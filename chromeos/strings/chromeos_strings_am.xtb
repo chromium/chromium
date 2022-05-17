@@ -38,6 +38,7 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">የቤት አውታረ መረብ፣ የሌላን እየተጠቀመ አይደለም</translation>
 <translation id="1327977588028644528">አግባቢ ፍኖት</translation>
+<translation id="1328223165223065150">የልጣፍ ቀለም</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ከመቃኛ አካባቢ ጋር አመጣጥን</translation>
 <translation id="1367951781824006909">ፋይል ይምረጡ</translation>
@@ -55,6 +56,7 @@
 <translation id="1442433966118452622">የምስል ምንጭ</translation>
 <translation id="1451536289672181509">መሣሪያ ቁልፍ ሰሌዳ ነው።</translation>
 <translation id="1459693405370120464">የአየር ሁኔታ</translation>
+<translation id="1459784442280469416">ወደ ዩኤስቢ አስቀምጥ</translation>
 <translation id="1468664791493211953">ቅናሽ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ይህን መሣሪያ ያስተዳድራል እና እንቅስቃሴዎን ሊከታተለው ይችላል።</translation>
 <translation id="1478594628797167447">ቃኚ</translation>
@@ -63,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያስተዳድር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
 <translation id="150962533380566081">ልክ ያልኾነ PUK።</translation>
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
+<translation id="1512982610995527443">መሣሪያው በ5 ሴኮንዶች ውስጥ ይዘጋል</translation>
+<translation id="1522984060396982789">ጥገናዎ ስኬታማ ሆኗል። መሣሪያውን መዝጋት ወይም አንዳንድ ተጨማሪ እርምጃዎችን መውሰድ ይችላሉ።</translation>
 <translation id="152892567002884378">ድምጽ ጨምር</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
@@ -105,6 +109,7 @@
 <translation id="1887850431809612466">የሃርድዌር ክለሳ</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
 <translation id="1908234395526491708">የ UDP ጥያቄ አለመሳካቶች</translation>
+<translation id="1932611479324127242">ባትሪ አቋርጥ</translation>
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1951012854035635156">ረዳት</translation>
 <translation id="1977994649430373166">የGoogle መገለጫ ፎቶ</translation>
@@ -123,6 +128,7 @@
 <translation id="2138109643290557664">ይንሳፈፉ በ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ፎቶዎች</translation>
+<translation id="2154739667870063220">ዳግም አስነሳ</translation>
 <translation id="2157959690810728433">ተሰልፏል</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />፦ እንደገና ይሞክሩ</translation>
 <translation id="2161394479394250669">የኅትመት ሥራን ሰርዝ</translation>
@@ -140,6 +146,7 @@
 <translation id="2240366984605217732">የአቀማመጥ መቀየሪያ</translation>
 <translation id="225692081236532131">የገባሪነት ሁኔታ</translation>
 <translation id="2271469253353559191">የጨለማ ሁነታ መርሐግብር</translation>
+<translation id="2275586345903859204">ጥገና ተጠናቋል</translation>
 <translation id="2287186687001756809">ምንም ምስል አልተገኘም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>
 <translation id="2307344026739914387">የአሁኑን የቁልፍ ጥምር ይጠቀሙ</translation>
 <translation id="2320295602967756579">ነጣ ያለ ገጽታን አንቃ</translation>
@@ -183,6 +190,7 @@
 <translation id="2717139507051041123">የጨለማ ቀለም ሁነታን አንቃ</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
+<translation id="2756652381241102009">ምርመራዎችን አሂድ</translation>
 <translation id="2783010256799387990">አልፏል</translation>
 <translation id="2789486458103222910">እሺ</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
@@ -332,6 +340,7 @@
 <translation id="4378551569595875038">በመገናኘት ላይ...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />ን ዳግም በማስነሳት ላይ</translation>
+<translation id="4415951057168511744">የአሁኑ አምሳያ</translation>
 <translation id="4425149324548788773">የእኔ Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ጠፍቷል</translation>
 <translation id="4429881212383817840">የKerberos ቲኬት ጊዜው በቅርቡ ያበቃል</translation>
@@ -368,6 +377,7 @@
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
+<translation id="4751272708893364980">የአርኤምኤ ምዝግብ ማስታወሻዎችን ይመልከቱ</translation>
 <translation id="4773299976671772492">ቆሟል</translation>
 <translation id="4774530504324923332">RSU የነቃላቸው የደህንነት ቁልፍ፣ የQR ኮድ መቃኛ እና ሁለተኛ የበይነመረብ ግንኙነት ያለው ሁለተኛ መሣሪያ ያስፈልገዎታል</translation>
 <translation id="4782311465517282004">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ</translation>
@@ -451,9 +461,11 @@
 <translation id="5372659122375744710">የWiFi አውታረ መረብ ደህንነት የተጠበቀ አይደለም</translation>
 <translation id="5376354385557966694">ራስሰር የብርሃን ሁነታ</translation>
 <translation id="537872351913703572">መሣሪያው ወደ ሌላ ተጠቃሚ ወይም ድርጅት ይሄዳል</translation>
+<translation id="5389224261615877010">ቀስተ ደመና</translation>
 <translation id="5395600419410242651">ሁሉንም ውሂብ ደምስስ</translation>
 <translation id="5400907029458559844">መሣሪያው እየተገናኘ ነው።</translation>
 <translation id="5401938042319910061">ሁሉንም የዕለት ተዕለት ተግባራት አሂድ</translation>
+<translation id="5406131354638931058">ለሚላኩ ወይም ለተከማቹ መሣሪያዎች ባትሪ ማቋረጥን ያከናውኑ</translation>
 <translation id="5423849171846380976">ገብሯል</translation>
 <translation id="5430931332414098647">ቅጽበታዊ እንደ ሞደም መሰካት</translation>
 <translation id="5431318178759467895">ቀለም</translation>
@@ -506,6 +518,7 @@
 <translation id="5931523347251946569">ፋይል አልተገኘም</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="594552776027197022">የዘፈቀደ የቁልፍ ጥምር አመንጭ</translation>
+<translation id="5951259522948394825">ሁሉም ነገር በትክክለኛ ቦታው ላይ መሆኑን ያረጋግጡ እና የምርመራ ሪፖርትን ይዩ</translation>
 <translation id="5972388717451707488">Engine አዘምን</translation>
 <translation id="5984145644188835034">ነባሪ ልጣፍ</translation>
 <translation id="6017514345406065928">አረንጓዴ</translation>
@@ -726,6 +739,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ን ምረጥ</translation>
 <translation id="8179976553408161302">አስገባ</translation>
+<translation id="819552138404104974">አርኤምኤ ምዝግብ ማስታወሻዎች</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
 <translation id="8217675307824400706">ይገናኙ</translation>
@@ -759,6 +773,7 @@
 <translation id="8456761643544401578">በራስሰር የጨለማ ሁነታ</translation>
 <translation id="8461329675984532579">የመነሻ አቅራቢ ስም</translation>
 <translation id="8467104829907989997">ክፍለ-አካላትን በመለካት ላይ...</translation>
+<translation id="8474030592808010086">ባትሪ ማቋረጥን ለማከናወን መሣሪያውን ይንቀሉ</translation>
 <translation id="8475690821716466388">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP PSK የተጠበቀ ነው</translation>
 <translation id="8477551185774834963">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በትንሹ ይበልጣል</translation>
 <translation id="8483248364096924578">የአይፒ አድራሻ</translation>
@@ -804,6 +819,7 @@
 <translation id="8898840733695078011">የሲግናል ጥንካሬ</translation>
 <translation id="8910721771319628100">ነባሪ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ ገደብ በላይ ነው</translation>
 <translation id="8918637186205009138">የ<ph name="GIVEN_NAME" /> <ph name="DEVICE_TYPE" /></translation>
+<translation id="8919792139048574232">ምን እንደተጠገነ ይመልከቱ</translation>
 <translation id="8919837981463578619">አልተሳካም - መሳቢያ ይጎድላል</translation>
 <translation id="8923267550422472772">እንደገና ለማስጀመር የወር ቀን</translation>
 <translation id="8928727111548978589">አልተሳካም - ወረቀት አልቋል</translation>

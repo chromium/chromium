@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">הגדרות וידאו</translation>
 <translation id="2144806332417375165">התאמה אישית של פרמטרים לסרטונים</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
+<translation id="2244252133441425811">‏הפעלת הכלי לבחירת FPS בסרטונים</translation>
 <translation id="2271433936731426666">הפעלת תמונת מצב לגבי הסרטון בגודל מלא</translation>
 <translation id="229579744168541441">ייצוא לדיסק</translation>
 <translation id="2320741269052147773">הזזה שמאלה</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">הפסקת הצילום</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:‏<ph name="ASPECT_RATIO_HEIGHT" />)‏ <ph name="MEGAPIXEL" /> מגה-פיקסל</translation>
 <translation id="4570032796877367747">מצלמה קדמית</translation>
+<translation id="4620818268515773682">החלפת המצב של השתקת המיקרופון. ההשתקה כבויה</translation>
 <translation id="4628948037717959914">תמונה</translation>
 <translation id="4649291346448517080">לא ניתן לשמור את הקובץ</translation>
 <translation id="4695379108709712600">מתבצעת תזוזה למעלה</translation>
@@ -157,6 +159,7 @@
 <translation id="8425673304802773841">הטייה מטה</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8687491812650032292">‏איכות HD ‏– ‎<ph name="HEIGHT" />p ‏(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">החלפת המצב של השתקת המיקרופון. ההשתקה פועלת</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8732462232047530626">תצוגה מקדימה של מטא-נתונים</translation>

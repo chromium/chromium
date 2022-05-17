@@ -326,6 +326,7 @@
 <translation id="2970920913501714344">ஆப்ஸ், நீட்டிப்புகள் மற்றும் தீம்களை நிறுவுதல்</translation>
 <translation id="2977598380246111477">அடுத்த எண்</translation>
 <translation id="2981684127883932071">பரிந்துரைகளைக் காட்டுகிறது</translation>
+<translation id="2985148236010982088">அனைத்து ஆப்ஸையும் காட்டு</translation>
 <translation id="2992327365391326550">சாதனத்தின் மைக்ரோஃபோன் பட்டன் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="2995447421581609334">அனுப்பும் சாதனங்களைக் காண்பிக்கும்.</translation>
 <translation id="2996462380875591307">டாக் செய்யப்பட்ட பெரிதாக்கி இயக்கப்பட்டது. அதை முடக்க, Ctrl+Search+Dயை மீண்டும் அழுத்தவும்.</translation>
@@ -464,6 +465,7 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ஆகியவையும் மேலும் <ph name="UNAVAILABLE_APPS_COUNT" /> ஆப்ஸும் இந்தச் சாதனத்தில் இல்லை.</translation>
 <translation id="3735740477244556633">இதன்படி வரிசைப்படுத்து</translation>
 <translation id="3742055079367172538">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
+<translation id="3761848338953536304">சிம் கார்டைப் பூட்டுவதற்கான அமைப்பை உங்கள் நிர்வாகி முடக்கச் சொல்கிறார்</translation>
 <translation id="3765841986579723851">இன்று திருத்தப்பட்டது</translation>
 <translation id="3771549900096082774">அதிக ஒளி மாறுபாட்டுப் பயன்முறை</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" />க்கு, பல உள்நுழைவை நிர்வாகி அனுமதிக்கவில்லை. தொடர, எல்லாப் பயனர்களும் வெளியேற வேண்டும்.</translation>
@@ -595,7 +597,6 @@
 <translation id="4481530544597605423">இணைக்காத சாதனங்கள்</translation>
 <translation id="4505050298327493054">செயலிலுள்ள டெஸ்க்.</translation>
 <translation id="4513946894732546136">கருத்து</translation>
-<translation id="4516867700536986208">அனைத்து ஆப்ஸும். அனைத்து ஆப்ஸையும் இடது/கீழ்நோக்கிய அம்புக்குறியைப் பயன்படுத்தி அணுகலாம்</translation>
 <translation id="4518404433291145981">Chromebookகை திறக்க உங்கள் ஃபோனை அன்லாக் செய்க</translation>
 <translation id="4527045527269911712">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> ஆகும் 100% சார்ஜாக</translation>
@@ -638,6 +639,7 @@
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
 <translation id="4735498845456076464">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + எண். செயல்பாட்டு பட்டன்களைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல் வரிசையில் உள்ள ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
+<translation id="4752784485658729358">6 டெஸ்க்குகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க ஒரு டெஸ்கை அகற்றவும்.</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
 <translation id="4774338217796918551">நாளை <ph name="COME_BACK_TIME" />க்கு சாதனத்தை மீண்டும் பயன்படுத்தலாம்.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> க்கான கடவுச்சொல்</translation>
@@ -828,6 +830,7 @@
 <translation id="598407983968395253">டெம்ப்ளேட்டைப் பயன்படுத்து</translation>
 <translation id="598882571027504733">புதுப்பிப்பைப் பெற, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
 <translation id="5992218262414051481">அதிக ஒளி மாறுபாட்டுப் பயன்முறை இயக்கப்பட்டது. அதை முடக்க, Ctrl+தேடல்+Hஐ மீண்டும் அழுத்தவும்.</translation>
+<translation id="6009656393242168182">உங்கள் சிம் கார்டைப் பூட்டுவதற்கான அமைப்பை முடக்குங்கள்</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> இல் <ph name="SELECTED_PAGE" />வது பக்கம்</translation>
 <translation id="6018164090099858612">கண்ணாடிப் பயன்முறையிலிருந்து வெளியேறுகிறது</translation>
 <translation id="602001110135236999">இடப்புறம் செல்</translation>
@@ -862,6 +865,7 @@
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6166852626429024716">உங்கள் சாதனம், ஆப்ஸ், அமைப்புகள், இணையம் ஆகியவற்றில் தேடுக...</translation>
 <translation id="6179832488876878285">முக்கியமான கோப்புகளை இங்கே பின் (pin) செய்யலாம். பின் செய்ய Files ஆப்ஸைத் திறக்கவும்.</translation>
+<translation id="6182592640011875895">டெஸ்க்கைத் திற</translation>
 <translation id="619279033188484792">மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள் ஆகியவற்றை <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
 <translation id="619335566042889110">இப்போதே சார்ஜ் செய்க</translation>
 <translation id="6220928844947387476">இப்போது ஒரே சமயத்தில் உங்கள் வீடியோவையும் திரையையும் ரெக்கார்டு செய்யலாம்</translation>
@@ -1033,7 +1037,6 @@
 <translation id="7302889331339392448">'உடனடி வசனம்' முடக்கப்பட்டது.</translation>
 <translation id="7303365578352795231">மற்றொரு சாதனத்தில் பதிலளிக்கப்படுகிறது.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7307830679306928882">சமீபத்திய ஆப்ஸ். சமீபத்திய ஆப்ஸ் அனைத்தையும் இடது/கீழ்நோக்கிய அம்புக்குறியைப் பயன்படுத்தி அணுகலாம்</translation>
 <translation id="7313193732017069507">கேமராவை விரிவாக்கும்</translation>
 <translation id="731589979057211264">'ஷெல்ஃப் பார்ட்டி' பயன்முறை இயக்கப்பட்டுள்ளது.</translation>
 <translation id="7319740667687257810">தொடக்கி, பகுதியளவு காட்சி</translation>
@@ -1168,8 +1171,8 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="8054466585765276473">பேட்டரி நேரத்தைக் கணக்கிடுகிறது.</translation>
-<translation id="8055510977240456975">தொடர் பரிந்துரைகளை மறை</translation>
 <translation id="8061464966246066292">உயர் மாறுபாடு</translation>
+<translation id="8083540854303889870">பின்னர் பயன்படுத்தச் சேமிக்கப்பட்டவை</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புவதை நிறுத்து</translation>
 <translation id="8113423164597455979">எல்லா ஆப்ஸுக்கும் இயக்கு</translation>
 <translation id="8120151603115102514">மொபைலில் பூட்டுத்திரை இல்லை. Chromebookகை திறக்க கடவுச்சொல் உள்ளிடுக</translation>

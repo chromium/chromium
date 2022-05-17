@@ -1284,6 +1284,11 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
 
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì sẽ không có nút nào xuất hiện.</translation>
 <translation id="2294382669900758280">Video đang phát trong các ứng dụng Android không được xem xét ngay cả khi chính sách này được đặt thành <ph name="TRUE" />.</translation>
+<translation id="2297792368307475351">Việc thiết lập chính sách này cho phép bạn thiết lập một danh sách mẫu URL xác định những trang web không được sử dụng quyền bảng nhớ tạm cho trang web. Việc này không bao gồm mọi thao tác bảng nhớ tạm trên những nguồn gốc khớp với mẫu đó. Ví dụ: người dùng vẫn có thể dán bằng phím tắt do việc này không do quyền bảng nhớ tạm cho trang web kiểm soát.
+
+      Khi bạn không đặt giá trị cho chính sách này, <ph name="DEFAULT_CLIPBOARD_SETTING" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt do người dùng chọn sẽ được áp dụng.
+
+      Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="2299220924812062390">Chỉ định danh sách plugin được phép</translation>
 <translation id="2301048990069984110">Mở rộng hỗ trợ cho Ứng dụng Chrome trên Windows, Mac và Linux.</translation>
 <translation id="2303795211377219696">Bật tính năng Tự động điền cho thẻ tín dụng</translation>
@@ -1586,6 +1591,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2604182581880595781">Định cấu hình các chính sách liên quan đến tính năng Chia sẻ tệp trong mạng.</translation>
 <translation id="2608535066974278204">Khoảng thời gian (tính bằng phút) chỉ định khoảng thời gian chạy lại.</translation>
 <translation id="2608887839902987727">Ngăn quá trình xác thực qua trang xác thực bỏ qua cài đặt proxy</translation>
+<translation id="2608985885792348429">Chế độ cài đặt bảng nhớ tạm mặc định</translation>
 <translation id="2615240493030733717">Báo cáo thông tin về múi giờ</translation>
 <translation id="2619966380594000538">Khi bạn đặt thành Bật hoặc không đặt chính sách này, cảnh báo bảo mật sẽ hiện ra khi những cờ hiệu dòng lệnh có thể nguy hiểm được dùng để chạy Chrome.
 
@@ -1605,6 +1611,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="264093234299818170">Tất cả máy in đều được hiển thị trừ những máy in trong danh sách chặn.</translation>
 <translation id="264252574246191885">Không công khai</translation>
 <translation id="2647069081229792812">Bật hoặc tắt tính năng chỉnh sửa dấu trang</translation>
+<translation id="264771271300359481">Không cho phép bất kỳ trang web nào sử dụng quyền bảng nhớ tạm cho trang web</translation>
 <translation id="2649896281375932517">Để người dùng quyết định</translation>
 <translation id="2650049181907741121">Hành động sẽ thực hiện khi người dùng đóng nắp</translation>
 <translation id="2658653824183107970">Sử dụng quy trình triển khai <ph name="CORS" /> cũ thay vì <ph name="CORS" /> mới</translation>
@@ -3858,25 +3865,6 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn không đặt hoặc đặt chính sách này thành False, thì Màn hình hợp nhất sẽ tắt và người dùng không thể bật tính năng đó.</translation>
 <translation id="5255162913209987122">Có thể được đề xuất</translation>
 <translation id="5257395339965216304">Dữ liệu ứng dụng được lưu trữ</translation>
-<translation id="5263649486910778308">Chính sách này đưa ra một cách để ghi đè danh sách tập hợp mà trình duyệt sử dụng cho các tính năng của First-Party Set.
-
-      Mọi tập hợp trong danh sách First-Party Set đều phải đáp ứng yêu cầu của một First-Party Set.
-      Mỗi First-Party Set bao gồm một chủ sở hữu và ít nhất một trang web thành viên. Tất cả trang web trong một First-Party Set đều phải là một miền đăng ký được và phân phát qua HTTPS, dù đó là trang web thành viên hay chủ sở hữu.
-      Từng trang web trong một First-Party Set cũng phải độc nhất, nghĩa là một trang web không được vừa là chủ sở hữu và vừa là thành viên, và mỗi trang chỉ được ghi nhận duy nhất một lần làm thành viên của một First-Party Set.
-      Xem https://github.com/privacycg/first-party-sets để tìm hiểu thêm về First-Party Set.
-
-      Khi bạn đặt chính sách này thành một từ điển trống, trình duyệt sẽ sử dụng danh sách First-Party Set công khai.
-
-      Đối với mọi trang web ở một First-Party Set trong danh sách <ph name="REPLACEMENTS" />, nếu một trang web cũng xuất hiện trong danh sách First-Party Set của trình duyệt thì trang web đó sẽ bị xoá khỏi First-Party Set của trình duyệt.
-      Sau đó, First-Party Set của chính sách sẽ được thêm vào danh sách First-Party Set của trình duyệt.
-
-      Đối với mọi trang web ở một First-Party Set trong danh sách <ph name="ADDITIONS" />, nếu một trang web cũng xuất hiện trong danh sách First-Party Set của trình duyệt thì First-Party Set của trình duyệt sẽ được cập nhật sao cho có thể thêm First-Party Set mới vào danh sách của trình duyệt. Sau khi danh sách của trình duyệt đã được cập nhật, First-Party Set của chính sách sẽ được thêm vào danh sách First-Party Set của trình duyệt.
-
-      Đối với mọi trang web trong danh sách của trình duyệt, danh sách First-Party Set của trình duyệt đòi hỏi không có trang web nào ở trong quá một tập hợp. Đây cũng là yêu cầu đối với danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />. Tương tự như vậy, mỗi trang web không thể ở cả danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />.
-
-      Hệ thống không hỗ trợ việc dùng ký tự đại diện (*) làm giá trị chính sách, cũng như trong mọi First-Party Set trong những danh sách này.
-
-      Mọi tập hợp mà chính sách cung cấp đều phải là First-Party Set hợp lệ, nếu không sẽ xảy ra lỗi.</translation>
 <translation id="5266173014392157048">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />".
 
       Nếu bạn đặt chính sách này, hệ thống sẽ chỉ định những máy chủ mà <ph name="PRODUCT_NAME" /> có thể ủy quyền. Hãy phân tách tên của các máy chủ bằng dấu phẩy. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
@@ -4095,6 +4083,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="5470500958458209831">URL mà từ đó có thể tải cẩm nang Ansible xuống.</translation>
 <translation id="5475361623548884387">Bật tính năng in</translation>
 <translation id="547601067149622666">Không cho phép quảng cáo trên các trang web chứa quảng cáo xâm nhập</translation>
+<translation id="5476152378885134514">Chặn bảng nhớ tạm trên những trang web này</translation>
 <translation id="5478734531226638813">Nếu bạn đặt chính sách này, thì hệ thống sẽ dừng việc cập nhật các ứng dụng Kiosk Chrome trong phiên (sử dụng URL cập nhật từ tệp kê khai tiện ích) và chỉ sử dụng tính năng tìm nạp trước CRX làm cơ chế cập nhật.</translation>
 <translation id="5480380613778757009">Nếu bạn tắt hoặc không đặt chính sách này, thì tất cả những chế độ cài đặt hiển thị đã đặt trong Phiên khách được quản lý sẽ được đặt lại ngay khi phiên này kết thúc. Nếu bạn đặt chính sách này thành Bật, thì các thuộc tính hiển thị sẽ vẫn giữ nguyên sau khi bạn thoát khỏi phiên khách được quản lý.</translation>
 <translation id="5483065054530244863">Cho phép các chứng chỉ SHA-1 có chữ ký do neo tin cậy cục bộ phát hành</translation>
@@ -4227,6 +4216,11 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 <translation id="5649046890958064703">Nếu bạn chọn <ph name="PRINTERS_BLACKLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, thì việc đặt <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng không thể sử dụng. Tất cả máy in sẽ được cung cấp cho người dùng, ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.</translation>
+<translation id="5649773663020498924">Nếu bạn đặt chính sách này thành 2, các trang web sẽ không được sử dụng quyền sử dụng bảng nhớ tạm cho trang web. Nếu bạn đặt chính sách này thành 3 hoặc không đặt chính sách này, người dùng có thể thay đổi chế độ cài đặt và chọn xem có API bảng nhớ tạm hay không khi một trang web muốn sử dụng.
+
+      Bạn có thể ghi đè chính sách này cho các mẫu URL cụ thể bằng các chính sách <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> và <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
+
+      Chính sách này chỉ ảnh hưởng đến những thao tác bảng nhớ tạm do quyền sử dụng bảng nhớ tạm cho trang web kiểm soát mà không ảnh hưởng đến việc viết bảng nhớ tạm được bảo vệ an toàn hoặc việc thực hiện thao tác sao chép và dán.</translation>
 <translation id="5652250453612826983">Kiểm soát các chính sách về sự giám sát của cha mẹ (chỉ áp dụng cho tài khoản người dùng là trẻ em).
       Những chính sách này không được đặt trong bảng điều khiển dành cho quản trị viên mà do Máy chủ API Kids định cấu hình trực tiếp.</translation>
 <translation id="5654682237531873653">Nếu bạn đặt chính sách này thành Bật, tính năng kiểm tra lỗi chính tả sẽ được bật và người dùng không thể tắt tính năng đó. Trên <ph name="MS_WIN_NAME" />, <ph name="PRODUCT_OS_NAME" /> và <ph name="LINUX_OS_NAME" />, các ngôn ngữ có tính năng kiểm tra lỗi chính tả có thể được bật hoặc tắt riêng. Vì vậy, người dùng vẫn có thể tắt tính năng kiểm tra lỗi chính tả bằng cách tắt mọi ngôn ngữ có tính năng đó. Để tránh trường hợp này, hãy dùng <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> để buộc bật các ngôn ngữ có tính năng kiểm tra lỗi chính tả cụ thể.
@@ -4975,6 +4969,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       1) Ngôn ngữ do người dùng chỉ định (nếu đã định cấu hình).
       2) Ngôn ngữ hệ thống.
       3) Ngôn ngữ dự phòng (en-US).</translation>
+<translation id="6493089139124468815">Cho phép trang web đề nghị người dùng cấp quyền bảng nhớ tạm cho trang web</translation>
 <translation id="6493918190032622602">Phiên bản <ph name="PRODUCT_OS_NAME" /> tối thiểu được phép</translation>
 <translation id="6495337487202227251">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -6218,6 +6213,12 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn không đặt chính sách này, người dùng có thể chọn có nhắc nhập mật khẩu để đánh thức thiết bị hay không.</translation>
 <translation id="7784062550705119230">Nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, việc đặt <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng có thể sử dụng. Người dùng chỉ có thể sử dụng những máy in có mã nhận dạng khớp với giá trị trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" /></translation>
 <translation id="7788511847830146438">Cho mỗi hồ sơ</translation>
+<translation id="7788632499792081231">Việc thiết lập chính sách này cho phép bạn thiết lập một danh sách mẫu URL xác định những trang web được sử dụng quyền bảng nhớ tạm cho trang web. Việc này không bao gồm mọi thao tác bảng nhớ tạm trên những nguồn gốc khớp với mẫu đó. Ví dụ: người dùng vẫn có thể dán bằng phím tắt do việc này không do quyền bảng nhớ tạm cho trang web kiểm soát.
+
+
+      Khi bạn không đặt giá trị cho chính sách này, <ph name="DEFAULT_CLIPBOARD_SETTING" /> (nếu được đặt) sẽ áp dụng cho mọi trang web. Nếu không, chế độ cài đặt do người dùng chọn sẽ được áp dụng.
+
+      Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="7792796937016596423">Người dùng sẽ không thể chặn bắt gói tin qua mạng</translation>
 <translation id="7798441698807517880">Chúng tôi đã xóa chính sách này khỏi <ph name="PRODUCT_NAME" /> phiên bản 89 trở đi <ph name="FLASH_PLUGIN_NAME" /> không còn được dùng nữa.
 
@@ -7005,6 +7006,7 @@ Bạn nên định cấu hình chính sách trên Windows qua GPO, mặc dù vi�
 
        Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, thì ban đầu, tính năng phản hồi bằng giọng nói sẽ tắt, nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="8656110680728938054">Bật tính năng chọn để nói</translation>
+<translation id="8659843732895043951">Cho phép dùng bảng nhớ tạm trên những trang này</translation>
 <translation id="8661297125441579970">Không cho phép di chuyển dữ liệu và App Runtime for Chrome (ARC).</translation>
 <translation id="8665314828727504286">Mức độ bảo vệ của tính năng Duyệt web an toàn</translation>
 <translation id="8666123502812856425">Nếu thiết lập chính sách này, bạn có thể liệt kê danh sách URL để chỉ định những trang web được tự động cấp quyền truy cập vào thiết bị HID chứa bộ sưu tập cấp cao nhất với cách sử dụng HID cụ thể. Mỗi mục trong danh sách này phải có cả trường <ph name="USAGES_FIELD_NAME" /> lẫn trường <ph name="URLS_FIELD_NAME" /> thì chính sách mới hợp lệ. Mỗi mục trong trường <ph name="USAGES_FIELD_NAME" /> phải có <ph name="USAGE_PAGE_FIELD_NAME" /> và có thể có trường <ph name="USAGE_FIELD_NAME" />. Nếu bạn bỏ qua trường <ph name="USAGE_FIELD_NAME" />, hệ thống sẽ tạo một chính sách áp dụng cho mọi thiết bị chứa bộ sưu tập cấp cao nhất với cách sử dụng từ một trang cụ thể về cách sử dụng. Nếu một mục có trường <ph name="USAGE_FIELD_NAME" /> nhưng không có trường <ph name="USAGE_PAGE_FIELD_NAME" />, thì mục đó không hợp lệ và bị bỏ qua.

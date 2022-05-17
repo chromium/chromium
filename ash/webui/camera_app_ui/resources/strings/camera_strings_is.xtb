@@ -82,6 +82,7 @@
 <translation id="4445542136948522167">Hætta að taka mynd</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixlar</translation>
 <translation id="4570032796877367747">Fremri myndavél</translation>
+<translation id="4620818268515773682">Kveikja/slökkva á hljóðnema. Slökkt er á þöggun</translation>
 <translation id="4628948037717959914">Mynd</translation>
 <translation id="4649291346448517080">Ekki tókst að vista skrána</translation>
 <translation id="4695379108709712600">Færist upp á við</translation>
@@ -158,6 +159,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8425673304802773841">Halla niður</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Kveikja/slökkva á hljóðnema. Kveikt er á þöggun</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8732462232047530626">Forskoða lýsigögn</translation>

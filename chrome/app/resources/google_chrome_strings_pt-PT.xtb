@@ -188,6 +188,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4969674060580488087">O ChromeOS Flex não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="4970761609246024540">Damos-lhe as boas-vindas aos perfis do Chrome</translation>
 <translation id="4970880042055371251">Versão do ChromeOS</translation>
+<translation id="4970947549776831107">O Chrome bloqueou este ficheiro porque este tipo de ficheiro é perigoso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Para obter atualizações futuras do Google Chrome, precisa do macOS 10.13 posterior. Este computador está a utilizar o OS X 10.11.</translation>
 <translation id="5112116809696021727">Para ver se o seu dispositivo está atualizado, aceda às <ph name="LINK_BEGIN" />Definições do ChromeOS<ph name="LINK_END" /></translation>

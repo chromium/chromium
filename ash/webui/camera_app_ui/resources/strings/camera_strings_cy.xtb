@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Gosodiadau fideo</translation>
 <translation id="2144806332417375165">Personoli paramedrau fideo</translation>
 <translation id="2175927920773552910">Cod QR</translation>
+<translation id="2244252133441425811">Galluogi dewisydd FPS fideo</translation>
 <translation id="2271433936731426666">Galluogi ciplun fideo maint llawn</translation>
 <translation id="229579744168541441">Allforio i ddisg</translation>
 <translation id="2320741269052147773">Panio i'r chwith</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Stopio tynnu llun</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapicsel</translation>
 <translation id="4570032796877367747">Camera blaen</translation>
+<translation id="4620818268515773682">Toglo distewi'r meicroffon. Mae distewi wedi'i ddiffodd</translation>
 <translation id="4628948037717959914">Llun</translation>
 <translation id="4649291346448517080">Methu â chadw'r ffeil</translation>
 <translation id="4695379108709712600">Yn symud i'r cyfeiriad uchaf</translation>
@@ -157,6 +159,7 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="8425673304802773841">Gogwyddo i lawr</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Toglo distewi'r meicroffon. Mae distewi ymlaen</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8732462232047530626">Rhagweld metaddata</translation>

@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">वीडियो सेटिंग</translation>
 <translation id="2144806332417375165">कस्टम वीडियो पैरामीटर</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
+<translation id="2244252133441425811">वीडियो के लिए, FPS (फ़्रेम प्रति सेकंड) चुनने की सुविधा चालू करें</translation>
 <translation id="2271433936731426666">वीडियो का फ़ुल साइज़ स्नैपशॉट लेने की सुविधा चालू करें</translation>
 <translation id="229579744168541441">डिस्क में ले जाएं</translation>
 <translation id="2320741269052147773">बाईं ओर पैन करें</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">फ़ोटो न खींचें</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> मेगापिक्सेल</translation>
 <translation id="4570032796877367747">सामने का कैमरा</translation>
+<translation id="4620818268515773682">माइक्रोफ़ोन को म्यूट करने वाले बटन को टॉगल करें. म्यूट बटन बंद है</translation>
 <translation id="4628948037717959914">फ़ोटो</translation>
 <translation id="4649291346448517080">फ़ाइल सेव नहीं की जा सकी</translation>
 <translation id="4695379108709712600">सबसे ऊपर की ओर जा रहा है</translation>
@@ -157,6 +159,7 @@
 <translation id="8425673304802773841">नीचे झुकाएं</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8687491812650032292">एचडी <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">माइक्रोफ़ोन को म्यूट करने वाले बटन को टॉगल करें. म्यूट बटन चालू है</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8732462232047530626">मेटाडेटा की झलक देखें</translation>

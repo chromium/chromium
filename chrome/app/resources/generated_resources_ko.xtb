@@ -843,7 +843,6 @@
 <translation id="1784707308176068866">함께 작동하는 네이티브 애플리케이션이 요청하는 경우 백그라운드에서 실행</translation>
 <translation id="1784849162047402014">기기에 디스크 저장 공간 부족</translation>
 <translation id="1787350673646245458">사용자 이미지</translation>
-<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능 액세스</translation>
 <translation id="1790976235243700817">액세스 권한 삭제</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792619191750875668">확장 디스플레이</translation>
@@ -872,6 +871,7 @@
 <translation id="1813278315230285598">서비스</translation>
 <translation id="18139523105317219">EDI측 이름</translation>
 <translation id="1815083418640426271">일반 텍스트로 붙여넣기</translation>
+<translation id="1815097521077272760">이 게임의 키보드 컨트롤을 사용해 보세요.</translation>
 <translation id="1815181278146012280">사이트에서 HID 기기에 액세스하려고 할 때 확인</translation>
 <translation id="181577467034453336"><ph name="NUMBER_OF_VIEWS" />개 더보기...</translation>
 <translation id="1816036116994822943">키보드 검색 속도</translation>
@@ -1006,6 +1006,7 @@
 <translation id="1935303383381416800">사용자 위치 확인이 허용됨</translation>
 <translation id="1936931585862840749">숫자로 인쇄 부수를 표시하세요(1부터 <ph name="MAX_COPIES" />까지).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> 기기에서는 <ph name="ARCHITECTURE_CONTAINER" /> 컨테이너 아키텍처 유형을 가져올 수 없습니다. 이 컨테이너를 다른 기기에서 복원할 수 있으며, 컨테이너 이미지를 Files 앱에서 열면 컨테이너 이미지에 포함된 파일에 액세스할 수 있습니다.</translation>
+<translation id="1938320257168860255">문제가 발생했습니다. 휴대전화가 근처에 있고, 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="1938351510777341717">외부 명령어</translation>
 <translation id="1940546824932169984">연결된 기기</translation>
 <translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
@@ -1088,6 +1089,7 @@
 <translation id="2030455719695904263">트랙패드</translation>
 <translation id="2031639749079821948">비밀번호가 Google 계정에 저장되었습니다.</translation>
 <translation id="2031914984822377766">선호하는 <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />를 추가하세요. 번역 시 목록의 가장 위에 있는 언어가 사용됩니다.</translation>
+<translation id="2033758234986231162">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고, 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="2034346955588403444">다른 Wi-Fi 네트워크 추가</translation>
 <translation id="203574396658008164">잠금 화면에서 메모 작성 사용</translation>
 <translation id="2037445849770872822">이 Google 계정에 감독 기능이 설정되었습니다. 더 많은 자녀 보호 기능을 설정하려면 계속을 선택하세요.
@@ -3757,6 +3759,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="461661862154729886">전원</translation>
 <translation id="4617001782309103936">너무 짧음</translation>
 <translation id="4617270414136722281">확장 프로그램 옵션</translation>
+<translation id="4617880081511131945">연결을 설정할 수 없음</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4619615317237390068">다른 기기의 탭</translation>
 <translation id="4620809267248568679">이 설정은 확장 프로그램에서 시행합니다.</translation>
@@ -3792,6 +3795,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4648491805942548247">권한 부족</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" />에서 휴대전화 연결 해제</translation>
 <translation id="4651484272688821107">데모 모드 리소스로 온라인 구성요소를 로드하지 못했습니다.</translation>
+<translation id="4651921906638302153">이 계정으로 로그인할 수 없음</translation>
 <translation id="4652935475563630866">카메라 설정을 변경하려면 Parallels Desktop을 다시 실행해야 합니다. 계속하려면 Parallels Desktop을 다시 실행하세요.</translation>
 <translation id="4653405415038586100">Linux 설정 중 오류 발생</translation>
 <translation id="465406513924180949">웹에서 장바구니에 둔 항목으로 쉽게 돌아갈 수 있도록 표시된 장바구니입니다.
@@ -4049,6 +4053,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4907306957610201395">권한 카테고리</translation>
 <translation id="4908811072292128752">새 탭을 열어 한 번에 두 개의 사이트를 탐색할 수 있습니다</translation>
 <translation id="4909038193460299775">이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 이 기기에서 삭제됩니다. 하지만 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
+<translation id="4912265719039610598">휴대전화 관리자가 앱 스트리밍을 사용 중지했습니다.</translation>
 <translation id="4912643508233590958">유휴 상태 해제</translation>
 <translation id="4915961947098019832">이미지 표시가 허용됨</translation>
 <translation id="4916542008280060967">사이트에서 <ph name="FILE_NAME" /> 파일을 수정하도록 허용하시겠습니까?</translation>
@@ -4658,7 +4663,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5539221284352502426">입력한 비밀번호가 서버에 의해 거부되었습니다. 가능한 이유는 다음과 같습니다. 비밀번호가 너무 짧습니다. 비밀번호에 숫자 또는 기호가 포함되어야 합니다. 이전 비밀번호와 달라야 합니다.</translation>
 <translation id="5541694225089836610">관리자가 사용 중지한 작업입니다.</translation>
 <translation id="5542132724887566711">프로필</translation>
-<translation id="554229901779827904">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chrome 브라우저 프로필과 데이터를 보고 수정할 수 있습니다. 데이터에는 북마크, 방문 기록, 비밀번호가 포함됩니다.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" />의 쿠키를 차단함</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" />에 연결 중</translation>
 <translation id="5543983818738093899">상태 확인 중...</translation>
@@ -5448,6 +5452,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6327785803543103246">웹 프록시 자동검색</translation>
 <translation id="6331818708794917058">사이트에서 MIDI 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="6333064448949140209">디버깅을 위해 파일이 Google로 전송됩니다.</translation>
+<translation id="6333170995003625229">이메일 또는 비밀번호를 확인할 수 없습니다. 다시 로그인해 주세요.</translation>
 <translation id="6335920438823100346">Linux를 시작하려면 <ph name="MANAGER" />의 요건에 따라 데이터를 백업하고 이 Chromebook을 초기화해야 합니다.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />(으)로 인해 ADB 디버깅이 사용 중지되었습니다. 24시간 후 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 유지하고 싶은 파일이 있으면 백업해 주세요.</translation>
 <translation id="6338981933082930623">모든 사이트에서 광고를 표시할 수 있음</translation>
@@ -5856,6 +5861,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6735304988756581115">쿠키 및 기타 사이트 데이터 표시...</translation>
 <translation id="6736243959894955139">주소</translation>
 <translation id="6737663862851963468">Kerberos 티켓 삭제</translation>
+<translation id="6738430949033571771">계정 확인 중...</translation>
 <translation id="6739923123728562974">바탕화면 바로가기 표시</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> 일시중지됨</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />관리자<ph name="END_LINK" />가 세이프 브라우징을 사용 중지했습니다.</translation>
@@ -6878,6 +6884,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">디스플레이 경계를 조정합니다.</translation>
 <translation id="7760004034676677601">설정한 시작 페이지가 맞습니까?</translation>
+<translation id="7762024824096060040">이 계정을 사용할 수 없음</translation>
 <translation id="7762463735017901568">휴대전화 관리자가 알림 동기화를 사용 중지했습니다.</translation>
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />에서 <ph name="DOWNLOAD_RECEIVED" />을(를) 다운로드함</translation>
@@ -7049,6 +7056,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />초</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="7920482456679570420">맞춤법 검사를 건너뛸 단어를 추가합니다.</translation>
+<translation id="7921347341284348270">이 관리 계정에서는 휴대전화의 알림을 볼 수 없습니다. 다른 계정에서 다시 시도해 보세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">시크릿 모드에서 서드 파티 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="7923564237306226146">Linux 업그레이드 완료</translation>
 <translation id="7924358170328001543">포트 전달 중 오류 발생</translation>
@@ -7674,6 +7682,8 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8546306075665861288">이미지 캐시</translation>
 <translation id="8546930481464505581">Touch Bar 맞춤설정</translation>
 <translation id="8547013269961688403">전체화면 돋보기 사용</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 계정은 <ph name="MANAGER" />에서 관리합니다. 이 이메일을 추가 계정으로 사용할 수 없습니다.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> 계정을 사용하려면 먼저 <ph name="DEVICE_TYPE" />에서 로그아웃한 다음, 로그인 화면 하단에서 사용자 추가를 선택하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">맨 위 키의 동작을 전환하려면 검색 키를 길게 누름</translation>
 <translation id="8549316893834449916">Gmail, 드라이브, YouTube 등에 사용하는 계정과 동일한 Google 계정으로 Chromebook에 로그인합니다.</translation>
 <translation id="8551388862522347954">라이선스</translation>

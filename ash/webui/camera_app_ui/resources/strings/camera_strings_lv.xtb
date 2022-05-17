@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Video iestatījumi</translation>
 <translation id="2144806332417375165">Pielāgoti video parametri</translation>
 <translation id="2175927920773552910">kvadrātkods</translation>
+<translation id="2244252133441425811">Iespējot video kadru/s atlasītāju</translation>
 <translation id="2271433936731426666">Iespējot pilna lieluma video momentuzņēmumu</translation>
 <translation id="229579744168541441">Eksportēt diskā</translation>
 <translation id="2320741269052147773">Bīdīt pa kreisi</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Pārtraukt fotoattēla uzņemšanu</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseļi</translation>
 <translation id="4570032796877367747">Priekšējā kamera</translation>
+<translation id="4620818268515773682">Mikrofona izslēgšanas slēdzis. Mikrofons ir ieslēgts.</translation>
 <translation id="4628948037717959914">Fotoattēls</translation>
 <translation id="4649291346448517080">Nevar saglabāt failu</translation>
 <translation id="4695379108709712600">Pārvietojas uz augšu</translation>
@@ -157,6 +159,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8425673304802773841">Pavirzīt lejup</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Mikrofona izslēgšanas slēdzis. Mikrofons ir izslēgts.</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8732462232047530626">Priekšskatīt metadatus</translation>

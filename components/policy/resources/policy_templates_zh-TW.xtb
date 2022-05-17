@@ -1245,6 +1245,11 @@
 
       如果將這項政策設為 False 或不設定，系統匣中不會顯示任何按鈕。</translation>
 <translation id="2294382669900758280">即使將這項政策設為 <ph name="TRUE" />，在 Android 應用程式中播放的影片仍不會受到影響。</translation>
+<translation id="2297792368307475351">你可以透過這項政策設定網址模式清單，指定哪些網站無法使用剪貼簿網站權限。這不包含在符合網址模式的來源網站上執行的所有剪貼簿作業。比方說，使用者仍可使用鍵盤快速鍵貼上內容，因為這項操作並未受到剪貼簿網站權限管制。
+
+      如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_CLIPBOARD_SETTING" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="2299220924812062390">指定停用的外掛程式清單</translation>
 <translation id="2301048990069984110">延長在 Windows、Mac 和 Linux 上支援 Chrome 應用程式的時間。</translation>
 <translation id="2303795211377219696">啟用信用卡的自動填入功能</translation>
@@ -1549,6 +1554,7 @@
 <translation id="2604182581880595781">設定網路檔案共用功能相關政策。</translation>
 <translation id="2608535066974278204">用於指定重新啟動時間範圍長度的時間段 (分鐘)。</translation>
 <translation id="2608887839902987727">禁止網頁認證入口驗證機制忽略 Proxy 設定</translation>
+<translation id="2608985885792348429">預設剪貼簿設定</translation>
 <translation id="2615240493030733717">回報時區資訊</translation>
 <translation id="2619966380594000538">如果將這項政策設為啟用或不設定，當你使用具潛在危險的指令列旗標啟動 Chrome 時，系統會顯示安全性警告。
 
@@ -1568,6 +1574,7 @@
 <translation id="264093234299818170">系統會顯示所有印表機 (封鎖清單中的印表機除外)。</translation>
 <translation id="264252574246191885">不公開</translation>
 <translation id="2647069081229792812">允許或禁止編輯書籤</translation>
+<translation id="264771271300359481">不允許任何網站使用剪貼簿網站權限</translation>
 <translation id="2649896281375932517">讓使用者決定</translation>
 <translation id="2650049181907741121">使用者蓋上螢幕時所採取的動作</translation>
 <translation id="2658653824183107970">使用舊版 <ph name="CORS" /> 模式，而不使用新版 <ph name="CORS" /></translation>
@@ -3798,25 +3805,6 @@
       如果將這項政策設為 False 或不設定，系統會停用整合桌面，且使用者無法啟用這項功能。</translation>
 <translation id="5255162913209987122">建議使用</translation>
 <translation id="5257395339965216304">代管的應用程式資料</translation>
-<translation id="5263649486910778308">你可以使用這項政策覆寫瀏覽器用於「第一方集合」功能的集合清單。
-
-      瀏覽器在第一方集合清單中列出的每個集合，都必須符合第一方集合的規定。
-      第一方集合是由一個擁有者和一或多個成員網站組成。第一方集合中的所有網站都必須是透過 HTTPS 提供的可註冊網域，無論是擁有者或成員網站都一樣。
-      此外，第一方集合中的每個網站也不得重複，這表示網站不可同時是擁有者和成員，也不能重複列為第一方集合的成員。
-      如要進一步瞭解第一方集合，請參閱 https://github.com/privacycg/first-party-sets。
-
-      如果你在這項政策中指定空白的字典，瀏覽器會使用第一方集合的公開清單。
-
-      對於 <ph name="REPLACEMENTS" /> 清單中第一方集合的所有網站，假如某個網站同時也列在瀏覽器清單中的第一方集合，則系統會將該網站從瀏覽器的第一方集合中移除。
-      移除後，系統會將政策的第一方集合加入瀏覽器的第一方集合清單中。
-
-      對於 <ph name="ADDITIONS" /> 清單中第一方集合的所有網站，假如某個網站同時也列在瀏覽器清單中的第一方集合，則系統會更新瀏覽器的第一方集合清單，以便將新的第一方集合加入瀏覽器的清單中。待瀏覽器的清單更新完成後，政策的第一方集合就會加入其中。
-
-      瀏覽器的第一方集合清單所列的所有網站，均不得重複列於其他集合中。這項要求也同樣適用於 <ph name="REPLACEMENTS" /> 清單和 <ph name="ADDITIONS" /> 清單。同樣地，一個網站也不得重複列在 <ph name="REPLACEMENTS" /> 清單和 <ph name="ADDITIONS" /> 清單中。
-
-      萬用字元 (*) 不得用做政策值，也不可用在這些清單中的任何第一方集合。
-
-      政策提供的所有集合都必須是有效的第一方集合，如果無效，就會顯示相應錯誤。</translation>
 <translation id="5266173014392157048">這項政策已遭淘汰，請改用「<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策，指派 <ph name="PRODUCT_NAME" /> 可能會委派的目標伺服器。每個伺服器名稱須以半形逗號分隔，亦可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
@@ -4032,6 +4020,7 @@
 <translation id="5470500958458209831">可下載 Ansible Playbook 的網址。</translation>
 <translation id="5475361623548884387">啟用列印功能</translation>
 <translation id="547601067149622666">禁止含侵入式廣告的網站顯示廣告</translation>
+<translation id="5476152378885134514">禁止這些網站使用剪貼簿</translation>
 <translation id="5478734531226638813">如果設定這項政策，系統會停用工作階段中的 Kiosk Chrome 應用程式更新作業 (該作業會使用擴充功能資訊清單中的更新網址)，且只會保留 CRX 預先擷取做為更新機制。</translation>
 <translation id="5480380613778757009">如果停用或不設定這項政策，當受管理訪客工作階段結束後，系統就會立即重設在此期間配置的所有顯示設定。如果將這項政策設為 True，系統就會在受管理的訪客工作階段結束後保留顯示屬性。</translation>
 <translation id="5483065054530244863">允許本機信任錨點核發的 SHA-1 簽署憑證</translation>
@@ -4163,6 +4152,11 @@
 <translation id="5649046890958064703">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLACKLIST" />，系統會根據 <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
 
       這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />。</translation>
+<translation id="5649773663020498924">如果將這項政策設為 2，系統會禁止網站使用剪貼簿網站權限。如果將這項政策設為 3 或不設定，使用者可變更設定，並在網站要求使用剪貼簿 API 時決定是否要授予權限。
+
+      你可以將特定網址模式列於 <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策中，藉此覆寫這項政策。
+
+      這項政策只會影響由剪貼簿網站權限控管的剪貼簿作業，不會對經過處理的剪貼簿寫入作業或信任的複製及貼上作業造成影響。</translation>
 <translation id="5652250453612826983">控管家長監督政策，這些政策只適用於兒童帳戶。
       這些政策並非是透過管理控制台設定，而是直接由 Kids API Server 設定。</translation>
 <translation id="5654682237531873653">如果將這項政策設為啟用，系統就會開啟拼字檢查功能，而且使用者無法停用。但是在 <ph name="MS_WIN_NAME" />、<ph name="PRODUCT_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 中，由於使用者可以分別開啟/關閉不同語言的拼字檢查功能，因此他們只要關閉所有語言的拼字檢查功能，就能達到與停用功能相同的效果。如要避免這種情況，請使用 <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 政策強制啟用特定語言的拼字檢查功能。
@@ -4883,6 +4877,7 @@
       1) 使用者指定的語言代碼 (如已設定)。
       2) 系統語言代碼。
       3) 備用語言代碼 (en-US)。</translation>
+<translation id="6493089139124468815">允許網站要求使用者授予剪貼簿網站權限</translation>
 <translation id="6493918190032622602"><ph name="PRODUCT_OS_NAME" />的最低版本限制</translation>
 <translation id="6495337487202227251">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
@@ -6116,6 +6111,12 @@
       如果不設定這項政策，使用者可選擇在解鎖休眠的裝置時，是否要收到輸入密碼的提示。</translation>
 <translation id="7784062550705119230">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="7788511847830146438">根據設定檔</translation>
+<translation id="7788632499792081231">你可以透過這項政策設定網址模式清單，指定哪些網站可以使用剪貼簿網站權限。這不包含在符合網址模式的來源網站上執行的所有剪貼簿作業。比方說，使用者仍可使用鍵盤快速鍵貼上內容，因為這項操作並未受到剪貼簿網站權限管制。
+
+
+      如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_CLIPBOARD_SETTING" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
+
+      想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="7792796937016596423">使用者將無法執行網路封包擷取作業</translation>
 <translation id="7798441698807517880">由於 <ph name="FLASH_PLUGIN_NAME" /> 已淘汰，因此這項政策自 <ph name="PRODUCT_NAME" /> 89 版起已移除。
 
@@ -6876,6 +6877,7 @@
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用互動朗讀功能，但使用者隨時可以啟用。</translation>
 <translation id="8656110680728938054">啟用隨選朗讀功能</translation>
+<translation id="8659843732895043951">允許這些網站使用剪貼簿</translation>
 <translation id="8661297125441579970">不允許資料遷移功能和 ARC。</translation>
 <translation id="8665314828727504286">安全瀏覽功能防護等級</translation>
 <translation id="8666123502812856425">你可以透過這項政策設定網址清單，指定哪些網站會自動取得權限，能夠存取包含具備指定 HID 使用權頂層集合的 HID 裝置。清單中的每個項目都必須包含 <ph name="USAGES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這項政策才會生效。<ph name="USAGES_FIELD_NAME" /> 欄位中的每個項目必須包含 <ph name="USAGE_PAGE_FIELD_NAME" /> 且可能包含 <ph name="USAGE_FIELD_NAME" /> 欄位。如果省略 <ph name="USAGE_FIELD_NAME" /> 欄位，建立的政策將適用於所有包含使用來自指定使用頁面的頂層集合裝置。要是政策包含 <ph name="USAGE_FIELD_NAME" /> 欄位，但缺少 <ph name="USAGE_PAGE_FIELD_NAME" /> 欄位，該項目將為無效且遭到忽略。

@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Вітаємо, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Ввести текст</translation>
+<translation id="1982717156487272186">Показати попередній тиждень</translation>
 <translation id="1989113344093894667">Не вдається записати контент</translation>
 <translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1993072747612765854">Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" /></translation>
@@ -326,6 +327,7 @@
 <translation id="2970920913501714344">установлювати додатки, розширення й теми</translation>
 <translation id="2977598380246111477">Наступна цифра</translation>
 <translation id="2981684127883932071">Показано пропозиції</translation>
+<translation id="2985148236010982088">Показати всі додатки</translation>
 <translation id="2992327365391326550">Кнопку мікрофона пристрою вимкнено.</translation>
 <translation id="2995447421581609334">Показати пристрої для трансляції</translation>
 <translation id="2996462380875591307">Увімкнено закріплену лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + D.</translation>
@@ -464,6 +466,7 @@
 <translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
+<translation id="3761848338953536304">Ваш адміністратор просить вимкнути налаштування блокування вашої SIM-карти</translation>
 <translation id="3765841986579723851">Змінено сьогодні</translation>
 <translation id="3771549900096082774">Режим високого контрасту</translation>
 <translation id="3773700760453577392">Адміністратор заборонив паралельний вхід користувачеві <ph name="USER_EMAIL" />. Щоб продовжити, усі користувачі повинні вийти.</translation>
@@ -595,7 +598,6 @@
 <translation id="4481530544597605423">Відключені пристрої</translation>
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
 <translation id="4513946894732546136">Відгуки</translation>
-<translation id="4516867700536986208">Усі додатки: щоб перейти до всіх додатків, використовуйте клавішу зі стрілкою вліво або вниз</translation>
 <translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон.</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до повного заряду</translation>
@@ -621,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оцінка – <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Поверніться до попередньої версії на пристрої протягом дня}one{Поверніться до попередньої версії на пристрої протягом # дня}few{Поверніться до попередньої версії на пристрої протягом # днів}many{Поверніться до попередньої версії на пристрої протягом # днів}other{Поверніться до попередньої версії на пристрої протягом # дня}}</translation>
 <translation id="4642092649622328492">Зробити частковий знімок екрана</translation>
+<translation id="4644727592819780893">Область замала для попереднього перегляду зображення з камери</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендований додаток</translation>
 <translation id="4657775630156561295">Наведену нижче підказку буде назавжди вилучено з історії у вашому обліковому записі:
 
@@ -775,6 +778,7 @@
 <translation id="5673434351075758678">Після синхронізації налаштувань мову змінено. Попередня мова: <ph name="FROM_LOCALE" />, нова: <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Елемент полиці</translation>
 <translation id="5677928146339483299">Заблоковано</translation>
+<translation id="5678564054339031017">Показати наступний тиждень</translation>
 <translation id="5679050765726761783">Підключено енергоекономний адаптер</translation>
 <translation id="5682642926269496722">Google Асистент недоступний для поточного облікового запису користувача.</translation>
 <translation id="5689633613396158040">Нічний екран допомагає знизити напруження очей в умовах тьмяного освітлення. Торкніться, щоб змінити час увімкнення нічного екрана або вимкнути його повністю.</translation>
@@ -829,6 +833,7 @@
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
 <translation id="5992218262414051481">Увімкнено режим високого контрасту. Щоб вимкнути його, знову натисніть Ctrl+Search+H.</translation>
+<translation id="6009656393242168182">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="6012623610530968780">Сторінка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Вихід із режиму віддзеркалення</translation>
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
@@ -863,6 +868,7 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6166852626429024716">Шукайте на пристрої, в додатках, налаштуваннях та Інтернеті…</translation>
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
+<translation id="6182592640011875895">Відкрити робочий стіл</translation>
 <translation id="619279033188484792">Переглядайте нещодавні фотографії, медіаконтент і сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Зарядити повністю</translation>
 <translation id="6220928844947387476">Тепер ви можете робити запис з екрана й веб-камери одночасно</translation>
@@ -1034,7 +1040,6 @@
 <translation id="7302889331339392448">Живі субтитри вимкнено.</translation>
 <translation id="7303365578352795231">Відповідь на іншому пристрої.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7307830679306928882">Нещодавні додатки: щоб перейти до нещодавніх додатків, використовуйте клавішу зі стрілкою вліво</translation>
 <translation id="7313193732017069507">Розгорнути вікно камери</translation>
 <translation id="731589979057211264">Режим Shelf Party ввімкнено.</translation>
 <translation id="7319740667687257810">Панель запуску, частковий перегляд</translation>
@@ -1169,8 +1174,8 @@
 <translation id="8051716679295756675">Шаблон <ph name="DESK_TEMPLATE_NAME" /> вже існує</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8054466585765276473">Обчислення часу роботи акумулятора.</translation>
-<translation id="8055510977240456975">Сховати пропозиції щодо продовження</translation>
 <translation id="8061464966246066292">Високий контраст</translation>
+<translation id="8083540854303889870">Збережено на потім</translation>
 <translation id="8098591350844501178">Зупинити трансляцію екрана на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Увімкнено всі</translation>
 <translation id="8120151603115102514">На телефоні немає екрана блокування. Щоб розблокувати Chromebook, введіть пароль.</translation>

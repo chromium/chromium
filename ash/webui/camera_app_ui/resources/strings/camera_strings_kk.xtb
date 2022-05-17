@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Бейне параметрлері</translation>
 <translation id="2144806332417375165">Арнаулы бейне параметрлері</translation>
 <translation id="2175927920773552910">QR коды</translation>
+<translation id="2244252133441425811">Бейне үшін кадр/сек таңдағышын қосу</translation>
 <translation id="2271433936731426666">Толық экрандық бейнені қосу</translation>
 <translation id="229579744168541441">Дискіге экспорттау</translation>
 <translation id="2320741269052147773">Солға жылжыту</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Фотосуретке түсіруді тоқтату</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксел</translation>
 <translation id="4570032796877367747">Алдыңғы камера</translation>
+<translation id="4620818268515773682">Микрофон дыбысын өшіру/қосу. Дыбыс қосулы.</translation>
 <translation id="4628948037717959914">Фотосурет</translation>
 <translation id="4649291346448517080">Файл сақталмады.</translation>
 <translation id="4695379108709712600">Жоғары қарай жылжыту</translation>
@@ -157,6 +159,7 @@
 <translation id="8425673304802773841">Төмен қарай еңкейту</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> пиксел (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Микрофон дыбысын өшіру/қосу. Дыбыс өшірулі.</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8732462232047530626">Метадеректі алдын ала қарау</translation>

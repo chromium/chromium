@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Configuración de video</translation>
 <translation id="2144806332417375165">Parámetros de video personalizados</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2244252133441425811">Habilitar el selector de FPS de video</translation>
 <translation id="2271433936731426666">Habilitar las instantáneas de video en tamaño completo</translation>
 <translation id="229579744168541441">Exportar al disco</translation>
 <translation id="2320741269052147773">Desplazarse a la izquierda</translation>
@@ -81,6 +82,7 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="4445542136948522167">Detener foto</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxel</translation>
 <translation id="4570032796877367747">Cámara frontal</translation>
+<translation id="4620818268515773682">Activar o desactivar la función para silenciar el micrófono, la función para silenciar está desactivada</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">No se puede guardar el archivo</translation>
 <translation id="4695379108709712600">Se está moviendo hacia la parte superior</translation>
@@ -157,6 +159,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8425673304802773841">Inclinar hacia abajo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Activar o desactivar la función para silenciar el micrófono, la función para silenciar está activada</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8732462232047530626">Obtener vista previa de metadatos</translation>

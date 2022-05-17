@@ -82,6 +82,7 @@
 <translation id="4445542136948522167">사진 촬영 중지</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" />메가픽셀</translation>
 <translation id="4570032796877367747">전면 카메라</translation>
+<translation id="4620818268515773682">마이크 음소거를 전환합니다. 음소거가 사용 중지되었습니다</translation>
 <translation id="4628948037717959914">사진</translation>
 <translation id="4649291346448517080">파일을 저장할 수 없습니다.</translation>
 <translation id="4695379108709712600">상단으로 이동</translation>
@@ -158,6 +159,7 @@
 <translation id="8425673304802773841">아래로 기울이기</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">마이크 음소거를 전환합니다. 음소거가 사용 설정되었습니다</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8732462232047530626">메타데이터 미리보기</translation>

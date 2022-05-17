@@ -37,6 +37,7 @@
 <translation id="131421566576084655">Дата останнього скидання даних недоступна</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Домашня мережа, без роумінгу</translation>
+<translation id="132712914231403017">Установіть зображення мікропрограми</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Колір фонового малюнка</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">Пристрій автоподачі документів (односторонній)</translation>
 <translation id="1643449475550628585">Змінювати фоновий малюнок щодня</translation>
 <translation id="1644574205037202324">Історія</translation>
+<translation id="1645954272419197032">Підтвердьте інформацію про пристрій</translation>
 <translation id="1662989795263954667">Зупинено – закінчилося чорнило</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">Підключення</translation>
 <translation id="2008685064673031089">Пошук Prime</translation>
 <translation id="2016697457005847575">Виконайте дії для вирішення проблеми</translation>
+<translation id="2016848882344942759">--немає бренду продавця--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Інші налаштування</translation>
 <translation id="2085089206770112532">Зменшити яскравість екрана</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">Розклад для темного режиму</translation>
 <translation id="2275586345903859204">Ремонт завершено</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Вставте зовнішній носій, наприклад носій USB або карту SD, на який завантажено зображення з Додатка для відновлення Chromebook</translation>
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
 <translation id="2320295602967756579">Увімкнути світлу тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">Ключ автентифікації TLS</translation>
 <translation id="2713444072780614174">Білий</translation>
 <translation id="2717139507051041123">Увімкнути режим темних кольорів</translation>
+<translation id="2727250716596204208">Не вдалося знайти зображення мікропрограми. Вставте зовнішній носій, наприклад носій USB або карту SD, на який завантажено зображення з Додатка для відновлення Chromebook.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">2-га фаза автентифікації EAP</translation>
 <translation id="2756652381241102009">Запустити діагностику</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3124039320086536031">Пристрій підключено.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}many{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Надання доступу до пристрою…</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
 <translation id="3156846309055100599">Сканування сторінки <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Виявлено адаптивний портал</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
+<translation id="3383751554789092165">За потреби відредагуйте інформацію про пристрій.</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
 <translation id="3404770484521709967">Компоненти встановлено правильно.</translation>
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">Не з’єднано</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
 <translation id="3771294271822695279">Відеофайли</translation>
+<translation id="3774059845329307709">Серійний номер</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
 <translation id="38114475217616659">Очистити всю історію</translation>
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930">Акумулятор ємністю <ph name="CHARGE_VALUE" /> мА·год</translation>
 <translation id="4561801978359312462">SIM-карту розблоковано</translation>
 <translation id="4562494484721939086">Не працює</translation>
+<translation id="4568938274596692027">Встановлення завершено. Підготовка до перезапуску…</translation>
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
 <translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
 <translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">Негайно виберіть новий</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Рівень заряду акумулятора лівого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4908030561598728899">Встановлюється мікропрограма…</translation>
 <translation id="4915052247106771211">Буде відновлено заводські налаштування пристрою (Powerwash).</translation>
 <translation id="4917385247580444890">Потужний</translation>
 <translation id="4917889632206600977">Зупинено – закінчився папір</translation>
@@ -615,8 +625,10 @@
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
+<translation id="6822504384524564824">Артикул потрібно змінювати, лише якщо певні компоненти було замінено на інші. Наприклад, сенсорний екран було замінено на несенсорний або оперативну пам’ять збільшили з 8 до 16 ГБ.</translation>
 <translation id="6840315122969944400">Ремонт пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>
+<translation id="6876833053687020046">Артикул DRAM</translation>
 <translation id="6889786074662672253">Поки відбувається перезапуск, не відключайте цей зовнішній пристрій і не завершуйте роботу комп’ютера. Можете згорнути це вікно. Перезапуск може зайняти кілька хвилин, і впродовж цього часу зовнішній пристрій, імовірно, не працюватиме.</translation>
 <translation id="6905724422583748843">Повернутися на сторінку <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Кришка сканера відкрита. Закрийте її та повторіть спробу.</translation>
@@ -664,6 +676,7 @@
 <translation id="7343649194310845056">Мережеві пристрої</translation>
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">Артикул</translation>
 <translation id="7378886533986123738">Змінити заставку</translation>
 <translation id="7397270852490618635">Вимкнути світлу тему</translation>
 <translation id="741244894080940828">конвертація</translation>
@@ -763,6 +776,7 @@
 <translation id="8364946094152050673">Сервери імен порожні</translation>
 <translation id="8372477600026034341">Додаткові хости</translation>
 <translation id="8378855320830505539">Регіон</translation>
+<translation id="8382302752385457774">Бренд продавця</translation>
 <translation id="8395584934117017006">Цим пристроєм <ph name="DEVICE_TYPE" /> керує організація</translation>
 <translation id="8398927464629426868">Поточна сила струму заряджання або розряджання</translation>
 <translation id="8422748173858722634">IMEI</translation>

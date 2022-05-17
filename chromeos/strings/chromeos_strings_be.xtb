@@ -38,9 +38,11 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
 <translation id="1327977588028644528">Шлюз</translation>
+<translation id="1328223165223065150">Колер шпалер</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Дапасаваць да вобласці сканіравання</translation>
 <translation id="1367951781824006909">Выбраць файл</translation>
+<translation id="1380220803921738821">Узнікаюць памылкі. Паспрабуйце перазагрузіць прыладу або аднавіць убудаванае ПЗ, выкарыстаўшы USB-дыск.</translation>
 <translation id="1387854245479784695">Гэта даныя па ўсіх ядрах разам</translation>
 <translation id="1394661041439318933">Узровень зараду акумулятара чахла: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Можна выканаць праверку ping для шлюза</translation>
@@ -54,6 +56,7 @@
 <translation id="1442433966118452622">Крыніца відарыса</translation>
 <translation id="1451536289672181509">Гэта клавіятура.</translation>
 <translation id="1459693405370120464">Надвор'е</translation>
+<translation id="1459784442280469416">Захаваць на USB-дыску</translation>
 <translation id="1468664791493211953">Прапановы</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> кіруе гэтай прыладай і можа адсочваць вашы дзеянні.</translation>
 <translation id="1478594628797167447">Сканер</translation>
@@ -62,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> можа кіраваць наладамі гэтага карыстальніка і адсочваць яго дзеянні.</translation>
 <translation id="150962533380566081">Няправільны PUK-код.</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
+<translation id="1512982610995527443">Прылада завершыць працу праз 5 секунд</translation>
+<translation id="1522984060396982789">Рамонт выкананы. Можна завяршыць працу прылады або выканаць іншыя дзеянні.</translation>
 <translation id="152892567002884378">Павялічыць гучнасць</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="155865706765934889">Сэнсарная панэль</translation>
@@ -104,6 +109,7 @@
 <translation id="1887850431809612466">Версія апаратнага забеспячэння</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
 <translation id="1908234395526491708">Збоі запытаў UDP</translation>
+<translation id="1932611479324127242">Выключыць акумулятар</translation>
 <translation id="1947737735496445907">Надрукавана</translation>
 <translation id="1951012854035635156">Памочнік</translation>
 <translation id="1977994649430373166">Відарыс профілю Google</translation>
@@ -122,6 +128,7 @@
 <translation id="2138109643290557664">Плывучы міма</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фота</translation>
+<translation id="2154739667870063220">Перазагрузіць</translation>
 <translation id="2157959690810728433">У ЧАРЗЕ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Паўтарыць спробу</translation>
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
@@ -139,6 +146,7 @@
 <translation id="2240366984605217732">Пераключэнне раскладкі</translation>
 <translation id="225692081236532131">Стан актывацыі</translation>
 <translation id="2271469253353559191">Расклад уключэння цёмнага рэжыму</translation>
+<translation id="2275586345903859204">Рамонт завершаны</translation>
 <translation id="2287186687001756809">Відарыс недаступны. Дадаць фота можна з сайта <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Выкарыстанне бягучай пары ключоў</translation>
 <translation id="2320295602967756579">Уключыць светлую тэму</translation>
@@ -182,10 +190,12 @@
 <translation id="2717139507051041123">Уключыць рэжым цёмных колераў</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
+<translation id="2756652381241102009">Запусціць дыягностыку</translation>
 <translation id="2783010256799387990">ПРОЙДЗЕНА</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="28232023175184696">Няма падключэння да інтэрнэту. Націсніце, каб паўтарыць спробу.</translation>
+<translation id="2827359915699915567">Каб атрымаць код RSU, увядзіце гэты URL-адрас уручную</translation>
 <translation id="2859243502336719778">Важнае абнаўленне</translation>
 <translation id="2860473693272905224">Палажыце чарговую старонку ў сканер</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
@@ -225,6 +235,7 @@
 <translation id="3291996639387199448">Кірунак ключа</translation>
 <translation id="3310640316857623290">Затрымка DNS значна перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="3328783797891415197">Выконваецца праверка</translation>
+<translation id="3333527094307156612">Выкарыстайце гэты QR-код, каб атрымаць 8-значны код разблакіроўкі. Можна таксама ўручную ўвесці <ph name="LINK_BEGIN" />гэты URL-адрас<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Не ведаю</translation>
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Падключана</translation>
@@ -258,6 +269,7 @@
 <translation id="3606583719724308068">Высокая затрымка на вэб-сайтах HTTPS</translation>
 <translation id="3621202678540785336">Увод</translation>
 <translation id="3632579075709132555">Пераключэнне экрана прыватнасці</translation>
+<translation id="3643810137582748570">Прапусціць каліброўку</translation>
 <translation id="3678765385266369662">Выберыце спосаб выключэння абароны ад запісу</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (праверка)</translation>
 <translation id="370665806235115550">Загрузка…</translation>
@@ -328,6 +340,7 @@
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">Ідзе перазапуск прылады "<ph name="DEVICE_NAME" />"</translation>
+<translation id="4415951057168511744">Бягучы аватар</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" />: выключана</translation>
 <translation id="4429881212383817840">Дзеянне білета Kerberos хутка скончыцца</translation>
@@ -364,6 +377,7 @@
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
+<translation id="4751272708893364980">Паказаць журналы RMA</translation>
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4774530504324923332">Вам патрэбны будзе ключ бяспекі з падтрымкай RSU, сканер QR-кодаў і другая прылада, падключаная да інтэрнэту</translation>
 <translation id="4782311465517282004">Атрымлівайце азначэнні, пераклады або пераводзьце адзінкі вымярэння: для гэтага вам трэба дакрануцца да тэксту і ўтрымліваць палец або націснуць на тэкст правай кнопкай мышы.</translation>
@@ -408,6 +422,7 @@
 <translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назва групы</translation>
 <translation id="5051044138948155788">Гэта адзіная старонка. Вы будзеце перанакіраваны на пачатковы экран сканіравання.</translation>
+<translation id="506768878203270635">Увядзіце 8 сімвалаў</translation>
 <translation id="5088172560898466307">Назва хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -446,9 +461,11 @@
 <translation id="5372659122375744710">Сетка Wi-Fi не абаронена</translation>
 <translation id="5376354385557966694">Аўтаматычнае ўключэнне светлага рэжыму</translation>
 <translation id="537872351913703572">Прылада будзе перададзена іншаму карыстальніку або арганізацыі</translation>
+<translation id="5389224261615877010">Вясёлка</translation>
 <translation id="5395600419410242651">Сцерці ўсе даныя</translation>
 <translation id="5400907029458559844">Прылада падключаецца.</translation>
 <translation id="5401938042319910061">Запусціць усе паслядоўнасці дзеянняў</translation>
+<translation id="5406131354638931058">Выключайце акумулятар, калі прылады трэба транспартаваць або адправіць на захоўванне</translation>
 <translation id="5423849171846380976">Уключана</translation>
 <translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
@@ -469,6 +486,7 @@
 <translation id="5620281292257375798">Для ўнутранага карыстання</translation>
 <translation id="5649768706273821470">Праслухаць</translation>
 <translation id="5655283760733841251">Павялічыць яркасць клавіятуры</translation>
+<translation id="5661196929408385351">Выкарыстаць Powerwash і завяршыць працу</translation>
 <translation id="5669267381087807207">Ідзе актывацыя</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Сям'я</translation>
@@ -480,6 +498,7 @@
 <translation id="576835345334454681">Павялічыць яркасць дысплэя</translation>
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5784136236926853061">Вялікая затрымка HTTP-запытаў</translation>
+<translation id="578753362485952307">Калі вы мадыфікуеце сістэмную плату для выкарыстання ў іншай прыладзе, трымайцеся <ph name="LINK_BEGIN" />адпаведнай працэдуры<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5843706793424741864">Шкала Фарэнгейта</translation>
@@ -499,6 +518,7 @@
 <translation id="5931523347251946569">Файл не знойдзены</translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="594552776027197022">Стварэнне выпадковай пары ключоў</translation>
+<translation id="5951259522948394825">Праверце, ці ўсё на сваім месцы, і праглядзіце справаздачу па дыягностыцы</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Стандартныя шпалеры</translation>
 <translation id="6017514345406065928">Зялёны</translation>
@@ -536,6 +556,7 @@
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Уключыць цёмную тэму</translation>
+<translation id="6295178529664209245">Працягнуць рамонт?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тэст скасаваны</translation>
 <translation id="6319207335391420837">Абнаўленне ўбудаванага ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6321407676395378991">Уключыць застаўку</translation>
@@ -571,6 +592,7 @@
 <translation id="6575134580692778371">Не наладжана</translation>
 <translation id="6579509898032828423">Выкарыстоўваць гэта фота</translation>
 <translation id="6596816719288285829">IP-адрас</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" />: скасаваць рамонт прылады</translation>
 <translation id="6618744767048954150">Выконваецца</translation>
 <translation id="6620487321149975369">Заданні друку будуць паказвацца ў гісторыі, пакуль яны не будуць выдалены ўручную</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
@@ -583,6 +605,7 @@
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6723847290197874913">Падсветка клавіятуры</translation>
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
+<translation id="6746847322826305075">Вы можаце выканаць рамонт або выкарыстаць у дачыненні да прылады функцыю Powerwash (скід да заводскіх налад) і адправіць сістэмную плату на захоўванне.</translation>
 <translation id="6747215703636344499">Спынена: выхадны латок запоўнены</translation>
 <translation id="6749473226660745022">Фота</translation>
 <translation id="6753452347192452143">Гэта камп'ютар.</translation>
@@ -630,6 +653,7 @@
 <translation id="7216409898977639127">Сотавы аператар</translation>
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Выберыце адзін або некалькі кампанентаў і паўтарыце спробу або прапусціце каліброўку</translation>
 <translation id="7281657306185710294">Адчуванне брызу</translation>
 <translation id="7287310195820267359">Калекцыі шпалер</translation>
 <translation id="7297226631177386107">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTPS</translation>
@@ -660,11 +684,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сэнсарны экран з USB</translation>
 <translation id="7595982850646262331">Застаецца <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">Выявіць гэты кампанент не ўдалося.</translation>
 <translation id="7620771111601174153">Атрымаць больш інфармацыі ў Даведачным цэнтры</translation>
 <translation id="7626501172915339021">Выканаць серверную разблакіроўку RMA (RSU)</translation>
 <translation id="763165478673169849">Час апошняга скіду</translation>
 <translation id="7648838807254605802">Вялікая затрымка HTTPS</translation>
 <translation id="7656388927906093505">Гэта мыш.</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" />: памылка выпраўлення непаладак</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7665800271478495366">Змяніць аватар</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
@@ -706,12 +732,14 @@
 <translation id="8083281199617904460">Рамонт павінен выконвацца кваліфікаваным спецыялістам па рамонце. Пачынаць рамонт можна толькі пасля замены кампанентаў, якія працуюць няправільна.</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8104083085214006426">Вы карыстаецеся адкрытай небяспечнай сеткай</translation>
+<translation id="8109786307828817014">Працягнуць нягледзячы на збой каліброўкі?</translation>
 <translation id="811820734797650957">(Android) Можна выканаць праверку ping для шлюза</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Запытаць лічыльнікі трафіка</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбраць <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">Журналы RMA</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
 <translation id="8217675307824400706">Устанавіце падключэнне</translation>
@@ -728,6 +756,7 @@
 <translation id="8302368968391049045">Брандмаўар HTTPS</translation>
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8327249300223641918">Перш чым працягнуць, размясціце ўсю прыладу (ніжнюю частку і вечка) на плоскай паверхні.</translation>
+<translation id="8330949592403310082">Выберыце, якія кампаненты былі заменены</translation>
 <translation id="8336739000755212683">Змяніць відарыс уліковага запісу на прыладзе</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8352772353338965963">Дадайце ўліковы запіс для функцыі ўваходу ў некалькі ўліковых запісаў. Гэта функцыя дае магчымасць пераключацца паміж уліковымі запісамі, у якія выкананы ўваход, без уводу пароля. Таму выкарыстоўвайце яе толькі для ўліковых запісаў, якім давяраеце.</translation>
@@ -744,6 +773,7 @@
 <translation id="8456761643544401578">Аўтаматычнае ўключэнне цёмнага рэжыму</translation>
 <translation id="8461329675984532579">Назва аператара</translation>
 <translation id="8467104829907989997">Ідзе калібраванне кампанентаў…</translation>
+<translation id="8474030592808010086">Каб выключыць акумулятар, адключыце прыладу ад сеткі</translation>
 <translation id="8475690821716466388">Сетка Wi-Fi абаронена слабым пратаколам WEP PSK</translation>
 <translation id="8477551185774834963">Затрымка DNS крыху перавышае дапушчальнае парогавае значэнне</translation>
 <translation id="8483248364096924578">IP-адрас</translation>
@@ -752,6 +782,7 @@
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8503836310948963452">Яшчэ пару хвілін…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Без каліброўкі кампаненты могуць не працаваць належным чынам</translation>
 <translation id="8575298406870537639">Магчыма, вам спатрэбіцца ўключыць гэту наладу, каб падключыцца да сеткі вашага аператара. Звяжыцеся з аператарам, каб даведацца больш.</translation>
 <translation id="8576249514688522074">Неініцыялізаваная</translation>
 <translation id="8620617069779373398">Стан роўмінгу</translation>
@@ -788,6 +819,7 @@
 <translation id="8898840733695078011">Сіла сігналу</translation>
 <translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
+<translation id="8919792139048574232">Паказаць, што было выпраўлена</translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
 <translation id="8923267550422472772">Дзень месяца для скіду</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>
@@ -806,6 +838,7 @@
 <translation id="9025198690966128418">Выкарыстоўваць як асабістую прыладу</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS-пераўтварэнне мае вялікую затрымку</translation>
+<translation id="9063121522582193837">Не ўдалося адкалібраваць некаторыя кампаненты</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Выкарыстоўваць гэта відэа</translation>

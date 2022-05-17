@@ -82,6 +82,7 @@
 <translation id="4445542136948522167">Stop taking photo</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="4570032796877367747">Front camera</translation>
+<translation id="4620818268515773682">Toggle microphone mute. Mute is off</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4649291346448517080">Unable to save the file</translation>
 <translation id="4695379108709712600">Moving in top direction</translation>
@@ -158,6 +159,7 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="8425673304802773841">Tilt down</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Toggle microphone mute. Mute is on</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8732462232047530626">Preview metadata</translation>

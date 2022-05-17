@@ -32,15 +32,18 @@
 <translation id="1270369111467284986">Portal cativo suspeito</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Ative a proteção contra escrita</translation>
 <translation id="1308754910631152188">A atualizar (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1310380015393971138">Nenhuma rede <ph name="NETWORK_NAME" /> disponível</translation>
 <translation id="131421566576084655">A data da última reposição de dados não está disponível</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rede doméstica, sem roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
+<translation id="1328223165223065150">Cor da imagem de fundo</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajustar à área de digitalização</translation>
 <translation id="1367951781824006909">Selecione um ficheiro</translation>
+<translation id="1380220803921738821">Estamos a encontrar erros. Experimente reiniciar ou recuperar o firmware através de uma unidade USB.</translation>
 <translation id="1387854245479784695">Isto é uma agregação de todos os núcleos.</translation>
 <translation id="1394661041439318933">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria na caixa.</translation>
 <translation id="1397738625398125236">É possível enviar ping ao gateway</translation>
@@ -54,6 +57,7 @@
 <translation id="1442433966118452622">Fonte da imagem</translation>
 <translation id="1451536289672181509">O dispositivo é um teclado.</translation>
 <translation id="1459693405370120464">Meteorologia</translation>
+<translation id="1459784442280469416">Guardar na unidade USB</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -62,6 +66,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
 <translation id="150962533380566081">PUK inválido.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
+<translation id="1512982610995527443">O dispositivo vai encerrar daqui a 5 segundos</translation>
+<translation id="1522984060396982789">A reparação foi realizada com êxito. Pode encerrar o dispositivo ou tomar algumas medidas adicionais.</translation>
 <translation id="152892567002884378">Aumentar o volume</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -104,6 +110,7 @@
 <translation id="1887850431809612466">Revisão de hardware</translation>
 <translation id="1905710495812624430">Foi excedido o número máximo de tentativas permitidas.</translation>
 <translation id="1908234395526491708">Falhas de pedidos de UDP.</translation>
+<translation id="1932611479324127242">Corte da bateria</translation>
 <translation id="1947737735496445907">Impressão concluída</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1977994649430373166">Foto do perfil do Google</translation>
@@ -122,6 +129,7 @@
 <translation id="2138109643290557664">A flutuar</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
+<translation id="2154739667870063220">Reiniciar</translation>
 <translation id="2157959690810728433">EM LISTA DE ESPERA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tente novamente</translation>
 <translation id="2161394479394250669">Cancelar tarefa de impressão</translation>
@@ -139,6 +147,7 @@
 <translation id="2240366984605217732">Interruptor do esquema</translation>
 <translation id="225692081236532131">Estado da ativação</translation>
 <translation id="2271469253353559191">Horário do modo escuro</translation>
+<translation id="2275586345903859204">A reparação está concluída</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, aceda a <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Utilizar par de chaves atual</translation>
 <translation id="2320295602967756579">Ativar tema claro</translation>
@@ -182,10 +191,12 @@
 <translation id="2717139507051041123">Ativar modo de cor escura</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Autenticação da fase 2 de EAP</translation>
+<translation id="2756652381241102009">Executar diagnósticos</translation>
 <translation id="2783010256799387990">APROVADO</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Não é possível estabelecer ligação à Internet. Clique para tentar novamente.</translation>
+<translation id="2827359915699915567">Introduza manualmente este URL para obter o código RSU (Desbloqueio por servidor RMA)</translation>
 <translation id="2859243502336719778">Atualização crítica</translation>
 <translation id="2860473693272905224">Coloque outra página no scanner</translation>
 <translation id="2872961005593481000">Encerrar</translation>
@@ -225,6 +236,7 @@
 <translation id="3291996639387199448">Direção da chave</translation>
 <translation id="3310640316857623290">Latência de DNS significativamente acima do limite permitido.</translation>
 <translation id="3328783797891415197">A executar teste…</translation>
+<translation id="3333527094307156612">Use este código QR para obter o código de desbloqueio de 8 carateres. Também pode introduzir manualmente <ph name="LINK_BEGIN" />este URL<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Não sei</translation>
 <translation id="3340011300870565703">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria no auricular direito.</translation>
 <translation id="3368922792935385530">Ligado</translation>
@@ -258,6 +270,7 @@
 <translation id="3606583719724308068">Latência elevada para Websites HTTPS</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
+<translation id="3643810137582748570">Ignorar calibração</translation>
 <translation id="3678765385266369662">Selecione como quer desativar a proteção contra escrita</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
@@ -328,6 +341,7 @@
 <translation id="4378551569595875038">A ligar...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">A reiniciar o dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">Avatar atual</translation>
 <translation id="4425149324548788773">O meu disco</translation>
 <translation id="4428374560396076622">A rede <ph name="NETWORK_NAME" /> está desativada</translation>
 <translation id="4429881212383817840">A permissão Kerberos expira em breve</translation>
@@ -364,6 +378,7 @@
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4744944742468440486">Informações relacionadas com a sua seleção</translation>
+<translation id="4751272708893364980">Ver registos RMA</translation>
 <translation id="4773299976671772492">Parado</translation>
 <translation id="4774530504324923332">Vai precisar de uma chave de segurança com RSU (Desbloqueio por servidor RMA) ativado, um Leitor de códigos QR e um segundo dispositivo com ligação à Internet</translation>
 <translation id="4782311465517282004">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto</translation>
@@ -408,6 +423,7 @@
 <translation id="5049856988445523908">SIM bloqueado (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Esta é a única página. Será apresentado o ecrã inicial da digitalização.</translation>
+<translation id="506768878203270635">Introduzir os 8 carateres</translation>
 <translation id="5088172560898466307">Nome do anfitrião do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -417,6 +433,7 @@
 <translation id="5166918508782100047">Definições das Respostas rápidas</translation>
 <translation id="5168185087976003268">Condição da bateria</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
+<translation id="5179530508336824319">Ative a proteção contra escrita para continuar para o ecrã seguinte. Aceda à página de apoio técnico do fabricante do dispositivo para obter instruções.</translation>
 <translation id="5190187232518914472">Reviva as suas memórias favoritas. Para adicionar ou editar álbuns, aceda ao <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
 Experimente tocar no microfone para me perguntar o que quiser.</translation>
@@ -446,9 +463,11 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5372659122375744710">A rede Wi-Fi não é segura.</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="537872351913703572">O dispositivo vai para um utilizador ou uma organização diferente</translation>
+<translation id="5389224261615877010">Arco-íris</translation>
 <translation id="5395600419410242651">Apagar todos os dados</translation>
 <translation id="5400907029458559844">O dispositivo está a ligar.</translation>
 <translation id="5401938042319910061">Executar todas as rotinas</translation>
+<translation id="5406131354638931058">Faça o corte da bateria para os dispositivos a enviar ou armazenar</translation>
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
 <translation id="5431318178759467895">Cor</translation>
@@ -469,6 +488,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5620281292257375798">Apenas interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
 <translation id="5655283760733841251">Aumentar o brilho do teclado</translation>
+<translation id="5661196929408385351">Fazer Powerwash e encerrar</translation>
 <translation id="5669267381087807207">A activar</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Família</translation>
@@ -480,6 +500,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="576835345334454681">Aumentar o brilho do ecrã</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">Latência elevada de HTTP</translation>
+<translation id="578753362485952307">Se estiver a reparar uma placa principal para usar noutro dispositivo, aceda ao <ph name="LINK_BEGIN" />fluxo de reparação<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -499,6 +520,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5931523347251946569">Ficheiro não encontrado</translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
+<translation id="5951259522948394825">Confirme se está tudo no local certo e veja o relatório de diagnóstico</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Imagem de fundo predefinida</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -536,6 +558,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Ativar tema escuro</translation>
+<translation id="6295178529664209245">Continuar a reparação?</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="6319207335391420837">Atualizar firmware no <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ativar proteção de ecrã</translation>
@@ -571,6 +594,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6575134580692778371">Não configurado</translation>
 <translation id="6579509898032828423">Utilizar esta foto</translation>
 <translation id="6596816719288285829">Endereço IP</translation>
+<translation id="6611280807952151149">Sair da reparação do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6620487321149975369">As tarefas de impressão serão apresentadas no histórico, exceto se forem removidas manualmente.</translation>
 <translation id="6643016212128521049">Limpar</translation>
@@ -583,6 +607,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6723847290197874913">Retroiluminação do teclado</translation>
 <translation id="672609503628871915">Descobrir as novidades mais recentes</translation>
+<translation id="6746847322826305075">Pode continuar com a reparação completa ou fazer o Powerwash (fazer uma reposição de fábrica) ao dispositivo para repor a placa principal.</translation>
 <translation id="6747215703636344499">Parada – Saída cheia</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6753452347192452143">O dispositivo é um computador.</translation>
@@ -630,6 +655,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
 <translation id="7271040990581020067">O leitor está a ser utilizado atualmente. Tente novamente mais tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Selecione 1 ou mais componentes e tente novamente ou ignore a calibração</translation>
 <translation id="7281657306185710294">Sentir a brisa</translation>
 <translation id="7287310195820267359">Coleções de imagens de fundo</translation>
 <translation id="7297226631177386107">Não é possível estabelecer ligação através da firewall a Websites HTTPS</translation>
@@ -660,11 +686,13 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ecrã tátil USB</translation>
 <translation id="7595982850646262331">Falta(m) <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">Não foi possível detetar este componente.</translation>
 <translation id="7620771111601174153">Saber mais no Centro de Ajuda</translation>
 <translation id="7626501172915339021">Executar Desbloqueio por servidor RMA (RSU)</translation>
 <translation id="763165478673169849">Hora da última reposição</translation>
 <translation id="7648838807254605802">Latência elevada de HTTPS</translation>
 <translation id="7656388927906093505">O dispositivo é um rato.</translation>
+<translation id="7657530360897961171">Erro de reparação do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Alterar avatar</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
@@ -706,12 +734,14 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8083281199617904460">O processo de reparação deve ser realizado por um técnico de reparação qualificado. Comece apenas depois de substituir os componentes que estão a funcionar incorretamente.</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="8104083085214006426">Está a utilizar uma rede aberta e insegura</translation>
+<translation id="8109786307828817014">Prosseguir com as calibrações com falha?</translation>
 <translation id="811820734797650957">(Android) É possível enviar ping ao gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selecionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">Registos de RMA (Autorização de devolução de mercadoria)</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8217675307824400706">Estabeleça ligação</translation>
@@ -728,6 +758,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
 <translation id="8318753676953949627">Não existem imagens</translation>
 <translation id="8327249300223641918">Antes de continuar, coloque o seu dispositivo inteiro (base e tampa) numa superfície plana.</translation>
+<translation id="8330949592403310082">Selecione os componentes que foram substituídos</translation>
 <translation id="8336739000755212683">Alterar imagem da conta do dispositivo</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
 <translation id="8352772353338965963">Adicione uma conta para início de sessão integrado. É possível aceder a todas as contas com a sessão iniciada sem uma palavra-passe, por isso, só deve usar esta funcionalidade com contas fidedignas.</translation>
@@ -744,6 +775,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8456761643544401578">Modo escuro automático</translation>
 <translation id="8461329675984532579">Nome do fornecedor base</translation>
 <translation id="8467104829907989997">A calibrar os componentes…</translation>
+<translation id="8474030592808010086">Desligue o dispositivo para fazer o corte da bateria</translation>
 <translation id="8475690821716466388">A rede Wi-Fi está protegida com um protocolo pouco seguro WEP PSK.</translation>
 <translation id="8477551185774834963">Latência de DNS ligeiramente acima do limite permitido.</translation>
 <translation id="8483248364096924578">Endereço IP</translation>
@@ -752,6 +784,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Se os componentes não foram calibrados, podem não funcionar corretamente</translation>
 <translation id="8575298406870537639">O operador pode exigir esta opção para estabelecer ligação à respetiva rede. Contacte o seu operador para obter mais detalhes.</translation>
 <translation id="8576249514688522074">Não iniciada</translation>
 <translation id="8620617069779373398">Estado do roaming</translation>
@@ -788,6 +821,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8910721771319628100">Rede predefinida acima do limite de latência.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">Veja o que foi corrigido</translation>
 <translation id="8919837981463578619">Falha – Tabuleiro em falta</translation>
 <translation id="8923267550422472772">Dia do mês para a reposição</translation>
 <translation id="8928727111548978589">Falha – Sem papel</translation>
@@ -806,6 +840,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="9025198690966128418">Usar como dispositivo pessoal</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">A resolução de DNS tem uma latência elevada</translation>
+<translation id="9063121522582193837">Não foi possível calibrar alguns componentes</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Utilizar este vídeo</translation>

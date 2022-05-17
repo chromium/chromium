@@ -42,6 +42,7 @@
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1367951781824006909">ଏକ ଫାଇଲ୍ ବାଛନ୍ତୁ</translation>
+<translation id="1380220803921738821">ଆମେ ତ୍ରୁଟିର ସମ୍ମୁଖୀନ ହେଉଛୁ। ଏକ USB ଥମ୍ବଡ୍ରାଇଭ ବ୍ୟବହାର କରି ଫାର୍ମୱେରକୁ ରିବୁଟ କିମ୍ବା ରିକଭର କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1387854245479784695">ଏହା ସମସ୍ତ କୋରର ଏକ ଏକତ୍ରୀକରଣ ଅଟେ</translation>
 <translation id="1394661041439318933">ଡିଭାଇସ କେସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="1397738625398125236">ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
@@ -194,6 +195,7 @@
 <translation id="2789486458103222910">ଠିକ୍ ଅଛି</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="28232023175184696">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
+<translation id="2827359915699915567">RSU କୋଡ ପାଇବା ପାଇଁ ଏହି URLକୁ ମାନୁଆଲୀ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="2859243502336719778">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଅପଡେଟ</translation>
 <translation id="2860473693272905224">ଅନ୍ୟ ଏକ ପୃଷ୍ଠାକୁ ସ୍କାନରରେ ରଖନ୍ତୁ</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -233,6 +235,7 @@
 <translation id="3291996639387199448">ପ୍ରମାଣୀକରଣ କୀ'ର ଦିଗ</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
+<translation id="3333527094307156612">8ଟି କେରେକ୍ଟରର ଅନଲକ କୋଡ ପାଇବା ପାଇଁ ଏହି QR କୋଡ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ <ph name="LINK_BEGIN" />ଏହି URL<ph name="LINK_END" />କୁ ମଧ୍ୟ ମାନୁଆଲୀ ଟାଇପ କରିପାରିବେ।</translation>
 <translation id="3336855445806447827">ନିଶ୍ଚିତ ନୁହେଁ</translation>
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
@@ -266,6 +269,7 @@
 <translation id="3606583719724308068">HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ପାଇଁ ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
 <translation id="3621202678540785336">ଇନ୍‌ପୁଟ୍</translation>
 <translation id="3632579075709132555">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ</translation>
+<translation id="3643810137582748570">କାଲିବ୍ରେସନକୁ ବାଦ ଦିଅନ୍ତୁ</translation>
 <translation id="3678765385266369662">Write Protectକୁ ଆପଣ କିପରି ବନ୍ଦ କରିବା ପାଇଁ ଚାହାଁନ୍ତି ତାହା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ଟେଷ୍ଟ</translation>
 <translation id="370665806235115550">ଲୋଡ୍ କରୁଛି...</translation>
@@ -418,6 +422,7 @@
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5051044138948155788">ଏହା ହେଉଛି ଏକମାତ୍ର ପୃଷ୍ଠା। ଏହା ଆପଣଙ୍କୁ ସ୍କାନ୍ ଆରମ୍ଭ ହେବାର ସ୍କ୍ରିନକୁ ନେଇଯିବ।</translation>
+<translation id="506768878203270635">8ଟି-କେରେକ୍ଟର ଲେଖନ୍ତୁ</translation>
 <translation id="5088172560898466307">ସର୍ଭର୍ ହୋଷ୍ଟନାମ</translation>
 <translation id="5089810972385038852">ରାଜ୍ୟ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -481,6 +486,7 @@
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
 <translation id="5655283760733841251">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
+<translation id="5661196929408385351">ପାୱାରୱାସ କରି ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ଫ୍ୟାମିଲି</translation>
@@ -492,6 +498,7 @@
 <translation id="576835345334454681">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5784136236926853061">HTTPର ଅଧିକ ଲାଟେନ୍ସି</translation>
+<translation id="578753362485952307">ଯଦି ଆପଣ ଅନ୍ୟ ଏକ ଡିଭାଇସରେ ବ୍ୟବହାର କରିବା ପାଇଁ ମେନବୋର୍ଡରେ କୌଣସି ରିୱାର୍କ କରନ୍ତି, ତେବେ <ph name="LINK_BEGIN" />ରିୱାର୍କ ଫ୍ଲୋ<ph name="LINK_END" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="5832805196449965646">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="583281660410589416">ଅଜ୍ଞାତ</translation>
 <translation id="5843706793424741864">ଫାରେନହାଇଟ୍</translation>
@@ -549,6 +556,7 @@
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ଗାଢ଼ା ଥିମ୍ ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="6295178529664209245">ମରାମତି କରିବା ଜାରି ରଖିବେ?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ଟେଷ୍ଟକୁ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />ରେ ଫାର୍ମୱେର ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="6321407676395378991">ସ୍କ୍ରିନ୍ ସେଭର୍ ଚାଲୁ କରନ୍ତୁ</translation>
@@ -584,6 +592,7 @@
 <translation id="6575134580692778371">କନଫିଗର୍ କରାଯାଇନାହିଁ</translation>
 <translation id="6579509898032828423">ଏହି ଫଟୋ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6596816719288285829">IP ଠିକଣା</translation>
+<translation id="6611280807952151149"><ph name="DEVICE_TYPE" />ର ମରାମତି କରିବାର ପ୍ରକ୍ରିୟାରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="6618744767048954150">ଚାଲୁଛି</translation>
 <translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
@@ -596,6 +605,7 @@
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="6723847290197874913">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ</translation>
 <translation id="672609503628871915">କ’ଣ ନୂଆ ଅଛି ଦେଖନ୍ତୁ</translation>
+<translation id="6746847322826305075">ଆପଣ ମେନବୋର୍ଡକୁ ରିଷ୍ଟକ କରିବା ପାଇଁ ଡିଭାଇସର ସମ୍ପୂର୍ଣ୍ଣ ମରାମତି କରିବା କିମ୍ବା ପାୱାରୱାସ (ଫ୍ୟାକ୍ଟୋରୀ ରିସେଟ) କରିବା ଜାରି ରଖିପାରିବେ।</translation>
 <translation id="6747215703636344499">ବନ୍ଦ ହୋଇଯାଇଛି - ଆଉଟପୁଟ୍ ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି</translation>
 <translation id="6749473226660745022">ଫଟୋଗୁଡ଼ିକ</translation>
 <translation id="6753452347192452143">ଡିଭାଇସଟି ଏକ କମ୍ପ୍ୟୁଟର ଅଟେ।</translation>
@@ -643,6 +653,7 @@
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
 <translation id="7271040990581020067">ସ୍କାନରକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">1ଟି କିମ୍ବା ଅଧିକ କମ୍ପୋନେଟ ଚୟନ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା କାଲିବ୍ରେସନକୁ ବାଦ ଦିଅନ୍ତୁ</translation>
 <translation id="7281657306185710294">ମୃଦୁ ପବନର ଆନନ୍ଦ ନିଅନ୍ତୁ</translation>
 <translation id="7287310195820267359">ୱାଲପେପର୍ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>
 <translation id="7297226631177386107">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -673,11 +684,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ଟଚସ୍କ୍ରିନ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
+<translation id="760845693386726841">ଏହି କମ୍ପୋନେଣ୍ଟକୁ ଚିହ୍ନଟ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="7620771111601174153">ସହାୟତା କେନ୍ଦ୍ରରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="7626501172915339021">RMA ସର୍ଭର ଅନଲକ (RSU) କରନ୍ତୁ</translation>
 <translation id="763165478673169849">ଗତଥର ରିସେଟ୍ କରାଯାଇଥିବା ସମୟ</translation>
 <translation id="7648838807254605802">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7656388927906093505">ଡିଭାଇସଟି ଏକ ମାଉସ ଅଟେ।</translation>
+<translation id="7657530360897961171"><ph name="DEVICE_TYPE" />ର ମରାମତି କରିବା ସମୟରେ ତ୍ରୁଟି</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7665800271478495366">ଅବତାର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -719,6 +732,7 @@
 <translation id="8083281199617904460">ଏହି ମରାମତି ପ୍ରକ୍ରିୟା ଜଣେ ତାଲିମପ୍ରାପ୍ତ ମରାମତି ଟେକ୍ନିସିଆନଙ୍କ ପାଇଁ ଉଦ୍ଦିଷ୍ଟ। ସଠିକ୍ କମ୍ପୋନେଣ୍ଟଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିବା ପରେ ହିଁ ଆରମ୍ଭ କରନ୍ତୁ।</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="8104083085214006426">ଆପଣ ଏକ ଖୋଲା ଏବଂ ଅସୁରକ୍ଷିତ ନେଟୱାର୍କ ବ୍ୟବହାର କରୁଛନ୍ତି</translation>
+<translation id="8109786307828817014">ବିଫଳ ହୋଇଥିବା କାଲିବ୍ରେସନ ସହ ଆଗକୁ ବଢ଼ିବେ?</translation>
 <translation id="811820734797650957">(Android) ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରର ଅନୁରୋଧ କରନ୍ତୁ</translation>
@@ -742,6 +756,7 @@
 <translation id="8302368968391049045">HTTPS ଫାୟାରୱାଲ୍</translation>
 <translation id="8318753676953949627">କୌଣସି ଇମେଜ୍ ନାହିଁ</translation>
 <translation id="8327249300223641918">ଆଗକୁ ବଢ଼ିବା ପୂର୍ବରୁ, ଆପଣଙ୍କ ସମ୍ପୂର୍ଣ୍ଣ ଡିଭାଇସ (ବେସ ଏବଂ ଲିଡ)କୁ ଏକ ସମତଳ ପୃଷ୍ଠରେ ରଖନ୍ତୁ।</translation>
+<translation id="8330949592403310082">କେଉଁ କମ୍ପୋନେଟଗୁଡ଼ିକ ପରିବର୍ତ୍ତନ କରାଯିବ ତାହା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8336739000755212683">ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଛବି ବଦଳାନ୍ତୁ</translation>
 <translation id="8347227221149377169">ପ୍ରିଣ୍ଟ ଜବ୍</translation>
 <translation id="8352772353338965963">ଏକାଧିକ ସାଇନ୍-ଇନ୍ କରିବାକୁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ। ସାଇନ୍-ଇନ୍ ହୋଇଥିବା ସମସ୍ତ ଆକାଉଣ୍ଟ ବିନା ପାସ୍‌ୱର୍ଡରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ, ତେଣୁ ଏହି ସୁବିଧା କେବଳ ବିଶ୍ୱସ୍ତ ଆକାଉଣ୍ଟ ସହ ବ୍ୟବହାର କରାଯିବା ଉଚିତ୍।</translation>
@@ -767,6 +782,7 @@
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8503836310948963452">ଆଉ ଅଳ୍ପ କିଛି ମିନିଟ୍ ଅଛି…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">କାଲିବ୍ରେଟ କରାନଯିବା ପର୍ଯ୍ୟନ୍ତ କମ୍ପୋନେଟଗୁଡ଼ିକ ସଠିକ ଭାବରେ କାମ କରିନପାରେ</translation>
 <translation id="8575298406870537639">ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଏହାର ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଏହି ବିକଳ୍ପ ଆବଶ୍ୟକ କରିପାରେ। ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="8576249514688522074">ଆରମ୍ଭ କରାଯାଇନାହିଁ</translation>
 <translation id="8620617069779373398">ରୋମିଂ ସ୍ଥିତି</translation>
@@ -822,6 +838,7 @@
 <translation id="9025198690966128418">ଏକ ବ୍ୟକ୍ତିଗତ ଡିଭାଇସ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">DNS ରିଜୋଲ୍ୟୁସନର ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
+<translation id="9063121522582193837">କିଛି କମ୍ପୋନେଟକୁ କାଲିବ୍ରେଟ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
 <translation id="9082718469794970195">ଏହି ଭିଡିଓ ବ୍ୟବହାର କରନ୍ତୁ</translation>

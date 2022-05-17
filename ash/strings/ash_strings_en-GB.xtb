@@ -176,6 +176,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hi, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Text input</translation>
+<translation id="1982717156487272186">Show previous week</translation>
 <translation id="1989113344093894667">Can't capture content</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
@@ -263,6 +264,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
 <translation id="2582112259361606227">Restart to update</translation>
+<translation id="2586561057878260610">Press Ctrl + W to combine with <ph name="DESK_NAME" />. Press Ctrl + Shift + W to close desk and windows.</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
 <translation id="2607678425161541573">Online sign-in required</translation>
@@ -326,6 +328,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2970920913501714344">Install apps, extensions and themes</translation>
 <translation id="2977598380246111477">Next number</translation>
 <translation id="2981684127883932071">Displaying suggestions</translation>
+<translation id="2985148236010982088">See all apps</translation>
 <translation id="2992327365391326550">Device's microphone button is turned off.</translation>
 <translation id="2995447421581609334">Show cast devices.</translation>
 <translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
@@ -464,6 +467,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> and <ph name="UNAVAILABLE_APPS_COUNT" /> more aren't on this device.</translation>
 <translation id="3735740477244556633">Sort by</translation>
 <translation id="3742055079367172538">Screenshot taken</translation>
+<translation id="3761848338953536304">Your administrator is requesting that you turn off the Lock SIM setting</translation>
 <translation id="3765841986579723851">Edited today</translation>
 <translation id="3771549900096082774">High contrast mode</translation>
 <translation id="3773700760453577392">An administrator has disallowed multiple sign-in for <ph name="USER_EMAIL" />. All users must sign out to continue.</translation>
@@ -595,7 +599,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
 <translation id="4505050298327493054">Active desk.</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4516867700536986208">All apps; navigate with left or down arrow to access all apps</translation>
 <translation id="4518404433291145981">To unlock your Chromebook, first unlock your phone</translation>
 <translation id="4527045527269911712">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> until full</translation>
@@ -621,6 +624,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, star rating <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Change device to previous version within a day}other{Change device to previous version within # days}}</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
+<translation id="4644727592819780893">Region is too small to fit camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app recommendation</translation>
 <translation id="4657775630156561295">The following suggestion will be permanently removed from your account’s suggestion history:
 
@@ -666,6 +670,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
+<translation id="4938176435186993759">Hide all suggestions</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
 <translation id="495046168593986294">Scroll up</translation>
@@ -753,6 +758,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5520229639206813572">Your administrator has removed all eSIM profiles. Contact your administrator for more info.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> is connecting.</translation>
 <translation id="5532994612895037630">Tap anywhere to record full screen</translation>
+<translation id="5536723544185013515">Recent apps; navigate with left or right arrow keys to access all recent apps</translation>
 <translation id="553675580533261935">Exiting session</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Toggle dictation</translation>
@@ -775,10 +781,12 @@ Here are some things that you can try to get started.</translation>
 <translation id="5673434351075758678">From '<ph name="FROM_LOCALE" />' to '<ph name="TO_LOCALE" />' after syncing your settings.</translation>
 <translation id="5675363643668471212">Shelf item</translation>
 <translation id="5677928146339483299">Blocked</translation>
+<translation id="5678564054339031017">Show next week</translation>
 <translation id="5679050765726761783">Low-power adaptor connected</translation>
 <translation id="5682642926269496722">The Google Assistant is not available for current user account.</translation>
 <translation id="5689633613396158040">Night Light makes it easier to look at your screen or read in dim light. Tap to change what time Night Light turns on, or turn it off completely.</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
+<translation id="570390244361237317">All apps; navigate with arrow keys to access all apps</translation>
 <translation id="5707775774148071965">Your device supports a higher data rate than your cable. Device performance may be limited.</translation>
 <translation id="5710450975648804523">Do Not Disturb is on</translation>
 <translation id="571295407079589142">Mobile data is turned off</translation>
@@ -829,6 +837,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="598407983968395253">Use template</translation>
 <translation id="598882571027504733">To get the update, restart your Chromebook with the keyboard attached.</translation>
 <translation id="5992218262414051481">High contrast mode enabled. Press Ctrl+Search+H again to toggle it off.</translation>
+<translation id="6009656393242168182">Disable your SIM lock setting</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> of <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Exiting mirror mode</translation>
 <translation id="602001110135236999">Scroll left</translation>
@@ -863,6 +872,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
+<translation id="6182592640011875895">Open desk</translation>
 <translation id="619279033188484792">View your phone's recent photos, media and notifications on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Fully charge now</translation>
 <translation id="6220928844947387476">You can now record yourself and your screen at the same time</translation>
@@ -1034,7 +1044,6 @@ New install</translation>
 <translation id="7302889331339392448">Live Caption is off.</translation>
 <translation id="7303365578352795231">Answering on another device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7307830679306928882">Recent apps; navigate with left arrow to access all recent apps</translation>
 <translation id="7313193732017069507">Expand camera</translation>
 <translation id="731589979057211264">Shelf Party is on.</translation>
 <translation id="7319740667687257810">Launcher, partial view</translation>
@@ -1169,8 +1178,8 @@ New install</translation>
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
-<translation id="8055510977240456975">Hide continue suggestions</translation>
 <translation id="8061464966246066292">High contrast</translation>
+<translation id="8083540854303889870">Saved for later</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">On, all apps</translation>
 <translation id="8120151603115102514">Your phone doesn’t have a lock screen. To unlock your Chromebook, enter password.</translation>

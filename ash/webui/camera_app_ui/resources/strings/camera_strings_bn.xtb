@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">ভিডিও সেটিংস</translation>
 <translation id="2144806332417375165">কাস্টম ভিডিও প্যারামিটার</translation>
 <translation id="2175927920773552910">QR কোড</translation>
+<translation id="2244252133441425811">ভিডিও FPS পিকার চালু করুন</translation>
 <translation id="2271433936731426666">সম্পূর্ণ সাইজের ভিডিও স্ন্যাপশট চালু করুন</translation>
 <translation id="229579744168541441">ডিস্কে এক্সপোর্ট করুন</translation>
 <translation id="2320741269052147773">বাঁদিকে প্যান করুন</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">ফটো তোলা বন্ধ করুন</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> মেগা পিক্সেল</translation>
 <translation id="4570032796877367747">সামনের ক্যামেরা</translation>
+<translation id="4620818268515773682">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন বন্ধ আছে</translation>
 <translation id="4628948037717959914">ফটো</translation>
 <translation id="4649291346448517080">ফাইল সেভ করা যাচ্ছে না</translation>
 <translation id="4695379108709712600">উপরের দিকে সরানো হচ্ছে</translation>
@@ -157,6 +159,7 @@
 <translation id="8425673304802773841">নীচের দিকে টিল্ট করুন</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন চালু আছে</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8732462232047530626">মেটাডেটা প্রিভিউ করুন</translation>

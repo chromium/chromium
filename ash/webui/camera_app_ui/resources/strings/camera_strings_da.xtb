@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Videoindstillinger</translation>
 <translation id="2144806332417375165">Tilpassede videoparametre</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2244252133441425811">Aktivér vælgeren for videobilleder pr. sekund</translation>
 <translation id="2271433936731426666">Aktivér øjebliksbillede af video i fuld størrelse</translation>
 <translation id="229579744168541441">Eksportér til disk</translation>
 <translation id="2320741269052147773">Panorer til venstre</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Stop med at tage billedet</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixels</translation>
 <translation id="4570032796877367747">Frontkamera</translation>
+<translation id="4620818268515773682">Slå mikrofonen til eller fra. Lyden er slået til</translation>
 <translation id="4628948037717959914">Billede</translation>
 <translation id="4649291346448517080">Filen kan ikke gemmes</translation>
 <translation id="4695379108709712600">Flyttes opad</translation>
@@ -158,6 +160,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8425673304802773841">Drej nedad</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Slå mikrofonen til eller fra. Lyden er slået fra</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>

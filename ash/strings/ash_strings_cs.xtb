@@ -143,6 +143,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1749109475624620922">Okno <ph name="WINDOW_TITLE" /> vylo přidruženo ke všem plochám</translation>
 <translation id="1750088060796401187">Je povoleno max. <ph name="MAX_DESK_LIMIT" /> ploch. Pokud chcete otevřít novou plochu, odstraňte stávající.</translation>
 <translation id="1756833229520115364">Šablonu nelze uložit. Máte uloženo příliš mnoho oken nebo karet.</translation>
+<translation id="1757857692711134412">Do západu slunce vypnuto</translation>
 <translation id="1761222317188459878">Přepnout připojení k síti. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + tečka se změnila. Pokud chcete použít klávesu Insert, stiskněte klávesu <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Přesunuto na řádek <ph name="ROW_NUMBER" /> do sloupce <ph name="COLUMN_NUMBER" />.</translation>
@@ -325,6 +326,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2970920913501714344">Instalovat aplikace, rozšíření a motivy</translation>
 <translation id="2977598380246111477">Další číslo</translation>
 <translation id="2981684127883932071">Jsou zobrazeny návrhy</translation>
+<translation id="2985148236010982088">Zobrazit všechny aplikace</translation>
 <translation id="2992327365391326550">Mikrofon zařízení je vypnutý.</translation>
 <translation id="2995447421581609334">Zobrazit zařízení pro streamování obsahu.</translation>
 <translation id="2996462380875591307">Zabudovaná lupa je zapnutá. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+D.</translation>
@@ -463,6 +465,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> a další aplikace (<ph name="UNAVAILABLE_APPS_COUNT" />) na tomto zařízení nejsou.</translation>
 <translation id="3735740477244556633">Seřadit podle</translation>
 <translation id="3742055079367172538">Byl vytvořen snímek obrazovky</translation>
+<translation id="3761848338953536304">Váš administrátor požaduje, abyste vypnuli zámek SIM karty</translation>
 <translation id="3765841986579723851">Upraveno dnes</translation>
 <translation id="3771549900096082774">Režim vysokého kontrastu</translation>
 <translation id="3773700760453577392">Administrátor zakázal vícenásobné přihlášení pro účet <ph name="USER_EMAIL" />. Všichni uživatelé se před pokračováním musejí odhlásit.</translation>
@@ -508,6 +511,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3995138139523574647">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="40062176907008878">Psaní rukou</translation>
 <translation id="4017989525502048489">Laserové ukazovátko</translation>
+<translation id="401993194061514265">Značka není k dispozici. Znovu otevřete Screencast.</translation>
 <translation id="4021716437419160885">Posunout dolů</translation>
 <translation id="4028481283645788203">Pro lepší zabezpečení je vyžadováno heslo</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -522,6 +526,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Pokud chcete odemknout Chromebook, zkontrolujte, zda je na telefonu zapnutý Bluetooth</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
+<translation id="4136724716305260864">Do východu slunce zapnuto</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
 <translation id="4165275524535002941">Kabel možná nepodporuje displeje</translation>
 <translation id="4177913004758410636">{0,plural, =1{Do jednoho dne zařízení aktualizujte}few{Do # dní zařízení aktualizujte}many{Do # dne zařízení aktualizujte}other{Do # dní zařízení aktualizujte}}</translation>
@@ -574,6 +579,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4421231901400348175">Ovládání obrazovky je prostřednictvím Vzdálené pomoci sdíleno s uživatelem <ph name="HELPER_NAME" />.</translation>
 <translation id="4424159417645388645">Plocha 5</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
+<translation id="4435022394553622295">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> oznámení a aplikace z telefonu</translation>
 <translation id="4441283832827406317">Aplikace jsou seřazeny podle názvu</translation>
 <translation id="4445159312344259901">Odemknete přihlášením</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 důležité oznámení}few{# důležitá oznámení}many{# důležitého oznámení}other{# důležitých oznámení}}</translation>
@@ -591,7 +597,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4481530544597605423">Nespárovaná zařízení</translation>
 <translation id="4505050298327493054">Aktivní plocha.</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
-<translation id="4516867700536986208">Všechny aplikace, pomocí šipky vlevo nebo dolů můžete procházet všechny aplikace</translation>
 <translation id="4518404433291145981">Pokud chcete Chromebook odemknout, nejdřív odemkněte telefon.</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabití</translation>
@@ -634,6 +639,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4734965478015604180">Na šířku</translation>
 <translation id="4735498845456076464">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + číslo se změnila. Pokud chcete použít funkční klávesy, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + klávesu na horním řádku.</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
+<translation id="4752784485658729358">Je povoleno pouze 6 uložených ploch. Pokud chcete uložit novou, některou odstraňte.</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
 <translation id="4774338217796918551">Vrať se v <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Heslo pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -701,6 +707,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 další oznámení}few{# další oznámení}many{# dalšího oznámení}other{# dalších oznámení}}</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5208059991603368177">Zap</translation>
+<translation id="5216991270656129561">Vypnuto do <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Odhlásit se</translation>
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="523505283826916779">Nastavení usnadnění přístupu</translation>
@@ -750,6 +757,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="553675580533261935">Ukončení návštěvy</translation>
 <translation id="5537725057119320332">Odeslat</translation>
 <translation id="554893713779400387">Přepnout diktování</translation>
+<translation id="5560420195677022218">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> oznámení z telefonu</translation>
 <translation id="556042886152191864">Tlačítko</translation>
 <translation id="5571066253365925590">Rozhraní Bluetooth aktivováno</translation>
 <translation id="557563299383177668">Další odstavec</translation>
@@ -822,6 +830,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="598407983968395253">Použít šablonu</translation>
 <translation id="598882571027504733">Aktualizaci nainstalujete tím, že Chromebook s připojenou klávesnicí restartujete.</translation>
 <translation id="5992218262414051481">Je aktivován režim vysokého kontrastu. Vypnete jej opětovným stisknutím kombinace kláves Ctrl+Hledat+H.</translation>
+<translation id="6009656393242168182">Vypněte zámek SIM karty</translation>
 <translation id="6012623610530968780">Stránka <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Ukončování režimu zrcadlení</translation>
 <translation id="602001110135236999">Posunout doleva</translation>
@@ -856,6 +865,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6166852626429024716">Prohledejte zařízení, aplikace, nastavení, internet…</translation>
 <translation id="6179832488876878285">Sem si můžete připnout důležité soubory. Začněte tím, že otevřete aplikaci Soubory.</translation>
+<translation id="6182592640011875895">Otevřít plochu</translation>
 <translation id="619279033188484792">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky, média a oznámení z telefonu</translation>
 <translation id="619335566042889110">Plně nabít</translation>
 <translation id="6220928844947387476">Nyní můžete nahrávat sebe a obrazovku současně</translation>
@@ -968,6 +978,7 @@ Nová instalace</translation>
 <translation id="6884665277231944629">Zpět na dnešek</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
 <translation id="688631446150864480">Okna můžete přepnout pomocí šipky dolů</translation>
+<translation id="6891721121089053234">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky, média a oznámení z telefonu</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6901883536534621389">Zkuste k procházení použít gesta</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
@@ -1026,7 +1037,6 @@ Nová instalace</translation>
 <translation id="7302889331339392448">Živý přepis je vypnutý.</translation>
 <translation id="7303365578352795231">Odpověď dostanete v jiném zařízení.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7307830679306928882">Nedávné aplikace, pomocí šipky vlevo nebo dolů můžete procházet nedávné aplikace</translation>
 <translation id="7313193732017069507">Rozbalit fotoaparát</translation>
 <translation id="731589979057211264">Režim Shelf Party je zapnutý.</translation>
 <translation id="7319740667687257810">Spouštěč, částečné zobrazení</translation>
@@ -1096,6 +1106,7 @@ Nová instalace</translation>
 <translation id="7684531502177797067">Vstup z kamery nastaven na <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Přidat novou mobilní síť</translation>
+<translation id="7720400844887872976">Zapnuto do <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ZKUSIT ZNOVU</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 oznámení}few{# oznámení}many{# oznámení}other{# oznámení}}</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
@@ -1160,8 +1171,8 @@ Nová instalace</translation>
 <translation id="8051716679295756675">Šablona s názvem <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Zkopírováno do schránky</translation>
 <translation id="8054466585765276473">Výpočet doby výdrže baterie.</translation>
-<translation id="8055510977240456975">Skrýt návrhy k pokračování</translation>
 <translation id="8061464966246066292">Vysoký kontrast</translation>
+<translation id="8083540854303889870">Uloženo na později</translation>
 <translation id="8098591350844501178">Ukončit odesílání obrazovky do přijímače <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Zap., všechny</translation>
 <translation id="8120151603115102514">Telefon nemá zámek obrazovky. Pokud chcete odemknout Chromebook, zadejte heslo.</translation>
@@ -1178,6 +1189,7 @@ Nová instalace</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Toto nastavení spravuje administrátor.</translation>
 <translation id="8155628902202578800">Otevřít dialogové okno s informacemi o účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Používá se <ph name="LOCALE_NAME" /></translation>
+<translation id="8183592608247778598">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky, média, oznámení a aplikace z telefonu</translation>
 <translation id="8192202700944119416">Oznámení jsou skryta.</translation>
 <translation id="8196787716797768628">Rychle přepínejte mezi aplikacemi a pracujte s Chromebookem pomocí gest v režimu tabletu.</translation>
 <translation id="8200772114523450471">Pokračovat</translation>

@@ -839,7 +839,6 @@
 <translation id="1784707308176068866">Изпълняване на заден план при поискване от съдействащо приложение с директно изпълнение</translation>
 <translation id="1784849162047402014">Дисковото пространство на устройството е малко</translation>
 <translation id="1787350673646245458">Изображение на потребител</translation>
-<translation id="1788329699711791226">Използвайте нещата си в браузъра Chrome от <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Премахване на достъпа</translation>
 <translation id="1791662854739702043">Инсталиран</translation>
 <translation id="1792619191750875668">Разширен екран</translation>
@@ -868,6 +867,7 @@
 <translation id="1813278315230285598">Услуги</translation>
 <translation id="18139523105317219">Име на EDI страна</translation>
 <translation id="1815083418640426271">Поставяне като неформатиран текст</translation>
+<translation id="1815097521077272760">Получихте покана да изпробвате управлението чрез клавиатура за тази игра.</translation>
 <translation id="1815181278146012280">Извеждане на запитване, когато сайт иска достъп до HID устройства</translation>
 <translation id="181577467034453336">Още <ph name="NUMBER_OF_VIEWS" />...</translation>
 <translation id="1816036116994822943">Скорост на сканиране за клавиатурата</translation>
@@ -1002,6 +1002,7 @@
 <translation id="1935303383381416800">Сайтове с разрешение за преглед на местоположението ви</translation>
 <translation id="1936931585862840749">Въведете число между 1 и <ph name="MAX_COPIES" />, за да укажете колко копия да се отпечатат .</translation>
 <translation id="1937774647013465102">Архитектурата на контейнера е от тип <ph name="ARCHITECTURE_CONTAINER" /> и не може да се импортира в това устройство, което е от тип <ph name="ARCHITECTURE_DEVICE" />. Можете да опитате да възстановите контейнера на друго устройство или да използвате файловете в образа му, като го отворите в приложението „Файлове“.</translation>
+<translation id="1938320257168860255">Нещо се обърка. Телефонът ви трябва да е наблизо, да е отключен и с включени функции за Bluetooth и Wi-Fi.</translation>
 <translation id="1938351510777341717">Външен клавиш Command</translation>
 <translation id="1940546824932169984">Свързани устройства</translation>
 <translation id="1941410638996203291">Начален час: <ph name="TIME" /></translation>
@@ -1084,6 +1085,7 @@
 <translation id="2030455719695904263">Тракпад</translation>
 <translation id="2031639749079821948">Паролата ви е запазена в профила ви в Google</translation>
 <translation id="2031914984822377766">Добавете предпочитаните от вас <ph name="LINK_BEGIN" />езици за уебсайтове<ph name="LINK_END" />. Най-горният език в списъка ще се използва за преводи.</translation>
+<translation id="2033758234986231162">Не може да се поддържа връзка с телефона ви. Той трябва да е наблизо, да е отключен и с включени функции за Bluetooth и Wi-Fi.</translation>
 <translation id="2034346955588403444">Добавяне на друга Wi-Fi мрежа</translation>
 <translation id="203574396658008164">Активиране на функцията за водене на бележки от заключения екран</translation>
 <translation id="2037445849770872822">Контролирането е настроено за този профил в Google. Ако искате да конфигурирате още родителски контроли, изберете „Напред“.
@@ -3755,6 +3757,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="461661862154729886">Енергиен източник</translation>
 <translation id="4617001782309103936">Твърде кратък</translation>
 <translation id="4617270414136722281">Опции за разширението</translation>
+<translation id="4617880081511131945">Не може да се установи връзка</translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4619615317237390068">Раздели от други устройства</translation>
 <translation id="4620809267248568679">Тази настройка е наложена от разширение.</translation>
@@ -4047,6 +4050,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4907306957610201395">Категория за разрешения</translation>
 <translation id="4908811072292128752">Отворете нов раздел, за да сърфирате в два сайта едновременно</translation>
 <translation id="4909038193460299775">Тъй като този профил се управлява от <ph name="DOMAIN" />, вашите отметки, история, пароли и други настройки ще бъдат изчистени от устройството. Данните ви обаче ще продължат да се съхраняват в профила ви в Google. Можете да ги управлявате от <ph name="BEGIN_LINK" />Google Табло за управление<ph name="END_LINK" />.</translation>
+<translation id="4912265719039610598">Поточното предаване на приложения е деактивирано от администратора на телефона ви.</translation>
 <translation id="4912643508233590958">Събуждания при неактивност</translation>
 <translation id="4915961947098019832">Сайтове с разрешение за показване на изображения</translation>
 <translation id="4916542008280060967">Да се разреши ли на сайта да редактира <ph name="FILE_NAME" />?</translation>
@@ -4656,7 +4660,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5539221284352502426">Въведената от вас парола бе отхвърлена от сървъра. Ето някои от възможните причини: паролата е твърде кратка; необходимо е да съдържа цифри или символи; трябва да е различна от предишните пароли.</translation>
 <translation id="5541694225089836610">Действието е деактивирано от администратора ви</translation>
 <translation id="5542132724887566711">Потребителски профил</translation>
-<translation id="554229901779827904">Профилът ви се управлява от <ph name="MANAGER_NAME" />. Администраторът ви може да вижда и редактира този потребителски профил в браузъра Chrome и данните му. Данните ви включват отметките, историята и паролите.</translation>
 <translation id="5542750926112347543">„Бисквитките“ от <ph name="DOMAIN" /> са блокирани</translation>
 <translation id="5542949973455282971">Установява се връзка с(ъс) <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Извършва се проверка за състоянието...</translation>
@@ -6877,6 +6880,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Коригиране на границите на екрана</translation>
 <translation id="7760004034676677601">Това ли е очакваната от вас страница при стартиране?</translation>
+<translation id="7762024824096060040">Не можете да използвате този профил</translation>
 <translation id="7762463735017901568">Синхронизирането на известията е деактивирано от администратора на телефона ви</translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> от <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -7047,6 +7051,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7919210519031517829"><ph name="DURATION" /> сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да преглежда <ph name="FILENAME" /></translation>
 <translation id="7920482456679570420">Добавете думи, които да се пропускат при проверка на правописа</translation>
+<translation id="7921347341284348270">Не можете да преглеждате известията от телефона си в този управляван профил. Опитайте отново с друг профил. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">Показване на подробностите за блокирането на „бисквитки“ на трети страни в режим „инкогнито“</translation>
 <translation id="7923564237306226146">Надстройването на Linux завърши успешно</translation>
 <translation id="7924358170328001543">Грешка при пренасочване на порта</translation>

@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Ustawienia wideo</translation>
 <translation id="2144806332417375165">Niestandardowe parametry wideo</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2244252133441425811">Włącz selektor FPS dla filmów</translation>
 <translation id="2271433936731426666">Włącz funkcję stopklatki w pełnym rozmiarze</translation>
 <translation id="229579744168541441">Eksportuj na dysk</translation>
 <translation id="2320741269052147773">Przesuń w lewo</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Nie rób zdjęcia</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Mpix</translation>
 <translation id="4570032796877367747">Przedni aparat</translation>
+<translation id="4620818268515773682">Przełącz przycisk wyciszenia mikrofonu. Wyciszenie jest wyłączone</translation>
 <translation id="4628948037717959914">Zdjęcie</translation>
 <translation id="4649291346448517080">Nie udało się zapisać pliku</translation>
 <translation id="4695379108709712600">Przesuwam w górę</translation>
@@ -157,6 +159,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="8425673304802773841">Pochyl w dół</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Przełącz przycisk wyciszenia mikrofonu. Wyciszenie jest włączone</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8732462232047530626">Wyświetl podgląd metadanych</translation>

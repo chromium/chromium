@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Nastavení videa</translation>
 <translation id="2144806332417375165">Vlastní parametry videa</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2244252133441425811">Povolit výběr snímkové frekvence videa</translation>
 <translation id="2271433936731426666">Aktivovat snímek videa na celou obrazovku</translation>
 <translation id="229579744168541441">Exportovat na disk</translation>
 <translation id="2320741269052147773">Posunout doleva</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Zastavit focení</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Mpx</translation>
 <translation id="4570032796877367747">Přední fotoaparát</translation>
+<translation id="4620818268515773682">Přepnout ztlumení mikrofonu. Ztlumení je vypnuté</translation>
 <translation id="4628948037717959914">Fotka</translation>
 <translation id="4649291346448517080">Soubor se nepodařilo uložit</translation>
 <translation id="4695379108709712600">Pohyb nahoru</translation>
@@ -157,6 +159,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8425673304802773841">Naklonit dolů</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> × <ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Přepnout ztlumení mikrofonu. Ztlumení je zapnuté</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8732462232047530626">Zobrazit náhled metadat</translation>

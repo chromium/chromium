@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Videoeinstellungen</translation>
 <translation id="2144806332417375165">Benutzerdefinierte Videoparameter</translation>
 <translation id="2175927920773552910">QR-Code</translation>
+<translation id="2244252133441425811">Auswahl für die fps (Bilder pro Sekunde) von Videos aktivieren</translation>
 <translation id="2271433936731426666">Video-Momentaufnahme in Originalgröße aktivieren</translation>
 <translation id="229579744168541441">Auf Festplatte exportieren</translation>
 <translation id="2320741269052147773">Nach links schwenken</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Fotoaufnahme beenden</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> Megapixel</translation>
 <translation id="4570032796877367747">Frontkamera</translation>
+<translation id="4620818268515773682">Mikrofonstummschalten ausschalten. Stummschaltung ist deaktiviert.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Datei konnte nicht gespeichert werden</translation>
 <translation id="4695379108709712600">Wird nach oben verschoben</translation>
@@ -157,6 +159,7 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="8425673304802773841">Nach unten neigen</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Mikrofonstummschalten einschalten. Stummschaltung ist aktiviert.</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8732462232047530626">Vorschau der Metadaten anzeigen</translation>

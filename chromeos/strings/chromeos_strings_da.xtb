@@ -38,9 +38,11 @@
 <translation id="1314565355471455267">VPN for Android</translation>
 <translation id="131461803491198646">Hjemmenetværk, uden roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
+<translation id="1328223165223065150">Baggrundsfarve</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
+<translation id="1380220803921738821">Der er opstået en fejl. Prøv at genstarte eller gendanne firmwaren ved hjælp af et USB-drev.</translation>
 <translation id="1387854245479784695">Dette er den samlede værdi for alle kerner</translation>
 <translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
@@ -54,6 +56,7 @@
 <translation id="1442433966118452622">Billedkilde</translation>
 <translation id="1451536289672181509">Enheden er et tastatur.</translation>
 <translation id="1459693405370120464">Vejr</translation>
+<translation id="1459784442280469416">Gem på USB</translation>
 <translation id="1468664791493211953">Tilbud</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer din enhed og kan muligvis overvåge din aktivitet.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -62,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og overvåge brugeraktivitet via fjernadgang.</translation>
 <translation id="150962533380566081">Ugyldig PUK-kode.</translation>
 <translation id="1510238584712386396">Appliste</translation>
+<translation id="1512982610995527443">Enheden slukker om 5 sekunder</translation>
+<translation id="1522984060396982789">Din reparation er gennemført. Du kan slukke enheden eller foretage yderligere handlinger.</translation>
 <translation id="152892567002884378">Lydstyrke op</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Touchplade</translation>
@@ -104,6 +109,7 @@
 <translation id="1887850431809612466">Hardwarerevision</translation>
 <translation id="1905710495812624430">Det maksimale antal forsøg er overskredet.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-anmodninger</translation>
+<translation id="1932611479324127242">Deaktivering af batteri</translation>
 <translation id="1947737735496445907">Udskrevet</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1977994649430373166">Google-profilbillede</translation>
@@ -122,6 +128,7 @@
 <translation id="2138109643290557664">Float on by</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> billeder</translation>
+<translation id="2154739667870063220">Genstart</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
@@ -139,6 +146,7 @@
 <translation id="2240366984605217732">Layoutskift</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
 <translation id="2271469253353559191">Tidsplan for mørk tilstand</translation>
+<translation id="2275586345903859204">Reparationen er gennemført</translation>
 <translation id="2287186687001756809">Der er ingen tilgængelige billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Brug aktuelt nøglepar</translation>
 <translation id="2320295602967756579">Aktivér Lyst tema</translation>
@@ -182,10 +190,12 @@
 <translation id="2717139507051041123">Aktivér tilstanden med mørke farver</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
+<translation id="2756652381241102009">Kør diagnosticering</translation>
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Der kunne ikke oprettes forbindelse til internettet. Klik for at prøve igen.</translation>
+<translation id="2827359915699915567">Indtast denne webadresse manuelt for at få RSU-koden</translation>
 <translation id="2859243502336719778">Kritisk opdatering</translation>
 <translation id="2860473693272905224">Placer en ny side i scanneren</translation>
 <translation id="2872961005593481000">Sluk</translation>
@@ -225,6 +235,7 @@
 <translation id="3291996639387199448">Nøgleretning</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
+<translation id="3333527094307156612">Brug denne QR-kode for at få oplåsningskoden på 8 tegn. Du kan også indtaste <ph name="LINK_BEGIN" />denne webadresse<ph name="LINK_END" /> manuelt.</translation>
 <translation id="3336855445806447827">Ved ikke</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
@@ -258,6 +269,7 @@
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3632579075709132555">Slå Privatlivsskærm til/fra</translation>
+<translation id="3643810137582748570">Spring kalibreringen over</translation>
 <translation id="3678765385266369662">Vælg, hvordan du vil deaktivere Write Protect</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Indlæser...</translation>
@@ -328,6 +340,7 @@
 <translation id="4378551569595875038">Tilslutter...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">Genstarter <ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">Aktuel avatar</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er deaktiveret</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
@@ -364,6 +377,7 @@
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4744944742468440486">Oplysninger relateret til det, du har markeret</translation>
+<translation id="4751272708893364980">Se logs over godkendelse af varereturnering</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4774530504324923332">Du skal bruge en RSU-kompatibel sikkerhedsnøgle, en QR-kodescanner og en anden enhed med en internetforbindelse</translation>
 <translation id="4782311465517282004">Få definitioner, oversættelser eller enhedsomregninger, når du højreklikker på eller holder tekst nede</translation>
@@ -408,6 +422,7 @@
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
 <translation id="5051044138948155788">Dette er den eneste side. Du videreføres til startsiden for scanning.</translation>
+<translation id="506768878203270635">Angiv koden på 8 tegn</translation>
 <translation id="5088172560898466307">Serverens hostname</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -445,9 +460,11 @@
 <translation id="5372659122375744710">Wi-Fi-netværket er ikke sikkert</translation>
 <translation id="5376354385557966694">Automatisk lys tilstand</translation>
 <translation id="537872351913703572">Enheden overdrages til en anden bruger eller organisation</translation>
+<translation id="5389224261615877010">Regnbue</translation>
 <translation id="5395600419410242651">Ryd alle data</translation>
 <translation id="5400907029458559844">Enheden opretter forbindelse.</translation>
 <translation id="5401938042319910061">Kør alle rutiner</translation>
+<translation id="5406131354638931058">Deaktiver batteriet for enheder, der afsendes eller opbevares</translation>
 <translation id="5423849171846380976">Aktiveret</translation>
 <translation id="5430931332414098647">Øjeblikkelig netdeling</translation>
 <translation id="5431318178759467895">Farve</translation>
@@ -468,6 +485,7 @@
 <translation id="5620281292257375798">Kun internt</translation>
 <translation id="5649768706273821470">Lyt</translation>
 <translation id="5655283760733841251">Øg tastaturets lysstyrke</translation>
+<translation id="5661196929408385351">Powerwash, og sluk</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -479,6 +497,7 @@
 <translation id="576835345334454681">Øg skærmens lysstyrke</translation>
 <translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
+<translation id="578753362485952307">Hvis du vil genbruge et bundkort i en anden enhed, skal du gå til <ph name="LINK_BEGIN" />genbrugsprocessen<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -498,6 +517,7 @@
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
 <translation id="5939518447894949180">Nulstil</translation>
 <translation id="594552776027197022">Generér vilkårligt nøglepar</translation>
+<translation id="5951259522948394825">Bekræft, at alt sidder, som det skal, og se diagnosticeringsrapporten</translation>
 <translation id="5972388717451707488">Opdater maskine</translation>
 <translation id="5984145644188835034">Standardbaggrund</translation>
 <translation id="6017514345406065928">Grøn</translation>
@@ -535,6 +555,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivér Mørkt tema</translation>
+<translation id="6295178529664209245">Vil du fortsætte reparationen?</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testen er annulleret</translation>
 <translation id="6319207335391420837">Opdater firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivér Pauseskærm</translation>
@@ -570,6 +591,7 @@
 <translation id="6575134580692778371">Ikke konfigureret</translation>
 <translation id="6579509898032828423">Brug dette billede</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
+<translation id="6611280807952151149">Afslut reparation af <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Ryd</translation>
@@ -582,6 +604,7 @@
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Tastaturlys</translation>
 <translation id="672609503628871915">Se de nye funktioner</translation>
+<translation id="6746847322826305075">Du kan fortsætte den fulde reparation eller foretage en powerwash (gendanne fabriksindstillingerne) på enheden for at genbruge bundkortet.</translation>
 <translation id="6747215703636344499">Stoppet – Fuld udskriftsbakke</translation>
 <translation id="6749473226660745022">Billeder</translation>
 <translation id="6753452347192452143">Enheden er en computer.</translation>
@@ -629,6 +652,7 @@
 <translation id="7216409898977639127">Mobilselskab</translation>
 <translation id="7271040990581020067">Scanneren bruges i øjeblikket. Prøv igen senere.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Vælg 1 eller flere komponenter, og prøv igen, eller spring kalibreringen over</translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Samlinger med baggrunde</translation>
 <translation id="7297226631177386107">Der kan ikke oprettes forbindelse gennem firewallen til HTTPS-websites</translation>
@@ -659,11 +683,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchskærm</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> tilbage</translation>
+<translation id="760845693386726841">Dette komponent kunne ikke registreres.</translation>
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>
 <translation id="7626501172915339021">Lås server til godkendelse af varereturnering op (RSU, RMA Server Unlock)</translation>
 <translation id="763165478673169849">Tidspunkt for seneste nulstilling</translation>
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
 <translation id="7656388927906093505">Enheden er en mus.</translation>
+<translation id="7657530360897961171">Fejl ved reparation af <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7665800271478495366">Skift avatar</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
@@ -705,12 +731,14 @@
 <translation id="8083281199617904460">Denne reparationsproces er beregnet til en tekniker med speciale i reparation. Start først processen, når de komponenter, der ikke fungerer, er blevet udskiftet.</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8104083085214006426">Du bruger et åbent og usikkert netværk</translation>
+<translation id="8109786307828817014">Vil du fortsætte på trods af mislykkede kalibreringer?</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vælg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">Logs over godkendelse af varereturnering</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8217675307824400706">Få forbindelse</translation>
@@ -727,6 +755,7 @@
 <translation id="8302368968391049045">HTTPS-firewall</translation>
 <translation id="8318753676953949627">Der er ingen billeder</translation>
 <translation id="8327249300223641918">Inden du fortsætter, skal du placere hele din enhed (base og låg) på en flad overflade.</translation>
+<translation id="8330949592403310082">Vælg, hvilke komponenter der blev erstattet</translation>
 <translation id="8336739000755212683">Skift kontobillede på enheden</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
@@ -743,6 +772,7 @@
 <translation id="8456761643544401578">Automatisk mørk tilstand</translation>
 <translation id="8461329675984532579">Navn på udbyder til hjem</translation>
 <translation id="8467104829907989997">Kalibrerer komponenter...</translation>
+<translation id="8474030592808010086">Tag strømkablet ud af din enhed for at deaktivere batteriet</translation>
 <translation id="8475690821716466388">Wi-Fi-netværket er beskyttet med den svage protokol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er en smule højere end den tilladte grænse</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
@@ -751,6 +781,7 @@
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Hvis komponenterne ikke kalibreres, fungerer de muligvis ikke, som de skal</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="8576249514688522074">Ikke startet</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
@@ -787,6 +818,7 @@
 <translation id="8898840733695078011">Signalstyrke</translation>
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> tilhørende <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">Se, hvilke problemer der er blevet løst</translation>
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
 <translation id="8923267550422472772">Dag i måneden, hvor der nulstilles</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>
@@ -805,6 +837,7 @@
 <translation id="9025198690966128418">Brug som en personlig enhed</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Der er stor forsinkelse på DNS-oversættelse</translation>
+<translation id="9063121522582193837">Visse komponenter kunne ikke kalibreres</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Brug denne video</translation>

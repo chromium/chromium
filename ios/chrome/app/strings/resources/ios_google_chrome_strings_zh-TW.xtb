@@ -7,6 +7,7 @@
 <translation id="1479202195792305274">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼。</translation>
 <translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
+<translation id="1511320244449497906">你已透過 <ph name="DOMAIN" /> 的受管理帳戶登入並正在同步資料，其系統管理員現在可以設定針對該帳戶且可變更 Chrome 行為的使用者政策。</translation>
 <translation id="1682483655351012182">同步處理你的 Chrome 資料</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">將使用統計資料和當機報告傳送給 Google，協助我們讓 Chrome 更臻完美</translation>
@@ -109,6 +110,7 @@
 <translation id="7780154209050837198">如要充分運用 Chrome 的各項功能，請透過 Google 帳戶登入 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
+<translation id="81358522153858150">Chrome 現在支援受管理帳戶的使用者政策</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8263079278049777200">登入這個網站、Google 帳戶和 Chrome。你可以稍後再開啟同步功能。</translation>
 <translation id="8357607116237445042">選擇是否要清除你在這部裝置上的 Chrome 資料</translation>

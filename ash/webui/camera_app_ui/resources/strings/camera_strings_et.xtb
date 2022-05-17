@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Video seaded</translation>
 <translation id="2144806332417375165">Video kohandatud parameetrid</translation>
 <translation id="2175927920773552910">QR-kood</translation>
+<translation id="2244252133441425811">Luba video kaadrisageduse valija</translation>
 <translation id="2271433936731426666">Luba video täissuuruses hetktõmmis</translation>
 <translation id="229579744168541441">Ekspordi kettale</translation>
 <translation id="2320741269052147773">Panoraami vasakule</translation>
@@ -81,6 +82,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="4445542136948522167">Peata foto jäädvustamine</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" /> : <ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikslit</translation>
 <translation id="4570032796877367747">Esikaamera</translation>
+<translation id="4620818268515773682">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on välja lülitatud</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">Faili salvestamine ebaõnnestus</translation>
 <translation id="4695379108709712600">Liigub üles</translation>
@@ -157,6 +159,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8425673304802773841">Kalluta alla</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on sisse lülitatud</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8732462232047530626">Metaandmete eelvaade</translation>

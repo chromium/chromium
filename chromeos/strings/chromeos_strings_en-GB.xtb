@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Captive portal suspected</translation>
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Turn on write-protect</translation>
 <translation id="1308754910631152188">Updating (<ph name="PERCENTAGE_VALUE" />% complete)</translation>
 <translation id="1310380015393971138">No <ph name="NETWORK_NAME" /> network available</translation>
 <translation id="131421566576084655">Date of last data reset is unavailable</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Home network, not roaming</translation>
+<translation id="132712914231403017">Install firmware image</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Wallpaper colour</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Document feeder (one-sided)</translation>
 <translation id="1643449475550628585">Change wallpaper image daily</translation>
 <translation id="1644574205037202324">History</translation>
+<translation id="1645954272419197032">Please confirm device information</translation>
 <translation id="1662989795263954667">Stopped – out of ink</translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Connectivity</translation>
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2016697457005847575">Try troubleshooting steps</translation>
+<translation id="2016848882344942759">--no white-label--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2085089206770112532">Display brightness down</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Dark mode schedule</translation>
 <translation id="2275586345903859204">Repair is complete</translation>
 <translation id="2287186687001756809">No image available. To add photos, go to <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Insert external storage, such as a USB drive or an SD card, with the downloaded Chromebook Recovery Utility image</translation>
 <translation id="2307344026739914387">Use current keypair</translation>
 <translation id="2320295602967756579">Enable Light theme</translation>
 <translation id="2323506179655536734">SKIPPED</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2717139507051041123">Enable dark colour mode</translation>
+<translation id="2727250716596204208">Couldn’t find firmware image. Insert external storage, such as a USB drive or an SD card, with the downloaded Chromebook Recovery Utility image.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
 <translation id="2756652381241102009">Run diagnostics</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Device is connected.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{Remove page {PAGE_NUMBER}?}other{Remove page {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Provisioning the device…</translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Captive portal detected</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
+<translation id="3383751554789092165">Change device information as needed.</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
 <translation id="3404770484521709967">Components are installed correctly.</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Not Connected</translation>
 <translation id="3749289110408117711">File name</translation>
 <translation id="3771294271822695279">Video Files</translation>
+<translation id="3774059845329307709">Serial number</translation>
 <translation id="3784455785234192852">Lock</translation>
 <translation id="38114475217616659">Clear all history</translation>
 <translation id="3820172043799983114">Invalid PIN.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh battery</translation>
 <translation id="4561801978359312462">SIM unlocked</translation>
 <translation id="4562494484721939086">No service</translation>
+<translation id="4568938274596692027">Installation is complete. Preparing to restart…</translation>
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Choose a new one immediately</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Device has <ph name="BATTERY_PERCENTAGE" />% left bud battery.</translation>
+<translation id="4908030561598728899">Installing firmware…</translation>
 <translation id="4915052247106771211">This will reset the device to factory settings (Powerwash).</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Quick Answers settings</translation>
 <translation id="5168185087976003268">Battery health</translation>
 <translation id="5170568018924773124">Show in folder</translation>
+<translation id="5179530508336824319">Enable write-protect to continue to the next screen. Go to the device manufacturer's support page for instructions.</translation>
 <translation id="5190187232518914472">Relive your favourite memories. To add or edit albums, go to <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">I can't find anything on your screen that I can help with.
 Try tapping the mic to ask me anything.</translation>
@@ -615,8 +627,10 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6768237774506518020">High DNS resolution failure rate</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
+<translation id="6822504384524564824">The SKU should only be changed if the new component(s) are different from the ones that they replaced. For example, a touchscreen replacing a non-touchscreen, or memory being upgraded from 8 GB to 16 GB.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> repair</translation>
 <translation id="6853312040151791195">Discharging rate</translation>
+<translation id="6876833053687020046">DRAM part number</translation>
 <translation id="6889786074662672253">While restarting, do not unplug this external device or shut down your computer. You can minimise this window. This may take a few minutes and your external device may not work during this time.</translation>
 <translation id="6905724422583748843">Back to <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">The scanner’s cover is open. Close the cover and try again.</translation>
@@ -664,6 +678,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7343649194310845056">Network devices</translation>
 <translation id="7359657277149375382">File type</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Change screensaver</translation>
 <translation id="7397270852490618635">Turn Light theme off</translation>
 <translation id="741244894080940828">conversion</translation>
@@ -763,6 +778,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8364946094152050673">Empty name servers</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
 <translation id="8378855320830505539">Region</translation>
+<translation id="8382302752385457774">White-label</translation>
 <translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8422748173858722634">IMEI</translation>

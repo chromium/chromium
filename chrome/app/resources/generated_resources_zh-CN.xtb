@@ -827,7 +827,6 @@
 <translation id="1784707308176068866">在合作的原生应用请求时在后台运行</translation>
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
 <translation id="1787350673646245458">用户图片</translation>
-<translation id="1788329699711791226">从 <ph name="ACCOUNT_EMAIL" /> 访问您的 Chrome 浏览器信息</translation>
 <translation id="1790976235243700817">移除访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
@@ -856,6 +855,7 @@
 <translation id="1813278315230285598">服务</translation>
 <translation id="18139523105317219">EDI 参与方名称</translation>
 <translation id="1815083418640426271">粘贴为纯文本</translation>
+<translation id="1815097521077272760">您已受邀试用此游戏的键盘控件。</translation>
 <translation id="1815181278146012280">当网站想访问 HID 设备时询问您</translation>
 <translation id="181577467034453336">另外还有 <ph name="NUMBER_OF_VIEWS" /> 个…</translation>
 <translation id="1816036116994822943">键盘扫描速度</translation>
@@ -987,6 +987,7 @@
 <translation id="1935303383381416800">允许查看您的位置信息</translation>
 <translation id="1936931585862840749">请使用一个介于 1-<ph name="MAX_COPIES" /> 之间的数字来表明要打印多少份。</translation>
 <translation id="1937774647013465102">无法使用此设备（即 <ph name="ARCHITECTURE_DEVICE" />）导入容器架构类型 <ph name="ARCHITECTURE_CONTAINER" />。您既可尝试将此容器恢复到另一设备中，也可使用“文件”应用打开此容器映像内的文件以进行访问。</translation>
+<translation id="1938320257168860255">出了点问题。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="1938351510777341717">外部命令</translation>
 <translation id="1940546824932169984">已连接的设备</translation>
 <translation id="1941410638996203291">开始时间：<ph name="TIME" /></translation>
@@ -1069,6 +1070,7 @@
 <translation id="2030455719695904263">触控板</translation>
 <translation id="2031639749079821948">您的密码已保存到您的 Google 帐号中</translation>
 <translation id="2031914984822377766">添加您首选的<ph name="LINK_BEGIN" />网站语言<ph name="LINK_END" />。列表中的第一种语言将被用作翻译时的目标语言。</translation>
+<translation id="2033758234986231162">无法保持与您手机的连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="2034346955588403444">添加其他 Wi-Fi 网络</translation>
 <translation id="203574396658008164">从锁定屏幕启用备注功能</translation>
 <translation id="2037445849770872822">此 Google 帐号的监管功能已设置完毕。要设置更多家长控制，请选择“继续”。
@@ -1246,7 +1248,7 @@
 <translation id="2187675480456493911">已与您帐号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
-<translation id="2188881192257509750">打开 <ph name="APPLICATION" /></translation>
+<translation id="2188881192257509750">打开<ph name="APPLICATION" /></translation>
 <translation id="2189787291884708275">分享标签页中的音频</translation>
 <translation id="2190069059097339078">WiFi 凭据获取工具</translation>
 <translation id="219008588003277019">Native Client 模块：<ph name="NEXE_NAME" /></translation>
@@ -2304,6 +2306,7 @@
 <translation id="3189187154924005138">大号光标</translation>
 <translation id="3190558889382726167">密码已保存</translation>
 <translation id="3192947282887913208">音频文件</translation>
+<translation id="3193695589337931419">系统信号实用程序</translation>
 <translation id="3194786596445804250">显示屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="3197453258332670132">只要您右键点击或长按所选文字，系统就会显示与其相关的信息</translation>
 <translation id="3199127022143353223">服务器</translation>
@@ -3729,6 +3732,7 @@
 <translation id="461661862154729886">电源</translation>
 <translation id="4617001782309103936">太短</translation>
 <translation id="4617270414136722281">扩展程序选项</translation>
+<translation id="4617880081511131945">无法建立连接</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4620809267248568679">此设置是由扩展程序强制设置的。</translation>
@@ -3764,6 +3768,7 @@
 <translation id="4648491805942548247">权限不足</translation>
 <translation id="4650591383426000695">将手机与 <ph name="DEVICE_TYPE" /> 断开连接</translation>
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
+<translation id="4651921906638302153">无法使用此帐号登录</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
 <translation id="465406513924180949">系统会显示购物车，方便您回来购买网购时留在购物车中的商品。
@@ -4021,6 +4026,7 @@
 <translation id="4907306957610201395">权限类别</translation>
 <translation id="4908811072292128752">只需打开一个新标签页，即可同时浏览两个网站</translation>
 <translation id="4909038193460299775">由于此帐号是由 <ph name="DOMAIN" /> 管理，因此系统将会从该设备中清除您的书签、历史记录、密码及其他设置。但是，您的数据依然会存储在您的 Google 帐号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
+<translation id="4912265719039610598">应用串流已被您手机的管理员停用。</translation>
 <translation id="4912643508233590958">闲置状态唤醒</translation>
 <translation id="4915961947098019832">允许显示图片</translation>
 <translation id="4916542008280060967">允许此网站修改“<ph name="FILE_NAME" />”？</translation>
@@ -4630,7 +4636,6 @@
 <translation id="5539221284352502426">您输入的密码被服务器拒绝了。可能的原因包括：此密码太短。此密码必须包含数字或符号，且必须不同于旧密码。</translation>
 <translation id="5541694225089836610">操作已被您的管理员禁止执行</translation>
 <translation id="5542132724887566711">个人资料</translation>
-<translation id="554229901779827904">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据。您的数据包括书签、历史记录和密码。</translation>
 <translation id="5542750926112347543">已拦截来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在检查状态…</translation>
@@ -5417,6 +5422,7 @@
 <translation id="6327785803543103246">网络代理自动发现</translation>
 <translation id="6331818708794917058">网站可以请求连接到 MIDI 设备</translation>
 <translation id="6333064448949140209">文件将发送到 Google 进行调试</translation>
+<translation id="6333170995003625229">无法验证您的电子邮件地址或密码。请尝试重新登录。</translation>
 <translation id="6335920438823100346">根据 <ph name="MANAGER" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
 <translation id="6338981933082930623">所有网站都可以向您显示任何广告</translation>
@@ -5825,6 +5831,7 @@
 <translation id="6735304988756581115">显示 Cookie 和其他网站数据…</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>
+<translation id="6738430949033571771">正在验证帐号…</translation>
 <translation id="6739923123728562974">显示桌面快捷方式</translation>
 <translation id="6740234557573873150">“<ph name="FILE_NAME" />”已暂停</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />您的管理员<ph name="END_LINK" />已关闭“安全浏览”功能</translation>
@@ -6847,6 +6854,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">调整显示屏的边界</translation>
 <translation id="7760004034676677601">这是您想要的启动页吗？</translation>
+<translation id="7762024824096060040">无法使用此帐号</translation>
 <translation id="7762463735017901568">手机管理员已停用通知同步功能</translation>
 <translation id="7764225426217299476">添加地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />，来自 <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -7016,6 +7024,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以查看“<ph name="FILENAME" />”的内容</translation>
 <translation id="7920482456679570420">添加您想让“拼写检查”功能跳过的字词</translation>
+<translation id="7921347341284348270">您无法通过这个受管理的帐号查看手机上的通知。请换个帐号重试。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7922935920104868876">显示在无痕模式下屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="7923564237306226146">Linux 升级完毕</translation>
 <translation id="7924358170328001543">转发端口时出错</translation>
@@ -7641,6 +7650,8 @@
 <translation id="8546306075665861288">图片缓存</translation>
 <translation id="8546930481464505581">自定义触摸栏</translation>
 <translation id="8547013269961688403">启用全屏放大镜</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 由 <ph name="MANAGER" /> 管理。您无法将此电子邮件地址添加为其他帐号。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />若要使用 <ph name="USER_EMAIL" />，请先在 <ph name="DEVICE_TYPE" /> 上退出您的帐号，然后在登录屏幕的底部选择“添加用户”。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">按住搜索键可切换顶行键的行为</translation>
 <translation id="8549316893834449916">您将使用自己的 Google 帐号登录 Chromebook - 此帐号与您登录 Gmail、Google 云端硬盘、YouTube 等服务时使用的帐号相同。</translation>
 <translation id="8551388862522347954">许可</translation>

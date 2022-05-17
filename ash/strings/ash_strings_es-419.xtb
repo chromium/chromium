@@ -143,6 +143,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1749109475624620922">Se asignó la ventana <ph name="WINDOW_TITLE" /> a todos los escritorios</translation>
 <translation id="1750088060796401187">Solo se permiten <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir un escritorio nuevo, deberás quitar uno.</translation>
 <translation id="1756833229520115364">No se pudo guardar la plantilla. Hay demasiadas ventanas o pestañas.</translation>
+<translation id="1757857692711134412">Desactivada hasta el atardecer</translation>
 <translation id="1761222317188459878">Activar o desactivar la conexión de red: <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + signo de punto. Para usar la tecla Insertar, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + Mayúsculas + retroceso.</translation>
 <translation id="1770726142253415363">Se movió a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
@@ -325,6 +326,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2970920913501714344">Instalar apps, extensiones y temas</translation>
 <translation id="2977598380246111477">Próximo número</translation>
 <translation id="2981684127883932071">Mostrando sugerencias</translation>
+<translation id="2985148236010982088">Ver todas las apps</translation>
 <translation id="2992327365391326550">El botón del micrófono del dispositivo está desactivado.</translation>
 <translation id="2995447421581609334">Mostrar dispositivos de transmisión</translation>
 <translation id="2996462380875591307">Se habilitó la lupa con vista acoplada. Presiona Ctrl+Buscar+D de nuevo para desactivarla.</translation>
@@ -463,6 +465,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y<ph name="UNAVAILABLE_APPS_COUNT" /> más no están disponibles en este dispositivo.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
+<translation id="3761848338953536304">El administrador te solicita que desactives la configuración de bloqueo de la SIM</translation>
 <translation id="3765841986579723851">Se editó hoy</translation>
 <translation id="3771549900096082774">Modo de contraste alto</translation>
 <translation id="3773700760453577392">Un administrador inhabilitó el acceso múltiple para <ph name="USER_EMAIL" />.
@@ -509,6 +512,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
 <translation id="40062176907008878">Escritura a mano</translation>
 <translation id="4017989525502048489">Puntero láser</translation>
+<translation id="401993194061514265">Marcador no disponible. Volver a abrir Screencast.</translation>
 <translation id="4021716437419160885">Desplazar hacia abajo</translation>
 <translation id="4028481283645788203">Se requiere la contraseña por razones de seguridad</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
@@ -523,6 +527,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="412298498316631026">ventana</translation>
 <translation id="4123259114412175274">Para desbloquear tu Chromebook, asegúrate de que la conexión Bluetooth del teléfono esté activada</translation>
 <translation id="4129129681837227511">Para ver notificaciones en la pantalla bloqueada, desbloquéala para cambiar la configuración</translation>
+<translation id="4136724716305260864">Activada hasta el amanecer</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4165275524535002941">Es posible que el cable no admita pantallas</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 día}other{Actualiza el dispositivo dentro de los próximos # días}}</translation>
@@ -575,6 +580,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4421231901400348175">Se está compartiendo el control de la pantalla con <ph name="HELPER_NAME" /> mediante la Asistencia remota.</translation>
 <translation id="4424159417645388645">Escritorio 5</translation>
 <translation id="4430019312045809116">Volumen</translation>
+<translation id="4435022394553622295">Mira las notificaciones y apps del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Las apps están ordenadas por nombre</translation>
 <translation id="4445159312344259901">Accede para desbloquear.</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificación importante}other{# notificaciones importantes}}</translation>
@@ -592,7 +598,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4481530544597605423">Dispositivos no sincronizados</translation>
 <translation id="4505050298327493054">Escritorio activo</translation>
 <translation id="4513946894732546136">Comentario</translation>
-<translation id="4516867700536986208">Todas las apps, navega con las flechas hacia abajo o hacia la izquierda para acceder a todas las apps</translation>
 <translation id="4518404433291145981">Para desbloquear la Chromebook, primero desbloquea el teléfono</translation>
 <translation id="4527045527269911712">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> para completar carga</translation>
@@ -635,6 +640,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + un número. Para usar las teclas de función, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + una tecla de la fila superior.</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4752784485658729358">Se permiten únicamente 6 escritorios guardados. Para guardar un escritorio nuevo, deberás quitar uno.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Regresa mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contraseña para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -702,6 +708,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="5208059991603368177">Sí</translation>
+<translation id="5216991270656129561">Desactivada hasta las <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
@@ -751,6 +758,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="553675580533261935">Salir de la sesión</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
+<translation id="5560420195677022218">Mira las apps del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="557563299383177668">Párrafo siguiente</translation>
@@ -823,6 +831,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para obtener la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="5992218262414051481">Se habilitó el modo de contraste alto. Presiona Ctrl+Buscar+H de nuevo para desactivarlo.</translation>
+<translation id="6009656393242168182">Inhabilita la configuración de bloqueo de la SIM</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Saliendo del modo de espejo</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
@@ -857,6 +866,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6166852626429024716">Buscar en el dispositivo, en su configuración y apps, y en la Web…</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Para comenzar, abre la app de Archivos.</translation>
+<translation id="6182592640011875895">Abrir el escritorio</translation>
 <translation id="619279033188484792">Ve las fotos, el contenido multimedia y las notificaciones recientes del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Cargar por completo ahora</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti y a tu pantalla al mismo tiempo</translation>
@@ -969,6 +979,7 @@ Nueva instalación</translation>
 <translation id="6884665277231944629">Volver al día de hoy</translation>
 <translation id="6886172995547742638">Es posible que tu dispositivo <ph name="DEVICE_TYPE" /> tenga un rendimiento deficiente. Usa un adaptador de alimentación con conexión USB tipo C de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="688631446150864480">Presiona la tecla de flecha hacia abajo para cambiar de ventana</translation>
+<translation id="6891721121089053234">Mira las fotos, el contenido multimedia y las notificaciones recientes del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6901883536534621389">Prueba los gestos para navegar</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
@@ -1027,7 +1038,6 @@ Nueva instalación</translation>
 <translation id="7302889331339392448">El Subtitulado instantáneo está desactivado.</translation>
 <translation id="7303365578352795231">Se responderá en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="7307830679306928882">Apps recientes, navega con la flecha hacia la izquierda para acceder a todas las apps recientes</translation>
 <translation id="7313193732017069507">Expandir la cámara</translation>
 <translation id="731589979057211264">El modo Grupo de barras está activado.</translation>
 <translation id="7319740667687257810">Launcher, vista parcial</translation>
@@ -1097,6 +1107,7 @@ Nueva instalación</translation>
 <translation id="7684531502177797067">Se estableció la entrada de cámara como <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Agregar una nueva red móvil</translation>
+<translation id="7720400844887872976">Activada hasta las <ph name="TIME" /></translation>
 <translation id="7720410380936703141">VOLVER A INTENTAR</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificaciones}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
@@ -1161,8 +1172,8 @@ Nueva instalación</translation>
 <translation id="8051716679295756675">Ya existe una plantilla con el nombre <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">Se copió el elemento en el portapapeles</translation>
 <translation id="8054466585765276473">Calculando duración de la batería...</translation>
-<translation id="8055510977240456975">Ocultar las sugerencias continuas</translation>
 <translation id="8061464966246066292">Contraste alto</translation>
+<translation id="8083540854303889870">Guardados para después</translation>
 <translation id="8098591350844501178">Detener la transmisión de la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, para todas</translation>
 <translation id="8120151603115102514">Tu teléfono no tiene una pantalla de bloqueo. Para desbloquear la Chromebook, ingresa la contraseña.</translation>
@@ -1179,6 +1190,7 @@ Nueva instalación</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" />: El administrador controla esta configuración.</translation>
 <translation id="8155628902202578800">Abrir el diálogo de información de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en uso</translation>
+<translation id="8183592608247778598">Mira las apps, las notificaciones, el contenido multimedia y las fotos recientes del teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8192202700944119416">Las notificaciones están ocultas.</translation>
 <translation id="8196787716797768628">Usa gestos para cambiar rápidamente de app o interactuar con la Chromebook en el modo tablet.</translation>
 <translation id="8200772114523450471">Reanudar</translation>

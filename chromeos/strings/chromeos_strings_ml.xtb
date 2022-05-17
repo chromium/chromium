@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">ക്യാപ്റ്റീവ് പോർട്ടൽ ആണെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">റൈറ്റ് പരിരക്ഷ ഓണാക്കുക</translation>
 <translation id="1308754910631152188">അപ്ഡേറ്റ് ചെയ്യുന്നു (<ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്ക് ഒന്നും ലഭ്യമല്ല</translation>
 <translation id="131421566576084655">അവസാനം ഡാറ്റാ റീസെറ്റ് ചെയ്ത തീയതി ലഭ്യമല്ല</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ഹോം നെറ്റ്‍വര്‍ക്ക്, റോമിംഗ് അല്ല</translation>
+<translation id="132712914231403017">ഫേംവെയർ ഇമേജ് ഇൻസ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="1327977588028644528">ഗേറ്റ്‌വേ</translation>
 <translation id="1328223165223065150">വാൾപേപ്പറിനിന്റെ നിറം</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1643449475550628585">വാൾപേപ്പർ ചിത്രം ദിവസേന മാറ്റുക</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
+<translation id="1645954272419197032">ഉപകരണ വിവരം സ്ഥിരീകരിക്കുക</translation>
 <translation id="1662989795263954667">പ്രിന്റ് ജോലി നിർത്തി - മഷിയില്ല</translation>
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
 <translation id="1703835215927279855">ലെറ്റർ</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">കണക്റ്റിവിറ്റി</translation>
 <translation id="2008685064673031089">പ്രധാന തിരയൽ</translation>
 <translation id="2016697457005847575">ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ പരീക്ഷിക്കുക</translation>
+<translation id="2016848882344942759">--വൈറ്റ് ലേബൽ ഇല്ല--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">കൂടുതൽ ക്രമീകരണങ്ങൾ</translation>
 <translation id="2085089206770112532">ഡിസ്‌പ്ലേ തെളിച്ചം കുറയ്‌ക്കുക</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">ഡാർക്ക് മോഡ് ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="2275586345903859204">റിപ്പയർ ചെയ്യൽ പൂർത്തിയായി</translation>
 <translation id="2287186687001756809">ചിത്രമൊന്നും ലഭ്യമല്ല. ഫോട്ടോകൾ ചേർക്കാൻ <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
+<translation id="2294753434210277304">ഡൗൺലോഡ് ചെയ്‌ത Chromebook വീണ്ടെടുക്കൽ യൂട്ടിലിറ്റി ഇമേജ് ഉള്ള USB ഡ്രൈവോ SD കാർഡോ പോലുള്ള ബാഹ്യ സ്റ്റോറേജ് ഉപകരണം ഇൻസേർട്ട് ചെയ്യുക</translation>
 <translation id="2307344026739914387">നിലവിലെ കീ ജോടി ഉപയോഗിക്കുക</translation>
 <translation id="2320295602967756579">ലൈറ്റ് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="2323506179655536734">ഒഴിവാക്കി</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS പരിശോധിച്ചുറപ്പിക്കൽ കീ</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2717139507051041123">ഡാർക്ക് കളർ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="2727250716596204208">ഫേംവെയർ ഇമേജ് കണ്ടെത്താനായില്ല. ഡൗൺലോഡ് ചെയ്‌ത Chromebook വീണ്ടെടുക്കൽ യൂട്ടിലിറ്റി ഇമേജ് ഉള്ള USB ഡ്രൈവോ SD കാർഡോ പോലുള്ള ബാഹ്യ സ്റ്റോറേജ് ഉപകരണം ഇൻസേർട്ട് ചെയ്യുക.</translation>
 <translation id="2740531572673183784">ശരി</translation>
 <translation id="2751739896257479635">രണ്ടാം ഘട്ട EAP പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="2756652381241102009">ഡയഗ്‌നോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുക</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ഉപകരണം കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{പേജ് നീക്കം ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് നീക്കം ചെയ്യണോ?}}</translation>
+<translation id="3137983112374760826">ഉപകരണം പ്രൊവിഷൻ ചെയ്യുന്നു...</translation>
 <translation id="315116470104423982">മൊബൈല്‍ ഡാറ്റ</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="315738237743207937">ക്യാപ്റ്റീവ് പോർട്ടൽ തിരിച്ചറിഞ്ഞു</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">ഉപകരണത്തിന്റെ വലത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
 <translation id="3369013195428705271">എല്ലാ പ്രിന്റ് ചരിത്രവും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ? നിങ്ങളുടെ പുരോഗതിയിലുള്ള പ്രിന്റ് ജോലികൾ മായ്ക്കില്ല.</translation>
+<translation id="3383751554789092165">ഉപകരണ വിവരങ്ങൾ ആവശ്യാനുസരണം മാറ്റുക.</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3404770484521709967">ഘടകങ്ങൾ ശരിയായിട്ടാണ് ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്നത്.</translation>
 <translation id="3413935475507503304">അപ്‌ഡേറ്റുമായി മുന്നോട്ട് പോകാൻ, 'അടുത്തത്' ക്ലിക്ക് ചെയ്യുക.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">കണക്റ്റുചെയ്‌തിട്ടില്ല</translation>
 <translation id="3749289110408117711">ഫയല്‍ നാമം</translation>
 <translation id="3771294271822695279">വീഡിയോ ഫയലുകള്‍</translation>
+<translation id="3774059845329307709">സീരിയൽ നമ്പർ</translation>
 <translation id="3784455785234192852">ലോക്കുചെയ്യുക</translation>
 <translation id="38114475217616659">എല്ലാ ചരിത്രവും മായ്ക്കുക</translation>
 <translation id="3820172043799983114">പിൻ നമ്പർ തെറ്റാണ്.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ബാറ്ററി</translation>
 <translation id="4561801978359312462">സിം അൺലോക്ക് ചെയ്തു</translation>
 <translation id="4562494484721939086">സേവനമില്ല</translation>
+<translation id="4568938274596692027">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയായി. റീസ്റ്റാർട്ട് ചെയ്യാൻ തയ്യാറെടുക്കുന്നു...</translation>
 <translation id="458794348635939462">എല്ലാ ഹോസ്‌റ്റുകളും പരിഹരിക്കാനായില്ല</translation>
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4609350030397390689">കീബോർഡ് തെളിച്ചം കുറയ്‌ക്കുക</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
 <translation id="4897058166682006107">ഉപകരണത്തിന്റെ ഇടത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
+<translation id="4908030561598728899">ഫേംവെയർ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു...</translation>
 <translation id="4915052247106771211">ഇത് ഉപകരണത്തെ ഫാക്‌ടറി ക്രമീകരണത്തിലേക്ക് റീസെറ്റ് ചെയ്യും (Powerwash).</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">'വേഗത്തിലുള്ള ഉത്തരങ്ങൾ' ക്രമീകരണം</translation>
 <translation id="5168185087976003268">ബാറ്ററിയുടെ പ്രവർത്തനക്ഷമത</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
+<translation id="5179530508336824319">അടുത്ത സ്ക്രീനിലേക്ക് പോകാൻ റൈറ്റ് പരിരക്ഷ പ്രവർത്തനക്ഷമമാക്കുക. നിർദ്ദേശങ്ങൾക്ക്, ഉപകരണ നിർമ്മാതാവിന്റെ പിന്തുണാ പേജിലേക്ക് പോകുക.</translation>
 <translation id="5190187232518914472">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഓർമ്മകളെ പുനരുജ്ജീവിപ്പിക്കുക. ആൽബങ്ങൾ ചേർക്കാനോ എഡിറ്റ് ചെയ്യാനോ <ph name="LINK_BEGIN" />Google Photos-ലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="5212543919916444558">എനിക്ക് സഹായിക്കാനാവുന്ന ഒന്നും നിങ്ങളുടെ സ്‌ക്രീനിൽ കണ്ടെത്താനാവുന്നില്ല. എന്നോട് എന്തെങ്കിലും ആവശ്യപ്പെടാൻ മൈക്ക് ടാപ്പ് ചെയ്യുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="5212593641110061691">ടാബ്ലോയ്‌ഡ്</translation>
@@ -614,8 +626,10 @@
 <translation id="6768237774506518020">ഉയർന്ന DNS റെസല്യൂഷൻ ഫെയ്‌ലിയർ നിരക്ക്</translation>
 <translation id="680983167891198932">കീ</translation>
 <translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
+<translation id="6822504384524564824">പുതിയ കമ്പോണന്റ്(കൾ) അവയ്ക്ക് പകരം മുമ്പ് ഉണ്ടായിരുന്നവയിൽ നിന്ന് വ്യത്യസ്തമാണെങ്കിൽ മാത്രമേ SKU മാറ്റാവൂ. ഉദാഹരണത്തിന്, ടച്ച്‌സ്‌ക്രീൻ അല്ലാത്തത് മാറി പകരം ടച്ച്‌സ്‌ക്രീൻ ആകുമ്പോൾ ആല്ലെങ്കിൽ മെമ്മറി 8GB-യിൽ നിന്ന് 16GB-ലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യുമ്പോൾ.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> റിപ്പയർ ചെയ്യുക</translation>
 <translation id="6853312040151791195">ഡിസ്‌ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
+<translation id="6876833053687020046">DRAM പാർട്ട് നമ്പർ</translation>
 <translation id="6889786074662672253">റീസ്റ്റാർട്ട് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ, ഈ ബാഹ്യ ഉപകരണം അൺപ്ലഗ് ചെയ്യാനോ നിങ്ങളുടെ കമ്പ്യൂട്ടർ ഷട്ട് ഡൗൺ ചെയ്യാനോ പാടില്ല. നിങ്ങൾക്ക് ഈ വിൻഡോ ചെറുതാക്കാം. ഇത് പൂർത്തിയാകാൻ ഏതാനും മിനിറ്റുകൾ എടുത്തേക്കാം, അതുവരെ നിങ്ങളുടെ ബാഹ്യ ഉപകരണം പ്രവർത്തിക്കില്ല.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> എന്ന പേജിലേക്ക് മടങ്ങുക</translation>
 <translation id="6910312834584889076">സ്‌കാനറിന്റെ കവർ തുറന്നിരിക്കുന്നു. കവർ അടച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -663,6 +677,7 @@
 <translation id="7343649194310845056">നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ</translation>
 <translation id="7359657277149375382">ഫയല്‍ തരം</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
 <translation id="7397270852490618635">ലൈറ്റ് തീം ഓഫാക്കുക</translation>
 <translation id="741244894080940828">പരിവർത്തനം</translation>
@@ -762,6 +777,7 @@
 <translation id="8364946094152050673">ശൂന്യമായ നെയിം സെർവറുകൾ</translation>
 <translation id="8372477600026034341">അധിക ഹോസ്‌റ്റുകൾ</translation>
 <translation id="8378855320830505539">പ്രദേശം</translation>
+<translation id="8382302752385457774">വൈറ്റ്-ലേബൽ</translation>
 <translation id="8395584934117017006">ഈ <ph name="DEVICE_TYPE" /> എന്റർപ്രൈസ് മാനേജ് ചെയ്യുന്നു</translation>
 <translation id="8398927464629426868">ഉപകരണം നിലവിൽ ചാർജ് ചെയ്യുന്നതോ ഡിസ്‌ചാർജ് ചെയ്യുന്നതോ ആയ റേറ്റ്</translation>
 <translation id="8422748173858722634">IMEI</translation>

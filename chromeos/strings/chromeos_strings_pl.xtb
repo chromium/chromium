@@ -38,9 +38,11 @@
 <translation id="1314565355471455267">VPN na Androida</translation>
 <translation id="131461803491198646">Sieć macierzysta, nie w roamingu</translation>
 <translation id="1327977588028644528">Brama</translation>
+<translation id="1328223165223065150">Kolor tapety</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
 <translation id="1367951781824006909">Wybierz plik</translation>
+<translation id="1380220803921738821">To działanie spowoduje błędy. Zrestartuj urządzenie lub przywróć oprogramowanie z dysku USB.</translation>
 <translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
 <translation id="1394661041439318933">Poziom naładowania baterii obudowy urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="1397738625398125236">Brama reaguje na ping</translation>
@@ -54,6 +56,7 @@
 <translation id="1442433966118452622">Źródło obrazu</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
 <translation id="1459693405370120464">Pogoda</translation>
+<translation id="1459784442280469416">Zapisz na nośniku USB</translation>
 <translation id="1468664791493211953">Oferty</translation>
 <translation id="1476467821656042872">Tym urządzeniem zarządza <ph name="MANAGER" />. Może też monitorować Twoją aktywność.</translation>
 <translation id="1478594628797167447">Skanery</translation>
@@ -62,6 +65,8 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
+<translation id="1512982610995527443">Za 5 sekund urządzenie się wyłączy</translation>
+<translation id="1522984060396982789">Naprawa została wykonana. Możesz teraz wyłączyć urządzenie lub wykonać czynności dodatkowe.</translation>
 <translation id="152892567002884378">Zwiększ głośność</translation>
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="155865706765934889">Touchpad</translation>
@@ -104,6 +109,7 @@
 <translation id="1887850431809612466">Wersja sprzętu</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1908234395526491708">Nieudane żądania UDP</translation>
+<translation id="1932611479324127242">Odcięcie baterii</translation>
 <translation id="1947737735496445907">Wydrukowano</translation>
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1977994649430373166">Zdjęcie profilowe Google</translation>
@@ -122,6 +128,7 @@
 <translation id="2138109643290557664">Płyń z prądem</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2152882202543497059">Zdjęcia: <ph name="NUMBER" /></translation>
+<translation id="2154739667870063220">Zrestartuj</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: spróbuj ponownie</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
@@ -139,6 +146,7 @@
 <translation id="2240366984605217732">Przełącznik układu</translation>
 <translation id="225692081236532131">Stan aktywacji</translation>
 <translation id="2271469253353559191">Harmonogram trybu ciemnego</translation>
+<translation id="2275586345903859204">Naprawa została ukończona</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
 <translation id="2320295602967756579">Włącz jasny motyw</translation>
@@ -182,10 +190,12 @@
 <translation id="2717139507051041123">Włącz ciemny tryb kolorów</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Uwierzytelnianie EAP Phase 2</translation>
+<translation id="2756652381241102009">Uruchom diagnostykę</translation>
 <translation id="2783010256799387990">ZALICZONY</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="28232023175184696">Nie udało się połączyć z internetem. Kliknij, by spróbować jeszcze raz.</translation>
+<translation id="2827359915699915567">Aby uzyskać kod RSU, wpisz ręcznie ten URL</translation>
 <translation id="2859243502336719778">Krytyczna aktualizacja</translation>
 <translation id="2860473693272905224">Umieść następną stronę na skanerze</translation>
 <translation id="2872961005593481000">Wyłącz</translation>
@@ -225,6 +235,7 @@
 <translation id="3291996639387199448">Kierunek klucza</translation>
 <translation id="3310640316857623290">Opóźnienie DNS znacznie przekracza dopuszczalny próg</translation>
 <translation id="3328783797891415197">Test w toku</translation>
+<translation id="3333527094307156612">Aby otrzymać 8-znakowy kod odblokowania, użyj tego kodu QR. Możesz też ręcznie wpisać <ph name="LINK_BEGIN" />ten URL<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">Nie wiem</translation>
 <translation id="3340011300870565703">Poziom naładowania baterii prawej słuchawki urządzenia: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Połączone</translation>
@@ -258,6 +269,7 @@
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3632579075709132555">Przełącznik filtra prywatności</translation>
+<translation id="3643810137582748570">Pomiń kalibrację</translation>
 <translation id="3678765385266369662">Wybierz, jak chcesz wyłączyć zabezpieczenie przed zapisem</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
 <translation id="370665806235115550">Ładuję...</translation>
@@ -328,6 +340,7 @@
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">Ponownie uruchamiam urządzenie: <ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">Bieżący awatar</translation>
 <translation id="4425149324548788773">Mój dysk</translation>
 <translation id="4428374560396076622">Sieć <ph name="NETWORK_NAME" /> jest wyłączona</translation>
 <translation id="4429881212383817840">Zgłoszenie Kerberos wkrótce straci ważność</translation>
@@ -364,6 +377,7 @@
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4744944742468440486">Informacje związane z zaznaczoną treścią</translation>
+<translation id="4751272708893364980">Zobacz logi RMA</translation>
 <translation id="4773299976671772492">Zatrzymano</translation>
 <translation id="4774530504324923332">Potrzebujesz klucza bezpieczeństwa z RSU lub skanera kodów QR oraz innego urządzenia połączonego z internetem.</translation>
 <translation id="4782311465517282004">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
@@ -408,6 +422,7 @@
 <translation id="5049856988445523908">Karta SIM zablokowana (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nazwa grupy</translation>
 <translation id="5051044138948155788">To jedyna strona. Pojawi się ekran rozpoczęcia skanowania.</translation>
+<translation id="506768878203270635">Wpisz 8-znakowy kod</translation>
 <translation id="5088172560898466307">Nazwa hosta serwera</translation>
 <translation id="5089810972385038852">Stan</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -446,9 +461,11 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5372659122375744710">Sieć Wi-Fi nie jest bezpieczna</translation>
 <translation id="5376354385557966694">Automatyczny tryb jasny</translation>
 <translation id="537872351913703572">Właścicielem urządzenia zostanie inny użytkownik lub inna organizacja</translation>
+<translation id="5389224261615877010">Tęcza</translation>
 <translation id="5395600419410242651">Usuń wszystkie dane</translation>
 <translation id="5400907029458559844">Urządzenie się łączy.</translation>
 <translation id="5401938042319910061">Uruchom wszystkie testy</translation>
+<translation id="5406131354638931058">W przypadku urządzeń dostarczonych lub przechowywanych wykonaj odcięcie baterii</translation>
 <translation id="5423849171846380976">Aktywowano</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Kolor</translation>
@@ -469,6 +486,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5620281292257375798">Na użytek wewnętrzny</translation>
 <translation id="5649768706273821470">Posłuchaj</translation>
 <translation id="5655283760733841251">Zwiększ jasność klawiatury</translation>
+<translation id="5661196929408385351">Wykonaj Powerwash i wyłącz</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodzina</translation>
@@ -480,6 +498,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="576835345334454681">Zwiększ jasność wyświetlacza</translation>
 <translation id="57838592816432529">Wycisz</translation>
 <translation id="5784136236926853061">Duże opóźnienie HTTP</translation>
+<translation id="578753362485952307">Jeśli przerabiasz płytę główną, aby użyć jej w innym urządzeniu, przejdź do <ph name="LINK_BEGIN" />procesu przerabiania<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5843706793424741864">Stopnie Fahrenheita</translation>
@@ -499,6 +518,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Wygeneruj losową parę kluczy</translation>
+<translation id="5951259522948394825">Upewnij się, że wszystko jest na swoim miejscu, i wyświetl raport diagnostyczny</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Domyślna tapeta</translation>
 <translation id="6017514345406065928">Zielony</translation>
@@ -536,6 +556,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Włącz ciemny motyw</translation>
+<translation id="6295178529664209245">Kontynuować naprawę?</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> został anulowany</translation>
 <translation id="6319207335391420837">Aktualizacja oprogramowania układowego na urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Włącz wygaszacz ekranu</translation>
@@ -571,6 +592,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6575134580692778371">Nie skonfigurowano</translation>
 <translation id="6579509898032828423">Użyj tego zdjęcia</translation>
 <translation id="6596816719288285829">Adres IP</translation>
+<translation id="6611280807952151149">Zamknij naprawę urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">W toku</translation>
 <translation id="6620487321149975369">Zadania drukowania będą widoczne w historii, dopóki ich nie usuniesz</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
@@ -583,6 +605,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="6723847290197874913">Podświetlenie klawiatury</translation>
 <translation id="672609503628871915">Zobacz, co nowego</translation>
+<translation id="6746847322826305075">Możesz kontynuować, wykonując pełną naprawę lub Powerwash (przywrócenie do ustawień fabrycznych) urządzenia, aby przywrócić do zasobów płytę główną.</translation>
 <translation id="6747215703636344499">Zatrzymano – odbiornik papieru jest pełny</translation>
 <translation id="6749473226660745022">Zdjęcia</translation>
 <translation id="6753452347192452143">Urządzenie to komputer.</translation>
@@ -630,6 +653,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
 <translation id="7271040990581020067">Skaner jest obecnie używany. Spróbuj ponownie później.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">Wybierz co najmniej 1 komponent i spróbuj ponownie lub pomiń kalibrację</translation>
 <translation id="7281657306185710294">Odetchnij</translation>
 <translation id="7287310195820267359">Kolekcje tapet</translation>
 <translation id="7297226631177386107">Nie można połączyć się z witrynami HTTPS przez zaporę sieciową</translation>
@@ -660,11 +684,13 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekran dotykowy USB</translation>
 <translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">Nie udało się wykryć tego komponentu.</translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>
 <translation id="7626501172915339021">Przeprowadź odblokowanie serwera RMA (RSU)</translation>
 <translation id="763165478673169849">Czas ostatniego resetu</translation>
 <translation id="7648838807254605802">duże opóźnienie HTTPS</translation>
 <translation id="7656388927906093505">Urządzenie to mysz.</translation>
+<translation id="7657530360897961171">Błąd naprawy urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7665800271478495366">Zmień awatara</translation>
 <translation id="7690294790491645610">Potwierdź nowe hasło</translation>
@@ -706,12 +732,14 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8083281199617904460">Proces naprawy powinien zostać przeprowadzony przez wykwalifikowanego specjalistę. Przed rozpoczęciem wymień wadliwe komponenty.</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8104083085214006426">Używasz niezabezpieczonej sieci otwartej</translation>
+<translation id="8109786307828817014">Kontynuować mimo braku kalibracji?</translation>
 <translation id="811820734797650957">(Android) Brama reaguje na ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Poproś o liczniki natężenia ruchu</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Wybierz <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">Logi RMA</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
 <translation id="8217675307824400706">Połącz się</translation>
@@ -728,6 +756,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8302368968391049045">Zapora sieciowa HTTPS</translation>
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8327249300223641918">Zanim przejdziesz dalej, umieść całe urządzenie (podstawę i pokrywę) na płaskiej powierzchni.</translation>
+<translation id="8330949592403310082">Wybierz komponenty, które zostały zastąpione</translation>
 <translation id="8336739000755212683">Zmień obraz konta na urządzeniu</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
 <translation id="8352772353338965963">Tu możesz dodać konto do wielokrotnego logowania. Ponieważ dostęp do wszystkich zalogowanych kont można uzyskać bez podawania hasła, tej funkcji należy używać tylko z zaufanymi kontami.</translation>
@@ -744,6 +773,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8456761643544401578">Automatyczny tryb ciemny</translation>
 <translation id="8461329675984532579">Nazwa operatora macierzystego</translation>
 <translation id="8467104829907989997">Kalibruję komponenty…</translation>
+<translation id="8474030592808010086">Odłącz urządzenie, aby wykonać odcięcie baterii</translation>
 <translation id="8475690821716466388">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP PSK</translation>
 <translation id="8477551185774834963">Opóźnienie DNS nieco przekracza dopuszczalny próg</translation>
 <translation id="8483248364096924578">Adres IP</translation>
@@ -752,6 +782,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">Nieskalibrowane komponenty mogą nie działać prawidłowo</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>
 <translation id="8576249514688522074">Nie zainicjowano</translation>
 <translation id="8620617069779373398">Stan roamingu</translation>
@@ -788,6 +819,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8898840733695078011">Siła sygnału</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
+<translation id="8919792139048574232">Zobacz, co zostało naprawione</translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
 <translation id="8923267550422472772">Dzień miesiąca, w którym ma być przeprowadzane resetowanie</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
@@ -806,6 +838,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="9025198690966128418">Użyj jako urządzenia osobistego</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">Długi czas oczekiwania na rozpoznanie nazw DNS</translation>
+<translation id="9063121522582193837">Nie udało się skalibrować niektórych komponentów</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Użyj tego filmu</translation>

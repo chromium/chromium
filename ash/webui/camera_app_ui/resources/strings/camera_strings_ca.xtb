@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Configuració del vídeo</translation>
 <translation id="2144806332417375165">Personalitza els paràmetres de vídeo</translation>
 <translation id="2175927920773552910">Codi QR</translation>
+<translation id="2244252133441425811">Activa el selector d'FPS per a vídeos</translation>
 <translation id="2271433936731426666">Activa la instantània del vídeo a mida completa</translation>
 <translation id="229579744168541441">Exporta al disc</translation>
 <translation id="2320741269052147773">Desplaça cap a l'esquerra</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">No facis la foto</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapíxels</translation>
 <translation id="4570032796877367747">Càmera frontal</translation>
+<translation id="4620818268515773682">Silencia el micròfon. La funció Silencia està desactivada.</translation>
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4649291346448517080">No es pot desar el fitxer</translation>
 <translation id="4695379108709712600">S'està movent cap a la part superior</translation>
@@ -157,6 +159,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="8425673304802773841">Inclina cap avall</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8687491812650032292">HD de <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Deixa de silenciar el micròfon. La funció Silencia està activada.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8732462232047530626">Previsualitza les metadades</translation>

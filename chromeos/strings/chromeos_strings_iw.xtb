@@ -38,9 +38,11 @@
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">רשת ביתית, לא בנדידה</translation>
 <translation id="1327977588028644528">שער</translation>
+<translation id="1328223165223065150">צבע הטפט</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">התאמה לאזור הסריקה</translation>
 <translation id="1367951781824006909">בחירת קובץ</translation>
+<translation id="1380220803921738821">נתקלנו בשגיאות. כדאי לנסות להפעיל מחדש או לשחזר או הקושחה בעזרת דיסק-און-קי.</translation>
 <translation id="1387854245479784695">המדד הזה נצבר מכל הליבות</translation>
 <translation id="1394661041439318933">רמת הטעינה של סוללת הנרתיק במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="1397738625398125236">אפשר לבדוק אם יש חיבור לשער באמצעות פינג</translation>
@@ -54,6 +56,7 @@
 <translation id="1442433966118452622">מקור התמונה</translation>
 <translation id="1451536289672181509">המכשיר הוא מקלדת.</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
+<translation id="1459784442280469416">‏שמירה בכונן USB</translation>
 <translation id="1468664791493211953">מבצעים</translation>
 <translation id="1476467821656042872">הניהול של המכשיר הזה נעשה מהדומיין <ph name="MANAGER" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="1478594628797167447">סורק</translation>
@@ -62,6 +65,8 @@
 <translation id="1499900233129743732">המשתמש הזה מנוהל על ידי <ph name="MANAGER" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
+<translation id="1512982610995527443">המכשיר ייכבה בעוד 5 שניות</translation>
+<translation id="1522984060396982789">התיקון הושלם. אפשר לכבות את המכשיר או לבצע פעולות נוספות.</translation>
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="155865706765934889">לוח מגע</translation>
@@ -104,6 +109,7 @@
 <translation id="1887850431809612466">שכתוב חומרה</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
+<translation id="1932611479324127242">ניתוק הסוללה</translation>
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1977994649430373166">‏תמונת הפרופיל ב-Google</translation>
@@ -122,6 +128,7 @@
 <translation id="2138109643290557664">צפים ונהנים</translation>
 <translation id="2141644705054017895">‎<ph name="PERCENTAGE_VALUE" />%‎</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
+<translation id="2154739667870063220">הפעלה מחדש</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ניסיון נוסף</translation>
 <translation id="2161394479394250669">ביטול משימת ההדפסה</translation>
@@ -139,6 +146,7 @@
 <translation id="2240366984605217732">מתג הפריסה</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
 <translation id="2271469253353559191">תזמון מצב כהה</translation>
+<translation id="2275586345903859204">התיקון הסתיים</translation>
 <translation id="2287186687001756809">אין תמונה זמינה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
 <translation id="2307344026739914387">שימוש בזוג המפתחות הנוכחי</translation>
 <translation id="2320295602967756579">הפעלת העיצוב הבהיר</translation>
@@ -182,10 +190,12 @@
 <translation id="2717139507051041123">הפעלה של מצב כהה</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
+<translation id="2756652381241102009">ביצוע אבחון</translation>
 <translation id="2783010256799387990">ציון 'עובר'</translation>
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="28232023175184696">לא ניתן להתחבר לאינטרנט. יש ללחוץ כדי לנסות שוב.</translation>
+<translation id="2827359915699915567">‏יש להקליד את כתובת ה-URL הזו באופן ידני כדי לקבל את קוד הביטול (RSU)</translation>
 <translation id="2859243502336719778">עדכון קריטי</translation>
 <translation id="2860473693272905224">צריך להניח דף נוסף על הסורק</translation>
 <translation id="2872961005593481000">כיבוי</translation>
@@ -225,6 +235,7 @@
 <translation id="3291996639387199448">כיוון המפתח</translation>
 <translation id="3310640316857623290">‏זמן האחזור של ה-DNS גבוה במידה משמעותית מהסף המותר</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
+<translation id="3333527094307156612">‏בעזרת קוד ה-QR הזה, אפשר לקבל את הקוד בן 8 התווים לביטול הנעילה. אפשר גם להקליד באופן ידני את <ph name="LINK_BEGIN" />כתובת ה-URL הזו<ph name="LINK_END" />.</translation>
 <translation id="3336855445806447827">לא בטוח</translation>
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">מחובר</translation>
@@ -258,6 +269,7 @@
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
+<translation id="3643810137582748570">דילוג על הכיול</translation>
 <translation id="3678765385266369662">‏בחירת הדרך לכיבוי Write Protect</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">בטעינה...</translation>
@@ -328,6 +340,7 @@
 <translation id="4378551569595875038">התחברות...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="439429847087949098">מתבצעת הפעלה מחדש של <ph name="DEVICE_NAME" /></translation>
+<translation id="4415951057168511744">הדמות הנוכחית</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> מושבת</translation>
 <translation id="4429881212383817840">‏התוקף של כרטיס Kerberos עומד לפוג בקרוב</translation>
@@ -364,6 +377,7 @@
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
+<translation id="4751272708893364980">‏הצגת יומני RMA</translation>
 <translation id="4773299976671772492">הופסק</translation>
 <translation id="4774530504324923332">‏יהיה צורך במפתח אבטחה עם תמיכה ב-RSU, סורק קודי QR ומכשיר נוסף עם חיבור לאינטרנט</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
@@ -408,6 +422,7 @@
 <translation id="5049856988445523908">‏כרטיס ה-SIM נעול (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">שם הקבוצה</translation>
 <translation id="5051044138948155788">זהו הדף היחיד. פעולה זו תעביר אותך אל מסך ההתחלה של הסריקה.</translation>
+<translation id="506768878203270635">יש להזין את 8 התווים</translation>
 <translation id="5088172560898466307">שם מארח של שרת</translation>
 <translation id="5089810972385038852">מדינה</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
@@ -446,9 +461,11 @@
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
 <translation id="5376354385557966694">מצב בהיר אוטומטי</translation>
 <translation id="537872351913703572">המכשיר יועבר למשתמש או לארגון אחר</translation>
+<translation id="5389224261615877010">קשת</translation>
 <translation id="5395600419410242651">מחיקת כל הנתונים</translation>
 <translation id="5400907029458559844">המכשיר בתהליך התחברות.</translation>
 <translation id="5401938042319910061">הרצה של כל התרחישים</translation>
+<translation id="5406131354638931058">כדאי לבצע ניתוק לסוללה במכשירים שנשלחים או מאוחסנים</translation>
 <translation id="5423849171846380976">מופעל</translation>
 <translation id="5430931332414098647">שיתוף אינטרנט מיידי בין ניידים</translation>
 <translation id="5431318178759467895">צבע</translation>
@@ -469,6 +486,7 @@
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5649768706273821470">האזנה</translation>
 <translation id="5655283760733841251">הגברת הבהירות של המקלדת</translation>
+<translation id="5661196929408385351">‏Powerwash וכיבוי</translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">משפחה</translation>
@@ -480,6 +498,7 @@
 <translation id="576835345334454681">הגברה של בהירות התצוגה</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
+<translation id="578753362485952307">אם בכוונתך לעבד מחדש את לוח האם לשימוש במכשיר אחר, עליך לעבור אל <ph name="LINK_BEGIN" />תהליך העיבוד מחדש<ph name="LINK_END" />.</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5843706793424741864">פרנהייט</translation>
@@ -499,6 +518,7 @@
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="594552776027197022">יצירת זוג מפתחות רנדומלי</translation>
+<translation id="5951259522948394825">בדיקה שהכול תקין והצגה של דוח האבחון</translation>
 <translation id="5972388717451707488">עדכון המנוע</translation>
 <translation id="5984145644188835034">הטפט המוגדר כברירת מחדל</translation>
 <translation id="6017514345406065928">ירוק</translation>
@@ -536,6 +556,7 @@
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">הפעלת העיצוב הכהה</translation>
+<translation id="6295178529664209245">להמשיך בתיקון?</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
 <translation id="6319207335391420837">יש לעדכן את הקושחה של <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">הפעלת שומר מסך</translation>
@@ -571,6 +592,7 @@
 <translation id="6575134580692778371">לא הוגדר</translation>
 <translation id="6579509898032828423">שימוש בתמונה הזו</translation>
 <translation id="6596816719288285829">‏כתובת IP</translation>
+<translation id="6611280807952151149">יציאה מתהליך התיקון של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>
 <translation id="6643016212128521049">ניקוי</translation>
@@ -583,6 +605,7 @@
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6723847290197874913">התאורה האחורית של המקלדת</translation>
 <translation id="672609503628871915">מה חדש</translation>
+<translation id="6746847322826305075">‏אפשר להמשיך בתיקון המלא או לבצע Powerwash (איפוס להגדרות המקוריות) במכשיר כדי לשמור את לוח האם לשימוש עתידי.</translation>
 <translation id="6747215703636344499">הפסיקה – מגש הפלט מלא</translation>
 <translation id="6749473226660745022">תמונות</translation>
 <translation id="6753452347192452143">המכשיר הוא מחשב.</translation>
@@ -630,6 +653,7 @@
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="7271040990581020067">הסורק נמצא בשימוש כרגע. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281209642468917121">יש לבחור רכיב אחד או יותר ולנסות שוב, או לדלג על הכיול</translation>
 <translation id="7281657306185710294">אוויר לנשימה</translation>
 <translation id="7287310195820267359">אוספים של טפטים</translation>
 <translation id="7297226631177386107">‏לא ניתן להתחבר עם חומת אש לאתרי HTTPS</translation>
@@ -660,11 +684,13 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏מסך מגע של USB</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
+<translation id="760845693386726841">לא ניתן היה לזהות את הרכיב הזה.</translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="7626501172915339021">‏ביטול הנעילה של שרת ה-RMA‏ (RSU)</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
+<translation id="7657530360897961171">שגיאה בתיקון של <ph name="DEVICE_TYPE" /></translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665800271478495366">החלפת הדמות</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
@@ -706,12 +732,14 @@
 <translation id="8083281199617904460">תהליך התיקון צריך להתבצע על ידי טכנאי מוסמך. יש להתחיל אותו רק אחרי שמחליפים את הרכיבים שאינם תקינים.</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8104083085214006426">הרשת שאליה התחברת פתוחה ואינה מאובטחת</translation>
+<translation id="8109786307828817014">להמשיך עם הכיול שנכשל?</translation>
 <translation id="811820734797650957">‏אפשר לבדוק אם יש חיבור לשער באמצעות פינג (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8132480444149501833">בקשה למוני תנועה</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8179976553408161302">Enter</translation>
+<translation id="819552138404104974">‏יומני RMA</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8217675307824400706">התחברות</translation>
@@ -728,6 +756,7 @@
 <translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
 <translation id="8318753676953949627">אין תמונות</translation>
 <translation id="8327249300223641918">לפני המשך התהליך, יש להניח את המכשיר כולו (הבסיס והמכסה) על משטח שטוח.</translation>
+<translation id="8330949592403310082">בחירת הרכיבים שהוחלפו</translation>
 <translation id="8336739000755212683">שינוי תמונת החשבון במכשיר</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
@@ -744,6 +773,7 @@
 <translation id="8456761643544401578">מצב כהה אוטומטי</translation>
 <translation id="8461329675984532579">שם ספק ביתי</translation>
 <translation id="8467104829907989997">מתבצע כיול רכיבים…</translation>
+<translation id="8474030592808010086">יש לנתק את הכבל מהמכשיר כדי לבצע ניתוק לסוללה</translation>
 <translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP PSK חלש</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
 <translation id="8483248364096924578">‏כתובת IP</translation>
@@ -752,6 +782,7 @@
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8503836310948963452">רק עוד מספר דקות…</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8529392826145705615">יכול להיות שרכיבים לא יפעלו באופן תקין אם לא יתבצע כיול</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>
 <translation id="8576249514688522074">לא מאותחלת</translation>
 <translation id="8620617069779373398">סטטוס נדידה</translation>
@@ -788,6 +819,7 @@
 <translation id="8898840733695078011">עוצמת אות</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8918637186205009138">ה-<ph name="DEVICE_TYPE" /> של <ph name="GIVEN_NAME" /></translation>
+<translation id="8919792139048574232">הצגת התיקונים שבוצעו</translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
 <translation id="8923267550422472772">היום בחודש לאיפוס</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>
@@ -806,6 +838,7 @@
 <translation id="9025198690966128418">שימוש בתור מכשיר אישי</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>
+<translation id="9063121522582193837">לא ניתן היה לכייל חלק מהרכיבים</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">שימוש בסרטון הזה</translation>

@@ -82,6 +82,7 @@
 <translation id="4445542136948522167">Fotókészítés leállítása</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Elülső kamera</translation>
+<translation id="4620818268515773682">Némítsa el a mikrofont. A némítás ki van kapcsolva.</translation>
 <translation id="4628948037717959914">Fénykép</translation>
 <translation id="4649291346448517080">Nem sikerült menteni a fájlt</translation>
 <translation id="4695379108709712600">Mozgatás felfelé</translation>
@@ -158,6 +159,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8425673304802773841">Billentés lefelé</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> × <ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Némítsa el a mikrofont. A némítás be van kapcsolva.</translation>
 <translation id="8712637175834984815">Sikerült</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8732462232047530626">Metaadatok előnézete</translation>

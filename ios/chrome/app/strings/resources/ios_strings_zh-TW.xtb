@@ -47,6 +47,7 @@
 <translation id="1283524564873030414">過去 24 小時</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />「<ph name="SITE_NAME" />」<ph name="END_BOLD" />的權限會在你離開該網站後重設為停用。</translation>
+<translation id="1312721752506309252">已啟用強化防護功能</translation>
 <translation id="1321993286294231467">儲存圖片時發生錯誤。</translation>
 <translation id="1322735045095424339">貴機構規定必須使用無痕模式</translation>
 <translation id="1323735185997015385">刪除</translation>
@@ -190,6 +191,7 @@
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
 <translation id="2695507686909505111">已翻譯網頁</translation>
+<translation id="2697526135132990015">登出並清除資料</translation>
 <translation id="2700241355396984822">權限設定選項</translation>
 <translation id="2702801445560668637">閱讀清單</translation>
 <translation id="2704491540504985681">下載內容</translation>
@@ -364,6 +366,7 @@
 <translation id="4121993058175073134">如要傳送淨匯出資料，請在「設定」應用程式中設定你的電子郵件帳戶。</translation>
 <translation id="4124987746317609294">時間範圍</translation>
 <translation id="4133265950310064865">強化防護</translation>
+<translation id="4148023517926189160">這個網站想要下載檔案並將其新增至你的日曆中。</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
 <translation id="4172051516777682613">一律顯示</translation>
 <translation id="418156467088430727">在新分頁中檢視離線版本</translation>
@@ -578,6 +581,7 @@
 <translation id="6012140227487808125">加密中…</translation>
 <translation id="6021332621416007159">在其他應用程式中開啟...</translation>
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
+<translation id="6036215966221662377">清除瀏覽資料</translation>
 <translation id="6036514205982097558">在同一個瀏覽器集中使用所有分頁</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />，<ph name="PUBLISHER_INFORMATION" />，<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -692,6 +696,7 @@
 <translation id="6760509555861141183">返回「最近」分頁</translation>
 <translation id="6762812039470893796">取消全選</translation>
 <translation id="6780034285637185932">郵遞區號</translation>
+<translation id="6781260999953472352">要開啟同步功能嗎？</translation>
 <translation id="6785453220513215166">正在傳送當機報告...</translation>
 <translation id="6797885426782475225">語音搜尋</translation>
 <translation id="6801927553864092214">如要進行私密瀏覽，請開啟無痕分頁</translation>
@@ -804,6 +809,7 @@
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7839985698273989086">離線版網頁</translation>
 <translation id="7840771868269352570">系統將移除所選項目。</translation>
+<translation id="784551991304901159">如要查看內容，請從選單中選取「開啟」</translation>
 <translation id="7853202427316060426">活動</translation>
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
@@ -821,6 +827,7 @@
 <translation id="7966516440812255683">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
 
 網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務。</translation>
+<translation id="7966904497916178308">已啟用標準防護功能</translation>
 <translation id="7971521879845308059">封鎖彈出式視窗</translation>
 <translation id="797413074872316787">如要在所有裝置上保持同步並享有個人化體驗，請開啟同步功能。</translation>
 <translation id="7978018860671536736">3. 輕觸 [自動填入密碼]</translation>

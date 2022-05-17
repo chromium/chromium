@@ -82,6 +82,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="4445542136948522167">Slutt å ta bilde</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Fremre kamera</translation>
+<translation id="4620818268515773682">Slå av/på mikrofonlyden. Lyden er på</translation>
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4649291346448517080">Kan ikke lagre filen</translation>
 <translation id="4695379108709712600">Beveger seg oppover</translation>
@@ -158,6 +159,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8425673304802773841">Vipp ned</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Slå av/på mikrofonlyden. Lyden er kuttet</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8732462232047530626">Forhåndsvis metadata</translation>

@@ -32,7 +32,7 @@
 <translation id="2134029355740465625">Postavke videozapisa</translation>
 <translation id="2144806332417375165">Prilagođeni parametri videozapisa</translation>
 <translation id="2175927920773552910">QR kôd</translation>
-<translation id="2244252133441425811">Omogućite alat za odabir broja sličica u sekundi za videozapise</translation>
+<translation id="2244252133441425811">Omogućite birač FPS-a za videozapis</translation>
 <translation id="2271433936731426666">Omogući pregled videozapisa pune veličine</translation>
 <translation id="229579744168541441">Izvezi na disk</translation>
 <translation id="2320741269052147773">Pomičite ulijevo</translation>
@@ -82,6 +82,7 @@
 <translation id="4445542136948522167">Zaustavi fotografiranje</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksela</translation>
 <translation id="4570032796877367747">Prednja kamera</translation>
+<translation id="4620818268515773682">Uključite/isključite mikrofon. Mikrofon je uključen</translation>
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4649291346448517080">Nije moguće sačuvati fajl</translation>
 <translation id="4695379108709712600">Pomjeranje nagore</translation>
@@ -158,6 +159,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8425673304802773841">Nagni dolje</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Uključite/isključite mikrofon. Mikrofon je isključen</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>

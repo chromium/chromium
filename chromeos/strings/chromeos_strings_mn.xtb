@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Дамжих портал гэж таамагласан</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Бичихээс хамгаалахыг асаах</translation>
 <translation id="1308754910631152188">Шинэчилж байна (<ph name="PERCENTAGE_VALUE" />% дууссан)</translation>
 <translation id="1310380015393971138">Боломжтой <ph name="NETWORK_NAME" /> сүлжээ байхгүй байна</translation>
 <translation id="131421566576084655">Сүүлийн дата шинэчлэлтийн огноо боломжгүй байна</translation>
 <translation id="1314565355471455267">Андройд VPN</translation>
 <translation id="131461803491198646">Үндсэн сүлжээ, роуминг биш</translation>
+<translation id="132712914231403017">Жижиг программын системийн хуулбарыг суулгах</translation>
 <translation id="1327977588028644528">Гэйтвэй</translation>
 <translation id="1328223165223065150">Дэлгэцийн зургийн өнгө</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Документыг дамжуулах тавиур (Нэг талаар нь)</translation>
 <translation id="1643449475550628585">Дэлгэцийн зургийг өдөр бүр өөрчлөх</translation>
 <translation id="1644574205037202324">Түүх</translation>
+<translation id="1645954272419197032">Төхөөрөмжийн мэдээллийг баталгаажуулна уу</translation>
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
 <translation id="1703835215927279855">Захидал</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Холболт</translation>
 <translation id="2008685064673031089">Үндсэн хайлт</translation>
 <translation id="2016697457005847575">Асуудал шийдэх алхмуудыг турших</translation>
+<translation id="2016848882344942759">--цагаан-шошго байхгүй--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2085089206770112532">Дэлгэцийн гэрэлтүүлгийг багасгах</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Бараан горимын хуваарь</translation>
 <translation id="2275586345903859204">Засаж дууслаа</translation>
 <translation id="2287186687001756809">Боломжтой зураг байхгүй. Зураг нэмэхийн тулд <ph name="LINK" /> руу очно уу</translation>
+<translation id="2294753434210277304">Chromebook Нөхөн сэргээх хэрэгслийн татсан системийн хуулбартай USB драйв эсвэл SD карт зэрэг гадаад хадгалах сан оруулна уу</translation>
 <translation id="2307344026739914387">Одоогийн хос түлхүүрийг ашиглах</translation>
 <translation id="2320295602967756579">Цайвар загварыг идэвхжүүлэх</translation>
 <translation id="2323506179655536734">АЛГАССАН</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS баталгаажуулалтын түлхүүр</translation>
 <translation id="2713444072780614174">Цагаан</translation>
 <translation id="2717139507051041123">Бараан өнгөний горимыг идэвхжүүлэх</translation>
+<translation id="2727250716596204208">Жижиг программын системийн хуулбарыг олж чадсангүй. Chromebook Нөхөн сэргээх хэрэгслийн татсан системийн хуулбартай USB драйв эсвэл SD карт зэрэг гадаад хадгалах сан оруулна уу.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP 2-р шатны баталгаажуулалт</translation>
 <translation id="2756652381241102009">Оношилгоо явуулах</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Төхөөрөмж холбогдсон байна.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
+<translation id="3137983112374760826">Төхөөрөмжийг бэлдэж байна...</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
 <translation id="315738237743207937">Дамжих портал илэрсэн</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Төхөөрөмжийн баруун талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369013195428705271">Та хэвлэлийн бүх түүхийг арилгахдаа итгэлтэй байна уу? Таны хийж буй хэвлэлийн ажлуудыг арилгахгүй.</translation>
+<translation id="3383751554789092165">Шаардлагатай бол төхөөрөмжийн мэдээллийг өөрчилнө үү.</translation>
 <translation id="3404249063913988450">Дэлгэц амраагчийг идэвхжүүлэх</translation>
 <translation id="3404770484521709967">Бүрэлдэхүүн хэсгүүдийг зөв суулгасан.</translation>
 <translation id="3413935475507503304">Шинэчлэлтийг үргэлжлүүлэхийн тулд Дараах дээр товшино уу.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
 <translation id="3771294271822695279">Видео файлууд</translation>
+<translation id="3774059845329307709">Серийн дугаар</translation>
 <translation id="3784455785234192852">Түгжих</translation>
 <translation id="38114475217616659">Бүх түүхийг арилгах</translation>
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh батарей</translation>
 <translation id="4561801978359312462">SIM-н түгжээг тайлсан</translation>
 <translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
+<translation id="4568938274596692027">Суулгаж дууслаа. Дахин эхлүүлэхээр бэлтгэж байна...</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4609350030397390689">Гарны гэрэлтүүлгийг багасгах</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Нэн даруй шинийг сонгоно уу</translation>
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4897058166682006107">Төхөөрөмжийн зүүн талын чихэвчийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
+<translation id="4908030561598728899">Жижиг программыг суулгаж байна...</translation>
 <translation id="4915052247106771211">Энэ нь төхөөрөмжийг үйлдвэрийн тохиргоонд шинэчлэх болно (Powerwash).</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Шуурхай хариултын тохиргоо</translation>
 <translation id="5168185087976003268">Батарей барилт</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
+<translation id="5179530508336824319">Дараагийн дэлгэц рүү үргэлжлүүлэхийн тулд бичихээс хамгаалахыг идэвхжүүлнэ үү. Төхөөрөмжийн үйлдвэрлэгчийн тусламжийн хуудас руу очиж, зааварчилгааг авна уу.</translation>
 <translation id="5190187232518914472">Дуртай дурсамжуудаа сэргээгээрэй. Цомог нэмэх эсвэл засахын тулд <ph name="LINK_BEGIN" />Google Зураг<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="5212543919916444558">Би таны дэлгэцээс туслах боломжтой зүйл олсонгүй.
 Асуух зүйл байвал микрофоныг товшиж үзнэ үү.</translation>
@@ -615,8 +627,10 @@
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
 <translation id="680983167891198932">Түлхүүр</translation>
 <translation id="6816797338148849397">Таны сонголттой холбоотой мэдээлэл боломжтой байна. Хандахын тулд Дээш суман товчийг ашиглана уу.</translation>
+<translation id="6822504384524564824">SKU-г зөвхөн шинэ бүрэлдэхүүн хэсгүүд нь сольсон бүрэлдэхүүн хэсгүүдээс өөр тохиолдолд өөрчлөх шаардлагатай. Жишээлбэл мэдрэмтгий бус дэлгэцийг мэдрэмтгий дэлгэцээр солих эсвэл санах ойг 8ГБ-аас 16ГБ болгож сайжруулах.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" />-н засвар</translation>
 <translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
+<translation id="6876833053687020046">DRAM эд ангийн дугаар</translation>
 <translation id="6889786074662672253">Дахин эхлүүлэх үед энэ гадаад төхөөрөмжийг бүү салгаарай. Мөн компьютероо бүү унтраагаарай. Та энэ цонхыг багасгах боломжтой. Үүнд хэдэн минут зарцуулж магадгүй бөгөөд энэ хугацаанд таны гадаад төхөөрөмж ажиллахгүй байж магадгүй.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> руу буцах</translation>
 <translation id="6910312834584889076">Сканнерын таг нээлттэй байна. Тагийг хаагаад, дахин оролдоно уу.</translation>
@@ -664,6 +678,7 @@
 <translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
 <translation id="7359657277149375382">Файлын төрөл</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Дэлгэц амраагчийг өөрчлөх</translation>
 <translation id="7397270852490618635">Цайвар загварыг унтраах</translation>
 <translation id="741244894080940828">хөрвүүлэлт</translation>
@@ -763,6 +778,7 @@
 <translation id="8364946094152050673">DNS хоосон байна</translation>
 <translation id="8372477600026034341">Нэмэлт хост</translation>
 <translation id="8378855320830505539">Хамрах бүс</translation>
+<translation id="8382302752385457774">Цагаан-шошго</translation>
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
 <translation id="8422748173858722634">IMEI</translation>

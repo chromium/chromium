@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">إعدادات الفيديو</translation>
 <translation id="2144806332417375165">مَعلمات الفيديوهات المخصّصة</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="2244252133441425811">تفعيل أداة اختيار عدد لقطات الفيديو في الثانية</translation>
 <translation id="2271433936731426666">تفعيل خيار الحصول على لقطات بالحجم الكامل من الفيديوهات</translation>
 <translation id="229579744168541441">تصدير إلى القرص</translation>
 <translation id="2320741269052147773">عرض شامل لليسار</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">إيقاف التقاط الصورة</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> ميغابكسل</translation>
 <translation id="4570032796877367747">الكاميرا الأمامية</translation>
+<translation id="4620818268515773682">زر إعادة صوت الميكروفون. تمت إعادة صوت الميكروفون.</translation>
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4649291346448517080">تعذّر حفظ الملف</translation>
 <translation id="4695379108709712600">جارٍ نقل زاوية المستند في اتجاه الأعلى</translation>
@@ -158,6 +160,7 @@
 <translation id="8425673304802773841">إمالة إلى أسفل</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8687491812650032292">دقة عالية <ph name="HEIGHT" />بكسل (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">زر كتم الميكروفون. تم كتم الميكروفون.</translation>
 <translation id="8712637175834984815">تم</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8732462232047530626">معاينة البيانات الوصفية</translation>

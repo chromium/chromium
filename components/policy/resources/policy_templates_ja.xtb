@@ -1197,6 +1197,11 @@
 <translation id="229322770310505679">ポリシーの最小単位グループの概念を有効にする</translation>
 <translation id="22941467117331786">このポリシーを True に設定した場合、アクティブなセッション中に画面がロックされていなければ、システムトレイに赤い大きなログアウト ボタンが表示されます。このポリシーを False に設定するか未設定のままにした場合、ボタンは表示されません。</translation>
 <translation id="2294382669900758280">Android アプリで再生中の動画は、このポリシーを <ph name="TRUE" /> に設定した場合でも考慮されません。</translation>
+<translation id="2297792368307475351">このポリシーでは、クリップボードのサイト権限の使用をブロックするサイトの URL パターンリストを指定できます。このポリシーは、指定したパターンと一致するオリジンのすべてのクリップボード操作に適用されるわけではありません。たとえば、キーボード ショートカットはクリップボードのサイト権限で管理されないため、キーボード ショートカットを使った貼り付けはこのポリシーに関係なく可能です。
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_CLIPBOARD_SETTING" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="2299220924812062390">有効なプラグインのリストを指定する</translation>
 <translation id="2301048990069984110">Windows、Mac、Linux で Chrome アプリを使用できるようサポートを拡張する。</translation>
 <translation id="2303795211377219696">クレジット カードの自動入力を有効にする</translation>
@@ -1470,6 +1475,7 @@
 <translation id="2604182581880595781">ネットワーク ファイル共有に関連するポリシーを設定します。</translation>
 <translation id="2608535066974278204">再起動の時間枠の長さを示す分単位の期間です。</translation>
 <translation id="2608887839902987727">キャプティブ ポータル認証でプロキシ設定を無視できないようにする</translation>
+<translation id="2608985885792348429">デフォルトのクリップボード設定</translation>
 <translation id="2615240493030733717">タイムゾーン情報を報告する</translation>
 <translation id="2619966380594000538">このポリシーを有効に設定するか未設定のままにした場合、危険性のあるコマンドライン フラグを使用して Chrome を起動したときにセキュリティ警告が表示されます。
 
@@ -1489,6 +1495,7 @@
 <translation id="264093234299818170">拒否リストに登録されている以外のすべてのプリンタを表示する。</translation>
 <translation id="264252574246191885">非推奨</translation>
 <translation id="2647069081229792812">ブックマークの編集を有効または無効にする</translation>
+<translation id="264771271300359481">クリップボードのサイト権限の使用をどのサイトにも許可しない</translation>
 <translation id="2649896281375932517">ユーザーの指定による</translation>
 <translation id="2650049181907741121">ユーザーがデバイスの蓋を閉じた際に行われる操作</translation>
 <translation id="2658653824183107970">新しい <ph name="CORS" /> の実装ではなく以前の <ph name="CORS" /> の実装を使用する</translation>
@@ -3647,25 +3654,6 @@
       このポリシーを False に設定するか未設定のままにした場合、統合デスクトップはオフになり、ユーザーはこの設定をオンにすることはできません。</translation>
 <translation id="5255162913209987122">推奨ポリシーの表示</translation>
 <translation id="5257395339965216304">ホストされているアプリデータ</translation>
-<translation id="5263649486910778308">このポリシーでは、ブラウザが First-Party Set 機能で使用するセットのリストをオーバーライドできます。
-
-      ブラウザの First-Party Set リストの各セットは、First-Party Set の要件を満たしている必要があります。
-      First-Party Set は、オーナーサイトと 1 つ以上のメンバーサイトで構成される必要があります。First-Party Set のすべてのサイトは、オーナーサイトかメンバーサイトかにかかわらず、HTTPS 経由で配信される登録可能なドメインである必要があります。
-      また、First-Party Set の各サイトは一意である必要があります。つまり、サイトはオーナーとメンバーの両方であることはできず、First-Party Set のメンバーとして複数回指定することもできません。
-      First-Party Set の詳細については、https://github.com/privacycg/first-party-sets　をご覧ください。
-
-      このポリシーで空の辞書を指定した場合、ブラウザは First-Party Set の公開リストを使用します。
-
-      <ph name="REPLACEMENTS" /> リストで指定した First-Party Set のサイトについては、ブラウザの First-Party Set リストに同じサイトがある場合は、ブラウザの First-Party Set からそのサイトが削除されます。
-      その後、ポリシーで指定した First-Party Set がブラウザの First-Party Set リストに追加されます。
-
-      <ph name="ADDITIONS" /> リストで指定した First-Party Set のサイトについては、ブラウザの First-Party Set リストに同じサイトがある場合は、新しい First-Party Set をブラウザのリストに追加できるようにブラウザの First-Party Set が更新されます。ブラウザのリストが更新された後、ポリシーで指定した First-Party Set がブラウザの First-Party Set リストに追加されます。
-
-      ブラウザの First-Party Set リストのサイトは、いずれも複数のセットに含まれないようにする必要があります。この要件は <ph name="REPLACEMENTS" /> リストと <ph name="ADDITIONS" /> リストにも適用されます。同様に、同じサイトを<ph name="REPLACEMENTS" /> リストと <ph name="ADDITIONS" /> リストの両方に含めることはできません。
-
-      ワイルドカード（*）は、ポリシーの値として使用できず、これらのリストのどの First-Party Set でも使用できません。
-
-      このポリシーで指定するすべてのセットは、有効な First-Party Set である必要があります。そうでない場合は、該当するエラーが出力されます。</translation>
 <translation id="5266173014392157048">このポリシーはサポートが終了しています。代わりに <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、<ph name="PRODUCT_NAME" /> が委任できるサーバーを割り当てることができます。複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
@@ -3863,6 +3851,7 @@
 <translation id="5470500958458209831">Ansible playbook をダウンロードすることのできる URL です。</translation>
 <translation id="5475361623548884387">印刷を有効にする</translation>
 <translation id="547601067149622666">煩わしい広告を含むサイトで広告の表示を許可しない</translation>
+<translation id="5476152378885134514">クリップボードの使用をブロックするサイトを指定する</translation>
 <translation id="5478734531226638813">このポリシーを設定すると、セッション中のキオスク Chrome アプリの更新（拡張機能マニフェストの更新 URL を使用）が無効になり、有効な更新メカニズムは CRX プリフェッチのみとなります。</translation>
 <translation id="5480380613778757009">このポリシーを無効にするか未設定のままにした場合、管理対象のゲスト セッションで設定されたディスプレイ設定はすべてセッションの終了時にリセットされます。このポリシーを True に設定した場合、管理対象のゲスト セッションが終了した後もディスプレイ プロパティが保持されます。</translation>
 <translation id="5483065054530244863">ローカルの信頼済みアンカーが発行した SHA-1 署名証明書を許可する</translation>
@@ -3981,6 +3970,11 @@
 <translation id="5649046890958064703"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLACKLIST" /> が選択されている場合、<ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
 
       このポリシーはサポートが終了しています。代わりに <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> を使用してください。</translation>
+<translation id="5649773663020498924">このポリシーを 2 に設定した場合、サイトに対してクリップボードのサイト権限の使用をブロックします。このポリシーを 3 に設定するか未設定のままにした場合、ユーザーはこの設定を変更して、サイトがクリップボード API の使用をリクエストしたときに許可するかどうかをできます。
+
+      <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> ポリシーと <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" /> ポリシーを使用して、特定の URL パターンについて、このポリシーをオーバーライドできます。
+
+      このポリシーは、クリップボードのサイト権限で制御されるクリップボード操作にのみ影響し、サニタイズされたクリップボードの書き込みと、信頼できるコピーと貼り付けの操作には影響しません。</translation>
 <translation id="5652250453612826983">子どものアカウントのみに適用される、保護者向け管理ツールのポリシーを制御します。
       これらのポリシーは管理コンソールではなく、Kids API サーバーで直接設定します。</translation>
 <translation id="5654682237531873653">このポリシーを有効に設定した場合、スペルチェックがオンになり、ユーザーがオフにすることはできません。<ph name="MS_WIN_NAME" />、<ph name="PRODUCT_OS_NAME" />、<ph name="LINUX_OS_NAME" /> ではスペルチェック言語のオンとオフを個別に切り替えられるので、ユーザーがすべてのスペルチェック言語をオフにすれば、スペルチェックは実質的にオフになります。この状況を回避するには、<ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> を使って特定のスペルチェック言語を強制的に有効にします。
@@ -4704,6 +4698,7 @@
       1）ユーザー指定の言語 / 地域（設定されている場合）
       2）システムの言語 / 地域
       3）代替の言語 / 地域（en-US）</translation>
+<translation id="6493089139124468815">ユーザーに対するクリップボードのサイト権限のリクエストをサイトに許可する</translation>
 <translation id="6493918190032622602">許可される <ph name="PRODUCT_OS_NAME" /> の最小バージョン</translation>
 <translation id="6495337487202227251">このポリシーはサポートが終了しており、<ph name="PRODUCT_OS_NAME" /> バージョン 85 で削除されます。代わりに <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" /> を使用してください。
 
@@ -5872,6 +5867,12 @@
       このポリシーを未設定のままにした場合、ユーザーはスリープ状態からデバイスのロックを解除する際にパスワードの入力を求めるかどうかを選択できます。</translation>
 <translation id="7784062550705119230"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_ALLOWLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="7788511847830146438">プロフィール単位</translation>
+<translation id="7788632499792081231">このポリシーでは、クリップボードのサイト権限の使用を許可するサイトの URL パターンリストを指定できます。このポリシーは、指定したパターンと一致するオリジンのすべてのクリップボード操作に適用されるわけではありません。たとえば、キーボード ショートカットはクリップボードのサイト権限で管理されないため、キーボード ショートカットを使った貼り付けはこのポリシーに関係なく可能です。
+
+
+      このポリシーを未設定のままにした場合、<ph name="DEFAULT_CLIPBOARD_SETTING" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
+
+      有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="7792796937016596423">ネットワーク パケット キャプチャの実行をユーザーに許可しない</translation>
 <translation id="7798441698807517880"><ph name="FLASH_PLUGIN_NAME" /> のサポートが終了したため、このポリシーは <ph name="PRODUCT_NAME" /> バージョン 89 以降で削除されています。
 
@@ -6610,6 +6611,7 @@
 
        このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、音声フィードバックは最初は無効ですが、ユーザーはいつでも有効にできます。</translation>
 <translation id="8656110680728938054">「選択して読み上げ」を有効にする</translation>
+<translation id="8659843732895043951">クリップボードの使用を許可するサイトを指定する</translation>
 <translation id="8661297125441579970">データ移行と ARC を許可しない。</translation>
 <translation id="8665314828727504286">セーフ ブラウジングの保護レベル</translation>
 <translation id="8666123502812856425">このポリシーでは、特定の HID 使用状況があるトップレベルのコレクションを含む HID デバイスへのアクセスを自動的に許可するサイトの URL リストを指定できます。リストの各項目では、「<ph name="USAGES_FIELD_NAME" />」と「<ph name="URLS_FIELD_NAME" />」フィールドの両方を指定する必要があります。「<ph name="USAGES_FIELD_NAME" />」フィールドの各項目において、「<ph name="USAGE_PAGE_FIELD_NAME" />」は必須ですが、「<ph name="USAGE_FIELD_NAME" />」フィールドは必須ではありません。「<ph name="USAGE_FIELD_NAME" />」フィールドを省略した場合、指定した使用状況ページの使用状況があるトップレベルのコレクションを含むあらゆるデバイスに一致するポリシーが作成されます。「<ph name="USAGE_FIELD_NAME" />」フィールドを指定して「<ph name="USAGE_PAGE_FIELD_NAME" />」フィールドは指定しなかった場合、項目は無効になり無視されます。

@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Vaizdo įrašų nustatymai</translation>
 <translation id="2144806332417375165">Tinkinti vaizdo įrašų parametrai</translation>
 <translation id="2175927920773552910">QR kodas</translation>
+<translation id="2244252133441425811">Įgalinti vaizdo įrašų KPS rinkiklį</translation>
 <translation id="2271433936731426666">Įgalinti viso dydžio momentinę vaizdo įrašo nuotrauką</translation>
 <translation id="229579744168541441">Eksportuoti į diską</translation>
 <translation id="2320741269052147773">Pastumti kairėn</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Sustabdyti fotografavimą</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiks.</translation>
 <translation id="4570032796877367747">Priekinis fotoaparatas</translation>
+<translation id="4620818268515773682">Perjungti mikrofono nutildymą. Nutildymas išjungtas</translation>
 <translation id="4628948037717959914">Nuotrauka</translation>
 <translation id="4649291346448517080">Nepavyko išsaugoti failo</translation>
 <translation id="4695379108709712600">Perkeliama aukštyn</translation>
@@ -157,6 +159,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8425673304802773841">Nukreipti žemyn</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Perjungti mikrofono nutildymą. Nutildymas įjungtas</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8732462232047530626">Peržiūrėti metaduomenis</translation>

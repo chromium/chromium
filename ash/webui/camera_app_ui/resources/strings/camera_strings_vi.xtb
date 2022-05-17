@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Cài đặt video</translation>
 <translation id="2144806332417375165">Thông số video tùy chỉnh</translation>
 <translation id="2175927920773552910">Mã QR</translation>
+<translation id="2244252133441425811">Bật bộ chọn FPS video</translation>
 <translation id="2271433936731426666">Cho phép ảnh chụp nhanh có kích thước đầy đủ khi quay video</translation>
 <translation id="229579744168541441">Xuất ra đĩa</translation>
 <translation id="2320741269052147773">Xoay trái</translation>
@@ -81,6 +82,7 @@
 <translation id="4445542136948522167">Dừng chụp ảnh</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Máy ảnh mặt trước</translation>
+<translation id="4620818268515773682">Bật/tắt micrô. Chế độ tắt tiếng đang tắt</translation>
 <translation id="4628948037717959914">Ảnh</translation>
 <translation id="4649291346448517080">Không thể lưu tệp</translation>
 <translation id="4695379108709712600">Đang di chuyển theo hướng lên trên</translation>
@@ -157,6 +159,7 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="8425673304802773841">Xoay xuống</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Bật/tắt micrô. Chế độ tắt tiếng đang bật</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8732462232047530626">Xem trước siêu dữ liệu</translation>

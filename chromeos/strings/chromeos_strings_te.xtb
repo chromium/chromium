@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">క్యాప్టివ్ పోర్టల్ అనుమానించబడింది</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">రైట్ ప్రొటెక్ట్‌ను ఆన్ చేయండి</translation>
 <translation id="1308754910631152188">అప్‌డేట్ అవుతోంది (<ph name="PERCENTAGE_VALUE" />% పూర్తయింది)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
 <translation id="131421566576084655">చివరిసారిగా డేటా రీసెట్ చేసిన తేదీ అందుబాటులో లేదు</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">హోమ్ నెట్‌వర్క్, రోమింగ్ కాదు</translation>
+<translation id="132712914231403017">ఫర్మ్‌వేర్ ఇమేజ్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="1327977588028644528">గేట్‌వే</translation>
 <translation id="1328223165223065150">వాల్‌పేపర్ రంగు</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
 <translation id="1643449475550628585">ప్రతిరోజూ వాల్‌పేపర్ ఇమేజ్‌ను మార్చండి</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
+<translation id="1645954272419197032">దయచేసి పరికర సమాచారాన్ని నిర్ధారించండి</translation>
 <translation id="1662989795263954667">ఆగిపోయింది - ఇంక్ లేదు</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
 <translation id="1703835215927279855">లెటర్</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">కనెక్టివిటీ</translation>
 <translation id="2008685064673031089">ప్రైమ్ సెర్చ్</translation>
 <translation id="2016697457005847575">పరిష్కార ప్రక్రియకు సంబంధించిన దశలను ట్రై చేయండి</translation>
+<translation id="2016848882344942759">--వైట్ లేబుల్ ఉండదు--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">డార్క్ మోడ్ షెడ్యూల్</translation>
 <translation id="2275586345903859204">రిపేర్ పూర్తయింది</translation>
 <translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
+<translation id="2294753434210277304">డౌన్‌లోడ్ చేసిన Chromebook రికవరీ యుటిలిటీ ఇమేజ్‌తో, USB డిస్క్ లేదా SD కార్డ్ వంటి బాహ్య స్టోరేజ్‌ను ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="2307344026739914387">ప్రస్తుత కీపెయిర్‌ను ఉపయోగించండి</translation>
 <translation id="2320295602967756579">లేత రంగు రూపాన్ని ఎనేబుల్ చేయండి</translation>
 <translation id="2323506179655536734">స్కిప్ చేయబడింది</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS ప్రామాణీకరణ కీ</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
 <translation id="2717139507051041123">ముదురు రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
+<translation id="2727250716596204208">ఫర్మ్‌వేర్ ఇమేజ్‌ను కనుగొనడం సాధ్యం కాలేదు. డౌన్‌లోడ్ చేసిన Chromebook రికవరీ యుటిలిటీ ఇమేజ్‌తో, USB డిస్క్ లేదా SD కార్డ్ వంటి బాహ్య స్టోరేజ్‌ను ఇన్‌సర్ట్ చేయండి.</translation>
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2751739896257479635">EAP 2వ దశ ప్రమాణీకరణ</translation>
 <translation id="2756652381241102009">సమస్య విశ్లేషణలను రన్ చేయండి</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">పరికరం కనెక్ట్ చేయబడింది.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{పేజీని తీసివేయాలా?}=1{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}other{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}}</translation>
+<translation id="3137983112374760826">పరికరాన్ని అనుకూలంగా మార్చడం...</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />వ పేజీని స్కాన్ చేస్తోంది...</translation>
 <translation id="315738237743207937">క్యాప్టివ్ పోర్టల్ గుర్తించబడింది</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ చరిత్ర మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
+<translation id="3383751554789092165">అవసరానికి తగినట్లు పరికర సమాచారాన్ని మార్చండి.</translation>
 <translation id="3404249063913988450">స్క్రీన్ సేవర్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3404770484521709967">భాగాలు సరిగ్గా ఇన్‌స్టాల్ చేయబడ్డాయి.</translation>
 <translation id="3413935475507503304">అప్‌డేట్ చేయడాన్ని కొనసాగించడానికి, 'తర్వాత'ను క్లిక్ చేయండి.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">కనెక్ట్ కాలేదు</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
+<translation id="3774059845329307709">సీరియల్ నంబర్</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
 <translation id="38114475217616659">చరిత్ర మొత్తాన్ని క్లియర్ చేయి</translation>
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh బ్యాటరీ</translation>
 <translation id="4561801978359312462">SIM అన్‌లాక్ చేయబడింది</translation>
 <translation id="4562494484721939086">సేవ లేదు</translation>
+<translation id="4568938274596692027">ఇన్‌స్టాల్ చేయడం పూర్తయింది. రీస్టార్ట్ చేయడానికి సిద్ధం అవుతోంది...</translation>
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4609350030397390689">కీబోర్డ్ బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
 <translation id="4891842000192098784">ఒత్తిడి</translation>
 <translation id="4897058166682006107">పరికరంలో ఎడమ వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
+<translation id="4908030561598728899">ఫర్మ్‌వేర్ ఇన్‌స్టాల్ అవుతోంది...</translation>
 <translation id="4915052247106771211">ఇది పరికరాన్ని ఫ్యాక్టరీ సెట్టింగ్‌లకు (పవర్‌వాష్) రీసెట్ చేస్తుంది.</translation>
 <translation id="4917385247580444890">బలమైన</translation>
 <translation id="4917889632206600977">ఆగిపోయింది - పేపర్లు లేవు</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">క్విక్ ఆన్సర్స్‌కు సంబంధించిన సెట్టింగ్‌లు</translation>
 <translation id="5168185087976003268">బ్యాటరీ సామర్థ్యం</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
+<translation id="5179530508336824319">తర్వాత స్క్రీన్‌కు కొనసాగడానికి రైట్ ప్రొటెక్ట్‌ను ఎనేబుల్ చేయండి. సూచనల కోసం పరికర తయారీదారుని సపోర్ట్ పేజీకి వెళ్లండి.</translation>
 <translation id="5190187232518914472">మీకు ఇష్టమైన మధుర జ్ఞాపకాలను మళ్లీ ఆస్వాదించండి. ఆల్బమ్‌లను జోడించడానికి లేదా ఎడిట్ చేయడానికి, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />కు వెళ్లండి.</translation>
 <translation id="5212543919916444558">నేను సహాయం అందించగలిగేలా మీ స్క్రీన్‌పై నాకు ఏదీ కనిపించలేదు. మైక్‌ను నొక్కి, నన్ను ఏదైనా అడగడానికి ప్రయత్నించండి.</translation>
 <translation id="5212593641110061691">టాబ్లాయిడ్</translation>
@@ -614,8 +626,10 @@
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="680983167891198932">కీ</translation>
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
+<translation id="6822504384524564824">కొత్త కాంపోనెంట్(లు) రీప్లేస్ చేసిన వాటికి భిన్నంగా ఉంటే మాత్రమే SKUను మార్చాలి. ఉదాహరణకు, టచ్‌స్క్రీన్ కాని దానిని టచ్‌స్క్రీన్‌తో రీప్లేస్ చేయడం, లేదా మెమరీని 8GB నుండి 16GBకి అప్‌గ్రేడ్ చేయడం.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" />‌ను రిపేర్ చేయండి</translation>
 <translation id="6853312040151791195">డిశ్చార్జింగ్ రేట్</translation>
+<translation id="6876833053687020046">DRAM విభాగం నంబర్</translation>
 <translation id="6889786074662672253">రీస్టార్ట్ అవుతున్నప్పుడు, ఈ బాహ్య పరికరాన్ని అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు. మీరు ఈ విండోను చిన్నదిగా చేయవచ్చు. ఇందుకు కొన్ని నిమిషాల సమయం పట్టవచ్చు, ఇంకా ఈ సమయంలో మీ బాహ్య పరికరం పని చేయకపోవచ్చు.</translation>
 <translation id="6905724422583748843">తిరిగి <ph name="PAGE_NAME" />‌కు</translation>
 <translation id="6910312834584889076">స్కానర్ కవర్ తెరిచి ఉంది. కవర్‌ను మూసివేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -663,6 +677,7 @@
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
 <translation id="7359657277149375382">ఫైల్ రకం</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
 <translation id="7397270852490618635">లేత రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
 <translation id="741244894080940828">మార్పిడి</translation>
@@ -762,6 +777,7 @@
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>
 <translation id="8372477600026034341">అదనపు హోస్ట్‌లు</translation>
 <translation id="8378855320830505539">ప్రాంతం</translation>
+<translation id="8382302752385457774">వైట్ లేబుల్</translation>
 <translation id="8395584934117017006">ఈ <ph name="DEVICE_TYPE" /> ఎంటర్‌ప్రైజ్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="8398927464629426868">పరికరం ప్రస్తుతం ఛార్జ్ అవుతున్న లేదా డిశ్చార్జ్ అవుతున్న రేట్</translation>
 <translation id="8422748173858722634">IMEI</translation>

@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Google Lens-ൽ ചിത്രം വിവർത്തനം ചെയ്യൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
+<translation id="13931502444227376">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സേവന നിബന്ധനകൾ<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="139993653570221430">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് എപ്പോൾ വേണമെങ്കിലും നിങ്ങളുടെ തീരുമാനം മാറ്റാനാകും. ട്രയലുകൾ റൺ ചെയ്യുന്നത് നിലവിൽ പരസ്യങ്ങൾ നൽകുന്ന രീതിക്കൊപ്പം ആയതിനാൽ, നിങ്ങൾ ഉടൻ മാറ്റങ്ങളൊന്നും കാണില്ല.</translation>
 <translation id="1406000523432664303">“ട്രാക്ക് ചെയ്യരുത്”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">സ്വകാര്യതാ സാൻഡ്‌ബോക്‌സിനെ കുറിച്ച്</translation>
 <translation id="1736419249208073774">അടുത്തറിയുക</translation>
 <translation id="1749561566933687563">നിങ്ങളുടെ ബുക്ക്മാർക്കുകൾ സമന്വയിപ്പിക്കുക</translation>
+<translation id="1750259112639922169">ടാബ് ഗ്രൂപ്പ് - <ph name="TAB_COUNT" /> ടാബുകൾ</translation>
 <translation id="17513872634828108">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="1754404134430936718">ടെക്‌സ്‌റ്റ് പകർത്തി</translation>
 <translation id="1779766957982586368">വിന്‍‌ഡോ അടയ്‌ക്കുക</translation>
@@ -171,6 +173,7 @@
 <translation id="1928696683969751773">അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="19288952978244135">Chrome വീണ്ടും തുറക്കുക.</translation>
 <translation id="1933845786846280168">തിരഞ്ഞെടുത്ത ടാബ്</translation>
+<translation id="193571872656840963">ഈ സ്രഷ്ടാവിനോട് നന്ദി പറയുക</translation>
 <translation id="1943432128510653496">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="1952172573699511566">വെബ്സൈറ്റുകൾ, സാധ്യമാകുന്നിടത്തെല്ലാം, നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷയിൽ ടെക്‌സ്‌റ്റ് കാണിക്കും.</translation>
 <translation id="1959679933317802873">ഉള്ളടക്കത്തിനായി കാത്തിരിക്കുന്നു</translation>
@@ -788,6 +791,7 @@
 <translation id="5368227114232678694">ഈ ഉപകരണത്തിൽ സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ, അദൃശ്യ മോഡ് പരീക്ഷിക്കൂ</translation>
 <translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">പ്രതികരണം മാറ്റി</translation>
+<translation id="5401851137404501592">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="5403644198645076998">ചില സൈറ്റുകളെ മാത്രം അനുവദിക്കുക</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> എന്നതിൽ <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
 <translation id="5414836363063783498">പരിശോധിച്ചുറപ്പിക്കുന്നു...</translation>
@@ -1128,6 +1132,7 @@
 <translation id="7177873915659574692">QR കോഡ് സൃഷ്‌ടിക്കാനാകുന്നില്ല. URL-ൽ <ph name="CHARACTER_LIMIT" /> പ്രതീകങ്ങളിൽ കൂടുതൽ അടങ്ങിയിരിക്കുന്നു.</translation>
 <translation id="7177959540995930968">Chrome ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഈ ഫീച്ചറുകളെ കുറിച്ച് കൂടുതലറിയാനാകും.</translation>
 <translation id="718226107353899806">നിങ്ങൾക്ക് <ph name="MAX_NUM_REACTIONS" /> പ്രതികരണങ്ങൾ വരെ ചേർക്കാനാകും</translation>
+<translation id="7183693674623539380">ടാബ് ഗ്രൂപ്പ് - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കുകയും ചെയ്യും.</translation>
 <translation id="7191430249889272776">ടാബ് പശ്ചാത്തലത്തിൽ തുറന്നു.</translation>
 <translation id="7196215469483532480">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>

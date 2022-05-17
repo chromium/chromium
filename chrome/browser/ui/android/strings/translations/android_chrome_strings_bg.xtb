@@ -106,6 +106,7 @@
 <translation id="1493287004536771723">Следвате <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
+<translation id="1513814250881909472">Включете синхронизирането, за да получите разделите от другите си устройства</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
 <translation id="1518421282666914498">Емоция чрез GIF: <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="1521774566618522728">Активно днес</translation>
@@ -184,6 +185,7 @@
 <translation id="1995884366040846621">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="2000419248597011803">Изпраща някои „бисквитки“ и заявките за търсене от адресната лента и полето за търсене до стандартната ви търсеща машина</translation>
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
+<translation id="2011996512573319870">Включете синхронизирането, за да получавате най-подходящото съдържание от Googlе</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файла}}</translation>
 <translation id="2020309681647789787">Историята ви ще бъде достъпна на всичките ви синхронизирани устройства и ще можете да продължите това, което сте правили</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
@@ -267,6 +269,7 @@
 <translation id="2461822463642141190">Ток</translation>
 <translation id="2472163211318554013">Влезте в профила си, за да се възползвате максимално от Chrome</translation>
 <translation id="247737702124049222">Функцията за описания на изображенията е включена</translation>
+<translation id="2481251096908459228">Преглеждайте истории за вас</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
 <translation id="2494974097748878569">Google Асистент в Chrome</translation>
@@ -308,6 +311,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайла}}</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
 <translation id="2656405586795711023">Уеб приложения</translation>
+<translation id="2700802943130197326">Включете синхронизирането, за да получите своите пароли, отметки и др. на всичките си устройства.</translation>
 <translation id="2702516483241149200">Ново: споделяне на връзка, която превърта до този текст</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Опресняване на страницата</translation>
@@ -569,6 +573,7 @@
 <translation id="4162867837470729563">Списъкът с опции за споделяне е отворен върху целия екран.</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4170011742729630528">Няма достъп до услугата. Опитайте отново по-късно.</translation>
+<translation id="4177222230309051052">Получете всичките си отметки</translation>
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4196597275619698563">Създаване на карта</translation>
@@ -724,6 +729,7 @@
 <translation id="4987271110129728827">Страницата не е намерена. Проверете изписването или потърсете в мрежата.</translation>
 <translation id="4988526792673242964">Страници</translation>
 <translation id="5001388021414335527">Следене на този сайт тук</translation>
+<translation id="500351648694011114">Сърфирайте по-лесно</translation>
 <translation id="5004416275253351869">Контроли за активността в Google</translation>
 <translation id="5005141133360250920">Реакцията е изтрита</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
@@ -875,6 +881,7 @@
 <translation id="5864419784173784555">Изчаква се друго изтегляне…</translation>
 <translation id="5865733239029070421">Автоматично изпраща до Google статистически данни за използването на Chrome и сигнали за сривове</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
+<translation id="5869789175361934029">Продължаване от друго устройство</translation>
 <translation id="587735546353481577">За да последвате даден сайт, посетете го, отворете менюто на Chrome и докоснете съответната опция.</translation>
 <translation id="5880748256563468367">Към емисията</translation>
 <translation id="5884076754568147479">За да ви помага да изпълнявате задачи, Google ще получава URL адресите и съдържанието на сайтовете, в които използвате Асистент, както и данните, които изпращате чрез услугата</translation>
@@ -1448,6 +1455,7 @@
 <translation id="8909135823018751308">Споделяне…</translation>
 <translation id="8912362522468806198">Профил в Google</translation>
 <translation id="8920114477895755567">Изчакват се подробности за родителите.</translation>
+<translation id="8921980840204105660">Включете синхронизирането, за да получите отметките от другите си устройства</translation>
 <translation id="8922289737868596582">Изтеглете страниците чрез бутона „Още опции“, за да ги използвате офлайн</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="892496902842311796">Пакетът за <ph name="LANG" /> е готов</translation>

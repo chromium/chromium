@@ -32,6 +32,7 @@
 <translation id="2134029355740465625">Cilësimet e videove</translation>
 <translation id="2144806332417375165">Personalizo parametrat e videos</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
+<translation id="2244252133441425811">Aktivizo zgjedhësin e shpejtësisë FPS të videos</translation>
 <translation id="2271433936731426666">Aktivizo përmbledhjen e videos në madhësi të plotë</translation>
 <translation id="229579744168541441">Eksporto në disk</translation>
 <translation id="2320741269052147773">Zgjero majtas</translation>
@@ -81,6 +82,7 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="4445542136948522167">Ndalo nxjerrjen e fotografive</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapiksel</translation>
 <translation id="4570032796877367747">Kamera e përparme</translation>
+<translation id="4620818268515773682">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është joaktiv</translation>
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4649291346448517080">Skedari nuk mund të ruhet</translation>
 <translation id="4695379108709712600">Po zhvendoset lart</translation>
@@ -157,6 +159,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8425673304802773841">Ano për poshtë</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8732462232047530626">Shiko paraprakisht të dhënat meta</translation>
