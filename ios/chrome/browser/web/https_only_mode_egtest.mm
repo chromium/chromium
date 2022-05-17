@@ -129,11 +129,6 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 @property(nonatomic, readonly)
     net::test_server::EmbeddedTestServer* slowHTTPSServer;
 
-// The value of the kHttpsOnlyModeEnabled pref, before this test
-// started. Saved in order to restore it back to its original value after
-// the test completes.
-@property(nonatomic, assign) BOOL originalHttpsOnlyModeEnabled;
-
 @end
 
 @implementation HttpsOnlyModeUpgradeTestCase
@@ -203,14 +198,11 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
   [HttpsOnlyModeAppInterface setFallbackDelayForTesting:kVeryLongTimeout];
 
-  self.originalHttpsOnlyModeEnabled =
-      [ChromeEarlGrey userBooleanPref:prefs::kHttpsOnlyModeEnabled];
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey setBoolValue:self.originalHttpsOnlyModeEnabled
-                   forUserPref:prefs::kHttpsOnlyModeEnabled];
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
   [HttpsOnlyModeAppInterface clearAllowlist];
 
   // Release the histogram tester.
