@@ -332,7 +332,7 @@ TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   const String speculation_script =
-      R"({"prefetch_with_subresources": [
+      R"({"prefetch": [
            {"source": "list",
             "urls": ["https://example.com/foo", "https://example.com/bar"],
             "requires": ["anonymous-client-ip-when-cross-origin"]}
@@ -348,15 +348,13 @@ TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
   ASSERT_EQ(candidates.size(), 3u);
   {
     const auto& candidate = candidates[0];
-    EXPECT_EQ(candidate->action,
-              mojom::blink::SpeculationAction::kPrefetchWithSubresources);
+    EXPECT_EQ(candidate->action, mojom::blink::SpeculationAction::kPrefetch);
     EXPECT_EQ(candidate->url, "https://example.com/foo");
     EXPECT_TRUE(candidate->requires_anonymous_client_ip_when_cross_origin);
   }
   {
     const auto& candidate = candidates[1];
-    EXPECT_EQ(candidate->action,
-              mojom::blink::SpeculationAction::kPrefetchWithSubresources);
+    EXPECT_EQ(candidate->action, mojom::blink::SpeculationAction::kPrefetch);
     EXPECT_EQ(candidate->url, "https://example.com/bar");
     EXPECT_TRUE(candidate->requires_anonymous_client_ip_when_cross_origin);
   }
@@ -404,7 +402,7 @@ TEST_F(SpeculationRuleSetTest, PrefetchIgnorePrerenderRules) {
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   const String speculation_script =
-      R"({"prefetch_with_subresources": [
+      R"({"prefetch": [
            {"source": "list",
             "urls": ["https://example.com/foo", "https://example.com/bar"],
             "requires": ["anonymous-client-ip-when-cross-origin"]}
