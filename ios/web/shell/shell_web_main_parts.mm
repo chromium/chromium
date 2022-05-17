@@ -6,10 +6,6 @@
 
 #include "ios/web/shell/shell_browser_state.h"
 
-#if DCHECK_IS_ON()
-#include "ui/display/screen_base.h"
-#endif
-
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -20,13 +16,6 @@ ShellWebMainParts::ShellWebMainParts() {
 }
 
 ShellWebMainParts::~ShellWebMainParts() {
-#if DCHECK_IS_ON()
-  // The screen object is never deleted on IOS. Make sure that all display
-  // observers are removed at the end.
-  display::ScreenBase* screen =
-      static_cast<display::ScreenBase*>(display::Screen::GetScreen());
-  DCHECK(!screen->HasDisplayObservers());
-#endif
 }
 
 void ShellWebMainParts::PreMainMessageLoopRun() {

@@ -25,15 +25,6 @@
 
 class WindowPlacementTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    display::Screen::SetScreenInstance(&screen_);
-    screen_.display_list().AddDisplay({1, gfx::Rect(0, 0, 803, 600)},
-                                      display::DisplayList::Type::PRIMARY);
-#endif
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     // Window placement features are only available on secure contexts.
     https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -42,20 +33,10 @@ class WindowPlacementTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_test_server_->Start());
   }
 
-  void TearDown() override {
-    InProcessBrowserTest::TearDown();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    display::Screen::SetScreenInstance(nullptr);
-#endif
-  }
-
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kWindowPlacement};
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  display::ScreenBase screen_;
-#endif
 };
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
@@ -75,6 +56,11 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-803x600");
+#else
+  display::ScreenBase screen;
+  screen.display_list().AddDisplay({1, gfx::Rect(0, 0, 803, 600)},
+                                   display::DisplayList::Type::PRIMARY);
+  display::test::ScopedScreenOverride screen_override(&screen);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
@@ -113,9 +99,9 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest,
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-807x600");
 #else
-  screen_.display_list().UpdateDisplay({1, gfx::Rect(0, 0, 807, 600)},
-                                       display::DisplayList::Type::PRIMARY);
-  EXPECT_EQ(screen_.display_list().displays().size(), 1u);
+  screen.display_list().UpdateDisplay({1, gfx::Rect(0, 0, 807, 600)},
+                                      display::DisplayList::Type::PRIMARY);
+  EXPECT_EQ(screen.display_list().displays().size(), 1u);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
@@ -130,9 +116,9 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest,
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("0+0-807x600,1000+0-804x600");
 #else
-  screen_.display_list().AddDisplay({2, gfx::Rect(1000, 0, 804, 600)},
-                                    display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(screen_.display_list().displays().size(), 2u);
+  screen.display_list().AddDisplay({2, gfx::Rect(1000, 0, 804, 600)},
+                                   display::DisplayList::Type::NOT_PRIMARY);
+  EXPECT_EQ(screen.display_list().displays().size(), 2u);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 

@@ -242,7 +242,6 @@ class EasyUnlockServiceRegularTest : public testing::Test {
     easy_unlock_service_regular_->Shutdown();
     PowerManagerClient::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    display::Screen::SetScreenInstance(nullptr);
   }
 
   // Most tests will want to pass `should_initialize_all_dependencies` == true,

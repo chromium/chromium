@@ -63,6 +63,5 @@ source_set("eg_test_support+eg2") {
     "//ios/third_party/edo",
     "//ios/web/common",
     "//testing/gtest:gtest",
-    "//ui/display",
   ]
 }

@@ -5821,8 +5821,6 @@ static_library("browser") {
       "mac/auth_session_request.mm",
       "mac/bluetooth_utility.h",
       "mac/bluetooth_utility.mm",
-      "mac/chrome_browser_main_extra_parts_mac.h",
-      "mac/chrome_browser_main_extra_parts_mac.mm",
       "mac/dock.h",
       "mac/dock.mm",
       "mac/exception_processor.h",

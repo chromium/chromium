@@ -56,7 +56,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
-    "//ui/display",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
