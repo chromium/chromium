@@ -381,8 +381,10 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
   }
 }
 
+// TODO(crbug.com/1268787): Test has been broken on Windows CI since it was
+// first landed.
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithScopedConfig,
-                       IncludesMetadata) {
+                       DISABLED_IncludesMetadata) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
   ASSERT_TRUE(EnableUkmRecording());
 
