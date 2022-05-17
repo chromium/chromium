@@ -33,22 +33,18 @@
       }
 
       iron-list {
-        --iron-list-items-container: {
-          /* Text selection in an iron-list is problematic because the items are
-           * reused. The result is the selection happens somewhat arbitrarily.
-           * Add a |risk-selection| attribute to enabled selection in an
-           * iron-list. */
-          user-select: none;
-        }
+        /* Text selection in an iron-list is problematic because the items are
+         * reused. The result is the selection happens somewhat arbitrarily.
+         * Add a |risk-selection| attribute to enabled selection in an
+         * iron-list. */
+        user-select: none;
       }
 
       iron-list[risk-selection] {
-        --iron-list-items-container: {
-          /* On short lists where selection is likely desired, we'll risk having
-           * text selection enabled. If the list is short enough that items are
-           * not actually reused, the bugs with selection are not evident. */
-          user-select: text;
-        }
+        /* On short lists where selection is likely desired, we'll risk having
+         * text selection enabled. If the list is short enough that items are
+         * not actually reused, the bugs with selection are not evident. */
+        user-select: text;
       }
 
       .separator + cr-icon-button {
