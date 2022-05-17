@@ -1045,6 +1045,7 @@ if (!is_component_build) {
     # This is the only Cronet APK with lint enabled. This one was chosen because
     # it depends on basically all source files.
     enable_lint = true
+    lint_baseline_file = "lint-baseline.xml"
     lint_suppressions_file = "lint-suppressions.xml"
 
     # Still needs to support KitKat. See crbug.com/1042122.

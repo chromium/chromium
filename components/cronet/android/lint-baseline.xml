@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 7.2.0" type="baseline" client="" dependencies="true" name="" variant="all" version="7.2.0">
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 14"
+        errorLine1="@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH) // TrafficStats only available on ICS"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/impl/JavaUrlRequest.java"
+            line="50"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="AssertionSideEffect"
+        message="Assertion condition has a side effect: mThreadId = Thread.currentThread().getId()"
+        errorLine1="        assert calledOnValidThread();"
+        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
+            line="100"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="AssertionSideEffect"
+        message="Assertion condition has a side effect: mThreadId = Thread.currentThread().getId()"
+        errorLine1="        assert calledOnValidThread();"
+        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/cronet/android/java/src/org/chromium/net/urlconnection/MessageLoop.java"
+            line="143"
+            column="16"/>
+    </issue>
+
+</issues>

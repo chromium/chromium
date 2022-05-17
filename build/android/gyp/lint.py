@@ -8,14 +8,11 @@
 from __future__ import print_function
 
 import argparse
-import functools
 import logging
 import os
-import re
 import shutil
 import sys
 import time
-import traceback
 from xml.dom import minidom
 from xml.etree import ElementTree
 
@@ -37,6 +34,7 @@ _DISABLED_ALWAYS = [
     "UniqueConstants",  # Chromium enums allow aliases.
     "UnusedAttribute",  # Chromium apks have various minSdkVersion values.
     "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
+    "OldTargetApi",  # Moving to a new target sdk version happens regularly.
 ]
 
 # These checks are not useful for test targets and adds an unnecessary burden
