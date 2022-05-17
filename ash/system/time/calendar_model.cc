@@ -424,7 +424,7 @@ base::Time CalendarModel::GetEndTimeAdjusted(
     return event->end_time().date_time() +
            base::Minutes(time_difference_minutes_.value());
   }
-  return event->start_time().date_time();
+  return event->end_time().date_time();
 }
 
 base::Time CalendarModel::GetStartTimeMidnightAdjusted(
