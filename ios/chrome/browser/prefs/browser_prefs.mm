@@ -208,6 +208,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kOmniboxGeolocationLastAuthorizationAlertVersion,
                                "");
 
+  registry->RegisterDictionaryPref(prefs::kOverflowMenuDestinationUsageHistory,
+                                   PrefRegistry::LOSSY_PREF);
+
   // Preferences related to Enterprise policies.
   registry->RegisterListPref(prefs::kRestrictAccountsToPatterns);
   registry->RegisterIntegerPref(prefs::kBrowserSigninPolicy,
