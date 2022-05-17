@@ -145,7 +145,7 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
     Browser* browser,
     const AccountInfo& account_info,
-    bool force_new_profile,
+    bool profile_creation_required_by_policy,
     bool show_link_data_option,
     SkColor profile_color,
     signin::SigninChoiceCallback callback) {
@@ -163,8 +163,8 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
   web_dialog_ui->Initialize(
       browser,
       EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation,
-      account_info, force_new_profile, show_link_data_option, profile_color,
-      std::move(callback));
+      account_info, profile_creation_required_by_policy, show_link_data_option,
+      profile_color, std::move(callback));
 
   return web_view;
 }
@@ -427,14 +427,14 @@ SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
     Browser* browser,
     const AccountInfo& account_info,
-    bool force_new_profile,
+    bool profile_creation_required_by_policy,
     bool show_link_data_option,
     SkColor profile_color,
     signin::SigninChoiceCallback callback) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
-          browser, account_info, force_new_profile, show_link_data_option,
-          profile_color, std::move(callback)),
+          browser, account_info, profile_creation_required_by_policy,
+          show_link_data_option, profile_color, std::move(callback)),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 #endif

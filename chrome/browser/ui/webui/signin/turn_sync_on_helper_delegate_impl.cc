@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
@@ -105,6 +106,11 @@ void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Profile Separation Enforced is not supported on Lacros.
+  OnProfileCheckComplete(account_info, std::move(callback),
+                         /*prompt_for_new_profile=*/false);
+#else
   account_level_signin_restriction_policy_fetcher_ =
       std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
           g_browser_process->browser_policy_connector(),
@@ -117,6 +123,7 @@ void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
       base::BindOnce(&TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete,
                      weak_ptr_factory_.GetWeakPtr(), account_info,
                      std::move(callback)));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
@@ -180,6 +187,7 @@ void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
     browser_ = nullptr;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback,
@@ -192,11 +200,14 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(browser_->profile()->GetPath());
-  auto force_new_profile = signin_util::ProfileSeparationEnforcedByPolicy(
-      browser_->profile(), signin_restriction);
+  auto profile_creation_required_by_policy =
+      signin_util::ProfileSeparationEnforcedByPolicy(browser_->profile(),
+                                                     signin_restriction);
+  bool show_link_data_option = signin_util::
+      ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+          browser_->profile(), signin_restriction);
   browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-      account_info, force_new_profile,
-      /*show_link_data_option=*/!force_new_profile,
+      account_info, profile_creation_required_by_policy, show_link_data_option,
       GenerateNewProfileColor(entry).color,
       base::BindOnce(
           [](signin::SigninChoiceCallback callback, Browser* browser,
@@ -206,6 +217,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
           },
           std::move(callback), browser_.get()));
 }
+#endif
 
 void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
     const AccountInfo& account_info,
@@ -215,11 +227,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
     std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
     return;
   }
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(browser_->profile()->GetPath());
-
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (prompt_for_new_profile) {
     account_level_signin_restriction_policy_fetcher_
         ->GetManagedAccountsSigninRestriction(
@@ -229,16 +237,22 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
                                OnProfileSigninRestrictionsFetched,
                            weak_ptr_factory_.GetWeakPtr(), account_info,
                            std::move(callback)));
-  } else {
-    browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-        account_info, /*force_new_profile=*/false,
-        /*show_link_data_option*/ false, GenerateNewProfileColor(entry).color,
-        base::BindOnce(
-            [](signin::SigninChoiceCallback callback, Browser* browser,
-               signin::SigninChoice choice) {
-              browser->signin_view_controller()->CloseModalSignin();
-              std::move(callback).Run(choice);
-            },
-            std::move(callback), browser_.get()));
+    return;
   }
+#endif
+  DCHECK(!prompt_for_new_profile);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(browser_->profile()->GetPath());
+  browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+      account_info, /*profile_creation_required_by_policy=*/false,
+      /*show_link_data_option*/ false, GenerateNewProfileColor(entry).color,
+      base::BindOnce(
+          [](signin::SigninChoiceCallback callback, Browser* browser,
+             signin::SigninChoice choice) {
+            browser->signin_view_controller()->CloseModalSignin();
+            std::move(callback).Run(choice);
+          },
+          std::move(callback), browser_.get()));
 }

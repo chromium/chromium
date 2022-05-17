@@ -64,13 +64,13 @@ void EnterpriseProfileWelcomeUI::Initialize(
     Browser* browser,
     EnterpriseProfileWelcomeUI::ScreenType type,
     const AccountInfo& account_info,
-    bool force_new_profile,
+    bool profile_creation_required_by_policy,
     bool show_link_data_option,
     absl::optional<SkColor> profile_color,
     signin::SigninChoiceCallback proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
-      browser, type, force_new_profile, account_info, profile_color,
-      std::move(proceed_callback));
+      browser, type, profile_creation_required_by_policy, account_info,
+      profile_color, std::move(proceed_callback));
   handler_ = handler.get();
 
   if (type ==
@@ -78,7 +78,7 @@ void EnterpriseProfileWelcomeUI::Initialize(
     base::Value::Dict update_data;
     update_data.Set("isModalDialog", true);
 
-    int title_id = force_new_profile
+    int title_id = profile_creation_required_by_policy
                        ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
                        : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
     update_data.Set("enterpriseProfileWelcomeTitle",

@@ -40,7 +40,7 @@ class EnterpriseProfileWelcomeHandler
   EnterpriseProfileWelcomeHandler(
       Browser* browser,
       EnterpriseProfileWelcomeUI::ScreenType type,
-      bool force_new_profile,
+      bool profile_creation_required_by_policy,
       const AccountInfo& account_info,
       absl::optional<SkColor> profile_color,
       signin::SigninChoiceCallback proceed_callback);
@@ -110,7 +110,7 @@ class EnterpriseProfileWelcomeHandler
 
   raw_ptr<Browser> browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
-  const bool force_new_profile_;
+  const bool profile_creation_required_by_policy_;
   const std::u16string email_;
   const std::string domain_name_;
   const CoreAccountId account_id_;
