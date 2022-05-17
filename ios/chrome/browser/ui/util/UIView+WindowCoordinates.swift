@@ -75,11 +75,11 @@ extension UIView {
   /// always has the same window coordinates as the receiver. The mirror view calls the
   /// `onWindowCoordinatesChanged` closure when its bounds change.
   private func addMirrorViewInWindow() {
-    let mirrorViewInWindow = BoundsNotifyingView()
+    let mirrorViewInWindow = NotifyingView()
     mirrorViewInWindow.backgroundColor = .clear
     mirrorViewInWindow.isUserInteractionEnabled = false
     mirrorViewInWindow.translatesAutoresizingMaskIntoConstraints = false
-    mirrorViewInWindow.onDidSetBounds = { [weak self] _ in
+    mirrorViewInWindow.onLayoutChanged = { [weak self] _ in
       guard let self = self else { return }
       self.cr_onWindowCoordinatesChanged?(self)
     }
@@ -98,16 +98,15 @@ extension UIView {
 
   /// Removes the mirror view added by a call to `addMirrorViewInWindow`.
   private func removeMirrorViewInWindow() {
-    mirrorViewInWindow?.onDidSetBounds = nil
+    mirrorViewInWindow?.onLayoutChanged = nil
     mirrorViewInWindow?.removeFromSuperview()
     mirrorViewInWindow = nil
   }
 
   /// The currently set mirror view.
-  private var mirrorViewInWindow: BoundsNotifyingView? {
+  private var mirrorViewInWindow: NotifyingView? {
     get {
-      objc_getAssociatedObject(self, &UIView.MirrorViewInWindowKey)
-        as? BoundsNotifyingView
+      objc_getAssociatedObject(self, &UIView.MirrorViewInWindowKey) as? NotifyingView
     }
     set {
       objc_setAssociatedObject(
@@ -115,13 +114,19 @@ extension UIView {
     }
   }
 
-  /// A simple view that calls a closure when its bounds changed.
-  private class BoundsNotifyingView: UIView {
-    var onDidSetBounds: ((UIView) -> Void)?
+  /// A simple view that calls a closure when its bounds and center changed.
+  private class NotifyingView: UIView {
+    var onLayoutChanged: ((UIView) -> Void)?
 
     override var bounds: CGRect {
       didSet {
-        onDidSetBounds?(self)
+        onLayoutChanged?(self)
+      }
+    }
+
+    override var center: CGPoint {
+      didSet {
+        onLayoutChanged?(self)
       }
     }
   }
