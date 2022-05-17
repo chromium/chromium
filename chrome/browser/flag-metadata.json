@@ -1387,7 +1387,7 @@
   {
     "name": "download-bubble",
     "owners": [ "bhatiarohit", "chrome-safebrowsing-alerts@google.com"],
-    "expiry_milestone": 103
+    "expiry_milestone": 106
   },
   {
     "name": "download-calendar",
