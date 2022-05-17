@@ -144,8 +144,15 @@ const char kCrostiniUpgraderShelfId[] =
 std::string GetCrostiniShelfAppId(const Profile* profile,
                                   const std::string* window_app_id,
                                   const std::string* window_startup_id) {
+  if (!profile || !profile->GetPrefs())
+    return std::string();
+
   const base::Value* apps =
       profile->GetPrefs()->GetDictionary(guest_os::prefs::kGuestOsRegistry);
+
+  if (!apps)
+    return std::string();
+
   std::string app_id;
 
   if (window_startup_id) {
@@ -229,12 +236,16 @@ bool IsCrostiniShelfAppId(const Profile* profile,
       shelf_app_id == kCrostiniTerminalSystemAppId) {
     return true;
   }
+
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
   // TODO(timloh): We need to handle desktop files that have been removed.
   // For example, running windows with a no-longer-valid app id will try to
   // use the ExtensionContextMenuModel.
-  return profile->GetPrefs()
-             ->GetDictionary(guest_os::prefs::kGuestOsRegistry)
-             ->FindKey(shelf_app_id) != nullptr;
+  const auto* apps =
+      profile->GetPrefs()->GetDictionary(guest_os::prefs::kGuestOsRegistry);
+  return apps != nullptr && apps->FindKey(shelf_app_id) != nullptr;
 }
 
 std::u16string GetCrostiniShelfTitle(base::StringPiece shelf_app_id) {

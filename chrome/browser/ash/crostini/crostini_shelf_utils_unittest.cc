@@ -47,10 +47,15 @@ std::string GenAppId(const App& app) {
 
 class CrostiniShelfUtilsTest : public testing::Test {
  public:
-  std::string GetShelfAppId(WindowIds window_ids) const {
+  std::string GetShelfAppIdUsingProfile(const Profile* profile,
+                                        WindowIds window_ids) const {
     return GetCrostiniShelfAppId(
-        &testing_profile_, base::OptionalOrNullptr(window_ids.app_id),
+        profile, base::OptionalOrNullptr(window_ids.app_id),
         base::OptionalOrNullptr(window_ids.startup_id));
+  }
+
+  std::string GetShelfAppId(WindowIds window_ids) const {
+    return GetShelfAppIdUsingProfile(&testing_profile_, window_ids);
   }
 
   void SetGuestOsRegistry(std::vector<App> apps) {
@@ -85,6 +90,11 @@ class CrostiniShelfUtilsTest : public testing::Test {
     }
   }
 
+  const Profile* GetOffTheRecordProfile() {
+    return testing_profile_.GetOffTheRecordProfile(
+        Profile::OTRProfileID::CreateUniqueForTesting(), true);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
@@ -95,6 +105,12 @@ TEST_F(CrostiniShelfUtilsTest,
   SetGuestOsRegistry({});
 
   EXPECT_EQ(GetShelfAppId(WindowIds()), "");
+}
+
+TEST_F(CrostiniShelfUtilsTest,
+       GetCrostiniShelfAppIdReturnsEmptyIdForIneligibleProfile) {
+  EXPECT_EQ(GetShelfAppIdUsingProfile(GetOffTheRecordProfile(), WindowIds()),
+            "");
 }
 
 TEST_F(CrostiniShelfUtilsTest,
