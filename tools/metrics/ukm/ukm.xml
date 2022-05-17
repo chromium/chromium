@@ -452,25 +452,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="AdPageLoadCustomSampling" singular="True">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Recorded when a page has loaded non-zero ad bytes, and the page is being
-    destroyed/navigated or when the app enters the background on mobile. This is
-    separate from the `AdPageLoad` event to allow a potentially different
-    sampling.
-  </summary>
-  <metric name="AverageViewportAdDensity">
-    <summary>
-      The estimated average density of ads within the viewport by area.
-      Calculated as the moving average of area of ads within the viewport * 100
-      / viewport area. This counts each overlapping area once.
-    </summary>
-  </metric>
-</event>
-
 <event name="AdsIntervention.LastIntervention" singular="True">
   <owner>yaoxia@google.com</owner>
   <owner>chrome-ads-core@google.com</owner>

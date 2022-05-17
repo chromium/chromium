@@ -135,8 +135,6 @@ class AdsPageLoadMetricsObserver
   void OnMainFrameIntersectionRectChanged(
       content::RenderFrameHost* render_frame_host,
       const gfx::Rect& main_frame_intersection_rect) override;
-  void OnMainFrameViewportRectChanged(
-      const gfx::Rect& main_frame_viewport_rect) override;
   void OnSubFrameDeleted(int frame_tree_node_id) override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
