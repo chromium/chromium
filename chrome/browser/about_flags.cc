@@ -6867,9 +6867,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteMoreInfo)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enhanced_clipboard", flag_descriptions::kEnhancedClipboardName,
-     flag_descriptions::kEnhancedClipboardDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistory)},
     {"enhanced_clipboard_nudge_session_reset",
      flag_descriptions::kEnhancedClipboardNudgeSessionResetName,
      flag_descriptions::kEnhancedClipboardNudgeSessionResetDescription, kOsCrOS,

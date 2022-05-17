@@ -2614,9 +2614,6 @@ extern const char kEnableAssistantRoutinesDescription[];
 extern const char kEnableBackgroundBlurName[];
 extern const char kEnableBackgroundBlurDescription[];
 
-extern const char kEnhancedClipboardName[];
-extern const char kEnhancedClipboardDescription[];
-
 extern const char kEnhancedClipboardNudgeSessionResetName[];
 extern const char kEnhancedClipboardNudgeSessionResetDescription[];
 

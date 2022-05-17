@@ -65,10 +65,8 @@ class ClipboardNudgeControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kClipboardHistory,
-         chromeos::features::kClipboardHistoryContextMenuNudge},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kClipboardHistoryContextMenuNudge);
     AshTestBase::SetUp();
     nudge_controller_ =
         Shell::Get()->clipboard_history_controller()->nudge_controller();

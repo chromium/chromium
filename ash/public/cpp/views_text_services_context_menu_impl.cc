@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/views_text_services_context_menu_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,8 +17,7 @@ ViewsTextServicesContextMenuImpl::ViewsTextServicesContextMenuImpl(
     ui::SimpleMenuModel* menu,
     views::Textfield* client)
     : views::ViewsTextServicesContextMenuBase(menu, client) {
-  if (chromeos::features::IsClipboardHistoryEnabled())
-    AddClipboardHistoryMenuOption(menu);
+  AddClipboardHistoryMenuOption(menu);
 }
 
 ViewsTextServicesContextMenuImpl::~ViewsTextServicesContextMenuImpl() = default;

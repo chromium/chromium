@@ -1174,10 +1174,8 @@ void Shell::Init(
       display::Screen::GetScreen()->GetPrimaryDisplay());
 
   accelerator_controller_ = std::make_unique<AcceleratorControllerImpl>();
-  if (chromeos::features::IsClipboardHistoryEnabled()) {
-    clipboard_history_controller_ =
-        std::make_unique<ClipboardHistoryControllerImpl>();
-  }
+  clipboard_history_controller_ =
+      std::make_unique<ClipboardHistoryControllerImpl>();
 
   // `HoldingSpaceController` must be instantiated before the shelf.
   holding_space_controller_ = std::make_unique<HoldingSpaceController>();

@@ -3060,11 +3060,6 @@
     "owners": [ "peah" ],
     "expiry_milestone": 102
   },
- {
-    "name": "enhanced_clipboard",
-    "owners": ["newcomer@chromium.org", "tbarzic@chromium.org"],
-    "expiry_milestone": 90
-  },
   {
     "name": "enhanced_clipboard_nudge_session_reset",
     "owners":["mmourgos@chromium.org", "newcomer@chromium.org"],

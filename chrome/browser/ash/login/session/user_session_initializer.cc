@@ -7,7 +7,6 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "ash/components/tpm/install_attributes.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -233,10 +232,8 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   if (crostini_manager)
     crostini_manager->MaybeUpdateCrostini();
 
-  if (features::IsClipboardHistoryEnabled()) {
-    clipboard_image_model_factory_impl_ =
-        std::make_unique<ClipboardImageModelFactoryImpl>(profile);
-  }
+  clipboard_image_model_factory_impl_ =
+      std::make_unique<ClipboardImageModelFactoryImpl>(profile);
 
   g_browser_process->platform_part()->InitializePrimaryProfileServices(profile);
 }

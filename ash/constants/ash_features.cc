@@ -298,11 +298,6 @@ const base::Feature kCellularUseSecondEuicc{"CellularUseSecondEuicc",
 const base::Feature kCheckPasswordsAgainstCryptohomeHelper{
     "CheckPasswordsAgainstCryptohomeHelper", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables pasting a few recently copied items in a menu when pressing search +
-// v.
-const base::Feature kClipboardHistory{"ClipboardHistory",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, a blue new nudge will show on the context menu option for
 // clipboard history.
 const base::Feature kClipboardHistoryContextMenuNudge{
@@ -1680,10 +1675,6 @@ bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
 
 bool IsClipboardHistoryContextMenuNudgeEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryContextMenuNudge);
-}
-
-bool IsClipboardHistoryEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistory);
 }
 
 bool IsClipboardHistoryNudgeSessionResetEnabled() {

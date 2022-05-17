@@ -1931,19 +1931,16 @@ void RenderViewContextMenu::AppendEditableItems() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsClipboardHistoryEnabled()) {
-    menu_model_.AddItemWithStringId(
-        IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
-        IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
-    ash::ClipboardHistoryController* clipboard_history_controller =
-        ash::ClipboardHistoryController::Get();
-    if (clipboard_history_controller &&
-        clipboard_history_controller->ShouldShowNewFeatureBadge()) {
-      menu_model_.SetIsNewFeatureAt(
-          menu_model_.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU),
-          true);
-      clipboard_history_controller->MarkNewFeatureBadgeShown();
-    }
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
+                                  IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
+  ash::ClipboardHistoryController* clipboard_history_controller =
+      ash::ClipboardHistoryController::Get();
+  if (clipboard_history_controller &&
+      clipboard_history_controller->ShouldShowNewFeatureBadge()) {
+    menu_model_.SetIsNewFeatureAt(
+        menu_model_.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU),
+        true);
+    clipboard_history_controller->MarkNewFeatureBadgeShown();
   }
 #endif
 
@@ -2404,8 +2401,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      return chromeos::features::IsClipboardHistoryEnabled() &&
-             ash::ClipboardHistoryController::Get()->CanShowMenu();
+      return ash::ClipboardHistoryController::Get()->CanShowMenu();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     {
       auto* service = chromeos::LacrosService::Get();

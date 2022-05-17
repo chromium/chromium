@@ -1166,10 +1166,6 @@ void HandleToggleCapsLock() {
   ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
 }
 
-bool CanHandleToggleClipboardHistory() {
-  return chromeos::features::IsClipboardHistoryEnabled();
-}
-
 void HandleToggleClipboardHistory() {
   DCHECK(Shell::Get()->clipboard_history_controller());
   Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator();
@@ -1963,7 +1959,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
     case TOGGLE_CLIPBOARD_HISTORY:
-      return CanHandleToggleClipboardHistory();
+      return true;
     case TOGGLE_DICTATION:
       return CanHandleToggleDictation();
     case TOGGLE_DOCKED_MAGNIFIER:

@@ -126,7 +126,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseSecondEuicc;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCheckPasswordsAgainstCryptohomeHelper;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kClipboardHistory;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryContextMenuNudge;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -630,7 +629,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCheckPasswordsAgainstCryptohomeHelperEnab
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherItemColorSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryContextMenuNudgeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCloudGamingDevice();

@@ -12,7 +12,6 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -21,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -245,8 +243,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   ClipboardHistoryBrowserTest() {
     login_mixin_.AppendRegularUsers(1);
     account_id1_ = login_mixin_.users()[0].account_id;
-
-    feature_list_.InitAndEnableFeature(chromeos::features::kClipboardHistory);
   }
 
   ~ClipboardHistoryBrowserTest() override = default;
@@ -380,8 +376,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verifies the history menu's ui interaction with the menu item selection.

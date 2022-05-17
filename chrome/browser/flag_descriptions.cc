@@ -4586,14 +4586,6 @@ const char kEnableBackgroundBlurName[] = "Enable background blur.";
 const char kEnableBackgroundBlurDescription[] =
     "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";
 
-const char kEnhancedClipboardName[] =
-    "Productivity Experiment: Enable Enhanced Clipboard";
-const char kEnhancedClipboardDescription[] =
-    "Enables an experimental clipboard history which aims to reduce context "
-    "switching. After copying to the clipboard, press search + v to show the "
-    "history. Selecting something from the menu will result in a paste to the "
-    "active window.";
-
 const char kEnhancedClipboardNudgeSessionResetName[] =
     "Enable resetting enhanced clipboard nudge data";
 const char kEnhancedClipboardNudgeSessionResetDescription[] =
