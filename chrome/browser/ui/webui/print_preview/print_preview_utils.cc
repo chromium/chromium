@@ -40,6 +40,11 @@ const char kSelectCapKey[] = "select_cap";
 const char kSelectString[] = "SELECT";
 const char kTypeKey[] = "type";
 
+// TODO(thestig): Consolidate duplicate constants.
+const char kDpiCapabilityKey[] = "dpi";
+const char kHorizontalDpi[] = "horizontal_dpi";
+const char kVerticalDpi[] = "vertical_dpi";
+
 // The dictionary key for the CDD item containing custom vendor capabilities.
 const char kVendorCapabilityKey[] = "vendor_capability";
 
@@ -84,6 +89,19 @@ base::Value GetFilteredList(const base::Value* list, Predicate pred) {
 
 bool ValueIsNull(const base::Value& val) {
   return val.is_none();
+}
+
+bool DpiCapabilityInvalid(const base::Value& val) {
+  if (!val.is_dict())
+    return true;
+  const auto& dict = val.GetDict();
+  absl::optional<int> horizontal_dpi = dict.FindInt(kHorizontalDpi);
+  if (horizontal_dpi.value_or(0) <= 0)
+    return true;
+  absl::optional<int> vertical_dpi = dict.FindInt(kVerticalDpi);
+  if (vertical_dpi.value_or(0) <= 0)
+    return true;
+  return false;
 }
 
 bool VendorCapabilityInvalid(const base::Value& val) {
@@ -135,8 +153,14 @@ base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd) {
     }
 
     bool is_vendor_capability = key == kVendorCapabilityKey;
-    list_value->EraseIf(is_vendor_capability ? VendorCapabilityInvalid
-                                             : ValueIsNull);
+    bool is_dpi_capability = key == kDpiCapabilityKey;
+    if (is_vendor_capability) {
+      list_value->EraseIf(VendorCapabilityInvalid);
+    } else if (is_dpi_capability) {
+      list_value->EraseIf(DpiCapabilityInvalid);
+    } else {
+      list_value->EraseIf(ValueIsNull);
+    }
     if (list_value->empty())  // leave out empty lists.
       continue;
 

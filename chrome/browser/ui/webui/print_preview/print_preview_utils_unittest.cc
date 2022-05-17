@@ -336,6 +336,41 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
   ValidatePrinter(cdd_out, printer);
 }
 
+TEST_F(PrintPreviewUtilsTest, FilterBadDpis) {
+  base::Value::Dict printer = GetCapabilitiesFull();
+
+  base::Value::Dict cdd;
+  base::Value::Dict& cdd_printer =
+      cdd.Set(kPrinter, printer.Clone())->GetDict();
+  base::Value::Dict* cdd_dpi_dict = cdd_printer.FindDict(kDpi);
+  ASSERT_TRUE(cdd_dpi_dict);
+  base::Value::List* cdd_dpi_list = cdd_dpi_dict->FindList(kOptionKey);
+  ASSERT_TRUE(cdd_dpi_list);
+
+  base::Value::Dict no_horizontal_dpi;
+  no_horizontal_dpi.Set(kVerticalDpi, 150);
+  cdd_dpi_list->Append(std::move(no_horizontal_dpi));
+
+  base::Value::Dict no_vertical_dpi;
+  no_vertical_dpi.Set(kVerticalDpi, 1200);
+  cdd_dpi_list->Append(std::move(no_vertical_dpi));
+
+  base::Value::Dict non_positive_horizontal_dpi;
+  non_positive_horizontal_dpi.Set(kHorizontalDpi, -150);
+  non_positive_horizontal_dpi.Set(kVerticalDpi, 150);
+  cdd_dpi_list->Append(std::move(non_positive_horizontal_dpi));
+
+  base::Value::Dict non_positive_vertical_dpi;
+  non_positive_vertical_dpi.Set(kHorizontalDpi, 1200);
+  non_positive_vertical_dpi.Set(kVerticalDpi, 0);
+  cdd_dpi_list->Append(std::move(non_positive_vertical_dpi));
+
+  cdd_dpi_list->Append("not a dict");
+
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
+}
+
 TEST_F(PrintPreviewUtilsTest, CddResetToDefault) {
   base::Value::Dict printer = GetCapabilitiesFull();
   base::Value::Dict* dpi_dict = printer.FindDict(kDpi);
