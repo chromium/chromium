@@ -48009,19 +48009,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="13" label="HTTP_1_1_REQUIRED"/>
 </enum>
 
-<enum name="HttpAuthCount">
-  <int value="0" label="Basic Start"/>
-  <int value="1" label="Basic Reject"/>
-  <int value="2" label="Digest Start"/>
-  <int value="3" label="Digest Reject"/>
-  <int value="4" label="NTLM Start"/>
-  <int value="5" label="NTLM Reject"/>
-  <int value="6" label="Negotiate Start"/>
-  <int value="7" label="Negotiate Reject"/>
-  <int value="8" label="SpdyProxy Start (Deprecated)"/>
-  <int value="9" label="SpdyProxy Reject (Deprecated)"/>
-</enum>
-
 <enum name="HttpAuthNtlmV2Usage">
   <int value="0" label="Disabled over unsecured connection"/>
   <int value="1" label="Disabled over secure connection"/>
@@ -48049,29 +48036,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Same-domain Sub-resource Allowed"/>
   <int value="2" label="Cross-domain Sub-resource Blocked"/>
   <int value="3" label="Cross-domain Sub-resource Allowed"/>
-</enum>
-
-<enum name="HttpAuthTarget">
-  <int value="0" label="Basic Proxy"/>
-  <int value="1" label="Basic Secure Proxy"/>
-  <int value="2" label="Basic Server"/>
-  <int value="3" label="Basic Secure Server"/>
-  <int value="4" label="Digest Proxy"/>
-  <int value="5" label="Digest Secure Proxy"/>
-  <int value="6" label="Digest Server"/>
-  <int value="7" label="Digest Secure Server"/>
-  <int value="8" label="NTLM Proxy"/>
-  <int value="9" label="NTLM Secure Proxy"/>
-  <int value="10" label="NTLM Server"/>
-  <int value="11" label="NTLM Secure Server"/>
-  <int value="12" label="Negotiate Proxy"/>
-  <int value="13" label="Negotiate Secure Proxy"/>
-  <int value="14" label="Negotiate Server"/>
-  <int value="15" label="Negotiate Secure Server"/>
-  <int value="16" label="SpdyProxy (Deprecated)"/>
-  <int value="17" label="SpdyProxy Secure (Deprecated)"/>
-  <int value="18" label="SpdyProxy Server (Invalid)"/>
-  <int value="19" label="SpdyProxy Secure Server (Invalid)"/>
 </enum>
 
 <enum name="HttpCacheParallelWritingPattern">
