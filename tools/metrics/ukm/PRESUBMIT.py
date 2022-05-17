@@ -22,7 +22,7 @@ def CheckChange(input_api, output_api):
       cwd = input_api.os_path.dirname(p)
 
       exit_code = input_api.subprocess.call(
-          [input_api.python_executable, 'pretty_print.py', '--presubmit'],
+          [input_api.python3_executable, 'pretty_print.py', '--presubmit'],
           cwd=cwd)
       if exit_code != 0:
         return [
@@ -31,7 +31,7 @@ def CheckChange(input_api, output_api):
         ]
 
       exit_code = input_api.subprocess.call(
-          [input_api.python_executable, 'validate_format.py', '--presubmit'],
+          [input_api.python3_executable, 'validate_format.py', '--presubmit'],
           cwd=cwd)
       if exit_code != 0:
         return [

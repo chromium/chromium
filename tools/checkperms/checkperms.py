@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -257,7 +257,7 @@ def has_executable_bit(full_path):
     # permissions are.
     dir_part, file_part = os.path.split(full_path)
     bits = capture([git_name, 'ls-files', '-s', file_part], dir_part).strip()
-    return bits.decode().startswith('100755')
+    return bits.startswith('100755')
   permission = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
   return bool(permission & os.stat(full_path).st_mode)
 
@@ -271,16 +271,16 @@ def has_shebang_or_is_elf_or_mach_o(full_path):
     data = f.read(4)
     return (
         data[:3] == b'#!/' or data == b'#! /',
-        data == '\x7fELF',  # ELFMAG
+        data == b'\x7fELF',  # ELFMAG
         data in (
-            '\xfe\xed\xfa\xce',  # MH_MAGIC
-            '\xce\xfa\xed\xfe',  # MH_CIGAM
-            '\xfe\xed\xfa\xcf',  # MH_MAGIC_64
-            '\xcf\xfa\xed\xfe',  # MH_CIGAM_64
-            '\xca\xfe\xba\xbe',  # FAT_MAGIC
-            '\xbe\xba\xfe\xca',  # FAT_CIGAM
-            '\xca\xfe\xba\xbf',  # FAT_MAGIC_64
-            '\xbf\xba\xfe\xca'))  # FAT_CIGAM_64
+            b'\xfe\xed\xfa\xce',  # MH_MAGIC
+            b'\xce\xfa\xed\xfe',  # MH_CIGAM
+            b'\xfe\xed\xfa\xcf',  # MH_MAGIC_64
+            b'\xcf\xfa\xed\xfe',  # MH_CIGAM_64
+            b'\xca\xfe\xba\xbe',  # FAT_MAGIC
+            b'\xbe\xba\xfe\xca',  # FAT_CIGAM
+            b'\xca\xfe\xba\xbf',  # FAT_MAGIC_64
+            b'\xbf\xba\xfe\xca'))  # FAT_CIGAM_64
 
 
 def check_file(root_path, rel_path):
@@ -492,7 +492,7 @@ Examples:
     errors = api.check(start_dir)
 
     if not options.bare:
-      print('Processed %s files, %d files where tested for shebang/ELF/Mach-O '
+      print('Processed %s files, %d files were tested for shebang/ELF/Mach-O '
             'header' % (api.count, api.count_read_header))
 
   # Convert to an actual list.
