@@ -2164,21 +2164,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-google-srp-isolated-prerender-nsp",
-    "owners": [ "//chrome/browser/prefetch/prefetch_proxy/OWNERS" ],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "enable-google-srp-isolated-prerender-probing",
-    "owners": [ "//chrome/browser/prefetch/prefetch_proxy/OWNERS" ],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "enable-google-srp-isolated-prerenders",
-    "owners": [ "//chrome/browser/prefetch/prefetch_proxy/OWNERS" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-gpu-rasterization",
     "owners": [ "enne", "vmiura", "ericrk" ],
     // A debugging flag intended for end-users where there may not be any other
@@ -2548,6 +2533,11 @@
     "name": "enable-portals-cross-origin",
     "owners": [ "jbroman", "//third_party/blink/renderer/core/html/portal/OWNERS" ],
     "expiry_milestone": 110
+  },
+  {
+    "name": "enable-prefetch-proxy",
+    "owners": [ "curranmax", "chrome-brapp-loading@google.com" ],
+    "expiry_milestone": 105
   },
   {
     "name": "enable-preinstalled-web-app-duplication-fixer",

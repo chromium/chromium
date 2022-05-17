@@ -272,6 +272,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableSignedExchangeSubresourcePrefetch,
      features::kSignedExchangeSubresourcePrefetch},
     {wf::EnableSkipTouchEventFilter, blink::features::kSkipTouchEventFilter},
+    {wf::EnableSpeculationRulesPrefetchProxy,
+     blink::features::kSpeculationRulesPrefetchProxy, kSetOnlyIfOverridden},
     {wf::EnableSubresourceWebBundles, features::kSubresourceWebBundles},
     {wf::EnableTextFragmentAnchor, blink::features::kTextFragmentAnchor},
     {wf::EnableTouchDragAndContextMenu, features::kTouchDragAndContextMenu},

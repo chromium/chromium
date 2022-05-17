@@ -1022,6 +1022,13 @@ const char kEnableIphDescription[] =
     "Enables the ability to show IPH. When disabled, IPHs are disabled system "
     "wide.";
 
+const char kEnablePrivatePrefetchProxyName[] =
+    "Enables prefetching using the prefetch proxy";
+const char kEnablePrivatePrefetchProxyDescription[] =
+    "Enables for prefetches to be made using the prefetch proxy when specified "
+    "via the speculation rules API. When enabled, will allow prefetches from "
+    "all domains without any limit on the number of prefetches.";
+
 const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
 const char kEnableRgbKeyboardDescription[] =
     "Enable RGB Keyboard support on supported devices.";
@@ -1031,21 +1038,6 @@ const char kEnableShortcutCustomizationAppName[] =
 const char kEnableShortcutCustomizationAppDescription[] =
     "Enable the shortcut customization SWA, allowing users to customize system "
     "shortcuts.";
-
-const char kEnableSRPIsolatedPrerendersName[] =
-    "Enable Navigation Predictor Isolated Prerenders";
-const char kEnableSRPIsolatedPrerendersDescription[] =
-    "Enable Navigation Predictions on the Google SRP to be fully isolated.";
-
-const char kEnableSRPIsolatedPrerenderProbingName[] =
-    "Enable Probing on Navigation Predictor Isolated Prerenders";
-const char kEnableSRPIsolatedPrerenderProbingDescription[] =
-    "Enable probing checks for Isolated Prerenders which will block commit.";
-
-const char kEnableSRPIsolatedPrerendersNSPName[] =
-    "Enable NoStatePrefetch on Navigation Predictor Isolated Prerenders";
-const char kEnableSRPIsolatedPrerendersNSPDescription[] =
-    "Enables NoStatePrefetch on Isolated Prerenders.";
 
 const char kExperimentalRgbKeyboardPatternsName[] =
     "Enable experimental RGB Keyboard patterns support";

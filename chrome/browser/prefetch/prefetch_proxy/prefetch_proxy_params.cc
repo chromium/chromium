@@ -270,8 +270,10 @@ bool PrefetchProxySendDecoyRequestForIneligiblePrefetch(
 }
 
 bool PrefetchProxyAllowAllDomains() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      "isolated-prerender-allow-all-domains");
+  return base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
+                                                 "allow_all_domains", false) ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             "isolated-prerender-allow-all-domains");
 }
 
 bool PrefetchProxyAllowAllDomainsForExtendedPreloading() {

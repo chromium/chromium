@@ -667,20 +667,14 @@ extern const char kEnablePortalsCrossOriginDescription[];
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 
+extern const char kEnablePrivatePrefetchProxyName[];
+extern const char kEnablePrivatePrefetchProxyDescription[];
+
 extern const char kEnableRgbKeyboardName[];
 extern const char kEnableRgbKeyboardDescription[];
 
 extern const char kEnableShortcutCustomizationAppName[];
 extern const char kEnableShortcutCustomizationAppDescription[];
-
-extern const char kEnableSRPIsolatedPrerendersName[];
-extern const char kEnableSRPIsolatedPrerendersDescription[];
-
-extern const char kEnableSRPIsolatedPrerenderProbingName[];
-extern const char kEnableSRPIsolatedPrerenderProbingDescription[];
-
-extern const char kEnableSRPIsolatedPrerendersNSPName[];
-extern const char kEnableSRPIsolatedPrerendersNSPDescription[];
 
 extern const char kExperimentalRgbKeyboardPatternsName[];
 extern const char kExperimentalRgbKeyboardPatternsDescription[];

@@ -659,4 +659,8 @@ void WebRuntimeFeatures::EnableWebAuthenticationRemoteDesktopSupport(
       enable);
 }
 
+void WebRuntimeFeatures::EnableSpeculationRulesPrefetchProxy(bool enable) {
+  RuntimeEnabledFeatures::SetSpeculationRulesPrefetchProxyEnabled(enable);
+}
+
 }  // namespace blink

@@ -860,47 +860,6 @@ const FeatureEntry::Choice kForceColorProfileChoices[] = {
      switches::kForceDisplayColorProfile, "hdr10"},
 };
 
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitNone[] = {
-    {"max_srp_prefetches", "-1"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitZero[] = {
-    {"max_srp_prefetches", "0"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitOne[] = {
-    {"max_srp_prefetches", "1"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitTwo[] = {
-    {"max_srp_prefetches", "2"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitThree[] = {
-    {"max_srp_prefetches", "3"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitFour[] = {
-    {"max_srp_prefetches", "4"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitFive[] = {
-    {"max_srp_prefetches", "5"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitTen[] = {
-    {"max_srp_prefetches", "10"}};
-const FeatureEntry::FeatureParam kIsolatedPrerenderPrefetchLimitFifteen[] = {
-    {"max_srp_prefetches", "15"}};
-
-const FeatureEntry::FeatureVariation
-    kIsolatedPrerenderFeatureWithPrefetchLimit[] = {
-        {"Unlimited Prefetches", kIsolatedPrerenderPrefetchLimitNone,
-         std::size(kIsolatedPrerenderPrefetchLimitNone), nullptr},
-        {"Zero Prefetches", kIsolatedPrerenderPrefetchLimitZero,
-         std::size(kIsolatedPrerenderPrefetchLimitZero), nullptr},
-        {"One Prefetch", kIsolatedPrerenderPrefetchLimitOne,
-         std::size(kIsolatedPrerenderPrefetchLimitOne), nullptr},
-        {"Two Prefetches", kIsolatedPrerenderPrefetchLimitTwo,
-         std::size(kIsolatedPrerenderPrefetchLimitTwo), nullptr},
-        {"Three Prefetches", kIsolatedPrerenderPrefetchLimitThree,
-         std::size(kIsolatedPrerenderPrefetchLimitThree), nullptr},
-        {"Four Prefetches", kIsolatedPrerenderPrefetchLimitFour,
-         std::size(kIsolatedPrerenderPrefetchLimitFour), nullptr},
-        {"Five Prefetches", kIsolatedPrerenderPrefetchLimitFive,
-         std::size(kIsolatedPrerenderPrefetchLimitFive), nullptr},
-        {"Ten Prefetches", kIsolatedPrerenderPrefetchLimitTen,
-         std::size(kIsolatedPrerenderPrefetchLimitTen), nullptr},
-        {"Fifteen Prefetches", kIsolatedPrerenderPrefetchLimitFifteen,
-         std::size(kIsolatedPrerenderPrefetchLimitFifteen), nullptr},
-};
-
 const FeatureEntry::Choice kMemlogModeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDisabled, "", ""},
     {flag_descriptions::kMemlogModeMinimal, heap_profiling::kMemlogMode,
@@ -4115,20 +4074,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"isolation-by-default", flag_descriptions::kIsolationByDefaultName,
      flag_descriptions::kIsolationByDefaultDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIsolationByDefault)},
-    {"enable-google-srp-isolated-prerender-probing",
-     flag_descriptions::kEnableSRPIsolatedPrerenderProbingName,
-     flag_descriptions::kEnableSRPIsolatedPrerenderProbingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kIsolatePrerendersMustProbeOrigin)},
-    {"enable-google-srp-isolated-prerenders",
-     flag_descriptions::kEnableSRPIsolatedPrerendersName,
-     flag_descriptions::kEnableSRPIsolatedPrerendersDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kIsolatePrerenders,
-                                    kIsolatedPrerenderFeatureWithPrefetchLimit,
-                                    "Prefetch Limit")},
-    {"enable-google-srp-isolated-prerender-nsp",
-     flag_descriptions::kEnableSRPIsolatedPrerendersNSPName,
-     flag_descriptions::kEnableSRPIsolatedPrerendersNSPDescription, kOsAll,
-     SINGLE_VALUE_TYPE(kIsolatedPrerenderEnableNSPCmdLineFlag)},
+    {"enable-prefetch-proxy",
+     flag_descriptions::kEnablePrivatePrefetchProxyName,
+     flag_descriptions::kEnablePrivatePrefetchProxyDescription, kOsAll,
+     SINGLE_VALUE_TYPE_AND_VALUE(
+         switches::kEnableFeatures,
+         "IsolatePrerenders:allow_all_domains/true/max_srp_prefetches/-1/"
+         "use_speculation_rules/true,SpeculationRulesPrefetchProxy")},
     {"allow-insecure-localhost", flag_descriptions::kAllowInsecureLocalhostName,
      flag_descriptions::kAllowInsecureLocalhostDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kAllowInsecureLocalhost)},

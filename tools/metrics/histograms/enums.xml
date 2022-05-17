@@ -55163,6 +55163,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentShowPlaceholderWhenCaretShowing:enabled"/>
   <int value="-1650769314" label="enable-webgl2-compute-context"/>
   <int value="-1649778035" label="disable-clear-browsing-data-counters"/>
+  <int value="-1648476870" label="SpeculationRulesPrefetchProxy:enabled"/>
   <int value="-1648216169" label="NewOmniboxAnswerTypes:disabled"/>
   <int value="-1647433421" label="use-passthrough-command-decoder"/>
   <int value="-1647250046" label="LauncherPlayStoreSearch:enabled"/>
@@ -59815,6 +59816,7 @@ from previous Chrome versions.
   <int value="1430924529" label="TranslateIntent:enabled"/>
   <int value="1431050645" label="PayWithGoogleV1:disabled"/>
   <int value="1431934725" label="OmniboxAutocompleteTitles:disabled"/>
+  <int value="1432263468" label="SpeculationRulesPrefetchProxy:disabled"/>
   <int value="1434502662" label="NtpDummyModules:enabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>
   <int value="1435251818" label="AutofillNoLocalSaveOnUploadSuccess:enabled"/>
