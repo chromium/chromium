@@ -247,8 +247,6 @@ public final class ProductionSupportedFlagList {
                     "Enables the <param> element's URL-setting features (this functionality is"
                             + " being deprecated and removed, so ENABLED is the safe/current"
                             + " behavior, and DISABLED is the tested/new behavior)."),
-            Flag.baseFeature(ContentFeatures.PRELOAD_COOKIES,
-                    "Enables preload cookie database on NetworkContext creation."),
             Flag.baseFeature(ContentFeatures.NAVIGATION_REQUEST_PRECONNECT,
                     "Enables preconnecting for frame requests."),
             Flag.baseFeature(ContentFeatures.NAVIGATION_NETWORK_RESPONSE_QUEUE,
