@@ -195,6 +195,31 @@ __gCrWeb.suggestion.getFormElementAfter = function(
 };
 
 /**
+ * Tests an element's visibility. This test is expensive so should be used
+ * sparingly.
+ *
+ * @param {Element} element A DOM element.
+ * @return {boolean} true if the |element| is currently part of the visible
+ * DOM.
+ */
+const isElementVisible = function(element) {
+  /** @type {Node} */
+  let node = element;
+  while (node && node !== document) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const style = window.getComputedStyle(/** @type {Element} */ (node));
+      if (style.display === 'none' || style.visibility === 'hidden') {
+        return false;
+      }
+    }
+    // Move up the tree and test again.
+    node = node.parentNode;
+  }
+  // Test reached the top of the DOM without finding a concealed ancestor.
+  return true;
+};
+
+/**
  * Returns if an element is reachable in sequential navigation.
  *
  * @param {Element} element The element that is to be examined.
@@ -245,7 +270,7 @@ __gCrWeb.suggestion.isSequentiallyReachable = function(element) {
   }
 
   // Expensive, final check that the element is not concealed.
-  return __gCrWeb['common'].isElementVisible(element);
+  return isElementVisible(element);
 };
 
 /**

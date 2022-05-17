@@ -144,6 +144,25 @@ __gCrWeb.fill.RENDERER_ID_NOT_SET = '0';
 __gCrWeb.fill.ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
 
 /**
+ * Acquires the specified DOM |attribute| from the DOM |element| and returns
+ * its lower-case value, or null if not present.
+ *
+ * @param {Element} element A DOM element.
+ * @param {string} attribute An attribute name.
+ * @return {?string} Lowercase value of DOM element or null if not present.
+ */
+function getLowerCaseAttribute_(element, attribute) {
+  if (!element) {
+    return null;
+  }
+  const value = element.getAttribute(attribute);
+  if (value) {
+    return value.toLowerCase();
+  }
+  return null;
+}
+
+/**
  * Returns true if an element can be autocompleted.
  *
  * This method aims to provide the same logic as method
@@ -158,12 +177,10 @@ __gCrWeb.fill.autoComplete = function(element) {
   if (!element) {
     return false;
   }
-  if (__gCrWeb.common.getLowerCaseAttribute(element, 'autocomplete') ===
-      'off') {
+  if (getLowerCaseAttribute_(element, 'autocomplete') === 'off') {
     return false;
   }
-  if (__gCrWeb.common.getLowerCaseAttribute(element.form, 'autocomplete') ==
-      'off') {
+  if (getLowerCaseAttribute_(element.form, 'autocomplete') == 'off') {
     return false;
   }
   return true;
@@ -523,6 +540,30 @@ __gCrWeb.fill.createAndDispatchHTMLEvent = function(
 };
 
 /**
+ * Converts a relative URL into an absolute URL.
+ *
+ * @param {Object} doc Document.
+ * @param {string} relativeURL Relative URL.
+ * @return {string} Absolute URL.
+ */
+function absoluteURL_(doc, relativeURL) {
+  // In the case of data: URL-based pages, relativeURL === absoluteURL.
+  if (doc.location.protocol === 'data:') {
+    return doc.location.href;
+  }
+  let urlNormalizer = doc['__gCrWebURLNormalizer'];
+  if (!urlNormalizer) {
+    urlNormalizer = doc.createElement('a');
+    doc['__gCrWebURLNormalizer'] = urlNormalizer;
+  }
+
+  // Use the magical quality of the <a> element. It automatically converts
+  // relative URLs into absolute ones.
+  urlNormalizer.href = relativeURL;
+  return urlNormalizer.href;
+}
+
+/**
  * Returns a canonical action for |formElement|. It works the same as upstream
  * function GetCanonicalActionForForm.
  * @param {HTMLFormElement} formElement
@@ -530,8 +571,7 @@ __gCrWeb.fill.createAndDispatchHTMLEvent = function(
  */
 __gCrWeb.fill.getCanonicalActionForForm = function(formElement) {
   const rawAction = formElement.getAttribute('action') || '';
-  const absoluteUrl =
-      __gCrWeb.common.absoluteURL(formElement.ownerDocument, rawAction);
+  const absoluteUrl = absoluteURL_(formElement.ownerDocument, rawAction);
   return __gCrWeb.common.removeQueryAndReferenceFromURL(absoluteUrl);
 };
 
@@ -854,9 +894,9 @@ __gCrWeb.fill.webFormElementToFormData = function(
   // Note different from form_autofill_util.cc version of this method, which
   // computes |form.action| using document.completeURL(form_element.action())
   // and falls back to formElement.action() if the computed action is invalid,
-  // here the action returned by |__gCrWeb.common.absoluteURL| is always
-  // valid, which is computed by creating a <a> element, and we don't check if
-  // the action is valid.
+  // here the action returned by |absoluteURL_| is always valid, which is
+  // computed by creating a <a> element, and we don't check if the action is
+  // valid.
 
   const controlElements = __gCrWeb.form.getFormControlElements(formElement);
 
