@@ -359,6 +359,7 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
     info.fFinishedContext =
         new base::WeakPtr<RasterCommandsCompletedQuery>(weak_ptr);
     gr_context->flush(info);
+    gr_context->submit();
   }
 
   void QueryCounter(base::subtle::Atomic32 submit_count) override {
@@ -1441,8 +1442,11 @@ bool RasterDecoderImpl::HasPendingQueries() const {
 }
 
 void RasterDecoderImpl::ProcessPendingQueries(bool did_finish) {
-  if (query_manager_)
+  if (query_manager_) {
+    if (auto* gr_context = shared_context_state_->gr_context())
+      gr_context->checkAsyncWorkCompletion();
     query_manager_->ProcessPendingQueries(did_finish);
+  }
 }
 
 bool RasterDecoderImpl::HasMoreIdleWork() const {
