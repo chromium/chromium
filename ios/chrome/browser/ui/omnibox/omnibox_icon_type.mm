@@ -14,7 +14,7 @@
 namespace {
 
 // Specific symbol names for the location bar.
-NSString* kInfoLocationBarSymbol = @"info.circle.fill";
+NSString* kInfoLocationBarSymbol = @"info.circle";
 NSString* kSecureLocationBarSymbol = @"lock.fill";
 
 }  // namespace
