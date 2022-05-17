@@ -4,16 +4,17 @@
 """Uploads Wpt test results from Chromium to wpt.fyi."""
 
 import argparse
+import base64
 import gzip
 import json
 import logging
 import os
 import requests
+import six
 import tempfile
 
 from blinkpy.common.net.rpc import Rpc
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.common import read_credentials
 
 _log = logging.getLogger(__name__)
 
@@ -165,6 +166,32 @@ class WptReportUploader(object):
         builds = raw_results_json['builds']
         return builds[0] if builds else None
 
+    def get_password(self):
+        from google.cloud import kms
+        import crcmod
+
+        def crc32c(data):
+            crc32c_fun = crcmod.predefined.mkPredefinedCrcFun('crc-32c')
+            return crc32c_fun(six.ensure_binary(data))
+
+        project_id = 'blink-kms'
+        location_id = 'global'
+        key_ring_id = 'chrome-official'
+        key_id = 'autoroller_key'
+        key_data = (b'CiQAcoZ22AXJttAoPI544QvH4C1jSnvVpe/XN+43vZan/RdbSmcSYyph'
+                    b'ChQKDLy9d1hq3L5Vr0veUBDI7oTJDBIvCifABA4GBbd+dfwbhbFAuQ5R'
+                    b'XZhu4Bl036JRYMtYZNrE4evBBMsO94YQ1qGnkggaGAoQ0eZ5gffcfN+M'
+                    b'YBfWzGxvtxDy6KSYBw==')
+        ciphertext = base64.b64decode(key_data)
+        ciphertext_crc32c = crc32c(ciphertext)
+        client = kms.KeyManagementServiceClient()
+        key_name = client.crypto_key_path(project_id, location_id, key_ring_id, key_id)
+        decrypt_response = client.decrypt(
+            request={'name': key_name, 'ciphertext': ciphertext, 'ciphertext_crc32c': ciphertext_crc32c})
+        if not decrypt_response.plaintext_crc32c == crc32c(decrypt_response.plaintext):
+            raise Exception('The response received from the server was corrupted in-transit.')
+        return decrypt_response.plaintext.decode('utf-8')
+
     def upload_report(self, path_to_report):
         """Upload the wpt report to wpt.fyi
 
@@ -172,7 +199,8 @@ class WptReportUploader(object):
         https://github.com/web-platform-tests/wpt.fyi/tree/main/api#results-creation
         """
         username = "chromium-ci-results-uploader"
-        url = "https://staging.wpt.fyi/api/results/upload"
+        fqdn = "wpt.fyi"
+        url = "https://%s/api/results/upload" % fqdn
 
         with open(path_to_report, 'rb') as fp:
             files = {'result_file': fp}
@@ -180,18 +208,13 @@ class WptReportUploader(object):
                 _log.info("Dry run, no report uploaded.")
                 return 0
             session = requests.Session()
-            credentials = read_credentials(self._host, self.options.credentials_json)
-            if not credentials.get('GH_TOKEN'):
-                _log.error("No password available, can not upload wpt reports.")
-                return 1
-
-            password = credentials['GH_TOKEN'][0:16]
+            password = self.get_password()
             session.auth = (username, password)
             res = session.post(url=url, files=files)
             if res.status_code == 200:
                 _log.info("Successfully uploaded wpt report with response: " + res.text.strip())
                 report_id = res.text.split()[1]
-                _log.info("Report uploaded to https://staging.wpt.fyi/results?run_id=%s" % report_id)
+                _log.info("Report uploaded to https://%s/results?run_id=%s" % (fqdn, report_id))
                 return 0
             else:
                 _log.error("Upload wpt report failed with status code: %d", res.status_code)
