@@ -12760,18 +12760,20 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
   RenderFrameHostImpl* top_document = this;
   while (RenderFrameHostImpl* parent = top_document->GetParent())
     top_document = parent;
-  BackForwardCacheCanStoreDocumentResultWithTree can_store =
-      frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
-          top_document);
+  BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
+      frame_tree()
+          ->controller()
+          .GetBackForwardCache()
+          .GetCurrentBackForwardCacheEligibility(top_document);
 
   TRACE_EVENT("navigation",
               "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
-              "render_frame_host", this, "can_store",
-              can_store.flattened_reasons.ToString());
+              "render_frame_host", this, "bfcache_eligibility",
+              bfcache_eligibility.flattened_reasons.ToString());
 
-  if (can_store)
+  if (bfcache_eligibility.CanStore())
     return;
-  EvictFromBackForwardCacheWithFlattenedAndTreeReasons(can_store);
+  EvictFromBackForwardCacheWithFlattenedAndTreeReasons(bfcache_eligibility);
 }
 
 void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(

@@ -130,9 +130,9 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   if (IsHistoryNavigation(navigation)) {
     UpdateNotRestoredReasonsForNavigation(navigation);
 
-    bool can_store = *page_store_result_;
+    bool can_restore = page_store_result_->CanRestore();
     bool did_store = navigation->IsServedFromBackForwardCache();
-    DCHECK_EQ(can_store, did_store) << page_store_result_->ToString();
+    DCHECK_EQ(can_restore, did_store) << page_store_result_->ToString();
 
     // If a navigation serves the result from back/forward cache, then it must
     // not have logged any NotRestoredReasons. Also if it is not restored from

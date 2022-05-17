@@ -2568,8 +2568,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TreeResultFeatureUsage) {
   // 3) Initialize the reasons tree and navigate away to ensure that everything
   // from the old frame has been destroyed.
   BackForwardCacheCanStoreDocumentResultWithTree can_store_result =
-      web_contents()->GetController().GetBackForwardCache().CanStorePageNow(
-          rfh.get());
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetCurrentBackForwardCacheEligibility(rfh.get());
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
@@ -2888,7 +2890,8 @@ IN_PROC_BROWSER_TEST_P(
             web_contents()
                 ->GetController()
                 .GetBackForwardCache()
-                .CanStorePageNow(static_cast<RenderFrameHostImpl*>(main_frame));
+                .GetCurrentBackForwardCacheEligibility(
+                    static_cast<RenderFrameHostImpl*>(main_frame));
         EXPECT_TRUE(can_store_result.flattened_reasons.HasNotRestoredReason(
             BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating));
       }));

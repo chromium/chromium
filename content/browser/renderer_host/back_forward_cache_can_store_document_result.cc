@@ -19,6 +19,7 @@ namespace content {
 namespace {
 
 using blink::scheduler::WebSchedulerTrackedFeature;
+using Reason = BackForwardCacheMetrics::NotRestoredReason;
 
 std::string DescribeFeatures(BlockListedFeatures blocklisted_features) {
   std::vector<std::string> features;
@@ -82,7 +83,6 @@ using ProtoEnum =
     perfetto::protos::pbzero::BackForwardCacheCanStoreDocumentResult;
 ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
     BackForwardCacheMetrics::NotRestoredReason reason) {
-  using Reason = BackForwardCacheMetrics::NotRestoredReason;
   switch (reason) {
     case Reason::kNotPrimaryMainFrame:
       return ProtoEnum::NOT_MAIN_FRAME;
@@ -228,6 +228,27 @@ void BackForwardCacheCanStoreDocumentResult::AddNotRestoredReason(
 }
 
 bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
+  if (not_restored_reasons_.Has(Reason::kCacheControlNoStore) ||
+      not_restored_reasons_.Has(Reason::kCacheControlNoStoreCookieModified) ||
+      not_restored_reasons_.Has(
+          Reason::kCacheControlNoStoreHTTPOnlyCookieModified)) {
+    // Cache-control:no-store related reasons are only recorded when the
+    // experiment is on to allow pages with cache-control:no-store into back/
+    // forward cache.
+    // If there are other reasons present outside of cache-control:no-store
+    // related reasons, the page is not eligible for storing.
+    return Difference(not_restored_reasons_,
+                      NotRestoredReasons(
+                          Reason::kCacheControlNoStore,
+                          Reason::kCacheControlNoStoreCookieModified,
+                          Reason::kCacheControlNoStoreHTTPOnlyCookieModified))
+        .Empty();
+  } else {
+    return not_restored_reasons_.Empty();
+  }
+}
+
+bool BackForwardCacheCanStoreDocumentResult::CanRestore() const {
   return not_restored_reasons_.Empty();
 }
 

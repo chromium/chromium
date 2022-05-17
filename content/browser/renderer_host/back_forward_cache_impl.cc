@@ -555,8 +555,8 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
 
   auto* matching_entry = FindMatchingEntry(render_frame_host->GetPage());
   // |matching_entry| can be nullptr for tests because this can be called from
-  // |CanStorePageNow()|, at which point |rfh| may not have a matching entry
-  // yet.
+  // |GetCurrentBackForwardCacheEligibility()|, at which point |rfh| may not
+  // have a matching entry yet.
   if (!matching_entry)
     return;
 
@@ -582,21 +582,15 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
 }
 
 BackForwardCacheCanStoreDocumentResultWithTree
-BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh,
-                                      bool include_ccns) {
+BackForwardCacheImpl::GetCurrentBackForwardCacheEligibility(
+    RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult flattened_result;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree =
       PopulateReasonsForPage(rfh, flattened_result,
                              /*include_non_sticky=*/true);
 
-  // TODO(https://crbug.com/1280150): Call
-  // UpdateCanStoreToIncludeCacheControlNoStore() for tree structure.
-  // Include cache-control:no-store related reasons only when requested.
-  if (include_ccns) {
-    DCHECK(AllowStoringPagesWithCacheControlNoStore());
-    UpdateCanStoreToIncludeCacheControlNoStore(flattened_result, rfh);
-  }
-  DVLOG(1) << "CanStorePageNow: " << rfh->GetLastCommittedURL() << " : "
+  DVLOG(1) << "GetCurrentBackForwardCacheEligibility: "
+           << rfh->GetLastCommittedURL() << " : "
            << flattened_result.ToString();
   TRACE_EVENT("navigation", "BackForwardCacheImpl::CanPotentiallyStorePageNow",
               ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
@@ -607,14 +601,16 @@ BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh,
 }
 
 BackForwardCacheCanStoreDocumentResultWithTree
-BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
+BackForwardCacheImpl::GetFutureBackForwardCacheEligibilityPotential(
+    RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult flattened;
   auto result = PopulateReasonsForPage(rfh, flattened,
                                        /*include_non_sticky = */ false);
-  DVLOG(1) << "CanPotentiallyStorePageLater: " << rfh->GetLastCommittedURL()
-           << " : " << flattened.ToString();
+  DVLOG(1) << "GetFutureBackForwardCacheEligibilityPotential: "
+           << rfh->GetLastCommittedURL() << " : " << flattened.ToString();
   TRACE_EVENT(
-      "navigation", "BackForwardCacheImpl::CanPotentiallyStorePageLater",
+      "navigation",
+      "BackForwardCacheImpl::GetFutureBackForwardCacheEligibilityPotential",
       ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, flattened);
   return BackForwardCacheCanStoreDocumentResultWithTree(flattened,
                                                         std::move(result));
@@ -713,9 +709,10 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   // This check makes sure the old and new document aren't sharing the same
   // BrowsingInstance. Note that the existence of related active contents might
   // change in the future, but we are checking this in
-  // CanPotentiallyStorePageLater instead of CanStorePageNow because it's needed
-  // to determine whether to do a proactive BrowsingInstance swap or not, which
-  // should not be done if the page has related active contents.
+  // GetFutureBackForwardCacheEligibilityPotential instead of
+  // GetCurrentBackForwardCacheEligibility because it's needed to determine
+  // whether to do a proactive BrowsingInstance swap or not, which should not be
+  // done if the page has related active contents.
   unsigned expected_related_active_contents_count = is_active_rfh ? 1 : 0;
   // We should never have fewer than expected.
   DCHECK_GE(rfh->GetSiteInstance()->GetRelatedActiveContentsCount(),
@@ -762,9 +759,9 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
 
   // We should not cache pages with Cache-control: no-store. Note that
   // even though this is categorized as a "feature", we will check this within
-  // CanPotentiallyStorePageLater as it's not possible to change the HTTP
-  // headers, so if it's not possible to cache this page now due to this, it's
-  // impossible to cache this page later.
+  // GetFutureBackForwardCacheEligibilityPotential as it's not possible to
+  // change the HTTP headers, so if it's not possible to cache this page now due
+  // to this, it's impossible to cache this page later.
   // TODO(rakina): Once we move cache-control tracking to RenderFrameHostImpl,
   // change this part to use the information stored in RenderFrameHostImpl
   // instead.
@@ -886,8 +883,9 @@ BackForwardCacheImpl::CreateEvictionBackForwardCacheCanStoreTreeResult(
       /* include_non_sticky = */ false,
       BackForwardCacheImpl::NotRestoredReasonBuilder::EvictionInfo(
           rfh, &eviction_reason));
+
   return BackForwardCacheCanStoreDocumentResultWithTree(
-      eviction_reason, builder.GetTreeResult());
+      builder.GetFlattenedResult(), builder.GetTreeResult());
 }
 
 BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
@@ -922,9 +920,6 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::~NotRestoredReasonBuilder() =
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
     RenderFrameHostImpl* rfh) {
-  // TODO(https://crbug.com/1280150): Add cache-control:no-store reasons to the
-  // tree.
-
   BackForwardCacheCanStoreDocumentResult result_for_rfh;
   if (eviction_info_.has_value()) {
     // When |eviction_info_| is set, that means that we are populating the
@@ -939,6 +934,7 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
     bfcache_.PopulateReasonsForDocument(result_for_rfh, rfh,
                                         include_non_sticky_);
   }
+  bfcache_.UpdateCanStoreToIncludeCacheControlNoStore(result_for_rfh, rfh);
   flattened_result_.AddReasonsFrom(result_for_rfh);
 
   // Finds the reasons recursively and create the reason subtree for the
@@ -960,7 +956,8 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
 void BackForwardCacheImpl::StoreEntry(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
   TRACE_EVENT("navigation", "BackForwardCache::StoreEntry", "entry", entry);
-  DCHECK(CanStorePageNow(entry->render_frame_host()));
+  DCHECK(GetCurrentBackForwardCacheEligibility(entry->render_frame_host())
+             .CanStore());
 
 #if BUILDFLAG(IS_ANDROID)
   if (!IsProcessBindingEnabled()) {
@@ -1186,29 +1183,21 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
   if (matching_entry == entries_.end())
     return nullptr;
 
-  if (AllowStoringPagesWithCacheControlNoStore() &&
-      (*matching_entry)
-          ->render_frame_host()
-          ->GetBackForwardCacheDisablingFeatures()
-          .Has(WebSchedulerTrackedFeature::
-                   kMainResourceHasCacheControlNoStore)) {
-    auto* render_frame_host = (*matching_entry)->render_frame_host();
-    // If we are in the experiments to allow pages with cache-control:no-store
-    // in back/forward cache and the page has cache-control:no-store, we should
-    // record them as reasons.
-    BackForwardCacheCanStoreDocumentResultWithTree can_store =
-        CanStorePageNow(render_frame_host, /* include_ccns = */ true);
-    if (!can_store) {
-      (*matching_entry)
-          ->render_frame_host()
-          ->EvictFromBackForwardCacheWithFlattenedAndTreeReasons(can_store);
-    }
+  auto* render_frame_host = (*matching_entry)->render_frame_host();
+  // If we are in the experiments to allow pages with cache-control:no-store
+  // in back/forward cache and the page has cache-control:no-store, we should
+  // record them as reasons. It might not be possible to restore the entry even
+  // if it hasn't been evicted up until this point, e.g. due to cache-control:
+  // no-store preventing restoration but not storage
+  BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
+      GetCurrentBackForwardCacheEligibility(render_frame_host);
+  if (!bfcache_eligibility.CanRestore()) {
+    render_frame_host->EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
+        bfcache_eligibility);
   }
 
   // Don't return the frame if it is evicted.
-  if ((*matching_entry)
-          ->render_frame_host()
-          ->is_evicted_from_back_forward_cache())
+  if (render_frame_host->is_evicted_from_back_forward_cache())
     return nullptr;
 
   return (*matching_entry).get();
@@ -1246,19 +1235,6 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
 
   base::EraseIf(entries_, [this](std::unique_ptr<Entry>& entry) {
     if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
-      // We need to update the not restored reasons to include cache-control:
-      // no-store related reasons before evicting. Because at this point, we
-      // have not recorded cache-control:no-store related reasons so that the
-      // page can temporarily enter bfcache.
-      BackForwardCacheCanStoreDocumentResult flattened_result;
-      // TODO(yuzus): Move this function to BackForwardCacheMetrics.
-      UpdateCanStoreToIncludeCacheControlNoStore(flattened_result,
-                                                 entry->render_frame_host());
-      if (auto* metrics =
-              entry->render_frame_host()->GetBackForwardCacheMetrics()) {
-        metrics->AddNotRestoredFlattenedReasonsToExistingResult(
-            flattened_result);
-      }
       RemoveProcessesForEntry(*entry);
       return true;
     }
