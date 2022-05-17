@@ -78,8 +78,9 @@ bool IsUserTypeAllowed(const User* user) {
       return true;
     case user_manager::USER_TYPE_CHILD:
       return base::FeatureList::IsEnabled(kLacrosForSupervisedUsers);
-    case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_KIOSK_APP:
+      return base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros);
+    case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
     case user_manager::NUM_USER_TYPES:
@@ -505,8 +506,9 @@ bool IsLacrosPrimaryBrowser() {
     return false;
 
   // Lacros-chrome will always be the primary browser if Lacros is enabled in
-  // web Kiosk session.
-  if (user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp())
+  // Kiosk session.
+  if (user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
+      user_manager::UserManager::Get()->IsLoggedInAsKioskApp())
     return true;
 
   if (!IsLacrosPrimaryBrowserAllowed())
@@ -598,6 +600,12 @@ bool IsLacrosChromeAppsEnabled() {
 bool IsLacrosEnabledInWebKioskSession() {
   return user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() &&
          base::FeatureList::IsEnabled(features::kWebKioskEnableLacros) &&
+         IsLacrosEnabled();
+}
+
+bool IsLacrosEnabledInChromeKioskSession() {
+  return user_manager::UserManager::Get()->IsLoggedInAsKioskApp() &&
+         base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros) &&
          IsLacrosEnabled();
 }
 
