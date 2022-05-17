@@ -325,7 +325,7 @@ class WebContentsObserverProxy extends WebContentsObserver {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             WebContentsObserver observer = mObserversIterator.next();
-            String s = "WebContentsObserverProxy::didStartNavigation observer:"
+            String s = "WebContentsObserverProxy::didFinishLoad observer:"
                     + observer.getClass().getName();
             try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
                 observer.didFinishLoad(
