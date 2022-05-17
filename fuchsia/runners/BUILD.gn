@@ -140,7 +140,6 @@ executable("cast_runner_exe") {
 _web_instance_host_deps_files_to_exclude = [
   "lib/libEGL.so",
   "lib/libGLESv2.so",
-  "lib/libtrace-engine.so",
   "lib/libvulkan.so",
   "ui/webui/resources/js/load_time_data.js",
 
@@ -151,9 +150,14 @@ _web_instance_host_deps_files_to_exclude = [
   "vk_swiftshader_icd.json",
 ]
 
-# This file is still required for component and coverage builds.
-if (!is_component_build && !fuchsia_code_coverage) {
-  _web_instance_host_deps_files_to_exclude += [ "lib/libfuchsia_egl.so" ]
+if (!is_component_build) {
+  # This file is required for component builds.
+  _web_instance_host_deps_files_to_exclude += [ "lib/libtrace-engine.so" ]
+
+  # This file is required for both component and coverage builds.
+  if (!fuchsia_code_coverage) {
+    _web_instance_host_deps_files_to_exclude += [ "lib/libfuchsia_egl.so" ]
+  }
 }
 
 fuchsia_component("cast_runner_component") {
