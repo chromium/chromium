@@ -1101,9 +1101,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   // forward allocations we don't own to the system malloc() implementation in
   // these rare cases, assuming that some remain.
   //
-  // On Chromecast, this is already checked in PartitionFree() in the shim.
+  // On Chromecast devices, this is already checked in PartitionFree() in the
+  // shim.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    ((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)))
+    ((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)))
   PA_CHECK(IsManagedByPartitionAlloc(object_addr));
 #endif
 

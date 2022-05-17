@@ -4160,7 +4160,7 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 // https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&                \
     defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMECAST)
+    !BUILDFLAG(IS_CASTOS)
 
 namespace {
 
@@ -4238,7 +4238,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) &&
-        // !BUILDFLAG(IS_CHROMECAST)
+        // !BUILDFLAG(IS_CASTOS)
 
 // Checks the bucket index logic.
 TEST_P(PartitionAllocTest, GetIndex) {
@@ -4515,7 +4515,7 @@ TEST_P(PartitionAllocTest, PartitionTagBasic) {
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(IS_CHROMECAST)
+    BUILDFLAG(IS_CASTOS)
 extern "C" {
 void* __real_malloc(size_t);
 }  // extern "C"

@@ -399,11 +399,11 @@ void* PartitionRealloc(const AllocatorDispatch*,
       MaybeAdjustSize(size), "");
 }
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CASTOS)
 extern "C" {
 void __real_free(void*);
 }  // extern "C"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CASTOS)
 
 void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   ScopedDisallowAllocations guard{};
@@ -419,11 +419,11 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
-  // On Chromecast, there is at least one case where a system malloc() pointer
-  // can be passed to PartitionAlloc's free(). If we don't own the pointer, pass
-  // it along. This should not have a runtime cost vs regular Android, since on
-  // Android we have a PA_CHECK() rather than the branch here.
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
+  // On Chromecast devices, there is at least one case where a system malloc()
+  // pointer can be passed to PartitionAlloc's free(). If we don't own the
+  // pointer, pass it along. This should not have a runtime cost vs regular
+  // Android, since on Android we have a PA_CHECK() rather than the branch here.
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CASTOS)
   if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
                    reinterpret_cast<uintptr_t>(object)) &&
                object)) {
@@ -432,7 +432,7 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
     // here.
     return __real_free(object);
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CASTOS)
 
   partition_alloc::ThreadSafePartitionRoot::FreeNoHooks(object);
 }
