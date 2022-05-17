@@ -50,8 +50,7 @@ class TranslateClient {
   virtual std::unique_ptr<TranslatePrefs> GetTranslatePrefs() = 0;
 
   // Returns the associated AcceptLanguagesService.
-  // TODO(crbug.com/949253): Rename this to GetAcceptLanguageService.
-  virtual language::AcceptLanguagesService* GetTranslateAcceptLanguages() = 0;
+  virtual language::AcceptLanguagesService* GetAcceptLanguagesService() = 0;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Returns a translate infobar that owns |delegate|.

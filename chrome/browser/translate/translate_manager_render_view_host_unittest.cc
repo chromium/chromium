@@ -1194,7 +1194,7 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateLanguagePref) {
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
   EXPECT_FALSE(translate_prefs->IsBlockedLanguage("fr"));
   language::AcceptLanguagesService* accept_languages =
-      ChromeTranslateClient::GetTranslateAcceptLanguages(profile);
+      ChromeTranslateClient::GetAcceptLanguagesService(profile);
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
   SetPrefObserverExpectation(
       translate::TranslatePrefs::kPrefTranslateBlockedLanguages);
@@ -1251,7 +1251,7 @@ TEST_F(TranslateManagerRenderViewHostTest, NeverTranslateSitePref) {
       ChromeTranslateClient::CreateTranslatePrefs(prefs));
   EXPECT_FALSE(translate_prefs->IsSiteOnNeverPromptList(host));
   language::AcceptLanguagesService* accept_languages =
-      ChromeTranslateClient::GetTranslateAcceptLanguages(profile);
+      ChromeTranslateClient::GetAcceptLanguagesService(profile);
   EXPECT_TRUE(translate_prefs->CanTranslateLanguage(accept_languages, "fr"));
   SetPrefObserverExpectation(
       translate::TranslatePrefs::kPrefNeverPromptSitesDeprecated);

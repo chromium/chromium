@@ -73,8 +73,7 @@ class ChromeTranslateClient
 
   // Helper method to return the AcceptLanguagesService instance associated
   // with |browser_context|.
-  // TODO(crbug.com/949253): Rename this to GetAcceptLanguageService.
-  static language::AcceptLanguagesService* GetTranslateAcceptLanguages(
+  static language::AcceptLanguagesService* GetAcceptLanguagesService(
       content::BrowserContext* browser_context);
 
   // Helper method to return the TranslateManager instance associated with
@@ -94,7 +93,7 @@ class ChromeTranslateClient
   translate::TranslateDriver* GetTranslateDriver() override;
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
-  language::AcceptLanguagesService* GetTranslateAcceptLanguages() override;
+  language::AcceptLanguagesService* GetAcceptLanguagesService() override;
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)

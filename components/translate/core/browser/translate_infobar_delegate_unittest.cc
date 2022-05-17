@@ -201,7 +201,7 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
       ConstructInfoBarDelegate();
   language::AcceptLanguagesService accept_languages(
       pref_service_.get(), testing::accept_languages_prefs);
-  ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
+  ON_CALL(*(client_.get()), GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ListPrefUpdate update(pref_service_.get(),
                         translate::prefs::kBlockedLanguages);
@@ -307,7 +307,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslate) {
 TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
   language::AcceptLanguagesService accept_languages(
       pref_service_.get(), testing::accept_languages_prefs);
-  ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
+  ON_CALL(*(client_.get()), GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   DictionaryPrefUpdate update_translate_denied_count(

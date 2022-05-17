@@ -408,7 +408,7 @@ TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishExperiment) {
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_,
           ShowTranslateUI(_, _, _, _, false /* triggered_from_menu */))
@@ -453,7 +453,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_,
           ShowTranslateUI(_, _, _, _, false /* triggered_from_menu */))
@@ -492,7 +492,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
       .WillByDefault(Return(true));
@@ -539,7 +539,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
       .WillByDefault(Return(true));
@@ -589,7 +589,7 @@ TEST_F(TranslateManagerTest, ShouldHonorExperimentRankerEnforcement_Enforce) {
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
       .WillByDefault(Return(true));
@@ -634,7 +634,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
       .WillByDefault(Return(true));
@@ -674,7 +674,7 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
       .WillByDefault(Return(true));
@@ -718,7 +718,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
       .WillByDefault(Return(true));
@@ -763,7 +763,7 @@ TEST_F(TranslateManagerTest, DontTranslateOffline) {
                                                     accept_languages_prefs);
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   translate_manager_ = std::make_unique<TranslateManager>(
@@ -802,7 +802,7 @@ TEST_F(TranslateManagerTest, DontTranslateAutofillAssistantRunning) {
 
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   ON_CALL(mock_translate_client_, IsAutofillAssistantRunning())
       .WillByDefault(Return(true));
@@ -1150,7 +1150,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   network_notifier_.SimulateOnline();
@@ -1202,7 +1202,7 @@ TEST_F(TranslateManagerTest,
 
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   translate_prefs_.AddLanguagePairToAlwaysTranslateList("fr", "de");
@@ -1243,7 +1243,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_BlockedLanguage) {
 
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   translate_prefs_.BlockLanguage("de");
@@ -1283,7 +1283,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_OverrideBlockedLanguage) {
 
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   translate_prefs_.BlockLanguage("de");
@@ -1322,7 +1322,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_BlockedSite) {
 
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   const GURL kTestUrl("https://www.example.com/");
@@ -1356,7 +1356,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_OverrideBlockedSite) {
 
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
 
   const GURL kTestUrl("https://www.example.com/");
@@ -1401,7 +1401,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_AutoTranslate) {
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   network_notifier_.SimulateOnline();
 
@@ -1454,7 +1454,7 @@ TEST_F(TranslateManagerTest, ShowTranslateUI) {
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   EXPECT_CALL(mock_translate_client_,
               ShowTranslateUI(_, _, _, _, false /* triggered_from_menu */))
@@ -1527,7 +1527,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   EXPECT_CALL(mock_translate_client_,
               ShowTranslateUI(TRANSLATE_STEP_BEFORE_TRANSLATE, "und", "ru",
@@ -1574,7 +1574,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   EXPECT_CALL(mock_translate_client_,
               ShowTranslateUI(TRANSLATE_STEP_BEFORE_TRANSLATE, "und", "ru",
@@ -1621,7 +1621,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   EXPECT_CALL(mock_translate_client_,
               ShowTranslateUI(TRANSLATE_STEP_TRANSLATING, "und", "ru",
@@ -1667,7 +1667,7 @@ TEST_F(TranslateManagerTest, HrefTranslateSimilarLanguages_OverrideDisabled) {
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   EXPECT_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _)).Times(0);
   network_notifier_.SimulateOnline();
@@ -1711,7 +1711,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   EXPECT_CALL(mock_translate_client_,
               ShowTranslateUI(TRANSLATE_STEP_BEFORE_TRANSLATE, "und", "en",
@@ -1758,7 +1758,7 @@ TEST_F(TranslateManagerTest,
       .WillByDefault(Return(true));
   language::AcceptLanguagesService accept_languages(&prefs_,
                                                     accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
       .WillByDefault(Return(&accept_languages));
   EXPECT_CALL(mock_translate_client_,
               ShowTranslateUI(TRANSLATE_STEP_TRANSLATING, "und", "en",

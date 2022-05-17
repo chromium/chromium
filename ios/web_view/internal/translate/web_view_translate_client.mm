@@ -114,7 +114,7 @@ WebViewTranslateClient::GetTranslatePrefs() {
 }
 
 language::AcceptLanguagesService*
-WebViewTranslateClient::GetTranslateAcceptLanguages() {
+WebViewTranslateClient::GetAcceptLanguagesService() {
   return accept_languages_;
 }
 

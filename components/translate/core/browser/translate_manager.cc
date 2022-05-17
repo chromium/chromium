@@ -996,7 +996,7 @@ void TranslateManager::FilterForUserPrefs(
     TranslatePrefs* translate_prefs,
     const std::string& page_language_code) {
   language::AcceptLanguagesService* accept_languages =
-      translate_client_->GetTranslateAcceptLanguages();
+      translate_client_->GetAcceptLanguagesService();
   // Don't translate any user blocklisted languages.
   if (!translate_prefs->CanTranslateLanguage(accept_languages,
                                              page_language_code)) {

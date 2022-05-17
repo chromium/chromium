@@ -181,7 +181,7 @@ ChromeTranslateClient::CreateTranslatePrefs(PrefService* prefs) {
 
 // static
 language::AcceptLanguagesService*
-ChromeTranslateClient::GetTranslateAcceptLanguages(
+ChromeTranslateClient::GetAcceptLanguagesService(
     content::BrowserContext* browser_context) {
   return AcceptLanguagesServiceFactory::GetForBrowserContext(browser_context);
 }
@@ -313,9 +313,9 @@ ChromeTranslateClient::GetTranslatePrefs() {
 }
 
 language::AcceptLanguagesService*
-ChromeTranslateClient::GetTranslateAcceptLanguages() {
+ChromeTranslateClient::GetAcceptLanguagesService() {
   DCHECK(web_contents());
-  return GetTranslateAcceptLanguages(web_contents()->GetBrowserContext());
+  return GetAcceptLanguagesService(web_contents()->GetBrowserContext());
 }
 
 #if BUILDFLAG(IS_ANDROID)

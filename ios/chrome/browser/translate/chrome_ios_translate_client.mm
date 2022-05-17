@@ -136,7 +136,7 @@ ChromeIOSTranslateClient::GetTranslatePrefs() {
 }
 
 language::AcceptLanguagesService*
-ChromeIOSTranslateClient::GetTranslateAcceptLanguages() {
+ChromeIOSTranslateClient::GetAcceptLanguagesService() {
   DCHECK(web_state_);
   return AcceptLanguagesServiceFactory::GetForBrowserState(
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
