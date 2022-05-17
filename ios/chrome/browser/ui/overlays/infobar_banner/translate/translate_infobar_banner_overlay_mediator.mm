@@ -64,7 +64,7 @@ NSString* const kTranslateImageName = @"infobar_translate_icon";
   [self.consumer setButtonText:[self infobarButtonText]];
 
   UIImage* iconImage = UseSymbols()
-                           ? DefaultSymbolTemplateWithPointSize(
+                           ? CustomSymbolTemplateWithPointSize(
                                  kTranslateSymbol, kSymbolImagePointSize)
                            : [UIImage imageNamed:kTranslateImageName];
   [self.consumer setIconImage:iconImage];
