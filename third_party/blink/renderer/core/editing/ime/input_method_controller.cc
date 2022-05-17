@@ -1584,7 +1584,8 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  const EphemeralRange& first_range = FirstEphemeralRangeOf(
+      GetFrame().Selection().ComputeVisibleSelectionInDOMTreeDeprecated());
 
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       GetDocument().Lifecycle());
@@ -1597,8 +1598,6 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
   if (info.value.IsEmpty())
     return info;
 
-  const EphemeralRange& first_range = FirstEphemeralRangeOf(
-      GetFrame().Selection().ComputeVisibleSelectionInDOMTreeDeprecated());
   const PlainTextRange& selection_plain_text_range =
       cached_text_input_info_.GetSelection(first_range);
   if (selection_plain_text_range.IsNotNull()) {
