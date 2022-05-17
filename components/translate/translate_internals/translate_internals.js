@@ -7,10 +7,9 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
@@ -22,27 +21,23 @@ const detectionLogs = [];
  */
 function initialize() {
   addMessageHandlers();
-  decorate('tabbox', TabBox);
+  const tabbox = document.querySelector('cr-tab-box');
+  tabbox.hidden = false;
   chrome.send('requestInfo');
 
   const button = $('detection-logs-dump');
   button.addEventListener('click', onDetectionLogsDump);
 
-  const tabpanelNodeList = document.getElementsByTagName('tabpanel');
+  const tabpanelNodeList = document.querySelectorAll('div[slot=\'panel\']');
   const tabpanels = Array.prototype.slice.call(tabpanelNodeList, 0);
   const tabpanelIds = tabpanels.map(function(tab) {
     return tab.id;
   });
 
-  const tabNodeList = document.getElementsByTagName('tab');
-  const tabs = Array.prototype.slice.call(tabNodeList, 0);
-  tabs.forEach(function(tab) {
-    tab.onclick = function(e) {
-      const tabbox = document.querySelector('tabbox');
-      const tabpanel = tabpanels[tabbox.selectedIndex];
-      const hash = tabpanel.id.match(/(?:^tabpanel-)(.+)/)[1];
-      window.location.hash = hash;
-    };
+  tabbox.addEventListener('selected-index-change', e => {
+    const tabpanel = tabpanels[e.detail];
+    const hash = tabpanel.id.match(/(?:^tabpanel-)(.+)/)[1];
+    window.location.hash = hash;
   });
 
   const activateTabByHash = function() {
@@ -52,11 +47,11 @@ function initialize() {
     hash = hash.substring(1);
 
     const id = 'tabpanel-' + hash;
-    if (tabpanelIds.indexOf(id) === -1) {
+    const index = tabpanelIds.indexOf(id);
+    if (index === -1) {
       return;
     }
-
-    $(id).selected = true;
+    tabbox.setAttribute('selected-index', `${index}`);
   };
 
   window.onhashchange = activateTabByHash;

@@ -34,6 +34,9 @@ content::WebUIDataSource* CreateTranslateInternalsHTMLSource() {
   source->AddResourcePath("translate_internals.css",
                           IDR_TRANSLATE_INTERNALS_CSS);
   source->AddResourcePath("translate_internals.js", IDR_TRANSLATE_INTERNALS_JS);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
 
   base::Value langs = translate::TranslateInternalsHandler::GetLanguages();
   for (const auto key_value_pair : langs.DictItems()) {
