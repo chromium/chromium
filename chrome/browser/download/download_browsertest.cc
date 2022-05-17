@@ -3478,7 +3478,13 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
   ASSERT_EQ(jpeg_url, download_items[1]->GetOriginalUrl());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadErrorsServer) {
+// TODO(crbug.com/1326326): Flaky on lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DownloadErrorsServer DISABLED_DownloadErrorsServer
+#else
+#define MAYBE_DownloadErrorsServer DownloadErrorsServer
+#endif
+IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadErrorsServer) {
   DownloadInfo download_info[] = {
       {// Normal navigated download.
        "a_zip_file.zip", "a_zip_file.zip", DOWNLOAD_NAVIGATE,
