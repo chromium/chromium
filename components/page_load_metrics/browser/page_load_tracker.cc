@@ -221,6 +221,7 @@ PageLoadTracker::PageLoadTracker(
   embedder_interface_->RegisterObservers(this);
   if (navigation_handle->IsInPrerenderedMainFrame()) {
     DCHECK(!started_in_foreground_);
+    DCHECK_EQ(ukm::kInvalidSourceId, source_id_);
     InvokeAndPruneObservers("PageLoadMetricsObserver::OnPrerenderStart",
                             base::BindRepeating(
                                 [](content::NavigationHandle* navigation_handle,
@@ -237,6 +238,7 @@ PageLoadTracker::PageLoadTracker(
     RecordPageType(internal::PageLoadTrackerPageType::kPrerenderPage);
   } else if (navigation_handle->GetNavigatingFrameType() ==
              content::FrameType::kFencedFrameRoot) {
+    DCHECK_NE(ukm::kInvalidSourceId, source_id_);
     InvokeAndPruneObservers("PageLoadMetricsObserver::OnFencedFramesStart",
                             base::BindRepeating(
                                 [](content::NavigationHandle* navigation_handle,
@@ -249,6 +251,7 @@ PageLoadTracker::PageLoadTracker(
                                 navigation_handle, currently_committed_url));
     RecordPageType(internal::PageLoadTrackerPageType::kFencedFramesPage);
   } else {
+    DCHECK_NE(ukm::kInvalidSourceId, source_id_);
     InvokeAndPruneObservers(
         "PageLoadMetricsObserver::OnStart",
         base::BindRepeating(
@@ -1046,6 +1049,9 @@ PageLoadTracker::GetExperimentalLargestContentfulPaintHandler() const {
 }
 
 ukm::SourceId PageLoadTracker::GetPageUkmSourceId() const {
+  DCHECK_NE(ukm::kInvalidSourceId, source_id_)
+      << "GetPageUkmSourceId was called on a prerendered page before its "
+         "activation. We should not collect UKM while prerendering pages.";
   return source_id_;
 }
 

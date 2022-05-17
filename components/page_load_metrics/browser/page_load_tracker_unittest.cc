@@ -25,6 +25,7 @@ struct PageLoadMetricsObserverEvents final {
   bool was_committed = false;
   bool was_sub_frame_deleted = false;
   size_t sub_frame_navigation_count = 0;
+  ukm::SourceId source_id = ukm::kInvalidSourceId;
 };
 
 class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
@@ -70,6 +71,14 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
     events_->was_sub_frame_deleted = true;
   }
 
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override {
+    events_->source_id = GetDelegate().GetPageUkmSourceId();
+    DCHECK_NE(ukm::kInvalidSourceId, events_->source_id);
+    // TODO(https://crbug.com/1301880): Check this new SourceId in a test for
+    // prerendering activation.
+  }
+
   bool stop_on_prerender_ = false;
   bool stop_on_fenced_frames_ = false;
 
@@ -98,7 +107,7 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
  private:
   void RegisterObservers(PageLoadTracker* tracker) override {
     ukm_source_ids_.emplace(tracker->GetUrl().spec(),
-                            tracker->GetPageUkmSourceId());
+                            tracker->GetPageUkmSourceIdForTesting());
 
     if (tracker->GetUrl() != target_url_)
       return;
@@ -140,6 +149,9 @@ TEST_F(PageLoadTrackerTest, PrimaryPageType) {
 
   // Check observer behaviors.
   EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
+
+  // Check ukm::SourceId.
+  EXPECT_NE(ukm::kInvalidSourceId, GetObservedUkmSourceIdFor(kTestUrl));
 }
 
 TEST_F(PageLoadTrackerTest, EventForwarding) {
@@ -214,8 +226,10 @@ TEST_F(PageLoadTrackerTest, PrerenderPageType) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kPageLoadTrackerPageType,
       internal::PageLoadTrackerPageType::kPrerenderPage, 1);
-  EXPECT_NE(GetObservedUkmSourceIdFor(kTestUrl),
-            GetObservedUkmSourceIdFor(kPrerenderingUrl));
+
+  // Check ukm::SourceId.
+  EXPECT_NE(ukm::kInvalidSourceId, GetObservedUkmSourceIdFor(kTestUrl));
+  EXPECT_EQ(ukm::kInvalidSourceId, GetObservedUkmSourceIdFor(kPrerenderingUrl));
 }
 
 TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
@@ -251,6 +265,9 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kPageLoadTrackerPageType,
       internal::PageLoadTrackerPageType::kFencedFramesPage, 1);
+
+  // Check ukm::SourceId.
+  EXPECT_NE(ukm::kInvalidSourceId, GetObservedUkmSourceIdFor(kTestUrl));
   EXPECT_EQ(GetObservedUkmSourceIdFor(kTestUrl),
             GetObservedUkmSourceIdFor(kFencedFramesUrl));
 

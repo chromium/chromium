@@ -417,6 +417,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // tracker list after the provisional load is committed.
   void SetPageMainFrame(content::RenderFrameHost* rfh);
 
+  // Gets a bound ukm::SourceId without any check for testing.
+  ukm::SourceId GetPageUkmSourceIdForTesting() const { return source_id_; }
+
   // Obtains a weak pointer for this instance.
   base::WeakPtr<PageLoadTracker> GetWeakPtr();
 
