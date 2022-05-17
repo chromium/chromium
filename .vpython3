@@ -41,8 +41,8 @@ verify_pep425_tag: [
 # Used by:
 #   build/android/pylib/local/emulator/avd.py
 wheel: <
-  name: "infra/python/wheels/protobuf-py2_py3"
-  version: "version:3.15.8"
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:3.19.3"
 >
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions
@@ -234,8 +234,8 @@ wheel: <
   version: "version:1.52.0"
 >
 wheel: <
-  name: "infra/python/wheels/google-api-core-py2_py3"
-  version: "version:1.25.1"
+  name: "infra/python/wheels/google-api-core-py3"
+  version: "version:1.31.5"
 >
 wheel: <
   name: "infra/python/wheels/google-auth-httplib2-py2_py3"
@@ -250,8 +250,35 @@ wheel: <
   version: "version:3.0.0"
 >
 
+# Used by:
+# //third_party/blink/tools/wpt_upload.py
+wheel: <
+  name: "infra/python/wheels/crcmod/${vpython_platform}"
+  version: "version:1.7.chromium.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpcio/${vpython_platform}"
+  version: "version:1.44.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-v1-py3"
+  version: "version:0.12.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/proto-plus-py3"
+  version: "version:1.20.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/google-cloud-kms-py3"
+  version: "version:2.11.1"
+>
+
 # Used by Web Platform Tests (WPT) codebase in
-# //third_party/blink/web_tests/external/wpt/tools/
+# //third_party/wpt_tools
 wheel: <
   name: "infra/python/wheels/html5lib-py2_py3"
   version: "version:1.0.1"
