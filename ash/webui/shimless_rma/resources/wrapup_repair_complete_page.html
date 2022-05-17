@@ -65,6 +65,16 @@
     color: var(--cros-icon-color-secondary);
   }
 
+  :host([all-buttons-disabled]) .button-card {
+    color: var(--cros-icon-color-secondary);
+    opacity: 0.38;
+  }
+
+  :host([all-buttons-disabled]) .button-label,
+  :host([all-buttons-disabled]) .button-description {
+    color: var(--cros-text-color-disabled);
+  }
+
   .button-label {
     color: var(--shimless-button-label-text-color);
     font-family: var(--shimless-button-label-font-family);
@@ -161,7 +171,7 @@
     <div id="buttonContainer">
       <cr-button id="diagnosticsButton" class="button-card"
         on-click="onDiagnosticsButtonClick_" disabled="[[allButtonsDisabled]]">
-        <iron-icon icon="shimless-icon:diagnostics" class="button-icon">
+        <iron-icon icon$="[[getDiagnosticsIcon_(allButtonsDisabled)]]" class="button-icon">
         </iron-icon>
         <div class="button-text">
           <div class="button-label">
@@ -174,7 +184,7 @@
       </cr-button>
       <cr-button id="rmaLogButton" class="button-card"
           on-click="onRmaLogButtonClick_" disabled="[[allButtonsDisabled]]">
-        <iron-icon icon="shimless-icon:rma-log" class="button-icon"></iron-icon>
+        <iron-icon icon$="[[getRmaLogIcon_(allButtonsDisabled)]]" class="button-icon"></iron-icon>
         <div class="button-text">
           <div class="button-label">
             <span>[[i18n('repairCompletedLogsButtonText')]]</span>
@@ -190,7 +200,7 @@
             disabled$="[[disableBatteryCutButton_(pluggedIn_,
             allButtonsDisabled)]]">
           <iron-icon id="batteryCutoffIcon"
-              icon="shimless-icon:battery-cutoff-disabled" class="button-icon">
+              icon$="[[getBatteryCutoffIcon_(allButtonsDisabled)]]" class="button-icon">
           </iron-icon>
           <div class="button-text">
             <div class="button-label">

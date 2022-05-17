@@ -55,7 +55,10 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
        * Set by shimless_rma.js.
        * @type {boolean}
        */
-      allButtonsDisabled: Boolean,
+      allButtonsDisabled: {
+        reflectToAttribute: true,
+        type: Boolean,
+      },
 
       /**
        * Keeps the shutdown and reboot buttons disabled after the response from
@@ -306,6 +309,33 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
    */
   disableBatteryCutButton_() {
     return this.pluggedIn_ || this.allButtonsDisabled;
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getDiagnosticsIcon_() {
+    return this.allButtonsDisabled ? 'shimless-icon:diagnostics-disabled' :
+                                     'shimless-icon:diagnostics';
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getRmaLogIcon_() {
+    return this.allButtonsDisabled ? 'shimless-icon:rma-log-disabled' :
+                                     'shimless-icon:rma-log';
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getBatteryCutoffIcon_() {
+    return this.allButtonsDisabled ? 'shimless-icon:battery-cutoff-disabled' :
+                                     'shimless-icon:battery-cutoff';
   }
 
   /**
