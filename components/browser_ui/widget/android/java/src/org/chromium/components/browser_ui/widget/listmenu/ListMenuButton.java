@@ -130,6 +130,7 @@ public class ListMenuButton
      */
     public void showMenu() {
         if (!mIsAttachedToWindow) return;
+        dismiss();
         initPopupWindow();
         mPopupMenu.show();
         notifyPopupListeners(true);
@@ -252,5 +253,9 @@ public class ListMenuButton
                 l.onPopupMenuDismissed();
             }
         });
+    }
+
+    void setAttachedToWindowForTesting() {
+        mIsAttachedToWindow = true;
     }
 }

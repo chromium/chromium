@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.widget.listmenu;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -19,6 +20,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
@@ -50,5 +52,32 @@ public class ListMenuButtonTest {
         button.setContentDescriptionContext(title);
         Assert.assertEquals(mContext.getString(R.string.accessibility_list_menu_button, title),
                 button.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testTriggerShowMenuTwice() {
+        ListMenuButton button = new ListMenuButton(mContext, null);
+        button.setAttachedToWindowForTesting();
+        View view = new View(mContext);
+        button.setDelegate(() -> new ListMenu() {
+            @Override
+            public View getContentView() {
+                return view;
+            }
+
+            @Override
+            public void addContentViewClickRunnable(Runnable runnable) {}
+
+            @Override
+            public int getMaxItemWidth() {
+                return 0;
+            }
+        }, true);
+        // Expect no crash when calling showMenu twice.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            button.showMenu();
+            button.showMenu();
+        });
     }
 }
