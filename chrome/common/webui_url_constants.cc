@@ -759,6 +759,7 @@ const size_t kNumberOfChromeInternalsPathURLs =
 const char* const kChromeDebugURLs[] = {
     blink::kChromeUIBadCastCrashURL,
     blink::kChromeUIBrowserCrashURL,
+    blink::kChromeUIBrowserDcheckURL,
     blink::kChromeUICrashURL,
     blink::kChromeUIDumpURL,
     blink::kChromeUIKillURL,

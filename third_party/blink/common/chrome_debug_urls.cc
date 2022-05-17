@@ -29,6 +29,8 @@ namespace blink {
 const char kChromeUIBadCastCrashURL[] = "chrome://badcastcrash/";
 const char kChromeUICheckCrashURL[] = "chrome://checkcrash/";
 const char kChromeUIBrowserCrashURL[] = "chrome://inducebrowsercrashforrealz/";
+const char kChromeUIBrowserDcheckURL[] =
+    "chrome://inducebrowserdcheckforrealz/";
 const char kChromeUIBrowserUIHang[] = "chrome://uithreadhang/";
 const char kChromeUICrashURL[] = "chrome://crash/";
 const char kChromeUIDelayedBrowserUIHang[] = "chrome://delayeduithreadhang/";

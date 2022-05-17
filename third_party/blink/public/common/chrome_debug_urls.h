@@ -24,6 +24,7 @@ namespace blink {
 BLINK_COMMON_EXPORT extern const char kChromeUIBadCastCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICheckCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserCrashURL[];
+BLINK_COMMON_EXPORT extern const char kChromeUIBrowserDcheckURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserUIHang[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIDelayedBrowserUIHang[];

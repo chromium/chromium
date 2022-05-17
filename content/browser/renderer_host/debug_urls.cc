@@ -134,6 +134,13 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
+  if (url == blink::kChromeUIBrowserDcheckURL) {
+    // Induce an intentional DCHECK in the browser process. This is used to
+    // see if a DCHECK will bring down the current process (is FATAL).
+    DCHECK(false);
+    return true;
+  }
+
 #if BUILDFLAG(IS_WIN)
   if (url == blink::kChromeUIBrowserHeapCorruptionURL) {
     // Induce an intentional heap corruption in the browser process.
