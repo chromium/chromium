@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -35,24 +36,6 @@ class PsmRlweIdProvider;
 // of a given identifier in the local_state PrefService. Upon a failed
 // determination it won't allow another membership check.
 class PsmHelper;
-
-// Indicates all possible PSM protocol results after it has executed
-// successfully or terminated because of an error or timeout. These values are
-// persisted to logs. Entries should not be renumbered and numeric values should
-// never be reused.
-enum class PsmResult {
-  kSuccessfulDetermination = 0,
-  kCreateRlweClientLibraryError = 1,
-  kCreateOprfRequestLibraryError = 2,
-  kCreateQueryRequestLibraryError = 3,
-  kProcessingQueryResponseLibraryError = 4,
-  kEmptyOprfResponseError = 5,
-  kEmptyQueryResponseError = 6,
-  kConnectionError = 7,
-  kServerError = 8,
-  kTimeout = 9,
-  kMaxValue = kTimeout,
-};
 
 // Interacts with the device management service and determines whether this
 // machine should automatically enter the Enterprise Enrollment screen during

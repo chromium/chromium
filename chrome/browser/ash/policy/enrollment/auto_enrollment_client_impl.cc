@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_id_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/common/chrome_content_client.h"
