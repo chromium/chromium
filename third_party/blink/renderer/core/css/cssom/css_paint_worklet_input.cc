@@ -17,7 +17,7 @@ CSSPaintWorkletInput::CSSPaintWorkletInput(
     Vector<std::unique_ptr<CrossThreadStyleValue>> parsed_input_arguments,
     cc::PaintWorkletInput::PropertyKeys property_keys)
     : PaintWorkletInput(container_size, worklet_id, property_keys),
-      name_(name.IsolatedCopy()),
+      name_(name),
       effective_zoom_(effective_zoom),
       style_map_data_(std::move(data)),
       parsed_input_arguments_(std::move(parsed_input_arguments)) {}

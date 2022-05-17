@@ -161,7 +161,7 @@ CSSSyntaxDefinition CSSSyntaxDefinition::IsolatedCopy() const {
   syntax_components_copy.ReserveCapacity(syntax_components_.size());
   for (const auto& syntax_component : syntax_components_) {
     syntax_components_copy.push_back(CSSSyntaxComponent(
-        syntax_component.GetType(), syntax_component.GetString().IsolatedCopy(),
+        syntax_component.GetType(), syntax_component.GetString(),
         syntax_component.GetRepeat()));
   }
   return CSSSyntaxDefinition(std::move(syntax_components_copy));

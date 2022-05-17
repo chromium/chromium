@@ -144,7 +144,7 @@ PaintWorkletStylePropertyMap::CopyCrossThreadData(const CrossThreadData& data) {
   PaintWorkletStylePropertyMap::CrossThreadData copied_data;
   copied_data.ReserveCapacityForSize(data.size());
   for (auto& pair : data)
-    copied_data.Set(pair.key.IsolatedCopy(), pair.value->IsolatedCopy());
+    copied_data.Set(pair.key, pair.value->IsolatedCopy());
   return copied_data;
 }
 

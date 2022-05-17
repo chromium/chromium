@@ -95,7 +95,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.three_d_enabled = three_d_enabled;
       data.immersive_mode = immersive_mode;
       data.strict_mode = strict_mode;
-      data.media_type = media_type.IsolatedCopy();
+      data.media_type = media_type;
       data.display_mode = display_mode;
       data.color_gamut = color_gamut;
       data.preferred_color_scheme = preferred_color_scheme;
