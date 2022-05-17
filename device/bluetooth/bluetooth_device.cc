@@ -310,7 +310,7 @@ bool BluetoothDevice::IsPairable() const {
   BluetoothDeviceType type = GetDeviceType();
 
   // Get the vendor part of the address: "00:11:22" for "00:11:22:33:44:55"
-  std::string vendor = GetAddress().substr(0, 8);
+  std::string vendor = GetOuiPortionOfBluetoothAddress();
 
   // Verbatim "Bluetooth Mouse", model 96674
   if (type == BluetoothDeviceType::MOUSE && vendor == "00:12:A1")
@@ -457,6 +457,11 @@ BluetoothRemoteGattService* BluetoothDevice::GetGattService(
 
 std::string BluetoothDevice::GetIdentifier() const {
   return GetAddress();
+}
+
+std::string BluetoothDevice::GetOuiPortionOfBluetoothAddress() const {
+  // Get the vendor part of the address: "00:11:22" for "00:11:22:33:44:55".
+  return GetAddress().substr(0, 8);
 }
 
 void BluetoothDevice::UpdateAdvertisementData(
