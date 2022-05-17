@@ -60,7 +60,7 @@ def _RunBindingsTests(input_api, output_api):
     cmd_name = 'run_bindings_tests.py'
     if input_api.platform == 'win32':
         # Windows needs some help.
-        cmd = [input_api.python_executable, run_bindings_tests_path]
+        cmd = [input_api.python3_executable, run_bindings_tests_path]
     else:
         cmd = [run_bindings_tests_path]
     test_cmd = input_api.Command(

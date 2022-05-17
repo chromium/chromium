@@ -19,7 +19,7 @@ def _GenerateTestCommand(input_api, output_api, file_name, affected_list):
     test_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                        file_name)
     if input_api.is_windows:
-        cmd = [input_api.python_executable, test_path]
+        cmd = [input_api.python3_executable, test_path]
     else:
         cmd = [test_path]
 

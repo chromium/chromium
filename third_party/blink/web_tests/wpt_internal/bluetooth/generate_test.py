@@ -25,7 +25,7 @@ def main():
     for generated_test in generate.GetGeneratedTests():
         generated_files.add(generated_test.path)
         try:
-            with open(generated_test.path) as f:
+            with open(generated_test.path, 'rb') as f:
                 data = f.read().decode('utf-8')
                 if data != generated_test.data:
                     print(generated_test.path + ' does not match template.')

@@ -78,7 +78,7 @@ def GetGeneratedTests():
     # Read Base Test Template.
     base_template_file_handle = open(
         os.path.join(bluetooth_tests_dir, TEMPLATES_DIR,
-                     'base_test.html.template'))
+                     'base_test.html.template'), 'rb')
     base_template_file_data = base_template_file_handle.read().decode('utf-8')
     base_template_file_handle.close()
 
@@ -95,7 +95,7 @@ def GetGeneratedTests():
     # Generate Test Files
     for template in available_templates:
         # Read template
-        template_file_handle = open(template)
+        template_file_handle = open(template, 'rb')
         template_file_data = template_file_handle.read().decode('utf-8')
         template_file_handle.close()
 
