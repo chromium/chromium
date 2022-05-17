@@ -3173,7 +3173,7 @@ void AutofillMetrics::
 }
 
 // static
-void AutofillMetrics::LogAddressFormImportStatustMetric(
+void AutofillMetrics::LogAddressFormImportStatusMetric(
     AutofillMetrics::AddressProfileImportStatusMetric metric) {
   base::UmaHistogramEnumeration("Autofill.AddressProfileImportStatus", metric);
 }
@@ -3402,6 +3402,16 @@ void AutofillMetrics::LogRemovedSettingInaccessibleField(
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.InaccessibleFieldsRemoved.ByFieldType",
       ConvertSettingsVisibleFieldTypeForMetrics(field));
+}
+
+// static
+void AutofillMetrics::LogPhoneNumberImportParsingResult(
+    bool with_variation_country_code,
+    bool with_app_locale) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.PhoneNumberParsingResult",
+      static_cast<AutofillMetrics::PhoneNumberImportParsingResult>(
+          (with_variation_country_code << 1) | with_app_locale));
 }
 
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(

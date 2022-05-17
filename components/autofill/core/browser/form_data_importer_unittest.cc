@@ -19,7 +19,6 @@
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/ranges.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -733,11 +732,10 @@ TEST_P(FormDataImporterTest, ComplementCountry) {
 TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
   std::vector<std::pair<ServerFieldType, std::string>>
       profile_with_invalid_phone_number = GetDefaultProfileTypeValuePairs();
-  auto phone_number_it =
-      base::ranges::find(profile_with_invalid_phone_number,
-                         std::pair<ServerFieldType, std::string>(
-                             PHONE_HOME_WHOLE_NUMBER, kDefaultPhone));
-  phone_number_it->second = "invalid";
+  const int phone_number_index = 3;
+  ASSERT_EQ(profile_with_invalid_phone_number[phone_number_index].first,
+            PHONE_HOME_WHOLE_NUMBER);
+  profile_with_invalid_phone_number[phone_number_index].second = "invalid";
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
           profile_with_invalid_phone_number);
@@ -759,11 +757,69 @@ TEST_P(FormDataImporterTest, InvalidPhoneNumber) {
     remove_invalid_phone_number_feature.InitAndEnableFeature(
         features::kAutofillRemoveInvalidPhoneNumberOnImport);
 
-    profile_with_invalid_phone_number.erase(phone_number_it);
+    profile_with_invalid_phone_number.erase(
+        profile_with_invalid_phone_number.begin() + phone_number_index);
     ImportAddressProfilesAndVerifyExpectation(
         *form_structure, {ConstructProfileFromTypeValuePairs(
                              profile_with_invalid_phone_number)});
   }
+}
+
+TEST_P(FormDataImporterTest, PhoneNumberRegionMetrics) {
+  // This test is only applicable if the feature is enabled.
+  if (!ConsiderVariationCountryCodeForPhoneNumbers())
+    return;
+
+  auto ImportWithPhoneNumber =
+      [this](const std::string& number,
+             AutofillMetrics::PhoneNumberImportParsingResult expected_result) {
+        // Remove existing profiles, to prevent an update instead of an import.
+        personal_data_manager_->ClearAllLocalData();
+
+        std::vector<std::pair<ServerFieldType, std::string>>
+            profile_with_invalid_phone_number =
+                GetDefaultProfileTypeValuePairs();
+        ASSERT_EQ(profile_with_invalid_phone_number[3].first,
+                  PHONE_HOME_WHOLE_NUMBER);
+        profile_with_invalid_phone_number[3].second = number;
+        std::unique_ptr<FormStructure> form_structure =
+            ConstructFormStructureFromTypeValuePairs(
+                profile_with_invalid_phone_number);
+
+        // Profiles with invalid phone number are rejected.
+        bool expect_success =
+            expected_result == AutofillMetrics::PhoneNumberImportParsingResult::
+                                   PARSED_WITH_VARIATION_COUNTRY_CODE ||
+            expected_result == AutofillMetrics::PhoneNumberImportParsingResult::
+                                   PARSED_WITH_BOTH;
+        base::HistogramTester histogram_tester;
+        ImportAddressProfiles(expect_success, *form_structure);
+        EXPECT_THAT(
+            histogram_tester.GetAllSamples(
+                "Autofill.ProfileImport.PhoneNumberParsingResult"),
+            testing::UnorderedElementsAre(base::Bucket(expected_result, 1)));
+      };
+
+  // `form_data_importer_` is initialized with app locale set to "en".
+  autofill_client_->SetVariationConfigCountryCode("DE");
+
+  ImportWithPhoneNumber(
+      "invalid", AutofillMetrics::PhoneNumberImportParsingResult::CANNOT_PARSE);
+
+  // The German phone number validation is very lenient and accepts all US
+  // numbers we could find. Thus no test for
+  // AutofillMetrics::PhoneNumberImportParsingResult::PARSED_WITH_APP_LOCALE.
+
+  // A German phone number only parses with the German variation country code.
+  ImportWithPhoneNumber("01578 7912345",
+                        AutofillMetrics::PhoneNumberImportParsingResult::
+                            PARSED_WITH_VARIATION_COUNTRY_CODE);
+
+  // For phone numbers in international format the region is ignored. So this
+  // Austrian phone number parses as both.
+  ImportWithPhoneNumber(
+      "+43 650 3847567",
+      AutofillMetrics::PhoneNumberImportParsingResult::PARSED_WITH_BOTH);
 }
 
 // ImportAddressProfiles tests.

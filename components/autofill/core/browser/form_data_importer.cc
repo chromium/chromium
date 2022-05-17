@@ -422,29 +422,39 @@ bool FormDataImporter::SetPhoneNumber(
   }
   const std::string predicted_country_code_without_variation =
       GetPredictedCountryCode(profile, "", app_locale_, nullptr);
-  // If `kAutofillConsiderVariationCountryCodeForPhoneNumbers` is enabled,
+  auto SetWithRegion = [&](const std::string& region) {
+    std::u16string constructed_number;
+    // `ParseNumber()` implicity accepts both a country code and a locale. This
+    // will be refactored with crbug.com/1296077. The parameter for
+    // `SetInfoWithVerificationStatus()` has to be consistent with
+    // `ParseNumber()`.
+    return combined_phone.ParseNumber(profile, region, &constructed_number) &&
+           profile.SetInfoWithVerificationStatus(
+               PHONE_HOME_WHOLE_NUMBER, constructed_number,
+               /*app_locale=*/region, VerificationStatus::kObserved);
+  };
+  // If `AutofillConsiderVariationCountryCodeForPhoneNumbers` is enabled,
   // a consistent country code prediction for addresses and phone numbers is
   // used. Otherwise the variation service state is not considered for phone
   // numbers. This makes a difference, if the country code cannot be found
   // in the `profile`.
-  // `ParseNumber()` implicity accepts both a country code and a locale. This
-  // will be refactored with crbug/1296077. The parameter for
-  // `SetInfoWithVerificationStatus()` has to be consistent with
-  // `ParseNumber()`.
   // TODO(crbug.com/1295721): Cleanup when launched.
-  const std::string& phone_number_region =
-      predicted_country_code != predicted_country_code_without_variation &&
-              base::FeatureList::IsEnabled(
-                  features::
-                      kAutofillConsiderVariationCountryCodeForPhoneNumbers)
-          ? predicted_country_code
-          : app_locale_;
-  std::u16string constructed_number;
-  return combined_phone.ParseNumber(profile, phone_number_region,
-                                    &constructed_number) &&
-         profile.SetInfoWithVerificationStatus(
-             AutofillType(PHONE_HOME_WHOLE_NUMBER), constructed_number,
-             phone_number_region, VerificationStatus::kObserved);
+  bool success_with_locale = SetWithRegion(app_locale_);
+  if (predicted_country_code == predicted_country_code_without_variation ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillConsiderVariationCountryCodeForPhoneNumbers))
+    return success_with_locale;
+  // AutofillConsiderVariationCountryCodeForPhoneNumbers is enabled and makes
+  // a difference for the region used. Parse the number with the new region and
+  // check if this actually changes the parsing outcome to measure the impact.
+  bool success_with_variation_code = SetWithRegion(predicted_country_code);
+  AutofillMetrics::LogPhoneNumberImportParsingResult(
+      success_with_variation_code, success_with_locale);
+  // Keep the current state, even if the parsing worked with the locale but not
+  // the variation country code. Because once
+  // `AutofillConsiderVariationCountryCodeForPhoneNumbers` is launched, only
+  // region = `predicted_country_code` will be used for parsing.
+  return success_with_variation_code;
 }
 
 void FormDataImporter::RemoveInaccessibleProfileValues(
@@ -553,20 +563,20 @@ bool FormDataImporter::ImportAddressProfiles(
     // Run the import on the union of the section if the import was not
     // successful and if there is more than one section.
     if (num_complete_profiles > 0) {
-      AutofillMetrics::LogAddressFormImportStatustMetric(
+      AutofillMetrics::LogAddressFormImportStatusMetric(
           AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
     } else if (sections.size() > 1) {
       // Try to import by combining all sections.
       if (ImportAddressProfileForSection(form, "", import_candidates,
                                          &import_log_buffer)) {
         num_complete_profiles++;
-        AutofillMetrics::LogAddressFormImportStatustMetric(
+        AutofillMetrics::LogAddressFormImportStatusMetric(
             AutofillMetrics::AddressProfileImportStatusMetric::
                 SECTION_UNION_IMPORT);
       }
     }
     if (num_complete_profiles == 0) {
-      AutofillMetrics::LogAddressFormImportStatustMetric(
+      AutofillMetrics::LogAddressFormImportStatusMetric(
           AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT);
     }
   }
