@@ -305,6 +305,39 @@ function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
                       direction, speed_in_pixels_s, precise_scrolling_deltas,
                       scroll_by_page, cursor_visible, scroll_by_percentage,
                       modifier_keys) {
+  const {pixels_to_scroll_x, pixels_to_scroll_y} = setPixelsDirection(
+    pixels_to_scroll, direction);
+  return smoothScrollWithXY(pixels_to_scroll_x, pixels_to_scroll_y, start_x,
+                            start_y, gesture_source_type, speed_in_pixels_s,
+                            precise_scrolling_deltas, scroll_by_page,
+                            cursor_visible, scroll_by_percentage, modifier_keys,
+                            "");
+}
+
+// Perform a smooth scroll. If percent based scrolling (PBS) is enabled, swap
+// the amount of pixels to scroll for the amount of pixels it needs to scroll
+// post PBS calculations to scroll the original intended amount. Note: PBS is
+// not as precise as regular scrolling, therefore use assert_aprox_equals when
+// using this function.
+// Different from "percentScroll" which performs a scroll based on a
+// percentage of the container instead of an amount of pixels.
+function percentBasedSmoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
+                      direction, speed_in_pixels_s, container) {
+  let {pixels_to_scroll_x, pixels_to_scroll_y} = setPixelsDirection(
+    pixels_to_scroll, direction);
+  // Only mouse inputs are concerned with PBS.
+  if (gesture_source_type === GestureSourceType.MOUSE_INPUT) {
+    const pixelsToScroll = calculatePixelsToScroll(container ??
+      document.scrollingElement, pixels_to_scroll_x, pixels_to_scroll_y);
+    pixels_to_scroll_x = pixelsToScroll.x;
+    pixels_to_scroll_y = pixelsToScroll.y;
+  }
+  return smoothScrollWithXY(pixels_to_scroll_x, pixels_to_scroll_y, start_x,
+                            start_y, GestureSourceType.MOUSE_INPUT,
+                            speed_in_pixels_s);
+}
+
+function setPixelsDirection(pixels_to_scroll, direction) {
   let pixels_to_scroll_x = 0;
   let pixels_to_scroll_y = 0;
   if (direction == "down") {
@@ -328,10 +361,7 @@ function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
     pixels_to_scroll_x = pixels_to_scroll;
     pixels_to_scroll_y = pixels_to_scroll;
   }
-  return smoothScrollWithXY(pixels_to_scroll_x, pixels_to_scroll_y, start_x,
-                            start_y, gesture_source_type, speed_in_pixels_s,
-                            precise_scrolling_deltas, scroll_by_page,
-                            cursor_visible, scroll_by_percentage, modifier_keys);
+  return {pixels_to_scroll_x, pixels_to_scroll_y};
 }
 
 // Perform a percent based scroll using smoothScrollWithXY
