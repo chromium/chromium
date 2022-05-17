@@ -168,6 +168,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   absl::optional<AnimationTimeDelta> TimelineDuration() const override;
   bool HasIncompatibleStyle() const;
   bool HasMultipleTransformProperties() const;
+  bool AffectsImportantProperty() const;
   void RestartRunningAnimationOnCompositor();
 
   Member<Element> effect_target_;

@@ -355,6 +355,10 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
     if (HasMultipleTransformProperties())
       reasons |= CompositorAnimations::kTargetHasMultipleTransformProperties;
 
+    // Do not animate a property on the compositor that is marked important.
+    if (AffectsImportantProperty())
+      reasons |= CompositorAnimations::kAffectsImportantProperty;
+
     reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
         SpecifiedTiming(), NormalizedTiming(), *effect_target_, GetAnimation(),
         *Model(), paint_artifact_compositor, animation_playback_rate,
@@ -773,6 +777,24 @@ bool KeyframeEffect::HasMultipleTransformProperties() const {
   if (effect_target_->GetComputedStyle()->Translate())
     transform_property_count++;
   return transform_property_count > 1;
+}
+
+bool KeyframeEffect::AffectsImportantProperty() const {
+  if (!effect_target_->GetComputedStyle())
+    return false;
+
+  const CSSBitset* important_properties =
+      effect_target_->GetComputedStyle()->GetBaseImportantSet();
+
+  if (!important_properties)
+    return false;
+
+  for (CSSPropertyID property_id : *important_properties) {
+    if (Affects(PropertyHandle(CSSProperty::Get(property_id))))
+      return true;
+  }
+
+  return false;
 }
 
 ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {

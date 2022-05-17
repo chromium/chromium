@@ -105,11 +105,14 @@ class CORE_EXPORT CompositorAnimations {
     // been optimized out so the animation of those properties has no effect.
     kCompositorPropertyAnimationsHaveNoEffect = 1 << 17,
 
+    // Cases where we are animating a property that is marked important.
+    kAffectsImportantProperty = 1 << 18,
+
     // The maximum number of flags in this enum (excluding itself). New flags
     // should increment this number but it should never be decremented because
     // the values are used in UMA histograms. It should also be noted that it
     // excludes the kNoFailure value.
-    kFailureReasonCount = 18,
+    kFailureReasonCount = 19,
   };
 
   static FailureReasons CheckCanStartAnimationOnCompositor(
