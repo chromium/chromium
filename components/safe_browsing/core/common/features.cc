@@ -47,7 +47,7 @@ const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kConnectorsScanningAccessToken{
-    "ConnectorsScanningAccessToken", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ConnectorsScanningAccessToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kConnectorsScanningReportOnlyUI{
     "ConnectorsScanningReportOnlyUI", base::FEATURE_ENABLED_BY_DEFAULT};
