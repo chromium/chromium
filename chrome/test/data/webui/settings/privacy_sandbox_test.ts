@@ -13,7 +13,7 @@ import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, Me
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -713,5 +713,38 @@ suite('PrivacySandboxSettings3', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#dialogCloseButton')!.click();
     await flushTasks();
     assertMainViewVisible();
+  });
+
+  test('directDialogClose', async function() {
+    // Confirm that closing the dialog directly (as done through the escape key)
+    // correctly navigates back.
+    assertMainViewVisible();
+
+    // Open a sub page.
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#adPersonalizationRow')!.click();
+    await flushTasks();
+    assertAdPersonalizationDialogVisible();
+
+    // Close the subpage by closing the modal dialog directly.
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertTrue(!!dialogWrapper);
+    dialogWrapper.close();
+    // The close() call on the the <cr-dialog> is routed to its internal
+    // <dialog> element, which then fires close, which the <cr-dialog> then
+    // fires it's own close event from. Not all of these tasks are necessarily
+    // queued synchronously. Waiting until the <cr-dialog> fires close, and
+    // then an additional flushTasks() so the page can react, is required.
+    await eventToPromise('close', dialogWrapper);
+    await flushTasks();
+
+    assertMainViewVisible();
+
+    // Closing the dialog should have reset the view state, such that another
+    // dialog can be opened.
+    page.shadowRoot!.querySelector<HTMLElement>('#adMeasurementRow')!.click();
+    await flushTasks();
+    assertAdMeasurementDialogVisible();
   });
 });

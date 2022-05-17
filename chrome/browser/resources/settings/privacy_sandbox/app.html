@@ -230,7 +230,7 @@
     <template is="dom-if"
         if="[[!showFragment_(privacySandboxSettingsViewEnum_.MAIN,
                 privacySandboxSettingsView_)]]" restamp>
-      <cr-dialog id="dialogWrapper" show-on-attach>
+      <cr-dialog id="dialogWrapper" show-on-attach on-close="onDialogClose_">
         <template id="learnMoreDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.LEARN_MORE_DIALOG,
