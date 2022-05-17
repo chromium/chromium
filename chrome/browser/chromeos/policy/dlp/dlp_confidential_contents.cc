@@ -47,8 +47,6 @@ static constexpr size_t kDefaultCacheSizeLimit = 100;
 // DlpConfidentialContentsCache.
 static constexpr base::TimeDelta kDefaultCacheTimeout = base::Days(7);
 
-DlpConfidentialContent::DlpConfidentialContent() = default;
-
 DlpConfidentialContent::DlpConfidentialContent(
     content::WebContents* web_contents)
     : icon(favicon::TabFaviconFromWebContents(web_contents).AsImageSkia()),
@@ -127,10 +125,6 @@ void DlpConfidentialContents::Add(content::WebContents* web_contents) {
 
 void DlpConfidentialContents::Add(aura::Window* window, const GURL& url) {
   contents_.insert(DlpConfidentialContent(window, url));
-}
-
-void DlpConfidentialContents::Add(const DlpConfidentialContent& content) {
-  contents_.insert(content);
 }
 
 void DlpConfidentialContents::ClearAndAdd(content::WebContents* web_contents) {

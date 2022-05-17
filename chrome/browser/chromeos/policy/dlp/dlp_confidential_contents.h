@@ -32,7 +32,7 @@ namespace policy {
 // Used to cache and later show information about observed confidential contents
 // to the user.
 struct DlpConfidentialContent {
-  DlpConfidentialContent();
+  DlpConfidentialContent() = delete;
   // Constructs DlpConfidentialContent from the title and icon obtained from
   // |web_contents|, which cannot be null.
   explicit DlpConfidentialContent(content::WebContents* web_contents);
@@ -101,8 +101,6 @@ class DlpConfidentialContents {
   void Add(content::WebContents* web_contents);
   // Same for |window| and |url| pair.
   void Add(aura::Window* window, const GURL& url);
-
-  void Add(const DlpConfidentialContent& content);
 
   // Removes all stored confidential content, if there was any, and adds
   // |web_contents| converted to a DlpConfidentialContent.
