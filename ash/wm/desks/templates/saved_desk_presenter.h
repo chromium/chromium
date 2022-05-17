@@ -34,13 +34,6 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   SavedDeskPresenter& operator=(const SavedDeskPresenter&) = delete;
   ~SavedDeskPresenter() override;
 
-  // Convenience function to get the presenter instance, which is created and
-  // owned by `OverviewSession`.
-  // TODO(crbug.com/1322553): Remove this function as `Get()` is normally used
-  // for singletons, or for objects whose lifetimes are deterministic and live
-  // as long as ash lives.
-  static SavedDeskPresenter* Get();
-
   bool should_show_templates_ui() { return should_show_templates_ui_; }
 
   size_t GetEntryCount() const;

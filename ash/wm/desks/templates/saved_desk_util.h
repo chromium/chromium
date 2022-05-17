@@ -11,6 +11,9 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class SavedDeskDialogController;
+class SavedDeskPresenter;
+
 namespace saved_desk_util {
 
 // Registers the per-profile preferences for whether desks templates are
@@ -22,6 +25,10 @@ ASH_EXPORT bool AreDesksTemplatesEnabled();
 ASH_EXPORT bool IsDeskSaveAndRecallEnabled();
 
 ASH_EXPORT bool IsSavedDesksEnabled();
+
+ASH_EXPORT SavedDeskDialogController* GetSavedDeskDialogController();
+
+ASH_EXPORT SavedDeskPresenter* GetSavedDeskPresenter();
 
 }  // namespace saved_desk_util
 }  // namespace ash

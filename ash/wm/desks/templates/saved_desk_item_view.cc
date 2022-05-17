@@ -26,6 +26,7 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -302,7 +303,7 @@ void SavedDeskItemView::MaybeRemoveNameNumber() {
 void SavedDeskItemView::ReplaceTemplate(const std::string& uuid) {
   // Make sure we delete the template we are replacing first, so that we don't
   // get template name collisions.
-  SavedDeskPresenter::Get()->DeleteEntry(uuid);
+  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(uuid);
   UpdateTemplateName();
   RecordReplaceTemplateHistogram();
 }
@@ -476,7 +477,7 @@ void SavedDeskItemView::MaybeShowReplaceDialog(
   // Show replace template dialog. If accepted, replace old template and commit
   // name change.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
-  SavedDeskDialogController::Get()->ShowReplaceDialog(
+  saved_desk_util::GetSavedDeskDialogController()->ShowReplaceDialog(
       root_window, name_view_->GetText(),
       template_to_replace->desk_template_->type(),
       base::BindOnce(
@@ -500,7 +501,7 @@ void SavedDeskItemView::UpdateTemplateName() {
   desk_template_->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(desk_template_->template_name());
 
-  SavedDeskPresenter::Get()->SaveOrUpdateDeskTemplate(
+  saved_desk_util::GetSavedDeskPresenter()->SaveOrUpdateDeskTemplate(
       /*is_update=*/true, GetWidget()->GetNativeWindow()->GetRootWindow(),
       desk_template_->Clone());
 }
@@ -626,14 +627,13 @@ SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
 }
 
 void SavedDeskItemView::OnDeleteTemplate() {
-  SavedDeskPresenter::Get()->DeleteEntry(
+  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
       desk_template_->uuid().AsLowercaseString());
 }
 
 void SavedDeskItemView::OnDeleteButtonPressed() {
   // Show the dialog to confirm the deletion.
-  auto* dialog_controller = SavedDeskDialogController::Get();
-  dialog_controller->ShowDeleteDialog(
+  saved_desk_util::GetSavedDeskDialogController()->ShowDeleteDialog(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
       name_view_->GetAccessibleName(), desk_template_->type(),
       base::BindOnce(&SavedDeskItemView::OnDeleteTemplate,
@@ -659,7 +659,7 @@ void SavedDeskItemView::MaybeLaunchTemplate(bool should_delay) {
     delay = base::Seconds(3);
 #endif
 
-  SavedDeskPresenter::Get()->LaunchDeskTemplate(
+  saved_desk_util::GetSavedDeskPresenter()->LaunchDeskTemplate(
       desk_template_->uuid().AsLowercaseString(), delay,
       GetWidget()->GetNativeWindow()->GetRootWindow());
 }

@@ -34,10 +34,6 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
       delete;
   ~SavedDeskDialogController() override;
 
-  // Convenience function to get the controller instance, which is created and
-  // owned by OverviewSession.
-  static SavedDeskDialogController* Get();
-
   const views::Widget* dialog_widget() const { return dialog_widget_; }
 
   // Shows the dialog. The dialog will look slightly different depending on the

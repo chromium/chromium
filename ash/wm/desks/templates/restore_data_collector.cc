@@ -7,6 +7,7 @@
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -148,7 +149,7 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
 
     // There were some unsupported apps in the active desk so open up a dialog
     // to let the user know.
-    SavedDeskDialogController::Get()->ShowUnsupportedAppsDialog(
+    saved_desk_util::GetSavedDeskDialogController()->ShowUnsupportedAppsDialog(
         root_window_to_show, std::move(call.unsupported_apps),
         std::move(call.callback), std::move(desk_template));
   } else {

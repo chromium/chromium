@@ -8,6 +8,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -51,6 +53,25 @@ bool IsDeskSaveAndRecallEnabled() {
 
 bool IsSavedDesksEnabled() {
   return AreDesksTemplatesEnabled() || IsDeskSaveAndRecallEnabled();
+}
+
+SavedDeskDialogController* GetSavedDeskDialogController() {
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  DCHECK(overview_session);
+  SavedDeskDialogController* controller =
+      overview_session->saved_desk_dialog_controller();
+  DCHECK(controller);
+  return controller;
+}
+
+SavedDeskPresenter* GetSavedDeskPresenter() {
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  DCHECK(overview_session);
+  SavedDeskPresenter* presenter = overview_session->saved_desk_presenter();
+  DCHECK(presenter);
+  return presenter;
 }
 
 }  // namespace saved_desk_util

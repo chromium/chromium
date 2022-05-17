@@ -36,6 +36,7 @@
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -295,7 +296,7 @@ class SavedDeskTest : public OverviewTestBase {
 
     // Click the delete button on the delete dialog. Show delete dialog and
     // select accept.
-    auto* dialog_controller = SavedDeskDialogController::Get();
+    auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
     auto* dialog_delegate = dialog_controller->dialog_widget()
                                 ->widget_delegate()
                                 ->AsDialogDelegate();
@@ -742,7 +743,7 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
   ASSERT_TRUE(GetOverviewSession());
 
   // Show one of the dialogs. Activating the dialog keeps us in overview mode.
-  auto* dialog_controller = SavedDeskDialogController::Get();
+  auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
   dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento",
                                        DeskTemplateType::kTemplate,
                                        base::DoNothing(), base::DoNothing());
@@ -944,7 +945,8 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     // maximum.
     ToggleOverview();
     OpenOverviewAndShowTemplatesGrid();
-    const SavedDeskPresenter* saved_desk_presenter = SavedDeskPresenter::Get();
+    const SavedDeskPresenter* saved_desk_presenter =
+        saved_desk_util::GetSavedDeskPresenter();
     ASSERT_EQ(saved_desk_presenter->GetMaxDeskTemplateEntryCount(),
               saved_desk_presenter->GetDeskTemplateEntryCount());
 
@@ -982,7 +984,8 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     // maximum.
     ToggleOverview();
     OpenOverviewAndShowTemplatesGrid();
-    const SavedDeskPresenter* saved_desk_presenter = SavedDeskPresenter::Get();
+    const SavedDeskPresenter* saved_desk_presenter =
+        saved_desk_util::GetSavedDeskPresenter();
     ASSERT_EQ(saved_desk_presenter->GetMaxSaveAndRecallDeskEntryCount(),
               saved_desk_presenter->GetSaveAndRecallDeskEntryCount());
 
@@ -1896,7 +1899,7 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
 
   // Decline the dialog. We should stay in overview and no template should have
   // been saved.
-  auto* dialog_controller = SavedDeskDialogController::Get();
+  auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
   dialog_controller->dialog_widget()
       ->widget_delegate()
       ->AsDialogDelegate()
@@ -1912,7 +1915,7 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
 
   // Accept the dialog. The template should have been saved and the templates
   // grid should now be shown.
-  dialog_controller = SavedDeskDialogController::Get();
+  dialog_controller = saved_desk_util::GetSavedDeskDialogController();
   dialog_controller->dialog_widget()
       ->widget_delegate()
       ->AsDialogDelegate()
@@ -2951,7 +2954,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   WaitForDesksTemplatesUI();
 
   // Mocks saving templates with some browsers.
-  SavedDeskPresenter::Get()->SaveOrUpdateDeskTemplate(
+  saved_desk_util::GetSavedDeskPresenter()->SaveOrUpdateDeskTemplate(
       /*is_update=*/false, Shell::GetPrimaryRootWindow(),
       std::move(desk_template));
 
@@ -3023,7 +3026,7 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
   SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/1);
   // Show replace dialogs.
-  auto* dialog_controller = SavedDeskDialogController::Get();
+  auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
   auto callback = base::BindLambdaForTesting(
       [&]() { item_view->ReplaceTemplate(uuid_1.AsLowercaseString()); });
 
@@ -3531,8 +3534,8 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
             // `LocalDeskStorage` does not support
             // `EntriesAddedOrUpdatedRemotely`, so
             // manually call it to simluate what the real model would do.
-            SavedDeskPresenter::Get()->EntriesAddedOrUpdatedRemotely(
-                {entry.get()});
+            saved_desk_util::GetSavedDeskPresenter()
+                ->EntriesAddedOrUpdatedRemotely({entry.get()});
             ASSERT_EQ(u"Desk 2", second_item->name_view()->GetText());
             ASSERT_EQ(u"Desk 2", second_item->desk_template().template_name());
             loop1.Quit();

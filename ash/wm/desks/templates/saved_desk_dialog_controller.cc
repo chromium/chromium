@@ -33,8 +33,6 @@ namespace ash {
 
 namespace {
 
-SavedDeskDialogController* g_instance = nullptr;
-
 std::u16string GetStringWithQuotes(const std::u16string& str) {
   return u"\"" + str + u"\"";
 }
@@ -121,23 +119,11 @@ namespace ash {
 //-----------------------------------------------------------------------------
 // SavedDeskDialogController:
 
-SavedDeskDialogController::SavedDeskDialogController() {
-  DCHECK_EQ(nullptr, g_instance);
-  g_instance = this;
-}
+SavedDeskDialogController::SavedDeskDialogController() = default;
 
 SavedDeskDialogController::~SavedDeskDialogController() {
   if (dialog_widget_ && !dialog_widget_->IsClosed())
     dialog_widget_->CloseNow();
-
-  DCHECK_EQ(this, g_instance);
-  g_instance = nullptr;
-}
-
-// static
-SavedDeskDialogController* SavedDeskDialogController::Get() {
-  DCHECK(g_instance);
-  return g_instance;
 }
 
 void SavedDeskDialogController::ShowUnsupportedAppsDialog(

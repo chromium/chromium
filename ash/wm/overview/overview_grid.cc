@@ -1924,7 +1924,8 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   }
 
   // Enable/disable button and update tooltip.
-  const SavedDeskPresenter* saved_desk_presenter = SavedDeskPresenter::Get();
+  const SavedDeskPresenter* saved_desk_presenter =
+      overview_session_->saved_desk_presenter();
   SaveDeskTemplateButtonContainer* container =
       static_cast<SaveDeskTemplateButtonContainer*>(
           save_desk_button_container_widget_->GetContentsView());
@@ -2464,13 +2465,13 @@ void OverviewGrid::UpdateCannotSnapWarningVisibility(bool animate) {
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
-  SavedDeskPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
       DeskTemplateType::kTemplate,
       save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
 }
 
 void OverviewGrid::OnSaveDeskForLaterButtonPressed() {
-  SavedDeskPresenter::Get()->MaybeSaveActiveDeskAsTemplate(
+  overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
       DeskTemplateType::kSaveAndRecall,
       save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
 }

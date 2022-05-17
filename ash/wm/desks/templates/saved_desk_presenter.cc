@@ -34,8 +34,6 @@ namespace ash {
 
 namespace {
 
-SavedDeskPresenter* g_instance = nullptr;
-
 // Toast names.
 constexpr char kMaximumDeskLaunchTemplateToastName[] =
     "MaximumDeskLaunchTemplateToast";
@@ -55,24 +53,12 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
     : overview_session_(overview_session) {
   DCHECK(overview_session_);
 
-  DCHECK_EQ(g_instance, nullptr);
-  g_instance = this;
-
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
   GetAllEntries(base::GUID(), Shell::GetPrimaryRootWindow());
 }
 
-SavedDeskPresenter::~SavedDeskPresenter() {
-  DCHECK_EQ(g_instance, this);
-  g_instance = nullptr;
-}
-
-// static
-SavedDeskPresenter* SavedDeskPresenter::Get() {
-  DCHECK(g_instance);
-  return g_instance;
-}
+SavedDeskPresenter::~SavedDeskPresenter() = default;
 
 size_t SavedDeskPresenter::GetEntryCount() const {
   return GetDeskModel()->GetEntryCount();

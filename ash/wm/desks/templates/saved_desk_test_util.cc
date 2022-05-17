@@ -12,6 +12,7 @@
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -202,7 +203,7 @@ views::Button* GetTemplateItemDeleteButton(int index) {
 
 views::Button* GetSavedDeskDialogAcceptButton() {
   const views::Widget* dialog_widget =
-      SavedDeskDialogController::Get()->dialog_widget();
+      saved_desk_util::GetSavedDeskDialogController()->dialog_widget();
   if (!dialog_widget)
     return nullptr;
   return dialog_widget->widget_delegate()->AsDialogDelegate()->GetOkButton();
