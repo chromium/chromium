@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -152,8 +151,6 @@ public class SignOutDialogFragment
         if (which == AlertDialog.BUTTON_POSITIVE) {
             SigninMetricsUtils.logProfileAccountManagementMenu(
                     ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT, mGaiaServiceType);
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                    Profile.getLastUsedRegularProfile());
             if (mWipeUserData != null) {
                 RecordHistogram.recordBooleanHistogram(
                         "Signin.UserRequestedWipeDataOnSignout", mWipeUserData.isChecked());
