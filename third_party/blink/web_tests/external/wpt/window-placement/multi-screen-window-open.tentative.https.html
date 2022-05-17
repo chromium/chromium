@@ -13,11 +13,11 @@ It runs automated or manually with `wpt serve` and a compatible browser.<br><br>
 <button id="cleanUpButton">Close any open popups</button><br>
 <input id="autoCleanUp" type="checkbox" checked=true>Auto-close popups</input>
 <ul id="logger"></ul>
-<p>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
 <script>
 'use strict';
 let popups = [];
@@ -44,10 +44,10 @@ function checkPopupPlacement(popup, x, y, allowSameScreenClamping) {
   const dY = popup.screenY - y - (popup.outerHeight - popup.innerHeight);
 
   assert_true(!popup.screenX || popup.screenX == x || Math.abs(dX) <= error ||
-              (allowSameScreenClamping && popup.screenX > screen.availLeft &&
+              (allowSameScreenClamping && popup.screenX >= screen.availLeft &&
                popup.screenX < screen.availLeft + screen.availWidth));
   assert_true(!popup.screenY || popup.screenY == y || Math.abs(dY) <= error ||
-              (allowSameScreenClamping && popup.screenY > screen.availTop &&
+              (allowSameScreenClamping && popup.screenY >= screen.availTop &&
                popup.screenY < screen.availTop + screen.availHeight));
 }
 
