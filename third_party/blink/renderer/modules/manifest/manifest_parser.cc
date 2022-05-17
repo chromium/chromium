@@ -742,7 +742,7 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
   }
 
   for (wtf_size_t i = 0; i < shortcuts_list->size(); ++i) {
-    if (i == kMaxUrlHandlersSize) {
+    if (i == kMaxShortcutsSize) {
       AddErrorInfo("property 'shortcuts' contains more than " +
                    String::Number(kMaxShortcutsSize) +
                    " valid elements, only the first " +
