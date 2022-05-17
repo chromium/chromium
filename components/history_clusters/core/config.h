@@ -153,6 +153,10 @@ struct Config {
   // Whether to hide single-visit clusters on prominent UI surfaces.
   bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
 
+  // Whether to hide clusters that only contain URLs from the same domain on
+  // prominent UI surfaces.
+  bool should_hide_single_domain_clusters_on_prominent_ui_surfaces = false;
+
   // Whether to filter clusters that are noisy from the UI. This will
   // heuristically remove clusters that are unlikely to be "interesting".
   bool should_filter_noisy_clusters = true;

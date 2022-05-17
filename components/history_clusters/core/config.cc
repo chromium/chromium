@@ -159,6 +159,12 @@ Config::Config() {
           "hide_single_visit_clusters_on_prominent_ui_surfaces",
           should_hide_single_visit_clusters_on_prominent_ui_surfaces);
 
+  should_hide_single_domain_clusters_on_prominent_ui_surfaces =
+      GetFieldTrialParamByFeatureAsBool(
+          features::kOnDeviceClustering,
+          "hide_single_domain_clusters_on_prominent_ui_surfaces",
+          should_hide_single_domain_clusters_on_prominent_ui_surfaces);
+
   should_filter_noisy_clusters = GetFieldTrialParamByFeatureAsBool(
       features::kOnDeviceClustering, "filter_noisy_clusters",
       should_filter_noisy_clusters);
