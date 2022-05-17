@@ -77,7 +77,7 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   std::u16string GetSelectedText() override;
 
   // WidgetObserver:
-  void OnWidgetClosing(Widget* widget) override;
+  void OnWidgetDestroying(Widget* widget) override;
   void OnWidgetBoundsChanged(Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
