@@ -34,12 +34,16 @@ class PrefService;
 namespace ash {
 namespace personalization_app {
 
+class EnterprisePolicyDelegate;
+
 class SearchHandler : public mojom::SearchHandler,
                       public SearchTagRegistry::Observer {
  public:
-  SearchHandler(::chromeos::local_search_service::LocalSearchServiceProxy&
-                    local_search_service_proxy,
-                PrefService* pref_service);
+  SearchHandler(
+      ::chromeos::local_search_service::LocalSearchServiceProxy&
+          local_search_service_proxy,
+      PrefService* pref_service,
+      std::unique_ptr<EnterprisePolicyDelegate> enterprise_policy_delegate);
 
   SearchHandler(const SearchHandler& other) = delete;
   SearchHandler& operator=(const SearchHandler& other) = delete;

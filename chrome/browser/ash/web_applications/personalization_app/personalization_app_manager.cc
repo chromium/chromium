@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
+#include "chrome/browser/ash/web_applications/personalization_app/enterprise_policy_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
@@ -52,7 +53,8 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
       // personalization search results when the feature is off.
       search_handler_ = std::make_unique<SearchHandler>(
           local_search_service_proxy,
-          Profile::FromBrowserContext(context)->GetPrefs());
+          Profile::FromBrowserContext(context)->GetPrefs(),
+          std::make_unique<EnterprisePolicyDelegateImpl>(context));
     }
   }
 

@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
@@ -30,6 +31,12 @@ namespace ash {
 namespace personalization_app {
 
 namespace {
+
+bool IsAmbientModeAllowed() {
+  return chromeos::features::IsAmbientModeEnabled() &&
+         ash::AmbientClient::Get() &&
+         ash::AmbientClient::Get()->IsAmbientModeAllowed();
+}
 
 std::string SearchConceptToId(const SearchConcept& search_concept) {
   return base::NumberToString(
@@ -63,27 +70,35 @@ SearchConceptToContentVector(const SearchConcept& search_concept) {
 }
 
 const std::vector<const SearchConcept>& GetPersonalizationSearchConcepts() {
+  static const base::NoDestructor<std::vector<const SearchConcept>>
+      search_concepts({
+          {
+              .id = mojom::SearchConceptId::kPersonalization,
+              .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE,
+              .alternate_message_ids =
+                  {
+                      IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT1,
+                      IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2,
+                  },
+              .relative_url = "",
+          },
+          {
+              .id = mojom::SearchConceptId::kChangeWallpaper,
+              .message_id =
+                  IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER,
+              .alternate_message_ids =
+                  {
+                      IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT1,
+                      IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2,
+                  },
+              .relative_url = kWallpaperSubpageRelativeUrl,
+          },
+      });
+  return *search_concepts;
+}
+
+const std::vector<const SearchConcept>& GetUserImageSearchConcepts() {
   static const base::NoDestructor<std::vector<const SearchConcept>> search_concepts({
-      {
-          .id = mojom::SearchConceptId::kPersonalization,
-          .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE,
-          .alternate_message_ids =
-              {
-                  IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT1,
-                  IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE_ALT2,
-              },
-          .relative_url = "",
-      },
-      {
-          .id = mojom::SearchConceptId::kChangeWallpaper,
-          .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER,
-          .alternate_message_ids =
-              {
-                  IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT1,
-                  IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2,
-              },
-          .relative_url = kWallpaperSubpageRelativeUrl,
-      },
       {
           .id = mojom::SearchConceptId::kChangeDeviceAccountImage,
           .message_id =
@@ -99,6 +114,15 @@ const std::vector<const SearchConcept>& GetPersonalizationSearchConcepts() {
       },
   });
   return *search_concepts;
+}
+
+SearchTagRegistry::SearchConceptUpdates GetUserImageEnterpriseUpdates(
+    bool is_enterprise_managed) {
+  SearchTagRegistry::SearchConceptUpdates updates;
+  for (const auto& search_concept : GetUserImageSearchConcepts()) {
+    updates[&search_concept] = !is_enterprise_managed;
+  }
+  return updates;
 }
 
 const std::vector<const SearchConcept>& GetAmbientSearchConcepts() {
@@ -160,6 +184,19 @@ const std::vector<const SearchConcept>& GetAmbientOffSearchConcepts() {
       },
   });
   return *tags;
+}
+
+SearchTagRegistry::SearchConceptUpdates GetAmbientPrefChangedUpdates(
+    bool ambient_on) {
+  DCHECK(IsAmbientModeAllowed());
+  SearchTagRegistry::SearchConceptUpdates updates;
+  for (const auto& search_concept : GetAmbientOnSearchConcepts()) {
+    updates[&search_concept] = ambient_on;
+  }
+  for (const auto& search_concept : GetAmbientOffSearchConcepts()) {
+    updates[&search_concept] = !ambient_on;
+  }
+  return updates;
 }
 
 const std::vector<const SearchConcept>& GetDarkModeSearchConcepts() {
@@ -231,11 +268,17 @@ const std::vector<const SearchConcept>& GetDarkModeOffSearchConcepts() {
   return *tags;
 }
 
-bool IsAmbientModeAllowed() {
-  // TODO(b/172029925): Set up to test this code.
-  return chromeos::features::IsAmbientModeEnabled() &&
-         ash::AmbientClient::Get() &&
-         ash::AmbientClient::Get()->IsAmbientModeAllowed();
+SearchTagRegistry::SearchConceptUpdates GetDarkModePrefChangedUpdates(
+    bool dark_mode_on) {
+  DCHECK(ash::features::IsDarkLightModeEnabled());
+  SearchTagRegistry::SearchConceptUpdates updates;
+  for (const auto& search_concept : GetDarkModeOnSearchConcepts()) {
+    updates[&search_concept] = dark_mode_on;
+  }
+  for (const auto& search_concept : GetDarkModeOffSearchConcepts()) {
+    updates[&search_concept] = !dark_mode_on;
+  }
+  return updates;
 }
 
 }  // namespace
@@ -243,9 +286,12 @@ bool IsAmbientModeAllowed() {
 SearchTagRegistry::SearchTagRegistry(
     ::chromeos::local_search_service::LocalSearchServiceProxy&
         local_search_service_proxy,
-    PrefService* pref_service)
-    : pref_service_(pref_service) {
+    PrefService* pref_service,
+    std::unique_ptr<EnterprisePolicyDelegate> enterprise_policy_delegate)
+    : pref_service_(pref_service),
+      enterprise_policy_delegate_(std::move(enterprise_policy_delegate)) {
   DCHECK(pref_service_);
+  DCHECK(enterprise_policy_delegate_);
 
   local_search_service_proxy.GetIndex(
       ::chromeos::local_search_service::IndexId::kPersonalization,
@@ -258,35 +304,27 @@ SearchTagRegistry::SearchTagRegistry(
     updates[&concept] = true;
   }
 
-  if (IsAmbientModeAllowed() || ::ash::features::IsDarkLightModeEnabled()) {
-    pref_change_registrar_.Init(pref_service_);
-  }
+  updates.merge(GetUserImageEnterpriseUpdates(
+      enterprise_policy_delegate_->IsUserImageEnterpriseManaged()));
 
   if (::ash::features::IsDarkLightModeEnabled()) {
     for (const auto& concept : GetDarkModeSearchConcepts()) {
       updates[&concept] = true;
     }
-    // base::Unretained is safe because |this| owns |pref_change_registrar_|.
-    pref_change_registrar_.Add(
-        ash::prefs::kDarkModeEnabled,
-        base::BindRepeating(&SearchTagRegistry::OnDarkModePrefChanged,
-                            base::Unretained(this)));
-    OnDarkModePrefChanged();
+    updates.merge(GetDarkModePrefChangedUpdates(
+        pref_service_->GetBoolean(ash::prefs::kDarkModeEnabled)));
   }
 
   if (IsAmbientModeAllowed()) {
     for (const auto& concept : GetAmbientSearchConcepts()) {
       updates[&concept] = true;
     }
-    // base::Unretained is safe because |this| owns |pref_change_registrar_|.
-    pref_change_registrar_.Add(
-        ::ash::ambient::prefs::kAmbientModeEnabled,
-        base::BindRepeating(&SearchTagRegistry::OnAmbientPrefChanged,
-                            base::Unretained(this)));
-    OnAmbientPrefChanged();
+    updates.merge(GetAmbientPrefChangedUpdates(
+        pref_service_->GetBoolean(::ash::ambient::prefs::kAmbientModeEnabled)));
   }
 
   UpdateSearchConcepts(updates);
+  BindObservers();
 }
 
 SearchTagRegistry::~SearchTagRegistry() = default;
@@ -340,6 +378,29 @@ void SearchTagRegistry::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void SearchTagRegistry::BindObservers() {
+  if (IsAmbientModeAllowed() || ::ash::features::IsDarkLightModeEnabled()) {
+    pref_change_registrar_.Init(pref_service_);
+  }
+  if (::ash::features::IsDarkLightModeEnabled()) {
+    // base::Unretained is safe because |this| owns |pref_change_registrar_|.
+    pref_change_registrar_.Add(
+        ash::prefs::kDarkModeEnabled,
+        base::BindRepeating(&SearchTagRegistry::OnDarkModePrefChanged,
+                            base::Unretained(this)));
+  }
+  if (IsAmbientModeAllowed()) {
+    // base::Unretained is safe because |this| owns |pref_change_registrar_|.
+    pref_change_registrar_.Add(
+        ::ash::ambient::prefs::kAmbientModeEnabled,
+        base::BindRepeating(&SearchTagRegistry::OnAmbientPrefChanged,
+                            base::Unretained(this)));
+  }
+
+  enterprise_policy_delegate_observation_.Observe(
+      enterprise_policy_delegate_.get());
+}
+
 void SearchTagRegistry::OnIndexUpdateComplete(uint32_t num_deleted) {
   DVLOG(3) << "Deleted " << num_deleted << " search concepts";
   for (auto& observer : observer_list_) {
@@ -348,30 +409,19 @@ void SearchTagRegistry::OnIndexUpdateComplete(uint32_t num_deleted) {
 }
 
 void SearchTagRegistry::OnAmbientPrefChanged() {
-  DCHECK(IsAmbientModeAllowed());
   bool ambient_on =
       pref_service_->GetBoolean(::ash::ambient::prefs::kAmbientModeEnabled);
-  SearchConceptUpdates updates;
-  for (const auto& search_concept : GetAmbientOnSearchConcepts()) {
-    updates[&search_concept] = ambient_on;
-  }
-  for (const auto& search_concept : GetAmbientOffSearchConcepts()) {
-    updates[&search_concept] = !ambient_on;
-  }
-  UpdateSearchConcepts(updates);
+  UpdateSearchConcepts(GetAmbientPrefChangedUpdates(ambient_on));
 }
 
 void SearchTagRegistry::OnDarkModePrefChanged() {
-  DCHECK(::ash::features::IsDarkLightModeEnabled());
   bool dark_mode_on = pref_service_->GetBoolean(::ash::prefs::kDarkModeEnabled);
-  SearchConceptUpdates updates;
-  for (const auto& search_concept : GetDarkModeOnSearchConcepts()) {
-    updates[&search_concept] = dark_mode_on;
-  }
-  for (const auto& search_concept : GetDarkModeOffSearchConcepts()) {
-    updates[&search_concept] = !dark_mode_on;
-  }
-  UpdateSearchConcepts(updates);
+  UpdateSearchConcepts(GetDarkModePrefChangedUpdates(dark_mode_on));
+}
+
+void SearchTagRegistry::OnUserImageIsEnterpriseManagedChanged(
+    bool is_enterprise_managed) {
+  UpdateSearchConcepts(GetUserImageEnterpriseUpdates(is_enterprise_managed));
 }
 
 }  // namespace personalization_app

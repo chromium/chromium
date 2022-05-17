@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_ENTERPRISE_POLICY_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_ENTERPRISE_POLICY_DELEGATE_IMPL_H_
+
+#include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
+
+namespace ash::personalization_app {
+
+class EnterprisePolicyDelegateImpl
+    : public EnterprisePolicyDelegate,
+      public user_manager::UserManager::Observer {
+ public:
+  explicit EnterprisePolicyDelegateImpl(
+      content::BrowserContext* browser_context);
+
+  EnterprisePolicyDelegateImpl(const EnterprisePolicyDelegateImpl&) = delete;
+  EnterprisePolicyDelegateImpl& operator=(const EnterprisePolicyDelegateImpl&) =
+      delete;
+
+  ~EnterprisePolicyDelegateImpl() override;
+
+  // EnterprisePolicyDelegate:
+  bool IsUserImageEnterpriseManaged() const override;
+  void AddObserver(EnterprisePolicyDelegate::Observer* observer) override;
+  void RemoveObserver(EnterprisePolicyDelegate::Observer* observer) override;
+
+ private:
+  // user_manager::UserManager::Observer:
+  void OnUserImageIsEnterpriseManagedChanged(
+      const user_manager::User& user,
+      bool is_enterprise_managed) override;
+
+  raw_ptr<Profile> profile_;
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      scoped_user_manager_observation_{this};
+  base::ObserverList<EnterprisePolicyDelegate::Observer> observer_list_;
+};
+
+}  // namespace ash::personalization_app
+
+#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_ENTERPRISE_POLICY_DELEGATE_IMPL_H_

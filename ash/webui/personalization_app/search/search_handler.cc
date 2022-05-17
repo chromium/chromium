@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
@@ -41,10 +42,12 @@ bool CompareSearchResults(const mojom::SearchResultPtr& a,
 SearchHandler::SearchHandler(
     ::chromeos::local_search_service::LocalSearchServiceProxy&
         local_search_service_proxy,
-    PrefService* pref_service)
-    : search_tag_registry_(
-          std::make_unique<SearchTagRegistry>(local_search_service_proxy,
-                                              pref_service)) {
+    PrefService* pref_service,
+    std::unique_ptr<EnterprisePolicyDelegate> enterprise_policy_delegate)
+    : search_tag_registry_(std::make_unique<SearchTagRegistry>(
+          local_search_service_proxy,
+          pref_service,
+          std::move(enterprise_policy_delegate))) {
   DCHECK(ash::features::IsPersonalizationHubEnabled())
       << "Personalization search requires personalization hub feature";
   local_search_service_proxy.GetIndex(

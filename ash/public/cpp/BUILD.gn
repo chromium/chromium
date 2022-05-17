@@ -224,6 +224,7 @@ component("cpp") {
     "pagination/pagination_model.cc",
     "pagination/pagination_model.h",
     "pagination/pagination_model_observer.h",
+    "personalization_app/enterprise_policy_delegate.h",
     "personalization_app/user_display_info.cc",
     "personalization_app/user_display_info.h",
     "power_utils.cc",
