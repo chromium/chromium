@@ -26,6 +26,7 @@ extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
 extern NSString* const kPinSymbol;
+extern NSString* const kPinFillSymbol;
 extern NSString* const kGearShapeSymbol;
 extern NSString* const kShareSymbol;
 extern NSString* const kXMarkSymbol;

@@ -70,7 +70,7 @@ using autofill_address_profile_infobar_overlays::
 
   if (UseSymbols()) {
     [self.consumer setIconImage:DefaultSymbolWithPointSize(
-                                    kPinSymbol, kSymbolImagePointSize)];
+                                    kPinFillSymbol, kSymbolImagePointSize)];
   } else {
     [self.consumer
         setIconImage:[UIImage imageNamed:self.config->icon_image_name()]];

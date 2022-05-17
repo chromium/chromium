@@ -226,9 +226,9 @@ NSInteger kSymbolIncognitoFullScreenPointSize = 14;
 
 - (BadgeButton*)saveAddressProfileBadgeButton {
   UIImage* image;
-  image = UseSymbols()
-              ? DefaultSymbolWithPointSize(kPinSymbol, kSymbolImagePointSize)
-              : [UIImage imageNamed:@"ic_place"];
+  image = UseSymbols() ? DefaultSymbolWithPointSize(kPinFillSymbol,
+                                                    kSymbolImagePointSize)
+                       : [UIImage imageNamed:@"ic_place"];
 
   BadgeButton* button =
       [self createButtonForType:kBadgeTypeSaveAddressProfile
