@@ -23,18 +23,20 @@
 // process will run at shutdown of a given embedder.
 class KEYED_SERVICE_EXPORT KeyedService {
  public:
-  KeyedService();
+  KeyedService() = default;
 
   KeyedService(const KeyedService&) = delete;
   KeyedService& operator=(const KeyedService&) = delete;
+  KeyedService(KeyedService&&) = delete;
+  KeyedService& operator=(KeyedService&&) = delete;
 
   // The second pass is the actual deletion of each object.
-  virtual ~KeyedService();
+  virtual ~KeyedService() = default;
 
   // The first pass is to call Shutdown on a KeyedService.
-  // Shutdown will be called automatically for you. Don't directly invoke this
-  // unless you have a specific reason and understand the implications.
-  virtual void Shutdown();
+  // Shutdown will be called automatically for you. Don't directly invoke
+  // this unless you have a specific reason and understand the implications.
+  virtual void Shutdown() {}
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_H_
