@@ -170,7 +170,10 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   VLOG(1) << "Executing EXTRACT_ARCHIVE IO task";
   progress_.state = State::kInProgress;
   progress_callback_.Run(progress_);
-  if (!chromeos::FileSystemBackend::CanHandleURL(parent_folder_)) {
+  // If the backend can't handle the folder to unpack into or
+  // there are no files to extract, finish the operation with an error.
+  if (!chromeos::FileSystemBackend::CanHandleURL(parent_folder_) ||
+      sizingCount_ == 0) {
     progress_.state = State::kError;
     Complete();
   } else {
