@@ -650,6 +650,15 @@ void HWNDMessageHandler::StackAtTop() {
 void HWNDMessageHandler::Show(ui::WindowShowState show_state,
                               const gfx::Rect& pixel_restore_bounds) {
   TRACE_EVENT0("views", "HWNDMessageHandler::Show");
+
+  // In headless mode the platform window is always hidden, so instead of
+  // showing it just maintain a local flag to track the expected headless
+  // window visibility state.
+  if (IsHeadless()) {
+    headless_window_visibility_state_ = true;
+    return;
+  }
+
   DWORD native_show_state;
   if (show_state == ui::SHOW_STATE_MAXIMIZED &&
       !pixel_restore_bounds.IsEmpty()) {
@@ -692,14 +701,6 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
       default:
         native_show_state = delegate_->GetInitialShowState();
         break;
-    }
-
-    // In headless mode the platform window is always hidden, so instead of
-    // showing it just maintain a local flag to track the expected headless
-    // window visibility state.
-    if (IsHeadless()) {
-      headless_window_visibility_state_ = true;
-      return;
     }
 
     ShowWindow(hwnd(), native_show_state);

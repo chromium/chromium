@@ -93,7 +93,14 @@ class DesktopWindowTreeHostWinWrapper : public views::DesktopWindowTreeHostWin {
   HWND GetHWND() const { return DesktopWindowTreeHostWin::GetHWND(); }
 };
 
-IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserDesktopWindowHidden) {
+INSTANTIATE_TEST_SUITE_P(HeadlessModeBrowserTestWithStartWindowMode,
+                         HeadlessModeBrowserTestWithStartWindowMode,
+                         testing::Values(kStartWindowNormal,
+                                         kStartWindowMaximized,
+                                         kStartWindowFullscreen));
+
+IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
+                       BrowserDesktopWindowHidden) {
   // On Windows, the Native Headless Chrome browser window exists and is
   // visible, while the underlying platform window is hidden.
   EXPECT_TRUE(browser()->window()->IsVisible());
