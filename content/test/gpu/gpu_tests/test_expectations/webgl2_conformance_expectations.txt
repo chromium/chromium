@@ -211,6 +211,12 @@ crbug.com/891953 [ linux display-server-wayland ] WebglExtension_OVR_multiview2 
 # Conformance expectations
 # ========================
 
+# Failures of new tests on Win and Linux NVIDIA
+crbug.com/1326332 [ linux nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
+crbug.com/1326332 [ win nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
+crbug.com/1326332 [ linux nvidia ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
+crbug.com/1326332 [ win nvidia ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
+
 # Failing new updated tests
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]

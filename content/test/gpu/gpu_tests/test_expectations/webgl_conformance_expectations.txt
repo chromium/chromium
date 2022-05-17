@@ -290,6 +290,10 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 # ========================
 # Fails on all platforms
 
+# Failures of new tests on Win and Linux NVIDIA
+crbug.com/1326332 [ linux nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
+crbug.com/1326332 [ win nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
+
 # The validating command decoder suppressions here will not be fixed.
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
