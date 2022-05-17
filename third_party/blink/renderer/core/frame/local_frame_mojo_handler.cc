@@ -26,7 +26,6 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -169,9 +168,10 @@ v8::Local<v8::Context> MainWorldScriptContext(LocalFrame* local_frame) {
 }
 
 base::Value GetJavaScriptExecutionResult(v8::Local<v8::Value> result,
-                                         v8::Local<v8::Context> context,
+                                         LocalFrame* local_frame,
                                          WebV8ValueConverter* converter) {
   if (!result.IsEmpty()) {
+    v8::Local<v8::Context> context = MainWorldScriptContext(local_frame);
     v8::Context::Scope context_scope(context);
     std::unique_ptr<base::Value> new_value =
         converter->FromV8Value(result, context);
@@ -334,115 +334,6 @@ void ParseOpenGraphProperty(const HTMLMetaElement& element,
   if (element.Itemprop() == "image" && !metadata->image)
     metadata->image = document.CompleteURL(element.Content());
 }
-
-// Convert the error to a string so it can be sent back to the test.
-//
-// We try to use .stack property so that the error message contains a stack
-// trace, but otherwise fallback to .toString().
-v8::Local<v8::String> ErrorToString(ScriptState* script_state,
-                                    v8::Local<v8::Value> error) {
-  if (!error.IsEmpty()) {
-    v8::Local<v8::Context> context = script_state->GetContext();
-    v8::Local<v8::Value> value =
-        v8::TryCatch::StackTrace(context, error).FromMaybe(error);
-    v8::Local<v8::String> value_string;
-    if (value->ToString(context).ToLocal(&value_string))
-      return value_string;
-  }
-
-  v8::Isolate* isolate = script_state->GetIsolate();
-  return v8::String::NewFromUtf8Literal(isolate, "Unknown Failure");
-}
-
-class JavaScriptExecuteRequestForTestsHandler
-    : public GarbageCollected<JavaScriptExecuteRequestForTestsHandler> {
- public:
-  class PromiseCallback : public ScriptFunction::Callable {
-   public:
-    PromiseCallback(JavaScriptExecuteRequestForTestsHandler& handler,
-                    mojom::blink::JavaScriptExecutionResultType type)
-        : handler_(handler), type_(type) {}
-
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-      DCHECK(script_state);
-      if (type_ == mojom::blink::JavaScriptExecutionResultType::kSuccess)
-        handler_->SendSuccess(script_state, value.V8Value());
-      else
-        handler_->SendException(script_state, value.V8Value());
-      return {};
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(handler_);
-      ScriptFunction::Callable::Trace(visitor);
-    }
-
-   private:
-    Member<JavaScriptExecuteRequestForTestsHandler> handler_;
-    const mojom::blink::JavaScriptExecutionResultType type_;
-  };
-
-  explicit JavaScriptExecuteRequestForTestsHandler(
-      LocalFrameMojoHandler::JavaScriptExecuteRequestForTestsCallback callback)
-      : callback_(std::move(callback)) {}
-
-  ~JavaScriptExecuteRequestForTestsHandler() {
-    if (callback_) {
-      std::move(callback_).Run(
-          mojom::blink::JavaScriptExecutionResultType::kException,
-          base::Value(
-              "JavaScriptExecuteRequestForTestsHandler was destroyed without "
-              "running the callback. This is usually caused by Promise "
-              "resolution functions getting destroyed without being called."));
-    }
-  }
-
-  ScriptFunction* CreateResolveCallback(ScriptState* script_state,
-                                        LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kSuccess));
-  }
-
-  ScriptFunction* CreateRejectCallback(ScriptState* script_state,
-                                       LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kException));
-  }
-
-  void SendSuccess(ScriptState* script_state, v8::Local<v8::Value> value) {
-    SendResponse(script_state,
-                 mojom::blink::JavaScriptExecutionResultType::kSuccess, value);
-  }
-
-  void SendException(ScriptState* script_state, v8::Local<v8::Value> error) {
-    SendResponse(script_state,
-                 mojom::blink::JavaScriptExecutionResultType::kException,
-                 ErrorToString(script_state, error));
-  }
-
-  void Trace(Visitor* visitor) const {}
-
- private:
-  void SendResponse(ScriptState* script_state,
-                    mojom::blink::JavaScriptExecutionResultType type,
-                    v8::Local<v8::Value> value) {
-    std::unique_ptr<WebV8ValueConverter> converter =
-        Platform::Current()->CreateWebV8ValueConverter();
-    converter->SetDateAllowed(true);
-    converter->SetRegExpAllowed(true);
-
-    CHECK(callback_) << "Promise resolved twice";
-    std::move(callback_).Run(
-        type, GetJavaScriptExecutionResult(value, script_state->GetContext(),
-                                           converter.get()));
-  }
-
-  LocalFrameMojoHandler::JavaScriptExecuteRequestForTestsCallback callback_;
-};
 
 }  // namespace
 
@@ -980,9 +871,8 @@ void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
            .ToLocal(&result)) {
     std::move(callback).Run({});
   } else if (wants_result) {
-    v8::Local<v8::Context> context = MainWorldScriptContext(frame_);
     std::move(callback).Run(
-        GetJavaScriptExecutionResult(result, context, converter.get()));
+        GetJavaScriptExecutionResult(result, frame_, converter.get()));
   } else {
     std::move(callback).Run({});
   }
@@ -1013,9 +903,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
     converter->SetDateAllowed(true);
     converter->SetRegExpAllowed(true);
 
-    v8::Local<v8::Context> context = MainWorldScriptContext(frame_);
     std::move(callback).Run(
-        GetJavaScriptExecutionResult(result, context, converter.get()));
+        GetJavaScriptExecutionResult(result, frame_, converter.get()));
   } else {
     std::move(callback).Run({});
   }
@@ -1026,8 +915,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
 
 void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
     const String& javascript,
+    bool wants_result,
     bool has_user_gesture,
-    bool resolve_promises,
     int32_t world_id,
     JavaScriptExecuteRequestForTestsCallback callback) {
   TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequestForTests",
@@ -1038,13 +927,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
   if (has_user_gesture)
     NotifyUserActivation(mojom::blink::UserActivationNotificationType::kTest);
 
-  v8::Isolate* isolate = ToIsolate(frame_);
-  ScriptState* script_state =
-      (world_id == DOMWrapperWorld::kMainWorldId)
-          ? ToScriptStateForMainWorld(frame_)
-          : ToScriptState(frame_, *DOMWrapperWorld::EnsureIsolatedWorld(
-                                      isolate, world_id));
-  ScriptState::Scope script_state_scope(script_state);
+  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
+  v8::Local<v8::Value> result;
 
   // `kDoNotSanitize` is used because this is only for tests and some tests
   // need `kDoNotSanitize` for dynamic imports.
@@ -1052,40 +936,28 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       javascript, ScriptSourceLocationType::kUnknown,
       SanitizeScriptErrors::kDoNotSanitize);
 
-  ScriptEvaluationResult result =
-      script->RunScriptOnScriptStateAndReturnValue(script_state);
-
-  auto* handler = MakeGarbageCollected<JavaScriptExecuteRequestForTestsHandler>(
-      std::move(callback));
-  v8::Local<v8::Value> error;
-  switch (result.GetResultType()) {
-    case ScriptEvaluationResult::ResultType::kSuccess: {
-      v8::Local<v8::Value> value = result.GetSuccessValue();
-      if (resolve_promises && !value.IsEmpty() && value->IsPromise()) {
-        ScriptPromise promise = ScriptPromise::Cast(script_state, value);
-        promise.Then(handler->CreateResolveCallback(script_state, frame_),
-                     handler->CreateRejectCallback(script_state, frame_));
-      } else {
-        handler->SendSuccess(script_state, value);
-      }
-      return;
-    }
-
-    case ScriptEvaluationResult::ResultType::kException:
-      error = result.GetExceptionForClassicForTesting();
-      break;
-
-    case ScriptEvaluationResult::ResultType::kAborted:
-      error = v8::String::NewFromUtf8Literal(isolate, "Script aborted");
-      break;
-
-    case ScriptEvaluationResult::ResultType::kNotRun:
-      error = v8::String::NewFromUtf8Literal(isolate, "Script not run");
-      break;
+  if (world_id == DOMWrapperWorld::kMainWorldId) {
+    result =
+        script->RunScriptAndReturnValue(DomWindow()).GetSuccessValueOrEmpty();
+  } else {
+    CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
+    CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
+    result =
+        script->RunScriptInIsolatedWorldAndReturnValue(DomWindow(), world_id)
+            .GetSuccessValueOrEmpty();
   }
-  DCHECK_NE(result.GetResultType(),
-            ScriptEvaluationResult::ResultType::kSuccess);
-  handler->SendException(script_state, error);
+
+  if (wants_result) {
+    std::unique_ptr<WebV8ValueConverter> converter =
+        Platform::Current()->CreateWebV8ValueConverter();
+    converter->SetDateAllowed(true);
+    converter->SetRegExpAllowed(true);
+
+    std::move(callback).Run(
+        GetJavaScriptExecutionResult(result, frame_, converter.get()));
+  } else {
+    std::move(callback).Run({});
+  }
 }
 
 void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(

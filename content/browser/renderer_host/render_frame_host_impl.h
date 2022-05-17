@@ -2473,19 +2473,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     kIframeNestedWithinFencedFrame
   };
 
-  using JavaScriptResultAndTypeCallback =
-      base::OnceCallback<void(blink::mojom::JavaScriptExecutionResultType,
-                              base::Value)>;
-
-  // Runs JavaScript in this frame, without restrictions. ONLY FOR TESTS.
-  // This method can optionally trigger a fake user activation notification,
-  // and can wait for returned promises to be resolved.
-  void ExecuteJavaScriptForTests(const std::u16string& javascript,
-                                 bool has_user_gesture,
-                                 bool resolve_promises,
-                                 int32_t world_id,
-                                 JavaScriptResultAndTypeCallback callback);
-
  protected:
   friend class RenderFrameHostFactory;
 

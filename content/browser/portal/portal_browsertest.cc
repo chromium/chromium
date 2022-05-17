@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest,
     TestNavigationObserver navigation_observer(a_url);
     navigation_observer.StartWatchingNewWebContents();
     EXPECT_TRUE(ExecJs(
-        main_frame, JsReplace("let portal = document.createElement('portal');"
+        main_frame, JsReplace("var portal = document.createElement('portal');"
                               "portal.src = $1;"
                               "portal.style.width = '500px';"
                               "portal.style.height = '500px';"

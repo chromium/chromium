@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* eslint no-var: "off" */
-
 /**
  * @fileoverview Helpers for testing against DOM. For integration tests, this is
  * injected into an isolated world, so can't access objects in other scripts.
@@ -19,7 +17,7 @@
  * @param {!Array<string>=} shadowRootPath
  * @returns {!Promise<!HTMLElement|!ShadowRoot>}
  */
-var getNextRoot = async (selectorMethod, shadowRootPath = []) => {
+async function getNextRoot(selectorMethod, shadowRootPath = []) {
   /** @type {!HTMLElement|!ShadowRoot} */
   let parentNode = document.body;
   const parentQuery = shadowRootPath.shift();
@@ -31,7 +29,7 @@ var getNextRoot = async (selectorMethod, shadowRootPath = []) => {
     parentNode = element.shadowRoot;
   }
   return parentNode;
-};
+}
 
 /**
  * Runs a query selector once. Returns the Element if it's found, otherwise
@@ -41,14 +39,14 @@ var getNextRoot = async (selectorMethod, shadowRootPath = []) => {
  * @param {!Array<string>=} path
  * @return {!Promise<!Element|undefined>}
  */
-var getNode = async (query, path = []) => {
+async function getNode(query, path = []) {
   const parentElement = await getNextRoot(getNode, path);
   const existingElement = parentElement.querySelector(query);
   if (existingElement) {
     return Promise.resolve(existingElement);
   }
   return Promise.resolve(undefined);
-};
+}
 
 /**
  * Runs a query selector until it finds an element (repeated on each mutation).
@@ -64,7 +62,7 @@ var getNode = async (query, path = []) => {
  * @param {!Array<string>=} opt_path
  * @return {!Promise<!Element>}
  */
-var waitForNode = async (query, opt_path) => {
+async function waitForNode(query, opt_path) {
   const parentElement = await getNextRoot(waitForNode, opt_path);
   const existingElement = parentElement.querySelector(query);
   if (existingElement) {
@@ -82,7 +80,7 @@ var waitForNode = async (query, opt_path) => {
     observer.observe(
         parentElement, {attributes: true, childList: true, subtree: true});
   });
-};
+}
 
 /**
  * Returns a promise that resolves when the passed node's child list is updated
@@ -90,7 +88,7 @@ var waitForNode = async (query, opt_path) => {
  * @param {!Node} node
  * @return {!Promise}
  */
-var childListUpdate = (node) => {
+function childListUpdate(node) {
   return new Promise(resolve => {
     const observer = new MutationObserver(() => {
       resolve();
@@ -98,4 +96,4 @@ var childListUpdate = (node) => {
     });
     observer.observe(node, {childList: true});
   });
-};
+}

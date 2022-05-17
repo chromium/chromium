@@ -55,17 +55,9 @@ ScriptEvaluationResult ScriptEvaluationResult::FromModuleSuccess(
 }
 
 // static
-ScriptEvaluationResult ScriptEvaluationResult::FromClassicExceptionRethrown() {
+ScriptEvaluationResult ScriptEvaluationResult::FromClassicException() {
   return ScriptEvaluationResult(mojom::blink::ScriptType::kClassic,
                                 ResultType::kException, {});
-}
-
-// static
-ScriptEvaluationResult ScriptEvaluationResult::FromClassicException(
-    v8::Local<v8::Value> exception) {
-  DCHECK(!exception.IsEmpty());
-  return ScriptEvaluationResult(mojom::blink::ScriptType::kClassic,
-                                ResultType::kException, exception);
 }
 
 // static
@@ -104,14 +96,6 @@ v8::Local<v8::Value> ScriptEvaluationResult::GetExceptionForModule() const {
 #if DCHECK_IS_ON()
   DCHECK_EQ(script_type_, mojom::blink::ScriptType::kModule);
 #endif
-  DCHECK_EQ(result_type_, ResultType::kException);
-  DCHECK(!value_.IsEmpty());
-
-  return value_;
-}
-
-v8::Local<v8::Value> ScriptEvaluationResult::GetExceptionForClassicForTesting()
-    const {
   DCHECK_EQ(result_type_, ResultType::kException);
   DCHECK(!value_.IsEmpty());
 

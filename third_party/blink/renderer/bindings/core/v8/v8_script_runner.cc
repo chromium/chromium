@@ -619,35 +619,32 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       // reported to WorkerGlobalScope.onerror via `TryCatch::SetVerbose(true)`
       // called at top-level worker script evaluation.
       try_catch.ReThrow();
-      return ScriptEvaluationResult::FromClassicExceptionRethrown();
-    }
-
-    // Step 8.1.3. Otherwise, rethrow errors is false. Perform the following
-    // steps: [spec text]
-    if (!rethrow_errors.ShouldRethrow()) {
-      // #report-the-error for rethrow errors == true is already handled via
-      // `TryCatch::SetVerbose(true)` above.
-      return ScriptEvaluationResult::FromClassicException(
-          try_catch.Exception());
+      return ScriptEvaluationResult::FromClassicException();
     }
   }
   // |v8::TryCatch| is (and should be) exited, before ThrowException() below.
 
-  // kDoNotSanitize case is processed and early-exited above.
-  DCHECK(rethrow_errors.ShouldRethrow());
-  DCHECK_EQ(sanitize_script_errors, SanitizeScriptErrors::kSanitize);
+  if (rethrow_errors.ShouldRethrow()) {
+    // kDoNotSanitize case is processed and early-exited above.
+    DCHECK_EQ(sanitize_script_errors, SanitizeScriptErrors::kSanitize);
 
-  // Step 8.2. If rethrow errors is true and script's muted errors is true,
-  // then: [spec text]
-  //
-  // Step 8.2.2. Throw a "NetworkError" DOMException. [spec text]
-  //
-  // We don't supply any message here to avoid leaking details of muted errors.
-  V8ThrowException::ThrowException(
-      isolate,
-      V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kNetworkError, rethrow_errors.Message()));
-  return ScriptEvaluationResult::FromClassicExceptionRethrown();
+    // Step 8.2. If rethrow errors is true and script's muted errors is
+    // true, then: [spec text]
+    //
+    // Step 8.2.2. Throw a "NetworkError" DOMException. [spec text]
+    //
+    // We don't supply any message here to avoid leaking details of muted
+    // errors.
+    V8ThrowException::ThrowException(
+        isolate, V8ThrowDOMException::CreateOrEmpty(
+                     isolate, DOMExceptionCode::kNetworkError,
+                     rethrow_errors.Message()));
+    return ScriptEvaluationResult::FromClassicException();
+  }
+
+  // #report-the-error for rethrow errors == true is already handled via
+  // |TryCatch::SetVerbose(true)| above.
+  return ScriptEvaluationResult::FromClassicException();
 }
 
 v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
