@@ -56,7 +56,7 @@ import build
 
 from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
                          RUST_TOOLCHAIN_OUT_DIR, STAGE0_JSON_SHA256,
-                         THIRD_PARTY_DIR, GetPackageVersion)
+                         THIRD_PARTY_DIR, VERSION_STAMP_PATH, GetPackageVersion)
 
 RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 
@@ -70,7 +70,6 @@ RUST_TOOLCHAIN_SRC_DIST_DIR = os.path.join(RUST_TOOLCHAIN_LIB_DIR, 'rustlib',
                                            'src', 'rust')
 RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR = os.path.join(RUST_TOOLCHAIN_SRC_DIST_DIR,
                                                   'vendor')
-VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'config.toml.template')
 RUST_SRC_VENDOR_DIR = os.path.join(RUST_SRC_DIR, 'vendor')

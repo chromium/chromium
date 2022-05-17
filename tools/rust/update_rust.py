@@ -13,6 +13,7 @@ a Chromium checkout to access functions from other scripts.
 
 import argparse
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -39,12 +40,25 @@ THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
+VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 
 
+# Get the target version as specified above.
 def GetPackageVersion():
   from update import (CLANG_REVISION, CLANG_SUB_REVISION)
   return '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, CLANG_REVISION,
                           CLANG_SUB_REVISION)
+
+
+# Get the version of the toolchain package we already have.
+def GetStampVersion():
+  if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+    with open(VERSION_STAMP_PATH) as version_file:
+      existing_stamp = version_file.readline().rstrip()
+    version_re = re.compile(r'rustc [0-9.]+-dev \((.+?) chromium\)')
+    return version_re.fullmatch(existing_stamp).group(1)
+
+  return None
 
 
 def main():
@@ -69,16 +83,21 @@ def main():
 
   from update import (DownloadAndUnpack, GetDefaultHostOs, GetPlatformUrlPrefix)
 
-  try:
-    with tempfile.TemporaryDirectory() as tdir:
-      url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
-          GetDefaultHostOs()), GetPackageVersion())
-      DownloadAndUnpack(url, tdir)
+  # Exit early if the existing package is up-to-date. Note that we cannot simply
+  # call DownloadAndUnpack() every time: aside from unnecessarily downloading
+  # the toolchain if it hasn't changed, it also leads to multiple versions of
+  # the same rustlibs. build/rust/std/find_std_rlibs.py chokes in this case.
+  if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+    if GetPackageVersion() == GetStampVersion():
+      return 0
 
-      # If download was successful, swap out existing rust-toolchain dir with
-      # newly extracted one.
-      shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
-      shutil.move(os.path.join(tdir, 'rust-toolchain'), RUST_TOOLCHAIN_OUT_DIR)
+  if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+    shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
+
+  try:
+    url = '%srust-toolchain-%s.tgz' % (GetPlatformUrlPrefix(
+        GetDefaultHostOs()), GetPackageVersion())
+    DownloadAndUnpack(url, THIRD_PARTY_DIR)
   except urllib.error.HTTPError as e:
     # Fail softly for now. This can happen if a Rust package was not produced,
     # e.g. if the Rust build failed upon a Clang update, or if a Rust roll and
@@ -86,6 +105,9 @@ def main():
     #
     # TODO(https://crbug.com/1245714): reconsider how to handle this.
     print(f'warning: could not download Rust package')
+
+  # Ensure the newly extracted package has the correct version.
+  assert GetPackageVersion() == GetStampVersion()
 
 
 if __name__ == '__main__':
