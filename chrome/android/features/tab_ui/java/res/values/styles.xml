@@ -101,9 +101,4 @@
         <item name="chipColor">@color/chip_background_color</item>
     </style>
 
-    <style name="TextAppearance.TasksSurfaceSearchBoxText">
-        <item name="android:textSize">@dimen/tasks_surface_location_bar_url_text_size</item>
-        <item name="android:textColorHint">@macro/search_box_hint</item>
-    </style>
-
 </resources>
