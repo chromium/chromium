@@ -166,7 +166,7 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
   sharing_hub::SharingHubBubbleController* controller =
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           &GetWebContents());
-  controller->ShowBubble();
+  controller->ShowBubble(share::ShareAttempt(&GetWebContents()));
 }
 
 bool SendTabToSelfBubbleController::InitialSendAnimationShown() {

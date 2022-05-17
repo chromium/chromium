@@ -419,6 +419,7 @@ static_library("ui") {
     "//chrome/browser/resources/omnibox:resources",
     "//chrome/browser/resources/usb_internals:resources",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/share",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/download_shelf:mojo_bindings",

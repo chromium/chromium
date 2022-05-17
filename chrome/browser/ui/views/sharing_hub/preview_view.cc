@@ -60,7 +60,7 @@ LayoutVariant LayoutVariant::FromFeatureConfig() {
 //     View [FlexLayout, vertical]
 //       Label (title)
 //       Label (URL)
-PreviewView::PreviewView(std::u16string title, GURL url, ui::ImageModel image) {
+PreviewView::PreviewView(share::ShareAttempt attempt, ui::ImageModel image) {
   auto variant = LayoutVariant::FromFeatureConfig();
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -92,9 +92,9 @@ PreviewView::PreviewView(std::u16string title, GURL url, ui::ImageModel image) {
   // use a hardcoded font, but we could also specify the font more explicitly
   // here.
   title_ = labels_container->AddChildView(std::make_unique<views::Label>(
-      title, views::style::CONTEXT_DIALOG_TITLE));
+      attempt.title, views::style::CONTEXT_DIALOG_TITLE));
   url_ = labels_container->AddChildView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(url.spec()), views::style::CONTEXT_DIALOG_TITLE,
+      base::UTF8ToUTF16(attempt.url.spec()), views::style::CONTEXT_DIALOG_TITLE,
       views::style::STYLE_HINT));
 }
 

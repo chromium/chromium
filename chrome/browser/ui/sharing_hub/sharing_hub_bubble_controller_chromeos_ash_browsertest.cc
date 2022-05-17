@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(SharingHubBubbleControllerChromeOsBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   sharing_hub::SharingHubBubbleControllerChromeOsImpl::
       CreateOrGetFromWebContents(web_contents)
-          ->ShowBubble();
+          ->ShowBubble(share::ShareAttempt(web_contents));
 
   // Verify that the sharesheet is open.
   sharesheet::SharesheetUiDelegate* bubble_delegate =

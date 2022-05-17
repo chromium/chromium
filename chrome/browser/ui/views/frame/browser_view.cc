@@ -2414,10 +2414,10 @@ views::Button* BrowserView::GetSharingHubIconButton() {
 }
 #else
 sharing_hub::SharingHubBubbleView* BrowserView::ShowSharingHubBubble(
-    content::WebContents* web_contents) {
+    share::ShareAttempt attempt) {
   auto* bubble = new sharing_hub::SharingHubBubbleViewImpl(
       toolbar_button_provider()->GetAnchorView(PageActionIconType::kSharingHub),
-      web_contents);
+      attempt);
   PageActionIconView* icon_view =
       toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kSharingHub);

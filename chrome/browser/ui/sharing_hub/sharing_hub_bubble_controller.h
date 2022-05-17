@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
+#include "chrome/browser/share/share_attempt.h"
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -25,7 +27,7 @@ class SharingHubBubbleController {
   // Hides the sharing bubble.
   virtual void HideBubble() = 0;
   // Displays the sharing bubble.
-  virtual void ShowBubble() = 0;
+  virtual void ShowBubble(share::ShareAttempt attempt) = 0;
 
   // Returns nullptr if no bubble is currently shown.
   virtual SharingHubBubbleView* sharing_hub_bubble_view() const = 0;

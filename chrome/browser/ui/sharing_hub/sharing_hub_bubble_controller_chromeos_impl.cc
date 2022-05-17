@@ -112,7 +112,8 @@ void SharingHubBubbleControllerChromeOsImpl::HideBubble() {
   }
 }
 
-void SharingHubBubbleControllerChromeOsImpl::ShowBubble() {
+void SharingHubBubbleControllerChromeOsImpl::ShowBubble(
+    share::ShareAttempt attempt) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
 
   // Ignore subsequent calls to open the Sharesheet if it already is open. This
