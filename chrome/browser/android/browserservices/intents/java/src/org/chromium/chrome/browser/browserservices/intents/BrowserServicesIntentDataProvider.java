@@ -318,15 +318,6 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return Whether the Activity should attempt to load a dynamic module.
-     *
-     * Will return false if native is not initialized.
-     */
-    public boolean isDynamicModuleEnabled() {
-        return false;
-    }
-
-    /**
      * Returns {@link TrustedWebActivityDisplayMode} supplied in the intent.
      */
     @Nullable
@@ -481,6 +472,14 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public @CloseButtonPosition int getCloseButtonPosition() {
         return CLOSE_BUTTON_POSITION_DEFAULT;
+    }
+
+    /**
+     * If {@code true} the App Menu will not be shown. If {@code false} it will be left to the
+     * Activity to decide.
+     */
+    public boolean shouldSuppressAppMenu() {
+        return false;
     }
 
     /**

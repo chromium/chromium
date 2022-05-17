@@ -561,4 +561,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         }
         super.maybePreconnect();
     }
+
+    @Override
+    public boolean supportsAppMenu() {
+        if (mIntentDataProvider.shouldSuppressAppMenu()) return false;
+
+        return super.supportsAppMenu();
+    }
 }

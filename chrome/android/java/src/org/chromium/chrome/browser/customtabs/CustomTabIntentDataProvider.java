@@ -882,6 +882,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return IntentUtils.safeGetIntExtra(
                 mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
     }
+    @Override
+    public boolean shouldSuppressAppMenu() {
+        // The media viewer has no default menu items, so if there are also no custom items, we
+        // should disable the menu altogether.
+        return isMediaViewer() && getMenuTitles().isEmpty();
+    }
 
     @Override
     public int getPartialTabToolbarCornerRadius() {

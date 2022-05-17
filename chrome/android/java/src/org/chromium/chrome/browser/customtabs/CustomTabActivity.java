@@ -258,16 +258,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         return new CustomTabIntentDataProvider(intent, this, colorScheme);
     }
 
-    @Override
-    public boolean supportsAppMenu() {
-        // The media viewer has no default menu items, so if there are also no custom items, we
-        // should disable the menu altogether.
-        if (mIntentDataProvider.isMediaViewer() && mIntentDataProvider.getMenuTitles().isEmpty()) {
-            return false;
-        }
-        return super.supportsAppMenu();
-    }
-
     /**
      * Show the web page with CustomTabActivity, without any navigation control.
      * Used in showing the terms of services page or help pages for Chrome.
