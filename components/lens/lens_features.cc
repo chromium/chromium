@@ -49,6 +49,9 @@ constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/"};
 
+const base::FeatureParam<bool> kSendImagesAsPng{&kLensStandalone,
+                                                "send-png-images", false};
+
 bool GetEnableUKMLoggingForRegionSearch() {
   return kEnableUKMLoggingForRegionSearch.Get();
 }
@@ -76,6 +79,11 @@ std::string GetHomepageURLForLens() {
 bool IsLensSidePanelEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          kEnableSidePanelForLens.Get();
+}
+
+bool GetSendImagesAsPng() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         kSendImagesAsPng.Get();
 }
 
 }  // namespace features

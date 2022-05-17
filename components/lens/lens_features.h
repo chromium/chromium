@@ -44,6 +44,9 @@ extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
 // Enables the side panel for Lens features on Chrome where supported.
 extern const base::FeatureParam<bool> kEnableSidePanelForLens;
 
+// Sends images as PNG to Lens Standalone to fix issues with transparency.
+extern const base::FeatureParam<bool> kSendImagesAsPng;
+
 // Returns whether to enable UKM logging for Lens Region Search feature.
 extern bool GetEnableUKMLoggingForRegionSearch();
 
@@ -65,6 +68,9 @@ extern std::string GetHomepageURLForLens();
 
 // Returns whether the Lens side panel is enabled.
 extern bool IsLensSidePanelEnabled();
+
+// Returns whether to send images to Lens Standalone as PNG
+extern bool GetSendImagesAsPng();
 
 }  // namespace features
 }  // namespace lens
