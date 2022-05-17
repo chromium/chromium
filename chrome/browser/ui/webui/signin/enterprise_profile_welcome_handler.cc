@@ -279,6 +279,10 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       dict.SetStringKey("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
+      title = l10n_util::GetStringUTF8(
+          profile_creation_required_by_policy_
+              ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
+              : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE);
       dict.SetBoolKey("showEnterpriseBadge", false);
       subtitle = GetManagedAccountTitleWithEmail(entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(
