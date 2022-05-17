@@ -100,9 +100,11 @@ class ScreenLockerUnitTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_->SetUp());
 
     // Set up certificate provider service for the signin profile.
-    CertificateProviderServiceFactory::GetInstance()->SetTestingFactory(
-        testing_profile_manager_->CreateTestingProfile(chrome::kInitialProfile),
-        base::BindRepeating(&CreateCertificateProviderService));
+    chromeos::CertificateProviderServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            testing_profile_manager_->CreateTestingProfile(
+                chrome::kInitialProfile),
+            base::BindRepeating(&CreateCertificateProviderService));
 
     user_profile_ = testing_profile_manager_->CreateTestingProfile(
         test_account_id_.GetUserEmail());

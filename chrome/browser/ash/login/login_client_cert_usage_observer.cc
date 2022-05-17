@@ -21,9 +21,9 @@
 namespace ash {
 namespace {
 
-CertificateProviderService* GetCertificateProviderService() {
+chromeos::CertificateProviderService* GetCertificateProviderService() {
   Profile* signin_profile = ProfileHelper::GetSigninProfile();
-  return CertificateProviderServiceFactory::GetForBrowserContext(
+  return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
       signin_profile);
 }
 

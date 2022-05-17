@@ -110,8 +110,8 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
   void Mount(
       const ::user_data_auth::MountRequest& request,
       DBusMethodCallback<::user_data_auth::MountReply> callback) override {
-    CertificateProviderService* certificate_provider_service =
-        CertificateProviderServiceFactory::GetForBrowserContext(
+    chromeos::CertificateProviderService* certificate_provider_service =
+        chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
     // Note: The real cryptohome would call the "ChallengeKey" D-Bus method
     // exposed by Chrome via org.chromium.CryptohomeKeyDelegateInterface, but
@@ -131,8 +131,8 @@ class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
   void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) override {
-    CertificateProviderService* certificate_provider_service =
-        CertificateProviderServiceFactory::GetForBrowserContext(
+    chromeos::CertificateProviderService* certificate_provider_service =
+        chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
     // Note: The real cryptohome would call the "ChallengeKey" D-Bus method
     // exposed by Chrome via org.chromium.CryptohomeKeyDelegateInterface, but

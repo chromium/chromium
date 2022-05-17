@@ -24,7 +24,7 @@
 namespace ash {
 
 ClientCertStoreAsh::ClientCertStoreAsh(
-    std::unique_ptr<CertificateProvider> cert_provider,
+    std::unique_ptr<chromeos::CertificateProvider> cert_provider,
     bool use_system_slot,
     const std::string& username_hash,
     const PasswordDelegateFactory& password_delegate_factory)
@@ -46,7 +46,7 @@ void ClientCertStoreAsh::GetClientCerts(
   base::OnceClosure get_additional_certs_and_continue;
   if (cert_provider_) {
     get_additional_certs_and_continue =
-        base::BindOnce(&CertificateProvider::GetCertificates,
+        base::BindOnce(&chromeos::CertificateProvider::GetCertificates,
                        base::Unretained(cert_provider_.get()),
                        std::move(get_platform_certs_and_filter));
   } else {

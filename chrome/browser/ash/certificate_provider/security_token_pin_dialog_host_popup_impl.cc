@@ -20,7 +20,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -109,4 +109,4 @@ void SecurityTokenPinDialogHostPopupImpl::OnViewDestroyed() {
     std::move(pin_dialog_closed_callback_).Run();
 }
 
-}  // namespace ash
+}  // namespace chromeos

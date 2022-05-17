@@ -15,7 +15,7 @@ namespace views {
 class Widget;
 }  // namespace views
 
-namespace ash {
+namespace chromeos {
 
 class RequestPinView;
 
@@ -64,6 +64,6 @@ class SecurityTokenPinDialogHostPopupImpl final
       this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_

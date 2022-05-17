@@ -13,7 +13,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 
-namespace ash {
+namespace chromeos {
 namespace certificate_provider {
 
 // Holds all information of a certificate that must be synchronously available
@@ -32,14 +32,6 @@ struct CertificateInfo {
 };
 using CertificateInfoList = std::vector<CertificateInfo>;
 
-}  // namespace certificate_provider
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace certificate_provider {
-using ::ash::certificate_provider::CertificateInfo;
 }  // namespace certificate_provider
 }  // namespace chromeos
 

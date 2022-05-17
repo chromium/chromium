@@ -125,8 +125,9 @@ void HandleSignatureKeyChallenge(
   // installed (e.g., for the smart card based login they are force-installed
   // via the DeviceLoginScreenExtensions admin policy).
   Profile* signin_profile = ProfileHelper::GetSigninProfile();
-  CertificateProviderService* certificate_provider_service =
-      CertificateProviderServiceFactory::GetForBrowserContext(signin_profile);
+  chromeos::CertificateProviderService* certificate_provider_service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+          signin_profile);
   if (!certificate_provider_service) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(

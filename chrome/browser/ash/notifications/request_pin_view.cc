@@ -29,7 +29,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -173,7 +173,7 @@ void RequestPinView::Init() {
                              views::LayoutAlignment::kStart);
 
   // Textfield to enter the PIN/PUK.
-  textfield_ = AddChildView(std::make_unique<PassphraseTextfield>());
+  textfield_ = AddChildView(std::make_unique<ash::PassphraseTextfield>());
   textfield_->set_controller(this);
   textfield_->SetEnabled(true);
   textfield_->SetAssociatedLabel(header_label_);
@@ -215,4 +215,4 @@ void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
 BEGIN_METADATA(RequestPinView, views::DialogDelegateView)
 END_METADATA
 
-}  // namespace ash
+}  // namespace chromeos

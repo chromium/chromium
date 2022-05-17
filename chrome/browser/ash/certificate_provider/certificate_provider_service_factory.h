@@ -16,7 +16,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace ash {
+namespace chromeos {
 
 class CertificateProviderService;
 
@@ -47,12 +47,6 @@ class CertificateProviderServiceFactory
       content::BrowserContext* context) const override;
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::CertificateProviderServiceFactory;
-}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_SERVICE_FACTORY_H_

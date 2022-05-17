@@ -6,7 +6,7 @@
 
 #include "net/cert/x509_certificate.h"
 
-namespace ash {
+namespace chromeos {
 namespace certificate_provider {
 
 CertificateInfo::CertificateInfo() {}
@@ -24,4 +24,4 @@ bool CertificateInfo::operator==(const CertificateInfo& other) const {
 }
 
 }  // namespace certificate_provider
-}  // namespace ash
+}  // namespace chromeos

@@ -17,7 +17,7 @@
 #include "net/ssl/ssl_private_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace certificate_provider {
 
 class SignRequests {
@@ -87,6 +87,6 @@ class SignRequests {
 };
 
 }  // namespace certificate_provider
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SIGN_REQUESTS_H_

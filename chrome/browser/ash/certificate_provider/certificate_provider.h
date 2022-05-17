@@ -7,7 +7,7 @@
 
 #include "net/ssl/client_cert_identity.h"
 
-namespace ash {
+namespace chromeos {
 
 class CertificateProvider {
  public:
@@ -20,12 +20,6 @@ class CertificateProvider {
       base::OnceCallback<void(net::ClientCertIdentityList)> callback) = 0;
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::CertificateProvider;
-}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_PROVIDER_H_

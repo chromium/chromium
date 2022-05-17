@@ -10,7 +10,7 @@
 #include "ash/components/security_token_pin/constants.h"
 #include "base/component_export.h"
 
-namespace ash {
+namespace chromeos {
 namespace security_token_pin {
 
 // Generate an error message for a security pin token dialog, based on dialog
@@ -21,6 +21,6 @@ std::u16string GenerateErrorMessage(ErrorLabel error_label,
                                     bool accept_input);
 
 }  // namespace security_token_pin
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_SECURITY_TOKEN_PIN_ERROR_GENERATOR_H_

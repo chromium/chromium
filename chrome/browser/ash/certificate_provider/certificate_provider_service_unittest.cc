@@ -26,7 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -614,4 +614,4 @@ TEST_F(CertificateProviderServiceTest, SignUsingSpkiAsIdentification) {
   EXPECT_EQ(signature_reply, received_signature);
 }
 
-}  // namespace ash
+}  // namespace chromeos

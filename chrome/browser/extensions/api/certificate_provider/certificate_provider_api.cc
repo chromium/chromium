@@ -31,8 +31,10 @@ namespace {
 
 namespace api_cp = ::extensions::api::certificate_provider;
 namespace api_cpi = ::extensions::api::certificate_provider_internal;
-using PinCodeType = ::ash::security_token_pin::CodeType;
-using PinErrorLabel = ::ash::security_token_pin::ErrorLabel;
+using PinCodeType = ::chromeos::security_token_pin::CodeType;
+using PinErrorLabel = ::chromeos::security_token_pin::ErrorLabel;
+using RequestPinResult = ::chromeos::PinDialogManager::RequestPinResult;
+using StopPinRequestResult = ::chromeos::PinDialogManager::StopPinRequestResult;
 
 PinErrorLabel GetErrorLabelForDialog(api_cp::PinRequestErrorType error_type) {
   switch (error_type) {
@@ -179,7 +181,7 @@ scoped_refptr<net::X509Certificate> ParseCertificateDer(
 
 bool ParseCertificateInfo(
     const api_cp::CertificateInfo& info,
-    ash::certificate_provider::CertificateInfo* out_info,
+    chromeos::certificate_provider::CertificateInfo* out_info,
     std::string* out_error_message) {
   out_info->certificate =
       ParseCertificateDer(info.certificate, out_error_message);
@@ -218,7 +220,7 @@ bool ParseCertificateInfo(
 
 bool ParseClientCertificateInfo(
     const api_cp::ClientCertificateInfo& info,
-    ash::certificate_provider::CertificateInfo* out_info,
+    chromeos::certificate_provider::CertificateInfo* out_info,
     std::string* out_error_message) {
   if (info.certificate_chain.empty()) {
     *out_error_message = kCertificateProviderErrorEmptyChain;
@@ -287,8 +289,8 @@ CertificateProviderInternalReportCertificatesFunction::Run() {
       api_cpi::ReportCertificates::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
 
@@ -299,10 +301,10 @@ CertificateProviderInternalReportCertificatesFunction::Run() {
     return RespondNow(Error(kCertificateProviderErrorAborted));
   }
 
-  ash::certificate_provider::CertificateInfoList cert_infos;
+  chromeos::certificate_provider::CertificateInfoList cert_infos;
   std::vector<std::vector<uint8_t>> rejected_certificates;
   for (const api_cp::CertificateInfo& input_cert_info : *params->certificates) {
-    ash::certificate_provider::CertificateInfo parsed_cert_info;
+    chromeos::certificate_provider::CertificateInfo parsed_cert_info;
     std::string error_message;
     if (ParseCertificateInfo(input_cert_info, &parsed_cert_info,
                              &error_message)) {
@@ -344,8 +346,8 @@ CertificateProviderStopPinRequestFunction::Run() {
   LOG(WARNING) << "Handling PIN stop request from extension "
                << extension()->id() << " error " << params->details.error_type;
 
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
   if (params->details.error_type ==
@@ -370,7 +372,7 @@ CertificateProviderStopPinRequestFunction::Run() {
   // the error and not allow any more input.
   const PinErrorLabel error_label =
       GetErrorLabelForDialog(params->details.error_type);
-  const ash::PinDialogManager::StopPinRequestResult stop_request_result =
+  const StopPinRequestResult stop_request_result =
       service->pin_dialog_manager()->StopPinRequestWithError(
           extension()->id(), error_label,
           base::BindOnce(
@@ -378,13 +380,13 @@ CertificateProviderStopPinRequestFunction::Run() {
               this));
   std::string error_result;
   switch (stop_request_result) {
-    case ash::PinDialogManager::StopPinRequestResult::kNoActiveDialog:
+    case StopPinRequestResult::kNoActiveDialog:
       error_result = kCertificateProviderNoActiveDialog;
       break;
-    case ash::PinDialogManager::StopPinRequestResult::kNoUserInput:
+    case StopPinRequestResult::kNoUserInput:
       error_result = kCertificateProviderNoUserInput;
       break;
-    case ash::PinDialogManager::StopPinRequestResult::kSuccess:
+    case StopPinRequestResult::kSuccess:
       return RespondLater();
   }
   // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
@@ -402,8 +404,8 @@ CertificateProviderRequestPinFunction::
     ~CertificateProviderRequestPinFunction() {}
 
 bool CertificateProviderRequestPinFunction::ShouldSkipQuotaLimiting() const {
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
 
@@ -454,8 +456,8 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
           ? PinCodeType::kPin
           : PinCodeType::kPuk;
 
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
 
@@ -472,24 +474,22 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
                << " type " << params->details.request_type << " error "
                << params->details.error_type << " attempts " << attempts_left;
 
-  const ash::PinDialogManager::RequestPinResult result =
-      service->pin_dialog_manager()->RequestPin(
-          extension()->id(), extension()->name(),
-          params->details.sign_request_id, code_type, error_label,
-          attempts_left,
-          base::BindOnce(
-              &CertificateProviderRequestPinFunction::OnInputReceived, this));
+  const RequestPinResult result = service->pin_dialog_manager()->RequestPin(
+      extension()->id(), extension()->name(), params->details.sign_request_id,
+      code_type, error_label, attempts_left,
+      base::BindOnce(&CertificateProviderRequestPinFunction::OnInputReceived,
+                     this));
   std::string error_result;
   switch (result) {
-    case ash::PinDialogManager::RequestPinResult::kSuccess:
+    case RequestPinResult::kSuccess:
       return RespondLater();
-    case ash::PinDialogManager::RequestPinResult::kInvalidId:
+    case RequestPinResult::kInvalidId:
       error_result = kCertificateProviderInvalidSignId;
       break;
-    case ash::PinDialogManager::RequestPinResult::kOtherFlowInProgress:
+    case RequestPinResult::kOtherFlowInProgress:
       error_result = kCertificateProviderOtherFlowInProgress;
       break;
-    case ash::PinDialogManager::RequestPinResult::kDialogDisplayedAlready:
+    case RequestPinResult::kDialogDisplayedAlready:
       error_result = kCertificateProviderPreviousDialogActive;
       break;
   }
@@ -501,8 +501,8 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
 void CertificateProviderRequestPinFunction::OnInputReceived(
     const std::string& value) {
   std::unique_ptr<base::ListValue> create_results(new base::ListValue());
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
   if (!value.empty()) {
@@ -532,11 +532,11 @@ CertificateProviderSetCertificatesFunction::Run() {
     return RespondNow(Error(kCertificateProviderErrorUnexpectedError));
   }
 
-  ash::certificate_provider::CertificateInfoList accepted_certificates;
+  chromeos::certificate_provider::CertificateInfoList accepted_certificates;
   uint32_t rejected_certificates_count = 0;
   for (const api_cp::ClientCertificateInfo& input_cert_info :
        params->details.client_certificates) {
-    ash::certificate_provider::CertificateInfo parsed_cert_info;
+    chromeos::certificate_provider::CertificateInfo parsed_cert_info;
     std::string parsing_error_message;
     if (ParseClientCertificateInfo(input_cert_info, &parsed_cert_info,
                                    &parsing_error_message)) {
@@ -553,8 +553,8 @@ CertificateProviderSetCertificatesFunction::Run() {
                << ": " << accepted_certificates.size() << ", rejected "
                << rejected_certificates_count;
 
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
   service->SetCertificatesProvidedByExtension(extension_id(),
@@ -580,8 +580,8 @@ CertificateProviderInternalReportSignatureFunction::Run() {
       api_cpi::ReportSignature::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
 
@@ -619,8 +619,8 @@ CertificateProviderReportSignatureFunction::Run() {
     return RespondNow(Error(kCertificateProviderErrorNeitherResultNorError));
   }
 
-  ash::CertificateProviderService* const service =
-      ash::CertificateProviderServiceFactory::GetForBrowserContext(
+  chromeos::CertificateProviderService* const service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
   DCHECK(service);
 

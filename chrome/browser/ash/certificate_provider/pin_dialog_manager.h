@@ -20,7 +20,7 @@
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 
 // Manages the state of the dialog that requests the PIN from user. Used by the
 // extensions that need to request the PIN. Implemented as requirement for
@@ -200,12 +200,6 @@ class PinDialogManager final {
   base::WeakPtrFactory<PinDialogManager> weak_factory_{this};
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::PinDialogManager;
-}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_PIN_DIALOG_MANAGER_H_

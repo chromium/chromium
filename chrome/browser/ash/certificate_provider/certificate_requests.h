@@ -13,7 +13,7 @@
 #include "base/callback_forward.h"
 #include "net/ssl/client_cert_identity.h"
 
-namespace ash {
+namespace chromeos {
 namespace certificate_provider {
 
 class CertificateRequests {
@@ -58,6 +58,6 @@ class CertificateRequests {
 };
 
 }  // namespace certificate_provider
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_CERTIFICATE_REQUESTS_H_

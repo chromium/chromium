@@ -7,7 +7,7 @@
 
 // This header contains types related to the security token PIN requests.
 
-namespace ash {
+namespace chromeos {
 namespace security_token_pin {
 
 // Type of the information asked from the user during a security token PIN
@@ -26,14 +26,6 @@ enum class ErrorLabel {
   kMaxAttemptsExceeded = 4,
 };
 
-}  // namespace security_token_pin
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-namespace security_token_pin {
-using ::ash::security_token_pin::CodeType;
-using ::ash::security_token_pin::ErrorLabel;
 }  // namespace security_token_pin
 }  // namespace chromeos
 

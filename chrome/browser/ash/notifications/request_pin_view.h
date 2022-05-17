@@ -24,7 +24,7 @@ namespace views {
 class Label;
 }  // namespace views
 
-namespace ash {
+namespace chromeos {
 
 // A dialog box for requesting PIN code. Instances of this class are managed by
 // SecurityTokenPinDialogHostPopupImpl.
@@ -112,6 +112,6 @@ class RequestPinView final : public views::DialogDelegateView,
   base::WeakPtrFactory<RequestPinView> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_REQUEST_PIN_VIEW_H_

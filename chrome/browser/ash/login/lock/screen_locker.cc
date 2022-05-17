@@ -153,9 +153,9 @@ ScreenLockObserver* g_screen_lock_observer = nullptr;
 const base::Clock* g_clock_for_testing_ = nullptr;
 const base::TickClock* g_tick_clock_for_testing_ = nullptr;
 
-CertificateProviderService* GetLoginScreenCertProviderService() {
+chromeos::CertificateProviderService* GetLoginScreenCertProviderService() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
-  return CertificateProviderServiceFactory::GetForBrowserContext(
+  return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
       ProfileHelper::GetSigninProfile());
 }
 

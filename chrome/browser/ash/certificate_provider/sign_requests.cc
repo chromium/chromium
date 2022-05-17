@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/certificate_provider/sign_requests.h"
 
-namespace ash {
+namespace chromeos {
 namespace certificate_provider {
 
 SignRequests::Request::Request(
@@ -92,4 +92,4 @@ std::vector<net::SSLPrivateKey::SignCallback> SignRequests::RemoveAllRequests(
 }
 
 }  // namespace certificate_provider
-}  // namespace ash
+}  // namespace chromeos

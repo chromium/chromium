@@ -21,7 +21,7 @@ SecurityTokenSessionControllerFactory::SecurityTokenSessionControllerFactory()
     : BrowserContextKeyedServiceFactory(
           "SecurityTokenSessionController",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(CertificateProviderServiceFactory::GetInstance());
+  DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 }
 
 SecurityTokenSessionControllerFactory::
@@ -57,8 +57,9 @@ KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
       Profile::FromBrowserContext(context));
-  CertificateProviderService* certificate_provider_service =
-      CertificateProviderServiceFactory::GetForBrowserContext(context);
+  chromeos::CertificateProviderService* certificate_provider_service =
+      chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+          context);
   return new SecurityTokenSessionController(local_state, profile->GetPrefs(),
                                             user, certificate_provider_service);
 }

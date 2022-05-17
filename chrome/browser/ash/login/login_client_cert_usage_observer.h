@@ -18,7 +18,7 @@ namespace ash {
 // Observes and remembers the extension-provided client certificates that were
 // used to successfully sign data on the login screen.
 class LoginClientCertUsageObserver final
-    : public CertificateProviderService::Observer {
+    : public chromeos::CertificateProviderService::Observer {
  public:
   LoginClientCertUsageObserver();
 

@@ -161,7 +161,7 @@ SecurityTokenSessionController::SecurityTokenSessionController(
     PrefService* local_state,
     PrefService* profile_prefs,
     const user_manager::User* user,
-    CertificateProviderService* certificate_provider_service)
+    chromeos::CertificateProviderService* certificate_provider_service)
     : local_state_(local_state),
       profile_prefs_(profile_prefs),
       user_(user),
@@ -210,7 +210,7 @@ void SecurityTokenSessionController::OnChallengeResponseKeysUpdated() {
 
 void SecurityTokenSessionController::OnCertificatesUpdated(
     const std::string& extension_id,
-    const std::vector<certificate_provider::CertificateInfo>&
+    const std::vector<chromeos::certificate_provider::CertificateInfo>&
         certificate_infos) {
   if (behavior_ == Behavior::kIgnore)
     return;

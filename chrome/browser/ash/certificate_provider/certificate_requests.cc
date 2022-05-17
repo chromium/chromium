@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
-namespace ash {
+namespace chromeos {
 namespace certificate_provider {
 
 namespace {
@@ -108,4 +108,4 @@ std::vector<int> CertificateRequests::DropExtension(
 }
 
 }  // namespace certificate_provider
-}  // namespace ash
+}  // namespace chromeos

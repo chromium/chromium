@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "net/base/net_errors.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -490,4 +490,4 @@ void CertificateProviderService::RequestSignatureFromExtension(
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

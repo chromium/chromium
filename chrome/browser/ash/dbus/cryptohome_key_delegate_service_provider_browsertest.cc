@@ -109,10 +109,10 @@ class CryptohomeKeyDelegateServiceProviderTest
 
   // Refreshes the browser's state from the current certificate providers.
   void RefreshCertsFromCertProviders() {
-    CertificateProviderService* cert_provider_service =
-        CertificateProviderServiceFactory::GetForBrowserContext(
+    chromeos::CertificateProviderService* cert_provider_service =
+        chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
-    std::unique_ptr<CertificateProvider> cert_provider =
+    std::unique_ptr<chromeos::CertificateProvider> cert_provider =
         cert_provider_service->CreateCertificateProvider();
     base::RunLoop run_loop;
     cert_provider->GetCertificates(base::BindLambdaForTesting(
