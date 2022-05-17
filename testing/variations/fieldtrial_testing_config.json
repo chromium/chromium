@@ -5191,7 +5191,7 @@
                 {
                     "name": "Enabled_90_Days_V2",
                     "params": {
-                        "OmniboxLocalZeroSuggestAgeThreshold": "90"
+                        "OmniboxLocalZeroSuggestAgeThreshold": "60"
                     },
                     "enable_features": [
                         "LocalHistoryZeroSuggest",
