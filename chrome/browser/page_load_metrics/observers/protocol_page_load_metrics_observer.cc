@@ -34,11 +34,13 @@ ProtocolPageLoadMetricsObserver::OnStart(
   return started_in_foreground ? CONTINUE_OBSERVING : STOP_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ProtocolPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // All observing events are preprocessed by PageLoadTracker so that the
+  // outermost page's observer instance sees gathered information. So, the
+  // instance for FencedFrames doesn't need to do anything.
   return STOP_OBSERVING;
 }
 
