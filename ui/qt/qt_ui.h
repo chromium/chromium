@@ -63,19 +63,11 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   std::unique_ptr<views::Border> CreateNativeBorder(
       views::LabelButton* owning_button,
       std::unique_ptr<views::LabelButtonBorder> border) override;
-  void AddWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
-  void RemoveWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   void NotifyWindowManagerStartupComplete() override;
   void UpdateDeviceScaleFactor() override;
   float GetDeviceScaleFactor() const override;
-  void AddDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
-  void RemoveDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
   std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;

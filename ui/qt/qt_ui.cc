@@ -202,16 +202,6 @@ std::unique_ptr<views::Border> QtUi::CreateNativeBorder(
   return nullptr;
 }
 
-void QtUi::AddWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void QtUi::RemoveWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
   NOTIMPLEMENTED_LOG_ONCE();
@@ -228,16 +218,6 @@ void QtUi::UpdateDeviceScaleFactor() {
 
 float QtUi::GetDeviceScaleFactor() const {
   return shim_->GetScaleFactor();
-}
-
-void QtUi::AddDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void QtUi::RemoveDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
-  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool QtUi::PreferDarkTheme() const {

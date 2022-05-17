@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/observer_list.h"
+#include "base/containers/fixed_flat_map.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -25,7 +25,6 @@ typedef struct _GtkStyle GtkStyle;
 namespace gtk {
 using ColorMap = std::map<int, SkColor>;
 
-class DeviceScaleFactorObserver;
 class GtkKeyBindingsHandler;
 class NativeThemeGtk;
 class SettingsProvider;
@@ -91,19 +90,11 @@ class GtkUi : public views::LinuxUI {
   std::unique_ptr<views::Border> CreateNativeBorder(
       views::LabelButton* owning_button,
       std::unique_ptr<views::LabelButtonBorder> border) override;
-  void AddWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
-  void RemoveWindowButtonOrderObserver(
-      views::WindowButtonOrderObserver* observer) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   void NotifyWindowManagerStartupComplete() override;
   void UpdateDeviceScaleFactor() override;
   float GetDeviceScaleFactor() const override;
-  void AddDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
-  void RemoveDeviceScaleFactorObserver(
-      views::DeviceScaleFactorObserver* observer) override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;
   std::unique_ptr<views::NavButtonProvider> CreateNavButtonProvider() override;
@@ -189,14 +180,6 @@ class GtkUi : public views::LinuxUI {
 
   // This is only used on GTK3.
   std::unique_ptr<GtkKeyBindingsHandler> key_bindings_handler_;
-
-  // Objects to notify when the window frame button order changes.
-  base::ObserverList<views::WindowButtonOrderObserver>::Unchecked
-      window_button_order_observer_list_;
-
-  // Objects to notify when the device scale factor changes.
-  base::ObserverList<views::DeviceScaleFactorObserver>::Unchecked
-      device_scale_factor_observer_list_;
 
   // The action to take when middle, double, or right clicking the titlebar.
   base::flat_map<WindowFrameActionSource, WindowFrameAction>

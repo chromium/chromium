@@ -680,16 +680,6 @@ std::unique_ptr<views::Border> GtkUi::CreateNativeBorder(
   return std::move(gtk_border);
 }
 
-void GtkUi::AddWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
-  window_button_order_observer_list_.AddObserver(observer);
-}
-
-void GtkUi::RemoveWindowButtonOrderObserver(
-    views::WindowButtonOrderObserver* observer) {
-  window_button_order_observer_list_.RemoveObserver(observer);
-}
-
 void GtkUi::SetWindowButtonOrdering(
     const std::vector<views::FrameButton>& leading_buttons,
     const std::vector<views::FrameButton>& trailing_buttons) {
@@ -697,7 +687,7 @@ void GtkUi::SetWindowButtonOrdering(
       leading_buttons, trailing_buttons);
 
   for (views::WindowButtonOrderObserver& observer :
-       window_button_order_observer_list_) {
+       window_button_order_observer_list()) {
     observer.OnWindowButtonOrderingChange();
   }
 }
@@ -745,16 +735,6 @@ void GtkUi::NotifyWindowManagerStartupComplete() {
   // TODO(port) Implement this using _NET_STARTUP_INFO_BEGIN/_NET_STARTUP_INFO
   // from http://standards.freedesktop.org/startup-notification-spec/ instead.
   gdk_display_notify_startup_complete(gdk_display_get_default(), nullptr);
-}
-
-void GtkUi::AddDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
-  device_scale_factor_observer_list_.AddObserver(observer);
-}
-
-void GtkUi::RemoveDeviceScaleFactorObserver(
-    views::DeviceScaleFactorObserver* observer) {
-  device_scale_factor_observer_list_.RemoveObserver(observer);
 }
 
 bool GtkUi::PreferDarkTheme() const {
@@ -1190,7 +1170,7 @@ void GtkUi::UpdateDeviceScaleFactor() {
   device_scale_factor_ = GetRawDeviceScaleFactor();
   if (device_scale_factor_ != old_device_scale_factor) {
     for (views::DeviceScaleFactorObserver& observer :
-         device_scale_factor_observer_list_) {
+         device_scale_factor_observer_list()) {
       observer.OnDeviceScaleFactorChanged();
     }
   }

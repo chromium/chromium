@@ -100,6 +100,21 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // running with the "--ash" flag.)
   static LinuxUI* instance();
 
+  // Notifies the observer about changes about how window buttons should be
+  // laid out.
+  void AddWindowButtonOrderObserver(WindowButtonOrderObserver* observer);
+
+  // Removes the observer from the LinuxUI's list.
+  void RemoveWindowButtonOrderObserver(WindowButtonOrderObserver* observer);
+
+  // Registers |observer| to be notified about changes to the device
+  // scale factor.
+  void AddDeviceScaleFactorObserver(DeviceScaleFactorObserver* observer);
+
+  // Unregisters |observer| from receiving changes to the device scale
+  // factor.
+  void RemoveDeviceScaleFactorObserver(DeviceScaleFactorObserver* observer);
+
   // Returns true on success.  If false is returned, this instance shouldn't
   // be used and the behavior of all functions is undefined.
   [[nodiscard]] virtual bool Initialize() = 0;
@@ -142,16 +157,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
       views::LabelButton* owning_button,
       std::unique_ptr<views::LabelButtonBorder> border) = 0;
 
-  // Notifies the observer about changes about how window buttons should be
-  // laid out. If the order is anything other than the default min,max,close on
-  // the right, will immediately send a button change event to the observer.
-  virtual void AddWindowButtonOrderObserver(
-      WindowButtonOrderObserver* observer) = 0;
-
-  // Removes the observer from the LinuxUI's list.
-  virtual void RemoveWindowButtonOrderObserver(
-      WindowButtonOrderObserver* observer) = 0;
-
   // What action we should take when the user clicks on the non-client area.
   // |source| describes the type of click.
   virtual WindowFrameAction GetWindowFrameAction(
@@ -169,16 +174,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
 
   // Determines the device scale factor of the primary screen.
   virtual float GetDeviceScaleFactor() const = 0;
-
-  // Registers |observer| to be notified about changes to the device
-  // scale factor.
-  virtual void AddDeviceScaleFactorObserver(
-      DeviceScaleFactorObserver* observer) = 0;
-
-  // Unregisters |observer| from receiving changes to the device scale
-  // factor.
-  virtual void RemoveDeviceScaleFactorObserver(
-      DeviceScaleFactorObserver* observer) = 0;
 
   // Only used on GTK to indicate if the dark GTK theme variant is
   // preferred.
@@ -225,6 +220,25 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   LinuxUI();
 
   static CmdLineArgs CopyCmdLine(const base::CommandLine& command_line);
+
+  const base::ObserverList<views::WindowButtonOrderObserver>::Unchecked&
+  window_button_order_observer_list() const {
+    return window_button_order_observer_list_;
+  }
+
+  const base::ObserverList<views::DeviceScaleFactorObserver>::Unchecked&
+  device_scale_factor_observer_list() const {
+    return device_scale_factor_observer_list_;
+  }
+
+ private:
+  // Objects to notify when the window frame button order changes.
+  base::ObserverList<views::WindowButtonOrderObserver>::Unchecked
+      window_button_order_observer_list_;
+
+  // Objects to notify when the device scale factor changes.
+  base::ObserverList<views::DeviceScaleFactorObserver>::Unchecked
+      device_scale_factor_observer_list_;
 };
 
 }  // namespace views

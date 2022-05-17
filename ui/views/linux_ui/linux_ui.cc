@@ -51,6 +51,26 @@ LinuxUI::CmdLineArgs& LinuxUI::CmdLineArgs::operator=(const CmdLineArgs&) =
 
 LinuxUI::CmdLineArgs::~CmdLineArgs() = default;
 
+void LinuxUI::AddWindowButtonOrderObserver(
+    views::WindowButtonOrderObserver* observer) {
+  window_button_order_observer_list_.AddObserver(observer);
+}
+
+void LinuxUI::RemoveWindowButtonOrderObserver(
+    views::WindowButtonOrderObserver* observer) {
+  window_button_order_observer_list_.RemoveObserver(observer);
+}
+
+void LinuxUI::AddDeviceScaleFactorObserver(
+    views::DeviceScaleFactorObserver* observer) {
+  device_scale_factor_observer_list_.AddObserver(observer);
+}
+
+void LinuxUI::RemoveDeviceScaleFactorObserver(
+    views::DeviceScaleFactorObserver* observer) {
+  device_scale_factor_observer_list_.RemoveObserver(observer);
+}
+
 // static
 LinuxUI::CmdLineArgs LinuxUI::CopyCmdLine(
     const base::CommandLine& command_line) {
