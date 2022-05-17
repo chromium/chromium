@@ -28,6 +28,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
@@ -69,7 +70,8 @@ class TasksSurfaceMediator implements OverviewModeObserver {
         mModel.set(IS_LENS_BUTTON_VISIBLE, false);
     }
 
-    public void initWithNative(OmniboxStub omniboxStub) {
+    public void initWithNative(
+            OmniboxStub omniboxStub, @Nullable FeedReliabilityLogger feedReliabilityLogger) {
         mOmniboxStub = omniboxStub;
         assert mOmniboxStub != null;
 
@@ -102,6 +104,9 @@ class TasksSurfaceMediator implements OverviewModeObserver {
         mModel.set(VOICE_SEARCH_BUTTON_CLICK_LISTENER, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (feedReliabilityLogger != null) {
+                    feedReliabilityLogger.onVoiceSearch();
+                }
                 mOmniboxStub.getVoiceRecognitionHandler().startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.TASKS_SURFACE);
                 RecordUserAction.record("TasksSurface.FakeBox.VoiceSearch");

@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.FeedSurfaceLifecycleManager;
@@ -126,6 +127,10 @@ public class ExploreSurfaceCoordinator {
 
     public void enableSwipeRefresh(boolean isVisible) {
         mFeedSurfaceCoordinator.enableSwipeRefresh(isVisible);
+    }
+
+    public FeedReliabilityLogger getFeedReliabilityLogger() {
+        return mFeedSurfaceCoordinator.getReliabilityLogger();
     }
 
     private class ExploreSurfaceActionDelegate extends FeedActionDelegateImpl {
