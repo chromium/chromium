@@ -7,6 +7,7 @@
 #import "base/allocator/partition_allocator/partition_alloc.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
