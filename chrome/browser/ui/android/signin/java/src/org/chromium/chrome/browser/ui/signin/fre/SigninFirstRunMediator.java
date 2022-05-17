@@ -295,7 +295,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
         // Metrics and Crash Reporting SpanInfo.
         if (!isMetricsReportingDisabled) {
-            footerString += "\n" + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
+            footerString += " " + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
             final NoUnderlineClickableSpan clickableUMADialogSpan =
                     new NoUnderlineClickableSpan(mContext, view -> mDelegate.openUmaDialog());
             spans.add(
