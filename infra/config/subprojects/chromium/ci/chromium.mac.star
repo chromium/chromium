@@ -211,6 +211,8 @@ ci.thin_tester(
         short_name = "11",
     ),
     cq_mirrors_console_view = "mirrors",
+    # TODO crbug/1325672 Removing as builder soon to be decomm'd
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/Mac Builder"],
 )
 
@@ -239,6 +241,8 @@ ci.thin_tester(
         short_name = "12",
     ),
     cq_mirrors_console_view = "mirrors",
+    # TODO crbug/1325672 Removing as builder soon to be decomm'd
+    sheriff_rotations = args.ignore_default(None),
     triggered_by = ["ci/Mac Builder"],
 )
 

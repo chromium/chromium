@@ -30,8 +30,6 @@ ci/Mac ASan 64 Builder
 ci/Mac ASan 64 Tests (1)
 ci/Mac Builder
 ci/Mac Builder (dbg)
-ci/Mac10.11 Tests
-ci/Mac10.12 Tests
 ci/Mac10.13 Tests
 ci/Mac10.14 Tests
 ci/Mac10.15 Tests
