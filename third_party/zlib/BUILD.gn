@@ -265,10 +265,11 @@ source_set("zlib_slide_hash_simd") {
 
 config("zlib_warnings") {
   if (is_clang) {
-    cflags = [ "-Wno-deprecated-non-prototype" ]
-    if (use_x86_x64_optimizations) {
-      cflags += [ "-Wno-incompatible-pointer-types" ]
-    }
+    cflags = [
+      "-Wno-deprecated-non-prototype",
+      "-Wno-incompatible-pointer-types",
+      "-Wunused-variable",
+    ]
   }
 }
 
