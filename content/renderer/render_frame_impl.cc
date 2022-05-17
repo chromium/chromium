@@ -4293,7 +4293,7 @@ void RenderFrameImpl::WillSendRequest(blink::WebURLRequest& request,
                                       ForRedirect for_redirect) {
   // This method is called for subresources, while transition type is
   // a navigation concept. We pass ui::PAGE_TRANSITION_LINK as default one.
-  WillSendRequestInternal(request, /*for_main_frame=*/false,
+  WillSendRequestInternal(request, /*for_outermost_main_frame=*/false,
                           ui::PAGE_TRANSITION_LINK, for_redirect);
 #if !BUILDFLAG(IS_ANDROID)
   for (auto& observer : observers_) {
@@ -4304,7 +4304,7 @@ void RenderFrameImpl::WillSendRequest(blink::WebURLRequest& request,
 
 void RenderFrameImpl::WillSendRequestInternal(
     blink::WebURLRequest& request,
-    bool for_main_frame,
+    bool for_outermost_main_frame,
     ui::PageTransition transition_type,
     ForRedirect for_redirect) {
   if (GetWebView()->GetRendererPreferences().enable_do_not_track) {
@@ -4364,7 +4364,7 @@ void RenderFrameImpl::WillSendRequestInternal(
   url_request_extra_data->set_top_frame_origin(GetSecurityOriginOfTopFrame());
 
   request.SetDownloadToNetworkCacheOnly(is_for_no_state_prefetch &&
-                                        !for_main_frame);
+                                        !for_outermost_main_frame);
 
   // The RenderThreadImpl or its URLLoaderThrottleProvider member may not be
   // valid in some tests.
@@ -5785,8 +5785,8 @@ void RenderFrameImpl::BeginNavigationInternal(
   // TODO(clamy): Apply devtools override.
   // TODO(clamy): Make sure that navigation requests are not modified somewhere
   // else in blink.
-  bool for_main_frame = !frame_->Parent();
-  WillSendRequestInternal(request, for_main_frame, transition_type,
+  bool for_outermost_main_frame = frame_->IsOutermostMainFrame();
+  WillSendRequestInternal(request, for_outermost_main_frame, transition_type,
                           ForRedirect(false));
 
   if (!info->url_request.GetURLRequestExtraData()) {
