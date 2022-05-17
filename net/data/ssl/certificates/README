@@ -161,6 +161,9 @@ unit tests.
 - subjectAltName_sanity_check.pem : Used to test the handling of various types
      within the subjectAltName extension of a certificate.
 
+- policies_sanity_check.pem : Used to test the parsing of various types of
+     certificatePolicies extension policyQualifiers.
+
 - punycodetest.pem : A test self-signed server certificate with punycode name.
      The common name is "xn--wgv71a119e.com" (日本語.com)
 

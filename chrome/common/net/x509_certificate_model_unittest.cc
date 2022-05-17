@@ -197,6 +197,78 @@ TEST_P(X509CertificateModel, SubjectAltNameSanityTest) {
       extensions[1].value);
 }
 
+TEST_P(X509CertificateModel, CertificatePoliciesSanityTest) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "policies_sanity_check.pem");
+  ASSERT_TRUE(cert);
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(cert->cert_buffer()), GetParam());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  ASSERT_EQ(1U, extensions.size());
+  EXPECT_EQ("Certificate Policies", extensions[0].name);
+  EXPECT_EQ(
+      "notcrit\nOID.1.2.3.4.5\nOID.1.3.5.8.12:\n"
+      "  Certification Practice Statement Pointer:"
+      "    http://cps.example.com/foo\n"
+      "  User Notice:Organization Name - #1, #2, #3, #4\n"
+      "    Explicit Text Here\n"
+      "  User Notice:\n    Explicit Text Two\n"
+      "  User Notice:Organization Name Two - #42\n",
+      extensions[0].value);
+}
+
+TEST_P(X509CertificateModel, CertificatePoliciesInvalidUtf8UserNotice) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // \xa1 is a UTF-8 continuation byte, but there is no leading byte before it,
+  // which is invalid.
+  //
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 1.2.3 }
+  //     SEQUENCE {
+  //       SEQUENCE {
+  //         # unotice
+  //         OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.2.2 }
+  //         SEQUENCE {
+  //           # explicitText
+  //           UTF8String { "Explicit \xa1 Text" }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  const uint8_t kExtension[] = {
+      0x30, 0x27, 0x30, 0x25, 0x06, 0x02, 0x2a, 0x03, 0x30, 0x1f, 0x30,
+      0x1d, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x02, 0x02,
+      0x30, 0x11, 0x0c, 0x0f, 0x45, 0x78, 0x70, 0x6c, 0x69, 0x63, 0x69,
+      0x74, 0x20, 0xa1, 0x20, 0x54, 0x65, 0x78, 0x74};
+  builder->SetExtension(
+      net::der::Input(net::kCertificatePoliciesOid),
+      std::string(kExtension, kExtension + sizeof(kExtension)));
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "policies_sanity_check.pem");
+  ASSERT_TRUE(cert);
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  bool found = false;
+  for (const auto& extension : extensions) {
+    if (extension.name == "Certificate Policies") {
+      found = true;
+      EXPECT_EQ("notcrit\nError: Unable to decode extension", extension.value);
+    }
+  }
+
+  EXPECT_TRUE(found);
+}
+
 TEST_P(X509CertificateModel, GlobalsignComCert) {
   auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       "2029_globalsign_com_cert.pem");
@@ -235,6 +307,13 @@ TEST_P(X509CertificateModel, GlobalsignComCert) {
       "TLS WWW Client Authentication (OID.1.3.6.1.5.5.7.3.2)\n",
       extensions[6].value);
 
+  EXPECT_EQ("Certificate Policies", extensions[7].name);
+  EXPECT_EQ(
+      "notcrit\nOID.1.3.6.1.4.1.4146.1.1:\n"
+      "  Certification Practice Statement Pointer:"
+      "    http://www.globalsign.net/repository/\n",
+      extensions[7].value);
+
   EXPECT_EQ("Netscape Certificate Type", extensions[8].name);
   EXPECT_EQ("notcrit\nSSL Client Certificate\nSSL Server Certificate",
             extensions[8].value);
@@ -256,6 +335,16 @@ TEST_P(X509CertificateModel, DiginotarCert) {
       "critical\nIs a Certification Authority\n"
       "Maximum number of intermediate CAs: 0",
       extensions[2].value);
+
+  EXPECT_EQ("Certificate Policies", extensions[3].name);
+  EXPECT_EQ(
+      "notcrit\nOID.2.16.528.1.1001.1.1.1.1.5.2.6.4:\n"
+      "  Certification Practice Statement Pointer:"
+      "    http://www.diginotar.nl/cps\n"
+      "  User Notice:\n"
+      "    Conditions, as mentioned on our website (www.diginotar.nl), are "
+      "applicable to all our products and services.\n",
+      extensions[3].value);
 }
 
 TEST_P(X509CertificateModel, AuthorityKeyIdentifierAllFields) {

@@ -17,12 +17,14 @@
 #include "components/url_formatter/url_formatter.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
+#include "net/cert/internal/certificate_policies.h"
 #include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/parse_name.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
+#include "net/der/parser.h"
 #include "net/der/tag.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -104,6 +106,7 @@ OptionalStringOrError FindAttributeOfType(
                                                          &rv)) {
         return Error();
       }
+      // TODO(mattm): do something about newlines (or other control chars)?
       return rv;
     }
   }
@@ -251,6 +254,7 @@ std::string ProcessRDN(const net::RelativeDistinguishedName& rdn) {
     rv += " = ";
     if (name_attribute.type == net::der::Input(net::kTypeCommonNameOid))
       value = ProcessIDN(value);
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += value;
     rv += "\n";
   }
@@ -274,6 +278,18 @@ OptionalStringOrError RDNSequenceToStringMultiLine(
       return Error();
     rv += rdn_value;
   }
+  return rv;
+}
+
+absl::optional<std::string> ProcessIA5String(net::der::Input extension_data) {
+  net::der::Input value;
+  net::der::Parser parser(extension_data);
+  std::string rv;
+  if (!parser.ReadTag(net::der::kIA5String, &value) || parser.HasMore() ||
+      !net::der::ParseIA5String(value, &rv)) {
+    return absl::nullopt;
+  }
+  // TODO(mattm): do something about newlines (or other control chars)?
   return rv;
 }
 
@@ -458,11 +474,13 @@ absl::optional<std::string> ProcessGeneralNames(
                             ProcessRawBytes(value));
   }
   for (const auto& rfc822_name : names.rfc822_names) {
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_RFC822_NAME, rfc822_name);
   }
   for (const auto& dns_name : names.dns_names) {
     // TODO(mattm): Should probably do ProcessIDN on dnsNames from
     // subjectAltName like we do on subject commonName?
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_DNS_NAME, dns_name);
   }
   for (const auto& x400_address : names.x400_addresses) {
@@ -482,6 +500,7 @@ absl::optional<std::string> ProcessGeneralNames(
   }
   for (const auto& uniform_resource_identifier :
        names.uniform_resource_identifiers) {
+    // TODO(mattm): do something about newlines (or other control chars)?
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_URI,
                             uniform_resource_identifier);
   }
@@ -565,6 +584,168 @@ absl::optional<std::string> ProcessAuthorityKeyId(
   return rv;
 }
 
+absl::optional<std::string> ProcessUserNoticeDisplayText(
+    net::der::Tag tag,
+    net::der::Input value) {
+  std::string display_text;
+  switch (tag) {
+    case net::der::kIA5String:
+      if (!net::der::ParseIA5String(value, &display_text))
+        return absl::nullopt;
+      break;
+    case net::der::kVisibleString:
+      if (!net::der::ParseVisibleString(value, &display_text))
+        return absl::nullopt;
+      break;
+    case net::der::kBmpString:
+      if (!net::der::ParseBmpString(value, &display_text))
+        return absl::nullopt;
+      break;
+    case net::der::kUtf8String:
+      if (!base::IsStringUTF8AllowingNoncharacters(value.AsStringPiece()))
+        return absl::nullopt;
+      display_text = value.AsString();
+      break;
+    default:
+      return absl::nullopt;
+  }
+  // TODO(mattm): do something about newlines (or other control chars)?
+  return display_text;
+}
+
+absl::optional<std::string> ProcessUserNotice(net::der::Input qualifier) {
+  // RFC 5280 section 4.2.1.4:
+  //
+  //    UserNotice ::= SEQUENCE {
+  //         noticeRef        NoticeReference OPTIONAL,
+  //         explicitText     DisplayText OPTIONAL }
+  //
+  //    NoticeReference ::= SEQUENCE {
+  //         organization     DisplayText,
+  //         noticeNumbers    SEQUENCE OF INTEGER }
+  //
+  //    DisplayText ::= CHOICE {
+  //         ia5String        IA5String      (SIZE (1..200)),
+  //         visibleString    VisibleString  (SIZE (1..200)),
+  //         bmpString        BMPString      (SIZE (1..200)),
+  //         utf8String       UTF8String     (SIZE (1..200)) }
+
+  net::der::Parser outer_parser(qualifier);
+  net::der::Parser parser;
+  if (!outer_parser.ReadSequence(&parser) || outer_parser.HasMore())
+    return absl::nullopt;
+
+  absl::optional<net::der::Input> notice_ref_value;
+  if (!parser.ReadOptionalTag(net::der::kSequence, &notice_ref_value))
+    return absl::nullopt;
+
+  std::string rv;
+  if (notice_ref_value) {
+    net::der::Parser notice_ref_parser(*notice_ref_value);
+    net::der::Tag organization_tag;
+    net::der::Input organization_value;
+    if (!notice_ref_parser.ReadTagAndValue(&organization_tag,
+                                           &organization_value)) {
+      return absl::nullopt;
+    }
+    absl::optional<std::string> s =
+        ProcessUserNoticeDisplayText(organization_tag, organization_value);
+    if (!s)
+      return absl::nullopt;
+    rv += *s;
+    rv += " - ";
+
+    net::der::Parser notice_numbers_parser;
+    if (!notice_ref_parser.ReadSequence(&notice_numbers_parser))
+      return absl::nullopt;
+    bool first = true;
+    while (notice_numbers_parser.HasMore()) {
+      net::der::Input notice_number;
+      if (!notice_numbers_parser.ReadTag(net::der::kInteger, &notice_number))
+        return absl::nullopt;
+      if (!first)
+        rv += ", ";
+      rv += '#';
+      uint64_t number;
+      if (net::der::ParseUint64(notice_number, &number))
+        rv += base::NumberToString(number);
+      else
+        rv += ProcessRawBytes(notice_number);
+      first = false;
+    }
+  }
+
+  if (parser.HasMore()) {
+    net::der::Tag explicit_text_tag;
+    net::der::Input explicit_text_value;
+    if (!parser.ReadTagAndValue(&explicit_text_tag, &explicit_text_value))
+      return absl::nullopt;
+    rv += "\n    ";
+    absl::optional<std::string> s =
+        ProcessUserNoticeDisplayText(explicit_text_tag, explicit_text_value);
+    if (!s)
+      return absl::nullopt;
+    rv += *s;
+  }
+
+  if (parser.HasMore())
+    return absl::nullopt;
+
+  return rv;
+}
+
+absl::optional<std::string> ProcessCertificatePolicies(
+    net::der::Input extension_data) {
+  std::vector<net::PolicyInformation> policies;
+  net::CertErrors errors;
+  if (!net::ParseCertificatePoliciesExtension(extension_data, &policies,
+                                              &errors)) {
+    return absl::nullopt;
+  }
+  std::string rv;
+  for (const auto& policy_info : policies) {
+    std::string key = GetOidTextOrNumeric(policy_info.policy_oid);
+    // If there are policy qualifiers, display the oid text
+    // with a ':', otherwise just put the oid text and a newline.
+    if (policy_info.policy_qualifiers.empty()) {
+      rv += key;
+    } else {
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_MULTILINE_INFO_START_FORMAT,
+                                      base::UTF8ToUTF16(key));
+    }
+    rv += '\n';
+
+    if (!policy_info.policy_qualifiers.empty()) {
+      for (const auto& qualifier_info : policy_info.policy_qualifiers) {
+        rv += "  ";
+        rv += l10n_util::GetStringFUTF8(IDS_CERT_MULTILINE_INFO_START_FORMAT,
+                                        base::UTF8ToUTF16(GetOidTextOrNumeric(
+                                            qualifier_info.qualifier_oid)));
+        if (qualifier_info.qualifier_oid ==
+            net::der::Input(net::kCpsPointerId)) {
+          absl::optional<std::string> s =
+              ProcessIA5String(qualifier_info.qualifier);
+          if (!s)
+            return absl::nullopt;
+          rv += "    ";
+          rv += *s;
+        } else if (qualifier_info.qualifier_oid ==
+                   net::der::Input(net::kUserNoticeId)) {
+          absl::optional<std::string> s =
+              ProcessUserNotice(qualifier_info.qualifier);
+          if (!s)
+            return absl::nullopt;
+          rv += *s;
+        } else {
+          rv += ProcessRawBytes(qualifier_info.qualifier);
+        }
+        rv += '\n';
+      }
+    }
+  }
+  return rv;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -635,6 +816,7 @@ std::string X509CertificateModel::GetTitle() const {
   }
 
   if (subject_alt_names_) {
+    // TODO(mattm): do something about newlines (or other control chars)?
     if (!subject_alt_names_->dns_names.empty())
       return std::string(subject_alt_names_->dns_names[0]);
     if (!subject_alt_names_->rfc822_names.empty())
@@ -821,6 +1003,8 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessSubjectKeyId(extension.value);
   if (extension.oid == net::der::Input(net::kAuthorityKeyIdentifierOid))
     return ProcessAuthorityKeyId(extension.value);
+  if (extension.oid == net::der::Input(net::kCertificatePoliciesOid))
+    return ProcessCertificatePolicies(extension.value);
   return ProcessRawBytes(extension.value);
 }
 
