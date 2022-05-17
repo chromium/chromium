@@ -334,10 +334,12 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
       desks_storage::DeskModel::AddOrUpdateEntryStatus::kEntryTooLarge) {
     // Show a toast if the template we tried to save was too large to be
     // transported through Chrome Sync.
+    int toast_text_id = desk_template->type() == DeskTemplateType::kTemplate
+                            ? IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST
+                            : IDS_ASH_DESKS_TEMPLATES_DESK_TOO_LARGE_TOAST;
     ToastData toast_data(kTemplateTooLargeToastName,
                          ToastCatalogName::kDeskTemplateTooLarge,
-                         l10n_util::GetStringUTF16(
-                             IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST));
+                         l10n_util::GetStringUTF16(toast_text_id));
     ToastManager::Get()->Show(toast_data);
     return;
   }

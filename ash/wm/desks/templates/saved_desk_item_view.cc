@@ -478,6 +478,7 @@ void SavedDeskItemView::MaybeShowReplaceDialog(
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   SavedDeskDialogController::Get()->ShowReplaceDialog(
       root_window, name_view_->GetText(),
+      template_to_replace->desk_template_->type(),
       base::BindOnce(
           &SavedDeskItemView::ReplaceTemplate, weak_ptr_factory_.GetWeakPtr(),
           template_to_replace->desk_template_->uuid().AsLowercaseString()),
@@ -634,7 +635,7 @@ void SavedDeskItemView::OnDeleteButtonPressed() {
   auto* dialog_controller = SavedDeskDialogController::Get();
   dialog_controller->ShowDeleteDialog(
       GetWidget()->GetNativeWindow()->GetRootWindow(),
-      name_view_->GetAccessibleName(),
+      name_view_->GetAccessibleName(), desk_template_->type(),
       base::BindOnce(&SavedDeskItemView::OnDeleteTemplate,
                      weak_ptr_factory_.GetWeakPtr()));
 }

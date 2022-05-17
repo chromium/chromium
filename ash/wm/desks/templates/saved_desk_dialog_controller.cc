@@ -187,7 +187,10 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
 
   auto dialog =
       views::Builder<SavedDeskDialog>()
-          .SetTitleText(IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE)
+          .SetTitleText(
+              unsupported_apps_template_->type() == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_TEMPLATE_DIALOG_TITLE
+                  : IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_DESK_DIALOG_TITLE)
           .SetConfirmButtonText(
               IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON)
           .SetDescriptionText(l10n_util::GetStringUTF16(app_description_id))
@@ -221,31 +224,44 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
 void SavedDeskDialogController::ShowReplaceDialog(
     aura::Window* root_window,
     const std::u16string& template_name,
+    DeskTemplateType template_type,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback) {
-  auto dialog = views::Builder<SavedDeskDialog>()
-                    .SetTitleText(IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE)
-                    .SetConfirmButtonText(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
-                    .SetDescriptionText(l10n_util::GetStringFUTF16(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
-                        GetStringWithQuotes(template_name)))
-                    .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
-                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
-                        template_name))
-                    .SetAcceptCallback(std::move(on_accept_callback))
-                    .SetCancelCallback(std::move(on_cancel_callback))
-                    .Build();
+  auto dialog =
+      views::Builder<SavedDeskDialog>()
+          .SetTitleText(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_TITLE
+                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_TITLE)
+          .SetConfirmButtonText(
+              IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
+          .SetDescriptionText(l10n_util::GetStringFUTF16(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+              GetStringWithQuotes(template_name)))
+          .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+              template_name))
+          .SetAcceptCallback(std::move(on_accept_callback))
+          .SetCancelCallback(std::move(on_cancel_callback))
+          .Build();
   CreateDialogWidget(std::move(dialog), root_window);
 }
 
 void SavedDeskDialogController::ShowDeleteDialog(
     aura::Window* root_window,
     const std::u16string& template_name,
+    DeskTemplateType template_type,
     base::OnceClosure on_accept_callback) {
   auto dialog =
       views::Builder<SavedDeskDialog>()
-          .SetTitleText(IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE)
+          .SetTitleText(
+              template_type == DeskTemplateType::kTemplate
+                  ? IDS_ASH_DESKS_TEMPLATES_DELETE_TEMPLATE_DIALOG_TITLE
+                  : IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE)
           .SetButtonLabel(
               ui::DIALOG_BUTTON_OK,
               l10n_util::GetStringUTF16(

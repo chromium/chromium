@@ -744,6 +744,7 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
   // Show one of the dialogs. Activating the dialog keeps us in overview mode.
   auto* dialog_controller = SavedDeskDialogController::Get();
   dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento",
+                                       DeskTemplateType::kTemplate,
                                        base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(GetOverviewSession());
@@ -3026,9 +3027,9 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
   auto callback = base::BindLambdaForTesting(
       [&]() { item_view->ReplaceTemplate(uuid_1.AsLowercaseString()); });
 
-  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(),
-                                       base::UTF8ToUTF16(name_1), callback,
-                                       base::DoNothing());
+  dialog_controller->ShowReplaceDialog(
+      Shell::GetPrimaryRootWindow(), base::UTF8ToUTF16(name_1),
+      DeskTemplateType::kTemplate, callback, base::DoNothing());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(GetOverviewSession());
 

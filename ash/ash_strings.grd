@@ -1799,14 +1799,23 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON" desc="The text of the confirm button of the desks templates delete dialog, which shows up when trying to delete a template.">
         Delete
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE" desc="The text of the title of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_TEMPLATE_DIALOG_TITLE" desc="The text of the title of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Unsupported apps in template
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE" desc="The text of the title of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
+        Unsupported apps in desk
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_TITLE" desc="The text of the title of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
         Replace template?
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE" desc="The text of the title of the desks templates delete dialog, which shows up when trying to delete a template.">
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk replace dialog, which shows up when trying to rename a saved desk to the name of an existing desk.">
+        Replace saved desk?
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_TEMPLATE_DIALOG_TITLE" desc="The text of the title of the desks templates delete dialog, which shows up when trying to delete a template.">
         Delete template?
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE" desc="The text of the title of the saved desk delete dialog, which shows up when trying to delete a saved desk.">
+        Delete saved desk?
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LACROS_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Lacros windows aren't currently supported. Other apps will be saved.
@@ -1820,8 +1829,11 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Incognito windows aren’t currently supported. Other apps will be saved.
       </message>
-      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
         Template named <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> already exists
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates replace dialog, which shows up when trying to rename a template to the name of an existing template.">
+        A saved desk named <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> already exists
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION" desc="The text of the description of the desks templates delete dialog, which shows up when trying to delete a template.">
         <ph name="DESK_TEMPLATE_NAME">$1<ex>Bento</ex></ph> will be permanently deleted
@@ -1876,6 +1888,9 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST" desc="The text of the toast displayed when user tries to save a template whose metadata would exceed the threshold for Chrome Sync. The template is not saved and this toast shows up instead.">
         Couldn’t save template. Too many windows or tabs.
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DESK_TOO_LARGE_TOAST" desc="The text of the toast displayed when user tries to save a desk whose metadata would exceed the threshold for Chrome Sync. The desk is not saved and this toast shows up instead.">
+        Couldn’t save desk. Too many windows or tabs.
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_MANAGEMENT_STATUS_DESCRIPTION" desc="The text of the description under template item if the desks templates is shared by the administrator.">
         Shared by your administrator
