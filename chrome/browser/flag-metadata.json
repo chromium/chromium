@@ -1475,11 +1475,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "edit-passwords-in-settings",
-    "owners": [ "fhorschig", "ioanap", "kazinova@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "elastic-overscroll",
     "owners": [ "arakeri@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 99
