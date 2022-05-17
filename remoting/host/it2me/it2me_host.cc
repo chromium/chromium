@@ -182,7 +182,10 @@ void It2MeHost::ConnectOnNetworkThread(
   }
 
   // Check the host domain policy.
-  if (!required_host_domain_list_.empty()) {
+  // Skip this check for enterprise sessions, as they use the device specific
+  // robot account as host, and we should not expect the customers to add this
+  // internal account to their host domain list.
+  if (!is_enterprise_session_ && !required_host_domain_list_.empty()) {
     bool matched = false;
     for (const auto& domain : required_host_domain_list_) {
       if (base::EndsWith(username, std::string("@") + domain,
