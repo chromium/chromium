@@ -27,9 +27,14 @@ class ExtensionSet {
 
   // Iteration over the values of the map (given that it's an ExtensionSet,
   // it should iterate like a set iterator).
-  class const_iterator : public std::iterator<std::input_iterator_tag,
-                                              scoped_refptr<const Extension> > {
+  class const_iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = scoped_refptr<const Extension>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = scoped_refptr<const Extension>*;
+    using reference = scoped_refptr<const Extension>&;
+
     const_iterator();
     const_iterator(const const_iterator& other);
     explicit const_iterator(ExtensionMap::const_iterator it);
