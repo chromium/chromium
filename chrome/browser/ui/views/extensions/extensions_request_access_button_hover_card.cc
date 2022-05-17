@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 
+#include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
@@ -21,6 +23,8 @@
 #include "ui/views/view.h"
 
 namespace {
+
+views::BubbleDialogModelHost* request_access_bubble = nullptr;
 
 ui::ImageModel GetIcon(ToolbarActionViewController* action,
                        content::WebContents* web_contents) {
@@ -64,10 +68,12 @@ class ExtensionItemFactory
 
 }  // namespace
 
+// static
 void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
     content::WebContents* web_contents,
     views::View* anchor_view,
     std::vector<ToolbarActionViewController*> actions) {
+  DCHECK(!request_access_bubble);
   DCHECK(web_contents);
   DCHECK(!actions.empty());
   std::u16string url = url_formatter::IDNToUnicode(
@@ -75,7 +81,12 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
 
   ui::DialogModel::Builder dialog_builder =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>());
-  dialog_builder.OverrideShowCloseButton(false);
+  dialog_builder
+      .OverrideShowCloseButton(false)
+      // Make sure the widget is closed if the dialog gets destroyed while the
+      // mouse is still on hover.
+      .SetDialogDestroyingCallback(
+          base::BindOnce(&ExtensionsRequestAccessButtonHoverCard::HideBubble));
 
   if (actions.size() == 1) {
     dialog_builder.SetIcon(GetIcon(actions[0], web_contents))
@@ -94,5 +105,19 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
+  request_access_bubble = bubble.get();
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
+}
+
+// static
+void ExtensionsRequestAccessButtonHoverCard::HideBubble() {
+  if (ExtensionsRequestAccessButtonHoverCard::IsShowing()) {
+    request_access_bubble->GetWidget()->Close();
+    request_access_bubble = nullptr;
+  }
+}
+
+// static
+bool ExtensionsRequestAccessButtonHoverCard::IsShowing() {
+  return request_access_bubble != nullptr;
 }

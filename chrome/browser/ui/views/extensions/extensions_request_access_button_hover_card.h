@@ -16,6 +16,13 @@ class ExtensionsRequestAccessButtonHoverCard {
   static void ShowBubble(content::WebContents* web_contents,
                          views::View* anchor_view,
                          std::vector<ToolbarActionViewController*> actions);
+
+  // Hides the currently-showing request access button bubble, if any exists.
+  static void HideBubble();
+
+  // Returns whether there is a currently a request access button bubble
+  // showing.
+  static bool IsShowing();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_REQUEST_ACCESS_BUTTON_HOVER_CARD_H_

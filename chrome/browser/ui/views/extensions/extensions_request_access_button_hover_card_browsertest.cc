@@ -64,7 +64,7 @@ class ExtensionsRequestAccessButtonHoverCardBrowserTest
         ->UpdateRequestAccessButton(extensions_requesting_access);
 
     EXPECT_TRUE(request_access_button()->GetVisible());
-    request_access_button()->ShowHoverCard();
+    request_access_button()->MaybeShowHoverCard();
   }
 
  private:
@@ -75,4 +75,19 @@ class ExtensionsRequestAccessButtonHoverCardBrowserTest
 IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessButtonHoverCardBrowserTest,
                        InvokeUi) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessButtonHoverCardBrowserTest,
+                       InvokeUi_HoverCardVisibleOnHover) {
+  EXPECT_FALSE(ExtensionsRequestAccessButtonHoverCard::IsShowing());
+
+  ShowUi("");
+  EXPECT_TRUE(ExtensionsRequestAccessButtonHoverCard::IsShowing());
+
+  ui::MouseEvent stop_hover_event(ui::ET_MOUSE_EXITED, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(), ui::EF_NONE,
+                                  0);
+  request_access_button()->OnMouseExited(stop_hover_event);
+
+  EXPECT_FALSE(ExtensionsRequestAccessButtonHoverCard::IsShowing());
 }

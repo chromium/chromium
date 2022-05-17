@@ -35,7 +35,11 @@ void ExtensionsRequestAccessButton::UpdateExtensionsRequestingAccess(
                color);
 }
 
-void ExtensionsRequestAccessButton::ShowHoverCard() {
+void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
+  if (ExtensionsRequestAccessButtonHoverCard::IsShowing() ||
+      !GetWidget()->IsMouseEventsEnabled())
+    return;
+
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   ExtensionsRequestAccessButtonHoverCard::ShowBubble(
@@ -51,3 +55,19 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
 // TODO(crbug.com/1239772): Grant access to all the extensions requesting access
 // when the button is pressed.
 void ExtensionsRequestAccessButton::OnButtonPressed() {}
+
+// Linux enter/leave events are sometimes flaky, so we don't want to "miss"
+// an enter event and fail to hover the button. This is effectively a no-op if
+// the button is already showing the hover card (crbug.com/1326272).
+void ExtensionsRequestAccessButton::OnMouseMoved(const ui::MouseEvent& event) {
+  MaybeShowHoverCard();
+}
+
+void ExtensionsRequestAccessButton::OnMouseEntered(
+    const ui::MouseEvent& event) {
+  MaybeShowHoverCard();
+}
+
+void ExtensionsRequestAccessButton::OnMouseExited(const ui::MouseEvent& event) {
+  ExtensionsRequestAccessButtonHoverCard::HideBubble();
+}
