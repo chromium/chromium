@@ -1,0 +1,13 @@
+# Copyright 2022 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "mojo_service_manager.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  component_output_prefix = "chromeos_mojo_service_manager"
+  component_macro_prefix = "CHROMEOS_MOJO_SERVICE_MANAGER"
+}
