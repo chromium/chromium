@@ -277,10 +277,12 @@ WindowState::~WindowState() {
   // properties. As a result, window_->RemoveObserver() doesn't need to (and
   // shouldn't) be called here.
 
-  // Records the number of mis-triggers of drag to maximize behavior for
-  // `window_` during its lifetime.
-  base::UmaHistogramCounts100(kDragToMaximizeMisTriggersHistogramName,
-                              num_of_drag_to_maximize_mis_triggers_);
+  // Records the number of mis-triggers of drag to maximize behavior if
+  // `window_` has been dragged to maximized during its lifetime.
+  if (has_ever_been_dragged_to_maximized_) {
+    base::UmaHistogramCounts100(kDragToMaximizeMisTriggersHistogramName,
+                                num_of_drag_to_maximize_mis_triggers_);
+  }
 }
 
 bool WindowState::HasDelegate() const {
@@ -704,6 +706,9 @@ WindowStateType WindowState::GetRestoreWindowState() const {
 }
 
 void WindowState::TrackDragToMaximizeBehavior() {
+  if (!has_ever_been_dragged_to_maximized_)
+    has_ever_been_dragged_to_maximized_ = true;
+
   // If drag to maximize is triggered again before we check for the previous
   // one, then the previous one must be a mis-trigger. Record the mis-trigger
   // and reset `drag_to_maximize_mis_trigger_timer_`.

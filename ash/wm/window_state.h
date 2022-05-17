@@ -546,6 +546,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // `CheckAndRecordDragToMaximizeMisTriggers` to record number of mis-triggers.
   base::OneShotTimer drag_to_maximize_mis_trigger_timer_;
 
+  // Will be set to true if `window_` has been dragged to maximized. Only when
+  // it's true, we will record the number of mis-triggers of drag to maximize
+  // behavior for `window_` while `this` is being destroyed.
+  bool has_ever_been_dragged_to_maximized_ = false;
+
   // The owner of this window settings.
   aura::Window* window_;
   std::unique_ptr<WindowStateDelegate> delegate_;

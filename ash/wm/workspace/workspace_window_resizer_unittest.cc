@@ -1987,6 +1987,12 @@ TEST_F(WorkspaceWindowResizerTest, DragToMaximizeNumOfMisTriggersMetric) {
   // maximize mis-trigger on it.
   histogram_tester.ExpectBucketCount(
       "Ash.Window.DragMaximized.NumberOfMisTriggers", 1, 1);
+
+  window3_.reset();
+  // Verify that the number of mis-triggers is not recorded for `window3`, since
+  // it's never been dragged to maximized.
+  histogram_tester.ExpectBucketCount(
+      "Ash.Window.DragMaximized.NumberOfMisTriggers", 0, 0);
 }
 
 TEST_F(WorkspaceWindowResizerTest, DragToMaximizeValidMetric) {
