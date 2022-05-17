@@ -54,7 +54,7 @@ class CONTENT_EXPORT ScreenOrientationProvider
   // WebContentsObserver
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override;
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(Page& page) override;
 
  private:
   // Calls on |on_result_callback_| with |result|, followed by resetting

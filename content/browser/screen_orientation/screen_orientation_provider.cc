@@ -8,7 +8,6 @@
 
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/screen_orientation_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -145,13 +144,7 @@ void ScreenOrientationProvider::DidToggleFullscreenModeForTab(
   UnlockOrientation();
 }
 
-void ScreenOrientationProvider::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
+void ScreenOrientationProvider::PrimaryPageChanged(Page& page) {
   UnlockOrientation();
 }
 
