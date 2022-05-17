@@ -41,8 +41,8 @@ void RecordPrintersDone(bool& is_done_out) {
   is_done_out = true;
 }
 
-void RecordGetCapability(base::Value& capabilities_out,
-                         base::Value capability) {
+void RecordGetCapability(base::Value::Dict& capabilities_out,
+                         base::Value::Dict capability) {
   capabilities_out = std::move(capability);
 }
 
@@ -116,10 +116,10 @@ TEST_F(LocalPrinterHandlerChromeosTest,
 
 TEST_F(LocalPrinterHandlerChromeosTest,
        GetCapabilityNoAsh_ProvidesDefaultValue) {
-  base::Value fetched_caps("unset");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
-  EXPECT_EQ(base::Value(), fetched_caps);
+  EXPECT_TRUE(fetched_caps.empty());
 }
 
 TEST_F(LocalPrinterHandlerChromeosTest, GetEulaUrlNoAsh_ProvidesDefaultValue) {
@@ -169,7 +169,8 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
       "printerOptions": {}
    }
 })");
-  EXPECT_EQ(kExpectedValue,
+  ASSERT_TRUE(kExpectedValue.is_dict());
+  EXPECT_EQ(kExpectedValue.GetDict(),
             LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
 }
 
@@ -187,13 +188,13 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
       "printerOptions": {}
    }
 })");
-  EXPECT_EQ(kExpectedValue,
+  ASSERT_TRUE(kExpectedValue.is_dict());
+  EXPECT_EQ(kExpectedValue.GetDict(),
             LocalPrinterHandlerChromeos::CapabilityToValue(std::move(caps)));
 }
 
 TEST(LocalPrinterHandlerChromeos, CapabilityToValue_EmptyInput) {
-  EXPECT_EQ(base::Value(),
-            LocalPrinterHandlerChromeos::CapabilityToValue(nullptr));
+  EXPECT_TRUE(LocalPrinterHandlerChromeos::CapabilityToValue(nullptr).empty());
 }
 
 TEST(LocalPrinterHandlerChromeos, StatusToValue) {

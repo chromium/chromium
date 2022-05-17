@@ -89,7 +89,7 @@ class ExtensionPrinterHandler : public PrinterHandler {
                                base::Value::List printers,
                                bool done);
   void WrapGetCapabilityCallback(GetCapabilityCallback callback,
-                                 const base::DictionaryValue& capability);
+                                 base::Value::Dict capability);
   void WrapPrintCallback(PrintCallback callback, const base::Value& status);
   void WrapGetPrinterInfoCallback(GetPrinterInfoCallback callback,
                                   const base::DictionaryValue& printer_info);

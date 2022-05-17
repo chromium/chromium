@@ -226,7 +226,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // printer capabilities information. If |settings_info| is empty, sends
   // error notification to the Web UI instead.
   void SendPrinterCapabilities(const std::string& callback_id,
-                               base::Value settings_info);
+                               base::Value::Dict settings_info);
 
   // Closes the preview dialog.
   void ClosePreviewDialog();

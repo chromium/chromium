@@ -87,24 +87,21 @@ constexpr mojom::PrinterType kFetchableTypes[] = {
 struct PrinterInfo {
   std::string id;
   bool is_default;
-  base::Value basic_info = base::Value(base::Value::Type::DICTIONARY);
-  base::Value capabilities = base::Value(base::Value::Type::DICTIONARY);
+  base::Value::Dict basic_info;
+  base::Value::Dict capabilities;
 };
 
 PrinterInfo GetSimplePrinterInfo(const std::string& name, bool is_default) {
   PrinterInfo simple_printer;
   simple_printer.id = name;
   simple_printer.is_default = is_default;
-  simple_printer.basic_info.SetKey("printer_name",
-                                   base::Value(simple_printer.id));
-  simple_printer.basic_info.SetKey("printer_description",
-                                   base::Value("Printer for test"));
-  simple_printer.basic_info.SetKey("printer_status", base::Value(1));
-  base::Value cdd(base::Value::Type::DICTIONARY);
-  base::Value capabilities(base::Value::Type::DICTIONARY);
-  simple_printer.capabilities.SetKey("printer",
-                                     simple_printer.basic_info.Clone());
-  simple_printer.capabilities.SetKey("capabilities", cdd.Clone());
+  simple_printer.basic_info.Set("printer_name", simple_printer.id);
+  simple_printer.basic_info.Set("printer_description", "Printer for test");
+  simple_printer.basic_info.Set("printer_status", 1);
+  base::Value::Dict cdd;
+  base::Value::Dict capabilities;
+  simple_printer.capabilities.Set("printer", simple_printer.basic_info.Clone());
+  simple_printer.capabilities.Set("capabilities", cdd.Clone());
   return simple_printer;
 }
 
@@ -112,13 +109,11 @@ PrinterInfo GetEmptyPrinterInfo() {
   PrinterInfo empty_printer;
   empty_printer.id = kEmptyPrinterName;
   empty_printer.is_default = false;
-  empty_printer.basic_info.SetKey("printer_name",
-                                  base::Value(empty_printer.id));
-  empty_printer.basic_info.SetKey("printer_description",
-                                  base::Value("Printer with no capabilities"));
-  empty_printer.basic_info.SetKey("printer_status", base::Value(0));
-  empty_printer.capabilities.SetKey("printer",
-                                    empty_printer.basic_info.Clone());
+  empty_printer.basic_info.Set("printer_name", empty_printer.id);
+  empty_printer.basic_info.Set("printer_description",
+                               "Printer with no capabilities");
+  empty_printer.basic_info.Set("printer_status", 0);
+  empty_printer.capabilities.Set("printer", empty_printer.basic_info.Clone());
   return empty_printer;
 }
 
@@ -218,7 +213,7 @@ class TestPrinterHandler : public PrinterHandler {
 
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override {
-    std::move(callback).Run(printer_capabilities_[destination_id]->Clone());
+    std::move(callback).Run(printer_capabilities_[destination_id].Clone());
   }
 
   void StartGrantPrinterAccess(const std::string& printer_id,
@@ -237,16 +232,14 @@ class TestPrinterHandler : public PrinterHandler {
       if (printer.is_default)
         default_printer_ = printer.id;
       printers_.Append(printer.basic_info.Clone());
-      printer_capabilities_[printer.id] = base::DictionaryValue::From(
-          std::make_unique<base::Value>(printer.capabilities.Clone()));
+      printer_capabilities_[printer.id] = printer.capabilities.Clone();
     }
   }
 
  private:
   std::string default_printer_;
   base::Value::List printers_;
-  std::map<std::string, std::unique_ptr<base::DictionaryValue>>
-      printer_capabilities_;
+  std::map<std::string, base::Value::Dict> printer_capabilities_;
 };
 
 class FakePrintPreviewUI : public PrintPreviewUI {
@@ -1367,7 +1360,7 @@ class FailingTestPrinterHandler : public TestPrinterHandler {
 
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override {
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(base::Value::Dict());
   }
 };
 

@@ -30,7 +30,7 @@ class PrinterProviderAPI : public KeyedService {
   using GetPrintersCallback =
       base::RepeatingCallback<void(base::Value::List printers, bool done)>;
   using GetCapabilityCallback =
-      base::OnceCallback<void(const base::DictionaryValue& capability)>;
+      base::OnceCallback<void(base::Value::Dict capability)>;
   using PrintCallback = base::OnceCallback<void(const base::Value& error)>;
   using GetPrinterInfoCallback =
       base::OnceCallback<void(const base::DictionaryValue& printer_info)>;

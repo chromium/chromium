@@ -36,7 +36,8 @@ void ConvertPrinterListForCallback(
 // Returns a sanitized version of |cdd| to prevent possible JS
 // errors in Print Preview. Will remove null items from lists or options lists
 // and remove any lists/options that are empty or only contain null values.
-base::Value ValidateCddForPrintPreview(base::Value cdd);
+// On failure, returns an empty dict.
+base::Value::Dict ValidateCddForPrintPreview(base::Value::Dict cdd);
 
 // Starts a local print of |print_data| with print settings dictionary
 // |job_settings|. Runs |callback| on failure or success.

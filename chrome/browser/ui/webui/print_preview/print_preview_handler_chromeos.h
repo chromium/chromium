@@ -81,7 +81,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
   // printer capabilities.
   void SendPrinterSetup(const std::string& callback_id,
                         const std::string& printer_name,
-                        base::Value settings_info);
+                        base::Value::Dict settings_info);
 
   // Called when an extension reports information requested for a provisional
   // printer.

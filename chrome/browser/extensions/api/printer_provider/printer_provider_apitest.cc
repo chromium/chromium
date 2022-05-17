@@ -74,10 +74,10 @@ void RecordPrintResultAndRunCallback(bool* result_success,
 // It saves reported |value| as JSON string to |*result| and runs |callback|.
 void RecordDictAndRunCallback(std::string* result,
                               base::OnceClosure callback,
-                              const base::DictionaryValue& value) {
+                              base::Value::Dict value) {
   JSONStringValueSerializer serializer(result);
   EXPECT_TRUE(serializer.Serialize(value));
-  if (!callback.is_null())
+  if (callback)
     std::move(callback).Run();
 }
 

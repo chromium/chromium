@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/printer_provider_internal.h"
 
 namespace base {
-class DictionaryValue;
 class RefCountedMemory;
 }  // namespace base
 
@@ -71,7 +71,7 @@ class PrinterProviderInternalAPI : public BrowserContextKeyedAPI {
   // |PrinterProviderInternalReportPrinterCapabilityFunction|.
   void NotifyGetCapabilityResult(const Extension* extension,
                                  int request_id,
-                                 const base::DictionaryValue& capability);
+                                 const base::Value::Dict& capability);
 
   // Notifies observers that a printerProvider.onPrintRequested callback has
   // been called. Called from

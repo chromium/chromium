@@ -183,9 +183,9 @@ void ValidateVendorCaps(const base::Value::Dict* printer_out,
   }
 }
 
-void ValidatePrinter(const base::Value* cdd_out,
+void ValidatePrinter(const base::Value::Dict& cdd_out,
                      const base::Value::Dict& printer) {
-  const base::Value::Dict* printer_out = cdd_out->GetDict().FindDict(kPrinter);
+  const base::Value::Dict* printer_out = cdd_out.FindDict(kPrinter);
   ASSERT_TRUE(printer_out);
 
   const base::Value::List* media = printer.FindList(kMediaSizes);
@@ -200,8 +200,8 @@ void ValidatePrinter(const base::Value* cdd_out,
   ValidateVendorCaps(printer_out, capabilities_list);
 }
 
-bool GetDpiResetToDefault(base::Value cdd) {
-  const base::Value::Dict* printer = cdd.GetDict().FindDict(kPrinter);
+bool GetDpiResetToDefault(base::Value::Dict cdd) {
+  const base::Value::Dict* printer = cdd.FindDict(kPrinter);
   const base::Value::Dict* dpi = printer->FindDict(kDpi);
   absl::optional<bool> reset_to_default = dpi->FindBool(kResetToDefault);
   if (!reset_to_default.has_value()) {
@@ -219,8 +219,8 @@ TEST_F(PrintPreviewUtilsTest, FullCddPassthrough) {
   base::Value::Dict printer = GetCapabilitiesFull();
   base::Value::Dict cdd;
   cdd.Set(kPrinter, printer.Clone());
-  auto cdd_out = ValidateCddForPrintPreview(base::Value(std::move(cdd)));
-  ValidatePrinter(&cdd_out, printer);
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadList) {
@@ -232,8 +232,8 @@ TEST_F(PrintPreviewUtilsTest, FilterBadList) {
   printer.Set(kMediaSizes, std::move(list_media));
   base::Value::Dict cdd;
   cdd.Set(kPrinter, printer.Clone());
-  auto cdd_out = ValidateCddForPrintPreview(base::Value(std::move(cdd)));
-  ValidatePrinter(&cdd_out, printer);
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadOptionOneElement) {
@@ -247,8 +247,8 @@ TEST_F(PrintPreviewUtilsTest, FilterBadOptionOneElement) {
   printer.Set(kDpi, std::move(options));
   base::Value::Dict cdd;
   cdd.Set(kPrinter, printer.Clone());
-  auto cdd_out = ValidateCddForPrintPreview(base::Value(std::move(cdd)));
-  ValidatePrinter(&cdd_out, printer);
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadOptionAllElement) {
@@ -262,8 +262,8 @@ TEST_F(PrintPreviewUtilsTest, FilterBadOptionAllElement) {
   printer.Set(kDpi, std::move(options));
   base::Value::Dict cdd;
   cdd.Set(kPrinter, printer.Clone());
-  auto cdd_out = ValidateCddForPrintPreview(base::Value(std::move(cdd)));
-  ValidatePrinter(&cdd_out, printer);
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityAllElement) {
@@ -278,8 +278,8 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityAllElement) {
   select_cap_0->Set(kOptionKey, std::move(option_list));
   base::Value::Dict cdd;
   cdd.Set(kPrinter, printer.Clone());
-  auto cdd_out = ValidateCddForPrintPreview(base::Value(std::move(cdd)));
-  ValidatePrinter(&cdd_out, printer);
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
@@ -305,8 +305,8 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
 
   base::Value::Dict cdd;
   cdd.Set(kPrinter, printer.Clone());
-  auto cdd_out = ValidateCddForPrintPreview(base::Value(std::move(cdd)));
-  ValidatePrinter(&cdd_out, printer);
+  auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, CddResetToDefault) {
@@ -316,14 +316,14 @@ TEST_F(PrintPreviewUtilsTest, CddResetToDefault) {
   base::Value::Dict cdd;
   dpi_dict->Set(kResetToDefault, true);
   cdd.Set(kPrinter, printer.Clone());
-  auto cdd_out = ValidateCddForPrintPreview(base::Value(cdd.Clone()));
-  ValidatePrinter(&cdd_out, printer);
+  auto cdd_out = ValidateCddForPrintPreview(cdd.Clone());
+  ValidatePrinter(cdd_out, printer);
   EXPECT_TRUE(GetDpiResetToDefault(std::move(cdd_out)));
 
   dpi_dict->Set(kResetToDefault, false);
   cdd.Set(kPrinter, printer.Clone());
-  cdd_out = ValidateCddForPrintPreview(base::Value(std::move(cdd)));
-  ValidatePrinter(&cdd_out, printer);
+  cdd_out = ValidateCddForPrintPreview(std::move(cdd));
+  ValidatePrinter(cdd_out, printer);
   EXPECT_FALSE(GetDpiResetToDefault(std::move(cdd_out)));
 }
 

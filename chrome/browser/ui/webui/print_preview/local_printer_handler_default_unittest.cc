@@ -57,8 +57,8 @@ void RecordPrintersDone(bool& is_done_out) {
   is_done_out = true;
 }
 
-void RecordGetCapability(base::Value& capabilities_out,
-                         base::Value capability) {
+void RecordGetCapability(base::Value::Dict& capabilities_out,
+                         base::Value::Dict capability) {
   capabilities_out = std::move(capability);
 }
 
@@ -457,28 +457,28 @@ TEST_P(LocalPrinterHandlerDefaultTestProcess, StartGetCapabilityValidPrinter) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
 
-  base::Value fetched_caps("dummy");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  EXPECT_TRUE(fetched_caps.FindDictKey(kSettingCapabilities));
-  EXPECT_TRUE(fetched_caps.FindDictKey(kPrinter));
+  EXPECT_TRUE(fetched_caps.FindDict(kSettingCapabilities));
+  EXPECT_TRUE(fetched_caps.FindDict(kPrinter));
 }
 
 // Tests that fetching capabilities bails early when the provided printer
 // can't be found.
 TEST_P(LocalPrinterHandlerDefaultTestProcess,
        StartGetCapabilityInvalidPrinter) {
-  base::Value fetched_caps("dummy");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"invalid printer",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  EXPECT_TRUE(fetched_caps.is_none());
+  EXPECT_TRUE(fetched_caps.empty());
 }
 
 // Test that installed printers to which the user does not have permission to
@@ -487,14 +487,14 @@ TEST_P(LocalPrinterHandlerDefaultTestProcess, StartGetCapabilityAccessDenied) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/true);
 
-  base::Value fetched_caps("dummy");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  EXPECT_TRUE(fetched_caps.is_none());
+  EXPECT_TRUE(fetched_caps.empty());
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -510,15 +510,15 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
   EXPECT_FALSE(PrintBackendServiceManager::GetInstance()
                    .PrinterDriverFoundToRequireElevatedPrivilege("printer1"));
 
-  base::Value fetched_caps("dummy");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  EXPECT_TRUE(fetched_caps.FindDictKey(kSettingCapabilities));
-  EXPECT_TRUE(fetched_caps.FindDictKey(kPrinter));
+  EXPECT_TRUE(fetched_caps.FindDict(kSettingCapabilities));
+  EXPECT_TRUE(fetched_caps.FindDict(kPrinter));
 
   // Verify that this printer now shows up as requiring elevated privileges.
   EXPECT_TRUE(PrintBackendServiceManager::GetInstance()
@@ -530,14 +530,14 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
        StartGetCapabilityInvalidPrinterDataFails) {
   AddInvalidDataPrinter("printer1");
 
-  base::Value fetched_caps("dummy");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  EXPECT_TRUE(fetched_caps.is_none());
+  EXPECT_TRUE(fetched_caps.empty());
 }
 
 // Tests that fetching capabilities fails if the print backend service
@@ -550,14 +550,14 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
   // Set up for service to terminate on next use.
   SetTerminateServiceOnNextInteraction();
 
-  base::Value fetched_caps("dummy");
+  base::Value::Dict fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"crashing-test-printer",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  EXPECT_TRUE(fetched_caps.is_none());
+  EXPECT_TRUE(fetched_caps.empty());
 }
 
 #endif  // #if BUILDFLAG(ENABLE_OOP_PRINTING)

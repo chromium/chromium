@@ -53,7 +53,7 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
 
   // Returns a CapabilitiesResponse object (defined in
   // chrome/browser/resources/print_preview/native_layer.js).
-  static base::Value CapabilityToValue(
+  static base::Value::Dict CapabilityToValue(
       crosapi::mojom::CapabilitiesResponsePtr caps);
 
   // Returns a PrinterStatus object (defined in

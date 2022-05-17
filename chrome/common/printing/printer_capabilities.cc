@@ -152,42 +152,40 @@ std::string GetUserFriendlyName(const std::string& printer_name) {
 }
 #endif
 
-base::Value AssemblePrinterSettings(
+base::Value::Dict AssemblePrinterSettings(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
     const PrinterSemanticCapsAndDefaults::Papers& user_defined_papers,
     bool has_secure_protocol,
     PrinterSemanticCapsAndDefaults* caps) {
-  base::Value printer_info(base::Value::Type::DICTIONARY);
-  printer_info.SetKey(kSettingDeviceName, base::Value(device_name));
-  printer_info.SetKey(kSettingPrinterName,
-                      base::Value(basic_info.display_name));
-  printer_info.SetKey(kSettingPrinterDescription,
-                      base::Value(basic_info.printer_description));
+  base::Value::Dict printer_info;
+  printer_info.Set(kSettingDeviceName, device_name);
+  printer_info.Set(kSettingPrinterName, basic_info.display_name);
+  printer_info.Set(kSettingPrinterDescription, basic_info.printer_description);
 
-  base::Value options(base::Value::Type::DICTIONARY);
+  base::Value::Dict options;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  printer_info.SetKey(
+  printer_info.Set(
       kCUPSEnterprisePrinter,
-      base::Value(base::Contains(basic_info.options, kCUPSEnterprisePrinter) &&
-                  basic_info.options.at(kCUPSEnterprisePrinter) == kValueTrue));
+      base::Contains(basic_info.options, kCUPSEnterprisePrinter) &&
+          basic_info.options.at(kCUPSEnterprisePrinter) == kValueTrue);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  printer_info.SetKey(kSettingPrinterOptions, std::move(options));
+  printer_info.Set(kSettingPrinterOptions, std::move(options));
 
-  base::Value printer_info_capabilities(base::Value::Type::DICTIONARY);
-  printer_info_capabilities.SetKey(kPrinter, std::move(printer_info));
+  base::Value::Dict printer_info_capabilities;
+  printer_info_capabilities.Set(kPrinter, std::move(printer_info));
   base::Value capabilities = AssemblePrinterCapabilities(
       device_name, user_defined_papers, has_secure_protocol, caps);
   if (capabilities.is_dict()) {
-    printer_info_capabilities.SetKey(kSettingCapabilities,
-                                     std::move(capabilities));
+    printer_info_capabilities.Set(kSettingCapabilities,
+                                  std::move(capabilities));
   }
   return printer_info_capabilities;
 }
 
-base::Value GetSettingsOnBlockingTaskRunner(
+base::Value::Dict GetSettingsOnBlockingTaskRunner(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
     PrinterSemanticCapsAndDefaults::Papers user_defined_papers,

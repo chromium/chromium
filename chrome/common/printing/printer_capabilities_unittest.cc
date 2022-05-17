@@ -21,20 +21,18 @@
 
 namespace printing {
 
-using base::Value;
-
 namespace {
 
 const char kDpi[] = "dpi";
 
 void GetSettingsDone(base::OnceClosure done_closure,
-                     base::Value* out_settings,
-                     base::Value settings) {
+                     base::Value::Dict* out_settings,
+                     base::Value::Dict settings) {
   *out_settings = std::move(settings);
   std::move(done_closure).Run();
 }
 
-void VerifyPaper(const Value& paper_dict,
+void VerifyPaper(const base::Value& paper_dict,
                  const std::string& expected_name,
                  const std::string& expected_vendor,
                  const gfx::Size& expected_size) {
@@ -74,12 +72,12 @@ class PrinterCapabilitiesTest : public testing::Test {
     test_backend_.reset();
   }
 
-  base::Value GetSettingsOnBlockingTaskRunnerAndWaitForResults(
+  base::Value::Dict GetSettingsOnBlockingTaskRunnerAndWaitForResults(
       const std::string& printer_name,
       const PrinterBasicInfo& basic_info,
       PrinterSemanticCapsAndDefaults::Papers papers) {
     base::RunLoop run_loop;
-    base::Value settings;
+    base::Value::Dict settings;
 
     base::PostTaskAndReplyWithResult(
         blocking_task_runner_.get(), FROM_HERE,
@@ -108,11 +106,11 @@ TEST_F(PrinterCapabilitiesTest, NonNullForMissingPrinter) {
   PrinterBasicInfo basic_info;
   PrinterSemanticCapsAndDefaults::Papers no_user_defined_papers;
 
-  base::Value settings_dictionary =
+  base::Value::Dict settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(
           printer_name, basic_info, std::move(no_user_defined_papers));
 
-  ASSERT_FALSE(settings_dictionary.DictEmpty());
+  ASSERT_FALSE(settings_dictionary.empty());
 }
 
 TEST_F(PrinterCapabilitiesTest, ProvidedCapabilitiesUsed) {
@@ -127,24 +125,23 @@ TEST_F(PrinterCapabilitiesTest, ProvidedCapabilitiesUsed) {
       printer_name, std::move(caps),
       std::make_unique<printing::PrinterBasicInfo>(basic_info));
 
-  base::Value settings_dictionary =
+  base::Value::Dict settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(
           printer_name, basic_info, std::move(no_user_defined_papers));
 
   // Verify settings were created.
-  ASSERT_FALSE(settings_dictionary.DictEmpty());
+  ASSERT_FALSE(settings_dictionary.empty());
 
   // Verify capabilities dict exists and has 2 entries. (printer and version)
-  base::Value* cdd = settings_dictionary.FindKeyOfType(
-      kSettingCapabilities, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* cdd =
+      settings_dictionary.FindDict(kSettingCapabilities);
   ASSERT_TRUE(cdd);
-  EXPECT_EQ(2U, cdd->DictSize());
+  EXPECT_EQ(2U, cdd->size());
 
   // Read the CDD for the "dpi" attribute.
-  base::Value* caps_dict =
-      cdd->FindKeyOfType(kPrinter, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* caps_dict = cdd->FindDict(kPrinter);
   ASSERT_TRUE(caps_dict);
-  EXPECT_TRUE(caps_dict->FindKey(kDpi));
+  EXPECT_TRUE(caps_dict->contains(kDpi));
 }
 
 // Ensure that the capabilities dictionary is not present if the backend
@@ -158,15 +155,15 @@ TEST_F(PrinterCapabilitiesTest, NullCapabilitiesExcluded) {
   print_backend()->AddValidPrinter(printer_name, /*caps=*/nullptr,
                                    /*info=*/nullptr);
 
-  base::Value settings_dictionary =
+  base::Value::Dict settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(
           printer_name, basic_info, std::move(no_user_defined_papers));
 
   // Verify settings were created.
-  ASSERT_FALSE(settings_dictionary.DictEmpty());
+  ASSERT_FALSE(settings_dictionary.empty());
 
   // Verify that capabilities is not present.
-  ASSERT_FALSE(settings_dictionary.FindKey(kSettingCapabilities));
+  ASSERT_FALSE(settings_dictionary.contains(kSettingCapabilities));
 }
 
 TEST_F(PrinterCapabilitiesTest, UserDefinedPapers) {
@@ -186,35 +183,32 @@ TEST_F(PrinterCapabilitiesTest, UserDefinedPapers) {
   user_defined_papers.push_back({"foo", "vendor", {200, 300}});
   user_defined_papers.push_back({"bar", "vendor", {600, 600}});
 
-  base::Value settings_dictionary =
+  base::Value::Dict settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(
           printer_name, basic_info, std::move(user_defined_papers));
 
   // Verify settings were created.
-  ASSERT_FALSE(settings_dictionary.DictEmpty());
+  ASSERT_FALSE(settings_dictionary.empty());
 
   // Verify there is a CDD with a printer entry.
-  const Value* cdd = settings_dictionary.FindKeyOfType(kSettingCapabilities,
-                                                       Value::Type::DICTIONARY);
+  const base::Value::Dict* cdd =
+      settings_dictionary.FindDict(kSettingCapabilities);
   ASSERT_TRUE(cdd);
-  const Value* printer = cdd->FindKeyOfType(kPrinter, Value::Type::DICTIONARY);
+  const base::Value::Dict* printer = cdd->FindDict(kPrinter);
   ASSERT_TRUE(printer);
 
   // Verify there are 3 paper sizes.
-  const Value* media_size =
-      printer->FindKeyOfType("media_size", Value::Type::DICTIONARY);
+  const base::Value::Dict* media_size = printer->FindDict("media_size");
   ASSERT_TRUE(media_size);
-  const Value* media_option =
-      media_size->FindKeyOfType("option", Value::Type::LIST);
+  const base::Value::List* media_option = media_size->FindList("option");
   ASSERT_TRUE(media_option);
-  const auto& list = media_option->GetListDeprecated();
-  ASSERT_EQ(3U, list.size());
+  ASSERT_EQ(3U, media_option->size());
 
   // Verify the 3 paper sizes are the ones in |caps->papers|, followed by the
   // ones in |user_defined_papers|.
-  VerifyPaper(list[0], "printer_foo", "printer_vendor", {100, 234});
-  VerifyPaper(list[1], "foo", "vendor", {200, 300});
-  VerifyPaper(list[2], "bar", "vendor", {600, 600});
+  VerifyPaper((*media_option)[0], "printer_foo", "printer_vendor", {100, 234});
+  VerifyPaper((*media_option)[1], "foo", "vendor", {200, 300});
+  VerifyPaper((*media_option)[2], "bar", "vendor", {600, 600});
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -230,24 +224,24 @@ TEST_F(PrinterCapabilitiesTest, HasNotSecureProtocol) {
       printer_name, std::move(caps),
       std::make_unique<printing::PrinterBasicInfo>(basic_info));
 
-  base::Value settings_dictionary =
+  base::Value::Dict settings_dictionary =
       GetSettingsOnBlockingTaskRunnerAndWaitForResults(
           printer_name, basic_info, std::move(no_user_defined_papers));
 
   // Verify settings were created.
-  ASSERT_FALSE(settings_dictionary.DictEmpty());
+  ASSERT_FALSE(settings_dictionary.empty());
 
   // Verify there is a CDD with a printer entry.
-  const Value* cdd = settings_dictionary.FindKeyOfType(kSettingCapabilities,
-                                                       Value::Type::DICTIONARY);
+  const base::Value::Dict* cdd =
+      settings_dictionary.FindDict(kSettingCapabilities);
   ASSERT_TRUE(cdd);
-  const Value* printer = cdd->FindKeyOfType(kPrinter, Value::Type::DICTIONARY);
+  const base::Value::Dict* printer = cdd->FindDict(kPrinter);
   ASSERT_TRUE(printer);
 
   // Verify that pin is not supported.
-  const Value* pin = printer->FindKeyOfType("pin", Value::Type::DICTIONARY);
+  const base::Value::Dict* pin = printer->FindDict("pin");
   ASSERT_TRUE(pin);
-  absl::optional<bool> pin_supported = pin->FindBoolKey("supported");
+  absl::optional<bool> pin_supported = pin->FindBool("supported");
   ASSERT_TRUE(pin_supported.has_value());
   ASSERT_FALSE(pin_supported.value());
 }

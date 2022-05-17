@@ -125,14 +125,14 @@ void OnDidFetchCapabilities(
     }
 
     // Unable to fallback, call back without data.
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
   VLOG(1) << "Received printer info & capabilities for " << device_name;
   const mojom::PrinterCapsAndInfoPtr& caps_and_info =
       printer_caps_and_info->get_printer_caps_and_info();
-  base::Value settings = AssemblePrinterSettings(
+  base::Value::Dict settings = AssemblePrinterSettings(
       device_name, caps_and_info->printer_info,
       caps_and_info->user_defined_papers, has_secure_protocol,
       &caps_and_info->printer_caps);
@@ -165,7 +165,7 @@ PrinterList LocalPrinterHandlerDefault::EnumeratePrintersAsync(
 }
 
 // static
-base::Value LocalPrinterHandlerDefault::FetchCapabilitiesAsync(
+base::Value::Dict LocalPrinterHandlerDefault::FetchCapabilitiesAsync(
     const std::string& device_name,
     const std::string& locale) {
   PrinterSemanticCapsAndDefaults::Papers user_defined_papers;
@@ -188,7 +188,7 @@ base::Value LocalPrinterHandlerDefault::FetchCapabilitiesAsync(
   if (print_backend->GetPrinterBasicInfo(device_name, &basic_info) !=
       mojom::ResultCode::kSuccess) {
     LOG(WARNING) << "Invalid printer " << device_name;
-    return base::Value();
+    return base::Value::Dict();
   }
 
   return GetSettingsOnBlockingTaskRunner(

@@ -974,13 +974,12 @@ void PrintPreviewHandler::ClosePreviewDialog() {
 
 void PrintPreviewHandler::SendPrinterCapabilities(
     const std::string& callback_id,
-    base::Value settings_info) {
+    base::Value::Dict settings_info) {
   // Check that |settings_info| is valid.
-  if (settings_info.is_dict() &&
-      settings_info.FindKeyOfType(kSettingCapabilities,
-                                  base::Value::Type::DICTIONARY)) {
+  if (settings_info.FindDict(kSettingCapabilities)) {
     VLOG(1) << "Get printer capabilities finished";
-    ResolveJavascriptCallback(base::Value(callback_id), settings_info);
+    ResolveJavascriptCallback(base::Value(callback_id),
+                              base::Value(std::move(settings_info)));
     return;
   }
 

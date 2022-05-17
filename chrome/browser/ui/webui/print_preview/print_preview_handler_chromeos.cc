@@ -198,30 +198,26 @@ void PrintPreviewHandlerChromeOS::SendEulaUrl(const std::string& callback_id,
 void PrintPreviewHandlerChromeOS::SendPrinterSetup(
     const std::string& callback_id,
     const std::string& printer_name,
-    base::Value destination_info) {
-  base::Value* caps_value =
-      destination_info.is_dict()
-          ? destination_info.FindKeyOfType(kSettingCapabilities,
-                                           base::Value::Type::DICTIONARY)
-          : nullptr;
+    base::Value::Dict destination_info) {
+  base::Value::Dict* caps_value =
+      destination_info.FindDict(kSettingCapabilities);
   if (!caps_value) {
     VLOG(1) << "Printer setup failed";
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
 
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey("printerId", base::Value(printer_name));
-  response.SetKey("capabilities", std::move(*caps_value));
-  base::Value* printer =
-      destination_info.FindKeyOfType(kPrinter, base::Value::Type::DICTIONARY);
+  base::Value::Dict response;
+  response.Set("printerId", printer_name);
+  response.Set("capabilities", std::move(*caps_value));
+  base::Value::Dict* printer = destination_info.FindDict(kPrinter);
   if (printer) {
-    base::Value* policies_value =
-        printer->FindKeyOfType(kSettingPolicies, base::Value::Type::DICTIONARY);
+    base::Value::Dict* policies_value = printer->FindDict(kSettingPolicies);
     if (policies_value)
-      response.SetKey("policies", std::move(*policies_value));
+      response.Set("policies", std::move(*policies_value));
   }
-  ResolveJavascriptCallback(base::Value(callback_id), response);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(response)));
 }
 
 PrintPreviewHandler* PrintPreviewHandlerChromeOS::GetPrintPreviewHandler() {

@@ -173,7 +173,7 @@ class PendingGetCapabilityRequests {
 
   // Completes the request with the provided request id. It runs the request
   // callback and removes the request from the set.
-  void Complete(int request_id, const base::DictionaryValue& result);
+  void Complete(int request_id, base::Value::Dict result);
 
   // Runs all pending callbacks with empty capability value and clears the
   // set of pending requests.
@@ -278,7 +278,7 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
       override;
   void OnGetCapabilityResult(const Extension* extension,
                              int request_id,
-                             const base::DictionaryValue& result) override;
+                             base::Value::Dict result) override;
   void OnPrintResult(const Extension* extension,
                      int request_id,
                      api::printer_provider_internal::PrintError error) override;
@@ -413,14 +413,13 @@ int PendingGetCapabilityRequests::Add(
       FROM_HERE,
       base::BindOnce(&PendingGetCapabilityRequests::Complete,
                      weak_factory_.GetWeakPtr(), last_request_id_,
-                     base::DictionaryValue()),
+                     base::Value::Dict()),
       kGetCapabilityTimeout);
   return last_request_id_;
 }
 
-void PendingGetCapabilityRequests::Complete(
-    int request_id,
-    const base::DictionaryValue& response) {
+void PendingGetCapabilityRequests::Complete(int request_id,
+                                            base::Value::Dict response) {
   auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
     return;
@@ -428,12 +427,12 @@ void PendingGetCapabilityRequests::Complete(
   PrinterProviderAPI::GetCapabilityCallback callback = std::move(it->second);
   pending_requests_.erase(it);
 
-  std::move(callback).Run(response);
+  std::move(callback).Run(std::move(response));
 }
 
 void PendingGetCapabilityRequests::FailAll() {
   for (auto& request : pending_requests_)
-    std::move(request.second).Run(base::DictionaryValue());
+    std::move(request.second).Run(base::Value::Dict());
   pending_requests_.clear();
 }
 
@@ -573,7 +572,7 @@ void PrinterProviderAPIImpl::DispatchGetCapabilityRequested(
   std::string extension_id;
   std::string internal_printer_id;
   if (!ParsePrinterId(printer_id, &extension_id, &internal_printer_id)) {
-    std::move(callback).Run(base::DictionaryValue());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
@@ -581,7 +580,7 @@ void PrinterProviderAPIImpl::DispatchGetCapabilityRequested(
   if (!event_router->ExtensionHasEventListener(
           extension_id,
           api::printer_provider::OnGetCapabilityRequested::kEventName)) {
-    std::move(callback).Run(base::DictionaryValue());
+    std::move(callback).Run(base::Value::Dict());
     return;
   }
 
@@ -702,11 +701,11 @@ void PrinterProviderAPIImpl::OnGetPrintersResult(
       extension->id(), request_id, std::move(printer_list));
 }
 
-void PrinterProviderAPIImpl::OnGetCapabilityResult(
-    const Extension* extension,
-    int request_id,
-    const base::DictionaryValue& result) {
-  pending_capability_requests_[extension->id()].Complete(request_id, result);
+void PrinterProviderAPIImpl::OnGetCapabilityResult(const Extension* extension,
+                                                   int request_id,
+                                                   base::Value::Dict result) {
+  pending_capability_requests_[extension->id()].Complete(request_id,
+                                                         std::move(result));
 }
 
 void PrinterProviderAPIImpl::OnPrintResult(
