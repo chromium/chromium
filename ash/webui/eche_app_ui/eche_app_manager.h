@@ -48,6 +48,7 @@ class SystemInfoProvider;
 class AppsAccessManager;
 class EcheStreamStatusChangeHandler;
 class EcheTrayStreamStatusObserver;
+class EcheConnectionScheduler;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -103,6 +104,7 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<EcheStreamStatusChangeHandler> stream_status_change_handler_;
   std::unique_ptr<EcheNotificationClickHandler>
       eche_notification_click_handler_;
+  std::unique_ptr<EcheConnectionScheduler> connection_scheduler_;
   std::unique_ptr<EcheConnector> eche_connector_;
   std::unique_ptr<EcheSignaler> signaler_;
   std::unique_ptr<EcheMessageReceiver> message_receiver_;

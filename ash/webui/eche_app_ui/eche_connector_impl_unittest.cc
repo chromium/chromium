@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
+#include "ash/webui/eche_app_ui/fake_eche_connection_scheduler.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 
 #include <memory>
@@ -28,7 +29,8 @@ class EcheConnectorImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     connector_ = std::make_unique<EcheConnectorImpl>(
-        &fake_feature_status_provider_, &fake_connection_manager_);
+        &fake_feature_status_provider_, &fake_connection_manager_,
+        &fake_connection_scheduler_);
   }
 
   void SetConnectionStatus(secure_channel::ConnectionManager::Status status) {
@@ -46,6 +48,7 @@ class EcheConnectorImplTest : public testing::Test {
 
   FakeFeatureStatusProvider fake_feature_status_provider_;
   secure_channel::FakeConnectionManager fake_connection_manager_;
+  FakeEcheConnectionScheduler fake_connection_scheduler_;
   std::unique_ptr<EcheConnectorImpl> connector_;
 };
 
@@ -57,7 +60,7 @@ TEST_F(EcheConnectorImplTest, SendAppsSetupRequest) {
   connector_->SendAppsSetupRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 
   SetFeatureStatus(FeatureStatus::kDependentFeaturePending);
@@ -65,7 +68,7 @@ TEST_F(EcheConnectorImplTest, SendAppsSetupRequest) {
   connector_->SendAppsSetupRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 
   SetFeatureStatus(FeatureStatus::kIneligible);
@@ -73,7 +76,7 @@ TEST_F(EcheConnectorImplTest, SendAppsSetupRequest) {
   connector_->SendAppsSetupRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kDisconnected);
@@ -82,7 +85,7 @@ TEST_F(EcheConnectorImplTest, SendAppsSetupRequest) {
   connector_->SendAppsSetupRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 1u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 1u);
   EXPECT_EQ(connector_->GetMessageCount(), 1);
 
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
@@ -101,7 +104,7 @@ TEST_F(EcheConnectorImplTest, SendAppsSetupRequest) {
   connector_->SendAppsSetupRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 2u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 2u);
   EXPECT_EQ(connector_->GetMessageCount(), 1);
 
   SetFeatureStatus(FeatureStatus::kConnecting);
@@ -147,7 +150,7 @@ TEST_F(EcheConnectorImplTest, GetAppsAccessStateRequest) {
   connector_->GetAppsAccessStateRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 1u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 1u);
   EXPECT_EQ(connector_->GetMessageCount(), 1);
 
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnecting);
@@ -166,7 +169,7 @@ TEST_F(EcheConnectorImplTest, GetAppsAccessStateRequest) {
   connector_->GetAppsAccessStateRequest();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 1u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 2u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 2u);
   EXPECT_EQ(connector_->GetMessageCount(), 1);
 
   SetFeatureStatus(FeatureStatus::kConnecting);
@@ -191,7 +194,7 @@ TEST_F(EcheConnectorImplTest, Disconnect) {
   connector_->Disconnect();
 
   EXPECT_EQ(connector_->GetMessageCount(), 0);
-  EXPECT_EQ(fake_connection_manager_.num_disconnect_calls(), 1u);
+  EXPECT_EQ(fake_connection_scheduler_.num_disconnect_calls(), 1u);
 }
 
 // Tests Send not allowed message with disabled feature status.
@@ -217,7 +220,7 @@ TEST_F(EcheConnectorImplTest, SendMessage) {
   SendNotAllowedMessage();
 
   EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
+  EXPECT_EQ(fake_connection_scheduler_.num_schedule_connection_now_calls(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 1);
 
   SetConnectionStatus(secure_channel::ConnectionManager::Status::kConnected);

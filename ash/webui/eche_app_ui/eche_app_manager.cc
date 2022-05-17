@@ -9,6 +9,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
+#include "ash/webui/eche_app_ui/eche_connection_scheduler_impl.h"
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 #include "ash/webui/eche_app_ui/eche_notification_generator.h"
@@ -70,9 +71,13 @@ EcheAppManager::EcheAppManager(
               phone_hub_manager,
               feature_status_provider_.get(),
               launch_app_helper_.get())),
+      connection_scheduler_(std::make_unique<EcheConnectionSchedulerImpl>(
+          connection_manager_.get(),
+          feature_status_provider_.get())),
       eche_connector_(
           std::make_unique<EcheConnectorImpl>(feature_status_provider_.get(),
-                                              connection_manager_.get())),
+                                              connection_manager_.get(),
+                                              connection_scheduler_.get())),
       signaler_(std::make_unique<EcheSignaler>(eche_connector_.get(),
                                                connection_manager_.get())),
       message_receiver_(
@@ -160,6 +165,7 @@ void EcheAppManager::Shutdown() {
   message_receiver_.reset();
   signaler_.reset();
   eche_connector_.reset();
+  connection_scheduler_.reset();
   eche_notification_click_handler_.reset();
   stream_status_change_handler_.reset();
   launch_app_helper_.reset();

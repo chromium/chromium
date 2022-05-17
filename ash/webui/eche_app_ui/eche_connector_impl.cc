@@ -16,9 +16,11 @@ namespace eche_app {
 
 EcheConnectorImpl::EcheConnectorImpl(
     FeatureStatusProvider* eche_feature_status_provider,
-    secure_channel::ConnectionManager* connection_manager)
+    secure_channel::ConnectionManager* connection_manager,
+    EcheConnectionScheduler* connection_scheduler)
     : eche_feature_status_provider_(eche_feature_status_provider),
-      connection_manager_(connection_manager) {
+      connection_manager_(connection_manager),
+      connection_scheduler_(connection_scheduler) {
   eche_feature_status_provider_->AddObserver(this);
   connection_manager_->AddObserver(this);
 }
@@ -45,7 +47,7 @@ void EcheConnectorImpl::SendMessage(const proto::ExoMessage message) {
       QueueMessageWhenDisabled(message);
       break;
     case FeatureStatus::kDisconnected:
-      connection_manager_->AttemptNearbyConnection();
+      AttemptNearbyConnection();
       [[fallthrough]];
     case FeatureStatus::kConnecting:
       PA_LOG(INFO) << "Connecting; queuing message";
@@ -64,7 +66,7 @@ void EcheConnectorImpl::Disconnect() {
     PA_LOG(INFO) << "Draining nonempty queue after manual disconnect";
   while (!message_queue_.empty())
     message_queue_.pop();
-  connection_manager_->Disconnect();
+  connection_scheduler_->DisconnectAndClearBackoffAttempts();
 }
 
 void EcheConnectorImpl::SendAppsSetupRequest() {
@@ -84,7 +86,7 @@ void EcheConnectorImpl::GetAppsAccessStateRequest() {
 }
 
 void EcheConnectorImpl::AttemptNearbyConnection() {
-  connection_manager_->AttemptNearbyConnection();
+  connection_scheduler_->ScheduleConnectionNow();
 }
 
 void EcheConnectorImpl::OnFeatureStatusChanged() {
@@ -101,7 +103,7 @@ void EcheConnectorImpl::QueueMessageWhenDisabled(
     return;
   switch (connection_manager_->GetStatus()) {
     case secure_channel::ConnectionManager::Status::kDisconnected:
-      connection_manager_->AttemptNearbyConnection();
+      AttemptNearbyConnection();
       [[fallthrough]];
     case secure_channel::ConnectionManager::Status::kConnecting:
       PA_LOG(INFO) << "Connecting; queuing message";
