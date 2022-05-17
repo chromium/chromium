@@ -348,6 +348,11 @@ void CommandBufferStub::Destroy() {
   surface_ = nullptr;
 
   if (decoder_context_) {
+    auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
+    absl::optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
+    if (gr_shader_cache)
+      gr_cache_use.emplace(gr_shader_cache, channel_->client_id());
+
     decoder_context_->Destroy(have_context);
     decoder_context_.reset();
   }
