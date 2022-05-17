@@ -436,4 +436,8 @@ void BrowsingContextState::WriteIntoTrace(
   dict.Add("this", static_cast<const void*>(this));
 }
 
+base::SafeRef<BrowsingContextState> BrowsingContextState::GetSafeRef() {
+  return weak_factory_.GetSafeRef();
+}
+
 }  // namespace content

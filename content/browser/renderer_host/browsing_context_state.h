@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_group.h"
@@ -265,6 +266,8 @@ class CONTENT_EXPORT BrowsingContextState
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
+  base::SafeRef<BrowsingContextState> GetSafeRef();
+
  protected:
   friend class base::RefCounted<BrowsingContextState>;
 
@@ -295,6 +298,8 @@ class CONTENT_EXPORT BrowsingContextState
   // TODO(crbug.com/1270671): Make |browsing_instance_id| non-optional when the
   // legacy path is removed.
   const absl::optional<BrowsingInstanceId> browsing_instance_id_;
+
+  base::WeakPtrFactory<BrowsingContextState> weak_factory_{this};
 };
 
 }  // namespace content

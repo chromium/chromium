@@ -290,6 +290,13 @@ RenderFrameHostManager::RenderFrameHostManager(FrameTreeNode* frame_tree_node,
 
 RenderFrameHostManager::~RenderFrameHostManager() {
   DCHECK(!speculative_render_frame_host_);
+
+  // Ensure that proxies associated with pending delete BrowsingContextStates
+  // are deleted as well, otherwise these proxies outlive the FrameTreeNode.
+  for (const auto& pending_delete_host : pending_delete_hosts_) {
+    pending_delete_host->browsing_context_state()->ResetProxyHosts();
+  }
+
   // If the current RenderFrameHost doesn't exist, then there is no need to
   // destroy proxies, as they are only accessible via RenderFrameHost. This
   // only occurs in MPArch activation, as frame trees are destroyed even when
@@ -2797,8 +2804,8 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
         // proxy when unloading a frame and committing a navigation.
         // TODO(crbug.com/1302242): Migrate storage of SiteInstance(Group) =>
         // RenderViewHost to BrowsingContextState to eliminate this branch.
-        browsing_context_state =
-            render_view_host->main_browsing_context_state();
+        browsing_context_state = scoped_refptr<BrowsingContextState>(
+            &*(render_view_host->main_browsing_context_state().value()));
         CHECK(frame_tree_node_->IsMainFrame());
       } else {
         browsing_context_state = base::MakeRefCounted<BrowsingContextState>(
