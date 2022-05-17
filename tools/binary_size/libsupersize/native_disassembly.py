@@ -160,9 +160,7 @@ def _GetTopChangedSymbols(delta_size_info):
       return False
     return True
 
-  sorted_symbols = delta_size_info.raw_symbols.Filter(filter_symbol).Sorted(
-      reverse=True)
-  return sorted_symbols
+  return delta_size_info.raw_symbols.Filter(filter_symbol).Sorted()
 
 
 def AddDisassembly(delta_size_info, before_path_resolver, after_path_resolver):
