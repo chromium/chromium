@@ -75,5 +75,5 @@ interface CrosWindow {
   [CallWith=ScriptState] Promise<void> focus();
 
   // Closes the window.
-  void close();
+  [CallWith=ScriptState] Promise<void> close();
 };

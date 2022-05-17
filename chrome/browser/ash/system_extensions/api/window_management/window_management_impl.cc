@@ -157,11 +157,18 @@ void WindowManagementImpl::Focus(const base::UnguessableToken& id,
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
-void WindowManagementImpl::Close(const base::UnguessableToken& id) {
+void WindowManagementImpl::Close(const base::UnguessableToken& id,
+                                 CloseCallback callback) {
   views::Widget* widget = GetWidget(id);
-  if (widget) {
-    widget->Close();
+  if (!widget) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNoWidget);
+    return;
   }
+  widget->Close();
+  // TODO(crbug.com/232703960): Scope into close function and refactor for
+  // error handling.
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
 aura::Window* WindowManagementImpl::GetWindow(

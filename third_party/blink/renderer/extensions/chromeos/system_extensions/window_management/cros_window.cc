@@ -193,13 +193,16 @@ ScriptPromise CrosWindow::focus(ScriptState* script_state) {
   return resolver->Promise();
 }
 
-void CrosWindow::close() {
+ScriptPromise CrosWindow::close(ScriptState* script_state) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();
   if (!cros_window_management) {
-    return;
+    return ScriptPromise();
   }
-  cros_window_management->Close(window_->id);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->Close(
+      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
 }
 
 }  // namespace blink

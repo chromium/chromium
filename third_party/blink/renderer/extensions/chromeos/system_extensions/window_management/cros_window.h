@@ -45,7 +45,7 @@ class CrosWindow : public ScriptWrappable {
   ScriptPromise maximize(ScriptState* script_state);
   ScriptPromise minimize(ScriptState* script_state);
   ScriptPromise focus(ScriptState* script_state);
-  void close();
+  ScriptPromise close(ScriptState* script_state);
 
  private:
   Member<CrosWindowManagement> window_management_;

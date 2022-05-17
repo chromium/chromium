@@ -45,7 +45,7 @@ class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
 
   void Focus(const base::UnguessableToken& id, FocusCallback callback) override;
 
-  void Close(const base::UnguessableToken& id) override;
+  void Close(const base::UnguessableToken& id, CloseCallback callback) override;
 
  private:
   // Returns ptr to top level window from window at given id.
