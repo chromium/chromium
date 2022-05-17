@@ -99,7 +99,11 @@ def generate_cpp_constants(id_to_name_to_lang_to_patterns):
     return (f"kPatterns__{id}__{name}__{lang.replace('-', '_')}"
             if lang else f'kPatterns__{id}__{name}')
 
+  # Preprocess the patterns.
   for id, name_to_lang_to_patterns in id_to_name_to_lang_to_patterns.items():
+    if "__comment__" in name_to_lang_to_patterns:
+      del name_to_lang_to_patterns["__comment__"]
+
     # Validate the JSON input.
     for name, lang_to_patterns in name_to_lang_to_patterns.items():
       if '' in lang_to_patterns:

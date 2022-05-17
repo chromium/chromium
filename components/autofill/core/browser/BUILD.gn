@@ -37,6 +37,9 @@ buildflag_header("buildflags") {
 
 action("regex_patterns_inl_h") {
   visibility = [ ":*" ]
+
+  # The order of sources must be so that it matches the PatternSource enum
+  # values in regex_patterns.h.
   if (!use_internal_autofill_patterns) {
     sources = [ "form_parsing/resources/legacy_regex_patterns.json" ]
   } else {

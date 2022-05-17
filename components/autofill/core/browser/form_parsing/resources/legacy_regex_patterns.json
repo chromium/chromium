@@ -1,4 +1,8 @@
 {
+  "__comment__": [
+    "This file is identified by PatternSource::kLegacy in the code.",
+    "See go/autofill-internal-parsing-patterns for instructions on how to update patterns."
+  ],
   "PATTERN_SOURCE_DUMMY": {
     "en": [
       {
