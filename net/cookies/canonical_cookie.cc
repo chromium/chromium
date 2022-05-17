@@ -359,27 +359,6 @@ bool HasValidHostPrefixAttributes(const GURL& url,
   return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
 }
 
-// Per rfc6265bis the maximum expiry date is no further than 400 days in the
-// future. Clamping only occurs when kClampCookieExpiryTo400Days is enabled.
-base::Time ValidateAndAdjustExpiryDate(const base::Time& expiry_date,
-                                       const base::Time& creation_date) {
-  if (expiry_date.is_null())
-    return expiry_date;
-  base::Time fixed_creation_date = creation_date;
-  if (fixed_creation_date.is_null()) {
-    // TODO(crbug.com/1264458): This shouldn't be necessary, let's examine
-    // where creation_date is null but expiry_date isn't and figure out
-    // what's happening. This blocks the launch until resolved.
-    fixed_creation_date = base::Time::Now();
-  }
-  if (base::FeatureList::IsEnabled(features::kClampCookieExpiryTo400Days)) {
-    base::Time maximum_expiry_date = fixed_creation_date + base::Days(400);
-    if (expiry_date > maximum_expiry_date)
-      return maximum_expiry_date;
-  }
-  return expiry_date;
-}
-
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -525,6 +504,32 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
 
   // Invalid or no expiration, session cookie.
   return Time();
+}
+
+// static
+base::Time CanonicalCookie::ValidateAndAdjustExpiryDate(
+    const base::Time& expiry_date,
+    const base::Time& creation_date) {
+  if (expiry_date.is_null())
+    return expiry_date;
+  base::Time fixed_creation_date = creation_date;
+  if (fixed_creation_date.is_null()) {
+    // TODO(crbug.com/1264458): Push this logic into
+    // CanonicalCookie::CreateSanitizedCookie. The four sites that call it
+    // with a null `creation_date` (CanonicalCookie::Create cannot be called
+    // this way) are:
+    // * GaiaCookieManagerService::ForceOnCookieChangeProcessing
+    // * CookiesSetFunction::Run
+    // * cookie_store.cc::ToCanonicalCookie
+    // * network_handler.cc::MakeCookieFromProtocolValues
+    fixed_creation_date = base::Time::Now();
+  }
+  if (base::FeatureList::IsEnabled(features::kClampCookieExpiryTo400Days)) {
+    base::Time maximum_expiry_date = fixed_creation_date + base::Days(400);
+    if (expiry_date > maximum_expiry_date)
+      return maximum_expiry_date;
+  }
+  return expiry_date;
 }
 
 // static
@@ -1448,6 +1453,12 @@ bool CanonicalCookie::IsCanonical() const {
   // assuming we collect metrics and determine that a low percentage of cookies
   // would fail this check. Note that we still don't want to enforce length
   // checks on domain or path for the reason stated above.
+
+  // TODO(crbug.com/1264458): Eventually we should push this logic into
+  // IsCanonicalForFromStorage, but for now we allow cookies already stored with
+  // high expiration dates to be retrieved.
+  if (ValidateAndAdjustExpiryDate(expiry_date_, creation_date_) != expiry_date_)
+    return false;
 
   return IsCanonicalForFromStorage();
 }

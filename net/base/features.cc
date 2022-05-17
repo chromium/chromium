@@ -291,7 +291,7 @@ const base::Feature kSandboxHttpCache("SandboxHttpCache",
 
 const base::Feature kClampCookieExpiryTo400Days(
     "ClampCookieExpiryTo400Days",
-    base::FEATURE_DISABLED_BY_DEFAULT);
+    base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 const base::Feature kStaticKeyPinningEnforcement(

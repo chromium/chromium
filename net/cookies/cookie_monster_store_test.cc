@@ -205,7 +205,7 @@ std::unique_ptr<CookieMonster> CreateMonsterFromStoreForGC(
     int num_old_non_secure_cookies,
     int days_old) {
   base::Time current(base::Time::Now());
-  base::Time past_creation(base::Time::Now() - base::Days(1000));
+  base::Time past_creation(base::Time::Now() - base::Days(100));
   scoped_refptr<MockSimplePersistentCookieStore> store(
       new MockSimplePersistentCookieStore);
   int total_cookies = num_secure_cookies + num_non_secure_cookies;

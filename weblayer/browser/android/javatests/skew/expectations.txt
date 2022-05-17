@@ -5,7 +5,7 @@
 # with versions less than or equal to $VERSION of the implementation.
 #
 # These lines are not comments! They define the set of known tags and other information.
-# tags: [ client_lte_91 client_lte_94 client_lte_95 impl_lte_95 client_lte_98 impl_lte_98 ]
+# tags: [ client_lte_91 client_lte_94 client_lte_95 impl_lte_95 client_lte_98 impl_lte_98 client_lte_103 ]
 # 'all' disables the test from any skew test.
 # tags: [ all ]
 # results: [ Skip ]
@@ -111,3 +111,6 @@ crbug.com/1278017 [ client_lte_98 ] org.chromium.weblayer.test.ExternalNavigatio
 crbug.com/1278017 [ client_lte_98 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserClicksLinkToPageWithExternalIntentLaunchedViaOnLoad [ Skip ]
 crbug.com/1278017 [ client_lte_98 ] org.chromium.weblayer.test.ExternalNavigationTest#testAvoidDisambiguationDialog [ Skip ]
 crbug.com/1278017 [ impl_lte_98 ] org.chromium.weblayer.test.ExternalNavigationTest#testAvoidDisambiguationDialog [ Skip ]
+
+# In 104 we started to cap maximum cookie expiration date
+crbug.com/1264458 [ client_lte_103 ] org.chromium.weblayer.test.CookieManagerTest#testGetResponseCookiesAllAttributes [ Skip ]

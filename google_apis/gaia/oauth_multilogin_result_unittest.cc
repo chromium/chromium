@@ -91,7 +91,7 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
   result.TryParseCookiesFromValue(dictionary_value.get());
 
   base::Time time_now = base::Time::Now();
-  base::Time expiration_time = (time_now + base::Seconds(63070000.));
+  base::Time expiration_time = (time_now + base::Seconds(34560000.));
   double now = time_now.ToDoubleT();
   double expiration = expiration_time.ToDoubleT();
   const std::vector<CanonicalCookie> cookies = {
