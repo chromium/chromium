@@ -43,8 +43,7 @@
             android:src="@drawable/modern_toolbar_shadow"
             android:scaleType="fitXY"
             android:importantForAccessibility="no"
-            android:layout_gravity="top"
-            android:visibility="invisible" />
+            android:layout_gravity="top" />
 
         <ImageView
             android:id="@+id/bottom_shadow"

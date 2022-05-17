@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.language.AppLanguagePromoDialog.LanguageItemAdapter;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -109,5 +110,24 @@ public class AppLanguagePromoDialogTest {
         // Follow system language
         Assert.assertFalse(AppLanguagePromoDialog.isOverrideLanguageOriginalSystemLanguage(
                 FOLLOW_SYSTEM, LocaleUtils.forLanguageTag("zu")));
+    }
+
+    // Test LanguageItemAdapter
+    @Test
+    @SmallTest
+    public void testLanguageItemAdapter() {
+        ArrayList<LanguageItem> topLanguages = new ArrayList<>(Arrays.asList(LANG_AF, LANG_AZ));
+        ArrayList<LanguageItem> otherLanguages =
+                new ArrayList<>(Arrays.asList(LANG_EN_GB, LANG_EN_US, LANG_ZU));
+        LanguageItem currentLanguage = LANG_AF;
+        LanguageItemAdapter adapter =
+                new LanguageItemAdapter(topLanguages, otherLanguages, currentLanguage);
+
+        // Only the top languages plus "More languages" item are showing to start.
+        Assert.assertEquals(3, adapter.getItemCount());
+
+        adapter.showOtherLanguages();
+        // All languages should now be showing.
+        Assert.assertEquals(6, adapter.getItemCount());
     }
 }

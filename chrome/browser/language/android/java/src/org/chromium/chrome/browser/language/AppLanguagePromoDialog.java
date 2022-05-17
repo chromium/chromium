@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -60,11 +59,12 @@ public class AppLanguagePromoDialog {
     private long mStartTime;
 
     /** Annotation for row item type. Either a LanguageItem or separator */
-    @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR})
+    @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR, ItemType.MORE_LANGUAGES})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ItemType {
         int LANGUAGE = 0;
         int SEPARATOR = 1;
+        int MORE_LANGUAGES = 2;
     }
 
     /**
@@ -122,11 +122,14 @@ public class AppLanguagePromoDialog {
 
     /**
      * Internal class for managing a list of languages in a RecyclerView.
+     * TODO(https://crbug.com/1325473) Refactor this to a separate file.
      */
-    private class LanguageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private List<LanguageItem> mTopLanguages;
-        private List<LanguageItem> mOtherLanguages;
+    protected static class LanguageItemAdapter
+            extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private ArrayList<LanguageItem> mTopLanguages;
+        private ArrayList<LanguageItem> mOtherLanguages;
         private LanguageItem mCurrentLanguage;
+        private boolean mShowOtherLanguages;
 
         /**
          * @param topLanguages - LanguageItems to appear at the top of the adapter list.
@@ -142,17 +145,23 @@ public class AppLanguagePromoDialog {
 
         @Override
         public int getItemViewType(int position) {
-            // The seperator is between top and other languages.
-            return (position == mTopLanguages.size()) ? ItemType.SEPARATOR : ItemType.LANGUAGE;
+            // The separator or "More languages" item is between top and other languages.
+            if (position != mTopLanguages.size()) return ItemType.LANGUAGE;
+            return mShowOtherLanguages ? ItemType.SEPARATOR : ItemType.MORE_LANGUAGES;
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType) {
                 case ItemType.LANGUAGE:
-                    View row = LayoutInflater.from(parent.getContext())
-                                       .inflate(R.layout.app_language_prompt_row, parent, false);
-                    return new AppLanguagePromptRowViewHolder(row);
+                    return new AppLanguagePromptRowViewHolder(
+                            LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.app_language_prompt_row, parent, false));
+                case ItemType.MORE_LANGUAGES:
+                    return new MoreLanguagesRowViewHolder(
+                            LayoutInflater.from(parent.getContext())
+                                    .inflate(R.layout.app_language_prompt_more_languages, parent,
+                                            false));
                 case ItemType.SEPARATOR:
                     return new SeparatorViewHolder(
                             LayoutInflater.from(parent.getContext())
@@ -166,33 +175,46 @@ public class AppLanguagePromoDialog {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            switch (getItemViewType(position)) {
-                case ItemType.LANGUAGE:
-                    LanguageItem languageItem = getLanguageItemAt(position);
-                    ((AppLanguagePromptRowViewHolder) holder)
-                            .bindViewHolder(languageItem, languageItem.equals(mCurrentLanguage));
-                    break;
-                case ItemType.SEPARATOR:
-                    // No binding necessary for the separator.
-                    break;
-                default:
-                    assert false : "No matching viewType";
+            if (getItemViewType(position) == ItemType.LANGUAGE) {
+                LanguageItem languageItem = getLanguageItemAt(position);
+                ((AppLanguagePromptRowViewHolder) holder)
+                        .bindViewHolder(languageItem, languageItem.equals(mCurrentLanguage));
             }
         }
 
         /**
+         * Modify the LanguageItemAdapter to show the other languages in addition to the top
+         * languages. Can only called once. The other languages can not be hidden once shown.
+         */
+        public void showOtherLanguages() {
+            mShowOtherLanguages = true;
+            notifyItemRemoved(mTopLanguages.size()); // Remove "More languages" item.
+            // Other languages plus a horizontal separator have been added.
+            notifyItemRangeInserted(mTopLanguages.size(), mOtherLanguages.size() + 1);
+        }
+
+        /**
          * Set the currently selected LanguageItem based on the position.
-         * @param postion Offset of the LanguageItem to select.
+         * TODO(https://crbug.com/1325522) Refactor to not use notifyDataSetChanged.
+         * @param position Offset of the LanguageItem to select.
          */
         public void setSelectedLanguage(int position) {
             mCurrentLanguage = getLanguageItemAt(position);
             notifyDataSetChanged();
         }
 
+        /**
+         * Return the number of items in the list making room for the list separator or more
+         * languages item.
+         */
         @Override
         public int getItemCount() {
-            // Sum of both lists + a separator.
-            return mTopLanguages.size() + mOtherLanguages.size() + 1;
+            // The top languages and a separator or "More languages" item are always shown.
+            int count = mTopLanguages.size() + 1;
+            if (mShowOtherLanguages) {
+                count += mOtherLanguages.size();
+            }
+            return count;
         }
 
         public LanguageItem getSelectedLanguage() {
@@ -203,7 +225,7 @@ public class AppLanguagePromoDialog {
             return mTopLanguages.contains(mCurrentLanguage);
         }
 
-        private LanguageItem getLanguageItemAt(int position) {
+        protected LanguageItem getLanguageItemAt(int position) {
             if (position < mTopLanguages.size()) {
                 return mTopLanguages.get(position);
             } else if (position > mTopLanguages.size()) {
@@ -218,7 +240,7 @@ public class AppLanguagePromoDialog {
     /**
      * Internal class representing an individual language row.
      */
-    private class AppLanguagePromptRowViewHolder
+    private static class AppLanguagePromptRowViewHolder
             extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mPrimaryNameTextView;
         private TextView mSecondaryNameTextView;
@@ -268,9 +290,27 @@ public class AppLanguagePromoDialog {
     }
 
     /**
+     * Internal class representing the "More languages" list item.
+     */
+    private static class MoreLanguagesRowViewHolder
+            extends RecyclerView.ViewHolder implements View.OnClickListener {
+        MoreLanguagesRowViewHolder(View view) {
+            super(view);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View row) {
+            // TODO(https://crbug.com/1325471) Add meteric recording action.
+            LanguageItemAdapter adapter = (LanguageItemAdapter) getBindingAdapter();
+            adapter.showOtherLanguages();
+        }
+    }
+
+    /**
      * Internal class representing the separator row.
      */
-    private class SeparatorViewHolder extends RecyclerView.ViewHolder {
+    private static class SeparatorViewHolder extends RecyclerView.ViewHolder {
         SeparatorViewHolder(View view) {
             super(view);
         }
@@ -298,7 +338,6 @@ public class AppLanguagePromoDialog {
                 R.layout.app_language_prompt_content, null, false);
         RecyclerView list = customView.findViewById(R.id.app_language_prompt_content_recycler_view);
         list.setAdapter(mAdapter);
-        list.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -309,7 +348,7 @@ public class AppLanguagePromoDialog {
         ImageView bottomShadow = customView.findViewById(R.id.bottom_shadow);
         list.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (recyclerView.canScrollVertically(-1)) {
                     topShadow.setVisibility(View.VISIBLE);
                 } else {
