@@ -150,7 +150,7 @@ ash::SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
     if (info->IsAppEnabled() ||
         base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps)) {
       // Gets `type` before std::move().
-      SystemAppType type = info->GetType();
+      ash::SystemWebAppType type = info->GetType();
       delegate_map.emplace(type, std::move(info));
     }
   }
@@ -166,7 +166,7 @@ bool HasSystemWebAppScheme(const GURL& url) {
 }
 
 ExternalInstallOptions CreateInstallOptionsForSystemApp(
-    const SystemAppType type,
+    const ash::SystemWebAppType type,
     const SystemWebAppDelegate& delegate,
     bool force_update,
     bool is_disabled) {
@@ -248,7 +248,7 @@ void SystemWebAppManager::StopBackgroundTasks() {
   }
 }
 
-bool SystemWebAppManager::IsAppEnabled(SystemAppType type) const {
+bool SystemWebAppManager::IsAppEnabled(ash::SystemWebAppType type) const {
   return ash::IsSystemWebAppEnabled(system_app_delegates_, type);
 }
 
@@ -332,25 +332,26 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   run_loop.Run();
 }
 
-const base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>&
+const base::flat_map<ash::SystemWebAppType,
+                     std::unique_ptr<SystemWebAppDelegate>>&
 SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
   return system_app_delegates_;
 }
 
 absl::optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
-    SystemAppType type) const {
+    ash::SystemWebAppType type) const {
   return web_app::GetAppIdForSystemApp(*registrar_, system_app_delegates_,
                                        type);
 }
 
-absl::optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
-    const AppId& app_id) const {
+absl::optional<ash::SystemWebAppType>
+SystemWebAppManager::GetSystemAppTypeForAppId(const AppId& app_id) const {
   return web_app::GetSystemAppTypeForAppId(*registrar_, system_app_delegates_,
                                            app_id);
 }
 
 const SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
-    SystemAppType type) const {
+    ash::SystemWebAppType type) const {
   return ash::GetSystemWebApp(system_app_delegates_, type);
 }
 
@@ -390,7 +391,8 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   if (navigation_handle->IsSameDocument())
     return;
 
-  const absl::optional<SystemAppType> type = GetSystemAppTypeForAppId(app_id);
+  const absl::optional<ash::SystemWebAppType> type =
+      GetSystemAppTypeForAppId(app_id);
   // This function should only be called when an navigation happens inside a
   // System App. So the |app_id| should always have a valid associated System
   // App type.
@@ -405,8 +407,8 @@ void SystemWebAppManager::OnReadyToCommitNavigation(
   }
 }
 
-absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
-    const GURL& url) const {
+absl::optional<ash::SystemWebAppType>
+SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
   if (!HasSystemWebAppScheme(url))
     return absl::nullopt;
 
@@ -414,7 +416,8 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
   if (!app_id.has_value())
     return absl::nullopt;
 
-  absl::optional<SystemAppType> type = GetSystemAppTypeForAppId(app_id.value());
+  absl::optional<ash::SystemWebAppType> type =
+      GetSystemAppTypeForAppId(app_id.value());
   if (!type.has_value())
     return absl::nullopt;
 
@@ -429,7 +432,7 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
     // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
     // move this into the camera one.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (type == SystemAppType::CAMERA) {
+  if (type == ash::SystemWebAppType::CAMERA) {
     GURL::Replacements replacements;
     replacements.ClearQuery();
     replacements.ClearRef();

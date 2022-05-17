@@ -72,7 +72,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetWebContentsAt(0);
   if (!web_contents || web_contents->GetURL() != url ||
-      GetType() == SystemAppType::HELP) {
+      GetType() == ash::SystemWebAppType::HELP) {
     NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.

@@ -76,6 +76,7 @@
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
@@ -93,7 +94,6 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -2282,7 +2282,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     WebContentCapturingObserver observer(fileAppURL);
     observer.StartWatchingNewWebContents();
     web_app::LaunchSystemWebAppAsync(
-        profile(), web_app::SystemAppType::FILE_MANAGER, params);
+        profile(), ash::SystemWebAppType::FILE_MANAGER, params);
     observer.Wait();
     ASSERT_TRUE(observer.last_navigation_succeeded());
     LoadSwaTestUtils(observer.web_contents());

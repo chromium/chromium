@@ -60,7 +60,7 @@ gfx::Rect GetDefaultBoundsForCameraApp(Browser*) {
 
 CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
     : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::CAMERA,
+          ash::SystemWebAppType::CAMERA,
           "Camera",
           GURL("chrome://camera-app/views/main.html"),
           profile,

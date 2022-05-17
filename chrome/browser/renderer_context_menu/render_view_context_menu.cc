@@ -633,8 +633,8 @@ bool DoesInputFieldTypeSupportEmoji(
 
 // If the link points to a system web app (in |profile|), return its type.
 // Otherwise nullopt.
-absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
-                                                            const GURL& url) {
+absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
+                                                           const GURL& url) {
   absl::optional<web_app::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, url);
 
@@ -1341,7 +1341,7 @@ void RenderViewContextMenu::AppendLinkItems() {
         browser && (browser->is_type_app() || browser->is_type_app_popup());
 
     Profile* profile = GetProfile();
-    absl::optional<web_app::SystemAppType> link_system_app_type =
+    absl::optional<ash::SystemWebAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
     if (system_app_ && link_system_app_type) {
       // Show "Open in new tab" if this link points to the current app, and the

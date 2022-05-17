@@ -104,7 +104,7 @@ void LaunchReleaseNotesImpl(Profile* profile,
   web_app::SystemAppLaunchParams params;
   params.url = GURL("chrome://help-app/updates");
   params.launch_source = source;
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP, params);
+  LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 }
 #endif
 
@@ -133,7 +133,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
 
   web_app::SystemAppLaunchParams params;
   params.launch_source = app_launch_source;
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP, params);
+  LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP, params);
 #else
   GURL url;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -490,26 +490,28 @@ void ShowAppManagementPage(Profile* profile,
 }
 
 void ShowPrintManagementApp(Profile* profile) {
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PRINT_MANAGEMENT);
+  web_app::LaunchSystemWebAppAsync(profile,
+                                   ash::SystemWebAppType::PRINT_MANAGEMENT);
 }
 
 void ShowConnectivityDiagnosticsApp(Profile* profile) {
-  LaunchSystemWebAppAsync(profile,
-                          web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
+  web_app::LaunchSystemWebAppAsync(
+      profile, ash::SystemWebAppType::CONNECTIVITY_DIAGNOSTICS);
 }
 
 void ShowScanningApp(Profile* profile) {
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SCANNING);
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::SCANNING);
 }
 
 void ShowDiagnosticsApp(Profile* profile) {
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS);
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DIAGNOSTICS);
 }
 
 void ShowFirmwareUpdatesApp(Profile* profile) {
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
 
-  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::FIRMWARE_UPDATE);
+  web_app::LaunchSystemWebAppAsync(profile,
+                                   ash::SystemWebAppType::FIRMWARE_UPDATE);
 }
 
 GURL GetOSSettingsUrl(const std::string& sub_page) {

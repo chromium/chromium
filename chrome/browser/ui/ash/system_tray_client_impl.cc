@@ -502,7 +502,7 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
   web_app::SystemAppLaunchParams params;
   params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
-  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::HELP,
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::HELP,
                                    params);
 }
 

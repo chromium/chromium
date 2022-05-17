@@ -24,7 +24,7 @@ class SettingsAppIntegrationTest : public SystemWebAppIntegrationTest {};
 IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsApp) {
   const GURL url("chrome://os-settings");
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::SETTINGS, url, "Settings"));
+      ash::SystemWebAppType::SETTINGS, url, "Settings"));
 }
 
 // Test that the Settings App installs correctly when it's set to be disabled
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsAppDisabled) {
   }
 
   ASSERT_FALSE(GetManager()
-                   .GetAppIdForSystemApp(web_app::SystemAppType::SETTINGS)
+                   .GetAppIdForSystemApp(ash::SystemWebAppType::SETTINGS)
                    .has_value());
 
   WaitForTestSystemAppInstall();
@@ -46,10 +46,10 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsAppDisabled) {
   // Don't wait for load here, because we navigate to chrome error page instead.
   // The App's launch URL won't be loaded.
   Browser* app_browser;
-  LaunchAppWithoutWaiting(web_app::SystemAppType::SETTINGS, &app_browser);
+  LaunchAppWithoutWaiting(ash::SystemWebAppType::SETTINGS, &app_browser);
 
   ASSERT_TRUE(GetManager()
-                  .GetAppIdForSystemApp(web_app::SystemAppType::SETTINGS)
+                  .GetAppIdForSystemApp(ash::SystemWebAppType::SETTINGS)
                   .has_value());
 
   content::WebContents* web_contents =
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest,
   Profile* incognito_profile =
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   web_app::LaunchSystemWebAppAsync(incognito_profile,
-                                   web_app::SystemAppType::SETTINGS);
+                                   ash::SystemWebAppType::SETTINGS);
   web_app::FlushSystemWebAppLaunchesForTesting(
       incognito_profile->GetOriginalProfile());
 

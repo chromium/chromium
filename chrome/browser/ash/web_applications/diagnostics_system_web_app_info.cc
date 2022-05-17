@@ -40,7 +40,7 @@ CreateWebAppInfoForDiagnosticsSystemWebApp() {
 }
 
 DiagnosticsSystemAppDelegate::DiagnosticsSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::DIAGNOSTICS,
+    : web_app::SystemWebAppDelegate(ash::SystemWebAppType::DIAGNOSTICS,
                                     "Diagnostics",
                                     GURL("chrome://diagnostics"),
                                     profile) {}

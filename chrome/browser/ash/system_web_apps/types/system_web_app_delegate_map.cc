@@ -10,7 +10,7 @@
 namespace ash {
 
 bool IsSystemWebAppEnabled(const SystemWebAppDelegateMap& delegates,
-                           web_app::SystemAppType type) {
+                           SystemWebAppType type) {
   if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
     return true;
 
@@ -24,7 +24,7 @@ bool IsSystemWebAppEnabled(const SystemWebAppDelegateMap& delegates,
 
 const web_app::SystemWebAppDelegate* GetSystemWebApp(
     const SystemWebAppDelegateMap& delegates,
-    web_app::SystemAppType type) {
+    SystemWebAppType type) {
   auto it = delegates.find(type);
   if (it == delegates.end())
     return nullptr;

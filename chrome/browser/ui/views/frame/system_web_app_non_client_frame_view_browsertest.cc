@@ -23,7 +23,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
                        HideWebAppMenuButton) {
   WaitForTestSystemAppInstall();
   Browser* app_browser;
-  LaunchApp(web_app::SystemAppType::SETTINGS, &app_browser);
+  LaunchApp(ash::SystemWebAppType::SETTINGS, &app_browser);
   EXPECT_EQ(nullptr, BrowserView::GetBrowserViewForBrowser(app_browser)
                          ->frame()
                          ->GetFrameView()
@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNonClientFrameViewBrowserTest,
                        HideFileSystemAccessPageAction) {
   WaitForTestSystemAppInstall();
   Browser* app_browser;
-  LaunchApp(web_app::SystemAppType::SETTINGS, &app_browser);
+  LaunchApp(ash::SystemWebAppType::SETTINGS, &app_browser);
   WebAppFrameToolbarView* toolbar =
       BrowserView::GetBrowserViewForBrowser(app_browser)
           ->frame()

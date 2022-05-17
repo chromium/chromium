@@ -45,7 +45,7 @@ class OSFeedbackAppIntegrationTest : public SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OSFeedbackAppInLauncher) {
   const GURL url(ash::kChromeUIOSFeedbackUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::OS_FEEDBACK, url, "Feedback"));
+      ash::SystemWebAppType::OS_FEEDBACK, url, "Feedback"));
 
   histogram_tester_.ExpectBucketCount(
       "Webapp.InstallResult.System.Apps.OSFeedback",
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, DefaultWindowBounds) {
 
   WaitForTestSystemAppInstall();
   Browser* browser;
-  LaunchApp(web_app::SystemAppType::OS_FEEDBACK, &browser);
+  LaunchApp(ash::SystemWebAppType::OS_FEEDBACK, &browser);
 
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, FeedbackAppAttributes) {
 
   // Check the correct attributes for Feedback App.
   auto* system_app =
-      GetManager().GetSystemApp(web_app::SystemAppType::OS_FEEDBACK);
+      GetManager().GetSystemApp(ash::SystemWebAppType::OS_FEEDBACK);
   EXPECT_TRUE(system_app->ShouldShowInLauncher());
   EXPECT_TRUE(system_app->ShouldShowInSearch());
   EXPECT_TRUE(system_app->ShouldReuseExistingWindow());
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest,
 
   // Check the correct attributes for Feedback App.
   auto* system_app =
-      GetManager().GetSystemApp(web_app::SystemAppType::OS_FEEDBACK);
+      GetManager().GetSystemApp(ash::SystemWebAppType::OS_FEEDBACK);
   EXPECT_FALSE(system_app->ShouldShowInLauncher());
   EXPECT_FALSE(system_app->ShouldShowInSearch());
 }

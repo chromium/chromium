@@ -14,8 +14,8 @@
 #include "base/one_shot_event.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -91,7 +91,7 @@ class SystemAppBackgroundTask {
 
   bool open_immediately_for_testing() const { return open_immediately_; }
 
-  SystemAppType app_type_for_testing() const { return app_type_; }
+  ash::SystemWebAppType app_type_for_testing() const { return app_type_; }
 
   GURL url_for_testing() const { return url_; }
 
@@ -144,7 +144,7 @@ class SystemAppBackgroundTask {
   void CloseWebContents(content::WebContents* contents);
 
   raw_ptr<Profile> profile_;
-  SystemAppType app_type_;
+  ash::SystemWebAppType app_type_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> web_app_url_loader_;
   std::unique_ptr<base::OneShotTimer> timer_;

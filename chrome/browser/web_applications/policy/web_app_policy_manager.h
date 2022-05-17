@@ -71,7 +71,7 @@ class WebAppPolicyManager {
   void OnDisableListPolicyChanged();
 
   // Gets system web apps disabled by SystemFeaturesDisableList policy.
-  const std::set<SystemAppType>& GetDisabledSystemWebApps() const;
+  const std::set<ash::SystemWebAppType>& GetDisabledSystemWebApps() const;
 
   // Gets ids of web apps disabled by SystemFeaturesDisableList policy.
   const std::set<AppId>& GetDisabledWebAppsIds() const;
@@ -167,7 +167,7 @@ class WebAppPolicyManager {
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   // List of disabled system web apps, containing app types.
-  std::set<SystemAppType> disabled_system_apps_;
+  std::set<ash::SystemWebAppType> disabled_system_apps_;
   // List of disabled system and progressive web apps, containing app ids.
   std::set<AppId> disabled_web_apps_;
 

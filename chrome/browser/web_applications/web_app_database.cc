@@ -12,10 +12,10 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -438,7 +438,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     auto* mutable_swa_data =
         local_data->mutable_client_data()->mutable_system_web_app_data();
     mutable_swa_data->set_system_app_type(
-        static_cast<SystemWebAppDataProto_SystemAppType>(
+        static_cast<SystemWebAppDataProto_SystemWebAppType>(
             swa_data.system_app_type));
   }
 
@@ -800,7 +800,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     WebAppSystemWebAppData& swa_data =
         web_app->client_data()->system_web_app_data.emplace();
 
-    swa_data.system_app_type = static_cast<SystemAppType>(
+    swa_data.system_app_type = static_cast<ash::SystemWebAppType>(
         local_data.client_data().system_web_app_data().system_app_type());
   }
 

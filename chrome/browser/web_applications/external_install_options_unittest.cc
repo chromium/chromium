@@ -100,7 +100,7 @@ TEST(WebAppExternalInstallOptions,
 
   install_options.launch_query_params = "param";
 
-  install_options.system_app_type = SystemAppType::SAMPLE;
+  install_options.system_app_type = ash::SystemWebAppType::SAMPLE;
 
   install_options.oem_installed = true;
 

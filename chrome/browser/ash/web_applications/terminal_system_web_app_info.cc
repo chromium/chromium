@@ -58,7 +58,7 @@ gfx::Rect GetDefaultBoundsForTerminal(Browser* browser) {
 }
 
 TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::TERMINAL,
+    : web_app::SystemWebAppDelegate(ash::SystemWebAppType::TERMINAL,
                                     "Terminal",
                                     GURL(chrome::kChromeUIUntrustedTerminalURL),
                                     profile) {}

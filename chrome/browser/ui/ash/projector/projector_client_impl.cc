@@ -13,6 +13,7 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -136,21 +136,21 @@ bool ProjectorClientImpl::IsDriveFsMountFailed() const {
 
 void ProjectorClientImpl::OpenProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PROJECTOR);
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::PROJECTOR);
 }
 
 void ProjectorClientImpl::MinimizeProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  auto* browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  auto* browser = web_app::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR);
   if (browser)
     browser->window()->Minimize();
 }
 
 void ProjectorClientImpl::CloseProjectorApp() const {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  auto* browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  auto* browser = web_app::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR);
   if (browser)
     browser->window()->Close();
 }
@@ -287,8 +287,8 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
   if (!is_enabled)
     CloseProjectorApp();
 
-  absl::optional<web_app::AppId> app_id =
-      GetAppIdForSystemWebApp(profile, web_app::SystemAppType::PROJECTOR);
+  absl::optional<web_app::AppId> app_id = web_app::GetAppIdForSystemWebApp(
+      profile, ash::SystemWebAppType::PROJECTOR);
   if (!app_id)
     return;
 

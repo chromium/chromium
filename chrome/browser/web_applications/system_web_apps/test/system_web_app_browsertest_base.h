@@ -25,9 +25,11 @@ namespace content {
 class WebContents;
 }
 
-namespace web_app {
+namespace ash {
+enum class SystemWebAppType;
+}
 
-enum class SystemAppType;
+namespace web_app {
 
 class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -47,8 +49,9 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Returns TestSystemWebAppManager if initialized with |install_mock| true.
   SystemWebAppManager& GetManager();
 
-  // Returns SystemAppType of mocked app, only valid if |install_mock| is true.
-  SystemAppType GetMockAppType();
+  // Returns ash::SystemWebAppType of mocked app, only valid if |install_mock|
+  // is true.
+  ash::SystemWebAppType GetMockAppType();
 
   // Returns the start URL based on the given |params|.
   GURL GetStartUrl(const apps::AppLaunchParams& params);
@@ -57,13 +60,14 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   GURL GetStartUrl();
 
   // Returns the URL for a installed system web app type.
-  GURL GetStartUrl(SystemAppType type);
+  GURL GetStartUrl(ash::SystemWebAppType type);
 
   void WaitForTestSystemAppInstall();
 
   // Creates a default AppLaunchParams for |system_app_type|. Launches a window.
   // Uses kSourceTest as the AppLaunchSource.
-  apps::AppLaunchParams LaunchParamsForApp(SystemAppType system_app_type);
+  apps::AppLaunchParams LaunchParamsForApp(
+      ash::SystemWebAppType system_app_type);
 
   // Launch the given System App from |params|, and wait for the application to
   // finish loading. If |browser| is not nullptr, it will store the Browser*
@@ -74,7 +78,7 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Launch the given System App |type| with default AppLaunchParams, and wait
   // for the application to finish loading. If |browser| is not nullptr, it will
   // store the Browser* that hosts the launched application.
-  content::WebContents* LaunchApp(SystemAppType type,
+  content::WebContents* LaunchApp(ash::SystemWebAppType type,
                                   Browser** browser = nullptr);
 
   // Launch the given System App from |params|, without waiting for the
@@ -86,11 +90,11 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Launch the given System App |type| with default AppLaunchParams, without
   // waiting for the application to finish loading. If |browser| is not nullptr,
   // it will store the Browser* that hosts the launched application.
-  content::WebContents* LaunchAppWithoutWaiting(SystemAppType type,
+  content::WebContents* LaunchAppWithoutWaiting(ash::SystemWebAppType type,
                                                 Browser** browser = nullptr);
 
   // Returns number of system web app browser windows matching |type|.
-  size_t GetSystemWebAppBrowserCount(SystemAppType type);
+  size_t GetSystemWebAppBrowserCount(ash::SystemWebAppType type);
 
  protected:
   std::unique_ptr<TestSystemWebAppInstallation> maybe_installation_;

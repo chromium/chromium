@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -191,8 +191,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -211,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -235,8 +235,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -349,8 +349,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that Projector App is not opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR);
   EXPECT_FALSE(app_browser);
 }
 
@@ -366,8 +366,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify the user can open the Projector App when the policy is enabled.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  Browser* app_browser = web_app::FindSystemWebAppBrowser(
+      profile, ash::SystemWebAppType::PROJECTOR);
   ASSERT_TRUE(app_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();

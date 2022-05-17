@@ -6,12 +6,12 @@
 
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
@@ -38,7 +38,7 @@ bool IsFileManagerUrl(const GURL& url) {
 // Show a chrome:// (os://) app for a given URL.
 void ShowOsAppForProfile(Profile* profile,
                          const GURL& gurl,
-                         web_app::SystemAppType app_type) {
+                         ash::SystemWebAppType app_type) {
   // Use the original (non off-the-record) profile for a Chrome URL unless
   // this is a guest session.
   if (!profile->IsGuestSession() && profile->IsOffTheRecord())
@@ -99,7 +99,7 @@ bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
     return true;
   }
 
-  web_app::SystemAppType app_id;
+  ash::SystemWebAppType app_id;
 
   // As there are different apps which need to be driven by some URLs, the
   // following code does pick the proper app for a given URL.
@@ -107,20 +107,20 @@ bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
   // should get refactored as well to improve long term stability.
   if (target_url == GURL(chrome::kChromeUIFlagsURL) ||
       target_url == GURL(chrome::kOsUIFlagsURL)) {
-    app_id = web_app::SystemAppType::OS_FLAGS;
+    app_id = ash::SystemWebAppType::OS_FLAGS;
     target_url = GURL(chrome::kChromeUIFlagsURL);
   } else if (target_url == GURL(chrome::kChromeUIUntrustedCroshURL)) {
-    app_id = web_app::SystemAppType::CROSH;
+    app_id = ash::SystemWebAppType::CROSH;
   } else if (IsFileManagerUrl(target_url)) {
-    app_id = web_app::SystemAppType::FILE_MANAGER;
+    app_id = ash::SystemWebAppType::FILE_MANAGER;
   } else if (target_url == GURL(chrome::kChromeUIScanningAppURL)) {
-    app_id = web_app::SystemAppType::SCANNING;
+    app_id = ash::SystemWebAppType::SCANNING;
   } else if (target_url == GURL(chrome::kOsUIHelpAppURL)) {
-    app_id = web_app::SystemAppType::HELP;
+    app_id = ash::SystemWebAppType::HELP;
     target_url = GURL(ash::kChromeUIHelpAppURL);
   } else if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
                  target_url)) {
-    app_id = web_app::SystemAppType::OS_URL_HANDLER;
+    app_id = ash::SystemWebAppType::OS_URL_HANDLER;
     if (crosapi::gurl_os_handler_utils::IsAshOsUrl(target_url)) {
       target_url =
           GURL(kChromeUrlPrefix +

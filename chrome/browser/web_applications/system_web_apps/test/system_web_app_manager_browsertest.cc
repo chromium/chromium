@@ -1158,8 +1158,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   // Check all system app types has a corresponding SystemWebAppDataProto entry
   // defined.
   for (const auto& type_and_info : app_map) {
-    EXPECT_TRUE(SystemWebAppDataProto_SystemAppType_IsValid(
-        static_cast<SystemWebAppDataProto_SystemAppType>(type_and_info.first)))
+    EXPECT_TRUE(SystemWebAppDataProto_SystemWebAppType_IsValid(
+        static_cast<SystemWebAppDataProto_SystemWebAppType>(
+            type_and_info.first)))
         << "Please make sure you have added a corresponding entry to "
            "SystemWebAppDataProto when adding a new System Web App.";
   }
@@ -1183,9 +1184,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
   // Chrome OS images. Here we test a few apps whose resources are bundled in
   // chrome and always available. These apps are able to cover the code path we
   // execute when launching the app.
-  const SystemAppType apps_to_launch[] = {
-      SystemAppType::SETTINGS,
-      SystemAppType::MEDIA,  // Uses File Handling with launch directory
+  const ash::SystemWebAppType apps_to_launch[] = {
+      ash::SystemWebAppType::SETTINGS,
+      ash::SystemWebAppType::MEDIA,  // Uses File Handling with launch directory
   };
 
   for (const auto& type : apps_to_launch) {
@@ -1419,8 +1420,9 @@ class SystemWebAppManagerAppSuspensionBrowserTest
 // is installed.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
                        AppSuspendedBeforeInstall) {
-  ASSERT_FALSE(
-      GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS).has_value());
+  ASSERT_FALSE(GetManager()
+                   .GetAppIdForSystemApp(ash::SystemWebAppType::SETTINGS)
+                   .has_value());
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
@@ -1429,7 +1431,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   }
   WaitForTestSystemAppInstall();
   absl::optional<AppId> settings_id =
-      GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS);
+      GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::SETTINGS);
   DCHECK(settings_id.has_value());
 
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy, GetAppReadiness(*settings_id));
@@ -1454,7 +1456,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
                        AppSuspendedAfterInstall) {
   WaitForTestSystemAppInstall();
   absl::optional<AppId> settings_id =
-      GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS);
+      GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::SETTINGS);
   DCHECK(settings_id.has_value());
   EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
 
@@ -1497,10 +1499,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
   WaitForTestSystemAppInstall();
   AppId app_id =
       GetManager()
-          .GetAppIdForSystemApp(SystemAppType::SHORTCUT_CUSTOMIZATION)
+          .GetAppIdForSystemApp(ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION)
           .value();
   Browser* browser;
-  EXPECT_TRUE(LaunchApp(SystemAppType::SHORTCUT_CUSTOMIZATION, &browser));
+  EXPECT_TRUE(
+      LaunchApp(ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION, &browser));
 
   // Wait for app service to see the newly installed apps.
   apps::AppServiceProxyFactory::GetForProfile(browser->profile())
@@ -1635,10 +1638,14 @@ class SystemWebAppManagerContextMenuBrowserTest
   }
 
   // See TestSystemWebAppInstallation::SetUpAppsForContestMenuTest.
-  const SystemAppType kAppTypeSingleWindow = SystemAppType::SETTINGS;
-  const SystemAppType kAppTypeMultiWindow = SystemAppType::FILE_MANAGER;
-  const SystemAppType kAppTypeSingleWindowTabStrip = SystemAppType::MEDIA;
-  const SystemAppType kAppTypeMultiWindowTabStrip = SystemAppType::HELP;
+  const ash::SystemWebAppType kAppTypeSingleWindow =
+      ash::SystemWebAppType::SETTINGS;
+  const ash::SystemWebAppType kAppTypeMultiWindow =
+      ash::SystemWebAppType::FILE_MANAGER;
+  const ash::SystemWebAppType kAppTypeSingleWindowTabStrip =
+      ash::SystemWebAppType::MEDIA;
+  const ash::SystemWebAppType kAppTypeMultiWindowTabStrip =
+      ash::SystemWebAppType::HELP;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

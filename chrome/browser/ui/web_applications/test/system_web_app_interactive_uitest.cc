@@ -102,7 +102,8 @@ class SystemWebAppLinkCaptureBrowserTest
     return incognito;
   }
   const GURL kInitiatingAppUrl = GURL("chrome://initiating-app/pwa.html");
-  const SystemAppType kInitiatingAppType = SystemAppType::SETTINGS;
+  const ash::SystemWebAppType kInitiatingAppType =
+      ash::SystemWebAppType::SETTINGS;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

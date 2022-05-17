@@ -35,7 +35,7 @@ CreateWebAppInfoForShimlessRMASystemWebApp() {
 }
 
 ShimlessRMASystemAppDelegate::ShimlessRMASystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::SHIMLESS_RMA,
+    : web_app::SystemWebAppDelegate(ash::SystemWebAppType::SHIMLESS_RMA,
                                     "ShimlessRMA",
                                     GURL(ash::kChromeUIShimlessRMAUrl),
                                     profile) {}

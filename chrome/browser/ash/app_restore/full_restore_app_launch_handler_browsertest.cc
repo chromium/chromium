@@ -2497,7 +2497,7 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
 
   Browser* LaunchSystemWebApp(
       const GURL& gurl,
-      web_app::SystemAppType system_app_type,
+      ash::SystemWebAppType system_app_type,
       apps::mojom::LaunchSource launch_source =
           apps::mojom::LaunchSource::kFromChromeInternal) {
     WaitForTestSystemAppInstall();
@@ -2519,7 +2519,7 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
       apps::mojom::LaunchSource launch_source =
           apps::mojom::LaunchSource::kFromChromeInternal) {
     return LaunchSystemWebApp(GURL("chrome://help-app/"),
-                              web_app::SystemAppType::HELP, launch_source);
+                              ash::SystemWebAppType::HELP, launch_source);
   }
 
   // Launches the media system web app. Used when a test needs to use a
@@ -2528,7 +2528,7 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
       apps::mojom::LaunchSource launch_source =
           apps::mojom::LaunchSource::kFromChromeInternal) {
     return LaunchSystemWebApp(GURL("chrome://media-app/"),
-                              web_app::SystemAppType::MEDIA, launch_source);
+                              ash::SystemWebAppType::MEDIA, launch_source);
   }
 
   void WaitForAppLaunchInfoSaved(bool allow_save = true) {
@@ -2560,7 +2560,7 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     apps::AppPtr app = std::make_unique<apps::App>(
         app_type,
-        *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP));
+        *GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::HELP));
     app->readiness = readiness;
     if (base::FeatureList::IsEnabled(
             apps::kAppServiceOnAppUpdateWithoutMojom)) {

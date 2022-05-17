@@ -103,7 +103,7 @@ void ChromeScanningAppDelegate::OpenFilesInMediaApp(
   params.launch_paths = file_paths;
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
   web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
-                                   web_app::SystemAppType::MEDIA, params);
+                                   ash::SystemWebAppType::MEDIA, params);
 }
 
 void ChromeScanningAppDelegate::SaveScanSettingsToPrefs(

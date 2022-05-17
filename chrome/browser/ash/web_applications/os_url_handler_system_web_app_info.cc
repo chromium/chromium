@@ -34,7 +34,7 @@ SkColor GetBgColor(bool use_dark_mode) {
 
 OsUrlHandlerSystemWebAppDelegate::OsUrlHandlerSystemWebAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::OS_URL_HANDLER,
+    : web_app::SystemWebAppDelegate(ash::SystemWebAppType::OS_URL_HANDLER,
                                     "OsUrlHandler",
                                     GURL(chrome::kChromeUIOsUrlAppURL),
                                     profile) {}

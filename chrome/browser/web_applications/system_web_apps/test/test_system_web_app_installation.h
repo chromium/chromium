@@ -20,7 +20,7 @@ namespace web_app {
 
 class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
  public:
-  UnittestingSystemAppDelegate(SystemAppType type,
+  UnittestingSystemAppDelegate(ash::SystemWebAppType type,
                                const std::string& name,
                                const GURL& url,
                                WebAppInstallInfoFactory info_factory);
@@ -166,8 +166,8 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithAdditionalSearchTerms();
 
-  // This method additionally sets up a helper SystemAppType::SETTING system app
-  // for testing capturing links from a different SWA.
+  // This method additionally sets up a helper ash::SystemWebAppType::SETTING
+  // system app for testing capturing links from a different SWA.
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppThatCapturesNavigation();
 
@@ -220,7 +220,7 @@ class TestSystemWebAppInstallation {
   AppId GetAppId();
   const GURL& GetAppUrl();
   SystemWebAppDelegate* GetDelegate();
-  SystemAppType GetType();
+  ash::SystemWebAppType GetType();
 
   void set_update_policy(SystemWebAppManager::UpdatePolicy update_policy) {
     update_policy_ = update_policy;
@@ -245,11 +245,11 @@ class TestSystemWebAppInstallation {
       SystemWebAppManager::UpdatePolicy::kAlwaysUpdate;
   std::unique_ptr<FakeWebAppProviderCreator> fake_web_app_provider_creator_;
   // nullopt if SetUpWithoutApps() was used.
-  const absl::optional<SystemAppType> type_;
+  const absl::optional<ash::SystemWebAppType> type_;
   std::vector<std::unique_ptr<TestSystemWebAppWebUIControllerFactory>>
       web_ui_controller_factories_;
   std::set<ContentSettingsType> auto_granted_permissions_;
-  base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>
+  base::flat_map<ash::SystemWebAppType, std::unique_ptr<SystemWebAppDelegate>>
       system_app_delegates_;
 };
 

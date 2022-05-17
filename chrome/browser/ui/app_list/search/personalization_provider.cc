@@ -73,7 +73,7 @@ void PersonalizationResult::Open(int event_flags) {
   ash::personalization_app::LogPersonalizationEntryPoint(
       ash::PersonalizationEntryPoint::kLauncherSearch);
   web_app::LaunchSystemWebAppAsync(
-      profile_, web_app::SystemAppType::PERSONALIZATION, launch_params);
+      profile_, ash::SystemWebAppType::PERSONALIZATION, launch_params);
 }
 
 PersonalizationProvider::PersonalizationProvider(Profile* profile)

@@ -10,7 +10,7 @@ package web_app;
 
 // Properties for System Web Apps.
 message SystemWebAppDataProto {
-  enum SystemAppType {
+  enum SystemWebAppType {
     FILE_MANAGER = 1;
     // TELEMETRY_DEPRECATED = 2;
     SAMPLE = 3;
@@ -36,5 +36,5 @@ message SystemWebAppDataProto {
     OS_FLAGS = 23;
   };
 
-  optional SystemAppType system_app_type = 1;
+  optional SystemWebAppType system_app_type = 1;
 }

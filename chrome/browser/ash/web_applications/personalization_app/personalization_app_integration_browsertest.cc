@@ -23,11 +23,11 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/user_manager/user_manager.h"
@@ -234,7 +234,7 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
   // the app.
   content::WebContents* LaunchAppAtWallpaperSubpage(Browser** browser) {
     apps::AppLaunchParams launch_params =
-        LaunchParamsForApp(web_app::SystemAppType::PERSONALIZATION);
+        LaunchParamsForApp(ash::SystemWebAppType::PERSONALIZATION);
     launch_params.override_url =
         GURL(std::string(kChromeUIPersonalizationAppURL) +
              kWallpaperSubpageRelativeUrl);
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                              ? "Personalization"
                              : "Wallpaper";
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::PERSONALIZATION, url, appTitle));
+      ash::SystemWebAppType::PERSONALIZATION, url, appTitle));
 }
 
 // Test that the widget is modified to be transparent.

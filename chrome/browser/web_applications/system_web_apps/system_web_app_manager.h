@@ -17,10 +17,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -70,7 +70,7 @@ class SystemWebAppManager {
       "Webapp.SystemApps.FreshInstallDuration";
 
   // Returns whether the given app type is enabled.
-  bool IsAppEnabled(SystemAppType type) const;
+  bool IsAppEnabled(ash::SystemWebAppType type) const;
 
   explicit SystemWebAppManager(Profile* profile);
   SystemWebAppManager(const SystemWebAppManager&) = delete;
@@ -100,14 +100,14 @@ class SystemWebAppManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns the app id for the given System App |type|.
-  absl::optional<AppId> GetAppIdForSystemApp(SystemAppType type) const;
+  absl::optional<AppId> GetAppIdForSystemApp(ash::SystemWebAppType type) const;
 
   // Returns the System App Type for the given |app_id|.
-  absl::optional<SystemAppType> GetSystemAppTypeForAppId(
+  absl::optional<ash::SystemWebAppType> GetSystemAppTypeForAppId(
       const AppId& app_id) const;
 
   // Returns the System App Delegate for the given App |type|.
-  const SystemWebAppDelegate* GetSystemApp(SystemAppType type) const;
+  const SystemWebAppDelegate* GetSystemApp(ash::SystemWebAppType type) const;
 
   // Returns the App Ids for all installed System Web Apps.
   std::vector<AppId> GetAppIds() const;
@@ -120,8 +120,9 @@ class SystemWebAppManager {
   void OnReadyToCommitNavigation(const AppId& app_id,
                                  content::NavigationHandle* navigation_handle);
 
-  // Returns the SystemAppType that should capture the navigation to |url|.
-  absl::optional<SystemAppType> GetCapturingSystemAppForURL(
+  // Returns the ash::SystemWebAppType that should capture the navigation to
+  // |url|.
+  absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
 
   // Returns a map of registered system app types and infos, these apps will be

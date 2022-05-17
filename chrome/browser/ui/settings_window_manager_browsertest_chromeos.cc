@@ -39,7 +39,7 @@ size_t GetNumberOfSettingsWindows() {
   return std::count_if(browser_list->begin(), browser_list->end(),
                        [](Browser* browser) {
                          return web_app::IsBrowserForSystemWebApp(
-                             browser, web_app::SystemAppType::SETTINGS);
+                             browser, ash::SystemWebAppType::SETTINGS);
                        });
 }
 
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {
 
   // Launching via LaunchService should also de-dupe to the same browser.
   web_app::AppId settings_app_id = *web_app::GetAppIdForSystemWebApp(
-      browser()->profile(), web_app::SystemAppType::SETTINGS);
+      browser()->profile(), ash::SystemWebAppType::SETTINGS);
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()

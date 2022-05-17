@@ -202,7 +202,7 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
   absl::optional<web_app::AppId> app_id =
       provider->system_web_app_manager().GetAppIdForSystemApp(
-          web_app::SystemAppType::CAMERA);
+          ash::SystemWebAppType::CAMERA);
 
   // The launch directory is passed here rather than
   // `SystemWebAppDelegate::LaunchAndNavigateSystemWebApp()` to handle the case
@@ -244,7 +244,7 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
   params.launch_paths = {path};
   params.launch_source = apps::mojom::LaunchSource::kFromOtherApp;
   web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui_),
-                                   web_app::SystemAppType::MEDIA, params);
+                                   ash::SystemWebAppType::MEDIA, params);
 }
 
 void ChromeCameraAppUIDelegate::OpenFeedbackDialog(

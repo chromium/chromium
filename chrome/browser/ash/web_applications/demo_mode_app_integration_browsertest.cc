@@ -56,7 +56,7 @@ class WidgetFullscreenWaiter : public views::WidgetObserver {
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
   const GURL url(ash::kChromeUIDemoModeAppURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::DEMO_MODE, url, "Demo Mode App"));
+      ash::SystemWebAppType::DEMO_MODE, url, "Demo Mode App"));
 }
 
 // Test that Demo Mode app starts in fullscreen from initial call to
@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   WaitForTestSystemAppInstall();
   Browser* browser;
   content::WebContents* web_contents =
-      LaunchApp(web_app::SystemAppType::DEMO_MODE, &browser);
+      LaunchApp(ash::SystemWebAppType::DEMO_MODE, &browser);
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
       web_contents->GetTopLevelNativeWindow());
   WidgetFullscreenWaiter(widget).WaitThenAssert(true);

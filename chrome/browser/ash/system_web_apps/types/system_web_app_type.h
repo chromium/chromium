@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_TYPES_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_TYPES_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_TYPE_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_TYPE_H_
 
-namespace web_app {
+namespace ash {
 
 // An enum that lists the different System Apps that exist. Can be used to
 // retrieve the App ID from the underlying Web App system.
@@ -15,7 +15,7 @@ namespace web_app {
 //
 // When deprecating, comment out the entry so that it's not accidentally
 // re-used.
-enum class SystemAppType {
+enum class SystemWebAppType {
   FILE_MANAGER = 1,
   // TELEMETRY_DEPRECATED = 2,
 
@@ -140,6 +140,6 @@ enum class SystemAppType {
   kMaxValue = OS_FLAGS,
 };
 
-}  // namespace web_app
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_TYPES_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_TYPE_H_

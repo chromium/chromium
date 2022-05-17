@@ -161,8 +161,8 @@ bool OpenFilesSwa(Profile* const profile,
 
   web_app::SystemAppLaunchParams params;
   params.url = files_swa_url;
-  web_app::LaunchSystemWebAppAsync(
-      profile, web_app::SystemAppType::FILE_MANAGER, params);
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                                   params);
   return true;
 }
 
@@ -441,7 +441,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 void ChromeNewWindowClient::OpenCrosh() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (base::FeatureList::IsEnabled(chromeos::features::kCroshSWA)) {
-    web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::CROSH);
+    web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::CROSH);
   } else {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     Browser* browser = displayer.browser();
@@ -508,7 +508,7 @@ void ChromeNewWindowClient::OpenFeedbackPage(
 void ChromeNewWindowClient::OpenPersonalizationHub() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   web_app::LaunchSystemWebAppAsync(profile,
-                                   web_app::SystemAppType::PERSONALIZATION);
+                                   ash::SystemWebAppType::PERSONALIZATION);
 }
 
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
@@ -538,5 +538,5 @@ bool ChromeNewWindowClient::IsCameraAppEnabled() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
   return provider && provider->system_web_app_manager().IsAppEnabled(
-                         web_app::SystemAppType::CAMERA);
+                         ash::SystemWebAppType::CAMERA);
 }

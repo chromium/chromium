@@ -51,7 +51,7 @@ class DiagnosticsAppIntegrationTest : public SystemWebAppIntegrationTest {
 
   apps::AppLaunchParams GetAppLaunchParams(
       const std::string override_url = "") {
-    auto params = LaunchParamsForApp(web_app::SystemAppType::DIAGNOSTICS);
+    auto params = LaunchParamsForApp(ash::SystemWebAppType::DIAGNOSTICS);
 
     // Override starting URL when provided.
     if (override_url != "") {
@@ -71,13 +71,14 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                        DiagnosticsAppInLauncher) {
   const GURL url(ash::kChromeUIDiagnosticsAppUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::DIAGNOSTICS, url, "Diagnostics"));
+      ash::SystemWebAppType::DIAGNOSTICS, url, "Diagnostics"));
 }
 
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest, LaunchMetricsTest) {
   WaitForTestSystemAppInstall();
 
-  LaunchSystemWebAppAsync(profile(), web_app::SystemAppType::DIAGNOSTICS);
+  web_app::LaunchSystemWebAppAsync(profile(),
+                                   ash::SystemWebAppType::DIAGNOSTICS);
   web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
   histogram_tester_.ExpectUniqueSample(kFromChromeLaunch, kDiagnosticsApp, 1);
@@ -88,7 +89,7 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest, UsageMetricsTest) {
 
   Browser* system_app_browser;
   // Launch app and allow UI to load.
-  LaunchApp(web_app::SystemAppType::DIAGNOSTICS, &system_app_browser);
+  LaunchApp(ash::SystemWebAppType::DIAGNOSTICS, &system_app_browser);
 
   // Find system browser for diagnostics and close it to trigger usage metrics.
   EXPECT_TRUE(web_app::IsSystemWebApp(system_app_browser));

@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 

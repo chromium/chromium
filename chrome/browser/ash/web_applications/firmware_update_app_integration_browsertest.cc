@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_P(FirmwareUpdateAppIntegrationTest,
                        FirmwareUpdateAppValid) {
   const GURL url(ash::kChromeUIFirmwareUpdateAppURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::FIRMWARE_UPDATE, url, "Firmware Updates"));
+      ash::SystemWebAppType::FIRMWARE_UPDATE, url, "Firmware Updates"));
 
   histogram_tester_.ExpectBucketCount(
       "Webapp.InstallResult.System.Apps.FirmwareUpdate",

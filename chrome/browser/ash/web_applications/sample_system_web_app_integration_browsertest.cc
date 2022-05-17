@@ -15,7 +15,7 @@ using SampleSystemWebAppIntegrationTest = SystemWebAppIntegrationTest;
 IN_PROC_BROWSER_TEST_P(SampleSystemWebAppIntegrationTest, SampleSystemWebApp) {
   const GURL url(ash::kChromeUISampleSystemWebAppURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::SAMPLE, url, "Sample System Web App"));
+      ash::SystemWebAppType::SAMPLE, url, "Sample System Web App"));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

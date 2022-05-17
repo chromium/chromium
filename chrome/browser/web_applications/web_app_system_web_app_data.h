@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_SYSTEM_WEB_APP_DATA_H_
 
 #include "base/values.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 
 namespace web_app {
 
 struct WebAppSystemWebAppData {
   base::Value AsDebugValue() const;
 
-  SystemAppType system_app_type;
+  ash::SystemWebAppType system_app_type;
 };
 
 bool operator==(const WebAppSystemWebAppData& data1,

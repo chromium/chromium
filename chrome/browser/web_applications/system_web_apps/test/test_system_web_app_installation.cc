@@ -12,9 +12,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_url_data_source.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -88,7 +88,7 @@ std::string GetChromeUntrustedDataSourceNameFromInstallUrl(const GURL& url) {
 }  // namespace
 
 UnittestingSystemAppDelegate::UnittestingSystemAppDelegate(
-    SystemAppType type,
+    ash::SystemWebAppType type,
     const std::string& name,
     const GURL& url,
     WebAppInstallInfoFactory info_factory)
@@ -348,7 +348,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::TERMINAL, "Terminal",
+          ash::SystemWebAppType::TERMINAL, "Terminal",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldReuseExistingWindow(false);
@@ -363,7 +363,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::SETTINGS, "OSSettings",
+          ash::SystemWebAppType::SETTINGS, "OSSettings",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetUrlInSystemAppScope(GURL("http://example.com/in-scope"));
@@ -378,7 +378,7 @@ TestSystemWebAppInstallation::SetUpAppThatReceivesLaunchFiles(
     IncludeLaunchDirectory include_launch_directory) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Media",
+          ash::SystemWebAppType::MEDIA, "Media",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
 
@@ -401,7 +401,7 @@ TestSystemWebAppInstallation::SetUpAppWithEnabledOriginTrials(
     const OriginTrialsMap& origin_to_trials) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Media",
+          ash::SystemWebAppType::MEDIA, "Media",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
 
@@ -415,7 +415,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppNotShownInLauncher() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
 
@@ -430,7 +430,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppNotShownInSearch() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldShowInSearch(false);
@@ -444,7 +444,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppThatHandlesFileOpenIntents() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldHandleFileOpenIntents(true);
@@ -458,7 +458,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithAdditionalSearchTerms() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetAdditionalSearchTerms({IDS_SETTINGS_SECURITY});
@@ -472,7 +472,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::HELP, "Test",
+          ash::SystemWebAppType::HELP, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldCaptureNavigations(true);
@@ -482,9 +482,9 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
   // Add a helper system app to test capturing links from it.
   const GURL kInitiatingAppUrl = GURL("chrome://initiating-app/pwa.html");
   installation->system_app_delegates_.insert_or_assign(
-      SystemAppType::SETTINGS,
+      ash::SystemWebAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::SETTINGS, "Initiating App", kInitiatingAppUrl,
+          ash::SystemWebAppType::SETTINGS, "Initiating App", kInitiatingAppUrl,
           base::BindLambdaForTesting([]() {
             auto info = std::make_unique<WebAppInstallInfo>();
             // the pwa.html is arguably wrong, but the manifest
@@ -512,7 +512,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpChromeUntrustedApp() {
   return base::WrapUnique(new TestSystemWebAppInstallation(
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::SETTINGS, "Test",
+          ash::SystemWebAppType::SETTINGS, "Test",
           GURL("chrome-untrusted://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestAppUntrusted))));
 }
@@ -522,7 +522,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpNonResizeableAndNonMaximizableApp() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldAllowResize(false);
@@ -537,7 +537,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithBackgroundTask() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
 
@@ -555,7 +555,7 @@ TestSystemWebAppInstallation::SetupAppWithAllowScriptsToCloseWindows(
     bool value) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   /* The default value of allow_scripts_to_close_windows is false. */
@@ -571,7 +571,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithTabStrip(bool has_tab_strip) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldHaveTabStrip(has_tab_strip);
@@ -586,7 +586,7 @@ TestSystemWebAppInstallation::SetUpAppWithDefaultBounds(
     const gfx::Rect& default_bounds) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetDefaultBounds(
@@ -601,7 +601,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::FILE_MANAGER, "Test",
+          ash::SystemWebAppType::FILE_MANAGER, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldShowNewWindowMenuOption(true);
@@ -616,7 +616,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::SHORTCUT_CUSTOMIZATION, "Shortcuts",
+          ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION, "Shortcuts",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindLambdaForTesting([]() {
             std::unique_ptr<WebAppInstallInfo> info =
@@ -646,7 +646,7 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppThatAbortsLaunch() {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::OS_FEEDBACK, "Test",
+          ash::SystemWebAppType::OS_FEEDBACK, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetLaunchAndNavigateSystemWebApp(base::BindRepeating(
@@ -667,7 +667,7 @@ enum SystemWebAppWindowConfig {
 
 std::unique_ptr<UnittestingSystemAppDelegate>
 CreateSystemAppDelegateWithWindowConfig(
-    const SystemAppType type,
+    const ash::SystemWebAppType type,
     const GURL& app_url,
     SystemWebAppWindowConfig window_config) {
   auto* delegate = new UnittestingSystemAppDelegate(
@@ -711,19 +711,22 @@ std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpAppsForContestMenuTest() {
   std::vector<std::unique_ptr<UnittestingSystemAppDelegate>> delegates;
   delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
-      SystemAppType::SETTINGS, GURL("chrome://single-window/pwa.html"),
+      ash::SystemWebAppType::SETTINGS, GURL("chrome://single-window/pwa.html"),
       SystemWebAppWindowConfig::SINGLE_WINDOW));
 
   delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
-      SystemAppType::FILE_MANAGER, GURL("chrome://multi-window/pwa.html"),
+      ash::SystemWebAppType::FILE_MANAGER,
+      GURL("chrome://multi-window/pwa.html"),
       SystemWebAppWindowConfig::MULTI_WINDOW));
 
   delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
-      SystemAppType::MEDIA, GURL("chrome://single-window-tab-strip/pwa.html"),
+      ash::SystemWebAppType::MEDIA,
+      GURL("chrome://single-window-tab-strip/pwa.html"),
       SystemWebAppWindowConfig::SINGLE_WINDOW_TAB_STRIP));
 
   delegates.push_back(CreateSystemAppDelegateWithWindowConfig(
-      SystemAppType::HELP, GURL("chrome://multi-window-tab-strip/pwa.html"),
+      ash::SystemWebAppType::HELP,
+      GURL("chrome://multi-window-tab-strip/pwa.html"),
       SystemWebAppWindowConfig::MULTI_WINDOW_TAB_STRIP));
   auto* installation =
       new TestSystemWebAppInstallation(std::move(delegates[0]));
@@ -751,7 +754,7 @@ TestSystemWebAppInstallation::SetUpAppWithColors(
     absl::optional<SkColor> dark_mode_background_color) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
-          SystemAppType::MEDIA, "Test",
+          ash::SystemWebAppType::MEDIA, "Test",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindLambdaForTesting([=]() {
             auto info = GenerateWebAppInstallInfoForTestApp();
@@ -837,7 +840,7 @@ SystemWebAppDelegate* TestSystemWebAppInstallation::GetDelegate() {
   return it != system_app_delegates_.end() ? it->second.get() : nullptr;
 }
 
-SystemAppType TestSystemWebAppInstallation::GetType() {
+ash::SystemWebAppType TestSystemWebAppInstallation::GetType() {
   return type_.value();
 }
 

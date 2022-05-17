@@ -94,7 +94,7 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
   if (!UseDeprecatedSettingsWindow(profile)) {
     web_app::SystemAppLaunchParams params;
     params.url = gurl;
-    web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SETTINGS,
+    web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::SETTINGS,
                                      params, apps::MakeWindowInfo(display_id));
     // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
     // notify SettingsWindowObservers.
@@ -159,7 +159,7 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
 Browser* SettingsWindowManager::FindBrowserForProfile(Profile* profile) {
   if (!UseDeprecatedSettingsWindow(profile)) {
     return web_app::FindSystemWebAppBrowser(profile,
-                                            web_app::SystemAppType::SETTINGS);
+                                            ash::SystemWebAppType::SETTINGS);
   }
 
   auto iter = settings_session_map_.find(profile);
@@ -181,7 +181,7 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
     // app install and then provide a valid answer here.
     absl::optional<std::string> settings_app_id =
         web_app::GetAppIdForSystemWebApp(profile,
-                                         web_app::SystemAppType::SETTINGS);
+                                         ash::SystemWebAppType::SETTINGS);
     return settings_app_id &&
            browser->app_controller()->app_id() == settings_app_id.value();
   } else {

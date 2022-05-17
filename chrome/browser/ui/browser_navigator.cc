@@ -556,7 +556,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // Open System Apps in their standalone window if necessary.
   // TODO(crbug.com/1096345): Remove this code after we integrate with intent
   // handling.
-  const absl::optional<web_app::SystemAppType> capturing_system_app_type =
+  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
       web_app::GetCapturingSystemAppForURL(params->initiating_profile,
                                            params->url);
   if (capturing_system_app_type &&

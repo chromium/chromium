@@ -7,11 +7,11 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -56,7 +56,7 @@ void HelpAppDiscoverTabNotification::OnClick(absl::optional<int> button_index) {
   params.url = GURL("chrome://help-app/discover");
   params.launch_source =
       apps::mojom::LaunchSource::kFromDiscoverTabNotification;
-  LaunchSystemWebAppAsync(profile_, web_app::SystemAppType::HELP, params);
+  LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP, params);
 
   base::RecordAction(
       base::UserMetricsAction("Discover.DiscoverTabNotification.Clicked"));

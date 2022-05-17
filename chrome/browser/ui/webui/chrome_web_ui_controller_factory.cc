@@ -1045,7 +1045,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == ash::kChromeUICameraAppHost) {
     auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
     if (provider && provider->system_web_app_manager().IsAppEnabled(
-                        web_app::SystemAppType::CAMERA)) {
+                        ash::SystemWebAppType::CAMERA)) {
       return &NewComponentUI<ash::CameraAppUI, ChromeCameraAppUIDelegate>;
     }
   }

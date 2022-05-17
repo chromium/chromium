@@ -98,7 +98,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 #endif
 
   // System Web Apps have their own launch code path.
-  absl::optional<SystemAppType> system_app_type =
+  absl::optional<ash::SystemWebAppType> system_app_type =
       GetSystemWebAppTypeForAppId(&profile_, params_.app_id);
   if (system_app_type) {
     Browser* browser = LaunchSystemWebAppImpl(&profile_, *system_app_type,

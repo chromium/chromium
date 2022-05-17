@@ -16,7 +16,7 @@ IN_PROC_BROWSER_TEST_P(PrintManagementAppIntegrationTest,
                        PrintManagementAppInLauncher) {
   const GURL url(ash::kChromeUIPrintManagementAppUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::PRINT_MANAGEMENT, url, "Print jobs"));
+      ash::SystemWebAppType::PRINT_MANAGEMENT, url, "Print jobs"));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

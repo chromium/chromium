@@ -14,7 +14,8 @@ namespace web_app {
 TestSystemWebAppManager::TestSystemWebAppManager(Profile* profile)
     : SystemWebAppManager(profile) {
   SetSystemAppsForTesting(
-      base::flat_map<SystemAppType, std::unique_ptr<SystemWebAppDelegate>>());
+      base::flat_map<ash::SystemWebAppType,
+                     std::unique_ptr<SystemWebAppDelegate>>());
 }
 
 TestSystemWebAppManager::~TestSystemWebAppManager() = default;

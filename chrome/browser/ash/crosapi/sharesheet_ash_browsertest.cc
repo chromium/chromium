@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(SharesheetAshBrowserTest, Success) {
   content::WebContents* const contents = waiter.Wait();
   EXPECT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_EQ(contents->GetLastCommittedURL(),
-            GetStartUrl(web_app::SystemAppType::SAMPLE).Resolve("share.html"));
+            GetStartUrl(ash::SystemWebAppType::SAMPLE).Resolve("share.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharesheetAshBrowserTest, Cancel) {

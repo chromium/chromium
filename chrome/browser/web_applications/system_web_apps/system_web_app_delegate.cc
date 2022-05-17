@@ -20,7 +20,7 @@ url::Origin GetOrigin(const char* url) {
 }
 
 SystemWebAppDelegate::SystemWebAppDelegate(
-    const SystemAppType type,
+    const ash::SystemWebAppType type,
     const std::string& internal_name,
     const GURL& install_url,
     Profile* profile,

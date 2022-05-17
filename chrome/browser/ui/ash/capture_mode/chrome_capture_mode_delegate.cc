@@ -125,7 +125,7 @@ void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
   web_app::SystemAppLaunchParams params;
   params.launch_paths = {file_path};
   params.launch_source = apps::mojom::LaunchSource::kFromFileManager;
-  web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::MEDIA,
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::MEDIA,
                                    params);
 }
 

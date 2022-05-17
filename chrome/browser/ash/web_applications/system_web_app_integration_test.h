@@ -10,8 +10,8 @@
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "url/gurl.h"
 
-namespace web_app {
-enum class SystemAppType;
+namespace ash {
+enum class SystemWebAppType;
 }
 
 class Profile;
@@ -29,7 +29,7 @@ class SystemWebAppIntegrationTest
 
   // Runs basic tests on a System Web App. E.g. ensures it exists, and
   // loads/navigates with an expected title that matches the manifest app name.
-  void ExpectSystemWebAppValid(web_app::SystemAppType app_type,
+  void ExpectSystemWebAppValid(ash::SystemWebAppType app_type,
                                const GURL& url,
                                const std::string& title);
 
@@ -38,12 +38,12 @@ class SystemWebAppIntegrationTest
 
   // Launch the given System App |type| with the given |file_path| as a launch
   // file, and wait for the application to finish loading.
-  content::WebContents* LaunchAppWithFile(web_app::SystemAppType type,
+  content::WebContents* LaunchAppWithFile(ash::SystemWebAppType type,
                                           const base::FilePath& file_path);
 
   // Launch the given System App |type| with the given |file_path| as a launch
   // file, without waiting for the application to finish loading.
-  void LaunchAppWithFileWithoutWaiting(web_app::SystemAppType type,
+  void LaunchAppWithFileWithoutWaiting(ash::SystemWebAppType type,
                                        const base::FilePath& file_path);
 };
 

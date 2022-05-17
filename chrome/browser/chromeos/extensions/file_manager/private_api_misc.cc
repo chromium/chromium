@@ -1343,8 +1343,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  web_app::LaunchSystemWebAppAsync(
-      profile, web_app::SystemAppType::FILE_MANAGER, launch_params);
+  web_app::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                                   launch_params);
 
   return RespondNow(OneArgument(base::Value(true)));
 }

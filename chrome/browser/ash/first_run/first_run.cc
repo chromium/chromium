@@ -102,7 +102,7 @@ class AppLauncher : public ProfileObserver,
   AppLauncher& operator=(const AppLauncher&) = delete;
 
   void LaunchHelpApp() {
-    LaunchSystemWebAppAsync(profile_, web_app::SystemAppType::HELP);
+    web_app::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::HELP);
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);
     delete this;
   }

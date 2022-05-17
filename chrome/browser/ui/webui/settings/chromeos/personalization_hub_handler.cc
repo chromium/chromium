@@ -35,7 +35,7 @@ void PersonalizationHubHandler::HandleOpenPersonalizationHub(
   ash::personalization_app::LogPersonalizationEntryPoint(
       ash::PersonalizationEntryPoint::kSettings);
   web_app::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui()),
-                                   web_app::SystemAppType::PERSONALIZATION);
+                                   ash::SystemWebAppType::PERSONALIZATION);
 }
 
 }  // namespace settings

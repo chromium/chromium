@@ -74,16 +74,17 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 
 namespace web_app {
 
-absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
-                                                          const AppId& app_id) {
+absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
+    Profile* profile,
+    const AppId& app_id) {
   auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   return provider ? provider->system_web_app_manager().GetSystemAppTypeForAppId(
                         app_id)
-                  : absl::optional<SystemAppType>();
+                  : absl::optional<ash::SystemWebAppType>();
 }
 
 absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
-                                              SystemAppType app_type) {
+                                              ash::SystemWebAppType app_type) {
   auto* provider = WebAppProvider::GetForSystemWebApps(profile);
   return provider
              ? provider->system_web_app_manager().GetAppIdForSystemApp(app_type)
@@ -92,7 +93,7 @@ absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
 
 absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
-    SystemAppType app_type,
+    ash::SystemWebAppType app_type,
     int64_t display_id) {
   absl::optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
   // TODO(calamity): Decide whether to report app launch failure or CHECK fail.
@@ -119,12 +120,12 @@ SystemAppLaunchParams::SystemAppLaunchParams() = default;
 SystemAppLaunchParams::~SystemAppLaunchParams() = default;
 
 void LaunchSystemWebAppAsync(Profile* profile,
-                             const SystemAppType type,
+                             const ash::SystemWebAppType type,
                              const SystemAppLaunchParams& params,
                              apps::mojom::WindowInfoPtr window_info) {
   DCHECK(profile);
   // Terminal should be launched with crostini::LaunchTerminal*.
-  DCHECK(type != SystemAppType::TERMINAL);
+  DCHECK(type != ash::SystemWebAppType::TERMINAL);
 
   // TODO(https://crbug.com/1135863): Implement a confirmation dialog when
   // changing to a different profile.
@@ -180,7 +181,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
 }
 
 Browser* LaunchSystemWebAppImpl(Profile* profile,
-                                SystemAppType app_type,
+                                ash::SystemWebAppType app_type,
                                 const GURL& url,
                                 const apps::AppLaunchParams& params) {
   // Exit early if we can't create browser windows (e.g. when browser is
@@ -244,7 +245,7 @@ void FlushSystemWebAppLaunchesForTesting(Profile* profile) {
 }
 
 Browser* FindSystemWebAppBrowser(Profile* profile,
-                                 SystemAppType app_type,
+                                 ash::SystemWebAppType app_type,
                                  Browser::Type browser_type,
                                  const GURL& url) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
@@ -293,14 +294,15 @@ bool IsSystemWebApp(Browser* browser) {
   return browser->app_controller() && browser->app_controller()->system_app();
 }
 
-bool IsBrowserForSystemWebApp(Browser* browser, SystemAppType type) {
+bool IsBrowserForSystemWebApp(Browser* browser, ash::SystemWebAppType type) {
   DCHECK(browser);
   return browser->app_controller() && browser->app_controller()->system_app() &&
          browser->app_controller()->system_app()->GetType() == type;
 }
 
-absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
-                                                          const GURL& url) {
+absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
+    Profile* profile,
+    const GURL& url) {
   auto* provider = WebAppProvider::GetForSystemWebApps(profile);
 
   if (!provider)

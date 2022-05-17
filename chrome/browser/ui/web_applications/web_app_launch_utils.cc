@@ -286,7 +286,7 @@ content::WebContents* NavigateWebApplicationWindow(
 content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
   Browser* browser = nav_params.browser;
-  const absl::optional<SystemAppType> capturing_system_app_type =
+  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
       GetCapturingSystemAppForURL(browser->profile(), nav_params.url);
   // TODO(crbug.com/1201820): This block creates conditions where Navigate()
   // returns early and causes a crash. Fail gracefully instead. Further

@@ -69,7 +69,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForSampleSystemWebApp() {
 
 SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
     : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::SAMPLE,
+          ash::SystemWebAppType::SAMPLE,
           "Sample",
           GURL("chrome://sample-system-web-app/pwa.html"),
           profile,

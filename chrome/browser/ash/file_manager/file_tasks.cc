@@ -857,7 +857,7 @@ bool ExecuteFileTask(Profile* profile,
     params.url = files_swa_url;
 
     web_app::LaunchSystemWebAppAsync(
-        profile, web_app::SystemAppType::FILE_MANAGER, params);
+        profile, ash::SystemWebAppType::FILE_MANAGER, params);
     if (done) {
       std::move(done).Run(
           extensions::api::file_manager_private::TASK_RESULT_OPENED, "");

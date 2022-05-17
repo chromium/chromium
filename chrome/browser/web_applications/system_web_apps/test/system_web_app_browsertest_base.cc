@@ -35,7 +35,7 @@ SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
       ->system_web_app_manager();
 }
 
-SystemAppType SystemWebAppBrowserTestBase::GetMockAppType() {
+ash::SystemWebAppType SystemWebAppBrowserTestBase::GetMockAppType() {
   CHECK(maybe_installation_);
   return maybe_installation_->GetType();
 }
@@ -58,7 +58,7 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
 }
 
 apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
-    SystemAppType system_app_type) {
+    ash::SystemWebAppType system_app_type) {
   absl::optional<AppId> app_id =
       GetManager().GetAppIdForSystemApp(system_app_type);
 
@@ -117,7 +117,7 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
-    SystemAppType type,
+    ash::SystemWebAppType type,
     Browser** browser) {
   return LaunchApp(LaunchParamsForApp(type), browser);
 }
@@ -129,7 +129,7 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
-    SystemAppType type,
+    ash::SystemWebAppType type,
     Browser** browser) {
   return LaunchAppWithoutWaiting(LaunchParamsForApp(type), browser);
 }
@@ -143,7 +143,7 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl(
                    .GetAppStartUrl(params.app_id);
 }
 
-GURL SystemWebAppBrowserTestBase::GetStartUrl(SystemAppType type) {
+GURL SystemWebAppBrowserTestBase::GetStartUrl(ash::SystemWebAppType type) {
   return GetStartUrl(LaunchParamsForApp(type));
 }
 
@@ -152,7 +152,7 @@ GURL SystemWebAppBrowserTestBase::GetStartUrl() {
 }
 
 size_t SystemWebAppBrowserTestBase::GetSystemWebAppBrowserCount(
-    SystemAppType type) {
+    ash::SystemWebAppType type) {
   auto* browser_list = BrowserList::GetInstance();
   return std::count_if(
       browser_list->begin(), browser_list->end(), [&](Browser* browser) {

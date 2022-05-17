@@ -125,7 +125,7 @@ const apps::AppLaunchParams PickFileFromParams(
 
 MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
     : web_app::SystemWebAppDelegate(
-          web_app::SystemAppType::MEDIA,
+          ash::SystemWebAppType::MEDIA,
           "Media",
           GURL("chrome://media-app/pwa.html"),
           profile,
@@ -282,7 +282,7 @@ Browser* MediaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
 
   // For PDFs, launch all but the last file from scratch. Windows will cascade.
   for (size_t i = 0; i < params.launch_files.size() - 1; ++i) {
-    web_app::LaunchSystemWebAppImpl(profile, web_app::SystemAppType::MEDIA, url,
+    web_app::LaunchSystemWebAppImpl(profile, ash::SystemWebAppType::MEDIA, url,
                                     PickFileFromParams(params, i));
   }
   return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(

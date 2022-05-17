@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
 
   // Terminal should launch after use clicks 'Cancel'.
   Browser* terminal_browser = web_app::FindSystemWebAppBrowser(
-      browser()->profile(), web_app::SystemAppType::TERMINAL);
+      browser()->profile(), ash::SystemWebAppType::TERMINAL);
   EXPECT_NE(nullptr, terminal_browser);
 
   // Any new apps launched should show the dialog again.

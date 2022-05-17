@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -51,7 +52,6 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -216,14 +216,14 @@ void DeleteDeskTemplate(const base::GUID uuid) {
 }
 
 web_app::AppId CreateSystemWebApp(Profile* profile,
-                                  web_app::SystemAppType app_type) {
-  DCHECK(app_type == web_app::SystemAppType::SETTINGS ||
-         app_type == web_app::SystemAppType::HELP);
+                                  ash::SystemWebAppType app_type) {
+  DCHECK(app_type == ash::SystemWebAppType::SETTINGS ||
+         app_type == ash::SystemWebAppType::HELP);
   web_app::AppId app_id = *web_app::GetAppIdForSystemWebApp(profile, app_type);
   apps::AppLaunchParams params(
       app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
-  params.restore_id = app_type == web_app::SystemAppType::SETTINGS
+  params.restore_id = app_type == ash::SystemWebAppType::SETTINGS
                           ? kSettingsWindowId
                           : kHelpWindowId;
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
@@ -233,11 +233,11 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
 }
 
 web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
-  return CreateSystemWebApp(profile, web_app::SystemAppType::SETTINGS);
+  return CreateSystemWebApp(profile, ash::SystemWebAppType::SETTINGS);
 }
 
 web_app::AppId CreateHelpSystemWebApp(Profile* profile) {
-  return CreateSystemWebApp(profile, web_app::SystemAppType::HELP);
+  return CreateSystemWebApp(profile, ash::SystemWebAppType::HELP);
 }
 
 void ClickButton(const views::Button* button) {

@@ -38,7 +38,7 @@ class ShimlessRMAIntegrationTest : public SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(ShimlessRMAIntegrationTest, ShimlessRMASWAValid) {
   const GURL url(ash::kChromeUIShimlessRMAUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::SHIMLESS_RMA, url, "Shimless RMA"));
+      ash::SystemWebAppType::SHIMLESS_RMA, url, "Shimless RMA"));
 
   histogram_tester_.ExpectBucketCount(
       "Webapp.InstallResult.System.Apps.ShimlessRMA",

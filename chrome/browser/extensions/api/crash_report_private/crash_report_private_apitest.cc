@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
 IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
                        CalledFromWebContentsInSwaWindow) {
   WaitForTestSystemAppInstall();
-  content::WebContents* web_content = LaunchApp(web_app::SystemAppType::MEDIA);
+  content::WebContents* web_content = LaunchApp(ash::SystemWebAppType::MEDIA);
   MockCrashEndpoint endpoint(embedded_test_server());
   ScopedMockChromeJsErrorReportProcessor processor(endpoint);
 

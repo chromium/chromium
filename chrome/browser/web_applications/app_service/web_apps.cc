@@ -402,7 +402,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
   if (web_app->IsSystemApp()) {
     DCHECK(web_app->client_data().system_web_app_data.has_value());
-    SystemAppType swa_type =
+    ash::SystemWebAppType swa_type =
         web_app->client_data().system_web_app_data->system_app_type;
 
     auto* system_app = WebAppProvider::GetForSystemWebApps(profile())

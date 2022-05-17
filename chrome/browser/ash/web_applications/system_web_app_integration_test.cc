@@ -28,7 +28,7 @@ Profile* SystemWebAppIntegrationTest::profile() {
 }
 
 void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
-    web_app::SystemAppType app_type,
+    ash::SystemWebAppType app_type,
     const GURL& url,
     const std::string& title) {
   WaitForTestSystemAppInstall();
@@ -72,7 +72,7 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
 }
 
 content::WebContents* SystemWebAppIntegrationTest::LaunchAppWithFile(
-    web_app::SystemAppType type,
+    ash::SystemWebAppType type,
     const base::FilePath& file_path) {
   apps::AppLaunchParams params = LaunchParamsForApp(type);
   params.launch_files.push_back(file_path);
@@ -80,7 +80,7 @@ content::WebContents* SystemWebAppIntegrationTest::LaunchAppWithFile(
 }
 
 void SystemWebAppIntegrationTest::LaunchAppWithFileWithoutWaiting(
-    web_app::SystemAppType type,
+    ash::SystemWebAppType type,
     const base::FilePath& file_path) {
   apps::AppLaunchParams params = LaunchParamsForApp(type);
   params.launch_files.push_back(file_path);

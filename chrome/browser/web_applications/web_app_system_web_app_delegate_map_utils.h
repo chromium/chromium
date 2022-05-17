@@ -5,7 +5,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_SYSTEM_WEB_APP_DELEGATE_MAP_UTILS_H_
 
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,10 +17,10 @@ class WebAppRegistrar;
 absl::optional<AppId> GetAppIdForSystemApp(
     const WebAppRegistrar& registrar,
     const ash::SystemWebAppDelegateMap& delegates,
-    SystemAppType type);
+    ash::SystemWebAppType type);
 
 // Returns the System App Type for the given |app_id|.
-absl::optional<SystemAppType> GetSystemAppTypeForAppId(
+absl::optional<ash::SystemWebAppType> GetSystemAppTypeForAppId(
     const WebAppRegistrar& registrar,
     const ash::SystemWebAppDelegateMap& delegates,
     const AppId& app_id);

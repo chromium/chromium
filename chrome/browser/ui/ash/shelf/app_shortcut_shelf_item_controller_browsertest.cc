@@ -75,7 +75,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
         .InstallSystemAppsForTesting();
 
     app_id_ = *web_app::GetAppIdForSystemWebApp(
-        browser()->profile(), web_app::SystemAppType::TERMINAL);
+        browser()->profile(), ash::SystemWebAppType::TERMINAL);
     app_shelf_id_ = ash::ShelfID(app_id_);
     PinAppWithIDToShelf(app_id_);
   }

@@ -116,7 +116,7 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
   // A SWA can handle multiple instances if it can open multiple windows.
   if (is_system_web_app) {
-    absl::optional<web_app::SystemAppType> swa_type =
+    absl::optional<ash::SystemWebAppType> swa_type =
         web_app::GetSystemWebAppTypeForAppId(profile(), app_id);
     if (swa_type.has_value()) {
       auto* system_app = web_app::WebAppProvider::GetForSystemWebApps(profile())

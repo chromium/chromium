@@ -107,7 +107,7 @@ void LaunchTerminalImpl(Profile* profile,
       if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH) ||
           params.disposition == WindowOpenDisposition::NEW_POPUP) {
         web_app::LaunchSystemWebAppImpl(
-            profile, web_app::SystemAppType::TERMINAL, url, params);
+            profile, ash::SystemWebAppType::TERMINAL, url, params);
         return;
       }
 
@@ -117,7 +117,7 @@ void LaunchTerminalImpl(Profile* profile,
       GURL home(base::StrCat(
           {chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
       Browser* browser = web_app::LaunchSystemWebAppImpl(
-          profile, web_app::SystemAppType::TERMINAL, home, params);
+          profile, ash::SystemWebAppType::TERMINAL, home, params);
       if (url != home) {
         chrome::AddTabAt(browser, url, /*index=*/1, /*foreground=*/true);
       }
@@ -202,7 +202,7 @@ void LaunchTerminalWithUrl(Profile* profile,
   crostini::RecordAppLaunchHistogram(
       crostini::CrostiniAppLaunchAppType::kTerminal);
   auto params = web_app::CreateSystemWebAppLaunchParams(
-      profile, web_app::SystemAppType::TERMINAL, display_id);
+      profile, ash::SystemWebAppType::TERMINAL, display_id);
   if (!params.has_value()) {
     LOG(WARNING) << "Empty launch params for terminal";
     return;
@@ -282,7 +282,7 @@ void LaunchTerminalWithIntent(Profile* profile,
 
 void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
   auto params = web_app::CreateSystemWebAppLaunchParams(
-      profile, web_app::SystemAppType::TERMINAL, display_id);
+      profile, ash::SystemWebAppType::TERMINAL, display_id);
   if (!params.has_value()) {
     LOG(WARNING) << "Empty launch params for terminal";
     return;

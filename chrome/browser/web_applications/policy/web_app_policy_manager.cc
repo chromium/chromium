@@ -177,8 +177,8 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-const std::set<SystemAppType>& WebAppPolicyManager::GetDisabledSystemWebApps()
-    const {
+const std::set<ash::SystemWebAppType>&
+WebAppPolicyManager::GetDisabledSystemWebApps() const {
   return disabled_system_apps_;
 }
 
@@ -612,22 +612,22 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   for (const auto& entry : disabled_system_features_pref->GetListDeprecated()) {
     switch (static_cast<policy::SystemFeature>(entry.GetInt())) {
       case policy::SystemFeature::kCamera:
-        disabled_system_apps_.insert(SystemAppType::CAMERA);
+        disabled_system_apps_.insert(ash::SystemWebAppType::CAMERA);
         break;
       case policy::SystemFeature::kOsSettings:
-        disabled_system_apps_.insert(SystemAppType::SETTINGS);
+        disabled_system_apps_.insert(ash::SystemWebAppType::SETTINGS);
         break;
       case policy::SystemFeature::kScanning:
-        disabled_system_apps_.insert(SystemAppType::SCANNING);
+        disabled_system_apps_.insert(ash::SystemWebAppType::SCANNING);
         break;
       case policy::SystemFeature::kExplore:
-        disabled_system_apps_.insert(SystemAppType::HELP);
+        disabled_system_apps_.insert(ash::SystemWebAppType::HELP);
         break;
       case policy::SystemFeature::kCanvas:
         disabled_web_apps_.insert(web_app::kCanvasAppId);
         break;
       case policy::SystemFeature::kCrosh:
-        disabled_system_apps_.insert(SystemAppType::CROSH);
+        disabled_system_apps_.insert(ash::SystemWebAppType::CROSH);
         break;
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:
@@ -637,7 +637,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     }
   }
 
-  for (const SystemAppType& app_type : disabled_system_apps_) {
+  for (const ash::SystemWebAppType& app_type : disabled_system_apps_) {
     absl::optional<AppId> app_id = GetAppIdForSystemApp(
         *app_registrar_, *system_web_apps_delegate_map_, app_type);
     if (app_id.has_value()) {

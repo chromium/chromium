@@ -12,8 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -46,7 +46,7 @@ class SystemWebAppDelegate {
   // needed only for various legacy reasons, maps for tracking state, and
   // generating the AppId and things of that nature.
   SystemWebAppDelegate(
-      SystemAppType type,
+      ash::SystemWebAppType type,
       const std::string& internal_name,
       const GURL& install_url,
       Profile* profile,
@@ -56,7 +56,7 @@ class SystemWebAppDelegate {
   SystemWebAppDelegate& operator=(const SystemWebAppDelegate& other) = delete;
   virtual ~SystemWebAppDelegate();
 
-  SystemAppType GetType() const { return type_; }
+  ash::SystemWebAppType GetType() const { return type_; }
 
   // A developer-friendly name for, among other things, reporting metrics
   // and interacting with tast tests. It should follow PascalCase
@@ -195,7 +195,7 @@ class SystemWebAppDelegate {
 
   // These should all be private. See
   // https://google.github.io/styleguide/cppguide.html#Access_Control
-  SystemAppType type_;
+  ash::SystemWebAppType type_;
   std::string internal_name_;
   GURL install_url_;
   raw_ptr<Profile> profile_;

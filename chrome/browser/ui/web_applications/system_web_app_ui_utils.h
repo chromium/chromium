@@ -9,8 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -24,16 +24,17 @@ namespace web_app {
 class WebAppProvider;
 
 // Returns the system app type for the given App ID.
-absl::optional<SystemAppType> GetSystemWebAppTypeForAppId(Profile* profile,
-                                                          const AppId& app_id);
+absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
+    Profile* profile,
+    const AppId& app_id);
 
 // Returns the PWA system App ID for the given system app type.
 absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
-                                              SystemAppType app_type);
+                                              ash::SystemWebAppType app_type);
 
 absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
-    SystemAppType app_type,
+    ash::SystemWebAppType app_type,
     int64_t display_id);
 
 // Additional parameters to control LaunchSystemAppAsync behaviors.
@@ -74,7 +75,7 @@ struct SystemAppLaunchParams {
 // |profile|, or use content::TestNavigationObserver to wait the navigation.
 void LaunchSystemWebAppAsync(
     Profile* profile,
-    SystemAppType type,
+    ash::SystemWebAppType type,
     const SystemAppLaunchParams& params = SystemAppLaunchParams(),
     apps::mojom::WindowInfoPtr window_info = nullptr);
 
@@ -95,26 +96,27 @@ void SetLaunchFiles(bool should_include_launch_directory,
 // This method returns `nullptr` if the app aborts the launch (e.g. delaying the
 // launch after some async operation).
 Browser* LaunchSystemWebAppImpl(Profile* profile,
-                                SystemAppType type,
+                                ash::SystemWebAppType type,
                                 const GURL& url,
                                 const apps::AppLaunchParams& params);
 
 // Returns a browser that is hosting the given system |app_type|,
 // |browser_type| and |url| (if not empty) or nullptr if not found.
 Browser* FindSystemWebAppBrowser(Profile* profile,
-                                 SystemAppType app_type,
+                                 ash::SystemWebAppType app_type,
                                  Browser::Type browser_type = Browser::TYPE_APP,
                                  const GURL& url = GURL());
 
 // Returns true if the |browser| is a system web app.
 bool IsSystemWebApp(Browser* browser);
 
-// Returns the SystemAppType that should capture the |url|.
-absl::optional<SystemAppType> GetCapturingSystemAppForURL(Profile* profile,
-                                                          const GURL& url);
+// Returns the ash::SystemWebAppType that should capture the |url|.
+absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
+    Profile* profile,
+    const GURL& url);
 
 // Returns whether the |browser| hosts the system app |type|.
-bool IsBrowserForSystemWebApp(Browser* browser, SystemAppType type);
+bool IsBrowserForSystemWebApp(Browser* browser, ash::SystemWebAppType type);
 
 // Returns the minimum window size for a system web app, or an empty size if
 // the app does not specify a minimum size.

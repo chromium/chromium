@@ -18,6 +18,7 @@ source_set("web_applications") {
     # system_web_app_types.cc/h to /ash/system_web_apps/types/
     "../ash/system_web_apps/types/system_web_app_delegate_map.cc",
     "../ash/system_web_apps/types/system_web_app_delegate_map.h",
+    "../ash/system_web_apps/types/system_web_app_type.h",
     "app_registrar_observer.h",
     "commands/callback_command.cc",
     "commands/callback_command.h",
@@ -106,7 +107,6 @@ source_set("web_applications") {
     "system_web_apps/system_web_app_delegate.h",
     "system_web_apps/system_web_app_manager.cc",
     "system_web_apps/system_web_app_manager.h",
-    "system_web_apps/system_web_app_types.h",
     "user_display_mode.cc",
     "user_display_mode.h",
     "user_uninstalled_preinstalled_web_app_prefs.cc",

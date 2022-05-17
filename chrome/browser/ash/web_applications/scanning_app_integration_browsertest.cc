@@ -26,7 +26,7 @@ using ScanningAppIntegrationTest = SystemWebAppIntegrationTest;
 IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppInLauncher) {
   const GURL url(ash::kChromeUIScanningAppUrl);
   EXPECT_NO_FATAL_FAILURE(
-      ExpectSystemWebAppValid(web_app::SystemAppType::SCANNING, url, "Scan"));
+      ExpectSystemWebAppValid(ash::SystemWebAppType::SCANNING, url, "Scan"));
 }
 
 // Test that the Scanning App installs correctly but doesn't launch when it's
@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppDisabled) {
   }
 
   ASSERT_FALSE(GetManager()
-                   .GetAppIdForSystemApp(web_app::SystemAppType::SCANNING)
+                   .GetAppIdForSystemApp(ash::SystemWebAppType::SCANNING)
                    .has_value());
 
   WaitForTestSystemAppInstall();
@@ -48,10 +48,10 @@ IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppDisabled) {
   // Launch the app without waiting since the Chrome error page will be loaded
   // instead of the app's URL.
   Browser* app_browser;
-  LaunchAppWithoutWaiting(web_app::SystemAppType::SCANNING, &app_browser);
+  LaunchAppWithoutWaiting(ash::SystemWebAppType::SCANNING, &app_browser);
 
   ASSERT_TRUE(GetManager()
-                  .GetAppIdForSystemApp(web_app::SystemAppType::SCANNING)
+                  .GetAppIdForSystemApp(ash::SystemWebAppType::SCANNING)
                   .has_value());
 
   content::WebContents* web_contents =

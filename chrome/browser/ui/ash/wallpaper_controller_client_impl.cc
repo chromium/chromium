@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/wallpaper_private_api.h"
@@ -51,7 +52,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -673,7 +673,7 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
         ash::personalization_app::kWallpaperSubpageRelativeUrl);
     params.launch_source = apps::mojom::LaunchSource::kFromShelf;
     web_app::LaunchSystemWebAppAsync(
-        profile, web_app::SystemAppType::PERSONALIZATION, params);
+        profile, ash::SystemWebAppType::PERSONALIZATION, params);
     return;
   }
 

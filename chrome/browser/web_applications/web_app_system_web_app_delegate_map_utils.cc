@@ -13,7 +13,7 @@ namespace web_app {
 absl::optional<AppId> GetAppIdForSystemApp(
     const WebAppRegistrar& registrar,
     const ash::SystemWebAppDelegateMap& delegates,
-    SystemAppType type) {
+    ash::SystemWebAppType type) {
   const web_app::SystemWebAppDelegate* delegate =
       ash::GetSystemWebApp(delegates, type);
   if (!delegate)
@@ -26,7 +26,7 @@ absl::optional<AppId> GetAppIdForSystemApp(
   return registrar.LookupExternalAppId(app_install_url.value());
 }
 
-absl::optional<SystemAppType> GetSystemAppTypeForAppId(
+absl::optional<ash::SystemWebAppType> GetSystemAppTypeForAppId(
     const WebAppRegistrar& registrar,
     const ash::SystemWebAppDelegateMap& delegates,
     const AppId& app_id) {
@@ -41,7 +41,7 @@ absl::optional<SystemAppType> GetSystemAppTypeForAppId(
   //
   // This check ensures we return a type that is safe for other methods (avoids
   // crashing when looking up that type).
-  SystemAppType proto_type =
+  ash::SystemWebAppType proto_type =
       web_app->client_data().system_web_app_data->system_app_type;
   if (delegates.contains(proto_type)) {
     return proto_type;
