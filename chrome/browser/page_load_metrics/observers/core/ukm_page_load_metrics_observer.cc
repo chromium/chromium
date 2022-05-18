@@ -98,6 +98,29 @@ bool IsDefaultSearchEngine(content::BrowserContext* browser_context,
   return template_service->IsSearchResultsPageFromDefaultSearchProvider(url);
 }
 
+bool IsValidSearchURL(content::BrowserContext* browser_context,
+                      const GURL& url) {
+  if (!browser_context)
+    return false;
+
+  auto* template_service = TemplateURLServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context));
+  if (!template_service)
+    return false;
+
+  const TemplateURL* template_url =
+      template_service->GetTemplateURLForHost(url.host());
+  const SearchTermsData& search_terms_data =
+      template_service->search_terms_data();
+
+  std::u16string search_terms;
+  // Is eligible if it is a valid template URL and contains search terms.
+  return template_url &&
+         template_url->ExtractSearchTermsFromURL(url, search_terms_data,
+                                                 &search_terms) &&
+         !search_terms.empty();
+}
+
 bool IsUserHomePage(content::BrowserContext* browser_context, const GURL& url) {
   if (!browser_context)
     return false;
@@ -191,6 +214,9 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
       IsDefaultSearchEngine(browser_context_, navigation_handle->GetURL());
   start_url_is_home_page_ =
       IsUserHomePage(browser_context_, navigation_handle->GetURL());
+
+  was_scoped_search_like_navigation_ =
+      IsValidSearchURL(browser_context_, navigation_handle->GetURL());
 
   if (started_in_foreground) {
     last_time_shown_ = navigation_handle->NavigationStart();
@@ -834,6 +860,10 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetNavigationEntryOffset(navigation_entry_offset_);
     builder.SetMainDocumentSequenceNumber(main_document_sequence_number_);
     RecordPageLoadTimestampMetrics(builder);
+  }
+
+  if (GetDelegate().DidCommit()) {
+    builder.SetIsScopedSearchLikeNavigation(was_scoped_search_like_navigation_);
   }
 
   builder.Record(ukm::UkmRecorder::Get());

@@ -13846,6 +13846,12 @@ be describing additional metrics about the same event.
       removed from a tab group is counted as false.
     </summary>
   </metric>
+  <metric name="IsScopedSearchLikeNavigation" enum="Boolean">
+    <summary>
+      Marked true if the page was eligible for a scoped search when the
+      navigation committed.
+    </summary>
+  </metric>
   <metric name="IsSignedExchangeInnerResponse">
     <obsolete>
       Migrated to the PageLoad.SignedExchange event. The presence of that event
