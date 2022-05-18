@@ -37,8 +37,11 @@ TrashEntry& TrashEntry::operator=(TrashEntry&& other) = default;
 TrashIOTask::TrashIOTask(
     std::vector<storage::FileSystemURL> file_urls,
     Profile* profile,
-    scoped_refptr<storage::FileSystemContext> file_system_context)
-    : profile_(profile), file_system_context_(file_system_context) {
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const base::FilePath base_path)
+    : profile_(profile),
+      file_system_context_(file_system_context),
+      base_path_(base_path) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kTrash;
   progress_.bytes_transferred = 0;
@@ -95,6 +98,11 @@ bool TrashIOTask::ConstructTrashEntries() {
 
   for (int i = 0; i < progress_.sources.size(); i++) {
     base::FilePath source_path = progress_.sources[i].url.path();
+
+    if (!base_path_.empty() && !source_path.IsAbsolute()) {
+      source_path = base_path_.Append(source_path);
+    }
+
     if (downloads_path.IsParent(source_path) &&
         UpdateTrashEntryAndIncrementRequiredSpace(i, downloads_path)) {
       continue;
@@ -116,6 +124,11 @@ bool TrashIOTask::UpdateTrashEntryAndIncrementRequiredSpace(
     size_t idx,
     const base::FilePath& trash_parent_path) {
   base::FilePath source_path = progress_.sources[idx].url.path();
+
+  if (!base_path_.empty() && !source_path.IsAbsolute()) {
+    source_path = base_path_.Append(source_path);
+  }
+
   std::string relative_restore_path = source_path.value();
   if (!file_manager::util::ReplacePrefix(&relative_restore_path,
                                          trash_parent_path.value(), "")) {

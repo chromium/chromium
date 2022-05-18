@@ -43,16 +43,18 @@ class TrashIOTaskTest : public testing::Test {
     profile_ =
         std::make_unique<TestingProfile>(base::FilePath(temp_dir_.GetPath()));
 
-    // Register `temp_dir_` as the parent directory for Downloads.
+    // Create Downloads and MyFiles inside the `temp_dir_`.
+    my_files_dir_ = temp_dir_.GetPath().Append("MyFiles");
+    downloads_dir_ = my_files_dir_.Append(
+        file_manager::util::GetDownloadsMountPointName(profile_.get()));
+    ASSERT_TRUE(base::CreateDirectory(downloads_dir_));
+    ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
+
+    // Register `my_files_dir_` as the parent directory for Downloads.
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         file_manager::util::GetDownloadsMountPointName(profile_.get()),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-        temp_dir_.GetPath());
-
-    // Create Downloads inside the `temp_dir_`.
-    downloads_dir_ = temp_dir_.GetPath().Append(
-        file_manager::util::GetDownloadsMountPointName(profile_.get()));
-    ASSERT_TRUE(base::CreateDirectory(downloads_dir_));
+        my_files_dir_);
   }
 
   void TearDown() override {
@@ -61,10 +63,17 @@ class TrashIOTaskTest : public testing::Test {
         file_manager::util::GetDownloadsMountPointName(profile_.get()));
   }
 
-  storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
+  storage::FileSystemURL CreateFileSystemURL(
+      const base::FilePath& absolute_path) {
+    // FileSystemURLs in test must be relative to the `temp_dir_`.
+    std::string relative_path = absolute_path.value();
+    EXPECT_TRUE(file_manager::util::ReplacePrefix(
+        &relative_path, temp_dir_.GetPath().AsEndingWithSeparator().value(),
+        ""));
+
     return file_system_context_->CreateCrackedFileSystemURL(
         kTestStorageKey, storage::kFileSystemTypeTest,
-        base::FilePath::FromUTF8Unsafe(path));
+        base::FilePath::FromUTF8Unsafe(relative_path));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -74,20 +83,18 @@ class TrashIOTaskTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath downloads_dir_;
+  base::FilePath my_files_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 };
 
 TEST_F(TrashIOTaskTest, FileInUnsupportedDirectoryShouldError) {
-  base::ScopedTempDir unsupported_dir;
-  ASSERT_TRUE(unsupported_dir.CreateUniqueTempDir());
-
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
-  const base::FilePath file_path = unsupported_dir.GetPath().Append("foo.txt");
+  const base::FilePath file_path = temp_dir_.GetPath().Append("foo.txt");
   ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
 
   base::RunLoop run_loop;
   std::vector<storage::FileSystemURL> source_urls = {
-      CreateFileSystemURL(file_path.value()),
+      CreateFileSystemURL(file_path),
   };
 
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
@@ -103,26 +110,24 @@ TEST_F(TrashIOTaskTest, FileInUnsupportedDirectoryShouldError) {
               Run(Field(&ProgressStatus::state, State::kError)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  TrashIOTask task(source_urls, profile_.get(), file_system_context_);
+  TrashIOTask task(source_urls, profile_.get(), file_system_context_,
+                   temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 }
 
 TEST_F(TrashIOTaskTest, MixedUnsupportedAndSupportedDirectoriesShouldError) {
-  base::ScopedTempDir unsupported_dir;
-  ASSERT_TRUE(unsupported_dir.CreateUniqueTempDir());
-
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
   const base::FilePath file_path_unsupported =
-      unsupported_dir.GetPath().Append("foo.txt");
+      temp_dir_.GetPath().Append("foo.txt");
   const base::FilePath file_path_supported = downloads_dir_.Append("bar.txt");
   ASSERT_TRUE(base::WriteFile(file_path_unsupported, foo_contents));
   ASSERT_TRUE(base::WriteFile(file_path_supported, foo_contents));
 
   base::RunLoop run_loop;
   std::vector<storage::FileSystemURL> source_urls = {
-      CreateFileSystemURL(file_path_unsupported.value()),
-      CreateFileSystemURL(file_path_supported.value()),
+      CreateFileSystemURL(file_path_unsupported),
+      CreateFileSystemURL(file_path_supported),
   };
 
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
@@ -138,7 +143,8 @@ TEST_F(TrashIOTaskTest, MixedUnsupportedAndSupportedDirectoriesShouldError) {
               Run(Field(&ProgressStatus::state, State::kError)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  TrashIOTask task(source_urls, profile_.get(), file_system_context_);
+  TrashIOTask task(source_urls, profile_.get(), file_system_context_,
+                   temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 }
@@ -150,7 +156,7 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryOnly) {
 
   base::RunLoop run_loop;
   std::vector<storage::FileSystemURL> source_urls = {
-      CreateFileSystemURL(file_path.value()),
+      CreateFileSystemURL(file_path),
   };
 
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
@@ -161,7 +167,8 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryOnly) {
               Run(Field(&ProgressStatus::state, State::kSuccess)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
-  TrashIOTask task(source_urls, profile_.get(), file_system_context_);
+  TrashIOTask task(source_urls, profile_.get(), file_system_context_,
+                   temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
 }

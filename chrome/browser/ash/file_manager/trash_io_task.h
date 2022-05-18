@@ -66,7 +66,8 @@ class TrashIOTask : public IOTask {
  public:
   TrashIOTask(std::vector<storage::FileSystemURL> file_urls,
               Profile* profile,
-              scoped_refptr<storage::FileSystemContext> file_system_context);
+              scoped_refptr<storage::FileSystemContext> file_system_context,
+              const base::FilePath base_path);
   ~TrashIOTask() override;
 
   // Starts trash trask.
@@ -99,6 +100,11 @@ class TrashIOTask : public IOTask {
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
+
+  // Represents the parent path that all the source URLs descend from. Used to
+  // work around the fact `FileSystemOperationRunner` requires relative paths
+  // only in testing.
+  const base::FilePath base_path_;
 
   base::WeakPtrFactory<TrashIOTask> weak_ptr_factory_{this};
 };
