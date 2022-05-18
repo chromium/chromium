@@ -4490,6 +4490,7 @@ source_set("unit_tests") {
     "../ash/policy/enrollment/auto_enrollment_client_impl_unittest.cc",
     "../ash/policy/enrollment/auto_enrollment_type_checker_unittest.cc",
     "../ash/policy/enrollment/enrollment_config_unittest.cc",
+    "../ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client_unittest.cc",
     "../ash/policy/enrollment/private_membership/psm_rlwe_id_provider_impl_unittest.cc",
     "../ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.cc",
     "../ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.h",
