@@ -160,10 +160,15 @@ public abstract class Observable<T> {
     public Observable<T> debug(Consumer<String> logger) {
         return make(observer -> {
             logger.accept("subscribe");
-            return Scopes.combine(() -> logger.accept("unsubscribe"), subscribe(data -> {
+            Scope subscription = subscribe(data -> {
                 logger.accept(new StringBuilder("open ").append(data).toString());
-                return () -> logger.accept(new StringBuilder("close ").append(data).toString());
-            })::close);
+                Scope scope = observer.open(data);
+                Scope debugClose =
+                        () -> logger.accept(new StringBuilder("close ").append(data).toString());
+                return Scopes.combine(scope, debugClose);
+            })::close;
+            Scope debugUnsubscribe = () -> logger.accept("unsubscribe");
+            return Scopes.combine(subscription, debugUnsubscribe);
         });
     }
 
