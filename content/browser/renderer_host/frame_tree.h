@@ -67,9 +67,14 @@ class CONTENT_EXPORT FrameTree {
  public:
   class NodeRange;
 
-  class CONTENT_EXPORT NodeIterator
-      : public std::iterator<std::forward_iterator_tag, FrameTreeNode*> {
+  class CONTENT_EXPORT NodeIterator {
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = FrameTreeNode*;
+    using difference_type = std::ptrdiff_t;
+    using pointer = FrameTreeNode**;
+    using reference = FrameTreeNode*&;
+
     NodeIterator(const NodeIterator& other);
     ~NodeIterator();
 
