@@ -77,7 +77,7 @@ void AddressEditorController::UpdateEditorFields() {
               ? EditorField::LengthHint::HINT_LONG
               : EditorField::LengthHint::HINT_SHORT;
       autofill::ServerFieldType server_field_type =
-          autofill::AddressFieldToServerFieldType(component.field);
+          autofill::i18n::TypeForField(component.field);
       EditorField::ControlType control_type =
           server_field_type == autofill::ADDRESS_HOME_COUNTRY
               ? EditorField::ControlType::COMBOBOX

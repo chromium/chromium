@@ -16,9 +16,6 @@ namespace autofill {
 class AutofillProfile;
 class PersonalDataManager;
 
-ServerFieldType AddressFieldToServerFieldType(
-    ::i18n::addressinput::AddressField address_field);
-
 // |address_components| is a 2D array for the address components in each line.
 // Fills |address_components| with the address UI components that should be used
 // to input an address for |country_code| when UI BCP 47 language code is

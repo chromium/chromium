@@ -1203,8 +1203,7 @@ ServerFieldTypeSet AutofillProfile::FindInaccessibleProfileValues(
        {AddressField::ADMIN_AREA, AddressField::LOCALITY,
         AddressField::DEPENDENT_LOCALITY, AddressField::POSTAL_CODE,
         AddressField::SORTING_CODE}) {
-    ServerFieldType server_field_type =
-        AddressFieldToServerFieldType(field_type);
+    ServerFieldType server_field_type = i18n::TypeForField(field_type);
     if (!GetRawInfo(server_field_type).empty() &&
         !::i18n::addressinput::IsFieldUsed(field_type, country_code)) {
       inaccessible_fields.insert(server_field_type);

@@ -35,7 +35,6 @@ using ::i18n::addressinput::SORTING_CODE;
 using ::i18n::addressinput::STREET_ADDRESS;
 
 struct FieldTypeMirrorConversionsTestCase {
-  bool billing;
   ServerFieldType server_field;
   AddressField address_field;
 };
@@ -49,8 +48,7 @@ TEST_P(FieldTypeMirrorConversionsTest, FieldTypeMirrorConversions) {
   EXPECT_TRUE(FieldForType(test_data.server_field, &address_field));
   EXPECT_EQ(test_data.address_field, address_field);
 
-  ServerFieldType server_field =
-      TypeForField(test_data.address_field, test_data.billing);
+  ServerFieldType server_field = TypeForField(test_data.address_field);
   EXPECT_EQ(test_data.server_field, server_field);
 }
 
@@ -58,37 +56,18 @@ INSTANTIATE_TEST_SUITE_P(
     AddressI18nTest,
     FieldTypeMirrorConversionsTest,
     testing::Values(
-        FieldTypeMirrorConversionsTestCase{true, ADDRESS_BILLING_COUNTRY,
-                                           COUNTRY},
-        FieldTypeMirrorConversionsTestCase{true, ADDRESS_BILLING_STATE,
-                                           ADMIN_AREA},
-        FieldTypeMirrorConversionsTestCase{true, ADDRESS_BILLING_CITY,
-                                           LOCALITY},
-        FieldTypeMirrorConversionsTestCase{
-            true, ADDRESS_BILLING_DEPENDENT_LOCALITY, DEPENDENT_LOCALITY},
-        FieldTypeMirrorConversionsTestCase{true, ADDRESS_BILLING_SORTING_CODE,
+        FieldTypeMirrorConversionsTestCase{ADDRESS_HOME_COUNTRY, COUNTRY},
+        FieldTypeMirrorConversionsTestCase{ADDRESS_HOME_STATE, ADMIN_AREA},
+        FieldTypeMirrorConversionsTestCase{ADDRESS_HOME_CITY, LOCALITY},
+        FieldTypeMirrorConversionsTestCase{ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                           DEPENDENT_LOCALITY},
+        FieldTypeMirrorConversionsTestCase{ADDRESS_HOME_SORTING_CODE,
                                            SORTING_CODE},
-        FieldTypeMirrorConversionsTestCase{true, ADDRESS_BILLING_ZIP,
-                                           POSTAL_CODE},
-        FieldTypeMirrorConversionsTestCase{true, ADDRESS_BILLING_STREET_ADDRESS,
+        FieldTypeMirrorConversionsTestCase{ADDRESS_HOME_ZIP, POSTAL_CODE},
+        FieldTypeMirrorConversionsTestCase{ADDRESS_HOME_STREET_ADDRESS,
                                            STREET_ADDRESS},
-        FieldTypeMirrorConversionsTestCase{true, COMPANY_NAME, ORGANIZATION},
-        FieldTypeMirrorConversionsTestCase{true, NAME_BILLING_FULL, RECIPIENT},
-        FieldTypeMirrorConversionsTestCase{false, ADDRESS_HOME_COUNTRY,
-                                           COUNTRY},
-        FieldTypeMirrorConversionsTestCase{false, ADDRESS_HOME_STATE,
-                                           ADMIN_AREA},
-        FieldTypeMirrorConversionsTestCase{false, ADDRESS_HOME_CITY, LOCALITY},
-        FieldTypeMirrorConversionsTestCase{
-            false, ADDRESS_HOME_DEPENDENT_LOCALITY, DEPENDENT_LOCALITY},
-        FieldTypeMirrorConversionsTestCase{false, ADDRESS_HOME_SORTING_CODE,
-                                           SORTING_CODE},
-        FieldTypeMirrorConversionsTestCase{false, ADDRESS_HOME_ZIP,
-                                           POSTAL_CODE},
-        FieldTypeMirrorConversionsTestCase{false, ADDRESS_HOME_STREET_ADDRESS,
-                                           STREET_ADDRESS},
-        FieldTypeMirrorConversionsTestCase{false, COMPANY_NAME, ORGANIZATION},
-        FieldTypeMirrorConversionsTestCase{false, NAME_FULL, RECIPIENT}));
+        FieldTypeMirrorConversionsTestCase{COMPANY_NAME, ORGANIZATION},
+        FieldTypeMirrorConversionsTestCase{NAME_FULL, RECIPIENT}));
 
 struct FieldTypeUnidirectionalConversionsTestCase {
   ServerFieldType server_field;

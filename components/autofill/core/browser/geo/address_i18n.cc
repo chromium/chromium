@@ -67,28 +67,26 @@ CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
   return address_data;
 }
 
-ServerFieldType TypeForField(AddressField address_field, bool billing) {
+ServerFieldType TypeForField(AddressField address_field) {
   switch (address_field) {
     case ::i18n::addressinput::COUNTRY:
-      return billing ? ADDRESS_BILLING_COUNTRY : ADDRESS_HOME_COUNTRY;
+      return ADDRESS_HOME_COUNTRY;
     case ::i18n::addressinput::ADMIN_AREA:
-      return billing ? ADDRESS_BILLING_STATE : ADDRESS_HOME_STATE;
+      return ADDRESS_HOME_STATE;
     case ::i18n::addressinput::LOCALITY:
-      return billing ? ADDRESS_BILLING_CITY : ADDRESS_HOME_CITY;
+      return ADDRESS_HOME_CITY;
     case ::i18n::addressinput::DEPENDENT_LOCALITY:
-      return billing ? ADDRESS_BILLING_DEPENDENT_LOCALITY
-                     : ADDRESS_HOME_DEPENDENT_LOCALITY;
+      return ADDRESS_HOME_DEPENDENT_LOCALITY;
     case ::i18n::addressinput::POSTAL_CODE:
-      return billing ? ADDRESS_BILLING_ZIP : ADDRESS_HOME_ZIP;
+      return ADDRESS_HOME_ZIP;
     case ::i18n::addressinput::SORTING_CODE:
-      return billing ? ADDRESS_BILLING_SORTING_CODE : ADDRESS_HOME_SORTING_CODE;
+      return ADDRESS_HOME_SORTING_CODE;
     case ::i18n::addressinput::STREET_ADDRESS:
-      return billing ? ADDRESS_BILLING_STREET_ADDRESS
-                     : ADDRESS_HOME_STREET_ADDRESS;
+      return ADDRESS_HOME_STREET_ADDRESS;
     case ::i18n::addressinput::ORGANIZATION:
       return COMPANY_NAME;
     case ::i18n::addressinput::RECIPIENT:
-      return billing ? NAME_BILLING_FULL : NAME_FULL;
+      return NAME_FULL;
   }
   NOTREACHED();
   return UNKNOWN_TYPE;
