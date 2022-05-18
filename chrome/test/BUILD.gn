@@ -6798,7 +6798,6 @@ test("unit_tests") {
       "//chrome/browser/resource_coordinator/tab_ranker:tab_features_test_helper",
       "//chrome/browser/resources:component_extension_resources_grit",
       "//chrome/browser/resources/new_tab_page_instant:resources_grit",
-      "//chrome/browser/share/core:crow_configuration_unittest",
       "//chrome/browser/share/core:share_targets_unittest",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",

@@ -4,31 +4,6 @@
 
 import("//chrome/browser/buildflags.gni")
 
-source_set("crow_configuration") {
-  sources = [
-    "crow_configuration.cc",
-    "crow_configuration.h",
-  ]
-  deps = [
-    "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/share/proto:crow_proto",
-  ]
-}
-
-source_set("crow_configuration_unittest") {
-  testonly = true
-  sources = [ "crow_configuration_unittest.cc" ]
-
-  deps = [
-    ":crow_configuration",
-    "//base",
-    "//chrome/browser/share/proto:crow_proto",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
 source_set("share_targets") {
   sources = [
     "share_targets.cc",
@@ -53,10 +28,10 @@ source_set("share_targets_unittest") {
 
   deps = [
     ":share_targets",
-    "//base",
+    "//base:base",
     "//build:chromeos_buildflags",
     "//components/country_codes",
-    "//testing/gmock",
-    "//testing/gtest",
+    "//testing/gmock:gmock",
+    "//testing/gtest:gtest",
   ]
 }
