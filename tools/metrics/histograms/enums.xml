@@ -58898,6 +58898,8 @@ from previous Chrome versions.
   <int value="835018878" label="disable-quic"/>
   <int value="835399079" label="ThreadWrapperUsesMetronome:enabled"/>
   <int value="835726069" label="NtpWebUI:disabled"/>
+  <int value="836070100"
+      label="AutofillRationalizeStreetAddressAndAddressLine:disabled"/>
   <int value="836406476" label="EnableTouchableAppContextMenu:enabled"/>
   <int value="837350465" label="SystemProxyForSystemServices:enabled"/>
   <int value="838300788" label="CalendarView:disabled"/>
@@ -59117,6 +59119,8 @@ from previous Chrome versions.
   <int value="988781221" label="SyncSetupFriendlySettings:disabled"/>
   <int value="988981463" label="ImageCaptureAPI:enabled"/>
   <int value="989062160" label="ModuleScriptsImportMetaUrl:enabled"/>
+  <int value="990380525"
+      label="AutofillRationalizeStreetAddressAndAddressLine:enabled"/>
   <int value="991462028"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:enabled"/>
   <int value="993486662" label="BorealisForceBetaClient:enabled"/>

@@ -194,6 +194,9 @@ public final class ProductionSupportedFlagList {
                             + "non-Google-based accounts."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_NAME_SURENAME_PARSING,
                     "Adds new name surname field combinations to the parsing logic"),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_RATIONALIZE_STREET_ADDRESS_AND_ADDRESS_LINE,
+                    "Rationalizes (street address, address line 2) field sequences to "
+                            + "(address line1, address line 2)."),
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),
