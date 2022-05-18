@@ -2818,6 +2818,49 @@
                     "disable_features": [
                         "NtpShoppingTasksModule"
                     ]
+                },
+                {
+                    "name": "Recipes_SAPIV2_20220415",
+                    "params": {
+                        "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
+                        "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
+                        "NtpChromeCartModuleHeuristicsImprovementParam": "true",
+                        "NtpDriveModuleExperimentGroupParam": "foo:bar",
+                        "NtpDriveModuleManagedUsersOnlyParam": "true",
+                        "NtpModulesLoadTimeoutMillisecondsParam": "3000",
+                        "discount-fetch-delay": "1h",
+                        "use_sapi_v2": "true"
+                    },
+                    "enable_features": [
+                        "NtpChromeCartModule",
+                        "NtpDriveModule",
+                        "NtpModules",
+                        "NtpRecipeTasksModule"
+                    ],
+                    "disable_features": [
+                        "NtpShoppingTasksModule"
+                    ]
+                },
+                {
+                    "name": "Recipes_SAPIV2_Control_20220415",
+                    "params": {
+                        "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
+                        "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
+                        "NtpChromeCartModuleHeuristicsImprovementParam": "true",
+                        "NtpDriveModuleExperimentGroupParam": "foo:bar",
+                        "NtpDriveModuleManagedUsersOnlyParam": "true",
+                        "NtpModulesLoadTimeoutMillisecondsParam": "3000",
+                        "discount-fetch-delay": "1h"
+                    },
+                    "enable_features": [
+                        "NtpChromeCartModule",
+                        "NtpDriveModule",
+                        "NtpModules",
+                        "NtpRecipeTasksModule"
+                    ],
+                    "disable_features": [
+                        "NtpShoppingTasksModule"
+                    ]
                 }
             ]
         }
