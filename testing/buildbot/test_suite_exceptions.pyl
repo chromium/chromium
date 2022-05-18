@@ -479,11 +479,6 @@
       'mac-osxbeta-rel': {
         'experiment_percentage': 0,
       },
-      'mac10.12-blink-rel-dummy': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'mac10.13-blink-rel-dummy': {
         'swarming': {
           'shards': 2,

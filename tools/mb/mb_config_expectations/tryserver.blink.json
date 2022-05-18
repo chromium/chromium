@@ -21,18 +21,6 @@
       "use_goma": true
     }
   },
-  "mac10.12-blink-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "mac10.13-blink-rel": {
     "gn_args": {
       "dcheck_always_on": false,

@@ -3687,19 +3687,6 @@
         },
         'use_swarming': False,
       },
-      'mac10.12-blink-rel-dummy': {
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-        'swarming': {
-          'dimension_sets': [
-            { # This should match Mac10.12 Tests on chromium.mac.
-              'cpu': 'x86-64',
-              'os': 'Mac-10.12.6',
-            },
-          ],
-        },
-      },
       'mac10.13-blink-rel-dummy': {
         'swarming': {
           'dimension_sets': [

@@ -94,10 +94,6 @@ try_.builder(
 )
 
 blink_mac_builder(
-    name = "mac10.12-blink-rel",
-)
-
-blink_mac_builder(
     name = "mac10.13-blink-rel",
 )
 

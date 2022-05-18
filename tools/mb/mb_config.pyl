@@ -807,7 +807,6 @@
       # waterfall bots, and run_web_tests.py can't handle that (by design).
       'linux-blink-optional-highdpi-rel': 'release_bot_blink_minimal_symbols',
       'linux-blink-rel': 'release_bot_blink_minimal_symbols',
-      'mac10.12-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac10.13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac10.14-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
