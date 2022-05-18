@@ -110,23 +110,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  // Show checkmark for selected item and update associated preference value.
+  // Show checkmark for selected item and update associated preference value by
+  // setting the SafeBrowsingState.
+  safe_browsing::SafeBrowsingState safeBrowsingState =
+      safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
   switch (type) {
     case ItemTypeSafeBrowsingEnhancedProtection:
-      self.safeBrowsingEnhancedProtectionPreference.value = YES;
-      self.safeBrowsingStandardProtectionPreference.value = YES;
+      safeBrowsingState = safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION;
       break;
     case ItemTypeSafeBrowsingStandardProtection:
-      self.safeBrowsingStandardProtectionPreference.value = YES;
-      self.safeBrowsingEnhancedProtectionPreference.value = NO;
+      safeBrowsingState = safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
       break;
     case ItemTypeSafeBrowsingNoProtection:
-      self.safeBrowsingStandardProtectionPreference.value = NO;
-      self.safeBrowsingEnhancedProtectionPreference.value = NO;
+      safeBrowsingState = safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
       break;
     default:
+      NOTREACHED();
       break;
   }
+  safe_browsing::SetSafeBrowsingState(self.userPrefService, safeBrowsingState);
+
   [self updatePrivacySafeBrowsingSectionAndNotifyConsumer:YES];
 }
 
@@ -227,16 +230,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return infoButtonItem;
 }
 
-// Returns whether an ItemType should have a checkmark based on its related
-// preference value.
+// Returns whether an ItemType should have a checkmark based on its
+// SafeBrowsingState.
 - (BOOL)shouldItemTypeHaveCheckmark:(NSInteger)itemType {
   ItemType type = static_cast<ItemType>(itemType);
-  if (self.safeBrowsingEnhancedProtectionPreference.value) {
-    return type == ItemTypeSafeBrowsingEnhancedProtection;
-  } else if (self.safeBrowsingStandardProtectionPreference.value) {
-    return type == ItemTypeSafeBrowsingStandardProtection;
+  safe_browsing::SafeBrowsingState safeBrowsingState =
+      safe_browsing::GetSafeBrowsingState(*self.userPrefService);
+  switch (type) {
+    case ItemTypeSafeBrowsingEnhancedProtection:
+      return safeBrowsingState ==
+             safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION;
+    case ItemTypeSafeBrowsingStandardProtection:
+      return safeBrowsingState ==
+             safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
+    case ItemTypeSafeBrowsingNoProtection:
+      return safeBrowsingState ==
+             safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
+    default:
+      NOTREACHED();
+      return NO;
   }
-  return type == ItemTypeSafeBrowsingNoProtection;
 }
 
 // Updates the privacy safe browsing section according to the user consent. If
