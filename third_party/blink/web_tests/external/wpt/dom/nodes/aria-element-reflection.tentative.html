@@ -24,10 +24,12 @@
     // Element reference should be set if the content attribute was included.
     assert_equals(parentListbox.getAttribute("aria-activedescendant"), "i1", "check content attribute after parsing.");
     assert_equals(parentListbox.ariaActiveDescendantElement, i1, "check idl attribute after parsing.");
+    assert_equals(parentListbox.ariaActiveDescendantElement, parentListbox.ariaActiveDescendantElement, "check idl attribute caching after parsing.");
 
     // If we set the content attribute, the element reference should reflect this.
     parentListbox.setAttribute("aria-activedescendant", "i2");
     assert_equals(parentListbox.ariaActiveDescendantElement, i2, "setting the content attribute updates the element reference.");
+    assert_equals(parentListbox.ariaActiveDescendantElement, parentListbox.ariaActiveDescendantElement, "check idl attribute caching after update.");
 
     // Setting the element reference should be reflected in the content attribute.
     parentListbox.ariaActiveDescendantElement = i1;
@@ -342,10 +344,12 @@
   test(function(t) {
     const billingElement = document.getElementById("billingElement")
     assert_array_equals(input1.ariaLabelledByElements, [billingElement, nameElement], "parsed content attribute sets element references.");
+    assert_equals(input1.ariaLabelledByElements, input1.ariaLabelledByElements, "check idl attribute caching after parsing");
     assert_equals(input2.ariaLabelledByElements, null, "Testing missing content attribute after parsing.");
 
     input2.ariaLabelledByElements = [billingElement, addressElement];
     assert_array_equals(input2.ariaLabelledByElements, [billingElement, addressElement], "Testing IDL setter/getter.");
+    assert_equals(input1.ariaLabelledByElements, input1.ariaLabelledByElements, "check idl attribute caching after update");
     assert_equals(input2.getAttribute("aria-labelledby"), "billingElement addressElement");
 
     // Remove the billingElement from the DOM.
