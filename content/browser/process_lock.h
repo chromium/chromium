@@ -18,9 +18,12 @@ class IsolationContext;
 
 // ProcessLock is a core part of Site Isolation, which is used to determine
 // which documents are allowed to load in a process and which site data the
-// process is allowed to access, based on the SiteInfo principal. If a process
-// has a ProcessLock in the "invalid" state, then no SiteInstances have been
-// associated with the process and access should not be granted to anything.
+// process is allowed to access, based on the SiteInfo principal.
+//
+// If a process has a ProcessLock in the "invalid" state, then no SiteInstances
+// have been associated with the process and access should not be granted to
+// anything.
+//
 // Once a process is associated with its first SiteInstance, it transitions to
 // the "locked_to_site" or "allow_any_site" state depending on whether the
 // SiteInstance requires the process to be locked to a specific site or not.
@@ -28,14 +31,13 @@ class IsolationContext;
 // process will transition to the "allow_any_site" state and will allow any
 // site to commit in the process. Such a process can later be upgraded to the
 // "locked_to_site" state if something later determines that the process should
-// only allow access to a single site. Once the process is in the
-// "locked_to_site" state, the process will not be able to access site data from
-// other sites.
+// only allow access to a single site, but only if it hasn't otherwise been used
+// to render content. Once the process is in the "locked_to_site" state, it will
+// not be able to access site data from other sites.
 //
 // ProcessLock is currently defined in terms of a single SiteInfo with a process
 // lock URL, but it could be possible to define it in terms of multiple
-// SiteInfos that are compatible with each other (e.g., multiple extensions
-// sharing an extension process).
+// SiteInfos that are compatible with each other.
 class CONTENT_EXPORT ProcessLock {
  public:
   // Create a lock that that represents a process that is associated with at

@@ -3552,36 +3552,39 @@ void NavigationRequest::OnResponseStarted(
 
   subresource_loader_params_ = std::move(subresource_loader_params);
 
-  // Since we've made the final pick for the RenderFrameHost above, the picked
-  // RenderFrameHost's process should be considered "tainted" for future
-  // process reuse decisions. That is, a site requiring a dedicated process
-  // should not reuse this process, unless it's same-site with the URL we're
-  // committing.  An exception is for URLs that do not "use up" the
-  // SiteInstance, such as about:blank or chrome-native://.
-  //
-  // Note that although NavigationThrottles could still cancel the navigation
-  // as part of WillProcessResponse below, we must update the process here,
-  // since otherwise there could be a race if a NavigationThrottle defers the
-  // navigation, and in the meantime another navigation reads the incorrect
-  // IsUnused() value from the same process when making a process reuse
-  // decision.
-  if (render_frame_host_ &&
-      SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
-    render_frame_host_->GetProcess()->SetIsUsed();
-
+  if (render_frame_host_) {
     // For sites that require a dedicated process, set the site URL now if it
     // hasn't been set already. This will lock the process to that site, which
     // will prevent other sites from incorrectly reusing this process. See
     // https://crbug.com/738634.
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
     const IsolationContext& isolation_context = instance->GetIsolationContext();
-
     UrlInfo url_info = GetUrlInfo();
     auto site_info = SiteInfo::Create(isolation_context, url_info);
     if (!instance->HasSite() &&
+        SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url) &&
         site_info.RequiresDedicatedProcess(isolation_context)) {
       instance->ConvertToDefaultOrSetSite(url_info);
     }
+
+    // Since we've made the final pick for the RenderFrameHost above, the picked
+    // RenderFrameHost's process should be considered "tainted" for future
+    // process reuse decisions. That is, a site requiring a dedicated process
+    // should not reuse this process, unless it's same-site with the URL we're
+    // committing.
+    //
+    // The process must be marked used after calling ConvertToDefaultOrSetSite,
+    // because that call verifies that a SiteInstance with an unassigned site
+    // (e.g., about:blank) can only be locked to a site if it is still unused.
+    //
+    // Note that although NavigationThrottles could still cancel the navigation
+    // as part of WillProcessResponse below, we must update the process here,
+    // since otherwise there could be a race if a NavigationThrottle defers the
+    // navigation, and in the meantime another navigation reads the incorrect
+    // IsUnused() value from the same process when making a process reuse
+    // decision.
+    render_frame_host_->GetProcess()->SetIsUsed();
+
     // Now that we know the IsolationContext for the assigned SiteInstance, we
     // opt the origin into OAC here if needed. Note that this doesn't need to
     // account for loading data URLs with a base URL, because such a base URL
@@ -3618,14 +3621,15 @@ void NavigationRequest::OnResponseStarted(
         isolation_context, origin, false /* is_global_walk_or_frame_removal */);
 
     // Replace the SiteInstance of the previously committed entry if it's for a
-    // url that doesn't require a site assignment, since this new commit is
+    // url that doesn't require a site assignment, if this new commit will be
     // assigning an incompatible site to the previous SiteInstance. This ensures
     // the new SiteInstance can be used with the old entry if we return to it.
     // See http://crbug.com/992198 for further context.
     NavigationEntryImpl* nav_entry =
         frame_tree_node_->navigator().controller().GetLastCommittedEntry();
     if (nav_entry && !nav_entry->GetURL().IsAboutBlank() &&
-        !SiteInstanceImpl::ShouldAssignSiteForURL(nav_entry->GetURL())) {
+        !SiteInstanceImpl::ShouldAssignSiteForURL(nav_entry->GetURL()) &&
+        SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
       scoped_refptr<FrameNavigationEntry> frame_entry =
           nav_entry->root_node()->frame_entry;
       scoped_refptr<SiteInstanceImpl> new_site_instance =

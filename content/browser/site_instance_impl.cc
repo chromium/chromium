@@ -1209,18 +1209,6 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   DCHECK_EQ(storage_partition->GetConfig(),
             site_info_.storage_partition_config());
 
-  // From now on, this process should be considered "tainted" for future
-  // process reuse decisions:
-  // (1) If |site_info_| required a dedicated process, this SiteInstance's
-  //     process can only host URLs for the same site.
-  // (2) Even if |site_info_| does not require a dedicated process, this
-  //     SiteInstance's process still cannot be reused to host other sites
-  //     requiring dedicated sites in the future.
-  // We can get here either when we commit a URL into a SiteInstance that does
-  // not yet have a site, or when we create a process for a SiteInstance with a
-  // preassigned site.
-  process->SetIsUsed();
-
   if (site_info_.ShouldLockProcessToSite(GetIsolationContext())) {
     // Sanity check that this won't try to assign an origin lock to a
     // non-site-isolated <webview> process, which can't be locked.
@@ -1269,6 +1257,18 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
           << "Unexpected process lock " << process_lock.ToString();
     }
   }
+
+  // From now on, this process should be considered "tainted" for future
+  // process reuse decisions:
+  // (1) If |site_info_| required a dedicated process, this SiteInstance's
+  //     process can only host URLs for the same site.
+  // (2) Even if |site_info_| does not require a dedicated process, this
+  //     SiteInstance's process still cannot be reused to host other sites
+  //     requiring dedicated sites in the future.
+  // We can get here either when we commit a URL into a SiteInstance that does
+  // not yet have a site, or when we create a process for a SiteInstance with a
+  // preassigned site.
+  process->SetIsUsed();
 
   // Track which isolation contexts use the given process.  This lets
   // ChildProcessSecurityPolicyImpl (e.g. CanAccessDataForOrigin) determine
