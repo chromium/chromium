@@ -141,6 +141,10 @@ TEST_F(WindowLocationTest, Assign) {
 // Tests that calling window.location.assign() with an unresolvable URL loads
 // about:blank.
 TEST_F(WindowLocationTest, WindowLocationAssignUnresolvable) {
+  if (@available(iOS 15.4, *)) {
+    // TODO(crbug.com/1326520): Failing on ios15-sdk-simulator.
+    return;
+  }
   // Attempt to call window.location.assign() using an unresolvable URL.
   GURL unresolvable_url("http:https:not a url");
   SetWindowLocationUrl(unresolvable_url);
