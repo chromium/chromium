@@ -720,7 +720,8 @@ void SendTabToSelfBridge::DeleteEntries(const std::vector<GURL>& urls) {
   for (const GURL& url : urls) {
     auto entry = entries_.begin();
     while (entry != entries_.end()) {
-      bool to_delete = (url == entry->second->GetURL());
+      bool to_delete =
+          (entry->second == nullptr || url == entry->second->GetURL());
 
       std::string guid = entry->first;
       entry++;
