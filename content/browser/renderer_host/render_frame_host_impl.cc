@@ -2849,13 +2849,21 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
         base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
   }
 
-  // The initial empty documents sandbox flags is the frame's sandbox flags,
-  // contained in browsing_context_state. This are either:
+  // The initial empty documents sandbox flags is the union from:
+  // - The parent or opener document's CSP sandbox inherited by policy
+  //   container.
+  // - The frame's sandbox flags, contained in browsing_context_state. This
+  //   are either:
   //   1. For iframe: the parent + iframe.sandbox attribute.
   //   2. For popups: the opener if "allow-popups-to-escape-sandbox" isn't
   //   set.
-  policy_container_host_->set_sandbox_flags(
-      browsing_context_state_->effective_frame_policy().sandbox_flags);
+  network::mojom::WebSandboxFlags sandbox_flags_to_commit =
+      browsing_context_state_->effective_frame_policy().sandbox_flags;
+  for (const auto& csp :
+       policy_container_host_->policies().content_security_policies) {
+    sandbox_flags_to_commit |= csp->sandbox;
+  }
+  policy_container_host_->set_sandbox_flags(sandbox_flags_to_commit);
 }
 
 void RenderFrameHostImpl::SetPolicyContainerHost(
