@@ -133,29 +133,34 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                                           handler:handler];
 }
 
-std::string UmaNameForDestination(Destination destination) {
+void RecordUmaActionForDestination(Destination destination) {
   switch (destination) {
     case Destination::Bookmarks:
-      return "MobileMenuAllBookmarks";
+      RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));
+      break;
     case Destination::History:
-      return "MobileMenuHistory";
+      RecordAction(UserMetricsAction("MobileMenuHistory"));
+      break;
     case Destination::ReadingList:
-      return "MobileMenuReadingList";
+      RecordAction(UserMetricsAction("MobileMenuReadingList"));
+      break;
     case Destination::Passwords:
-      return "MobileMenuPasswords";
+      RecordAction(UserMetricsAction("MobileMenuPasswords"));
+      break;
     case Destination::Downloads:
-      return "MobileDownloadFolderUIShownFromToolsMenu";
+      RecordAction(
+          UserMetricsAction("MobileDownloadFolderUIShownFromToolsMenu"));
+      break;
     case Destination::RecentTabs:
-      return "MobileMenuRecentTabs";
+      RecordAction(UserMetricsAction("MobileMenuRecentTabs"));
+      break;
     case Destination::SiteInfo:
-      return "MobileMenuSiteInformation";
+      RecordAction(UserMetricsAction("MobileMenuSiteInformation"));
+      break;
     case Destination::Settings:
-      return "MobileMenuSettings";
+      RecordAction(UserMetricsAction("MobileMenuSettings"));
+      break;
   }
-}
-
-base::UserMetricsAction UmaActionForDestination(Destination destination) {
-  return UserMetricsAction(UmaNameForDestination(destination).c_str());
 }
 
 OverflowMenuDestination* CreateOverflowMenuDestination(
@@ -167,7 +172,7 @@ OverflowMenuDestination* CreateOverflowMenuDestination(
   NSString* name = l10n_util::GetNSString(nameID);
 
   auto handlerWithMetrics = ^{
-    RecordAction(UmaActionForDestination(destinationEnum));
+    RecordUmaActionForDestination(destinationEnum);
     handler();
   };
 
