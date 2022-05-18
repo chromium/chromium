@@ -292,7 +292,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kToolbarIphAndroid,
     &kToolbarMicIphAndroid,
     &kTrustedWebActivityLocationDelegation,
-    &kTrustedWebActivityNewDisclosure,
     &kTrustedWebActivityNotificationPermissionDelegation,
     &kTrustedWebActivityPostMessage,
     &kTrustedWebActivityQualityEnforcement,
@@ -810,9 +809,6 @@ const base::Feature kToolbarMicIphAndroid{"ToolbarMicIphAndroid",
 
 const base::Feature kTrustedWebActivityLocationDelegation{
     "TrustedWebActivityLocationDelegation", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kTrustedWebActivityNewDisclosure{
-    "TrustedWebActivityNewDisclosure", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrustedWebActivityNotificationPermissionDelegation{
     "TrustedWebActivityNotificationPermissionDelegation",
