@@ -419,11 +419,12 @@ enum class ReplacedSizeMode {
 // This will handle both intrinsic, and layout calculations depending on the
 // space provided. (E.g. if the available inline-size is indefinite it will
 // return the intrinsic size).
-CORE_EXPORT LogicalSize
-ComputeReplacedSize(const NGBlockNode&,
-                    const NGConstraintSpace&,
-                    const NGBoxStrut& border_padding,
-                    ReplacedSizeMode = ReplacedSizeMode::kNormal);
+CORE_EXPORT LogicalSize ComputeReplacedSize(
+    const NGBlockNode&,
+    const NGConstraintSpace&,
+    const NGBoxStrut& border_padding,
+    absl::optional<LogicalSize> override_available_size = absl::nullopt,
+    ReplacedSizeMode = ReplacedSizeMode::kNormal);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.

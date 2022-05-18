@@ -852,10 +852,12 @@ absl::optional<LogicalSize> ComputeNormalizedNaturalSize(
 }  // namespace
 
 // Computes size for a replaced element.
-LogicalSize ComputeReplacedSize(const NGBlockNode& node,
-                                const NGConstraintSpace& space,
-                                const NGBoxStrut& border_padding,
-                                ReplacedSizeMode mode) {
+LogicalSize ComputeReplacedSize(
+    const NGBlockNode& node,
+    const NGConstraintSpace& space,
+    const NGBoxStrut& border_padding,
+    absl::optional<LogicalSize> override_available_size,
+    ReplacedSizeMode mode) {
   DCHECK(node.IsReplaced());
 
   LogicalSize size_override = node.GetReplacedSizeOverrideIfAny(space);
@@ -863,6 +865,13 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     DCHECK_GE(size_override.block_size, border_padding.BlockSum());
     DCHECK_GE(size_override.inline_size, border_padding.InlineSum());
     return size_override;
+  }
+
+  LayoutUnit override_available_inline_size = kIndefiniteSize;
+  LayoutUnit override_available_block_size = kIndefiniteSize;
+  if (override_available_size) {
+    override_available_inline_size = override_available_size->inline_size;
+    override_available_block_size = override_available_size->block_size;
   }
 
   const ComputedStyle& style = node.Style();
@@ -887,13 +896,12 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
             : space.ReplacedPercentageResolutionBlockSize();
 
     block_min_max_sizes = {
-        ResolveMinBlockLength(space, style, border_padding,
-                              style.LogicalMinHeight(),
-                              /* override_available_size */ kIndefiniteSize,
-                              &min_max_percentage_resolution_size),
+        ResolveMinBlockLength(
+            space, style, border_padding, style.LogicalMinHeight(),
+            override_available_block_size, &min_max_percentage_resolution_size),
         ResolveMaxBlockLength(space, style, border_padding,
                               style.LogicalMaxHeight(),
-                              /* override_available_size */ kIndefiniteSize,
+                              override_available_block_size,
                               &min_max_percentage_resolution_size)};
 
     if (space.IsFixedBlockSize()) {
@@ -917,30 +925,13 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
                                    &main_percentage_resolution_size)) {
         replaced_block = ResolveMainBlockLength(
             space, style, border_padding, block_length_to_resolve,
-            /* intrinsic_size */ kIndefiniteSize,
-            /* override_available_size */ kIndefiniteSize,
+            /* intrinsic_size */ kIndefiniteSize, override_available_block_size,
             &main_percentage_resolution_size);
         DCHECK_GE(*replaced_block, LayoutUnit());
         replaced_block =
             block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
       }
     }
-  }
-
-  // If we are OOF-positioned we need to respect the inline-insets for
-  // determining the available size. Instead of creating a new space, just
-  // override the available inline-size.
-  LayoutUnit override_available_inline_size = kIndefiniteSize;
-  if (node.IsOutOfFlowPositioned()) {
-    const LayoutUnit available_size = space.AvailableSize().inline_size;
-    DCHECK_NE(available_size, kIndefiniteSize);
-
-    // NOTE: Negative insets may grow the available inline-size.
-    override_available_inline_size =
-        (available_size -
-         MinimumValueForLength(style.LogicalInlineStart(), available_size) -
-         MinimumValueForLength(style.LogicalInlineEnd(), available_size))
-            .ClampNegativeToZero();
   }
 
   const LogicalSize aspect_ratio = node.GetAspectRatio();
@@ -991,6 +982,7 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     } else if (natural_size) {
       DCHECK_NE(mode, ReplacedSizeMode::kIgnoreInlineLengths);
       size = ComputeReplacedSize(node, space, border_padding,
+                                 override_available_size,
                                  ReplacedSizeMode::kIgnoreInlineLengths)
                  .inline_size;
     } else {

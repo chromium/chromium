@@ -1443,29 +1443,33 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     }
   }
 
+  const LogicalSize computed_available_size = ComputeOutOfFlowAvailableSize(
+      node_info.node, node_info.constraint_space, node_info.static_position);
+
   const NGBoxStrut border_padding =
       ComputeBorders(node_info.constraint_space, node_info.node) +
       ComputePadding(node_info.constraint_space, candidate_style);
 
   absl::optional<LogicalSize> replaced_size;
   if (node_info.node.IsReplaced()) {
-    replaced_size = ComputeReplacedSize(
-        node_info.node, node_info.constraint_space, border_padding);
+    replaced_size =
+        ComputeReplacedSize(node_info.node, node_info.constraint_space,
+                            border_padding, computed_available_size);
   }
 
   offset_info.inline_size_depends_on_min_max_sizes =
       ComputeOutOfFlowInlineDimensions(
           node_info.node, node_info.constraint_space, border_padding,
-          node_info.static_position, replaced_size, container_writing_direction,
-          &offset_info.node_dimensions);
+          node_info.static_position, computed_available_size, replaced_size,
+          container_writing_direction, &offset_info.node_dimensions);
 
   // We may have already pre-computed our block-dimensions when determining
   // our min/max sizes, only run if needed.
   if (offset_info.node_dimensions.size.block_size == kIndefiniteSize) {
     offset_info.initial_layout_result = ComputeOutOfFlowBlockDimensions(
         node_info.node, node_info.constraint_space, border_padding,
-        node_info.static_position, replaced_size, container_writing_direction,
-        &offset_info.node_dimensions);
+        node_info.static_position, computed_available_size, replaced_size,
+        container_writing_direction, &offset_info.node_dimensions);
   }
   offset_info.block_estimate = offset_info.node_dimensions.size.block_size;
 

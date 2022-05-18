@@ -90,6 +90,60 @@ inline LayoutUnit StaticPositionEndInset(StaticPositionEdge edge,
   }
 }
 
+// Computes the available-size, accounting for insets and the static-position.
+LayoutUnit ComputeAvailableSize(const LayoutUnit available_size,
+                                const Length& inset_start_length,
+                                const Length& inset_end_length,
+                                const LayoutUnit static_position_offset,
+                                StaticPositionEdge static_position_edge,
+                                bool is_table) {
+  DCHECK_NE(available_size, kIndefiniteSize);
+  LayoutUnit computed_available_size;
+
+  if (inset_start_length.IsAuto() && inset_end_length.IsAuto()) {
+    // If both our insets are auto, the available-size is defined by the
+    // static-position.
+    switch (static_position_edge) {
+      case kStart:
+        // The available-size for the start static-position "grows" towards the
+        // end edge.
+        // |      *----------->|
+        computed_available_size = available_size - static_position_offset;
+        break;
+      case kCenter:
+        // The available-size for the center static-position "grows" towards
+        // both edges (equally), and stops when it hits the first one.
+        // |<-----*----->      |
+        computed_available_size =
+            2 * std::min(static_position_offset,
+                         available_size - static_position_offset);
+        break;
+      case kEnd:
+        // The available-size for the end static-position "grows" towards the
+        // start edge.
+        // |<-----*            |
+        computed_available_size = static_position_offset;
+        break;
+    }
+  } else {
+    // Otherwise we just subtract the insets.
+    LayoutUnit inset_start =
+        MinimumValueForLength(inset_start_length, available_size);
+    LayoutUnit inset_end =
+        MinimumValueForLength(inset_end_length, available_size);
+    computed_available_size = available_size - inset_start - inset_end;
+  }
+
+  // The available-size given to tables isn't allowed to exceed the
+  // available-size of the containing-block.
+  if (is_table) {
+    computed_available_size = std::min(computed_available_size, available_size);
+  }
+
+  // Ensure the computed available-size isn't negative.
+  return computed_available_size.ClampNegativeToZero();
+}
+
 // Implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-height
@@ -98,6 +152,7 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding,
                          const MinMaxSizesFunc& min_max_sizes_func,
                          const LayoutUnit margin_percentage_resolution_size,
                          const LayoutUnit available_size,
+                         const LayoutUnit computed_available_size,
                          const Length& margin_start_length,
                          const Length& margin_end_length,
                          const Length& inset_start_length,
@@ -141,14 +196,7 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding,
                     min_max_length_sizes.ClampSizeToMinAndMax(size));
   };
 
-  auto ComputeShrinkToFitSize = [&](LayoutUnit computed_available_size,
-                                    LayoutUnit margin) {
-    // The available-size given to tables isn't allowed to exceed the
-    // available-size of the containing-block.
-    if (is_table) {
-      computed_available_size =
-          std::min(computed_available_size, available_size);
-    }
+  auto ComputeShrinkToFitSize = [&](LayoutUnit margin) {
     return ClampToMinMaxLengthSizes(
         min_max_sizes_func(MinMaxSizesType::kContent)
             .sizes.ShrinkToFit(computed_available_size - margin));
@@ -167,33 +215,8 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding,
     if (!margin_end)
       margin_end = LayoutUnit();
 
-    LayoutUnit computed_available_size;
-    switch (static_position_edge) {
-      case kStart:
-        // The available-size for the start static-position "grows" towards the
-        // end edge.
-        // |      *----------->|
-        computed_available_size = available_size - static_position_offset;
-        break;
-      case kCenter:
-        // The available-size for the center static-position "grows" towards
-        // both edges (equally), and stops when it hits the first one.
-        // |<-----*----->      |
-        computed_available_size =
-            2 * std::min(static_position_offset,
-                         available_size - static_position_offset);
-        break;
-      case kEnd:
-        // The available-size for the end static-position "grows" towards the
-        // start edge.
-        // |<-----*            |
-        computed_available_size = static_position_offset;
-        break;
-    }
-
     if (!size) {
-      size = ComputeShrinkToFitSize(computed_available_size,
-                                    *margin_start + *margin_end);
+      size = ComputeShrinkToFitSize(*margin_start + *margin_end);
     }
 
     LayoutUnit margin_size = *size + *margin_start + *margin_end;
@@ -206,14 +229,11 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding,
                                  available_size, margin_size);
     }
   } else if (inset_start && inset_end) {
-    LayoutUnit computed_available_size =
-        available_size - *inset_start - *inset_end;
-
     if (!size) {
       const LayoutUnit margin = margin_start.value_or(LayoutUnit()) +
                                 margin_end.value_or(LayoutUnit());
       size = is_shrink_to_fit
-                 ? ComputeShrinkToFitSize(computed_available_size, margin)
+                 ? ComputeShrinkToFitSize(margin)
                  : ClampToMinMaxLengthSizes(computed_available_size - margin);
     }
 
@@ -261,19 +281,15 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding,
 
   if (!inset_start) {
     DCHECK(inset_end.has_value());
-    LayoutUnit computed_available_size = available_size - *inset_end;
     if (!size) {
-      size = ComputeShrinkToFitSize(computed_available_size,
-                                    *margin_start + *margin_end);
+      size = ComputeShrinkToFitSize(*margin_start + *margin_end);
     }
     inset_start =
         available_size - *size - *inset_end - *margin_start - *margin_end;
   } else if (!inset_end) {
     DCHECK(inset_start.has_value());
-    LayoutUnit computed_available_size = available_size - *inset_start;
     if (!size) {
-      size = ComputeShrinkToFitSize(computed_available_size,
-                                    *margin_start + *margin_end);
+      size = ComputeShrinkToFitSize(*margin_start + *margin_end);
     }
     inset_end =
         available_size - *size - *inset_start - *margin_start - *margin_end;
@@ -319,11 +335,28 @@ bool CanComputeBlockSizeWithoutLayout(const NGBlockNode& node) {
 
 }  // namespace
 
+LogicalSize ComputeOutOfFlowAvailableSize(
+    const NGBlockNode& node,
+    const NGConstraintSpace& space,
+    const NGLogicalStaticPosition& static_position) {
+  const auto& style = node.Style();
+  const bool is_table = node.IsTable();
+  return {ComputeAvailableSize(
+              space.AvailableSize().inline_size, style.LogicalInlineStart(),
+              style.LogicalInlineEnd(), static_position.offset.inline_offset,
+              GetStaticPositionEdge(static_position.inline_edge), is_table),
+          ComputeAvailableSize(
+              space.AvailableSize().block_size, style.LogicalTop(),
+              style.LogicalBottom(), static_position.offset.block_offset,
+              GetStaticPositionEdge(static_position.block_edge), is_table)};
+}
+
 bool ComputeOutOfFlowInlineDimensions(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
+    const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
@@ -350,7 +383,7 @@ bool ComputeOutOfFlowInlineDimensions(
     // Compute our block-size if we haven't already.
     if (dimensions->size.block_size == kIndefiniteSize) {
       ComputeOutOfFlowBlockDimensions(node, space, border_padding,
-                                      static_position,
+                                      static_position, computed_available_size,
                                       /* replaced_size */ absl::nullopt,
                                       container_writing_direction, dimensions);
     }
@@ -419,9 +452,10 @@ bool ComputeOutOfFlowInlineDimensions(
   ComputeAbsoluteSize(
       border_padding.InlineSum(), MinMaxSizesFunc,
       space.PercentageResolutionInlineSizeForParentWritingMode(),
-      space.AvailableSize().inline_size, style.MarginStart(), style.MarginEnd(),
-      style.LogicalInlineStart(), style.LogicalInlineEnd(),
-      min_max_length_sizes, static_position.offset.inline_offset,
+      space.AvailableSize().inline_size, computed_available_size.inline_size,
+      style.MarginStart(), style.MarginEnd(), style.LogicalInlineStart(),
+      style.LogicalInlineEnd(), min_max_length_sizes,
+      static_position.offset.inline_offset,
       GetStaticPositionEdge(static_position.inline_edge), is_start_dominant,
       false /* is_block_direction */, is_table, is_shrink_to_fit, inline_size,
       &dimensions->size.inline_size, &dimensions->inset.inline_start,
@@ -436,6 +470,7 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
     const NGLogicalStaticPosition& static_position,
+    const LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     NGLogicalOutOfFlowDimensions* dimensions) {
@@ -537,9 +572,10 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
   ComputeAbsoluteSize(
       border_padding.BlockSum(), MinMaxSizesFunc,
       space.PercentageResolutionInlineSizeForParentWritingMode(),
-      space.AvailableSize().block_size, style.MarginBefore(),
-      style.MarginAfter(), style.LogicalTop(), style.LogicalBottom(),
-      min_max_length_sizes, static_position.offset.block_offset,
+      space.AvailableSize().block_size, computed_available_size.block_size,
+      style.MarginBefore(), style.MarginAfter(), style.LogicalTop(),
+      style.LogicalBottom(), min_max_length_sizes,
+      static_position.offset.block_offset,
       GetStaticPositionEdge(static_position.block_edge), is_start_dominant,
       true /* is_block_direction */, is_table, is_shrink_to_fit, block_size,
       &dimensions->size.block_size, &dimensions->inset.block_start,
