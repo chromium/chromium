@@ -117,3 +117,11 @@ blink_mac_builder(
 blink_mac_builder(
     name = "mac11.0.arm64-blink-rel",
 )
+
+blink_mac_builder(
+    name = "mac12.0-blink-rel",
+)
+
+blink_mac_builder(
+    name = "mac12.0.arm64-blink-rel",
+)

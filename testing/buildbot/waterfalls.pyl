@@ -3763,6 +3763,22 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
+      'mac12.0-blink-rel-dummy': {
+        'mixins': [
+          'mac_12_x64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'mac12.0.arm64-blink-rel-dummy': {
+        'mixins': [
+          'mac_12_beta_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'win-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',

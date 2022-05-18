@@ -813,6 +813,8 @@
       'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
+      'mac12.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
+      'mac12.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
       'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols',
       'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols',
       'win7-blink-rel': 'release_bot_blink_x86_minimal_symbols',
