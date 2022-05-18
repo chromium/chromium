@@ -45,7 +45,9 @@ class ASH_EXPORT CaptureModeToastController {
   const CaptureToastType* current_toast_type() const {
     return current_toast_type_ ? &(*current_toast_type_) : nullptr;
   }
-  views::Widget* capture_toast_widget() { return capture_toast_widget_.get(); }
+  views::Widget* capture_toast_widget() const {
+    return capture_toast_widget_.get();
+  }
 
   // Shows `capture_toast_widget_` with label text defined by the given
   // `capture_toast_type`; if `capture_toast_widget_` doesn't exist, creates

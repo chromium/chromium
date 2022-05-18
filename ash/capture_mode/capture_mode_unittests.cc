@@ -3161,7 +3161,32 @@ TEST_F(CaptureModeTest, CancelCaptureDuringCountDown) {
   auto* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_RETURN, event_generator);
   WaitForSeconds(1);
+  CaptureModeTestApi test_api;
+  EXPECT_TRUE(test_api.IsInCountDownAnimation());
   SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_FALSE(test_api.IsInCountDownAnimation());
+  EXPECT_FALSE(test_api.IsSessionActive());
+  EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
+}
+
+TEST_F(CaptureModeTest, EscDuringCountDownWhileSettingsOpen) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+
+  // Hitting Esc while the settings menu is open and the count down is in
+  // progress should end the session directly.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  SendKey(ui::VKEY_RETURN, event_generator);
+  WaitForSeconds(1);
+  CaptureModeTestApi test_api;
+  EXPECT_TRUE(test_api.IsInCountDownAnimation());
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_FALSE(test_api.IsInCountDownAnimation());
+  EXPECT_FALSE(test_api.IsSessionActive());
+  EXPECT_FALSE(test_api.IsVideoRecordingInProgress());
 }
 
 // Tests that metrics are recorded properly for capture region adjustments.
@@ -4109,6 +4134,7 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
   auto* capture_bar_widget = GetCaptureModeBarWidget();
   ui::Layer* capture_bar_layer = capture_bar_widget->GetLayer();
   EXPECT_TRUE(controller->IsActive());
+  auto* session = CaptureModeController::Get()->capture_mode_session();
 
   // Test the settings menu and capture bar are hidden when the user clicks to
   // start selecting a region.
@@ -4118,22 +4144,45 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
       gfx::Point(0, 0),
       capture_bar_widget->GetWindowBoundsInScreen().top_right() +
           gfx::Vector2d(0, -50)));
+  // Moving the cursor outside the bounds of the settings menu should update the
+  // cursor to `kPointer`, since the only possible operation here when clicking
+  // is to dismiss the settings menu rather than take a screenshot or update the
+  // region.
   event_generator->MoveMouseTo(target_region.origin());
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  using ui::mojom::CursorType;
+  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+
+  // Pressing outside the bounds of the settings should dismiss it immediately,
+  // update the cursor to `kCell` (to signal that it's now possible to select a
+  // region), but region selection doesn't start until the next click event.
   event_generator->PressLeftButton();
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
+  EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
+  EXPECT_FALSE(session->is_selecting_region());
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(session->is_selecting_region());
+
+  event_generator->PressLeftButton();
+  EXPECT_TRUE(session->is_selecting_region());
   event_generator->MoveMouseTo(target_region.bottom_right());
   EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
   event_generator->ReleaseLeftButton();
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
 
-  // Test that the settings menu is hidden when we drag a region. This drags a
-  // region that overlaps the capture bar for later steps of testing. Also tests
-  // that capture bar is invisible while region is being dragged even it
-  // overlaps with capture bar.
+  // Test that the settings menu will dismiss immediately when clicking
+  // somewhere in the middle of the capture region.
   ClickOnView(GetSettingsButton(), event_generator);
   event_generator->MoveMouseTo(target_region.origin() + gfx::Vector2d(50, 50));
   event_generator->PressLeftButton();
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
+  event_generator->ReleaseLeftButton();
+  event_generator->PressLeftButton();
+  EXPECT_EQ(CursorType::kMove, cursor_manager->GetCursor().type());
+  EXPECT_FALSE(session->is_selecting_region());
+  EXPECT_TRUE(session->is_drag_in_progress());
+  // This creates a region that overlaps with the capture bar. The capture bar
+  // should be fully transparent while dragging the region is in progress.
   event_generator->MoveMouseTo(target_region.bottom_center());
   EXPECT_EQ(0.f, capture_bar_layer->GetTargetOpacity());
   event_generator->ReleaseLeftButton();
@@ -4150,6 +4199,7 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
       capture_bar_widget->GetWindowBoundsInScreen().CenterPoint());
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
   ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
 
   // Move mouse onto the settings menu, confirm the capture bar is still

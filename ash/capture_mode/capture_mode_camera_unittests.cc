@@ -22,6 +22,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/fake_camera_device.h"
+#include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
@@ -184,11 +185,13 @@ class CaptureModeCameraTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
+    FakeFolderSelectionDialogFactory::Start();
     window_ = CreateTestWindow(gfx::Rect(30, 40, 600, 500));
   }
 
   void TearDown() override {
     window_.reset();
+    FakeFolderSelectionDialogFactory::Stop();
     AshTestBase::TearDown();
   }
 
@@ -2989,6 +2992,45 @@ class CaptureModeCameraPreviewTest
     }
   }
 };
+
+TEST_P(CaptureModeCameraPreviewTest, PreviewVisibilityWhileFolderSelection) {
+  AddDefaultCamera();
+  StartCaptureSessionWithParam();
+  CaptureModeTestApi().SelectCameraAtIndex(0);
+
+  // The camera preview should be initially visible.
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  auto* preview_widget = GetCameraController()->camera_preview_widget();
+  ASSERT_TRUE(preview_widget);
+  EXPECT_TRUE(preview_widget->IsVisible());
+
+  // Click on the settings button, the settings menu should open, and the camera
+  // preview should remain visible.
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  auto* settings_button =
+      session_test_api.GetCaptureModeBarView()->settings_button();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(settings_button, event_generator);
+  ASSERT_TRUE(session_test_api.GetCaptureModeSettingsWidget());
+  EXPECT_TRUE(preview_widget->IsVisible());
+
+  // Click on the "Select folder ..." option, the folder selection dialog should
+  // open, all capture UIs should hide, including the camera preview.
+  CaptureModeSettingsTestApi settings_test_api;
+  ClickOnView(settings_test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(session_test_api.IsFolderSelectionDialogShown());
+  EXPECT_FALSE(session_test_api.IsAllUisVisible());
+  EXPECT_FALSE(preview_widget->IsVisible());
+
+  // Dismiss the folder selection dialog, all capture UIs should show again,
+  // including the camera preview.
+  FakeFolderSelectionDialogFactory::Get()->CancelDialog();
+  EXPECT_FALSE(session_test_api.IsFolderSelectionDialogShown());
+  EXPECT_TRUE(session_test_api.IsAllUisVisible());
+  EXPECT_TRUE(preview_widget->IsVisible());
+}
 
 // Tests that camera preview's bounds is updated after display rotations with
 // two use cases, when capture session is active and when there's a video

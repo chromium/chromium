@@ -800,12 +800,12 @@ void CaptureModeController::OnSessionStateChanged(
 }
 
 void CaptureModeController::OnChromeTerminating() {
-  // Order here matters. We end the recording first before we inform the camera
-  // controller, so that ending the recording will destroy any camera previews
-  // first.
-  EndSessionOrRecording(EndRecordingReason::kShuttingDown);
+  // Order here matters. We may shutdown while a session with a camera is active
+  // before recording starts, we need to inform the camera controller first to
+  // destroy the camera preview first.
   if (camera_controller_)
     camera_controller_->OnShuttingDown();
+  EndSessionOrRecording(EndRecordingReason::kShuttingDown);
 }
 
 void CaptureModeController::SuspendImminent(
