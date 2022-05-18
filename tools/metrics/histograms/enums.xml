@@ -64034,6 +64034,7 @@ Called by update_use_counter_css.py.-->
   <int value="28" label="AboutThisSite"/>
   <int value="29" label="Translate"/>
   <int value="30" label="OfferNotification"/>
+  <int value="31" label="ExternalNavigation"/>
 </enum>
 
 <enum name="MessageLoopProblems">

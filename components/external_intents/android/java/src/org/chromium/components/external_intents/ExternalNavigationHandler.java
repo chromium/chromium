@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.os.SystemClock;
@@ -47,22 +48,31 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.webapk.lib.client.ChromeWebApkHostSignature;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
 
@@ -178,16 +188,52 @@ public class ExternalNavigationHandler {
 
     // Used to ensure we only call queryIntentActivities when we really need to.
     protected class QueryIntentActivitiesSupplier extends LazySupplier<List<ResolveInfo>> {
+        final Intent mIntent;
+        Intent mIntentCopy;
+
         public QueryIntentActivitiesSupplier(Intent intent) {
             super(() -> queryIntentActivities(intent));
+            mIntent = intent;
+        }
+
+        @Nullable
+        @Override
+        public List<ResolveInfo> get() {
+            // If the intent filter changes the previously supplied result will no longer be valid.
+            if (BuildConfig.ENABLE_ASSERTS) {
+                if (mIntentCopy != null) {
+                    assert intentResolutionMatches(mIntent, mIntentCopy);
+                } else {
+                    mIntentCopy = new Intent(mIntent);
+                }
+            }
+            return super.get();
         }
     }
 
     protected static class ResolveActivitySupplier extends LazySupplier<ResolveInfo> {
+        final Intent mIntent;
+        Intent mIntentCopy;
+
         public ResolveActivitySupplier(Intent intent) {
             super(()
                             -> PackageManagerUtils.resolveActivity(
                                     intent, PackageManager.MATCH_DEFAULT_ONLY));
+            mIntent = intent;
+        }
+
+        @Nullable
+        @Override
+        public ResolveInfo get() {
+            // If the intent filter changes the previously supplied result will no longer be valid.
+            if (BuildConfig.ENABLE_ASSERTS) {
+                if (mIntentCopy != null) {
+                    assert intentResolutionMatches(mIntent, mIntentCopy);
+                } else {
+                    mIntentCopy = new Intent(mIntent);
+                }
+            }
+            return super.get();
         }
     }
 
@@ -247,11 +293,13 @@ public class ExternalNavigationHandler {
         @OverrideUrlLoadingAsyncActionType
         int mAsyncActionType;
 
-        OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType) {
+        boolean mCanAskUserToLaunchApp;
+
+        private OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType) {
             this(resultType, OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION);
         }
 
-        OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType,
+        private OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType,
                 @OverrideUrlLoadingAsyncActionType int asyncActionType) {
             // The async action type should be set only for async actions...
             assert (asyncActionType == OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION
@@ -265,6 +313,13 @@ public class ExternalNavigationHandler {
             mAsyncActionType = asyncActionType;
         }
 
+        private OverrideUrlLoadingResult(
+                @OverrideUrlLoadingResultType int resultType, boolean canAskUser) {
+            this(resultType);
+            assert resultType == OverrideUrlLoadingResultType.NO_OVERRIDE;
+            mCanAskUserToLaunchApp = canAskUser;
+        }
+
         public @OverrideUrlLoadingResultType int getResultType() {
             return mResultType;
         }
@@ -273,18 +328,50 @@ public class ExternalNavigationHandler {
             return mAsyncActionType;
         }
 
+        public boolean canAskUserToLaunchApp() {
+            assert mResultType == OverrideUrlLoadingResultType.NO_OVERRIDE;
+            return mCanAskUserToLaunchApp;
+        }
+
+        /**
+         * Use this result when an asynchronous action needs to be carried out before deciding
+         * whether to block the external navigation.
+         */
         public static OverrideUrlLoadingResult forAsyncAction(
                 @OverrideUrlLoadingAsyncActionType int asyncActionType) {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, asyncActionType);
         }
+
+        /**
+         * Use this result when we would like to block an external navigation without prompting the
+         * user asking them whether would like to launch an app, or when the navigation does not
+         * target an app.
+         */
         public static OverrideUrlLoadingResult forNoOverride() {
             return new OverrideUrlLoadingResult(OverrideUrlLoadingResultType.NO_OVERRIDE);
         }
+
+        /**
+         * Use this result when it might make sense to prompt the user with a message asking them
+         * if they would like to launch the targeted app when we block an external navigation.
+         */
+        public static OverrideUrlLoadingResult canPromptForExternalIntent() {
+            return new OverrideUrlLoadingResult(OverrideUrlLoadingResultType.NO_OVERRIDE, true);
+        }
+
+        /**
+         * Use this result when the current external navigation should be blocked and a new
+         * navigation will be started in the Tab, clobbering the previous one.
+         */
         public static OverrideUrlLoadingResult forClobberingTab() {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB);
         }
+
+        /**
+         * Use this result when an external app has been launched as a result of the navigation.
+         */
         public static OverrideUrlLoadingResult forExternalIntent() {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT);
@@ -332,8 +419,13 @@ public class ExternalNavigationHandler {
         MutableBoolean canLaunchExternalFallbackResult = new MutableBoolean();
 
         long time = SystemClock.elapsedRealtime();
-        OverrideUrlLoadingResult result = shouldOverrideUrlLoadingInternal(
-                params, targetIntent, browserFallbackUrl, canLaunchExternalFallbackResult);
+        QueryIntentActivitiesSupplier resolvingInfos =
+                new QueryIntentActivitiesSupplier(targetIntent);
+        ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
+
+        OverrideUrlLoadingResult result =
+                shouldOverrideUrlLoadingInternal(params, targetIntent, browserFallbackUrl,
+                        resolvingInfos, resolveActivity, canLaunchExternalFallbackResult);
         assert canLaunchExternalFallbackResult.get() != null;
         RecordHistogram.recordTimesHistogram(
                 "Android.StrictMode.OverrideUrlLoadingTime", SystemClock.elapsedRealtime() - time);
@@ -351,6 +443,14 @@ public class ExternalNavigationHandler {
             result = handleFallbackUrl(params, targetIntent, browserFallbackUrl,
                     canLaunchExternalFallbackResult.get());
         }
+
+        if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE
+                && result.mCanAskUserToLaunchApp
+                && maybeAskToLaunchApp(params, targetIntent, resolvingInfos, resolveActivity)) {
+            result = OverrideUrlLoadingResult.forAsyncAction(
+                    OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH);
+        }
+
         if (DEBUG) printDebugShouldOverrideUrlLoadingResultType(result);
         return result;
     }
@@ -362,7 +462,7 @@ public class ExternalNavigationHandler {
                         && params.getRedirectHandler().isOnNavigation()
                         // For instance, if this is a chained fallback URL, we ignore it.
                         && params.getRedirectHandler().shouldNotOverrideUrlLoading())) {
-            return OverrideUrlLoadingResult.forNoOverride();
+            return OverrideUrlLoadingResult.canPromptForExternalIntent();
         }
 
         if (mDelegate.isIntentToInstantApp(targetIntent)) {
@@ -421,6 +521,71 @@ public class ExternalNavigationHandler {
         }
         if (DEBUG) Log.i(TAG, "clobberCurrentTab called");
         return clobberCurrentTab(browserFallbackUrl, params.getReferrerUrl());
+    }
+
+    private boolean maybeAskToLaunchApp(ExternalNavigationParams params, Intent targetIntent,
+            QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity) {
+        // Don't prompt for URLs the browser supports, just load them in browser.
+        if (UrlUtilities.isAcceptedScheme(params.getUrl())) return false;
+
+        ResolveInfo intentResolveInfo = resolveActivity.get();
+
+        // No app can resolve the intent, don't prompt.
+        if (intentResolveInfo == null || intentResolveInfo.activityInfo == null) return false;
+
+        // If the |resolvingInfos| from queryIntentActivities don't contain the result of
+        // resolveActivity, it means there's no default handler for the intent and it's resolving to
+        // the ResolverActivity. This means we can't know which app will be launched and can't
+        // convey that to the user. We also don't want to just allow the chooser dialog to be shown
+        // when the external navigation was otherwise blocked. In this case, we should just continue
+        // to block the navigation, and sites hoping to prompt the user when navigation fails should
+        // make sure to correctly target their app.
+        if (!resolversSubsetOf(Arrays.asList(intentResolveInfo), resolvingInfos.get())) {
+            return false;
+        }
+
+        MessageDispatcher messageDispatcher =
+                MessageDispatcherProvider.from(mDelegate.getWindowAndroid());
+        WebContents webContents = mDelegate.getWebContents();
+        if (messageDispatcher == null || webContents == null) return false;
+
+        String packageName = intentResolveInfo.activityInfo.packageName;
+        PackageManager pm = mDelegate.getContext().getPackageManager();
+        ApplicationInfo applicationInfo = null;
+        try {
+            applicationInfo = pm.getApplicationInfo(packageName, 0);
+        } catch (NameNotFoundException e) {
+            return false;
+        }
+
+        Drawable icon = pm.getApplicationLogo(applicationInfo);
+        if (icon == null) icon = pm.getApplicationIcon(applicationInfo);
+        CharSequence label = pm.getApplicationLabel(applicationInfo);
+
+        Resources res = mDelegate.getContext().getResources();
+        String title = res.getString(R.string.external_navigation_continue_to_title, label);
+        String description =
+                res.getString(R.string.external_navigation_continue_to_description, label);
+        String action = res.getString(R.string.external_navigation_continue_to_action);
+
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.EXTERNAL_NAVIGATION)
+                        .with(MessageBannerProperties.TITLE, title)
+                        .with(MessageBannerProperties.DESCRIPTION, description)
+                        .with(MessageBannerProperties.ICON, icon)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, action)
+                        .with(MessageBannerProperties.ICON_TINT_COLOR,
+                                MessageBannerProperties.TINT_NONE)
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> {
+                                    startActivity(targetIntent, false);
+                                    return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+                                })
+                        .build();
+        messageDispatcher.enqueueMessage(message, webContents, MessageScopeType.NAVIGATION, false);
+        return true;
     }
 
     private void printDebugShouldOverrideUrlLoadingResultType(OverrideUrlLoadingResult result) {
@@ -1320,6 +1485,7 @@ public class ExternalNavigationHandler {
 
     private OverrideUrlLoadingResult shouldOverrideUrlLoadingInternal(
             ExternalNavigationParams params, Intent targetIntent, GURL browserFallbackUrl,
+            QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
             MutableBoolean canLaunchExternalFallbackResult) {
         recordIntentSelectorMetrics(params.getUrl(), targetIntent);
         sanitizeQueryIntentActivitiesIntent(targetIntent);
@@ -1372,20 +1538,19 @@ public class ExternalNavigationHandler {
         if (handleCCTRedirectsToInstantApps(params, isExternalProtocol, incomingIntentRedirect)) {
             return OverrideUrlLoadingResult.forExternalIntent();
         } else if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
-            return OverrideUrlLoadingResult.forNoOverride();
+            return OverrideUrlLoadingResult.canPromptForExternalIntent();
         }
 
         if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
 
-        Intent debugIntent = new Intent(targetIntent);
-        QueryIntentActivitiesSupplier resolvingInfos =
-                new QueryIntentActivitiesSupplier(targetIntent);
         if (!preferToShowIntentPicker(params, pageTransitionCore, isExternalProtocol, isFormSubmit,
                     incomingIntentRedirect, isFromIntent, resolvingInfos)) {
-            return OverrideUrlLoadingResult.forNoOverride();
+            return OverrideUrlLoadingResult.canPromptForExternalIntent();
         }
 
-        if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.forNoOverride();
+        if (isLinkFromChromeInternalPage(params)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
 
         if (handleWtaiMcProtocol(params)) {
             return OverrideUrlLoadingResult.forExternalIntent();
@@ -1399,7 +1564,9 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (isYoutubePairingCode(params.getUrl())) return OverrideUrlLoadingResult.forNoOverride();
+        if (isYoutubePairingCode(params.getUrl())) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
 
         if (shouldStayInIncognito(params, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1445,9 +1612,6 @@ public class ExternalNavigationHandler {
 
         prepareExternalIntent(
                 targetIntent, params, resolvingInfos.get(), shouldProxyForInstantApps);
-        // As long as our intent resolution hasn't changed, resolvingInfos won't need to be
-        // re-computed as it won't have changed.
-        assert intentResolutionMatches(debugIntent, targetIntent);
 
         if (params.isIncognito()) {
             return handleIncognitoIntent(params, targetIntent, intentDataUrl, resolvingInfos.get(),
@@ -1465,7 +1629,6 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forExternalIntent();
         }
 
-        ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         boolean requiresIntentChooser = false;
         if (!mDelegate.maybeSetTargetPackage(targetIntent)) {
             requiresIntentChooser = isViewIntentToOtherBrowser(
@@ -1474,11 +1637,11 @@ public class ExternalNavigationHandler {
 
         if (shouldAvoidShowingDisambiguationPrompt(
                     isExternalProtocol, targetIntent, resolvingInfos, resolveActivity)) {
-            return OverrideUrlLoadingResult.forNoOverride();
+            return OverrideUrlLoadingResult.canPromptForExternalIntent();
         }
 
         return startActivity(targetIntent, shouldProxyForInstantApps, requiresIntentChooser,
-                resolvingInfos.get(), resolveActivity, browserFallbackUrl, intentDataUrl,
+                resolvingInfos, resolveActivity, browserFallbackUrl, intentDataUrl,
                 params.getReferrerUrl());
     }
 
@@ -1825,7 +1988,7 @@ public class ExternalNavigationHandler {
      * @returns The OverrideUrlLoadingResult for starting (or not starting) the Activity.
      */
     protected OverrideUrlLoadingResult startActivity(Intent intent, boolean proxy,
-            boolean requiresIntentChooser, List<ResolveInfo> resolvingInfos,
+            boolean requiresIntentChooser, QueryIntentActivitiesSupplier resolvingInfos,
             ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl, GURL intentDataUrl,
             GURL referrerUrl) {
         // Only touches disk on Kitkat. See http://crbug.com/617725 for more context.
@@ -1877,7 +2040,7 @@ public class ExternalNavigationHandler {
 
     @SuppressWarnings("UseCompatLoadingForDrawables")
     private OverrideUrlLoadingResult startActivityWithChooser(final Intent intent,
-            List<ResolveInfo> resolvingInfos, ResolveActivitySupplier resolveActivity,
+            QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
             GURL browserFallbackUrl, GURL intentDataUrl, GURL referrerUrl, Context context) {
         ResolveInfo intentResolveInfo = resolveActivity.get();
         // If this is null, then the intent was only previously matching
@@ -1889,7 +2052,7 @@ public class ExternalNavigationHandler {
         // will already get the option to choose the target app (as there will be multiple options)
         // and we don't need to do anything. Otherwise we have to make a fake option in the chooser
         // dialog that loads the URL in the embedding app.
-        if (!resolversSubsetOf(Arrays.asList(intentResolveInfo), resolvingInfos)) {
+        if (!resolversSubsetOf(Arrays.asList(intentResolveInfo), resolvingInfos.get())) {
             return doStartActivity(intent, context);
         }
 
