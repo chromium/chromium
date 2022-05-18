@@ -55,7 +55,7 @@ class CORE_EXPORT StyleResolverState {
  public:
   StyleResolverState(Document&,
                      Element&,
-                     const StyleRecalcContext& = StyleRecalcContext(),
+                     const StyleRecalcContext* = nullptr,
                      const StyleRequest& = StyleRequest());
   StyleResolverState(const StyleResolverState&) = delete;
   StyleResolverState& operator=(const StyleResolverState&) = delete;
@@ -213,7 +213,7 @@ class CORE_EXPORT StyleResolverState {
   PseudoElement* pseudo_element_;
   ElementStyleResources element_style_resources_;
   ElementType element_type_;
-  Element* nearest_container_;
+  Element* container_unit_context_;
 
   scoped_refptr<const ComputedStyle> originating_element_style_;
   // True if we are resolving styles for a highlight pseudo-element.

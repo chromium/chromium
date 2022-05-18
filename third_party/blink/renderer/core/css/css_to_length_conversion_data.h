@@ -120,11 +120,16 @@ class CORE_EXPORT CSSToLengthConversionData {
 
    public:
     ContainerSizes() = default;
-    explicit ContainerSizes(Element* nearest_container)
-        : nearest_container_(nearest_container) {}
+
+    // ContainerSizes will look for container-query containers in the inclusive
+    // ancestor chain of `context_element`. Optimally, the nearest container-
+    // query container is provided, although it's harmless to provide some
+    // descendant of that container (we'll just traverse a bit more).
+    explicit ContainerSizes(const Element* context_element)
+        : context_element_(context_element) {}
 
     // ContainerSizes::Width/Height is normally computed lazily by looking
-    // the ancestor chain of `nearest_container_`. This function allows the
+    // the ancestor chain of `context_element_`. This function allows the
     // sizes to be fetched eagerly instead. This is useful for situations where
     // we don't have enough context to fetch the information lazily (e.g.
     // generated images).
@@ -142,7 +147,7 @@ class CORE_EXPORT CSSToLengthConversionData {
    private:
     void CacheSizeIfNeeded(PhysicalAxes, absl::optional<double>& cache) const;
 
-    Member<Element> nearest_container_;
+    Member<const Element> context_element_;
     mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
     mutable absl::optional<double> cached_width_;
     mutable absl::optional<double> cached_height_;

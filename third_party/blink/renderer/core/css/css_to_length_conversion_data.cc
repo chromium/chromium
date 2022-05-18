@@ -51,9 +51,10 @@ PhysicalAxes SupportedAxes(const ComputedStyle& style) {
   return ToPhysicalAxes(supported, style.GetWritingMode());
 }
 
-absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axes,
-                                                Element* nearest_container) {
-  for (Element* element = nearest_container; element;
+absl::optional<double> FindSizeForContainerAxis(
+    PhysicalAxes requested_axes,
+    const Element* context_element) {
+  for (const Element* element = context_element; element;
        element = element->ParentOrShadowHostElement()) {
     auto* evaluator = element->GetContainerQueryEvaluator();
     if (!evaluator)
@@ -138,15 +139,15 @@ CSSToLengthConversionData::ContainerSizes::PreCachedCopy() const {
   ContainerSizes copy = *this;
   copy.Width();
   copy.Height();
-  DCHECK(!copy.nearest_container_ || copy.cached_width_.has_value());
-  DCHECK(!copy.nearest_container_ || copy.cached_height_.has_value());
+  DCHECK(!copy.context_element_ || copy.cached_width_.has_value());
+  DCHECK(!copy.context_element_ || copy.cached_height_.has_value());
   // We don't need to keep the container since we eagerly fetched both values.
-  copy.nearest_container_ = nullptr;
+  copy.context_element_ = nullptr;
   return copy;
 }
 
 void CSSToLengthConversionData::ContainerSizes::Trace(Visitor* visitor) const {
-  visitor->Trace(nearest_container_);
+  visitor->Trace(context_element_);
 }
 
 bool CSSToLengthConversionData::ContainerSizes::SizesEqual(
@@ -172,7 +173,7 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
   if ((cached_physical_axes_ & requested_axis) == requested_axis)
     return;
   cached_physical_axes_ |= requested_axis;
-  cache = FindSizeForContainerAxis(requested_axis, nearest_container_);
+  cache = FindSizeForContainerAxis(requested_axis, context_element_);
 }
 
 CSSToLengthConversionData::CSSToLengthConversionData(

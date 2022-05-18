@@ -855,7 +855,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   // The StyleResolverState is where we actually end up accumulating the
   // computed style. It's just a convenient way of not having to send
   // a lot of input/output variables around between the different functions.
-  StyleResolverState state(GetDocument(), *element, style_recalc_context,
+  StyleResolverState state(GetDocument(), *element, &style_recalc_context,
                            style_request);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
@@ -1370,9 +1370,8 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     double offset) {
   // TODO(alancutter): Avoid creating a StyleResolverState just to apply a
   // single value on a ComputedStyle.
-  // TOOD(crbug.com/1223030): Propagate a real StyleRecalcContext to handle
-  // container relative units.
-  StyleResolverState state(element.GetDocument(), element, StyleRecalcContext(),
+  StyleResolverState state(element.GetDocument(), element,
+                           nullptr /* StyleRecalcContext */,
                            StyleRequest(parent_style));
   state.SetStyle(ComputedStyle::Clone(base_style));
   if (value) {
@@ -1400,7 +1399,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
     return initial_style;
 
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
-                           StyleRecalcContext(),
+                           nullptr /* StyleRecalcContext */,
                            StyleRequest(initial_style.get()));
 
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
@@ -1921,7 +1920,8 @@ FilterOperations StyleResolver::ComputeFilterOperations(
   scoped_refptr<ComputedStyle> parent = CreateComputedStyle();
   parent->SetFont(font);
 
-  StyleResolverState state(GetDocument(), *element, StyleRecalcContext(),
+  StyleResolverState state(GetDocument(), *element,
+                           nullptr /* StyleRecalcContext */,
                            StyleRequest(parent.get()));
 
   state.SetStyle(ComputedStyle::Clone(*parent));
@@ -1940,7 +1940,7 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
   StyleRecalcContext style_recalc_context =
       StyleRecalcContext::FromAncestors(element);
   StyleRequest style_request;
-  StyleResolverState state(GetDocument(), element, style_recalc_context,
+  StyleResolverState state(GetDocument(), element, &style_recalc_context,
                            style_request);
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
@@ -2049,7 +2049,8 @@ void StyleResolver::ComputeFont(Element& element,
   };
 
   // TODO(timloh): This is weird, the style is being used as its own parent
-  StyleResolverState state(GetDocument(), element, StyleRecalcContext(),
+  StyleResolverState state(GetDocument(), element,
+                           nullptr /* StyleRecalcContext */,
                            StyleRequest(style));
   state.SetStyle(style);
 
@@ -2408,7 +2409,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
     // don't inherit anything from existing elements.
     StyleResolverState state(
         GetDocument(), EnsureElementForCanvasFormattedText(),
-        StyleRecalcContext{},
+        nullptr /* StyleRecalcContext */,
         StyleRequest{parent_style ? parent_style : &InitialStyle()});
     state.SetStyle(style);
 

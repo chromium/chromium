@@ -88,7 +88,7 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   // require our callers to properly register every animation they pass in
   // here, which the current tests do not do.
   auto style = document.GetStyleResolver().CreateComputedStyle();
-  StyleResolverState state(document, *element, StyleRecalcContext(),
+  StyleResolverState state(document, *element, nullptr /* StyleRecalcContext */,
                            StyleRequest(style.get()));
   state.SetStyle(style);
 
