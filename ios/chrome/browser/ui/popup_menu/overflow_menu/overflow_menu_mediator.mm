@@ -1173,6 +1173,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                : @"popup_menu_follow"];
   __weak __typeof(self) weakSelf = self;
   self.followAction.handler = ^{
+    RecordAction(status ? UserMetricsAction("MobileMenuUnfollow")
+                        : UserMetricsAction("MobileMenuFollow"));
+    // TODO(crbug.com/1324452): Record histogram.
     [weakSelf updateFollowStatus:!status withFollowWebPageURLs:webPageURLs];
   };
 }

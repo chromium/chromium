@@ -17671,6 +17671,13 @@ should be able to be added at any place in this file.
   <description>User pressed 'Find in page' in the app menu.</description>
 </action>
 
+<action name="MobileMenuFollow">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>User pressed the follow option in the app menu.</description>
+</action>
+
 <action name="MobileMenuForward">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed the forward icon in the app menu.</description>
@@ -17881,6 +17888,13 @@ should be able to be added at any place in this file.
 <action name="MobileMenuTranslate">
   <owner>frechette@chromium.org</owner>
   <description>User pressed the 'Translate' in the app menu.</description>
+</action>
+
+<action name="MobileMenuUnfollow">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>tinazwang@chromium.org</owner>
+  <description>User pressed the unfollow option in the app menu.</description>
 </action>
 
 <action name="MobileMenuVoiceSearch">
