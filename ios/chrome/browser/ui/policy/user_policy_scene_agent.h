@@ -13,6 +13,10 @@ class AuthenticationService;
 class PrefService;
 class Browser;
 
+namespace policy {
+class UserPolicySigninService;
+}  // namespace policy
+
 // Scene agent that monitors app and scene events to control the UI for User
 // Policy (e.g. show the User Policy notification dialog at startup).
 //
@@ -57,6 +61,8 @@ class Browser;
                  (id<ApplicationCommands>)applicationCommandsHandler
                             prefService:(PrefService*)prefService
                             mainBrowser:(Browser*)mainBrowser
+                          policyService:
+                              (policy::UserPolicySigninService*)policyService
     NS_DESIGNATED_INITIALIZER;
 
 @end

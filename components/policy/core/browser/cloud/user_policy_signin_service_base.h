@@ -18,13 +18,10 @@
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class AccountId;
 class PrefService;
-
-namespace network {
-class SharedURLLoaderFactory;
-}
 
 namespace policy {
 

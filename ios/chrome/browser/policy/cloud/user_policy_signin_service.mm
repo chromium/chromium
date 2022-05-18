@@ -55,6 +55,10 @@ UserPolicySigninService::UserPolicySigninService(
                                   identity_manager,
                                   system_url_loader_factory),
       browser_state_prefs_(browser_state_prefs) {
+  if (identity_manager) {
+    scoped_identity_manager_observation_.Observe(identity_manager);
+  }
+
   TryInitialize();
 }
 
@@ -81,12 +85,6 @@ void UserPolicySigninService::TryInitialize() {
     return;
   }
 
-  // Shutdown the UserCloudPolicyManager when the user signs out. We start
-  // observing the IdentityManager here because we don't want to get signout
-  // notifications until after the profile has started initializing
-  // (http://crbug.com/316229).
-  scoped_identity_manager_observation_.Observe(identity_manager());
-
   if (!IsUserPolicyEnabled() ||
       !CanApplyPolicies(/*check_for_refresh_token=*/false)) {
     // Clear existing user policies if the feature is disabled or if policies
@@ -101,6 +99,13 @@ void UserPolicySigninService::TryInitialize() {
 }
 
 bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
+  if (!browser_state_prefs_->GetBoolean(
+          policy::policy_prefs::kUserPolicyNotificationWasShown)) {
+    // Return false if the user hasn't yet seen the notification about User
+    // Policy.
+    return false;
+  }
+
   return CanApplyPoliciesForSignedInUser(check_for_refresh_token,
                                          GetConsentLevelForRegistration(),
                                          identity_manager());
@@ -118,6 +123,10 @@ void UserPolicySigninService::UpdateLastPolicyCheckTime() {
 
 signin::ConsentLevel UserPolicySigninService::GetConsentLevelForRegistration() {
   return signin::ConsentLevel::kSync;
+}
+
+void UserPolicySigninService::OnUserPolicyNotificationSeen() {
+  TryInitialize();
 }
 
 }  // namespace policy

@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -387,10 +388,25 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _alertCoordinator;
+
   ProceduralBlock acceptBlock = ^{
     AuthenticationFlowPerformer* strongSelf = weakSelf;
     if (!strongSelf)
       return;
+
+    // TODO(crbug.com/1326767): Nullify the browser object in the
+    // AlertCoordinator when the coordinator is stopped to avoid using the
+    // browser object at that moment, in which case the browser object may have
+    // been deleted before the callback block is called. This is to avoid
+    // potential bad memory accesses.
+    Browser* browser = weakAlert.browser;
+    if (browser) {
+      PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+      // TODO(crbug.com/1325115): Remove this line once we determined that the
+      // notification isn't needed anymore.
+      [strongSelf updateUserPolicyNotificationStatusIfNeeded:prefService];
+    }
+
     [strongSelf alertControllerDidDisappear:weakAlert];
     [[strongSelf delegate] didAcceptManagedConfirmation];
   };
@@ -557,6 +573,19 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
     handlerForSettings {
   NOTREACHED();
   return nil;
+}
+
+#pragma mark - Internal
+
+- (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
+  if (!policy::IsUserPolicyEnabled()) {
+    // Don't set the notification pref if the User Policy feature isn't
+    // enabled.
+    return;
+  }
+
+  prefService->SetBoolean(policy::policy_prefs::kUserPolicyNotificationWasShown,
+                          true);
 }
 
 @end

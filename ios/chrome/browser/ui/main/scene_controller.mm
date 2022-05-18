@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #include "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
@@ -876,13 +877,17 @@ bool IsSigninForcedByPolicy() {
       AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   if (IsUserPolicyNotificationNeeded(authService, prefService)) {
+    policy::UserPolicySigninService* userPolicyService =
+        policy::UserPolicySigninServiceFactory::GetForBrowserState(
+            browserState);
     [self.sceneState
         addAgent:[[UserPolicySceneAgent alloc]
                         initWithSceneUIProvider:self
                                     authService:authService
                      applicationCommandsHandler:applicationCommandsHandler
                                     prefService:prefService
-                                    mainBrowser:mainBrowser]];
+                                    mainBrowser:mainBrowser
+                                  policyService:userPolicyService]];
   }
 
   // Now that the main browser's command dispatcher is created and the newly
