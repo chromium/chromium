@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -17,6 +18,7 @@
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -735,9 +737,10 @@ std::u16string GetExpirationYearForVirtualCardPreviewInput(
 }
 
 // Returns the appropriate expiration date from |credit_card| for the field
-// based on the |field_type|. Uses the |field|'s max_length attribute to
-// determine if the |value| needs to be truncated or padded. Returns an empty
-// string in case of a failure.
+// based on the |field_type|. If the field contains a recognized date format
+// string, the function follows that format. Otherwise, it uses the |field|'s
+// max_length attribute to determine if the |value| needs to be truncated or
+// padded. Returns an empty string in case of a failure.
 std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
                                          const AutofillField& field,
                                          ServerFieldType field_type,
@@ -747,6 +750,38 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
   std::u16string two_digit_year = credit_card.Expiration2DigitYearAsString();
   std::u16string four_digit_year = credit_card.Expiration4DigitYearAsString();
 
+  // Check whether we find one of the standard format descriptors like
+  // "mm/yy", "mm/yyyy", "mm / yy", "mm-yyyy", ... in one of the human
+  // readable labels. In that case, follow the specified pattern.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillFillCreditCardAsPerFormatString)) {
+    std::vector<std::u16string> groups;
+    const char16_t* kFormatRegEx = u"mm(\\s?[/-]?\\s?)?yy(yy)?";
+    //                                  ^^^^ optional white space
+    //                                      ^^^^^ optional separator
+    //                                           ^^^ optional white space
+    //                                                   ^^^^^ 4 digit year?
+    if (MatchesPattern(field.placeholder, kFormatRegEx, &groups) ||
+        MatchesPattern(field.label, kFormatRegEx, &groups)) {
+      bool is_two_digit_year = groups[2].empty();
+      std::u16string expiration_candidate =
+          base::StrCat({month, groups[1],
+                        is_two_digit_year ? two_digit_year : four_digit_year});
+      if (field.max_length == 0 ||
+          expiration_candidate.size() <= field.max_length) {
+        return expiration_candidate;
+      }
+      // Try once more with a stripped version of the separator if the previous
+      // version did not fit.
+      expiration_candidate =
+          base::StrCat({month, base::TrimWhitespace(groups[1], base::TRIM_ALL),
+                        is_two_digit_year ? two_digit_year : four_digit_year});
+      if (field.max_length == 0 ||
+          expiration_candidate.size() <= field.max_length) {
+        return expiration_candidate;
+      }
+    }
+  }
 
   switch (field.max_length) {
     case 1:

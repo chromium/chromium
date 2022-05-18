@@ -142,11 +142,11 @@ bool SetExpirationYear(int value, int* expiration_year) {
 }
 
 std::u16string FindPossiblePhoneCountryCode(const std::u16string& text) {
-  std::u16string candidate;
   if (text.find(u"00") != std::u16string::npos ||
       text.find('+') != std::u16string::npos) {
-    if (MatchesPattern(text, kAugmentedPhoneCountryCodeRe, &candidate, 1))
-      return candidate;
+    std::vector<std::u16string> captures;
+    if (MatchesPattern(text, kAugmentedPhoneCountryCodeRe, &captures))
+      return captures[1];
   }
 
   return std::u16string();

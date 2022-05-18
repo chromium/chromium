@@ -641,6 +641,7 @@ struct FillUtilExpirationDateTestCase {
   size_t field_max_length;
   std::u16string expected_value;
   bool expected_response;
+  const char* opt_label = nullptr;
 };
 
 class ExpirationDateTest
@@ -655,6 +656,16 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   field.form_control_type = "text";
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
+
+  base::test::ScopedFeatureList enabled;
+  if (test_case.opt_label) {
+    field.label = base::UTF8ToUTF16(test_case.opt_label);
+    // We take the addition of label also as an indication to test the
+    // features::kAutofillFillCreditCardAsPerFormatString feature. When this
+    // lands, we can just drop all references to |enabled| from this function.
+    enabled.InitAndEnableFeature(
+        features::kAutofillFillCreditCardAsPerFormatString);
+  }
 
   CreditCard card = test::GetCreditCard();
   card.SetExpirationDateFromString(u"03/2022");
@@ -730,8 +741,51 @@ INSTANTIATE_TEST_SUITE_P(
         FillUtilExpirationDateTestCase{
             HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 7, u"03/2022", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 12, u"03/2022",
-            true}));
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 12, u"03/2022", true},
+
+        // Tests for features::kAutofillFillCreditCardAsPerFormatString:
+
+        // Base case works regardless of captialization.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            "mm/yy"},
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            "MM/YY"},
+        // Even if we expect a 4 digit expiration date, we follow the
+        // placeholder.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 0, u"03/22", true,
+            "MM/YY"},
+        // Whitespaces are respected.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03 / 22", true,
+            "MM / YY"},
+        // Whitespaces are stripped if that makes the string fit.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 5, u"03/22", true,
+            "MM / YY"},
+        // Different separators work.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03-22", true,
+            "MM-YY"},
+        // Four year expiration years work.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03-2022", true,
+            "MM-YYYY"},
+        // Some extra text around the pattern does not matter.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            "Credit card in format MM/YY."},
+        // Fallback to the length based filling in case the maxlength is too
+        // low.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true,
+            "MM/YYYY"},
+        // Empty strings are handled gracefully.
+        FillUtilExpirationDateTestCase{
+            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true,
+            ""}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
   std::vector<const char*> kOptions = {

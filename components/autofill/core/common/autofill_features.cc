@@ -114,6 +114,14 @@ const base::Feature kAutofillCreateDataForTest{
 const base::Feature kAutofillFillAndImportFromMoreFields{
     "AutofillFillAndImportFromMoreFields", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, autofill searches for format strings (like "MM/YY", "MM / YY",
+// "MM/YYYY") in the label or placeholder of input elements and uses these
+// to fill expiration dates.
+// TODO(crbug.com/1326244): Cleanup when launched.
+const base::Feature kAutofillFillCreditCardAsPerFormatString{
+    "AutofillFillCreditCardAsPerFormatString",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, AutofillPopupControllerImpl is destructed not immediately in its
 // HideViewAndDie() function, but as a delayed task.
 // TODO(crbug.com/1277218): Cleanup when launched.

@@ -326,7 +326,9 @@ bool FormField::Match(const AutofillField* field,
   bool found_match = false;
   base::StringPiece match_type_string;
   base::StringPiece16 value;
-  std::u16string match;
+  std::vector<std::u16string> matches;
+  std::vector<std::u16string>* capture_destination =
+      logging.log_manager ? &matches : nullptr;
 
   // TODO(crbug/1165780): Remove once shared labels are launched.
   const std::u16string& label =
@@ -339,19 +341,19 @@ bool FormField::Match(const AutofillField* field,
 
   const bool match_label =
       match_type.attributes.contains(MatchAttribute::kLabel);
-  if (match_label && MatchesPattern(label, pattern, &match)) {
+  if (match_label && MatchesPattern(label, pattern, capture_destination)) {
     found_match = true;
     match_type_string = "Match in label";
     value = label;
   } else if (match_type.attributes.contains(MatchAttribute::kName) &&
-             MatchesPattern(name, pattern, &match)) {
+             MatchesPattern(name, pattern, capture_destination)) {
     found_match = true;
     match_type_string = "Match in name";
     value = name;
   } else if (match_label &&
              base::FeatureList::IsEnabled(
                  features::kAutofillConsiderPlaceholderForParsing) &&
-             MatchesPattern(field->placeholder, pattern, &match)) {
+             MatchesPattern(field->placeholder, pattern, capture_destination)) {
     // TODO(crbug.com/1317961): The label and placeholder cases should logically
     // be grouped together. Placeholder is currently last, because for the finch
     // study we want the group assignment to happen as late as possible.
@@ -365,10 +367,10 @@ bool FormField::Match(const AutofillField* field,
     LogBuffer table_rows;
     table_rows << Tr{} << "Match type:" << match_type_string;
     table_rows << Tr{} << "RegEx:" << logging.regex_name;
-    table_rows << Tr{} << "Value: " << HighlightValue(value, match);
+    table_rows << Tr{} << "Value: " << HighlightValue(value, matches[0]);
     // The matched substring is reported once more as the highlighting is not
     // particularly copy&paste friendly.
-    table_rows << Tr{} << "Matched substring: " << match;
+    table_rows << Tr{} << "Matched substring: " << matches[0];
     logging.log_manager->Log()
         << LoggingScope::kParsing << LogMessage::kLocalHeuristicRegExMatched
         << Tag{"table"} << std::move(table_rows) << CTag{"table"};
