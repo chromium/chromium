@@ -63,11 +63,15 @@ class HistoryClustersMetricsLogger
   ~HistoryClustersMetricsLogger() override;
   PAGE_USER_DATA_KEY_DECL();
 
-  void set_initial_state(HistoryClustersInitialState init_state) {
-    init_state_ = init_state;
+  absl::optional<HistoryClustersInitialState> initial_state() const {
+    return initial_state_;
   }
 
-  absl::optional<HistoryClustersFinalState> get_final_state() {
+  void set_initial_state(HistoryClustersInitialState initial_state) {
+    initial_state_ = initial_state;
+  }
+
+  absl::optional<HistoryClustersFinalState> final_state() {
     return final_state_;
   }
 
@@ -94,7 +98,7 @@ class HistoryClustersMetricsLogger
 
   // The initial state of how this interaction with the HistoryClusters UI was
   // started.
-  absl::optional<HistoryClustersInitialState> init_state_;
+  absl::optional<HistoryClustersInitialState> initial_state_;
 
   // The final state of how this interaction with the HistoryClusters UI ended.
   absl::optional<HistoryClustersFinalState> final_state_;

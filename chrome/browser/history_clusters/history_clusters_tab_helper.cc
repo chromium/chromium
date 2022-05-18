@@ -288,8 +288,8 @@ void HistoryClustersTabHelper::DidStartNavigation(
     auto* logger =
         history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
             navigation_handle->GetWebContents()->GetPrimaryPage());
-    DCHECK(!logger->get_final_state() ||
-           *logger->get_final_state() ==
+    DCHECK(!logger->final_state() ||
+           *logger->final_state() ==
                history_clusters::HistoryClustersFinalState::kSameDocNavigation);
     logger->clear_final_state();
   }
@@ -372,9 +372,17 @@ void HistoryClustersTabHelper::DidFinishNavigation(
     return;
   }
 
+  // Loggers should only record the initial state once. This code will be called
+  // again if the user subsequently switches in-page tabs between History and
+  // Journeys, or if the user makes an in-page search. We should early return in
+  // those cases because we want to preserve the state of the INITIAL arrival.
   auto* logger =
       history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
           navigation_handle->GetWebContents()->GetPrimaryPage());
+  if (logger->initial_state()) {
+    return;
+  }
+
   logger->set_navigation_id(navigation_handle->GetNavigationId());
 
   // If the transition type is typed (meaning directly entered into the

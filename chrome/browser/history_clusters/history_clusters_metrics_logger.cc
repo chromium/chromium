@@ -21,7 +21,7 @@ HistoryClustersMetricsLogger::HistoryClustersMetricsLogger(content::Page& page)
 HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   if (!navigation_id_)
     return;
-  if (!init_state_)
+  if (!initial_state_)
     return;
 
   // Record UKM metrics.
@@ -36,7 +36,7 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
     // window closing.
     final_state_ = HistoryClustersFinalState::kCloseTab;
   }
-  builder.SetInitialState(static_cast<int>(*init_state_));
+  builder.SetInitialState(static_cast<int>(*initial_state_));
   builder.SetFinalState(static_cast<int>(*final_state_));
   builder.SetNumQueries(num_queries_);
   builder.SetNumTogglesToBasicHistory(num_toggles_to_basic_history_);
@@ -46,7 +46,7 @@ HistoryClustersMetricsLogger::~HistoryClustersMetricsLogger() {
   base::UmaHistogramExactLinear("History.Clusters.Actions.LinksOpened",
                                 links_opened_count_, 100);
   base::UmaHistogramEnumeration("History.Clusters.Actions.InitialState",
-                                *init_state_);
+                                *initial_state_);
   base::UmaHistogramEnumeration("History.Clusters.Actions.FinalState",
                                 *final_state_);
   base::UmaHistogramBoolean("History.Clusters.Actions.DidMakeQuery",
