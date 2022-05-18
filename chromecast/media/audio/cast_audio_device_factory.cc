@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/android/bundle_utils.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -74,7 +75,8 @@ class NonSwitchableAudioRendererSink
     if (is_initialized_)
       return;
     is_initialized_ = true;
-    if (!base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice) ||
+    if (!(base::android::BundleUtils::IsBundle() ||
+          base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) ||
         params.IsBitstreamFormat()) {
       output_device_ =
           NewOutputDevice(frame_token_, sink_params_, kAuthorizationTimeout);

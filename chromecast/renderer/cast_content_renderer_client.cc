@@ -49,6 +49,7 @@
 #include "third_party/blink/public/web/web_view.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/bundle_utils.h"
 #include "chromecast/media/audio/cast_audio_device_factory.h"
 #include "media/base/android/media_codec_util.h"
 #else
@@ -398,7 +399,8 @@ absl::optional<::media::AudioRendererAlgorithmParameters>
 CastContentRendererClient::GetAudioRendererAlgorithmParameters(
     ::media::AudioParameters audio_parameters) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) {
+  if (base::android::BundleUtils::IsBundle() ||
+      base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) {
     return absl::nullopt;
   }
   ::media::AudioRendererAlgorithmParameters parameters;
