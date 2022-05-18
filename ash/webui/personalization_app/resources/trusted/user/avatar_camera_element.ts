@@ -10,7 +10,6 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-
 import '../cros_button_style.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
@@ -101,6 +100,11 @@ export class AvatarCamera extends WithPersonalizationStore {
         computed: 'computePreviewBlobUrl_(pngBinary_)',
         observer: 'onPreviewBlobUrlChanged_',
       },
+
+      captureInProgress_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -108,6 +112,7 @@ export class AvatarCamera extends WithPersonalizationStore {
   private cameraStream_: MediaStream|null;
   private pngBinary_: Uint8Array|null;
   private previewBlobUrl_: string|null;
+  private captureInProgress_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -171,11 +176,20 @@ export class AvatarCamera extends WithPersonalizationStore {
   private async takePhoto_() {
     const webcamUtils = getWebcamUtils();
 
-    const frames = await webcamUtils.captureFrames(
-        this.$.webcamVideo, getCaptureSize(this.mode),
-        webcamUtils.CAPTURE_INTERVAL_MS, getNumFrames(this.mode));
+    try {
+      this.captureInProgress_ = true;
+      // Let the animation start smoothly before beginning the capture.
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      const frames = await webcamUtils.captureFrames(
+          this.$.webcamVideo, getCaptureSize(this.mode),
+          webcamUtils.CAPTURE_INTERVAL_MS, getNumFrames(this.mode));
 
-    this.pngBinary_ = webcamUtils.convertFramesToPngBinary(frames);
+      this.pngBinary_ = webcamUtils.convertFramesToPngBinary(frames);
+    } catch (e) {
+      console.error('Failed to capture from webcam', e);
+    } finally {
+      this.captureInProgress_ = false;
+    }
   }
 
   private confirmPhoto_() {

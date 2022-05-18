@@ -4,6 +4,37 @@
     --cr-dialog-body-padding-horizontal: 24px;
   }
 
+  div[slot='body'] {
+    height: 255px;
+    position: relative;
+  }
+
+  @keyframes flash {
+    0% { opacity: 0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 0; }
+  }
+
+  #captureOverlay {
+    animation-delay: 100ms;
+    animation-duration: 100ms;
+    animation-iteration-count: infinite;
+    animation-name: flash;
+    animation-play-state: paused;
+    animation-timing-function: ease-in-out;
+    background-color: white;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  #captureOverlay[data-mode='video']:not([hidden]) {
+    animation-play-state: running;
+  }
+
   #webcamVideo {
     /*
      * Mirror the webcam feed because people are used to seeing themselves in a
@@ -23,11 +54,6 @@
 
   cr-button.primary:hover {
     color: var(--cros-text-color-secondary);
-  }
-
-  div[slot='body'] {
-    height: 255px;
-    position: relative;
   }
 
   paper-spinner-lite {
@@ -80,6 +106,8 @@
     <template is="dom-if" if="[[previewBlobUrl_]]">
       <img id="previewImg" src$="[[previewBlobUrl_]]">
     </template>
+    <div id="captureOverlay" data-mode$="[[mode]]"
+        hidden$="[[!captureInProgress_]]"></div>
   </div>
   <template is="dom-if" if="[[showFooter_(cameraStream_, previewBlobUrl_)]]">
     <div slot="footer">
