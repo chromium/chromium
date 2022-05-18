@@ -5833,17 +5833,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledGroupA_FullTrim_20220211",
-                    "params": {
-                        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot": "false",
-                        "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
-                    },
-                    "enable_features": [
-                        "TrimArcVmOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "EnabledGroupB_DropCachesOnly_20220211",
+                    "name": "EnabledGroupB_DropCachesOnly_20220513",
                     "params": {
                         "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot": "true",
                         "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
