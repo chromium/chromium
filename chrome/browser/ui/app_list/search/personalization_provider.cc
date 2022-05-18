@@ -78,11 +78,9 @@ void PersonalizationResult::Open(int event_flags) {
 
 PersonalizationProvider::PersonalizationProvider(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
-
-  if (!ash::features::IsPersonalizationHubEnabled()) {
-    return;
-  }
+  DCHECK(ash::features::IsPersonalizationHubEnabled());
+  DCHECK(profile_ && profile_->IsRegularProfile())
+      << "Regular profile required for personalization search";
 
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
   Observe(&app_service_proxy_->AppRegistryCache());
@@ -99,13 +97,11 @@ PersonalizationProvider::PersonalizationProvider(Profile* profile)
 PersonalizationProvider::~PersonalizationProvider() = default;
 
 void PersonalizationProvider::Start(const std::u16string& query) {
+  DCHECK(search_handler_) << "Search handler required to run query";
+
   ClearResultsSilently();
 
   if (query.size() < kMinQueryLength) {
-    return;
-  }
-
-  if (!search_handler_) {
     return;
   }
 

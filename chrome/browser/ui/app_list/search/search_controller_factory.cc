@@ -204,7 +204,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   }
 
   if (ash::features::IsPersonalizationHubEnabled() &&
-      !profile->IsGuestSession()) {
+      profile->IsRegularProfile()) {
     size_t personalization_app_group_id =
         controller->AddGroup(kGenericMaxResults);
 
