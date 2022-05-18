@@ -151,8 +151,8 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kGpu));
-  EXPECT_EQ(0.4, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::Process::kRenderer));
+  EXPECT_EQ(0.75, config()->GetChildProcessEnableFraction(
+                      metrics::CallStackProfileParams::Process::kRenderer));
   EXPECT_EQ(0.0,
             config()->GetChildProcessEnableFraction(
                 metrics::CallStackProfileParams::Process::kNetworkService));
