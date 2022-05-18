@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
@@ -91,22 +90,6 @@ void ReportInternalError(const char* type,
       INTERNAL_ERROR_MAX, INTERNAL_ERROR_MAX + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(location);
-}
-
-void ReportSchemaVersion(int version,
-                         const storage::BucketLocator& bucket_locator) {
-  UMA_HISTOGRAM_ENUMERATION("WebCore.IndexedDB.SchemaVersion", version,
-                            kLatestKnownSchemaVersion + 1);
-  const std::string suffix =
-      BucketLocatorToCustomHistogramSuffix(bucket_locator);
-  if (!suffix.empty()) {
-    base::LinearHistogram::FactoryGet(
-        base::StrCat({"WebCore.IndexedDB.SchemaVersion", suffix}), 0,
-        indexed_db::kLatestKnownSchemaVersion,
-        indexed_db::kLatestKnownSchemaVersion + 1,
-        base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->Add(version);
-  }
 }
 
 void ReportLevelDBError(const std::string& histogram_name,

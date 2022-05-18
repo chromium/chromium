@@ -701,8 +701,8 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
 
   std::unique_ptr<LevelDBWriteBatch> write_batch = LevelDBWriteBatch::Create();
 
-  // This must have a default value to handle this case where
-  // ReportSchemaVersion reports a not-found entry.
+  // This must have a default value to handle the case where
+  // a not-found entry is reported.
   int64_t db_schema_version = 0;
   IndexedDBDataFormatVersion db_data_version;
   bool found = false;
@@ -711,7 +711,6 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     INTERNAL_READ_ERROR(SET_UP_METADATA);
     return s;
   }
-  indexed_db::ReportSchemaVersion(db_schema_version, bucket_locator_);
   if (!found) {
     // Initialize new backing store.
     db_schema_version = indexed_db::kLatestKnownSchemaVersion;
