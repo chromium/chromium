@@ -372,13 +372,14 @@ void ImageDecoderExternal::close() {
   if (!data_complete_)
     completed_property_->Reject(exception);
 
-  if (consumer_)
-    consumer_->Cancel();
   CloseInternal(exception);
 }
 
 void ImageDecoderExternal::CloseInternal(DOMException* exception) {
   reset(exception);
+  if (consumer_)
+    consumer_->Cancel();
+
   weak_factory_.InvalidateWeakPtrs();
   pending_metadata_requests_ = 0;
   consumer_ = nullptr;
