@@ -146,6 +146,8 @@ void SyncSchedulerImpl::OnServerConnectionErrorFixed() {
   // call TryCanaryJob to achieve this, and note that nothing -- not even a
   // canary job -- can bypass a THROTTLED WaitInterval. The only thing that
   // has the authority to do that is the Unthrottle timer.
+  // TODO(crbug.com/1170609): Delete log trace when the flakiness is resolved.
+  LOG(WARNING) << "Server connection fixed and retrying canary job";
   TryCanaryJob();
 }
 
@@ -510,8 +512,9 @@ void SyncSchedulerImpl::HandleFailure(
 }
 
 void SyncSchedulerImpl::DoPollSyncCycleJob() {
-  SDVLOG(2) << "Polling with types "
-            << ModelTypeSetToDebugString(GetEnabledAndUnblockedTypes());
+  // TODO(crbug.com/1170609): Revert to SDVLOG(2) the flakiness is resolved.
+  LOG(WARNING) << "Polling with types "
+               << ModelTypeSetToDebugString(GetEnabledAndUnblockedTypes());
   SyncCycle cycle(cycle_context_, this);
   bool success = syncer_->PollSyncShare(GetEnabledAndUnblockedTypes(), &cycle);
 
@@ -703,6 +706,8 @@ void SyncSchedulerImpl::Unthrottle() {
   // was just created (e.g via ScheduleNudgeImpl). The main implication is
   // that we're careful to update routing info (etc) with such potentially
   // stale canary jobs.
+  // TODO(crbug.com/1170609): Delete log trace when the flakiness is resolved.
+  LOG(WARNING) << "Unthrottling scheduler and trying canary job";
   TryCanaryJob();
 }
 
@@ -736,6 +741,8 @@ void SyncSchedulerImpl::PerformDelayedNudge() {
 }
 
 void SyncSchedulerImpl::ExponentialBackoffRetry() {
+  // TODO(crbug.com/1170609): Delete log trace when the flakiness is resolved.
+  LOG(WARNING) << "Retrying exponential backoff with a canary job";
   TryCanaryJob();
 }
 
