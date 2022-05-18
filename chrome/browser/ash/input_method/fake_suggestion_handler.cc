@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
+#include "base/strings/string_util.h"
 
 namespace ash {
 namespace input_method {
@@ -76,10 +77,9 @@ bool FakeSuggestionHandler::SetAssistiveWindowProperties(
   }
 
   if (assistive_window.visible) {
+    context_id_ = context_id;
     showing_suggestion_ = true;
-    // TODO(b/225988020): Expand this class to allow for multiple suggestion
-    // candidates. Currently only saves the first one.
-    suggestion_text_ = assistive_window.candidates.front();
+    suggestion_text_ = base::JoinString(assistive_window.candidates, u";");
   } else {
     showing_suggestion_ = false;
   }

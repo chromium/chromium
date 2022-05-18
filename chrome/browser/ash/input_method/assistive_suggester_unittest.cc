@@ -1084,7 +1084,7 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
   assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6);
 
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
-  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←");
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←;↑;→");
 }
 }  // namespace input_method
 }  // namespace ash
