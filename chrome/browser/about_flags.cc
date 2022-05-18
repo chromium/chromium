@@ -5324,11 +5324,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScrollableTabStripButtonsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kScrollableTabStripButtons)},
 
-    {flag_descriptions::kSidePanelDragAndDropFlagId,
-     flag_descriptions::kSidePanelDragAndDropName,
-     flag_descriptions::kSidePanelDragAndDropDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSidePanelDragAndDrop)},
-
     {"side-panel-improved-clobbering",
      flag_descriptions::kSidePanelImprovedClobberingName,
      flag_descriptions::kSidePanelImprovedClobberingDescription, kOsDesktop,

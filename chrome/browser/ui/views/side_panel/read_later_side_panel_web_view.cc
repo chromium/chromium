@@ -35,10 +35,8 @@ ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
       browser_(browser) {
   SetProperty(views::kElementIdentifierKey,
               kReadLaterSidePanelWebViewElementId);
-  if (base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop)) {
-    extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
-        contents_wrapper()->web_contents());
-  }
+  extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
+      contents_wrapper()->web_contents());
   browser_->tab_strip_model()->AddObserver(this);
 }
 

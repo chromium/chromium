@@ -2307,11 +2307,6 @@ const char kSendTabToSelfSigninPromoDescription[] =
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 
-const char kSidePanelDragAndDropFlagId[] = "side-panel-drag-and-drop";
-const char kSidePanelDragAndDropName[] = "Side panel drag and drop";
-const char kSidePanelDragAndDropDescription[] =
-    "Enables drag and drop of bookmarks within the side panel.";
-
 const char kSidePanelImprovedClobberingName[] =
     "Side panel improved clobbering";
 const char kSidePanelImprovedClobberingDescription[] =

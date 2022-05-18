@@ -135,9 +135,6 @@ const base::FeatureParam<kSideSearchLabelAnimationFrequencyOption>
 const base::Feature kClobberAllSideSearchSidePanels{
     "ClobberAllSideSearchSidePanels", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Adds improved support for handling multiple contextual and global RHS browser
 // side panels. Designed specifically to handle the interim state before the v2
 // side panel project launches.

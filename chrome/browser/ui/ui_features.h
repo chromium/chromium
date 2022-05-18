@@ -62,7 +62,6 @@ extern const base::Feature kScrollableTabStripButtons;
 
 // TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
-extern const base::Feature kSidePanelDragAndDrop;
 extern const base::Feature kSidePanelImprovedClobbering;
 
 extern const base::Feature kSidePanelJourneys;

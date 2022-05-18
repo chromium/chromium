@@ -46,10 +46,8 @@ BookmarksSidePanelCoordinator::CreateBookmarksWebView() {
               GetBrowser().profile(), IDS_BOOKMARK_MANAGER_TITLE,
               /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false));
-  if (base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop)) {
-    extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
-        bookmarks_web_view.get()->contents_wrapper()->web_contents());
-  }
+  extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
+      bookmarks_web_view.get()->contents_wrapper()->web_contents());
   return bookmarks_web_view;
 }
 

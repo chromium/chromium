@@ -1293,10 +1293,6 @@ extern const char kSendTabToSelfSigninPromoDescription[];
 extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
 
-extern const char kSidePanelDragAndDropFlagId[];
-extern const char kSidePanelDragAndDropName[];
-extern const char kSidePanelDragAndDropDescription[];
-
 extern const char kSidePanelImprovedClobberingName[];
 extern const char kSidePanelImprovedClobberingDescription[];
 

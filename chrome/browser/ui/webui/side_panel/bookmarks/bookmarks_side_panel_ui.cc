@@ -51,9 +51,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean(
       "bookmarksDragAndDropEnabled",
-
-      base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop) &&
-          prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
+      prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
 
   source->AddBoolean("unifiedSidePanel",
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
