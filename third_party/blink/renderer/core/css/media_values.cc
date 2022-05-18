@@ -506,22 +506,28 @@ bool MediaValues::ComputeLengthImpl(double value,
       result = (value * std::max(ViewportWidth(), ViewportHeight())) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kSmallViewportWidth:
+    case CSSPrimitiveValue::UnitType::kContainerWidth:
       result = (value * SmallViewportWidth()) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kSmallViewportHeight:
+    case CSSPrimitiveValue::UnitType::kContainerHeight:
       result = (value * SmallViewportHeight()) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kSmallViewportInlineSize:
+    case CSSPrimitiveValue::UnitType::kContainerInlineSize:
       result = (value * SmallViewportInlineSize()) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kSmallViewportBlockSize:
+    case CSSPrimitiveValue::UnitType::kContainerBlockSize:
       result = (value * SmallViewportBlockSize()) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kSmallViewportMin:
+    case CSSPrimitiveValue::UnitType::kContainerMin:
       result = (value * std::min(SmallViewportWidth(), SmallViewportHeight())) /
                100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kSmallViewportMax:
+    case CSSPrimitiveValue::UnitType::kContainerMax:
       result = (value * std::max(SmallViewportWidth(), SmallViewportHeight())) /
                100.0;
       return true;
