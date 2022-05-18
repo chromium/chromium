@@ -11,6 +11,9 @@
 // Reloads content suggestions collection view.
 - (void)reloadContentSuggestions;
 
+// YES if the content requires the header to stick while scrolling.
+- (BOOL)isContentHeaderSticky;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONTENT_DELEGATE_H_

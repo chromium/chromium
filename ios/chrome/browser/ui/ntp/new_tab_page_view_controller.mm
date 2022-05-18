@@ -884,7 +884,8 @@
   }
 
   // Handles the sticky feed header.
-  if (IsWebChannelsEnabled() && self.feedHeaderViewController) {
+  if ([self.ntpContentDelegate isContentHeaderSticky] &&
+      self.feedHeaderViewController) {
     if ((!self.isScrolledIntoFeed || force) &&
         scrollPosition > [self offsetWhenScrolledIntoFeed]) {
       [self setIsScrolledIntoFeed:YES];
