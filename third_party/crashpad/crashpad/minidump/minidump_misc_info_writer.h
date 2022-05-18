@@ -118,6 +118,9 @@ class MinidumpMiscInfoWriter final : public internal::MinidumpStreamWriter {
   //! \brief Sets MINIDUMP_MISC_INFO_5::XStateData.
   void SetXStateData(const XSTATE_CONFIG_FEATURE_MSC_INFO& xstate_data);
 
+  //! \brief Will this write extended context information?
+  bool HasXStateData() const;
+
   //! \brief Sets the field referenced by #MINIDUMP_MISC5_PROCESS_COOKIE.
   void SetProcessCookie(uint32_t process_cookie);
 

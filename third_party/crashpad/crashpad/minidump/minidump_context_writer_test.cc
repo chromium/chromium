@@ -153,6 +153,30 @@ TEST(MinidumpContextWriter, AMD64_FromSnapshot) {
       context, ExpectMinidumpContextAMD64, kSeed);
 }
 
+TEST(MinidumpContextWriter, AMD64_CetFromSnapshot) {
+  constexpr uint32_t kSeed = 77;
+  CPUContextX86_64 context_x86_64;
+  CPUContext context;
+  context.x86_64 = &context_x86_64;
+  InitializeCPUContextX86_64(&context, kSeed);
+  context_x86_64.xstate.enabled_features |= XSTATE_MASK_CET_U;
+  context_x86_64.xstate.cet_u.cetmsr = 1;
+  context_x86_64.xstate.cet_u.ssp = kSeed * kSeed;
+  // We cannot use FromSnapshotTest as we write more than the fixed context.
+  std::unique_ptr<MinidumpContextWriter> context_writer =
+      MinidumpContextWriter::CreateFromSnapshot(&context);
+  ASSERT_TRUE(context_writer);
+
+  StringFile string_file;
+  ASSERT_TRUE(context_writer->WriteEverything(&string_file));
+
+  const MinidumpContextAMD64* observed =
+      MinidumpWritableAtRVA<MinidumpContextAMD64>(string_file.string(), 0);
+  ASSERT_TRUE(observed);
+
+  ExpectMinidumpContextAMD64(kSeed, observed, true);
+}
+
 TEST(MinidumpContextWriter, ARM_Zeros) {
   EmptyContextTest<MinidumpContextARMWriter, MinidumpContextARM>(
       ExpectMinidumpContextARM);

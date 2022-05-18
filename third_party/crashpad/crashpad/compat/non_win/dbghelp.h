@@ -1100,6 +1100,11 @@ enum MINIDUMP_TYPE {
   //!    MINIDUMP_MEMORY_DESCRIPTOR containing the 256 bytes centered around
   //!    the exception address or the instruction pointer.
   MiniDumpNormal = 0x00000000,
+
+  //! \brief A minidump with extended contexts.
+  //!
+  //! Contains Normal plus a MISC_INFO_5 structure describing the contexts.
+  MiniDumpWithAvxXStateContext = 0x00200000,
 };
 
 #endif  // CRASHPAD_COMPAT_NON_WIN_DBGHELP_H_

@@ -155,6 +155,17 @@
 //! Architecture (253665-060), 13.4.2 “XSAVE Header”.
 #define MAXIMUM_XSTATE_FEATURES (64)
 
+//! \anchor XSTATE_x
+//! \name XSTATE_*
+//!
+//! \brief Offsets and constants for extended state.
+//! \{
+#define XSTATE_COMPACTION_ENABLE (63)
+#define XSTATE_COMPACTION_ENABLE_MASK (1ull << XSTATE_COMPACTION_ENABLE)
+#define XSTATE_CET_U (11)
+#define XSTATE_MASK_CET_U (1ull << XSTATE_CET_U)
+//! \}
+
 //! \brief The location of a single state component within an XSAVE area.
 struct XSTATE_FEATURE {
   //! \brief The location of a state component within a CPU-specific context
