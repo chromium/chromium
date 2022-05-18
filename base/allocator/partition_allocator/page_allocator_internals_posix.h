@@ -46,13 +46,7 @@
 // on the system since macOS 10.12.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wavailability"
-uint32_t SecTaskGetCodeSignStatus(SecTaskRef task)
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
-    // When redeclaring something previously declared as unavailable, the
-    // weak_import attribute won’t be applied unless manually set.
-    __attribute__((weak_import))
-#endif  // DT < 10.12
-    API_AVAILABLE(macos(10.12));
+uint32_t SecTaskGetCodeSignStatus(SecTaskRef task) API_AVAILABLE(macos(10.12));
 #pragma clang diagnostic pop
 
 #endif  // BUILDFLAG(IS_MAC)

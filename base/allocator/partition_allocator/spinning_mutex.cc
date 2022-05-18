@@ -45,17 +45,7 @@ void SpinningMutex::Reinit() {
   // On most platforms, no need to re-init the lock, can just unlock it.
   Release();
 #else
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-
-  if (LIKELY(os_unfair_lock_trylock)) {
-    unfair_lock_ = OS_UNFAIR_LOCK_INIT;
-    return;
-  }
-
-#pragma clang diagnostic pop
-
-  Release();
+  unfair_lock_ = OS_UNFAIR_LOCK_INIT;
 #endif  // BUILDFLAG(IS_APPLE)
 }
 

@@ -63,7 +63,6 @@ template <typename T>
 T CFCastStrict(const CFTypeRef& cf_val);
 
 bool IsAtLeastOS10_14();
-bool IsOS10_11();
 
 }  // namespace mac
 
@@ -103,7 +102,6 @@ namespace mac {
 
 using ::base::mac::CFCast;
 using ::base::mac::IsAtLeastOS10_14;
-using ::base::mac::IsOS10_11;
 
 }  // namespace mac
 #endif  // BUILDFLAG(IS_MAC)

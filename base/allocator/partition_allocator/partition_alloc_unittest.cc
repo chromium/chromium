@@ -4678,13 +4678,9 @@ class ScopedOpenCLNoOpKernel {
 
 // On macOS 10.11, allocations are made with PartitionAlloc, but the pointer
 // is incorrectly passed by CoreFoundation to the previous default zone,
-// causing crashes. This is intended to detect these issues coming back.
+// causing crashes. This is intended to detect these issues regressing in future
+// versions of macOS.
 TEST_P(PartitionAllocTest, OpenCL) {
-  // Skip on 10.11, as it fails there.
-  // TODO(crbug.com/1268776): Make it pass on macOS 10.11.
-  if (base::mac::IsOS10_11())
-    return;
-
   ScopedOpenCLNoOpKernel kernel;
   kernel.SetUp();
 #if !defined(ARCH_CPU_ARM64)

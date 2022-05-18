@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
+
 #include <io.h>
 #include <windows.h>
 // Windows warns on using write().  It prefers _write().
@@ -21,31 +22,6 @@
 // Windows doesn't define STDERR_FILENO.  Define it here.
 #define STDERR_FILENO 2
 
-#elif BUILDFLAG(IS_APPLE)
-// In MacOS 10.12 and iOS 10.0 and later ASL (Apple System Log) was deprecated
-// in favor of OS_LOG (Unified Logging).
-#include <AvailabilityMacros.h>
-#if BUILDFLAG(IS_IOS)
-#if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-#define USE_ASL
-#endif
-#else  // BUILDFLAG(IS_IOS)
-#if !defined(MAC_OS_X_VERSION_10_12) || \
-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12
-#define USE_ASL
-#endif
-#endif  // BUILDFLAG(IS_IOS)
-
-#if defined(USE_ASL)
-#include <asl.h>
-#else
-#include <os/log.h>
-#endif
-
-#include <CoreFoundation/CoreFoundation.h>
-#include <mach-o/dyld.h>
-#include <mach/mach.h>
-#include <mach/mach_time.h>
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
