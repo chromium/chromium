@@ -5,7 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DefaultImageSymbol, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, getImageKey, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isFilePath, kDefaultImageSymbol, selectWallpaper, WallpaperImage} from 'chrome://personalization/trusted/personalization_app.js';
+import {cancelPreviewWallpaper, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, getImageKey, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectWallpaper, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -787,10 +788,25 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     wallpaperProvider.isInTabletModeResponse = false;
   });
 
+  function getImageType(image: DisplayableImage): WallpaperType {
+    if (isDefaultImage(image)) {
+      return WallpaperType.kDefault;
+    }
+    if (isGooglePhotosPhoto(image)) {
+      return WallpaperType.kOnceGooglePhotos;
+    }
+    if (isWallpaperImage(image)) {
+      return WallpaperType.kOnline;
+    }
+    if (isFilePath(image)) {
+      return WallpaperType.kCustomized;
+    }
+    assertNotReached('unknown wallpaper type');
+  }
+
   // Selects `image` as the wallpaper twice and verifies that the second attempt
   // quits early because there is no work to do.
-  async function testReselectWallpaper(image: WallpaperImage|FilePath|
-                                       GooglePhotosPhoto) {
+  async function testReselectWallpaper(image: DisplayableImage) {
     const selectWallpaperActions = [
       {
         name: 'begin_select_image',
@@ -811,11 +827,13 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     assertDeepEquals(personalizationStore.actions, selectWallpaperActions);
 
     // Complete the pending selection as would happen in production code.
-    const selected = personalizationStore.data.wallpaper.pendingSelected;
-    assertEquals(selected, image);
+    const pendingSelected = personalizationStore.data.wallpaper.pendingSelected;
+    assertEquals(pendingSelected, image);
     personalizationStore.data.wallpaper.currentSelected = {
-      key: getImageKey(image)
+      key: getImageKey(image),
+      type: getImageType(image),
     };
+    personalizationStore.data.wallpaper.pendingSelected = null;
 
     // Select the same wallpaper and verify that no further actions are taken.
     await selectWallpaper(image, wallpaperProvider, personalizationStore);
@@ -861,6 +879,13 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     personalizationStore.reset(personalizationStore.data);
 
     await testReselectWallpaper(image);
+  });
+
+  test('re-selects default image', async () => {
+    // Reset the history of actions and prior states, but keep the current
+    // state.
+    personalizationStore.reset(personalizationStore.data);
+    await testReselectWallpaper(kDefaultImageSymbol);
   });
 });
 
