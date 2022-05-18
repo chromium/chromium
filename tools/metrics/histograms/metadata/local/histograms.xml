@@ -302,32 +302,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorageContext.OpenError" enum="LocalStorageOpenError"
-    expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The reason opening the LevelDB database that backs LocalStorage failed.
-  </summary>
-</histogram>
-
-<histogram
-    name="LocalStorageContext.OpenResultAfter{LocalStorageContextOpenReasons}"
-    enum="LocalStorageOpenError" expires_after="M87">
-  <owner>mek@chromium.org</owner>
-  <summary>
-    The result of opening the LevelDB database that backs LocalStorage.
-    {LocalStorageContextOpenReasons}
-  </summary>
-  <token key="LocalStorageContextOpenReasons">
-    <variant name="CommitErrors" summary="After too many commit errors."/>
-    <variant name="InvalidVersion"
-        summary="After an invalid version was read."/>
-    <variant name="OpenFailed" summary="After opening the DB failed."/>
-    <variant name="ReadVersionError"
-        summary="After reading the schema version failed."/>
-  </token>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

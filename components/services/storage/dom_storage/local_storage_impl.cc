@@ -18,7 +18,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -548,10 +547,9 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 
 void LocalStorageImpl::OnDatabaseOpened(leveldb::Status status) {
   if (!status.ok()) {
-    LogDatabaseOpenResult(OpenResult::DATABASE_OPEN_FAILED);
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
-    DeleteAndRecreateDatabase("LocalStorageContext.OpenResultAfterOpenFailed");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -579,18 +577,14 @@ void LocalStorageImpl::OnGotDatabaseVersion(leveldb::Status status,
                              &db_version) ||
         db_version < kMinSchemaVersion ||
         db_version > kCurrentLocalStorageSchemaVersion) {
-      LogDatabaseOpenResult(OpenResult::INVALID_VERSION);
-      DeleteAndRecreateDatabase(
-          "LocalStorageContext.OpenResultAfterInvalidVersion");
+      DeleteAndRecreateDatabase();
       return;
     }
 
     database_initialized_ = true;
   } else {
     // Other read error. Possibly database corruption.
-    LogDatabaseOpenResult(OpenResult::VERSION_READ_ERROR);
-    DeleteAndRecreateDatabase(
-        "LocalStorageContext.OpenResultAfterReadVersionError");
+    DeleteAndRecreateDatabase();
     return;
   }
 
@@ -607,9 +601,6 @@ void LocalStorageImpl::OnConnectionFinished() {
   if (database_)
     tried_to_recreate_during_open_ = false;
 
-  LogDatabaseOpenResult(OpenResult::SUCCESS);
-  open_result_histogram_ = nullptr;
-
   // |database_| should be known to either be valid or invalid by now. Run our
   // delayed bindings.
   connection_state_ = CONNECTION_FINISHED;
@@ -618,7 +609,7 @@ void LocalStorageImpl::OnConnectionFinished() {
   on_database_opened_callbacks_.clear();
 }
 
-void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
+void LocalStorageImpl::DeleteAndRecreateDatabase() {
   if (connection_state_ == CONNECTION_SHUTDOWN)
     return;
 
@@ -631,7 +622,6 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(const char* histogram_name) {
   connection_state_ = CONNECTION_IN_PROGRESS;
   commit_error_count_ = 0;
   database_.reset();
-  open_result_histogram_ = histogram_name;
 
   bool recreate_in_memory = false;
 
@@ -820,19 +810,7 @@ void LocalStorageImpl::OnCommitResult(leveldb::Status status) {
     // Deleting StorageAreas in here could cause more commits (and commit
     // errors), but those commits won't reach OnCommitResult because the area
     // will have been deleted before the commit finishes.
-    DeleteAndRecreateDatabase(
-        "LocalStorageContext.OpenResultAfterCommitErrors");
-  }
-}
-
-void LocalStorageImpl::LogDatabaseOpenResult(OpenResult result) {
-  if (result != OpenResult::SUCCESS) {
-    UMA_HISTOGRAM_ENUMERATION("LocalStorageContext.OpenError", result,
-                              OpenResult::MAX);
-  }
-  if (open_result_histogram_) {
-    base::UmaHistogramEnumeration(open_result_histogram_, result,
-                                  OpenResult::MAX);
+    DeleteAndRecreateDatabase();
   }
 }
 
