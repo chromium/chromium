@@ -52,11 +52,13 @@ SchemePageLoadMetricsObserver::OnCommit(
   return STOP_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SchemePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // This class is interested in events that are dispatched only for the primary
+  // page or preprocessed by PageLoadTracker to be per-outermost page. So, no
+  // need to forward events at the observer layer.
   return STOP_OBSERVING;
 }
 
