@@ -87,25 +87,28 @@ void LayoutNGSVGText::RemoveChild(LayoutObject* child) {
 void LayoutNGSVGText::InsertedIntoTree() {
   NOT_DESTROYED();
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::InsertedIntoTree();
-  for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
-    cb->AddSvgTextDescendant(*this);
-
+  bool seen_svg_root = false;
   for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
-    if (auto* root = DynamicTo<LayoutSVGRoot>(ancestor)) {
+    auto* root = DynamicTo<LayoutSVGRoot>(ancestor);
+    if (!seen_svg_root && root) {
       root->AddSvgTextDescendant(*this);
-      break;
+      seen_svg_root = true;
+    } else if (auto* block = DynamicTo<LayoutBlock>(ancestor)) {
+      block->AddSvgTextDescendant(*this);
     }
   }
 }
 
 void LayoutNGSVGText::WillBeRemovedFromTree() {
   NOT_DESTROYED();
-  for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
-    cb->RemoveSvgTextDescendant(*this);
+  bool seen_svg_root = false;
   for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
-    if (auto* root = DynamicTo<LayoutSVGRoot>(ancestor)) {
+    auto* root = DynamicTo<LayoutSVGRoot>(ancestor);
+    if (!seen_svg_root && root) {
       root->RemoveSvgTextDescendant(*this);
-      break;
+      seen_svg_root = true;
+    } else if (auto* block = DynamicTo<LayoutBlock>(ancestor)) {
+      block->RemoveSvgTextDescendant(*this);
     }
   }
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeRemovedFromTree();
