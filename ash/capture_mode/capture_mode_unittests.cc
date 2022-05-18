@@ -114,6 +114,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
 
@@ -349,17 +350,22 @@ class CaptureModeTest : public AshTestBase {
   }
 
   // Select a region by pressing and dragging the mouse.
-  void SelectRegion(const gfx::Rect& region, bool release_mouse = true) {
+  void SelectRegion(const gfx::Rect& region_in_screen,
+                    bool release_mouse = true) {
     auto* controller = CaptureModeController::Get();
     ASSERT_TRUE(controller->IsActive());
     ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
     auto* event_generator = GetEventGenerator();
-    event_generator->set_current_screen_location(region.origin());
+    event_generator->set_current_screen_location(region_in_screen.origin());
     event_generator->PressLeftButton();
-    event_generator->MoveMouseTo(region.bottom_right());
+    event_generator->MoveMouseTo(region_in_screen.bottom_right());
     if (release_mouse)
       event_generator->ReleaseLeftButton();
-    EXPECT_EQ(region, controller->user_capture_region());
+    auto capture_region_in_root = region_in_screen;
+    wm::ConvertRectFromScreen(
+        controller->capture_mode_session()->current_root(),
+        &capture_region_in_root);
+    EXPECT_EQ(capture_region_in_root, controller->user_capture_region());
   }
 
   void WaitForSessionToEnd() {
@@ -1246,88 +1252,121 @@ TEST_F(CaptureModeTest, MultiDisplayTouch) {
 }
 
 TEST_F(CaptureModeTest, RegionCursorStates) {
+  UpdateDisplay("800x700,801+0-800x700");
   using ui::mojom::CursorType;
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
-  CursorType original_cursor_type = cursor_manager->GetCursor().type();
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(CursorType::kPointer, original_cursor_type);
-
   auto* event_generator = GetEventGenerator();
+
+  struct {
+    std::string scoped_trace;
+    gfx::Rect display_rect;
+    gfx::Point point;
+    gfx::Rect capture_region;
+  } kRegionTestCases[] = {
+      {"primary_display", gfx::Rect(0, 0, 800, 700), gfx::Point(250, 250),
+       gfx::Rect(200, 200, 200, 200)},
+      {"external_display", gfx::Rect(801, 0, 800, 700), gfx::Point(1050, 250),
+       gfx::Rect(1000, 200, 200, 200)},
+  };
+
+  for (auto test_case : kRegionTestCases) {
+    SCOPED_TRACE(test_case.scoped_trace);
+    MoveMouseToAndUpdateCursorDisplay(test_case.point, event_generator);
+    const CursorType original_cursor_type = cursor_manager->GetCursor().type();
+    EXPECT_FALSE(cursor_manager->IsCursorLocked());
+    auto* controller = StartImageRegionCapture();
+    EXPECT_TRUE(test_case.display_rect.Contains(
+        GetCaptureModeBarView()->GetBoundsInScreen()));
+    auto outside_point = test_case.capture_region.origin();
+    outside_point.Offset(-10, -10);
+    // Clear the previous region if any.
+    event_generator->MoveMouseTo(outside_point);
+    event_generator->ClickLeftButton();
+    EXPECT_TRUE(cursor_manager->IsCursorVisible());
+    EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
+    EXPECT_TRUE(cursor_manager->IsCursorLocked());
+
+    // Makes sure that the cursor is updated when the user releases the region
+    // select and is still hovering in the same location.
+    SelectRegion(test_case.capture_region);
+    EXPECT_EQ(CursorType::kSouthEastResize, cursor_manager->GetCursor().type());
+
+    // Verify that all of the `FineTunePosition` locations have the correct
+    // cursor when hovered over both in primary display and external display.
+    event_generator->MoveMouseTo(test_case.capture_region.origin());
+    EXPECT_EQ(CursorType::kNorthWestResize, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.top_center());
+    EXPECT_EQ(CursorType::kNorthSouthResize,
+              cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.top_right());
+    EXPECT_EQ(CursorType::kNorthEastResize, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.right_center());
+    EXPECT_EQ(CursorType::kEastWestResize, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.bottom_right());
+    EXPECT_EQ(CursorType::kSouthEastResize, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.bottom_center());
+    EXPECT_EQ(CursorType::kNorthSouthResize,
+              cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.bottom_left());
+    EXPECT_EQ(CursorType::kSouthWestResize, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.left_center());
+    EXPECT_EQ(CursorType::kEastWestResize, cursor_manager->GetCursor().type());
+
+    // Tests that within the bounds of the selected region, the cursor is a hand
+    // when hovering over the capture button, otherwise it is a
+    // multi-directional move cursor.
+    event_generator->MoveMouseTo(test_case.point);
+    EXPECT_EQ(CursorType::kMove, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(test_case.capture_region.CenterPoint());
+    EXPECT_EQ(CursorType::kHand, cursor_manager->GetCursor().type());
+
+    // Tests that the cursor changes to a cell type when hovering over the
+    // unselected region.
+    event_generator->MoveMouseTo(outside_point);
+    EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
+
+    // Check that cursor is unlocked when changing sources, and that the cursor
+    // changes to a pointer when hovering over the capture mode bar.
+    event_generator->MoveMouseTo(
+        GetRegionToggleButton()->GetBoundsInScreen().CenterPoint());
+    EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(
+        GetWindowToggleButton()->GetBoundsInScreen().CenterPoint());
+    EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+    event_generator->ClickLeftButton();
+    ASSERT_EQ(CaptureModeSource::kWindow, controller->source());
+
+    // The event on the capture bar to change capture source will still keep the
+    // cursor locked.
+    EXPECT_TRUE(cursor_manager->IsCursorLocked());
+    EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+
+    // Tests that on changing back to region capture mode, the cursor becomes
+    // locked, and is still a pointer type over the bar, whilst a cell cursor
+    // otherwise (not over the selected region).
+    event_generator->MoveMouseTo(
+        GetRegionToggleButton()->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+    EXPECT_TRUE(cursor_manager->IsCursorLocked());
+    EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+
+    // Tests that clicking on the button again doesn't change the cursor.
+    event_generator->ClickLeftButton();
+    EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+    event_generator->MoveMouseTo(outside_point);
+    EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
+
+    // Tests that when exiting capture mode that the cursor is restored to its
+    // original state.
+    controller->Stop();
+    EXPECT_FALSE(controller->IsActive());
+    EXPECT_FALSE(cursor_manager->IsCursorLocked());
+    EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+  }
+
+  // Tests the cursor state in tablet mode.
   auto* controller = StartImageRegionCapture();
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  event_generator->MoveMouseTo(gfx::Point(175, 175));
-  EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
-
-  const gfx::Rect target_region(gfx::Rect(200, 200, 200, 200));
-  SelectRegion(target_region);
-
-  // Makes sure that the cursor is updated when the user releases the region
-  // select and is still hovering in the same location.
-  EXPECT_EQ(CursorType::kSouthEastResize, cursor_manager->GetCursor().type());
-
-  // Verify that all of the |FineTunePosition| locations have the correct cursor
-  // when hovered over.
-  event_generator->MoveMouseTo(target_region.origin());
-  EXPECT_EQ(CursorType::kNorthWestResize, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.top_center());
-  EXPECT_EQ(CursorType::kNorthSouthResize, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.top_right());
-  EXPECT_EQ(CursorType::kNorthEastResize, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.right_center());
-  EXPECT_EQ(CursorType::kEastWestResize, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.bottom_right());
-  EXPECT_EQ(CursorType::kSouthEastResize, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.bottom_center());
-  EXPECT_EQ(CursorType::kNorthSouthResize, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.bottom_left());
-  EXPECT_EQ(CursorType::kSouthWestResize, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.left_center());
-  EXPECT_EQ(CursorType::kEastWestResize, cursor_manager->GetCursor().type());
-
-  // Tests that within the bounds of the selected region, the cursor is a hand
-  // when hovering over the capture button, otherwise it is a multi-directional
-  // move cursor.
-  event_generator->MoveMouseTo(gfx::Point(250, 250));
-  EXPECT_EQ(CursorType::kMove, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(target_region.CenterPoint());
-  EXPECT_EQ(CursorType::kHand, cursor_manager->GetCursor().type());
-
-  // Tests that the cursor changes to a cell type when hovering over the
-  // unselected region.
-  event_generator->MoveMouseTo(gfx::Point(50, 50));
-  EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
-
-  // Check that cursor is unlocked when changing sources, and that the cursor
-  // changes to a pointer when hovering over the capture mode bar.
-  event_generator->MoveMouseTo(
-      GetRegionToggleButton()->GetBoundsInScreen().CenterPoint());
-  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(
-      GetWindowToggleButton()->GetBoundsInScreen().CenterPoint());
-  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
-  event_generator->ClickLeftButton();
-  ASSERT_EQ(CaptureModeSource::kWindow, controller->source());
-  // The event on the capture bar to change capture source will still keep the
-  // cursor locked.
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
-
-  // Tests that on changing back to region capture mode, the cursor becomes
-  // locked, and is still a pointer type over the bar, whilst a cell cursor
-  // otherwise (not over the selected region).
-  event_generator->MoveMouseTo(
-      GetRegionToggleButton()->GetBoundsInScreen().CenterPoint());
-  original_cursor_type = cursor_manager->GetCursor().type();
-  event_generator->ClickLeftButton();
-  EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
-  // Tests that clicking on the button again doesn't change the cursor.
-  event_generator->ClickLeftButton();
-  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
-  event_generator->MoveMouseTo(gfx::Point(50, 50));
-  EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
 
   // Enter tablet mode, the cursor should be hidden.
   SwitchToTabletMode();
@@ -1343,13 +1382,7 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   LeaveTabletMode();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
   EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
-
-  // Tests that when exiting capture mode that the cursor is restored to its
-  // original state.
   controller->Stop();
-  EXPECT_FALSE(controller->IsActive());
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
 }
 
 TEST_F(CaptureModeTest, FullscreenCursorStates) {

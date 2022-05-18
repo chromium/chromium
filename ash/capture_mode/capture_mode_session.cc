@@ -2022,13 +2022,15 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 }
 
 FineTunePosition CaptureModeSession::GetFineTunePosition(
-    const gfx::Point& location_in_root,
+    const gfx::Point& location_in_screen,
     bool is_touch) const {
   // When the region is empty, this is a brand new selection rather than a fine
   // tune.
   if (controller_->user_capture_region().IsEmpty())
     return FineTunePosition::kNone;
 
+  gfx::Rect capture_region_in_screen = controller_->user_capture_region();
+  wm::ConvertRectToScreen(current_root_, &capture_region_in_screen);
   // In the case of overlapping affordances, prioritize the bottomm right
   // corner, then the rest of the corners, then the edges.
   static const std::vector<FineTunePosition> drag_positions = {
@@ -2043,16 +2045,15 @@ FineTunePosition CaptureModeSession::GetFineTunePosition(
   for (FineTunePosition position : drag_positions) {
     const gfx::Point position_location =
         capture_mode_util::GetLocationForFineTunePosition(
-            controller_->user_capture_region(), position);
-    // If |location_in_root| is within |hit_radius| of |position_location| for
-    // both x and y, then |position| is the current pressed down affordance.
-    if ((position_location - location_in_root).LengthSquared() <=
+            capture_region_in_screen, position);
+    // If `location_in_screen` is within `hit_radius` of `position_location` for
+    // both x and y, then `position` is the current pressed down affordance.
+    if ((position_location - location_in_screen).LengthSquared() <=
         hit_radius_squared) {
       return position;
     }
   }
-
-  if (controller_->user_capture_region().Contains(location_in_root))
+  if (capture_region_in_screen.Contains(location_in_screen))
     return FineTunePosition::kCenter;
 
   return FineTunePosition::kNone;
@@ -2089,7 +2090,7 @@ void CaptureModeSession::OnLocatedEventPressed(
   if (is_selecting_region_)
     return;
 
-  fine_tune_position_ = GetFineTunePosition(location_in_root, is_touch);
+  fine_tune_position_ = GetFineTunePosition(screen_location, is_touch);
 
   if (fine_tune_position_ == FineTunePosition::kNone) {
     // If the point is outside the capture region and not on the capture bar or

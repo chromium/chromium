@@ -307,8 +307,8 @@ class ASH_EXPORT CaptureModeSession
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
   // Returns the fine tune position that corresponds to the given
-  // |location_in_root|.
-  FineTunePosition GetFineTunePosition(const gfx::Point& location_in_root,
+  // `location_in_screen`.
+  FineTunePosition GetFineTunePosition(const gfx::Point& location_in_screen,
                                        bool is_touch) const;
 
   // Handles updating the select region UI.
