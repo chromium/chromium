@@ -14,12 +14,12 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
 class Browser;
 class Profile;
+struct WebAppInstallInfo;
 
 namespace apps {
 struct AppLaunchParams;
