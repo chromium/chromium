@@ -61,6 +61,9 @@ try_.builder(
 try_.builder(
     name = "cast_shell_linux_arm64",
     branch_selector = branches.MAIN,
+    mirrors = [
+        "ci/Cast Linux ARM64",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [

@@ -105,6 +105,25 @@ ci.builder(
 ci.builder(
     name = "Cast Linux ARM64",
     branch_selector = branches.MAIN,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "arm64",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium_clang",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "arm64",
