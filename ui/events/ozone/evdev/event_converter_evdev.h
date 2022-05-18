@@ -155,6 +155,9 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns whether the gamepad device supports rumble type force feedback.
   virtual bool GetGamepadRumbleCapability() const;
 
+  // Returns supported key bits of the gamepad.
+  virtual std::vector<uint64_t> GetGamepadKeyBits() const;
+
   // Sets which keyboard keys should be processed. If |enable_filter| is
   // false, all keys are allowed and |allowed_keys| is ignored.
   virtual void SetKeyFilter(bool enable_filter,

@@ -205,6 +205,18 @@ void InputControllerEvdev::SetPointingStickAcceleration(bool enabled) {
   ScheduleUpdateDeviceSettings();
 }
 
+void InputControllerEvdev::SetGamepadKeyBitsMapping(
+    const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping) {
+  gamepad_key_bits_mapping_ = std::move(key_bits_mapping);
+}
+
+std::vector<uint64_t> InputControllerEvdev::GetGamepadKeyBits(int id) {
+  auto gamepad_key_bits_iter = gamepad_key_bits_mapping_.find(id);
+  return gamepad_key_bits_iter == gamepad_key_bits_mapping_.end()
+             ? std::vector<uint64_t>()
+             : gamepad_key_bits_iter->second;
+}
+
 void InputControllerEvdev::SetPrimaryButtonRight(bool right) {
   mouse_button_map_->SetPrimaryButtonRight(right);
 }

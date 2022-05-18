@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_gaming_input_v2" version="2">
+  <interface name="zcr_gaming_input_v2" version="3">
     <description summary="extends wl_seat with gaming input devices">
       A global interface to provide gaming input devices for a given seat.
 
@@ -98,7 +98,7 @@
     </event>
   </interface>
 
-  <interface name="zcr_gamepad_v2" version="2">
+  <interface name="zcr_gamepad_v2" version="3">
     <description summary="gamepad input device">
       The zcr_gamepad_v2 interface represents one or more gamepad input devices,
       which are reported as a normalized 'Standard Gamepad' as it is specified
@@ -203,6 +203,14 @@
         to be added before the "activated" event is called.
       </description>
       <arg name="vibrator" type="new_id" interface="zcr_gamepad_vibrator_v2" summary="the gamepad vibrator"/>
+    </event>
+
+    <!-- added since v3 -->
+    <event name="supported_key_bits" since="3">
+      <description summary="supported key bits">
+        Supported scan code key bits of the gamepad device.
+      </description>
+      <arg name="key_bits" type="array" summary="Uint64 key bits" />
     </event>
   </interface>
 

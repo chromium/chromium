@@ -102,6 +102,11 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual void SetPointingStickPrimaryButtonRight(bool right) = 0;
   virtual void SetPointingStickAcceleration(bool enabled) = 0;
 
+  // Gamepad settings.
+  virtual void SetGamepadKeyBitsMapping(
+      const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping) = 0;
+  virtual std::vector<uint64_t> GetGamepadKeyBits(int id) = 0;
+
   // Touch log collection.
   virtual void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) = 0;
   virtual void GetTouchEventLog(const base::FilePath& out_dir,

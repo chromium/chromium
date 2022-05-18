@@ -568,16 +568,19 @@ void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {
 }
 
 void InputDeviceFactoryEvdev::NotifyGamepadDevicesUpdated() {
+  base::flat_map<int, std::vector<uint64_t>> key_bits_mapping;
   std::vector<GamepadDevice> gamepads;
   for (auto it = converters_.begin(); it != converters_.end(); ++it) {
     if (it->second->HasGamepad()) {
       gamepads.emplace_back(it->second->input_device(),
                             it->second->GetGamepadAxes(),
                             it->second->GetGamepadRumbleCapability());
+      key_bits_mapping[it->second->id()] = it->second->GetGamepadKeyBits();
     }
   }
 
-  dispatcher_->DispatchGamepadDevicesUpdated(gamepads);
+  dispatcher_->DispatchGamepadDevicesUpdated(gamepads,
+                                             std::move(key_bits_mapping));
 }
 
 void InputDeviceFactoryEvdev::NotifyUncategorizedDevicesUpdated() {

@@ -164,6 +164,11 @@ bool EventConverterEvdev::GetGamepadRumbleCapability() const {
   return false;
 }
 
+std::vector<uint64_t> EventConverterEvdev::GetGamepadKeyBits() const {
+  NOTREACHED();
+  return std::vector<uint64_t>();
+}
+
 void EventConverterEvdev::PlayVibrationEffect(uint8_t amplitude,
                                               uint16_t duration_millis) {
   NOTREACHED();

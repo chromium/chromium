@@ -43,6 +43,7 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
   void OnDisabled() override;
   std::vector<ui::GamepadDevice::Axis> GetGamepadAxes() const override;
   bool GetGamepadRumbleCapability() const override;
+  std::vector<uint64_t> GetGamepadKeyBits() const override;
 
   // This function processes one input_event from evdev.
   void ProcessEvent(const struct input_event& input);
@@ -124,6 +125,8 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
   // The effect id is needed to keep track of effects that are uploaded and
   // stored in the gamepad device.
   int effect_id_;
+
+  std::vector<uint64_t> key_bits_;
 };
 
 }  // namespace ui

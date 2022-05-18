@@ -195,6 +195,25 @@ class WaylandGamepadDelegate : public GamepadDelegate {
                                          gamepad_vibrator_resource);
     }
 
+    if (wl_resource_get_version(gamepad_resource_) >=
+        ZCR_GAMEPAD_V2_SUPPORTED_KEY_BITS_SINCE_VERSION) {
+      // Sending key_bits.
+      wl_array wl_key_bits;
+      wl_array_init(&wl_key_bits);
+      std::vector<uint64_t> key_bits =
+          ui::OzonePlatform::GetInstance()
+              ->GetInputController()
+              ->GetGamepadKeyBits(gamepad->device.id);
+      size_t key_bits_len = key_bits.size() * sizeof(uint64_t);
+      uint64_t* wl_key_bits_ptr =
+          static_cast<uint64_t*>(wl_array_add(&wl_key_bits, key_bits_len));
+      if (wl_key_bits_ptr) {
+        memcpy(wl_key_bits_ptr, key_bits.data(), key_bits_len);
+        zcr_gamepad_v2_send_supported_key_bits(gamepad_resource_, &wl_key_bits);
+      }
+      wl_array_release(&wl_key_bits);
+    }
+
     zcr_gamepad_v2_send_activated(gamepad_resource_);
   }
 

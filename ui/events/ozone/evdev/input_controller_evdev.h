@@ -81,6 +81,10 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   void SetPointingStickSensitivity(int value) override;
   void SetPointingStickPrimaryButtonRight(bool right) override;
   void SetPointingStickAcceleration(bool enabled) override;
+  void SetGamepadKeyBitsMapping(
+      const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping)
+      override;
+  std::vector<uint64_t> GetGamepadKeyBits(int id) override;
   void SetTouchpadAcceleration(bool enabled) override;
   void SetTouchpadScrollAcceleration(bool enabled) override;
   void SetTapToClickPaused(bool state) override;
@@ -151,6 +155,9 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
 
   // Pointing stick button map.
   MouseButtonMapEvdev* const pointing_stick_button_map_;
+
+  // Gamepad keybits.
+  base::flat_map<int, std::vector<uint64_t>> gamepad_key_bits_mapping_;
 
   // Device presence.
   bool has_mouse_ = false;

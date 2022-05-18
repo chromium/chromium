@@ -209,7 +209,8 @@ class COMPONENT_EXPORT(EVDEV) DeviceEventDispatcherEvdev {
   virtual void DispatchDeviceListsComplete() = 0;
   virtual void DispatchStylusStateChanged(StylusState stylus_state) = 0;
   virtual void DispatchGamepadDevicesUpdated(
-      const std::vector<GamepadDevice>& devices) = 0;
+      const std::vector<GamepadDevice>& devices,
+      const base::flat_map<int, std::vector<uint64_t>>& key_bits_mapping) = 0;
   virtual void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices) = 0;
 };

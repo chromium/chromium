@@ -146,11 +146,14 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
   }
 
   void DispatchGamepadDevicesUpdated(
-      const std::vector<GamepadDevice>& devices) override {
+      const std::vector<GamepadDevice>& devices,
+      const base::flat_map<int, std::vector<uint64_t>>& key_bits_mapping)
+      override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchGamepadDevicesUpdated,
-                       event_factory_evdev_, devices));
+                       event_factory_evdev_, devices,
+                       std::move(key_bits_mapping)));
   }
 
   void DispatchUncategorizedDevicesUpdated(
@@ -459,9 +462,11 @@ void EventFactoryEvdev::DispatchUncategorizedDevicesUpdated(
 }
 
 void EventFactoryEvdev::DispatchGamepadDevicesUpdated(
-    const std::vector<GamepadDevice>& devices) {
+    const std::vector<GamepadDevice>& devices,
+    const base::flat_map<int, std::vector<uint64_t>>& key_bits_mapping) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchGamepadDevicesUpdated");
   gamepad_provider_->DispatchGamepadDevicesUpdated(devices);
+  input_controller_.SetGamepadKeyBitsMapping(std::move(key_bits_mapping));
 }
 
 void EventFactoryEvdev::OnDeviceEvent(const DeviceEvent& event) {

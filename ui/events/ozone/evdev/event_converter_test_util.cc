@@ -101,8 +101,11 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
   }
 
   void DispatchGamepadDevicesUpdated(
-      const std::vector<GamepadDevice>& devices) override {
-    event_factory_evdev_->DispatchGamepadDevicesUpdated(devices);
+      const std::vector<GamepadDevice>& devices,
+      const base::flat_map<int, std::vector<uint64_t>>& key_bits_mapping)
+      override {
+    event_factory_evdev_->DispatchGamepadDevicesUpdated(devices,
+                                                        key_bits_mapping);
   }
 
  private:

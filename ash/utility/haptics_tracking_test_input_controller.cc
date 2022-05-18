@@ -111,6 +111,14 @@ void HapticsTrackingTestInputController::SetPointingStickPrimaryButtonRight(
 void HapticsTrackingTestInputController::SetPointingStickAcceleration(
     bool enabled) {}
 
+void HapticsTrackingTestInputController::SetGamepadKeyBitsMapping(
+    const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping) {}
+
+std::vector<uint64_t> HapticsTrackingTestInputController::GetGamepadKeyBits(
+    int id) {
+  return std::vector<uint64_t>();
+}
+
 void HapticsTrackingTestInputController::GetTouchDeviceStatus(
     GetTouchDeviceStatusReply reply) {
   std::move(reply).Run(std::string());
