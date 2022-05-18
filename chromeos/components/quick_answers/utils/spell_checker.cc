@@ -243,6 +243,11 @@ void SpellChecker::OnPathExistsComplete(bool path_exists) {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                kNetworkTrafficAnnotationTag);
+    loader_->SetRetryOptions(
+        /*max_retries=*/5,
+        network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
+            network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+
     // TODO(b/226221138): Probably use |DownloadToTempFile| instead.
     loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory_.get(),
