@@ -299,18 +299,36 @@ TEST_F(DemuxerStreamAdapterTest, DuplicateInitializeCausesFatalError) {
   EXPECT_EQ(PEERS_OUT_OF_SYNC, errors[0]);
 }
 
-TEST_F(DemuxerStreamAdapterTest, ClosingPipeCausesFatalError) {
+TEST_F(DemuxerStreamAdapterTest, ClosingMessagePipeCausesMojoDisconnected) {
   std::vector<StopTrigger> errors;
   demuxer_stream_adapter_->TakeErrors(&errors);
   ASSERT_TRUE(errors.empty());
 
-  // Closes one end of mojo message and data pipes.
+  // Closes one end of mojo message pipes.
   data_stream_sender_.reset();
   RunPendingTasks();  // Allow notification from mojo to propagate.
 
   demuxer_stream_adapter_->TakeErrors(&errors);
   ASSERT_EQ(1u, errors.size());
-  EXPECT_EQ(MOJO_PIPE_ERROR, errors[0]);
+  EXPECT_EQ(MOJO_DISCONNECTED, errors[0]);
+}
+
+TEST_F(DemuxerStreamAdapterTest, ClosingDataPipeCausesWriteError) {
+  EXPECT_CALL(*demuxer_stream_, Read(_)).Times(1);
+
+  std::vector<StopTrigger> errors;
+  demuxer_stream_adapter_->TakeErrors(&errors);
+  ASSERT_TRUE(errors.empty());
+
+  // Closes the consumer end of the data pipe.
+  data_stream_sender_->CloseDataPipe();
+  demuxer_stream_->CreateFakeFrame(100, true /* key frame */, 1 /* pts */);
+  demuxer_stream_adapter_->FakeReadUntil(1, 999);
+  RunPendingTasks();  // Allow notification from mojo to propagate.
+
+  demuxer_stream_adapter_->TakeErrors(&errors);
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_EQ(DATA_PIPE_WRITE_ERROR, errors[0]);
 }
 
 }  // namespace remoting

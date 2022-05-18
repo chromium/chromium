@@ -71,7 +71,7 @@ DemuxerStreamAdapter::DemuxerStreamAdapter(
   stream_sender_.Bind(std::move(stream_sender_remote));
   stream_sender_.set_disconnect_handler(
       base::BindOnce(&DemuxerStreamAdapter::OnFatalError,
-                     weak_factory_.GetWeakPtr(), MOJO_PIPE_ERROR));
+                     weak_factory_.GetWeakPtr(), MOJO_DISCONNECTED));
 }
 
 DemuxerStreamAdapter::~DemuxerStreamAdapter() {
@@ -320,7 +320,7 @@ void DemuxerStreamAdapter::WriteFrame() {
 
 void DemuxerStreamAdapter::OnFrameWritten(bool success) {
   if (!success) {
-    OnFatalError(MOJO_PIPE_ERROR);
+    OnFatalError(DATA_PIPE_WRITE_ERROR);
     return;
   }
 

@@ -80974,12 +80974,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="15" label="Peers out-of-sync"/>
   <int value="16" label="RPC invalid"/>
   <int value="17" label="Data pipe create error"/>
-  <int value="18" label="Mojo pipe error"/>
+  <int value="18" label="Mojo disconnection"/>
   <int value="19" label="Message send failure"/>
   <int value="20" label="Data send failure"/>
   <int value="21" label="Unexpected failure"/>
   <int value="22" label="Service gone"/>
   <int value="23" label="Disabled by user"/>
+  <int value="24" label="Data pipe write error"/>
 </enum>
 
 <enum name="RemotingTrackConfiguration">

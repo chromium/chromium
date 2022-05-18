@@ -94,6 +94,10 @@ bool FakeRemotingDataStreamSender::ValidateFrameBuffer(size_t index,
 #endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
 }
 
+void FakeRemotingDataStreamSender::CloseDataPipe() {
+  data_pipe_reader_.Close();
+}
+
 void FakeRemotingDataStreamSender::SendFrame(uint32_t frame_size) {
   next_frame_data_.resize(frame_size);
   data_pipe_reader_.Read(
@@ -103,7 +107,8 @@ void FakeRemotingDataStreamSender::SendFrame(uint32_t frame_size) {
 }
 
 void FakeRemotingDataStreamSender::OnFrameRead(bool success) {
-  EXPECT_TRUE(success);
+  if (!success)
+    return;
 
   ++send_frame_count_;
   received_frame_list.push_back(std::move(next_frame_data_));
