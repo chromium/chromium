@@ -1538,8 +1538,8 @@ TEST(ValuesTest, StringValue) {
 
 TEST(ValuesTest, ListDeletion) {
   ListValue list;
-  list.Append(std::make_unique<Value>());
-  EXPECT_FALSE(list.GetListDeprecated().empty());
+  list.Append(Value());
+  EXPECT_FALSE(list.GetList().empty());
   list.ClearList();
   EXPECT_TRUE(list.GetListDeprecated().empty());
 }
@@ -1775,8 +1775,8 @@ TEST(ValuesTest, Equals) {
   EXPECT_EQ(dv, *copy);
 
   std::unique_ptr<ListValue> list(new ListValue);
-  list->Append(std::make_unique<Value>());
-  list->Append(std::make_unique<DictionaryValue>());
+  list->Append(Value());
+  list->Append(Value(Value::Type::DICTIONARY));
   Value list_copy(list->Clone());
 
   ListValue* list_weak = dv.SetList("f", std::move(list));
@@ -1784,7 +1784,7 @@ TEST(ValuesTest, Equals) {
   copy->SetKey("f", std::move(list_copy));
   EXPECT_EQ(dv, *copy);
 
-  list_weak->Append(std::make_unique<Value>(true));
+  list_weak->Append(true);
   EXPECT_NE(dv, *copy);
 
   // Check if Equals detects differences in only the keys.
@@ -1996,8 +1996,8 @@ TEST(ValuesTest, RemoveEmptyChildren) {
   }
   {
     ListValue inner;
-    inner.Append(std::make_unique<DictionaryValue>());
-    inner.Append(std::make_unique<ListValue>());
+    inner.Append(Value(Value::Type::DICTIONARY));
+    inner.Append(Value(Value::Type::LIST));
     root->SetKey("list_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
     EXPECT_EQ(2U, root->DictSize());
@@ -2006,8 +2006,8 @@ TEST(ValuesTest, RemoveEmptyChildren) {
   // Nested with siblings.
   {
     ListValue inner;
-    inner.Append(std::make_unique<DictionaryValue>());
-    inner.Append(std::make_unique<ListValue>());
+    inner.Append(Value(Value::Type::DICTIONARY));
+    inner.Append(Value(Value::Type::LIST));
     root->SetKey("list_with_empty_children", std::move(inner));
     DictionaryValue inner2;
     inner2.SetKey("empty_dict", DictionaryValue());
@@ -2020,9 +2020,9 @@ TEST(ValuesTest, RemoveEmptyChildren) {
   // Make sure nested values don't get pruned.
   {
     ListValue inner;
-    auto inner2 = std::make_unique<ListValue>();
-    inner2->Append(std::make_unique<Value>("hello"));
-    inner.Append(std::make_unique<DictionaryValue>());
+    ListValue inner2;
+    inner2.Append("hello");
+    inner.Append(Value(Value::Type::DICTIONARY));
     inner.Append(std::move(inner2));
     root->SetKey("list_with_empty_children", std::move(inner));
     root = root->DeepCopyWithoutEmptyChildren();
@@ -2227,13 +2227,13 @@ TEST(ValuesTest, GetWithNullOutValue) {
   main_dict.SetKey("dict", dict_value.Clone());
   main_dict.SetKey("list", list_value.Clone());
 
-  main_list.Append(std::make_unique<Value>(bool_value.Clone()));
-  main_list.Append(std::make_unique<Value>(int_value.Clone()));
-  main_list.Append(std::make_unique<Value>(double_value.Clone()));
-  main_list.Append(std::make_unique<Value>(string_value.Clone()));
-  main_list.Append(std::make_unique<Value>(binary_value.Clone()));
-  main_list.Append(std::make_unique<Value>(dict_value.Clone()));
-  main_list.Append(std::make_unique<Value>(list_value.Clone()));
+  main_list.Append(bool_value.Clone());
+  main_list.Append(int_value.Clone());
+  main_list.Append(double_value.Clone());
+  main_list.Append(string_value.Clone());
+  main_list.Append(binary_value.Clone());
+  main_list.Append(dict_value.Clone());
+  main_list.Append(list_value.Clone());
 
   EXPECT_TRUE(main_dict.Get("bool", nullptr));
   EXPECT_TRUE(main_dict.Get("int", nullptr));

@@ -1348,8 +1348,6 @@ class BASE_EXPORT ListValue : public Value {
   // Appends a Value to the end of the list.
   // DEPRECATED: prefer `Value::List::Append()`.
   using Value::Append;
-  // DEPRECATED: prefer `Value::List::Append()`.
-  void Append(std::unique_ptr<Value> in_value);
   // DEPRECATED: prefer `Value::List::Append()`. Provided to simplify
   // incremental migration and intentionally only defined on ListValue and not
   // Value.
