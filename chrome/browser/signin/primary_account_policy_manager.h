@@ -44,7 +44,7 @@ class PrimaryAccountPolicyManager : public KeyedService {
       Profile* profile,
       signin_metrics::ProfileSignout clear_primary_account_source);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
   class DeleteProfileDialogManager;
 
   // SHows the delete profile dialog.
@@ -68,7 +68,7 @@ class PrimaryAccountPolicyManager : public KeyedService {
   // profile-specific local prefs (like kGoogleServicesUsernamePattern).
   PrefChangeRegistrar local_state_pref_registrar_;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<DeleteProfileDialogManager> delete_profile_dialog_manager_;
   bool hide_ui_for_testing_ = false;
 #endif
