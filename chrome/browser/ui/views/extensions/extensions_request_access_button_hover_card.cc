@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
-#include <memory>
 
 #include "base/bind.h"
 #include "base/strings/strcat.h"
@@ -34,31 +33,38 @@ ui::ImageModel GetIcon(ToolbarActionViewController* action,
           .AsImageSkia());
 }
 
-std::unique_ptr<views::BubbleDialogModelHost::CustomViewFactory>
-CreateExtensionItemFactory(std::u16string name, ui::ImageModel icon) {
-  return std::make_unique<views::BubbleDialogModelHost::CustomViewFactory>(
-      base::BindOnce(
-          [](std::u16string name,
-             ui::ImageModel icon) -> std::unique_ptr<views::View> {
-            const gfx::Insets content_insets =
-                ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-                    views::DialogContentType::kText,
-                    views::DialogContentType::kText);
+class ExtensionItemFactory
+    : public views::BubbleDialogModelHost::CustomViewFactory {
+ public:
+  ExtensionItemFactory(const std::u16string& name, const ui::ImageModel& icon)
+      : name_(std::move(name)), icon_(icon) {}
+  ~ExtensionItemFactory() override = default;
 
-            return views::Builder<views::FlexLayoutView>()
-                .SetOrientation(views::LayoutOrientation::kHorizontal)
-                .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-                .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-                .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-                    0, content_insets.left(), 0, content_insets.right())))
-                .AddChildren(
-                    views::Builder<views::ImageView>().SetImage(icon),
-                    views::Builder<views::Label>().SetText(std::move(name)))
-                .Build();
-          },
-          std::move(name), std::move(icon)),
-      views::BubbleDialogModelHost::FieldType::kMenuItem);
-}
+  // views::BubbleDialogModelHost::CustomViewFactory:
+  std::unique_ptr<views::View> CreateView() override {
+    const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+    const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
+        views::DialogContentType::kText, views::DialogContentType::kText);
+
+    return views::Builder<views::FlexLayoutView>()
+        .SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+            0, content_insets.left(), 0, content_insets.right())))
+        .AddChildren(views::Builder<views::ImageView>().SetImage(icon_),
+                     views::Builder<views::Label>().SetText(name_))
+        .Build();
+  }
+
+  views::BubbleDialogModelHost::FieldType GetFieldType() const override {
+    return views::BubbleDialogModelHost::FieldType::kMenuItem;
+  }
+
+ private:
+  const std::u16string name_;
+  const ui::ImageModel icon_;
+};
 
 }  // namespace
 
@@ -92,7 +98,7 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
         IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
         url)));
     for (auto* action : actions) {
-      dialog_builder.AddCustomField(CreateExtensionItemFactory(
+      dialog_builder.AddCustomField(std::make_unique<ExtensionItemFactory>(
           action->GetActionName(), GetIcon(action, web_contents)));
     }
   }
