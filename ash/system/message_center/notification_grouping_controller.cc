@@ -174,16 +174,16 @@ const std::string& NotificationGroupingController::GetParentIdForChildForTest(
     const std::string& notification_id) const {
   return grouped_notification_list_->GetParentForChild(notification_id);
 }
-void NotificationGroupingController::SetupParentNotification(
-    std::string* parent_id) {
+
+const std::string& NotificationGroupingController::SetupParentNotification(
+    const std::string& parent_id) {
   Notification* parent_notification =
-      MessageCenter::Get()->FindNotificationById(*parent_id);
+      MessageCenter::Get()->FindNotificationById(parent_id);
   std::unique_ptr<Notification> notification_copy =
       CreateCopyForParentNotification(*parent_notification);
 
   std::string new_parent_id = notification_copy->id();
-  std::string old_parent_id = *parent_id;
-  *parent_id = new_parent_id;
+  std::string old_parent_id = parent_id;
 
   grouped_notification_list_->AddGroupedNotification(old_parent_id,
                                                      new_parent_id);
@@ -226,6 +226,8 @@ void NotificationGroupingController::SetupParentNotification(
     parent_view->SetExpanded(false);
     parent_view->AddGroupNotification(*parent_notification);
   }
+
+  return new_parent_notification->id();
 }
 
 std::unique_ptr<Notification>
@@ -323,7 +325,7 @@ void NotificationGroupingController::OnNotificationAdded(
   // use it to set up a container notification which will hold all
   // notifications for this group.
   if (!grouped_notification_list_->ParentNotificationExists(parent_id))
-    SetupParentNotification(&parent_id);
+    parent_id = SetupParentNotification(parent_id);
 
   grouped_notification_list_->AddGroupedNotification(notification_id,
                                                      parent_id);

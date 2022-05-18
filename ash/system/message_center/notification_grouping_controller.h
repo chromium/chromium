@@ -56,7 +56,8 @@ class NotificationGroupingController
   // a grouped notification. Does this by creating a copy of the
   // parent notification and switching the notification_ids of the
   // current message view associated with the parent notification.
-  void SetupParentNotification(std::string* parent_id);
+  // Returns the new parent_id for the newly created  copy.
+  const std::string& SetupParentNotification(const std::string& parent_id);
 
   // Creates a copy notification that will act as a parent notification
   // for its group.
