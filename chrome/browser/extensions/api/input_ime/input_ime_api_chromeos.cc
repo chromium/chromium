@@ -146,6 +146,7 @@ input_ime::AssistiveWindowType ConvertAssistiveWindowType(
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
     case ui::ime::AssistiveWindowType::kGrammarSuggestion:
     case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
       return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_NONE;
     case ui::ime::AssistiveWindowType::kUndoWindow:
       return input_ime::AssistiveWindowType::ASSISTIVE_WINDOW_TYPE_UNDO;
@@ -626,8 +627,8 @@ class ImeObserverChromeOS
 
     auto event = std::make_unique<extensions::Event>(
         histogram_value, event_name, std::move(args), profile_);
-    extensions::EventRouter::Get(profile_)
-        ->DispatchEventToExtension(extension_id_, std::move(event));
+    extensions::EventRouter::Get(profile_)->DispatchEventToExtension(
+        extension_id_, std::move(event));
   }
 
   // The component IME extensions need to know the current screen type (e.g.
@@ -1062,8 +1063,8 @@ ExtensionFunction::ResponseAction
 InputImeSetCandidateWindowPropertiesFunction::Run() {
   std::unique_ptr<SetCandidateWindowProperties::Params> parent_params(
       SetCandidateWindowProperties::Params::Create(args()));
-  const SetCandidateWindowProperties::Params::Parameters&
-      params = parent_params->parameters;
+  const SetCandidateWindowProperties::Params::Parameters& params =
+      parent_params->parameters;
 
   std::string error;
   InputMethodEngine* engine =
@@ -1150,8 +1151,7 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
 
   std::unique_ptr<SetCandidates::Params> parent_params(
       SetCandidates::Params::Create(args()));
-  const SetCandidates::Params::Parameters& params =
-      parent_params->parameters;
+  const SetCandidates::Params::Parameters& params = parent_params->parameters;
 
   std::vector<InputMethodEngine::Candidate> candidates_out;
   for (const auto& candidate_in : params.candidates) {

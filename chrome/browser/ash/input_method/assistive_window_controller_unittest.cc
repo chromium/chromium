@@ -20,6 +20,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/wm/core/window_util.h"
 
@@ -270,6 +271,81 @@ TEST_F(AssistiveWindowControllerTest, SetsUndoWindowAnchorRectCorrectly) {
   autocorrect_bounds.Inset(-4);
   EXPECT_EQ(autocorrect_bounds,
             controller_->GetUndoWindowForTesting()->GetAnchorRect());
+}
+
+TEST_F(AssistiveWindowControllerTest, SetsEmojiWindowOrientationVertical) {
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type = ui::ime::AssistiveWindowType::kEmojiSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  ui::IMEBridge::Get()
+      ->GetAssistiveWindowHandler()
+      ->SetAssistiveWindowProperties(properties);
+
+  ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
+  views::BoxLayout::Orientation layout_orientation =
+      static_cast<views::BoxLayout*>(
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
+          ->GetOrientation();
+  EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kVertical);
+}
+
+TEST_F(AssistiveWindowControllerTest,
+       SetsPersonalInfoWindowOrientationVertical) {
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type = ui::ime::AssistiveWindowType::kPersonalInfoSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  ui::IMEBridge::Get()
+      ->GetAssistiveWindowHandler()
+      ->SetAssistiveWindowProperties(properties);
+
+  ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
+  views::BoxLayout::Orientation layout_orientation =
+      static_cast<views::BoxLayout*>(
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
+          ->GetOrientation();
+  EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kVertical);
+}
+
+TEST_F(AssistiveWindowControllerTest, SetsMultiWordWindowOrientationVertical) {
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type = ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  ui::IMEBridge::Get()
+      ->GetAssistiveWindowHandler()
+      ->SetAssistiveWindowProperties(properties);
+
+  ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
+  views::BoxLayout::Orientation layout_orientation =
+      static_cast<views::BoxLayout*>(
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
+          ->GetOrientation();
+  EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kVertical);
+}
+
+TEST_F(AssistiveWindowControllerTest,
+       SetsDiacriticsWindowOrientationHorizontal) {
+  // Create new suggestion window.
+  AssistiveWindowProperties properties;
+  properties.type =
+      ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion;
+  properties.visible = true;
+  properties.candidates = std::vector<std::u16string>({u"candidate"});
+  ui::IMEBridge::Get()
+      ->GetAssistiveWindowHandler()
+      ->SetAssistiveWindowProperties(properties);
+
+  ASSERT_TRUE(controller_->GetSuggestionWindowViewForTesting() != nullptr);
+  views::BoxLayout::Orientation layout_orientation =
+      static_cast<views::BoxLayout*>(
+          controller_->GetSuggestionWindowViewForTesting()->GetLayoutManager())
+          ->GetOrientation();
+  EXPECT_EQ(layout_orientation, views::BoxLayout::Orientation::kHorizontal);
 }
 
 TEST_F(AssistiveWindowControllerTest,

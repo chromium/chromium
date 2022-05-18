@@ -60,15 +60,13 @@ AssistiveWindowController::~AssistiveWindowController() {
   CHECK(!IsInObserverList());
 }
 
-void AssistiveWindowController::InitSuggestionWindow() {
+void AssistiveWindowController::InitSuggestionWindow(
+    ui::ime::SuggestionWindowView::Orientation orientation) {
   if (suggestion_window_view_)
     return;
   // suggestion_window_view_ is deleted by DialogDelegateView::DeleteDelegate.
-  // TODO(b/215292569): Allow horizontal and vertical orientation to be toggled
-  // via some parameter.
-  suggestion_window_view_ = ui::ime::SuggestionWindowView::Create(
-      GetParentView(), this,
-      ui::ime::SuggestionWindowView::Orientation::kVertical);
+  suggestion_window_view_ =
+      ui::ime::SuggestionWindowView::Create(GetParentView(), this, orientation);
   views::Widget* widget = suggestion_window_view_->GetWidget();
   widget->AddObserver(this);
   widget->Show();
@@ -186,7 +184,9 @@ void AssistiveWindowController::FocusStateChanged() {
 void AssistiveWindowController::ShowSuggestion(
     const ui::ime::SuggestionDetails& details) {
   if (!suggestion_window_view_)
-    InitSuggestionWindow();
+    // Since there is only one suggestion text in ShowSuggestion, we default to
+    // vertical layout.
+    InitSuggestionWindow(ui::ime::SuggestionWindowView::Orientation::kVertical);
   tracking_last_suggestion_ = suggestion_text_ == details.text;
   suggestion_text_ = details.text;
   confirmed_length_ = details.confirmed_length;
@@ -200,6 +200,7 @@ void AssistiveWindowController::SetButtonHighlighted(
     case ui::ime::AssistiveWindowType::kEmojiSuggestion:
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
     case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
       if (!suggestion_window_view_)
         return;
 
@@ -235,6 +236,25 @@ size_t AssistiveWindowController::GetConfirmedLength() const {
   return confirmed_length_;
 }
 
+ui::ime::SuggestionWindowView::Orientation
+AssistiveWindowController::WindowOrientationFor(
+    ui::ime::AssistiveWindowType window_type) {
+  switch (window_type) {
+    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
+      return ui::ime::SuggestionWindowView::Orientation::kHorizontal;
+    case ui::ime::AssistiveWindowType::kUndoWindow:
+    case ui::ime::AssistiveWindowType::kEmojiSuggestion:
+    case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ui::ime::AssistiveWindowType::kGrammarSuggestion:
+      return ui::ime::SuggestionWindowView::Orientation::kVertical;
+    case ui::ime::AssistiveWindowType::kNone:
+      NOTREACHED();
+  }
+  NOTREACHED();
+  return ui::ime::SuggestionWindowView::Orientation::kVertical;
+}
+
 void AssistiveWindowController::SetAssistiveWindowProperties(
     const AssistiveWindowProperties& window) {
   window_ = window;
@@ -256,8 +276,9 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
     case ui::ime::AssistiveWindowType::kEmojiSuggestion:
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
     case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
+    case ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion:
       if (!suggestion_window_view_)
-        InitSuggestionWindow();
+        InitSuggestionWindow(WindowOrientationFor(window.type));
       if (window_.visible) {
         suggestion_window_view_->ShowMultipleCandidates(window);
       } else {
@@ -285,7 +306,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
 
 void AssistiveWindowController::AssistiveWindowButtonClicked(
     const ui::ime::AssistiveWindowButton& button) const {
-    delegate_->AssistiveWindowButtonClicked(button);
+  delegate_->AssistiveWindowButtonClicked(button);
 }
 
 ui::ime::SuggestionWindowView*
