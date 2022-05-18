@@ -947,7 +947,6 @@ crbug.com/1261306 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
 
-crbug.com/1251634 external/wpt/css/css-text-decor/text-underline-offset-zero-position.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-003.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-color.html [ Failure ]
