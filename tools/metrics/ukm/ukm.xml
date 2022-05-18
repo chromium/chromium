@@ -17928,7 +17928,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="OutputDelaySec">
     <summary>
-      The time from executing the model to when the UKM is recorded, in seconds.
+      The time from last segment selection to when the UKM is recorded, in
+      seconds.
     </summary>
   </metric>
   <metric name="PredictionResult">
@@ -17936,6 +17937,13 @@ be describing additional metrics about the same event.
       Predicted result from executing the ML model. This is normally a score for
       determining whether to show a particular feature. The value is a floating
       number between 0 to 1 and encoded into IEEE 754 double precision here.
+    </summary>
+  </metric>
+  <metric name="SelectionResult">
+    <summary>
+      The OptimizationTarget of the last selected segment before UKM is
+      recorded. Some features might have several ML models with them. This
+      metric records which model is currently selected for the feature.
     </summary>
   </metric>
 </event>
