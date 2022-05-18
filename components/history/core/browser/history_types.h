@@ -843,11 +843,14 @@ struct ClusterVisit {
   // should not be used by the UI.
   float engagement_score = 0.0;
 
-  // The visit URL modified for better dupe finding.  The result may not be
-  // navigable or even valid; it's only meant to be used for detecting
-  // duplicates. This is similar in intent to
-  // `AutocompleteMatch::stripped_destination_url`, but is not the same, as
-  // History Clusters and Omnibox have different deduping requirements.
+  // The visit URL stripped down for aggressive deduping. This GURL may not be
+  // navigable or even valid. The stripping on `url_for_deduping` must be
+  // strictly more aggressive than on `url_for_display`. This ensures that the
+  // UI never shows two visits that look completely identical.
+  //
+  // The stripping is so aggressive that the URL should not be used alone for
+  // deduping. See `SimilarVisitDeDeduperClusterFinalizer` for an example usage
+  // that combines this with the page title as a deduping key.
   GURL url_for_deduping;
 
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the

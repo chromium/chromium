@@ -22,14 +22,14 @@ TEST(HistoryClustersUtilTest, ComputeURLForDeduping) {
       << "Normalizes scheme to https.";
   EXPECT_EQ(
       ComputeURLForDeduping(GURL("https://google.com/path?foo=bar#reftag")),
-      "https://google.com/path?foo=bar")
-      << "Strips ref, leaves path and query.";
+      "https://google.com/path")
+      << "Strips ref and query, leaves path.";
   EXPECT_EQ(
       ComputeURLForDeduping(GURL("http://www.google.com/path?foo=bar#reftag")),
-      "https://google.com/path?foo=bar")
+      "https://google.com/path")
       << "Does all of the above at once.";
-  EXPECT_EQ(ComputeURLForDeduping(GURL("https://google.com/path?foo=bar")),
-            "https://google.com/path?foo=bar")
+  EXPECT_EQ(ComputeURLForDeduping(GURL("https://google.com/path")),
+            "https://google.com/path")
       << "Sanity check when no replacements needed.";
 }
 
