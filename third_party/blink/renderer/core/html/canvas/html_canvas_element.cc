@@ -677,7 +677,7 @@ void HTMLCanvasElement::Reset() {
 
   SetSurfaceSize(new_size);
 
-  if (IsWebGL() && old_size != Size())
+  if ((IsWebGL() || IsWebGPU()) && old_size != Size())
     context_->Reshape(width(), height());
 
   if (LayoutObject* layout_object = GetLayoutObject()) {

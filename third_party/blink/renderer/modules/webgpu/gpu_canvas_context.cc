@@ -74,6 +74,21 @@ cc::Layer* GPUCanvasContext::CcLayer() const {
   return nullptr;
 }
 
+void GPUCanvasContext::Reshape(int width, int height) {
+  if (stopped_ || !swapchain_) {
+    return;
+  }
+
+  // If an explicit size was given during the last call to configure() use that
+  // size instead. This is deprecated behavior.
+  // TODO(crbug.com/1326473): Remove after deprecation period.
+  if (!configured_size_.IsZero()) {
+    return;
+  }
+
+  ReconfigureSwapchain(gfx::Size(width, height));
+}
+
 scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
   if (!swapchain_)
     return nullptr;
@@ -159,6 +174,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     return;
   }
 
+  // This needs to happen early so that if any validation fails the swapchain
+  // stays unconfigured.
   if (swapchain_) {
     // Tell any previous swapchain that it will no longer be used and can
     // destroy all its resources (and produce errors when used).
@@ -170,10 +187,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // that errors can be generated in the appropriate error scope.
   configured_device_ = descriptor->device();
 
-  WGPUTextureUsage usage = AsDawnEnum<WGPUTextureUsage>(descriptor->usage());
-  WGPUTextureFormat format =
-      AsDawnEnum<WGPUTextureFormat>(descriptor->format());
-  switch (format) {
+  usage_ = AsDawnEnum<WGPUTextureUsage>(descriptor->usage());
+  format_ = AsDawnEnum<WGPUTextureFormat>(descriptor->format());
+  switch (format_) {
     case WGPUTextureFormat_BGRA8Unorm:
       // TODO(crbug.com/1298618): support RGBA8Unorm on MAC.
 #if !BUILDFLAG(IS_MAC)
@@ -190,11 +206,44 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       return;
   }
 
-  // Set the default size.
-  gfx::Size size;
+  alpha_mode_ = V8GPUCanvasCompositingAlphaMode::Enum::kPremultiplied;
+  if (descriptor->hasCompositingAlphaMode()) {
+    alpha_mode_ = descriptor->compositingAlphaMode().AsEnum();
+  } else {
+    configured_device_->AddConsoleWarning(
+        "The default GPUCanvasCompositingAlphaMode will change from "
+        "\"premultiplied\" to \"opaque\". "
+        "Please explicitly pass \"premultiplied\" if you would like to "
+        "continue using that compositing mode.");
+  }
+
+  // TODO(crbug.com/1326473): Implement support for context viewFormats.
+  if (descriptor->viewFormats().size()) {
+    configured_device_->InjectError(
+        WGPUErrorType_Validation,
+        "Specifying additional viewFormats for GPUCanvasContexts is not "
+        "supported yet.");
+    return;
+  }
+
+  // Once colorSpaces other than sRGB are defined, we'll need to ensure they're
+  // supported here.
+  DCHECK_EQ(AsDawnEnum(descriptor->colorSpace()),
+            WGPUPredefinedColorSpace_Srgb);
+
+  // Set the size while configuring.
   if (descriptor->hasSize()) {
+    // TODO(crbug.com/1326473): Remove this branch after deprecation period.
+    configured_device_->AddConsoleWarning(
+        "Setting an explicit size when calling configure() on a "
+        "GPUCanvasContext has been deprecated, and will soon be removed. "
+        "Please set the canvas width and height attributes instead. Note that "
+        "after the initial call to configure() changes to the canvas width and "
+        "height will now take effect without the need to call configure() "
+        "again.");
+
     WGPUExtent3D dawn_extent = AsDawnType(descriptor->size());
-    size = gfx::Size(dawn_extent.width, dawn_extent.height);
+    configured_size_ = gfx::Size(dawn_extent.width, dawn_extent.height);
 
     if (dawn_extent.depthOrArrayLayers != 1) {
       configured_device_->InjectError(
@@ -202,32 +251,31 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
           "swap chain size must have depthOrArrayLayers set to 1");
       return;
     }
-    if (size.IsEmpty()) {
+    if (configured_size_.IsEmpty()) {
       configured_device_->InjectError(
           WGPUErrorType_Validation,
           "context width and height must be greater than 0");
       return;
     }
+
+    ReconfigureSwapchain(configured_size_);
   } else {
-    size = Host()->Size();
+    configured_size_.SetSize(0, 0);
+    ReconfigureSwapchain(Host()->Size());
+  }
+}
+
+void GPUCanvasContext::ReconfigureSwapchain(gfx::Size size) {
+  if (swapchain_) {
+    // Tell any previous swapchain that it will no longer be used and can
+    // destroy all its resources (and produce errors when used).
+    swapchain_->Neuter();
+    swapchain_ = nullptr;
   }
 
-  V8GPUCanvasCompositingAlphaMode::Enum alpha_mode =
-      V8GPUCanvasCompositingAlphaMode::Enum::kPremultiplied;
-  if (descriptor->hasCompositingAlphaMode()) {
-    alpha_mode = descriptor->compositingAlphaMode().AsEnum();
-  } else {
-    configured_device_->AddConsoleWarning(
-        "The default GPUCanvasCompositingAlphaMode will change from \"premultiplied\" to \"opaque\". "
-        "Please explicitly pass \"premultiplied\" if you would like to "
-        "continue using that compositing mode.");
-  }
   swapchain_ = MakeGarbageCollected<GPUSwapChain>(
-      this, configured_device_, usage, format, filter_quality_, alpha_mode,
+      this, configured_device_, usage_, format_, filter_quality_, alpha_mode_,
       size);
-
-  if (descriptor->hasLabel())
-    swapchain_->setLabel(descriptor->label());
 
   // If we don't notify the host that something has changed it may never check
   // for the new cc::Layer.

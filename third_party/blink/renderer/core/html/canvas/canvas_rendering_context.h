@@ -229,20 +229,22 @@ class CORE_EXPORT CanvasRenderingContext
 
   // WebGL-specific interface
   virtual bool UsingSwapChain() const { return false; }
-  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) { NOTREACHED(); }
-  virtual void Reshape(int width, int height) {}
   virtual void MarkLayerComposited() { NOTREACHED(); }
   virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {
     NOTREACHED();
     return nullptr;
   }
-  virtual int ExternallyAllocatedBufferCountPerPixel() {
-    NOTREACHED();
-    return 0;
-  }
   virtual gfx::Size DrawingBufferSize() const {
     NOTREACHED();
     return gfx::Size(0, 0);
+  }
+
+  // WebGL & WebGPU-specific interface
+  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) { NOTREACHED(); }
+  virtual void Reshape(int width, int height) {}
+  virtual int ExternallyAllocatedBufferCountPerPixel() {
+    NOTREACHED();
+    return 0;
   }
 
   // OffscreenCanvas-specific methods.

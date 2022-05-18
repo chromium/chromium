@@ -177,7 +177,7 @@ void OffscreenCanvas::SetSize(const gfx::Size& size) {
   if (frame_dispatcher_)
     frame_dispatcher_->Reshape(size_);
   if (context_) {
-    if (context_->IsWebGL()) {
+    if (context_->IsWebGL() || IsWebGPU()) {
       context_->Reshape(size_.width(), size_.height());
     } else if (context_->IsRenderingContext2D()) {
       context_->Reset();
