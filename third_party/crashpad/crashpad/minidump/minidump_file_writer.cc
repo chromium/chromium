@@ -79,6 +79,9 @@ void MinidumpFileWriter::InitializeFromSnapshot(
 
   auto misc_info = std::make_unique<MinidumpMiscInfoWriter>();
   misc_info->InitializeFromSnapshot(process_snapshot);
+  if (misc_info->HasXStateData())
+    header_.Flags = header_.Flags | MiniDumpWithAvxXStateContext;
+
   add_stream_result = AddStream(std::move(misc_info));
   DCHECK(add_stream_result);
 

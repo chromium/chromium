@@ -118,6 +118,11 @@ size_t MinidumpContextWriter::SizeOfObject() {
   return ContextSize();
 }
 
+size_t MinidumpContextWriter::FreezeAndGetSizeOfObject() {
+  Freeze();
+  return SizeOfObject();
+}
+
 MinidumpContextX86Writer::MinidumpContextX86Writer()
     : MinidumpContextWriter(), context_() {
   context_.context_flags = kMinidumpContextX86;
@@ -213,7 +218,14 @@ void MinidumpContextAMD64Writer::InitializeFromSnapshot(
   DCHECK_EQ(state(), kStateMutable);
   DCHECK_EQ(context_.context_flags, kMinidumpContextAMD64);
 
-  context_.context_flags = kMinidumpContextAMD64All;
+  if (context_snapshot->xstate.enabled_features != 0) {
+    // Extended context.
+    context_.context_flags =
+        kMinidumpContextAMD64All | kMinidumpContextAMD64Xstate;
+  } else {
+    // Fixed size context - no xsave components.
+    context_.context_flags = kMinidumpContextAMD64All;
+  }
 
   context_.mx_csr = context_snapshot->fxsave.mxcsr;
   context_.cs = context_snapshot->cs;
@@ -247,6 +259,15 @@ void MinidumpContextAMD64Writer::InitializeFromSnapshot(
 
   // This is effectively a memcpy() of a big structure.
   context_.fxsave = context_snapshot->fxsave;
+
+  // If XSave features are being recorded store in xsave_entries in xcomp_bv
+  // order. We will not see features we do not support as we provide flags
+  // to the OS when first obtaining a snapshot.
+  if (context_snapshot->xstate.enabled_features & XSTATE_MASK_CET_U) {
+    auto cet_u = std::make_unique<MinidumpXSaveAMD64CetU>();
+    cet_u->InitializeFromSnapshot(context_snapshot);
+    xsave_entries_.push_back(std::move(cet_u));
+  }
 }
 
 size_t MinidumpContextAMD64Writer::Alignment() {
@@ -258,14 +279,96 @@ size_t MinidumpContextAMD64Writer::Alignment() {
 
 bool MinidumpContextAMD64Writer::WriteObject(FileWriterInterface* file_writer) {
   DCHECK_EQ(state(), kStateWritable);
+  // Note: all sizes here come from our constants, not from untrustworthy data.
+  std::vector<unsigned char> data(ContextSize());
+  unsigned char* const buf = data.data();
 
-  return file_writer->Write(&context_, sizeof(context_));
+  // CONTEXT always comes first.
+  DCHECK_LE(sizeof(context_), data.size());
+  memcpy(buf, &context_, sizeof(context_));
+
+  if (xsave_entries_.size() > 0) {
+    MinidumpContextExHeader context_ex = {{0}, {0}, {0}};
+    MinidumpXSaveAreaHeader xsave_header = {0};
+
+    // CONTEXT_EX goes directly after the CONTEXT. |offset| is relative to
+    // &CONTEXT_EX.
+    context_ex.all.offset = -static_cast<int32_t>(sizeof(context_));
+    context_ex.all.size = static_cast<uint32_t>(ContextSize());
+    context_ex.legacy.offset = context_ex.all.offset;
+    context_ex.legacy.size = sizeof(context_);
+    // Then... there is a gap.
+    //
+    // In the compacted format the XSave area header goes just before
+    // the first xsave entry.  It has a total size given by the header
+    // + (padded) sizes of all the entries.
+    context_ex.xstate.offset = static_cast<int32_t>(
+        kMinidumpAMD64XSaveOffset - sizeof(MinidumpXSaveAreaHeader) -
+        sizeof(context_));
+    context_ex.xstate.size =
+        static_cast<uint32_t>(sizeof(MinidumpXSaveAreaHeader) + ContextSize() -
+                              kMinidumpAMD64XSaveOffset);
+
+    // Store CONTEXT_EX now it is complete.
+    DCHECK_LE(sizeof(context_) + sizeof(context_ex), data.size());
+    memcpy(&buf[sizeof(context_)], &context_ex, sizeof(context_ex));
+
+    // Calculate flags for xsave header & write entries (they will be
+    // *after* the xsave header).
+    size_t cursor = kMinidumpAMD64XSaveOffset;
+    for (auto const& entry : xsave_entries_) {
+      xsave_header.mask |= 1ull << entry->XCompBVBit();
+      DCHECK_LE(cursor + entry->Size(), data.size());
+      entry->Copy(&buf[cursor]);
+      cursor += entry->Size();
+    }
+
+    xsave_header.compaction_mask =
+        xsave_header.mask | XSTATE_COMPACTION_ENABLE_MASK;
+
+    // Store xsave header at its calculated offset. It is before the entries
+    // above, but we need to add the |mask| bits before writing it.
+    DCHECK_LE(
+        context_ex.xstate.offset + sizeof(context_) + sizeof(xsave_header),
+        data.size());
+    memcpy(&buf[context_ex.xstate.offset + sizeof(context_)],
+           &xsave_header,
+           sizeof(xsave_header));
+  }
+
+  if (!file_writer->Write(data.data(), data.size()))
+    return false;
+
+  return true;
 }
 
 size_t MinidumpContextAMD64Writer::ContextSize() const {
   DCHECK_GE(state(), kStateFrozen);
+  if (xsave_entries_.size() == 0) {
+    return sizeof(context_);
+  } else {
+    DCHECK_EQ(context_.context_flags,
+              kMinidumpContextAMD64All | kMinidumpContextAMD64Xstate);
+    DCHECK(xsave_entries_.size() != 0);
+    size_t size = kMinidumpAMD64XSaveOffset;
+    for (auto& entry : xsave_entries_) {
+      size += entry->Size();
+    }
+    return size;
+  }
+}
 
-  return sizeof(context_);
+bool MinidumpXSaveAMD64CetU::InitializeFromSnapshot(
+    const CPUContextX86_64* context_snapshot) {
+  DCHECK_EQ(context_snapshot->xstate.cet_u.cetmsr, 1ull);
+  cet_u_.cetmsr = context_snapshot->xstate.cet_u.cetmsr;
+  cet_u_.ssp = context_snapshot->xstate.cet_u.ssp;
+  return true;
+}
+
+bool MinidumpXSaveAMD64CetU::Copy(void* dst) const {
+  memcpy(dst, &cet_u_, sizeof(cet_u_));
+  return true;
 }
 
 MinidumpContextARMWriter::MinidumpContextARMWriter()

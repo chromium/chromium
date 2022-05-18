@@ -18,6 +18,8 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/page_size.h"
+#include "base/numerics/safe_conversions.h"
 #include "snapshot/capture_memory.h"
 #include "snapshot/win/capture_memory_delegate_win.h"
 #include "snapshot/win/cpu_context_win.h"
@@ -25,6 +27,26 @@
 
 namespace crashpad {
 namespace internal {
+
+namespace {
+#if defined(ARCH_CPU_X86_64)
+
+XSAVE_CET_U_FORMAT* LocateXStateCetU(CONTEXT* context) {
+  // GetEnabledXStateFeatures needs Windows 7 SP1.
+  static auto locate_xstate_feature = []() {
+    HINSTANCE kernel32 = GetModuleHandle(L"Kernel32.dll");
+    return reinterpret_cast<decltype(LocateXStateFeature)*>(
+        GetProcAddress(kernel32, "LocateXStateFeature"));
+  }();
+  if (!locate_xstate_feature)
+    return nullptr;
+
+  DWORD cet_u_size = 0;
+  return reinterpret_cast<XSAVE_CET_U_FORMAT*>(
+      locate_xstate_feature(context, XSTATE_CET_U, &cet_u_size));
+}
+#endif  // defined(ARCH_CPU_X86_64)
+}  // namespace
 
 ThreadSnapshotWin::ThreadSnapshotWin()
     : ThreadSnapshot(),
@@ -67,24 +89,52 @@ bool ThreadSnapshotWin::Initialize(
 #if defined(ARCH_CPU_X86)
   context_.architecture = kCPUArchitectureX86;
   context_.x86 = &context_union_.x86;
-  InitializeX86Context(process_reader_thread.context.native, context_.x86);
+  InitializeX86Context(process_reader_thread.context.context<CONTEXT>(),
+                       context_.x86);
 #elif defined(ARCH_CPU_X86_64)
   if (process_reader->Is64Bit()) {
     context_.architecture = kCPUArchitectureX86_64;
     context_.x86_64 = &context_union_.x86_64;
-    InitializeX64Context(process_reader_thread.context.native, context_.x86_64);
+    CONTEXT* context = process_reader_thread.context.context<CONTEXT>();
+    InitializeX64Context(context, context_.x86_64);
+    // Capturing process must have CET enabled. If captured process does not,
+    // then this will not set any state in the context snapshot.
+    if (IsXStateFeatureEnabled(XSTATE_MASK_CET_U)) {
+      XSAVE_CET_U_FORMAT* cet_u = LocateXStateCetU(context);
+      if (cet_u && cet_u->Ia32CetUMsr && cet_u->Ia32Pl3SspMsr) {
+        InitializeX64XStateCet(context, cet_u, context_.x86_64);
+      }
+    }
   } else {
     context_.architecture = kCPUArchitectureX86;
     context_.x86 = &context_union_.x86;
-    InitializeX86Context(process_reader_thread.context.wow64, context_.x86);
+    InitializeX86Context(process_reader_thread.context.context<WOW64_CONTEXT>(),
+                         context_.x86);
   }
 #elif defined(ARCH_CPU_ARM64)
   context_.architecture = kCPUArchitectureARM64;
   context_.arm64 = &context_union_.arm64;
-  InitializeARM64Context(process_reader_thread.context.native, context_.arm64);
+  InitializeARM64Context(process_reader_thread.context.context<CONTEXT>(),
+                         context_.arm64);
 #else
 #error Unsupported Windows Arch
 #endif  // ARCH_CPU_X86
+
+#if defined(ARCH_CPU_X86_64)
+  // Unconditionally store page around ssp if it is present.
+  if (process_reader->Is64Bit() && context_.x86_64->xstate.cet_u.ssp) {
+    WinVMAddress page_size =
+        base::checked_cast<WinVMAddress>(base::GetPageSize());
+    WinVMAddress page_mask = ~(page_size - 1);
+    WinVMAddress ssp_base = context_.x86_64->xstate.cet_u.ssp & page_mask;
+    if (process_reader->GetProcessInfo().LoggingRangeIsFullyReadable(
+            CheckedRange<WinVMAddress, WinVMSize>(ssp_base, page_size))) {
+      auto region = std::make_unique<MemorySnapshotGeneric>();
+      region->Initialize(process_reader->Memory(), ssp_base, page_size);
+      pointed_to_memory_.push_back(std::move(region));
+    }
+  }
+#endif  // ARCH_CPU_X86_64
 
   CaptureMemoryDelegateWin capture_memory_delegate(
       process_reader,

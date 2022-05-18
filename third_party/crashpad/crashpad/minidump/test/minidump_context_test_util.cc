@@ -383,7 +383,15 @@ void ExpectMinidumpContextAMD64(
   MinidumpContextAMD64 expected;
   InitializeMinidumpContextAMD64(&expected, expect_seed);
 
-  EXPECT_EQ(observed->context_flags, expected.context_flags);
+  // Allow context_flags to include xstate bit - this is added if we will write
+  // an extended context, but is not generated in the fixed context for testing.
+  if ((observed->context_flags & kMinidumpContextAMD64Xstate) ==
+      kMinidumpContextAMD64Xstate) {
+    EXPECT_EQ(observed->context_flags,
+              (expected.context_flags | kMinidumpContextAMD64Xstate));
+  } else {
+    EXPECT_EQ(observed->context_flags, expected.context_flags);
+  }
 
   if (snapshot) {
     EXPECT_EQ(observed->p1_home, 0u);

@@ -111,7 +111,8 @@ TEST(ProcessReaderWin, SelfOneThread) {
   ASSERT_GE(threads.size(), 1u);
 
   EXPECT_EQ(threads[0].id, GetCurrentThreadId());
-  EXPECT_NE(ProgramCounterFromCONTEXT(&threads[0].context.native), nullptr);
+  EXPECT_NE(ProgramCounterFromCONTEXT(threads[0].context.context<CONTEXT>()),
+            nullptr);
   EXPECT_EQ(threads[0].suspend_count, 0u);
 }
 
