@@ -91,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser_context());
 
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
 
   scoped_refptr<const Extension> test_extension = LoadApp("sockets_tcp/api");
   ASSERT_TRUE(test_extension);
@@ -157,7 +158,8 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, DISABLED_SocketTcpExtensionTLS) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser_context());
 
-  ExtensionTestMessageListener listener("info_please", true);
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(LoadApp("sockets_tcp/api"));
   EXPECT_TRUE(listener.WaitUntilSatisfied());

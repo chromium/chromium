@@ -131,12 +131,12 @@ class AppViewTest : public AppShellTest {
 
     extension_system_->LaunchApp(app_embedder->id());
 
-    ExtensionTestMessageListener launch_listener("LAUNCHED", false);
+    ExtensionTestMessageListener launch_listener("LAUNCHED");
     ASSERT_TRUE(launch_listener.WaitUntilSatisfied());
 
     embedder_web_contents_ = GetFirstAppWindowWebContents();
 
-    ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+    ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
     ASSERT_TRUE(content::ExecuteScript(
         embedder_web_contents_.get(),

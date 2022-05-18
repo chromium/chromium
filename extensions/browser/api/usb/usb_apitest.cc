@@ -285,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidTimeout) {
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, CallsAfterDisconnect) {
-  ExtensionTestMessageListener ready_listener("ready", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener ready_listener("ready");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   EXPECT_CALL(mock_device_, OpenInternal(_))
@@ -300,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, CallsAfterDisconnect) {
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailureOnDisconnect) {
-  ExtensionTestMessageListener ready_listener("ready", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener ready_listener("ready");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   EXPECT_CALL(mock_device_, OpenInternal(_))
@@ -324,8 +324,8 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailureOnDisconnect) {
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, OnDeviceAdded) {
-  ExtensionTestMessageListener load_listener("loaded", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   ASSERT_TRUE(LoadApp("api_test/usb/add_event"));
@@ -338,8 +338,8 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, OnDeviceAdded) {
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, OnDeviceRemoved) {
-  ExtensionTestMessageListener load_listener("loaded", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   ASSERT_TRUE(LoadApp("api_test/usb/remove_event"));
@@ -350,8 +350,8 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, OnDeviceRemoved) {
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, GetUserSelectedDevices) {
-  ExtensionTestMessageListener ready_listener("opened_device", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener ready_listener("opened_device");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   EXPECT_CALL(mock_device_, OpenInternal(_))
@@ -368,9 +368,9 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, GetUserSelectedDevices) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(UsbApiTest, MassStorage) {
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ready_listener.set_failure_message("failure");
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   // Mass storage devices should be hidden unless allowed in policy.

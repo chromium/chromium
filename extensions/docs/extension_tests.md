@@ -151,7 +151,7 @@ between events.  This class is only useful in browser tests.
 IN_PROC_BROWSER_TEST_F(...) {
   LoadExtension(...);
   GURL url = GetASpecialURL();
-  ExtensionTestMessageListener listener("clicked", /*will_reply=*/true);
+  ExtensionTestMessageListener listener("clicked", ReplyBehavior::kWillReply);
   ClickAction();
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply(url.spec());
@@ -175,7 +175,7 @@ the C++.
 ```c++
 // test.cc:
 IN_PROC_BROWSER_TEST_F(...) {
-  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener listener("ready");
   LoadExtension(...);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   // The extension is now ready!

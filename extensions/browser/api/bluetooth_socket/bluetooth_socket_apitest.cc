@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
       .WillOnce(base::test::RunOnceCallback<0>());
 
   // Run the test.
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   scoped_refptr<const Extension> extension(
       LoadApp("api_test/bluetooth_socket/connect"));
   ASSERT_TRUE(extension.get());
@@ -143,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
 
   // Run the test, it sends a ready signal once it's ready for us to dispatch
   // a client connection to it.
-  ExtensionTestMessageListener socket_listening("ready", true);
+  ExtensionTestMessageListener socket_listening("ready",
+                                                ReplyBehavior::kWillReply);
   scoped_refptr<const Extension> extension(
       LoadApp("api_test/bluetooth_socket/listen"));
   ASSERT_TRUE(extension.get());
@@ -153,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, Listen) {
   // thread. Waiting until idle ensures the event is dispatched to the
   // receiver(s).
   base::RunLoop().RunUntilIdle();
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   socket_listening.Reply("go");
 
   // Second stage of tests checks for error conditions, and will clean up

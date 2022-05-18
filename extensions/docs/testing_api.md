@@ -343,7 +343,7 @@ used with [ExtensionTestMessageListener] on the C++ side.
 IN_PROC_BROWSER_TEST_F(...) {
   LoadExtension(...);
   GURL url = GetASpecialURL();
-  ExtensionTestMessageListener listener("clicked", /*will_reply=*/true);
+  ExtensionTestMessageListener listener("clicked", ReplyBehavior::kWillReply);
   ClickAction();
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply(url.spec());

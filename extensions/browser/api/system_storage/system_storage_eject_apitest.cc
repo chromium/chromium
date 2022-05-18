@@ -48,7 +48,7 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
   }
 
   content::RenderFrameHost* GetMainFrame() {
-    ExtensionTestMessageListener listener("loaded", false);
+    ExtensionTestMessageListener listener("loaded");
     const extensions::Extension* extension = LoadApp("system/storage_eject");
 
     // Wait for the extension to load completely so we can execute
@@ -63,7 +63,7 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
   void ExecuteCmdAndCheckReply(content::RenderFrameHost* frame,
                                const std::string& js_command,
                                const std::string& ok_message) {
-    ExtensionTestMessageListener listener(ok_message, false);
+    ExtensionTestMessageListener listener(ok_message);
     frame->ExecuteJavaScriptForTests(base::ASCIIToUTF16(js_command),
                                      base::NullCallback());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -97,8 +97,7 @@ IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectTest) {
   // Attach / detach
   const std::string expect_attach_msg =
       base::StringPrintf("%s,%s", "attach_test_ok", kRemovableStorageData.name);
-  ExtensionTestMessageListener attach_finished_listener(expect_attach_msg,
-                                                        false /* no reply */);
+  ExtensionTestMessageListener attach_finished_listener(expect_attach_msg);
   Attach();
   EXPECT_TRUE(attach_finished_listener.WaitUntilSatisfied());
 
