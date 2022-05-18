@@ -989,16 +989,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
         .sessionHandler = self;
   }
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  // Disable fatal OOM to hack around an OS bug https://crbug.com/654695.
-  if (base::mac::IsOS10_12()) {
-    g_swizzle_imk_input_session = new base::mac::ScopedObjCClassSwizzler(
-        NSClassFromString(@"IMKInputSession"),
-        [OOMDisabledIMKInputSession class],
-        @selector(_coreAttributesFromRange:whichAttributes:completionHandler:));
-  }
-#endif
 }
 
 // Helper function for populating and displaying the in progress downloads at

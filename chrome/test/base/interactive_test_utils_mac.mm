@@ -145,7 +145,7 @@ void SendGlobalKeyEventsHelper::SendGlobalKeyEvent(int key_code,
   // Starting in 10.14, CGEventPost() pops up a modal that asks the user to
   // confirm whether the app should be allowed to use accessibility APIs, which
   // hangs tests on the bots. https://crbug.com/904403
-  DCHECK(base::mac::IsAtMostOS10_13());
+  DCHECK(base::mac::IsOS10_13());
 
   CGEventPost(event_tap_location_, key_event);
   if (key_down && !first_key_down_code_)
