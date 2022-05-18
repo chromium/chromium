@@ -174,6 +174,12 @@ HEADER = headers.header(
                     alt = "Chromium Fuzz console",
                 ),
                 headers.link(
+                    text = "fuchsia",
+                    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+                    url = "/p/{}/g/chromium.fuchsia".format(settings.project),
+                    alt = "Chromium Fuchsia console",
+                ),
+                headers.link(
                     text = "fyi",
                     branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/chromium.fyi".format(settings.project),
@@ -277,6 +283,12 @@ HEADER = headers.header(
                     alt = "ChromiumOS",
                 ),
                 headers.link(
+                    text = "fuchsia",
+                    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+                    url = "/p/{}/g/tryserver.chromium.fuchsia/builders".format(settings.project),
+                    alt = "Fuchsia",
+                ),
+                headers.link(
                     text = "linux",
                     branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.linux/builders".format(settings.project),
@@ -331,6 +343,7 @@ HEADER = headers.header(
                 "chromium/chromium.mac",
                 "chromium/chromium.linux",
                 "chromium/chromium.chromiumos",
+                "chromium/chromium.fuchsia",
                 "chrome/chrome",
                 "chromium/chromium.memory",
                 "chromium/chromium.gpu",
