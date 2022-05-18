@@ -158,14 +158,11 @@ const tokenMap = new Map();
 const guestMessagePipe =
     new MessagePipe('chrome-untrusted://media-app', undefined, false);
 
-/**
- * Promise that resolves once the iframe is ready to receive messages. This is
- * to allow initial file processing to run in parallel with the iframe load.
- * @type {!Promise<undefined>}
- */
-const iframeReady = new Promise(resolve => {
-  guestMessagePipe.registerHandler(Message.IFRAME_READY, resolve);
-});
+// Register a handler for the "IFRAME_READY" message which does nothing. This
+// prevents MessagePipe emitting an error that there is no handler for it. The
+// message is handled by logic in first_message_received.js, which installs the
+// event listener before the <iframe> is added to the DOM.
+guestMessagePipe.registerHandler(Message.IFRAME_READY, () => {});
 
 guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, message => {
   const notifyMsg = /** @type {!NotifyCurrentFileMessage} */ (message);
@@ -804,7 +801,11 @@ async function sendSnapshotToGuest(
   for (const fd of snapshot) {
     fd.file = null;
   }
-  await iframeReady;
+
+  // Wait for the signal from first_message_received.js before proceeding.
+  await /** @type {{firstMessageReceived: !Promise<*>}} */ (window)
+      .firstMessageReceived;
+
   if (extraFiles) {
     await guestMessagePipe.sendMessage(
         Message.LOAD_EXTRA_FILES, loadFilesMessage);

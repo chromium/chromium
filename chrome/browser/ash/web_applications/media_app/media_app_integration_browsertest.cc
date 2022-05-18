@@ -333,10 +333,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaApp) {
 
 // Test that the MediaApp successfully loads a file passed in on its launch
 // params. This exercises only web_applications logic.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
-                       DISABLED_MediaAppLaunchWithFile) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   WaitForTestSystemAppInstall();
   // Launch the App for the first time.
   content::WebContents* app = LaunchAppWithFile(ash::SystemWebAppType::MEDIA,
@@ -359,10 +356,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 // Test that the MediaApp successfully loads a file using
 // LaunchSystemWebAppAsync. This exercises high level integration with SWA
 // platform (a different code path than MediaAppLaunchWithFile test).
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
-                       DISABLED_MediaAppWithLaunchSystemWebAppAsync) {
+                       MediaAppWithLaunchSystemWebAppAsync) {
   WaitForTestSystemAppInstall();
   // Launch the App for the first time.
   web_app::SystemAppLaunchParams audio_params;
@@ -389,10 +384,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 }
 
 // Test that the Media App launches a single window for images.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
-                       DISABLED_MediaAppLaunchImageMulti) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   WaitForTestSystemAppInstall();
   web_app::SystemAppLaunchParams image_params;
   image_params.launch_paths = {TestFile(kFilePng800x600),
@@ -412,10 +404,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 }
 
 // Test that the Media App launches multiple windows for PDFs.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
-                       DISABLED_MediaAppLaunchPdfMulti) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   WaitForTestSystemAppInstall();
   web_app::SystemAppLaunchParams pdf_params;
   pdf_params.launch_paths = {TestFile(kFilePdfTall), TestFile(kFilePdfImg)};
@@ -800,10 +789,7 @@ startxref
 }
 
 // Test that the MediaApp can load RAW files passed on launch params.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
-                       DISABLED_HandleRawFiles) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, HandleRawFiles) {
   WaitForTestSystemAppInstall();
 
   // Initialize a folder with 2 RAW images. Note this approach doesn't guarantee
@@ -1036,10 +1022,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 // End-to-end test to ensure that the MediaApp successfully registers as a file
 // handler with the ChromeOS file manager on startup and acts as the default
 // handler for a given file.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
-                       DISABLED_FileOpenUsesMediaApp) {
+                       FileOpenUsesMediaApp) {
   base::HistogramTester histograms;
 
   WaitForTestSystemAppInstall();
@@ -1101,10 +1085,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeDisabledTest,
 
 // Ensures both the "audio" and "gallery" flavours of the MediaApp can be
 // launched at the same time when launched via the files app.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
-                       DISABLED_FileOpenCanLaunchBothAudioAndImages) {
+                       FileOpenCanLaunchBothAudioAndImages) {
   base::HistogramTester histograms;
 
   WaitForTestSystemAppInstall();
@@ -1150,9 +1132,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 }
 
 // Ensures audio files opened in the media app successfully autoplay.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_Autoplay) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
   content::WebContents* web_ui = LaunchWithOneTestFile(kFileAudioOgg);
 
   EXPECT_EQ(kFileAudioOgg, WaitForAudioTrackTitle(web_ui));
@@ -1177,9 +1157,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_Autoplay) {
 
 // Ensures the autoplay on audio file launch updates the global media controls
 // with an appropriate media source name.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_MediaControls) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaControls) {
   using absl::optional;
   class MediaControlsObserver
       : public media_session::mojom::MediaControllerObserver {
@@ -1230,10 +1208,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, DISABLED_MediaControls) {
 
 // Test that the MediaApp can traverse other files in the directory of a file
 // that was opened, even if those files have changed since launch.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
-                       DISABLED_FileOpenCanTraverseDirectory) {
+                       FileOpenCanTraverseDirectory) {
   WaitForTestSystemAppInstall();
 
   // Initialize a folder with 2 files: 1 JPEG, 1 PNG. Note this approach doesn't
@@ -1291,10 +1267,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
 }
 
 // Integration test for rename using the WritableFileSystem and Streams APIs.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
-                       DISABLED_RenameFile) {
+                       RenameFile) {
   WaitForTestSystemAppInstall();
 
   file_manager::test::FolderInMyFiles folder(profile());
@@ -1302,6 +1276,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   folder.Open(TestFile(kFileJpeg640x480));
   content::WebContents* web_ui = PrepareActiveBrowserForTest();
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+
+  // lastLoadedReceivedFileList is only set when the load IPC is received, so
+  // ensure that has completed before trying to index it.
+  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
 
   // Rename "image3.jpg" to "x.jpg".
   constexpr int kRenameResultSuccess = 0;
@@ -1329,10 +1307,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
 }
 
 // Integration test for deleting a file using the WritableFiles API.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
-                       DISABLED_DeleteFile) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, DeleteFile) {
   WaitForTestSystemAppInstall();
 
   file_manager::test::FolderInMyFiles folder(profile());
@@ -1360,10 +1335,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 }
 
 // Integration test for deleting a special file using the WritableFiles API.
-//
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
-                       DISABLED_FailToDeleteReservedFile) {
+                       FailToDeleteReservedFile) {
   WaitForTestSystemAppInstall();
 
   file_manager::test::FolderInMyFiles folder(profile());
@@ -1395,9 +1368,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   EXPECT_EQ("thumbs.db", folder.files()[0].BaseName().value());
 }
 
-// TODO(https://crbug.com/1325739): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
-                       DISABLED_CheckBrowserWritable) {
+                       CheckBrowserWritable) {
   WaitForTestSystemAppInstall();
 
   file_manager::test::FolderInMyFiles folder(profile());
@@ -1415,6 +1387,19 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
 
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
+
+  // WaitForImageAlt only requires one image to load, but a follow-up IPC is
+  // used to load additional files, which might not be available on
+  // lastLoadedReceivedFileList if it is inspected now. Check the length, and
+  // retry if there are not two files yet. There is enough context switching
+  // here that 0-1 retries are usually sufficient.
+  int received_file_length = 0;
+  do {
+    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+        app,
+        "domAutomationController.send(lastLoadedReceivedFileList().length);",
+        &received_file_length));
+  } while (received_file_length != 2);
 
   bool result;
   constexpr char kScript[] =
