@@ -3145,6 +3145,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_RECENT_TABS_GROUP_CLOSURE_WITHOUT_TITLE" desc="Text for a Recent Tabs Page > Recently Closed row item that represents a single group of tabs closed together that does not have a user specified title. TAB_COUNT is the total number of tabs closed in the group.">
         Tab group - <ph name="TAB_COUNT">%1$s<ex>5</ex></ph> tabs
       </message>
+      <message name="IDS_WEB_FEED_AWARENESS" desc="Educating the user about the web feed.">
+        Follow any sites you want
+      </message>
 
       <!-- Explore sites strings -->
       <message name="IDS_EXPLORE_SITES_TITLE" desc="Title of a section showing different categories, each with a number of popular websites">

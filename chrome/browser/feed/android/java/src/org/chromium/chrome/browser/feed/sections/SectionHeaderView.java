@@ -405,7 +405,7 @@ public class SectionHeaderView extends LinearLayout {
                         .build());
     }
 
-    private boolean shouldUseAwarenessIPH() {
+    public boolean shouldUseWebFeedAwarenessIPH() {
         return ChromeFeatureList
                 .getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style")
@@ -419,6 +419,17 @@ public class SectionHeaderView extends LinearLayout {
                 R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card,
                 R.string.feature_notification_guide_tooltip_message_ntp_suggestion_card)
                                       .setAnchorView(mTitleView)
+                                      .build());
+    }
+
+    /** Shows an IPH on the web feed tab in the section header. */
+    public void showWebFeedAwarenessIph(
+            UserEducationHelper helper, int tabIndex, Runnable scroller) {
+        helper.requestShowIPH(new IPHCommandBuilder(mTitleView.getContext().getResources(),
+                FeatureConstants.WEB_FEED_AWARENESS_FEATURE, R.string.web_feed_awareness,
+                R.string.web_feed_awareness)
+                                      .setAnchorView(getTabAt(tabIndex).view)
+                                      .setOnShowCallback(scroller)
                                       .build());
     }
 

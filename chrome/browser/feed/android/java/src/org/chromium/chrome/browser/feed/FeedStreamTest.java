@@ -17,6 +17,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -99,12 +100,14 @@ public class FeedStreamTest {
     private static final String TEST_DATA = "test";
     private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String HEADER_PREFIX = "header";
+    private static final String TAG = "FeedStreamTest";
 
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
     private FeedStream mFeedStream;
     private NtpListContentManager mContentManager;
+    private boolean mFirstLoadWatcherCalled;
 
     @Mock
     private FeedStream.Natives mFeedStreamJniMock;
@@ -150,6 +153,8 @@ public class FeedStreamTest {
     private ArgumentCaptor<Callback<UnfollowResults>> mUnfollowResultsCallbackCaptor;
     @Mock
     private WebFeedFollowUpdate.Callback mWebFeedFollowUpdateCallback;
+    @Mock
+    private FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -186,7 +191,7 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
@@ -269,6 +274,7 @@ public class FeedStreamTest {
         assertEquals(2, mContentManager.getItemCount());
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
         assertEquals(1, mContentManager.findContentPositionByKey("Spacer"));
+        verify(mFeedContentFirstLoadWatcher).nonNativeContentLoaded(anyInt());
     }
 
     @Test
@@ -912,7 +918,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         mFeedStream = stream;
         createHeaderContent(1);
         bindToView();
@@ -932,7 +939,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertNull(stream.getUnreadContentObserverForTest());
     }
 
@@ -946,7 +954,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -961,7 +970,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertNotNull(stream.getUnreadContentObserverForTest());
         FeatureList.setTestFeatures(null);
     }
@@ -976,7 +986,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -990,7 +1001,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -1004,7 +1016,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertFalse(stream.supportsOptions());
     }
 
@@ -1018,7 +1031,8 @@ public class FeedStreamTest {
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
                 StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null);
+                /*helpAndFeedbackLauncher=*/null,
+                /*FeedContentFirstLoadWatcher=*/null);
         assertTrue(stream.supportsOptions());
     }
 

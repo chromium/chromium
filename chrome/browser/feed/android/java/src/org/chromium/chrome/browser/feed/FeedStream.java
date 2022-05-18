@@ -504,6 +504,7 @@ public class FeedStream implements Stream {
     private WindowAndroid mWindowAndroid;
     private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
+    FeedContentFirstLoadWatcher mFeedContentFirstLoadWatcher;
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -558,7 +559,8 @@ public class FeedStream implements Stream {
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
             int streamKind, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
-            FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            FeedActionDelegate actionDelegate, HelpAndFeedbackLauncher helpAndFeedbackLauncher,
+            FeedContentFirstLoadWatcher feedContentFirstLoadWatcher) {
         this.mActivity = activity;
         mStreamKind = streamKind;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
@@ -573,6 +575,7 @@ public class FeedStream implements Stream {
         mWindowAndroid = windowAndroid;
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
+        mFeedContentFirstLoadWatcher = feedContentFirstLoadWatcher;
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler(actionDelegate));
@@ -944,6 +947,8 @@ public class FeedStream implements Stream {
             mRenderer.update(state.getXsurfaceSharedState().toByteArray());
         }
 
+        boolean foundNewContent = false;
+
         // Builds the new list containing:
         // * existing headers
         // * both new and existing contents
@@ -955,12 +960,18 @@ public class FeedStream implements Stream {
                         createContentFromSlice(sliceUpdate.getSlice(), loggingParameters);
                 if (content != null) {
                     newContentList.add(content);
+                    if (!content.isNativeView()) {
+                        foundNewContent = true;
+                    }
                 }
             } else {
                 String existingSliceId = sliceUpdate.getSliceId();
                 int position = mContentManager.findContentPositionByKey(existingSliceId);
                 if (position != -1) {
                     newContentList.add(mContentManager.getContent(position));
+                    if (!mContentManager.getContent(position).isNativeView()) {
+                        foundNewContent = true;
+                    }
                 }
                 // We intentionially don't add the spacer back in. The spacer has a key SPACER_KEY,
                 // not a slice id.
@@ -976,6 +987,13 @@ public class FeedStream implements Stream {
 
         updateContentsInPlace(newContentList);
         mRecyclerView.post(mReliabilityLoggingBridge::onStreamUpdateFinished);
+
+        // If we have new content, and the new content callback is set, then call it, and clear the
+        // callback.
+        if (mFeedContentFirstLoadWatcher != null && foundNewContent) {
+            mFeedContentFirstLoadWatcher.nonNativeContentLoaded(mStreamKind);
+            mFeedContentFirstLoadWatcher = null;
+        }
 
         // If all of the cards fit on the screen, load more content. The view
         // may not be scrollable, preventing the user from otherwise triggering

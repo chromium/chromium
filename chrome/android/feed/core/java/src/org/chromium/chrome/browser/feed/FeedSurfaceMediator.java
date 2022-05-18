@@ -194,6 +194,7 @@ public class FeedSurfaceMediator
 
     private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
+    private HasContentListener mHasContentListener;
     private ContentChangedListener mStreamContentChangedListener;
     private MemoryPressureCallback mMemoryPressureCallback;
     private @Nullable SignInPromo mSignInPromo;
@@ -235,6 +236,7 @@ public class FeedSurfaceMediator
             @FeedSurfaceCoordinator.StreamTabId int openingTabId, FeedActionDelegate actionDelegate,
             FeedOptionsCoordinator optionsCoordinator) {
         mCoordinator = coordinator;
+        mHasContentListener = coordinator;
         mContext = context;
         mSnapScrollHelper = snapScrollHelper;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
@@ -472,6 +474,7 @@ public class FeedSurfaceMediator
         // hasUnreadContent() changes.
         Callback<Boolean> callback = hasUnreadContent -> {
             headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
+            mHasContentListener.hasContentChanged(stream.getStreamKind(), hasUnreadContent);
         };
         callback.onResult(stream.hasUnreadContent().addObserver(callback));
     }
