@@ -673,13 +673,12 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
                         },
                         this)));
 
-  auto arrow_button_view = std::make_unique<ArrowButtonView>(
+  submit_button_ = AddChildView(std::make_unique<ArrowButtonView>(
       base::BindRepeating(&LoginPasswordView::SubmitPassword,
                           base::Unretained(this)),
-      kSubmitButtonContentSizeDp);
-  arrow_button_view->SetBackgroundColor(palette.submit_button_background_color);
-  arrow_button_view->SetIconColor(palette.submit_button_icon_color);
-  submit_button_ = AddChildView(std::move(arrow_button_view));
+      kSubmitButtonContentSizeDp));
+  submit_button_->SetBackgroundColor(palette.submit_button_background_color);
+  submit_button_->SetIconColor(palette.submit_button_icon_color);
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetAccessibleName(
@@ -958,8 +957,12 @@ void LoginPasswordView::UpdatePalette(const LoginPalette& palette) {
   password_row_->UpdatePalette(palette);
   textfield_->UpdatePalette(palette);
   display_password_button_->UpdateIcons(palette);
+
+  // Submit button does not have palette support, explicitly update colors.
   submit_button_->SetBackgroundColor(palette.submit_button_background_color);
   submit_button_->SetIconColor(palette.submit_button_icon_color);
+  // Setting color does not apply them immediately, trigger theme changed event.
+  submit_button_->OnThemeChanged();
 }
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {

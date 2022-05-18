@@ -278,8 +278,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
                       size,
                       l10n_util::GetStringUTF16(
                           IDS_ASH_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME),
-                      on_press),
-        palette_(palette) {
+                      on_press) {
     image_ = AddChildView(new views::ImageView());
     SetEnabled(false);
   }
@@ -403,8 +402,6 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
       AddEnabledChangedCallback(base::BindRepeating(
           &LoginPinView::BackspacePinButton::OnEnabledChanged,
           base::Unretained(this)));
-
-  LoginPalette palette_;
 };
 
 // A PIN button to press to submit the PIN / password.
@@ -417,8 +414,7 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
                       size,
                       l10n_util::GetStringUTF16(
                           IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME),
-                      on_press),
-        palette_(palette) {
+                      on_press) {
     image_ = AddChildView(std::make_unique<views::ImageView>());
     SetEnabled(false);
   }
@@ -446,8 +442,6 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
       AddEnabledChangedCallback(
           base::BindRepeating(&LoginPinView::SubmitPinButton::UpdateImage,
                               base::Unretained(this)));
-
-  LoginPalette palette_;
 };
 
 // static
