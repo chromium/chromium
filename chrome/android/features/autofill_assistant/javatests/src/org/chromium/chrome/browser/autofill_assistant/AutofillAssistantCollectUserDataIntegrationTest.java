@@ -1402,7 +1402,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                         .setContactDetails(ContactDetailsProto.newBuilder()
                                                                    .setContactDetailsName("contact")
                                                                    .setRequestPayerName(true)
-                                                                   .setRequestPayerEmail(true)))
+                                                                   .setRequestPayerEmail(true))
+                                        .setDataSource(DataSource.newBuilder()))
                         .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
@@ -1414,6 +1415,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.setUserData(GetUserDataResponseProto.newBuilder().setLocale("en-US").build());
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(withText("About this data"), isDisplayed());

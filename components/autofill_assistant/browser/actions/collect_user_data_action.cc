@@ -1143,6 +1143,11 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
       delegate_->GetEmailAddressForAccessTokenAccount();
 
   if (collect_user_data.has_data_origin_notice()) {
+    if (!should_use_backend_data) {
+      VLOG(1) << "Data origin notice should only be shown for backend provided "
+                 "data.";
+      return false;
+    }
     const auto& notice = collect_user_data.data_origin_notice();
     if (notice.link_text().empty() || notice.dialog_title().empty() ||
         notice.dialog_text().empty() || notice.dialog_button_text().empty()) {

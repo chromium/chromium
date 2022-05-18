@@ -2589,6 +2589,54 @@ TEST_F(CollectUserDataActionTest, FailsForWebLayerRunsWithoutBackendData) {
   action.ProcessAction(callback_.Get());
 }
 
+TEST_F(CollectUserDataActionTest, FailsForDataOriginNoticeWithoutBackendData) {
+  EXPECT_CALL(mock_action_delegate_, CollectUserData).Times(0);
+  EXPECT_CALL(mock_action_delegate_, RequestUserData).Times(0);
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->set_request_payment_method(true);
+  collect_user_data->set_billing_address_name("billing");
+  collect_user_data->mutable_data_origin_notice()->set_link_text("Link");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_title("Title");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_text("Text");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_button_text(
+      "Button");
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, SucceedsWithDataOriginNoticeAndBackendData) {
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<2>(true, GetUserDataResponseProto()));
+  ON_CALL(mock_action_delegate_, CollectUserData)
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_TRUE(collect_user_data_options->data_origin_notice);
+        // Do not finish the action.
+      });
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->set_request_payment_method(true);
+  collect_user_data->set_billing_address_name("billing");
+  collect_user_data->mutable_data_origin_notice()->set_link_text("Link");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_title("Title");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_text("Text");
+  collect_user_data->mutable_data_origin_notice()->set_dialog_button_text(
+      "Button");
+  collect_user_data->mutable_data_source();
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
 TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
   ON_CALL(mock_action_delegate_, GetPersonalDataManager)
       .WillByDefault(Return(nullptr));

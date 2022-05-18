@@ -327,21 +327,13 @@ class AssistantCollectUserDataBinder
             view.mContactDetailsSection.setContactFullOptions(
                     model.get(AssistantCollectUserDataModel.CONTACT_FULL_DESCRIPTION_OPTIONS));
             return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_LINK_TEXT) {
-            view.mDataOriginNotice.setDataOriginLinkText(
-                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_LINK_TEXT));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TITLE) {
-            view.mDataOriginNotice.setDataOriginDialogTitle(
-                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TITLE));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TEXT) {
-            view.mDataOriginNotice.setDataOriginDialogText(
-                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_TEXT));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_BUTTON_TEXT) {
-            view.mDataOriginNotice.setDataOriginDialogButtonText(
-                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_DIALOG_BUTTON_TEXT));
+        } else if (propertyKey == AssistantCollectUserDataModel.DATA_ORIGIN_NOTICE_CONFIGURATION) {
+            AssistantCollectUserDataModel.DataOriginNoticeConfiguration configuration =
+                    model.get(AssistantCollectUserDataModel.DATA_ORIGIN_NOTICE_CONFIGURATION);
+            view.mDataOriginNotice.setLinkText(configuration.getLinkText());
+            view.mDataOriginNotice.setDialogTitle(configuration.getTitle());
+            view.mDataOriginNotice.setDialogText(configuration.getText());
+            view.mDataOriginNotice.setDialogButtonText(configuration.getButtonText());
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.ACCOUNT_EMAIL) {
             view.mDataOriginNotice.setAccountEmail(
