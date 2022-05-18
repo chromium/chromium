@@ -499,10 +499,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           LocalCSSFileExtensionRejected;
       break;
-    case DeprecationIssueType::kMediaElementAudioSourceNode:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          MediaElementAudioSourceNode;
-      break;
     case DeprecationIssueType::kMediaSourceAbortRemove:
       type = protocol::Audits::DeprecationIssueTypeEnum::MediaSourceAbortRemove;
       break;

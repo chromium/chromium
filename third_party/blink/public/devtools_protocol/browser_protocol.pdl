@@ -762,7 +762,6 @@ experimental domain Audits
       InsecurePrivateNetworkSubresourceRequest
       LegacyConstraintGoogIPv6
       LocalCSSFileExtensionRejected
-      MediaElementAudioSourceNode
       MediaSourceAbortRemove
       MediaSourceDurationTruncatingBuffered
       NoSysexWebMIDIWithoutPermission

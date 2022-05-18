@@ -59,7 +59,6 @@ enum class DeprecationIssueType {
   kInsecurePrivateNetworkSubresourceRequest,
   kLegacyConstraintGoogIPv6,
   kLocalCSSFileExtensionRejected,
-  kMediaElementAudioSourceNode,
   kMediaSourceAbortRemove,
   kMediaSourceDurationTruncatingBuffered,
   kNoSysexWebMIDIWithoutPermission,

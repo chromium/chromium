@@ -134,9 +134,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kLocalCSSFileExtensionRejected:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kLocalCSSFileExtensionRejected);
-    case WebFeature::kMediaElementSourceOnOfflineContext:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kMediaElementAudioSourceNode);
     case WebFeature::kMediaSourceAbortRemove:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kMediaSourceAbortRemove);
