@@ -173,6 +173,7 @@ bool FontFallback::GetCachedFont(const std::u16string& text,
                                  DWRITE_FONT_STRETCH base_stretch,
                                  IDWriteFont** font,
                                  uint32_t* mapped_length) {
+  base::AutoLock guard(lock_);
   std::map<std::wstring, std::list<mswr::ComPtr<IDWriteFontFamily>>>::iterator
       it = fallback_family_cache_.find(MakeCacheKey(base_family_name, locale));
   if (it == fallback_family_cache_.end())
@@ -227,6 +228,7 @@ void FontFallback::AddCachedFamily(
     Microsoft::WRL::ComPtr<IDWriteFontFamily> family,
     const wchar_t* base_family_name,
     const wchar_t* locale) {
+  base::AutoLock guard(lock_);
   // Note: If the requested locale does not disambiguate Han ideographs, caching
   // by locale may prime the cache with one CJK font for the first request,
   // which may be unsuitable for the next request. For example: While specifying

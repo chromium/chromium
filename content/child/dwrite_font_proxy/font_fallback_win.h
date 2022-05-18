@@ -55,6 +55,9 @@ class FontFallback
  protected:
   ~FontFallback() override;
 
+  // Note: `mapped_font` is used in `SkFontMgr_DirectWrite::fallback()` to
+  // construct `SkTypeface` which can be shared between threads[1].
+  // [1] https://api.skia.org/classSkTypeface.html#details
   bool GetCachedFont(const std::u16string& text,
                      const wchar_t* base_family_name,
                      const wchar_t* locale,
@@ -62,23 +65,25 @@ class FontFallback
                      DWRITE_FONT_STYLE base_style,
                      DWRITE_FONT_STRETCH base_stretch,
                      IDWriteFont** mapped_font,
-                     uint32_t* mapped_length);
+                     uint32_t* mapped_length) LOCKS_EXCLUDED(lock_);
 
   void AddCachedFamily(Microsoft::WRL::ComPtr<IDWriteFontFamily> family,
                        const wchar_t* base_family_name,
-                       const wchar_t* locale);
+                       const wchar_t* locale) LOCKS_EXCLUDED(lock_);
 
  private:
   blink::mojom::DWriteFontProxy& GetFontProxy();
 
   Microsoft::WRL::ComPtr<DWriteFontCollectionProxy> collection_;
 
+  base::Lock lock_;
+
   // |fallback_family_cache_| keeps a mapping from base family name to a list
   // of font families that matched a character on a previous call. The list is
   // capped in size and maintained in MRU order. This gives us a good chance of
   // returning a suitable fallback font without having to do an IPC.
   std::map<std::wstring, std::list<Microsoft::WRL::ComPtr<IDWriteFontFamily>>>
-      fallback_family_cache_;
+      fallback_family_cache_ GUARDED_BY(lock_);
 };
 
 }  // namespace content
