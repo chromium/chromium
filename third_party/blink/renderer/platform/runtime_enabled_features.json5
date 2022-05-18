@@ -2612,6 +2612,10 @@
       status: "experimental",
     },
     {
+      name: "WebGLColorManagement",
+      status: "experimental",
+    },
+    {
       name: "WebGLDeveloperExtensions",
       status: "experimental",
     },
