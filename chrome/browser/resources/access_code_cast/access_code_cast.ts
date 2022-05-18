@@ -20,7 +20,7 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AddSinkResultCode, CastDiscoveryMethod, PageCallbackRouter} from './access_code_cast.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxy, DialogCloseReason} from './browser_proxy.js';
 import {PasscodeInputElement} from './passcode_input/passcode_input.js';
 import {ErrorMessageElement} from './error_message/error_message.js';
 import {RouteRequestResultCode} from './route_request_result_code.mojom-webui.js';
@@ -82,6 +82,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   private accessCode: string;
   private canCast: boolean;
+  private inputEnabledStartTime: number;
   private inputLabel: string;
   private state: PageState;
   private submitDisabled: boolean;
@@ -99,6 +100,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
         loadTimeData.getInteger('rememberedDeviceDuration'));
 
     this.accessCode = '';
+    this.inputEnabledStartTime = Date.now();
     BrowserProxy.getInstance().isQrScanningAvailable().then((available) => {
       this.qrScannerEnabled = available;
     });
@@ -126,7 +128,8 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     this.listenerIds.forEach(id => this.router.removeListener(id));
   }
 
-  close() {
+  cancelButtonPressed() {
+    BrowserProxy.recordDialogCloseReason(DialogCloseReason.CANCEL_BUTTON);
     BrowserProxy.getInstance().closeDialog();
   }
 
@@ -139,6 +142,9 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
   }
 
   async addSinkAndCast() {
+    BrowserProxy.recordAccessCodeEntryTime(
+        Date.now() - this.inputEnabledStartTime);
+
     if (!BrowserProxy.getInstance().isDialog()) {
       return;
     }
@@ -162,8 +168,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (addResult !== AddSinkResultCode.OK) {
       this.$.errorMessage.setAddSinkError(addResult);
-      this.set('canCast', true);
-      this.$.codeInput.focusInput();
+      this.afterFailedAddAndCast();
       return;
     }
 
@@ -173,12 +178,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (castResult !== RouteRequestResultCode.OK) {
       this.$.errorMessage.setCastError(castResult);
-      this.set('canCast', true);
-      this.$.codeInput.focusInput();
+      this.afterFailedAddAndCast();
       return;
     }
 
-    this.close();
+    BrowserProxy.recordDialogCloseReason(DialogCloseReason.CAST_SUCCESS);
+    BrowserProxy.getInstance().closeDialog();
   }
 
   async createManagedFootnote(duration: number) {
@@ -230,6 +235,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   getManagedFootnoteForTest() {
     return this.managedFootnote;
+  }
+
+  private afterFailedAddAndCast() {
+    this.set('canCast', true);
+    this.$.codeInput.focusInput();
+    this.inputEnabledStartTime = Date.now();
   }
 
   private castStateChange() {

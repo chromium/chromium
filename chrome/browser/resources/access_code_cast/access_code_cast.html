@@ -113,7 +113,9 @@
     </template>
   </div>
   <div slot="button-container">
-    <cr-button on-click="close" class="cancel-button">$i18n{cancel}</cr-button>
+    <cr-button on-click="cancelButtonPressed" class="cancel-button">
+      $i18n{cancel}
+    </cr-button>
     <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
       disabled="[[submitDisabled]]">
       $i18n{submit}

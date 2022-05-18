@@ -116,7 +116,11 @@ void AccessCodeCastDialog::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
   DCHECK(dialog_widget_)
       << "dialog_widget_ must be set exactly once during dialog setup";
-  if (dialog_widget_ && !active) {
+  // Close the dialog only if it is no longer active and it isn't already
+  // closing.
+  if (dialog_widget_ && !active && !closing_dialog_) {
+    AccessCodeCastMetrics::RecordDialogCloseReason(
+        AccessCodeCastDialogCloseReason::kFocus);
     dialog_widget_->Close();
   }
 }
@@ -174,6 +178,7 @@ void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {
 void AccessCodeCastDialog::OnCloseContents(content::WebContents* source,
                                            bool* out_close_dialog) {
   *out_close_dialog = true;
+  closing_dialog_ = true;
 }
 
 bool AccessCodeCastDialog::ShouldShowDialogTitle() const {

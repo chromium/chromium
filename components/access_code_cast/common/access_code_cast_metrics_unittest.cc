@@ -105,3 +105,24 @@ TEST(AccessCodeCastMetricsTest, RecordDialogLoadTime) {
 
   histogram_tester.ExpectTotalCount("AccessCodeCast.Ui.DialogLoadTime", 3);
 }
+
+TEST(AccessCodeCastMetricsTest, RecordDialogCloseReason) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::RecordDialogCloseReason(
+      AccessCodeCastDialogCloseReason::kFocus);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.DialogCloseReason", 0, 1);
+
+  AccessCodeCastMetrics::RecordDialogCloseReason(
+      AccessCodeCastDialogCloseReason::kCancel);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.DialogCloseReason", 1, 1);
+
+  AccessCodeCastMetrics::RecordDialogCloseReason(
+      AccessCodeCastDialogCloseReason::kCastSuccess);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.DialogCloseReason", 2, 1);
+
+  histogram_tester.ExpectTotalCount("AccessCodeCast.Ui.DialogCloseReason", 3);
+}

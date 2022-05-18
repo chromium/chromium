@@ -200,11 +200,11 @@ void AccessCodeCastHandler::AddSink(
     std::move(callback).Run(AddSinkResultCode::UNKNOWN_ERROR);
     return;
   }
-  AddSinkCallback callback_with_metrics =
-      std::move(base::BindOnce(&AddSinkMetricsCallback))
-          .Then(std::move(callback));
-  add_sink_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback_with_metrics), AddSinkResultCode::UNKNOWN_ERROR);
+  AddSinkCallback callback_with_default_invoker =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+          AddSinkResultCode::UNKNOWN_ERROR);
+  add_sink_callback_ = std::move(base::BindOnce(&AddSinkMetricsCallback))
+          .Then(std::move(callback_with_default_invoker));
   access_code_sink_service_->DiscoverSink(
       access_code, base::BindOnce(&AccessCodeCastHandler::OnSinkAddedResult,
                                   weak_ptr_factory_.GetWeakPtr()));

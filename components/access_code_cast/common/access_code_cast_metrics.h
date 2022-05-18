@@ -48,6 +48,18 @@ enum class AccessCodeCastCastMode {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class AccessCodeCastDialogCloseReason {
+  kFocus = 0,
+  kCancel = 1,
+  kCastSuccess = 2,
+
+  // NOTE: Do not reorder existing entries, and add entries only immediately
+  // above this line.
+  kMaxValue = kCastSuccess
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AccessCodeCastDialogOpenLocation {
   kBrowserCastMenu = 0,
   kSystemTrayCastFeaturePod = 1,
@@ -67,6 +79,7 @@ class AccessCodeCastMetrics {
   static const char kHistogramAddSinkResultNew[];
   static const char kHistogramAddSinkResultRemembered[];
   static const char kHistogramCastModeOnSuccess[];
+  static const char kHistogramDialogCloseReason[];
   static const char kHistogramDialogLoadTime[];
   static const char kHistogramDialogOpenLocation[];
 
@@ -81,6 +94,9 @@ class AccessCodeCastMetrics {
 
   // Records the time it takes for the AccessCodeCast dialog to load.
   static void RecordDialogLoadTime(base::TimeDelta load_time);
+
+  // Records the reason that the AccessCodeCast dialog closed.
+  static void RecordDialogCloseReason(AccessCodeCastDialogCloseReason reason);
 
   // Records where the user clicked to open the AccessCodeCast dialog.
   static void RecordDialogOpenLocation(

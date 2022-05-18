@@ -95,6 +95,7 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<Profile> context_;
   base::Time dialog_creation_timestamp_;
+  bool closing_dialog_ = false;
 };
 
 }  // namespace media_router

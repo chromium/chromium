@@ -154,6 +154,12 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="Desktop mirroring"/>
 </enum>
 
+<enum name="AccessCodeCastDialogCloseReason">
+  <int value="0" label="Dialog lost focus"/>
+  <int value="1" label="Cancel action"/>
+  <int value="2" label="Successfully began casting"/>
+</enum>
+
 <enum name="AccessCodeCastDialogOpenLocation">
   <int value="0" label="Browser cast menu"/>
   <int value="1" label="ChromeOS quick settings feature pod"/>

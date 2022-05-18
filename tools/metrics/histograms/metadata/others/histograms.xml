@@ -190,6 +190,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Ui.AccessCodeInputTime" units="ms"
+    expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The amount of time in milliseconds for the user to input an access code
+    after the UI is enabled for a cast attempt. Recorded when the user presses
+    enter or the submit button after typing an access code. Logged only on
+    desktop platforms.
+  </summary>
+</histogram>
+
+<histogram name="AccessCodeCast.Ui.DialogCloseReason"
+    enum="AccessCodeCastDialogCloseReason" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The reason why the Access Code Cast dialog closed. Recorded when the Access
+    Code Cast dialog closes. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Ui.DialogLoadTime" units="ms"
     expires_after="2023-01-01">
   <owner>bzielinski@google.com</owner>
