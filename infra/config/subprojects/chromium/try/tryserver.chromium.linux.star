@@ -39,6 +39,9 @@ try_.builder(
 try_.builder(
     name = "cast_shell_linux",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Cast Linux",
+    ],
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
