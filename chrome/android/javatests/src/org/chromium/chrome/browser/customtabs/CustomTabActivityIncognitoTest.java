@@ -63,6 +63,8 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
@@ -512,5 +514,24 @@ public class CustomTabActivityIncognitoTest {
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         connection.cleanUpSession(token);
+    }
+
+    /**
+     * Regression test for crbug.com/1325331.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID,
+            ChromeFeatureList.CCT_INCOGNITO})
+    public void
+    testIncognitoReauthControllerCreated_WhenReauthFeatureIsEnabled() throws InterruptedException {
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        CustomTabActivity customTabActivity = launchIncognitoCustomTab(intent);
+
+        // Ensure that we did indeed create the re-auth controller.
+        IncognitoReauthController controller = customTabActivity.getRootUiCoordinatorForTesting()
+                                                       .getIncognitoReauthControllerForTesting();
+        assertNotNull(controller);
     }
 }

@@ -721,23 +721,25 @@ public class RootUiCoordinator
             //  OneshotSupplierImpl<TabSwitcherCustomViewManager> instance.
             OneshotSupplierImpl<IncognitoReauthTabSwitcherDelegate>
                     incognitoReauthTabSwitcherSupplier = new OneshotSupplierImpl<>();
-            mTabSwitcherCustomViewController = new CallbackController();
-            mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier().onAvailable(
-                    mTabSwitcherCustomViewController.makeCancelable(tabSwitcherCustomViewManager
-                            -> incognitoReauthTabSwitcherSupplier.set(
-                                    new IncognitoReauthTabSwitcherDelegate() {
-                                        @Override
-                                        public boolean addReauthScreenInTabSwitcher(
-                                                @NonNull View customView) {
-                                            return tabSwitcherCustomViewManager.requestView(
-                                                    customView);
-                                        }
+            if (mActivityType == ActivityType.TABBED) {
+                mTabSwitcherCustomViewController = new CallbackController();
+                mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier().onAvailable(
+                        mTabSwitcherCustomViewController.makeCancelable(tabSwitcherCustomViewManager
+                                -> incognitoReauthTabSwitcherSupplier.set(
+                                        new IncognitoReauthTabSwitcherDelegate() {
+                                            @Override
+                                            public boolean addReauthScreenInTabSwitcher(
+                                                    @NonNull View customView) {
+                                                return tabSwitcherCustomViewManager.requestView(
+                                                        customView);
+                                            }
 
-                                        @Override
-                                        public boolean removeReauthScreenFromTabSwitcher() {
-                                            return tabSwitcherCustomViewManager.releaseView();
-                                        }
-                                    })));
+                                            @Override
+                                            public boolean removeReauthScreenFromTabSwitcher() {
+                                                return tabSwitcherCustomViewManager.releaseView();
+                                            }
+                                        })));
+            }
 
             IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
                     new IncognitoReauthCoordinatorFactory(mActivity, tabModelSelector,
@@ -1345,6 +1347,11 @@ public class RootUiCoordinator
     @VisibleForTesting
     public ScrimCoordinator getScrimCoordinatorForTesting() {
         return mScrimCoordinator;
+    }
+
+    @VisibleForTesting
+    public IncognitoReauthController getIncognitoReauthControllerForTesting() {
+        return mIncognitoReauthController;
     }
 
     @VisibleForTesting
