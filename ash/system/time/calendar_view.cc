@@ -761,13 +761,20 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
   if (observed_view != scroll_view_)
     return;
 
-  // Initializes the view to auto scroll to `PositionOfToday` or the first row
-  // of today's month. This init needs to be done after the view is drawn
-  // (bounds has changed), otherwise we cannot get the bounds of each view.
-  // After the first time auto scroll, the view is drawn and we don't need to
-  // observe it anymore.
+  // The CalendarView is created and lives without being added to the view tree
+  // for a while. The first time OnViewBoundsChanged is called is the sign that
+  // the view has actually been added to a view hierarchy, and it is time to
+  // make some changes which depend on the view belonging to a widget.
   scoped_view_observer_.RemoveObservation(observed_view);
+
+  // Initializes the view to auto scroll to `PositionOfToday` or the first row
+  // of today's month.
   ScrollToToday();
+
+  // If the view was shown via keyboard shortcut, the widget will be focusable.
+  // Request focus to enable the user to quickly press enter to see todays
+  // events. If the view was not shown via keyboard, this will be a no-op.
+  RequestFocus();
 }
 
 void CalendarView::OnViewFocused(View* observed_view) {

@@ -230,7 +230,6 @@ void ToggleCalendar() {
   // show the calendar view.
   if (!tray->IsBubbleShown())
     tray->ShowBubble();
-  tray->ActivateBubble();
   tray->bubble()->ShowCalendarView(
       calendar_metrics::CalendarViewShowSource::kAccelerator,
       calendar_metrics::CalendarEventSource::kKeyboard);

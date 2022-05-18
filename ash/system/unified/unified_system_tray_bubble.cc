@@ -176,6 +176,11 @@ void UnifiedSystemTrayBubble::ShowCalendarView(
   if (!bubble_widget_)
     return;
 
+  if (event_source == calendar_metrics::CalendarEventSource::kKeyboard) {
+    bubble_view_->SetCanActivate(true);
+    bubble_widget_->Activate();
+  }
+
   DCHECK(unified_view_);
   DCHECK(controller_);
   controller_->ShowCalendarView(show_source, event_source);

@@ -454,15 +454,20 @@ TEST_F(CalendarViewTest, HeaderFocusing) {
 
   CreateCalendarView();
 
-  // Generates a tab key press. Should focus on today's button.
-  PressTab();
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  // Todays DateCellView should be focused on open.
+  EXPECT_STREQ(focus_manager->GetFocusedView()->GetClassName(),
+               "CalendarDateCellView");
+  EXPECT_EQ(
+      static_cast<const views::LabelButton*>(focus_manager->GetFocusedView())
+          ->GetText(),
+      u"7");
 
   // Moves to the back button.
   PressTab();
 
   // Moves to the next focusable view. Today's button.
   PressTab();
-  auto* focus_manager = calendar_view()->GetFocusManager();
   EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
 
   // Moves to settings button.
@@ -495,8 +500,7 @@ TEST_F(CalendarViewTest, FocusingToDateCell) {
 
   auto* focus_manager = calendar_view()->GetFocusManager();
 
-  // Generates a tab key press. Should focus on today's cell.
-  PressTab();
+  // Focus should start on todays CalendarDateCellView.
   EXPECT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
@@ -585,8 +589,7 @@ TEST_F(CalendarViewTest, MixedInput) {
 
   auto* focus_manager = calendar_view()->GetFocusManager();
 
-  // Generates a tab key press. Should focus on today's cell.
-  PressTab();
+  // Focus starts on todays CalendarDateCellView.
   ASSERT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
@@ -616,8 +619,7 @@ TEST_F(CalendarViewTest, MonthViewFocusing) {
   CreateCalendarView();
 
   auto* focus_manager = calendar_view()->GetFocusManager();
-  // Focus on the the 7th date cell, which is the date of "today".
-  PressTab();
+  // Todays DateCellView should be focused on open.
   EXPECT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
@@ -680,8 +682,7 @@ TEST_F(CalendarViewTest, FocusingToNavigate) {
   CreateCalendarView();
 
   auto* focus_manager = calendar_view()->GetFocusManager();
-  // Focus on the the 7th date cell, which is the date of "today".
-  PressTab();
+  // Focus starts on todays CalendarDateCellView.
   EXPECT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
@@ -739,8 +740,7 @@ TEST_F(CalendarViewTest, ExpandableViewFocusing) {
             GetScrollBarMode());
 
   auto* focus_manager = calendar_view()->GetFocusManager();
-  // Moves to the the 7th date cell, which is the date of "today".
-  PressTab();
+  // Focus starts on todays CalendarDateCellView.
   EXPECT_EQ(u"7",
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());

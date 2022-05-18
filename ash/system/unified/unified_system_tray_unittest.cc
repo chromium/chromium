@@ -5,7 +5,9 @@
 #include "ash/system/unified/unified_system_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
@@ -22,9 +24,11 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -438,6 +442,49 @@ TEST_F(UnifiedSystemTrayTest, TimeInQuickSettingsMetric) {
   tray->CloseBubble();
   histogram_tester.ExpectTotalCount("Ash.QuickSettings.UserJourneyTime",
                                     /*count=*/2);
+}
+
+// Tests that pressing the TOGGLE_CALENDAR accelerator once results in the
+// calendar view showing.
+TEST_F(UnifiedSystemTrayTest, PressCalendarAccelerator) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCalendarView);
+
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+}
+
+// Tests that pressing the TOGGLE_CALENDAR accelerator twice results in a hidden
+// QuickSettings bubble.
+TEST_F(UnifiedSystemTrayTest, ToggleCalendarViewAccelerator) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCalendarView);
+
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  EXPECT_FALSE(GetUnifiedSystemTrayBubble());
+}
+
+// Tests that showing the calendar view by the TOGGLE_CALENDAR accelerator
+// results in the CalendarDateCellView being focused.
+TEST_F(UnifiedSystemTrayTest, CalendarAcceleratorFocusesDateCell) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCalendarView);
+
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+
+  auto* focus_manager =
+      GetUnifiedSystemTrayBubble()->GetBubbleWidget()->GetFocusManager();
+  EXPECT_TRUE(focus_manager->GetFocusedView());
+  EXPECT_STREQ(focus_manager->GetFocusedView()->GetClassName(),
+               "CalendarDateCellView");
 }
 
 }  // namespace ash
