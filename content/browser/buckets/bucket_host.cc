@@ -12,11 +12,8 @@
 namespace content {
 
 BucketHost::BucketHost(BucketManagerHost* bucket_manager_host,
-                       const storage::BucketInfo& bucket_info,
-                       blink::mojom::BucketPoliciesPtr policies)
-    : bucket_manager_host_(bucket_manager_host),
-      bucket_info_(bucket_info),
-      policies_(std::move(policies)) {
+                       const storage::BucketInfo& bucket_info)
+    : bucket_manager_host_(bucket_manager_host), bucket_info_(bucket_info) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketHost::OnReceiverDisconnected, base::Unretained(this)));
 }
@@ -30,17 +27,17 @@ BucketHost::CreateStorageBucketBinding() {
   return remote;
 }
 
+void BucketHost::OnUpdate(const storage::BucketInfo& bucket_info) {
+  bucket_info_ = bucket_info;
+}
+
 void BucketHost::Persist(PersistCallback callback) {
-  // TODO(ayui): Add implementation for requesting Storage Bucket persistence.
-  policies_->has_persisted = true;
-  policies_->persisted = true;
-  std::move(callback).Run(true, true);
+  bucket_manager_host_->UpdateBucketPersistence(
+      bucket_info_.id, true, base::BindOnce(std::move(callback), true));
 }
 
 void BucketHost::Persisted(PersistedCallback callback) {
-  // TODO(ayui): Retrieve from DB once Storage Buckets table is implemented.
-  std::move(callback).Run(policies_->has_persisted && policies_->persisted,
-                          true);
+  std::move(callback).Run(bucket_info_.persistent, true);
 }
 
 void BucketHost::Estimate(EstimateCallback callback) {
@@ -49,22 +46,19 @@ void BucketHost::Estimate(EstimateCallback callback) {
 }
 
 void BucketHost::Durability(DurabilityCallback callback) {
-  auto durability = policies_->has_durability
-                        ? policies_->durability
-                        : blink::mojom::BucketDurability::kRelaxed;
-  // TODO(ayui): Retrieve from DB once Storage Buckets table is implemented.
-  std::move(callback).Run(durability, true);
+  std::move(callback).Run(bucket_info_.durability, true);
 }
 
 void BucketHost::SetExpires(base::Time expires, SetExpiresCallback callback) {
-  // TODO(ayui): Update DB once Storage Buckets table is implemented.
-  policies_->expires = expires;
-  std::move(callback).Run(true);
+  bucket_manager_host_->UpdateBucketExpiration(bucket_info_.id, expires,
+                                               std::move(callback));
 }
 
 void BucketHost::Expires(ExpiresCallback callback) {
-  // TODO(ayui): Retrieve from DB once Storage Buckets table is implemented.
-  std::move(callback).Run(policies_->expires, true);
+  absl::optional<base::Time> expires;
+  if (!bucket_info_.expiration.is_null())
+    expires = bucket_info_.expiration;
+  std::move(callback).Run(expires, true);
 }
 
 void BucketHost::OnReceiverDisconnected() {

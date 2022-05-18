@@ -77,8 +77,9 @@ class MediaLicenseManagerTest : public testing::Test {
   storage::BucketLocator GetOrCreateBucket(
       const blink::StorageKey& storage_key) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_->GetOrCreateBucket(storage::BucketInitParams(storage_key),
-                                      future.GetCallback());
+    quota_manager_->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(storage_key),
+        future.GetCallback());
     auto bucket = future.Take();
     EXPECT_TRUE(bucket.ok());
     return bucket->ToBucketLocator();

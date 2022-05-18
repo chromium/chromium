@@ -189,8 +189,9 @@ void ServiceWorkerRegistry::CreateNewRegistration(
 
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
-    quota_manager_proxy_->GetOrCreateBucket(
-        storage::BucketInitParams(key), base::ThreadTaskRunnerHandle::Get(),
+    quota_manager_proxy_->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(key),
+        base::ThreadTaskRunnerHandle::Get(),
         base::BindOnce(
             &ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo,
             weak_factory_.GetWeakPtr(), std::move(options), key,
@@ -209,7 +210,7 @@ void ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo(
     const blink::StorageKey& key,
     NewRegistrationCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
-  // Return nullptr if GetOrCreateBucket fails.
+  // Return nullptr if `UpdateOrCreateBucket` fails.
   if (!result.ok()) {
     std::move(callback).Run(nullptr);
     return;

@@ -61,17 +61,28 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
 
   void RemoveBucketHost(const std::string& name);
 
+  // These functions update bucket policies in the quota database.
+  void UpdateBucketExpiration(storage::BucketId bucket,
+                              const base::Time& expiration,
+                              base::OnceCallback<void(bool)> callback);
+  void UpdateBucketPersistence(storage::BucketId bucket,
+                               bool persistent,
+                               base::OnceCallback<void(bool)> callback);
+
  private:
   // Called when a receiver in the receiver set is disconnected.
   void OnReceiverDisconnect();
 
-  void DidGetBucket(blink::mojom::BucketPoliciesPtr policy,
-                    OpenBucketCallback callback,
+  void DidGetBucket(OpenBucketCallback callback,
                     storage::QuotaErrorOr<storage::BucketInfo> result);
 
   void DidDeleteBucket(const std::string& bucket_name,
                        DeleteBucketCallback callback,
                        blink::mojom::QuotaStatusCode status);
+
+  void DidUpdateBucket(base::OnceCallback<void(bool)> callback,
+                       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Raw pointer is safe because BucketManager owns this BucketManagerHost, and

@@ -46,15 +46,14 @@ class MockQuotaManager : public QuotaManager {
 
   // Overrides QuotaManager's implementation that maintains an internal
   // container of created buckets and avoids going to the DB.
-  void GetOrCreateBucket(
+  void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
   // Overrides QuotaManager's implementation that maintains an internal
   // container of created buckets and avoids going to the DB.
   void GetOrCreateBucketDeprecated(
-      const blink::StorageKey& storage_key,
-      const std::string& bucket_name,
+      const BucketInitParams& bucket_params,
       blink::mojom::StorageType type,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 

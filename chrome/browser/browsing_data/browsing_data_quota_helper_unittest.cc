@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper_impl.h"
+#include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -109,8 +110,9 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
     for (const ClientDefaultBucketData& data : storage_key_data) {
       base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
       quota_manager_->GetOrCreateBucketDeprecated(
-          blink::StorageKey::CreateFromStringForTesting(data.origin),
-          storage::kDefaultBucketName, data.type, future.GetCallback());
+          storage::BucketInitParams::ForDefaultBucket(
+              blink::StorageKey::CreateFromStringForTesting(data.origin)),
+          data.type, future.GetCallback());
       auto bucket = future.Take();
       EXPECT_TRUE(bucket.ok());
       buckets_data.insert(std::pair<storage::BucketLocator, int64_t>(

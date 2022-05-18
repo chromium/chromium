@@ -11,15 +11,18 @@ BucketInfo::BucketInfo(BucketId bucket_id,
                        blink::mojom::StorageType type,
                        std::string name,
                        base::Time expiration,
-                       int64_t quota)
+                       int64_t quota,
+                       bool persistent,
+                       blink::mojom::BucketDurability durability)
     : id(std::move(bucket_id)),
       storage_key(std::move(storage_key)),
       type(type),
       name(std::move(name)),
       expiration(std::move(expiration)),
-      quota(quota) {}
+      quota(quota),
+      persistent(persistent),
+      durability(durability) {}
 
-BucketInfo::BucketInfo() = default;
 BucketInfo::~BucketInfo() = default;
 
 BucketInfo::BucketInfo(const BucketInfo&) = default;

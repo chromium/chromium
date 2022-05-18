@@ -74,19 +74,24 @@ void BucketManagerHost::OpenBucket(const std::string& name,
     return;
   }
 
-  storage::BucketInitParams params((blink::StorageKey(origin_)));
-  params.name = name;
+  storage::BucketInitParams params(blink::StorageKey(origin_), name);
   if (policies) {
     if (policies->expires)
       params.expiration = *policies->expires;
 
-    params.quota = policies->quota;
+    if (policies->has_quota)
+      params.quota = policies->quota;
+
+    if (policies->has_persisted)
+      params.persistent = policies->persisted;
+
+    if (policies->has_durability)
+      params.durability = policies->durability;
   }
-  manager_->quota_manager_proxy()->GetOrCreateBucket(
+  manager_->quota_manager_proxy()->UpdateOrCreateBucket(
       params, base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&BucketManagerHost::DidGetBucket,
-                     weak_factory_.GetWeakPtr(), std::move(policies),
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BucketManagerHost::Keys(KeysCallback callback) {
@@ -115,13 +120,32 @@ void BucketManagerHost::RemoveBucketHost(const std::string& bucket_name) {
   bucket_map_.erase(bucket_name);
 }
 
+void BucketManagerHost::UpdateBucketExpiration(
+    storage::BucketId id,
+    const base::Time& expiration,
+    base::OnceCallback<void(bool)> callback) {
+  manager_->quota_manager_proxy()->UpdateBucketExpiration(
+      id, expiration, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&BucketManagerHost::DidUpdateBucket,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BucketManagerHost::UpdateBucketPersistence(
+    storage::BucketId id,
+    bool persistent,
+    base::OnceCallback<void(bool)> callback) {
+  manager_->quota_manager_proxy()->UpdateBucketPersistence(
+      id, persistent, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&BucketManagerHost::DidUpdateBucket,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void BucketManagerHost::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   manager_->OnHostReceiverDisconnect(this, base::PassKey<BucketManagerHost>());
 }
 
 void BucketManagerHost::DidGetBucket(
-    blink::mojom::BucketPoliciesPtr policy,
     OpenBucketCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -133,8 +157,7 @@ void BucketManagerHost::DidGetBucket(
   }
 
   const auto& bucket = result.value();
-  auto bucket_host =
-      std::make_unique<BucketHost>(this, bucket, std::move(policy));
+  auto bucket_host = std::make_unique<BucketHost>(this, bucket);
   auto pending_remote = bucket_host->CreateStorageBucketBinding();
   bucket_map_.emplace(bucket.name, std::move(bucket_host));
   std::move(callback).Run(std::move(pending_remote));
@@ -149,6 +172,26 @@ void BucketManagerHost::DidDeleteBucket(const std::string& bucket_name,
     return;
   }
   bucket_map_.erase(bucket_name);
+  std::move(callback).Run(true);
+}
+
+void BucketManagerHost::DidUpdateBucket(
+    base::OnceCallback<void(bool)> callback,
+    storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!bucket_info.ok()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto bucket = bucket_map_.find(bucket_info->name);
+  if (bucket == bucket_map_.end()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bucket->second->OnUpdate(bucket_info.value());
   std::move(callback).Run(true);
 }
 

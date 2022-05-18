@@ -124,8 +124,8 @@ void WebDatabaseHostImpl::OpenFileValidated(const std::u16string& vfs_file_name,
       !db_tracker_->IsDatabaseScheduledForDeletion(origin_identifier,
                                                    database_name)) {
     DCHECK(db_tracker_->quota_manager_proxy());
-    db_tracker_->quota_manager_proxy()->GetOrCreateBucket(
-        storage::BucketInitParams(blink::StorageKey(
+    db_tracker_->quota_manager_proxy()->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(blink::StorageKey(
             storage::GetOriginFromIdentifier(origin_identifier))),
         db_tracker_->task_runner(),
         base::BindOnce(&WebDatabaseHostImpl::OpenFileWithBucketCreated,
@@ -147,7 +147,7 @@ void WebDatabaseHostImpl::OpenFileWithBucketCreated(
     int32_t desired_flags,
     OpenFileCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> bucket) {
-  // Return invalid file path on GetOrCreateBucket error.
+  // Return invalid file path on `UpdateOrCreateBucket` error.
   if (!bucket.ok()) {
     std::move(callback).Run(base::File());
     return;

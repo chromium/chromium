@@ -204,7 +204,7 @@ class QuotaManagerImplTest : public testing::Test {
     for (const ClientBucketData& data : mock_data) {
       base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
       quota_manager_impl_->GetOrCreateBucketDeprecated(
-          ToStorageKey(data.origin), data.name, data.type,
+          {ToStorageKey(data.origin), data.name}, data.type,
           future.GetCallback());
       auto bucket = future.Take();
       EXPECT_TRUE(bucket.ok());
@@ -219,9 +219,8 @@ class QuotaManagerImplTest : public testing::Test {
   QuotaErrorOr<BucketInfo> GetOrCreateBucket(const StorageKey& storage_key,
                                              const std::string& bucket_name) {
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
-    BucketInitParams params(storage_key);
-    params.name = bucket_name;
-    quota_manager_impl_->GetOrCreateBucket(params, future.GetCallback());
+    BucketInitParams params(storage_key, bucket_name);
+    quota_manager_impl_->UpdateOrCreateBucket(params, future.GetCallback());
     return future.Take();
   }
 
@@ -808,8 +807,7 @@ TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindLambdaForTesting([&]() {
-        BucketInitParams params(ToStorageKey("http://b.com"));
-        params.name = "bucket_b";
+        BucketInitParams params(ToStorageKey("http://b.com"), "bucket_b");
         // Ensure that the synchronous function returns a bucket.
         auto bucket =
             quota_manager_impl_->proxy()->GetOrCreateBucketSync(params);

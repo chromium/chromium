@@ -349,8 +349,8 @@ void MediaLicenseManager::DidGetMediaLicenses(
       continue;
     }
     const blink::StorageKey& storage_key = storage_key_and_files.first;
-    quota_manager_proxy()->GetOrCreateBucket(
-        storage::BucketInitParams(storage_key),
+    quota_manager_proxy()->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(storage_key),
         base::SequencedTaskRunnerHandle::Get(),
         base::BindOnce(&MediaLicenseManager::OpenPluginFileSystemsForStorageKey,
                        weak_factory_.GetWeakPtr(), storage_key,
@@ -489,8 +489,8 @@ void MediaLicenseManager::DidClearPluginPrivateData() {
   for (const auto& receivers : pending_receivers_) {
     const auto& storage_key = receivers.first;
     // Get the default bucket for `storage_key`.
-    quota_manager_proxy()->GetOrCreateBucket(
-        storage::BucketInitParams(storage_key),
+    quota_manager_proxy()->UpdateOrCreateBucket(
+        storage::BucketInitParams::ForDefaultBucket(storage_key),
         base::SequencedTaskRunnerHandle::Get(),
         base::BindOnce(&MediaLicenseManager::DidGetBucket,
                        weak_factory_.GetWeakPtr(), storage_key));
@@ -515,15 +515,15 @@ void MediaLicenseManager::OpenCdmStorage(
   if (receiver_list.size() > 1 ||
       !plugin_private_data_migration_closure_.is_null()) {
     // If a pending receiver for this storage key already existed, there is
-    // an in-flight `GetOrCreateBucket()` call for this storage key. If we're in
-    // the process of migrating data from the plugin private file system,
+    // an in-flight `UpdateOrCreateBucket()` call for this storage key. If we're
+    // in the process of migrating data from the plugin private file system,
     // pending receivers will be handled in `DidClearPluginPrivateData()`.
     return;
   }
 
   // Get the default bucket for `storage_key`.
-  quota_manager_proxy()->GetOrCreateBucket(
-      storage::BucketInitParams(storage_key),
+  quota_manager_proxy()->UpdateOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&MediaLicenseManager::DidGetBucket,
                      weak_factory_.GetWeakPtr(), storage_key));
@@ -540,7 +540,7 @@ void MediaLicenseManager::DidGetBucket(
     // TODO(crbug.com/1231162): This case can only be hit
     // when the migration code is kicked off after `OpenCdmStorage()` has
     // already been called, since `OpenCdmStorage()` will not call
-    // `GetOrCreateBucket()` while there is an in-progress migration. Change
+    // `UpdateOrCreateBucket()` while there is an in-progress migration. Change
     // this to a DCHECK once the migration logic is removed.
     return;
   }

@@ -43,7 +43,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override;
 
-  void GetOrCreateBucket(
+  void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) override;

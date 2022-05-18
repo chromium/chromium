@@ -74,6 +74,56 @@ void RecordDatabaseResetHistogram(const DatabaseResetReason reason) {
   base::UmaHistogramEnumeration("Quota.QuotaDatabaseReset", reason);
 }
 
+// SQL statement fragment for inserting fields into the buckets table.
+#define BUCKETS_FIELDS_INSERTER                                               \
+  " (storage_key, host, type, name, use_count, last_accessed, last_modified," \
+  " expiration, quota, persistent, durability) "                              \
+  " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+
+void BindBucketInitParamsToInsertStatement(const BucketInitParams& params,
+                                           StorageType type,
+                                           int use_count,
+                                           const base::Time& last_accessed,
+                                           const base::Time& last_modified,
+                                           sql::Statement& statement) {
+  statement.BindString(0, params.storage_key.Serialize());
+  statement.BindString(1, params.storage_key.origin().host());
+  statement.BindInt(2, static_cast<int>(type));
+  statement.BindString(3, params.name);
+  statement.BindInt(4, use_count);
+  statement.BindTime(5, last_accessed);
+  statement.BindTime(6, last_modified);
+  statement.BindTime(7, params.expiration);
+  statement.BindInt64(8, params.quota);
+  statement.BindBool(9, params.persistent.value_or(false));
+  int durability = static_cast<int>(
+      params.durability.value_or(blink::mojom::BucketDurability::kRelaxed));
+  statement.BindInt(10, durability);
+}
+
+// Fields to be retrieved from the database and stored in a `BucketInfo`.
+#define BUCKET_INFO_FIELDS_SELECTOR \
+  " id, storage_key, type, name, expiration, quota, persistent, durability "
+
+QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
+  if (!statement.Step()) {
+    return statement.Succeeded() ? QuotaError::kNotFound
+                                 : QuotaError::kDatabaseError;
+  }
+
+  absl::optional<StorageKey> storage_key =
+      StorageKey::Deserialize(statement.ColumnString(1));
+  if (!storage_key.has_value())
+    return QuotaError::kNotFound;
+
+  return BucketInfo(
+      BucketId(statement.ColumnInt64(0)), storage_key.value(),
+      static_cast<StorageType>(statement.ColumnInt(2)),
+      statement.ColumnString(3), statement.ColumnTime(4),
+      statement.ColumnInt(5), statement.ColumnBool(6),
+      static_cast<blink::mojom::BucketDurability>(statement.ColumnInt(7)));
+}
+
 }  // anonymous namespace
 
 const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
@@ -204,33 +254,45 @@ QuotaError QuotaDatabase::SetHostQuota(const std::string& host,
   return QuotaError::kNone;
 }
 
-QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucket(
+QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
     const BucketInitParams& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   QuotaErrorOr<BucketInfo> bucket_result =
       GetBucket(params.storage_key, params.name, StorageType::kTemporary);
 
-  if (bucket_result.ok())
+  if (!bucket_result.ok()) {
+    if (bucket_result.error() == QuotaError::kNotFound)
+      return CreateBucketInternal(params, StorageType::kTemporary);
+
     return bucket_result;
+  }
 
-  if (bucket_result.error() != QuotaError::kNotFound)
-    return bucket_result.error();
+  if (!params.expiration.is_null() &&
+      (params.expiration != bucket_result->expiration)) {
+    DCHECK(!bucket_result->is_default());
+    bucket_result =
+        UpdateBucketExpiration(bucket_result->id, params.expiration);
+  }
+  DCHECK(bucket_result.ok());
 
-  base::Time now = base::Time::Now();
-  return CreateBucketInternal(
-      params.storage_key, StorageType::kTemporary, params.name,
-      /*use_count=*/0, now, now, params.expiration, params.quota);
+  if (params.persistent && (*params.persistent != bucket_result->persistent)) {
+    DCHECK(!bucket_result->is_default());
+    bucket_result =
+        UpdateBucketPersistence(bucket_result->id, *params.persistent);
+  }
+  DCHECK(bucket_result.ok());
+
+  return bucket_result;
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucketDeprecated(
-    const StorageKey& storage_key,
-    const std::string& bucket_name,
+    const BucketInitParams& params,
     StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   QuotaErrorOr<BucketInfo> bucket_result =
-      GetBucket(storage_key, bucket_name, type);
+      GetBucket(params.storage_key, params.name, type);
 
   if (bucket_result.ok())
     return bucket_result;
@@ -238,20 +300,17 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucketDeprecated(
   if (bucket_result.error() != QuotaError::kNotFound)
     return bucket_result.error();
 
-  base::Time now = base::Time::Now();
-  return CreateBucketInternal(storage_key, type, bucket_name, /*use_count=*/0,
-                              now, now, absl::nullopt, 0);
+  return CreateBucketInternal(params, type);
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketForTesting(
     const StorageKey& storage_key,
     const std::string& bucket_name,
-    blink::mojom::StorageType storage_type) {
+    StorageType storage_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Time now = base::Time::Now();
-  return CreateBucketInternal(storage_key, storage_type, bucket_name,
-                              /*use_count=*/0, now, now, absl::nullopt, 0);
+  BucketInitParams params(storage_key, bucket_name);
+  return CreateBucketInternal(params, storage_type);
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
@@ -265,7 +324,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
 
   static constexpr char kSql[] =
       // clang-format off
-      "SELECT id, expiration, quota "
+      "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
         "WHERE storage_key = ? AND type = ? AND name = ?";
   // clang-format on
@@ -274,14 +333,53 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
   statement.BindInt(1, static_cast<int>(storage_type));
   statement.BindString(2, bucket_name);
 
-  if (!statement.Step()) {
-    return statement.Succeeded() ? QuotaError::kNotFound
-                                 : QuotaError::kDatabaseError;
-  }
+  return BucketInfoFromSqlStatement(statement);
+}
 
-  return BucketInfo(BucketId(statement.ColumnInt64(0)), storage_key,
-                    storage_type, bucket_name, statement.ColumnTime(1),
-                    statement.ColumnInt(2));
+QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateBucketExpiration(
+    BucketId bucket,
+    const base::Time& expiration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  QuotaError open_error = EnsureOpened();
+  if (open_error != QuotaError::kNone)
+    return open_error;
+
+  static constexpr char kSql[] =
+      // clang-format off
+      "UPDATE buckets "
+        "SET expiration = ? "
+        "WHERE id = ? "
+        "RETURNING " BUCKET_INFO_FIELDS_SELECTOR;
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindTime(0, expiration);
+  statement.BindInt64(1, bucket.value());
+  ScheduleCommit();
+
+  return BucketInfoFromSqlStatement(statement);
+}
+
+QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateBucketPersistence(
+    BucketId bucket,
+    bool persistent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  QuotaError open_error = EnsureOpened();
+  if (open_error != QuotaError::kNone)
+    return open_error;
+
+  static constexpr char kSql[] =
+      // clang-format off
+      "UPDATE buckets "
+        "SET persistent = ? "
+        "WHERE id = ? "
+        "RETURNING " BUCKET_INFO_FIELDS_SELECTOR;
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindBool(0, persistent);
+  statement.BindInt64(1, bucket.value());
+  ScheduleCommit();
+
+  return BucketInfoFromSqlStatement(statement);
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucketById(BucketId bucket_id) {
@@ -292,27 +390,14 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucketById(BucketId bucket_id) {
 
   static constexpr char kSql[] =
       // clang-format off
-      "SELECT storage_key, type, name, expiration, quota "
+      "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
         "WHERE id = ?";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt64(0, bucket_id.value());
 
-  if (!statement.Step()) {
-    return statement.Succeeded() ? QuotaError::kNotFound
-                                 : QuotaError::kDatabaseError;
-  }
-
-  absl::optional<StorageKey> storage_key =
-      StorageKey::Deserialize(statement.ColumnString(0));
-  if (!storage_key.has_value())
-    return QuotaError::kNotFound;
-
-  return BucketInfo(bucket_id, storage_key.value(),
-                    static_cast<StorageType>(statement.ColumnInt(1)),
-                    statement.ColumnString(2), statement.ColumnTime(3),
-                    statement.ColumnInt(4));
+  return BucketInfoFromSqlStatement(statement);
 }
 
 QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForType(
@@ -477,27 +562,14 @@ QuotaError QuotaDatabase::RegisterInitialStorageKeyInfo(
     StorageType storage_type = type_and_storage_keys.first;
     for (const auto& storage_key : type_and_storage_keys.second) {
       static constexpr char kSql[] =
-          // clang-format off
-          "INSERT OR IGNORE INTO buckets("
-              "storage_key,"
-              "host,"
-              "type,"
-              "name,"
-              "use_count,"
-              "last_accessed,"
-              "last_modified,"
-              "expiration,"
-              "quota,"
-              "persistent,"
-              "durability) "
-            "VALUES (?, ?, ?, ?, 0, 0, 0, ?, 0, 0, 0)";
-      // clang-format on
+          "INSERT OR IGNORE INTO buckets" BUCKETS_FIELDS_INSERTER;
       sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-      statement.BindString(0, storage_key.Serialize());
-      statement.BindString(1, storage_key.origin().host());
-      statement.BindInt(2, static_cast<int>(storage_type));
-      statement.BindString(3, kDefaultBucketName);
-      statement.BindTime(4, base::Time());
+      BucketInitParams init_params =
+          BucketInitParams::ForDefaultBucket(storage_key);
+      BindBucketInitParamsToInsertStatement(
+          init_params, storage_type, /*use_count=*/0,
+          /*last_accessed=*/base::Time(),
+          /*last_modified=*/base::Time(), statement);
 
       if (!statement.Run())
         return QuotaError::kDatabaseError;
@@ -1082,14 +1154,8 @@ QuotaError QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
-    const blink::StorageKey& storage_key,
-    StorageType type,
-    const std::string& bucket_name,
-    int use_count,
-    base::Time last_accessed,
-    base::Time last_modified,
-    absl::optional<base::Time> expiration,
-    int64_t quota) {
+    const BucketInitParams& params,
+    StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug/1210259): Add DCHECKs for input validation.
   QuotaError open_error = EnsureOpened();
@@ -1098,45 +1164,27 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
 
   static constexpr char kSql[] =
       // clang-format off
-      "INSERT INTO buckets("
-        "storage_key,"
-        "host,"
-        "type,"
-        "name,"
-        "use_count,"
-        "last_accessed,"
-        "last_modified,"
-        "expiration,"
-        "quota,"
-        "persistent,"
-        "durability) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)";
+      "INSERT INTO buckets " BUCKETS_FIELDS_INSERTER
+        " RETURNING " BUCKET_INFO_FIELDS_SELECTOR;
   // clang-format on
+
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, storage_key.Serialize());
-  statement.BindString(1, storage_key.origin().host());
-  statement.BindInt(2, static_cast<int>(type));
-  statement.BindString(3, bucket_name);
-  statement.BindInt(4, use_count);
-  statement.BindTime(5, last_accessed);
-  statement.BindTime(6, last_modified);
-  const base::Time expires = expiration.value_or(base::Time());
-  statement.BindTime(7, expires);
-  statement.BindInt64(8, quota);
+  BindBucketInitParamsToInsertStatement(params, type, /*use_count=*/0,
+                                        /*last_accessed=*/base::Time::Now(),
+                                        /*last_modified=*/base::Time::Now(),
+                                        statement);
+  QuotaErrorOr<BucketInfo> result = BucketInfoFromSqlStatement(statement);
+  const bool done = !statement.Step();
+  DCHECK(done);
 
-  if (!statement.Run())
-    return QuotaError::kDatabaseError;
+  if (result.ok()) {
+    // Commit immediately so that we persist the bucket metadata to disk before
+    // we inform other services / web apps (via the Buckets API) that we did so.
+    // Once informed, that promise should persist across power failures.
+    Commit();
+  }
 
-  int64_t bucket_id = db_->GetLastInsertRowId();
-  DCHECK_GT(bucket_id, 0);
-
-  // Commit immediately so that we persist the bucket metadata to disk before we
-  // inform other services / web apps (via the Buckets API) that we did so.
-  // Once informed, that promise should persist across power failures.
-  Commit();
-
-  return BucketInfo(BucketId(bucket_id), storage_key, type, bucket_name,
-                    expires, quota);
+  return result;
 }
 
 bool operator<(const QuotaDatabase::BucketTableEntry& lhs,

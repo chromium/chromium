@@ -197,8 +197,7 @@ FileSystemContext::FileSystemContext(
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       quota_client_(std::make_unique<FileSystemQuotaClient>(this)),
       quota_client_wrapper_(
-          std::make_unique<storage::QuotaClientCallbackWrapper>(
-              quota_client_.get())),
+          std::make_unique<QuotaClientCallbackWrapper>(quota_client_.get())),
       sandbox_delegate_(std::make_unique<SandboxFileSystemBackendDelegate>(
           quota_manager_proxy_.get(),
           default_file_task_runner_.get(),
@@ -264,18 +263,18 @@ void FileSystemContext::Initialize() {
 
   // QuotaManagerProxy::RegisterClient() must be called synchronously during
   // DatabaseTracker creation until crbug.com/1182630 is fixed.
-  mojo::PendingRemote<storage::mojom::QuotaClient> quota_client_remote;
-  mojo::PendingReceiver<storage::mojom::QuotaClient> quota_client_receiver =
+  mojo::PendingRemote<mojom::QuotaClient> quota_client_remote;
+  mojo::PendingReceiver<mojom::QuotaClient> quota_client_receiver =
       quota_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy_->RegisterClient(std::move(quota_client_remote),
-                                       storage::QuotaClientType::kFileSystem,
+                                       QuotaClientType::kFileSystem,
                                        QuotaManagedStorageTypes());
 
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<FileSystemContext> self,
-             mojo::PendingReceiver<storage::mojom::QuotaClient> receiver) {
+             mojo::PendingReceiver<mojom::QuotaClient> receiver) {
             if (!self->quota_client_receiver_) {
               // Shutdown() may be called directly on the IO sequence. If that
               // happens, `quota_client_receiver_` may get reset before this
@@ -439,8 +438,8 @@ void FileSystemContext::OpenFileSystem(
     // Ensure default bucket for `storage_key` exists so that Quota API
     // is aware of the usage.
     quota_manager_proxy()->GetOrCreateBucketDeprecated(
-        storage_key, kDefaultBucketName, FileSystemTypeToQuotaStorageType(type),
-        io_task_runner_.get(),
+        BucketInitParams::ForDefaultBucket(storage_key),
+        FileSystemTypeToQuotaStorageType(type), io_task_runner_.get(),
         base::BindOnce(&FileSystemContext::OnGetOrCreateBucket,
                        weak_factory_.GetWeakPtr(), storage_key, type, mode,
                        std::move(callback)));

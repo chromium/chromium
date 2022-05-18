@@ -55,7 +55,7 @@ MockQuotaManager::MockQuotaManager(
   QuotaManagerImpl::SetEvictionDisabledForTesting(false);
 }
 
-void MockQuotaManager::GetOrCreateBucket(
+void MockQuotaManager::UpdateOrCreateBucket(
     const BucketInitParams& params,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (db_disabled_) {
@@ -77,8 +77,7 @@ void MockQuotaManager::GetOrCreateBucket(
 }
 
 void MockQuotaManager::GetOrCreateBucketDeprecated(
-    const blink::StorageKey& storage_key,
-    const std::string& bucket_name,
+    const BucketInitParams& params,
     blink::mojom::StorageType type,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (db_disabled_) {
@@ -87,12 +86,12 @@ void MockQuotaManager::GetOrCreateBucketDeprecated(
   }
 
   QuotaErrorOr<BucketInfo> bucketOr =
-      FindBucket(storage_key, bucket_name, type);
+      FindBucket(params.storage_key, params.name, type);
   if (bucketOr.ok()) {
     std::move(callback).Run(std::move(bucketOr));
     return;
   }
-  BucketInfo bucket = CreateBucket(storage_key, bucket_name, type);
+  BucketInfo bucket = CreateBucket(params.storage_key, params.name, type);
   buckets_.emplace_back(
       BucketData(bucket, storage::AllQuotaClientTypes(), base::Time::Now()));
   std::move(callback).Run(std::move(bucket));
@@ -149,7 +148,9 @@ BucketInfo MockQuotaManager::CreateBucket(const StorageKey& storage_key,
                                           const std::string& name,
                                           StorageType type) {
   return BucketInfo(bucket_id_generator_.GenerateNextId(), storage_key, type,
-                    name, /*expiration=*/base::Time::Max(), /*quota=*/0);
+                    name, /*expiration=*/base::Time::Max(), /*quota=*/0,
+                    /*persistent=*/false,
+                    /*durability=*/{});
 }
 
 bool MockQuotaManager::BucketHasData(const BucketInfo& bucket,

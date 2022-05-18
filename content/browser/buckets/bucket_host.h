@@ -25,8 +25,7 @@ class BucketManagerHost;
 class BucketHost : public blink::mojom::BucketHost {
  public:
   BucketHost(BucketManagerHost* bucket_manager_host,
-             const storage::BucketInfo& bucket_info,
-             blink::mojom::BucketPoliciesPtr policies);
+             const storage::BucketInfo& bucket_info);
   ~BucketHost() override;
 
   BucketHost(const BucketHost&) = delete;
@@ -35,6 +34,8 @@ class BucketHost : public blink::mojom::BucketHost {
   // Create mojo data pipe and return remote to pass to the renderer
   // for the StorageBucket object.
   mojo::PendingRemote<blink::mojom::BucketHost> CreateStorageBucketBinding();
+
+  void OnUpdate(const storage::BucketInfo& bucket_info);
 
   // blink::mojom::BucketHost
   void Persist(PersistCallback callback) override;
@@ -51,11 +52,8 @@ class BucketHost : public blink::mojom::BucketHost {
   // BucketHost.
   raw_ptr<BucketManagerHost> bucket_manager_host_;
 
-  const storage::BucketInfo bucket_info_;
-
-  // TODO(ayui): The authoritative source of bucket policies should be the
-  //             buckets database.
-  blink::mojom::BucketPoliciesPtr policies_;
+  // Holds the latest snapshot from the database.
+  storage::BucketInfo bucket_info_;
 
   mojo::ReceiverSet<blink::mojom::BucketHost> receivers_;
 };

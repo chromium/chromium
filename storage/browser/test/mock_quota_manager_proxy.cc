@@ -34,12 +34,12 @@ void MockQuotaManagerProxy::RegisterClient(
   registered_client_.Bind(std::move(client));
 }
 
-void MockQuotaManagerProxy::GetOrCreateBucket(
+void MockQuotaManagerProxy::UpdateOrCreateBucket(
     const BucketInitParams& params,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_)
-    mock_quota_manager_->GetOrCreateBucket(params, std::move(callback));
+    mock_quota_manager_->UpdateOrCreateBucket(params, std::move(callback));
 }
 
 void MockQuotaManagerProxy::GetBucket(

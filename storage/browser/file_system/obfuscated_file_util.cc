@@ -1265,7 +1265,7 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForStorageKey(
     // Retrieve the bucket information for third-party StorageKey.
     QuotaErrorOr<BucketInfo> bucket =
         sandbox_delegate_->quota_manager_proxy()->GetOrCreateBucketSync(
-            BucketInitParams(storage_key));
+            BucketInitParams::ForDefaultBucket(storage_key));
     if (!bucket.ok())
       return base::File::FILE_ERROR_FAILED;
     // Get the path and verify it is valid.

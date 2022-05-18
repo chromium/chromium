@@ -176,12 +176,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void BindInternalsHandler(
       mojo::PendingReceiver<mojom::QuotaInternalsHandler> receiver);
 
-  // Gets the bucket with `bucket_name` for the `storage_key` for StorageType
-  // kTemporary and returns the BucketInfo. If one doesn't exist, it creates
-  // a new bucket with the specified policies. Returns a QuotaError if the
-  // operation has failed.
-  // This method is declared as virtual to allow test code to override it.
-  virtual void GetOrCreateBucket(
+  // Gets the bucket with `bucket_name` for the `storage_key` for
+  // StorageType kTemporary and returns the BucketInfo. This may update
+  // expiration and persistence if the existing attributes don't match those
+  // found in `bucket_params`, and may clobber the bucket and rebuild it if it's
+  // expired. If a bucket doesn't exist, a new bucket is created with the
+  // specified policies. Returns a QuotaError if the operation has failed. This
+  // method is declared as virtual to allow test code to override it.
+  virtual void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
   // Same as GetOrCreateBucket but takes in StorageType. This should only be
@@ -189,8 +191,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // StorageType::kSyncable and StorageType::kPersistent are deprecated.
   // (crbug.com/1233525, crbug.com/1286964).
   virtual void GetOrCreateBucketDeprecated(
-      const blink::StorageKey& storage_key,
-      const std::string& bucket_name,
+      const BucketInitParams& bucket_params,
       blink::mojom::StorageType storage_type,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
@@ -358,6 +359,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   virtual void FindAndDeleteBucketData(const blink::StorageKey& storage_key,
                                        const std::string& bucket_name,
                                        StatusCallback callback);
+
+  // Updates the expiration for the given bucket.
+  void UpdateBucketExpiration(
+      BucketId bucket,
+      const base::Time& expiration,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Updates the persistence bit for the given bucket.
+  void UpdateBucketPersistence(
+      BucketId bucket,
+      bool persistent,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
   // Instructs each QuotaClient to remove possible traces of deleted
   // data on the disk.
