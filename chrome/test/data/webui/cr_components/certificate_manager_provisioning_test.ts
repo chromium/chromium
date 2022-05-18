@@ -54,6 +54,7 @@ function createSampleCertificateProvisioningProcess(isUpdated: boolean):
     stateId: 8,
     status: isUpdated ? 'dummyStateName2' : 'dummyStateName',
     timeSinceLastUpdate: 'dummyTimeSinceLastUpdate',
+    lastUnsuccessfulMessage: 'dummyLastUnsuccessfulMessage',
   };
 }
 

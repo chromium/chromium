@@ -37,6 +37,16 @@ using CertProvisioningWorkerCallback =
 
 class CertProvisioningWorker;
 
+struct BackendServerError {
+  // info on the last failed DMServer call attempt.
+  BackendServerError(policy::DeviceManagementStatus dm_status,
+                     base::Time error_time)
+      : time(error_time), status(dm_status) {}
+
+  base::Time time;
+  policy::DeviceManagementStatus status;
+};
+
 class CertProvisioningWorkerFactory {
  public:
   virtual ~CertProvisioningWorkerFactory() = default;
@@ -102,6 +112,9 @@ class CertProvisioningWorker {
   virtual CertProvisioningWorkerState GetPreviousState() const = 0;
   // Returns the time when this worker has been last updated.
   virtual base::Time GetLastUpdateTime() const = 0;
+  // Return the info of when this worker has last faced an unsuccessful attempt.
+  virtual const absl::optional<BackendServerError>& GetLastBackendServerError()
+      const = 0;
 };
 
 class CertProvisioningWorkerImpl : public CertProvisioningWorker {
@@ -127,6 +140,8 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   CertProvisioningWorkerState GetState() const override;
   CertProvisioningWorkerState GetPreviousState() const override;
   base::Time GetLastUpdateTime() const override;
+  const absl::optional<BackendServerError>& GetLastBackendServerError()
+      const override;
 
  private:
   friend class CertProvisioningSerializer;
@@ -237,9 +252,17 @@ class CertProvisioningWorkerImpl : public CertProvisioningWorker {
   // State that was before the current one. Useful for debugging and cleaning
   // on failure.
   CertProvisioningWorkerState prev_state_ = state_;
-  // Time when this worker has been last updated.
+  // Time when this worker has been last updated. An update is when the worker
+  // advances to the next state or for states that wait for a backend-side
+  // condition (e.g CertProvisioningWorkerState:kFinishCsrResponseReceived):
+  // when it successfully checked with the backend that the condition is not
+  // fulfilled yet.
   base::Time last_update_time_;
-
+  // Consequently, it is not updated if waiting for a backend-side condition,
+  // but communication with the backend is not possible (e.g. due to server
+  // errors or network connectivity issues).
+  // The last error received in communicating to the backend server.
+  absl::optional<BackendServerError> last_backend_server_error_;
   bool is_waiting_ = false;
   // Used for an UMA metric to track situation when the worker did not receive
   // an invalidation for a completed server side task.

@@ -28,6 +28,7 @@
 #include "crypto/nss_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -89,11 +90,14 @@ void SetupMockCertProvisioningWorker(
     ash::cert_provisioning::MockCertProvisioningWorker* worker,
     ash::cert_provisioning::CertProvisioningWorkerState state,
     const std::string* public_key,
-    ash::cert_provisioning::CertProfile& cert_profile) {
+    ash::cert_provisioning::CertProfile& cert_profile,
+    absl::optional<ash::cert_provisioning::BackendServerError>& backend_error) {
   EXPECT_CALL(*worker, GetState).WillRepeatedly(Return(state));
   EXPECT_CALL(*worker, GetLastUpdateTime).WillRepeatedly(Return(base::Time()));
   EXPECT_CALL(*worker, GetPublicKey).WillRepeatedly(ReturnPointee(public_key));
   ON_CALL(*worker, GetCertProfile).WillByDefault(ReturnRef(cert_profile));
+  ON_CALL(*worker, GetLastBackendServerError)
+      .WillByDefault(ReturnRef(backend_error));
 }
 
 // Recursively visits all strings in |value| and replaces placeholders such as
@@ -288,12 +292,14 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {
   ash::cert_provisioning::CertProfile user_cert_profile(
       kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+  absl::optional<ash::cert_provisioning::BackendServerError> backend_error =
+      absl::nullopt;
   auto user_cert_worker =
       std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
   SetupMockCertProvisioningWorker(
       user_cert_worker.get(),
       ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, user_cert_profile);
+      &der_encoded_spki_, user_cert_profile, backend_error);
   user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
 
   ash::cert_provisioning::CertProfile device_cert_profile(
@@ -304,7 +310,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {
   SetupMockCertProvisioningWorker(
       device_cert_worker.get(),
       ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, device_cert_profile);
+      &der_encoded_spki_, device_cert_profile, backend_error);
   device_workers_[kDeviceCertProfileId] = std::move(device_cert_worker);
 
   // Only the user worker is expected to be displayed in the UI, because the
@@ -324,7 +330,8 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {
                "publicKey": "$2",
                "stateId": 1,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": ""
              })",
           {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(
@@ -337,10 +344,11 @@ TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
   auto user_cert_worker =
       std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
+  absl::optional<ash::cert_provisioning::BackendServerError> backend_error{};
   SetupMockCertProvisioningWorker(
       user_cert_worker.get(),
       ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, user_cert_profile);
+      &der_encoded_spki_, user_cert_profile, backend_error);
   user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
 
   ash::cert_provisioning::CertProfile device_cert_profile(
@@ -351,7 +359,7 @@ TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
   SetupMockCertProvisioningWorker(
       device_cert_worker.get(),
       ash::cert_provisioning::CertProvisioningWorkerState::kFailed,
-      &der_encoded_spki_, device_cert_profile);
+      &der_encoded_spki_, device_cert_profile, backend_error);
   device_workers_[kDeviceCertProfileId] = std::move(device_cert_worker);
 
   // Both user and device-wide workers are expected to be displayed in the UI,
@@ -373,7 +381,8 @@ TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
                "publicKey": "$2",
                "stateId": 1,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": ""
              })",
           {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(
@@ -388,7 +397,8 @@ TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
                "publicKey": "$2",
                "stateId": 10,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": ""
              })",
           {kDeviceCertProfileId, kDeviceCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(
@@ -409,12 +419,14 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
   ash::cert_provisioning::CertProfile user_cert_profile(
       kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
       /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
+  absl::optional<ash::cert_provisioning::BackendServerError> backend_error =
+      absl::nullopt;
   auto user_cert_worker =
       std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
   SetupMockCertProvisioningWorker(
       user_cert_worker.get(),
       ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, user_cert_profile);
+      &der_encoded_spki_, user_cert_profile, backend_error);
   user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
 
   // The user worker triggers an update
@@ -442,7 +454,8 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
                "publicKey": "$2",
                "stateId": 1,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": ""
              })",
           {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(

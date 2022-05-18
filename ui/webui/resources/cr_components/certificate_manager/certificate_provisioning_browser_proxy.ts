@@ -19,6 +19,7 @@ export type CertificateProvisioningProcess = {
   certProfileId: string,
   certProfileName: string,
   isDeviceWide: boolean,
+  lastUnsuccessfulMessage: string,
   status: string,
   stateId: number,
   timeSinceLastUpdate: string,

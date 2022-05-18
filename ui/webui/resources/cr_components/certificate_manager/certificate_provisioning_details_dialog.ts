@@ -58,6 +58,10 @@ export class CertificateProvisioningDetailsDialogElement extends
             this.model.certProfileId, this.model.isDeviceWide);
   }
 
+  private shouldHideLastFailedStatus_(): boolean {
+    return this.model.lastUnsuccessfulMessage.length === 0;
+  }
+
   private arrowState_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
   }

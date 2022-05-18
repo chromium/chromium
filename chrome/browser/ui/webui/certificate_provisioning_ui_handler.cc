@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 
 #include "base/bind.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/browser/cloud/message_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -106,13 +109,28 @@ std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
                                 ui::TimeFormat::LENGTH_SHORT, elapsed_time);
 }
 
+std::u16string GetMessageFromBackendError(
+    const absl::optional<ash::cert_provisioning::BackendServerError>&
+        call_info) {
+  if (!call_info.has_value())
+    return std::u16string();
+
+  std::u16string time_u16 =
+      base::UTF8ToUTF16(base::TimeFormatHTTP(call_info->time));
+  return l10n_util::GetStringFUTF16(
+      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DMSERVER_ERROR_MESSAGE,
+      policy::FormatDeviceManagementStatus(call_info->status), time_u16);
+}
+
 base::Value CreateProvisioningProcessEntry(
     const std::string& cert_profile_id,
     const std::string& cert_profile_name,
     bool is_device_wide,
     ash::cert_provisioning::CertProvisioningWorkerState state,
     base::Time time_since_last_update,
-    const std::string& public_key_spki_der) {
+    const std::string& public_key_spki_der,
+    const absl::optional<ash::cert_provisioning::BackendServerError>&
+        last_unsuccessful_attempt) {
   base::Value entry(base::Value::Type::DICTIONARY);
   entry.SetStringKey("certProfileId", cert_profile_id);
   entry.SetStringKey("certProfileName", cert_profile_name);
@@ -121,6 +139,8 @@ base::Value CreateProvisioningProcessEntry(
   entry.SetIntKey("stateId", static_cast<int>(state));
   entry.SetStringKey("timeSinceLastUpdate",
                      GetTimeSinceLastUpdate(time_since_last_update));
+  entry.SetStringKey("lastUnsuccessfulMessage",
+                     GetMessageFromBackendError(last_unsuccessful_attempt));
 
   auto spki_der_bytes = base::as_bytes(base::make_span(public_key_spki_der));
   entry.SetStringKey(
@@ -142,8 +162,8 @@ void CollectProvisioningProcesses(
         worker_entry.second.get();
     list_to_append_to->Append(CreateProvisioningProcessEntry(
         worker_entry.first, worker->GetCertProfile().name, is_device_wide,
-        worker->GetState(), worker->GetLastUpdateTime(),
-        worker->GetPublicKey()));
+        worker->GetState(), worker->GetLastUpdateTime(), worker->GetPublicKey(),
+        worker->GetLastBackendServerError()));
   }
   for (const auto& failed_worker_entry :
        cert_provisioning_scheduler->GetFailedCertProfileIds()) {
@@ -152,7 +172,7 @@ void CollectProvisioningProcesses(
     list_to_append_to->Append(CreateProvisioningProcessEntry(
         failed_worker_entry.first, worker.cert_profile_name, is_device_wide,
         ash::cert_provisioning::CertProvisioningWorkerState::kFailed,
-        worker.last_update_time, worker.public_key));
+        worker.last_update_time, worker.public_key, absl::nullopt));
   }
 }
 

@@ -100,6 +100,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_ID},
     {"certificateProvisioningLastUpdate",
      IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UPDATE},
+    {"certificateProvisioningLastUnsuccessfulStatus",
+     IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_LAST_UNSUCCESSFUL_STATUS},
     {"certificateProvisioningPublicKey", IDS_CERT_DETAILS_SUBJECT_KEY},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // For A11y.

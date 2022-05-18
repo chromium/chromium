@@ -290,6 +290,11 @@ base::Time CertProvisioningWorkerImpl::GetLastUpdateTime() const {
   return last_update_time_;
 }
 
+const absl::optional<BackendServerError>&
+CertProvisioningWorkerImpl::GetLastBackendServerError() const {
+  return last_backend_server_error_;
+}
+
 void CertProvisioningWorkerImpl::Stop(CertProvisioningWorkerState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -311,8 +316,6 @@ void CertProvisioningWorkerImpl::DoStep() {
 
   CancelScheduledTasks();
   is_waiting_ = false;
-  last_update_time_ = base::Time::NowFromSystemTime();
-
   switch (state_) {
     case CertProvisioningWorkerState::kInitState:
       GenerateKey();
@@ -741,11 +744,15 @@ bool CertProvisioningWorkerImpl::ProcessResponseErrors(
                  << " for profile ID: " << cert_profile_.profile_id
                  << " in state: "
                  << CertificateProvisioningWorkerStateToString(state_);
+    last_backend_server_error_ =
+        BackendServerError(status, base::Time::NowFromSystemTime());
     request_backoff_.InformOfRequest(false);
     ScheduleNextStep(request_backoff_.GetTimeUntilRelease());
     return false;
   }
 
+  // From this point, connection to the DM Server was successful.
+  last_backend_server_error_ = absl::nullopt;
   if (status ==
       policy::DeviceManagementStatus::DM_STATUS_SERVICE_ACTIVATION_PENDING) {
     const base::TimeDelta try_later_delay =
@@ -808,8 +815,10 @@ void CertProvisioningWorkerImpl::ScheduleNextStep(base::TimeDelta delay) {
       delay);
 
   is_waiting_ = true;
-  last_update_time_ = base::Time::NowFromSystemTime();
   VLOG(0) << "Next step scheduled in " << delay;
+
+  last_update_time_ = base::Time::NowFromSystemTime();
+  state_change_callback_.Run();
 }
 
 void CertProvisioningWorkerImpl::OnShouldContinue(ContinueReason reason) {
