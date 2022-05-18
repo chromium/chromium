@@ -1,286 +1,188 @@
+# TODO(crbug.com/1326643):
+# ../../chrome/browser/ui/views/page_info/accuracy_tip_bubble_view_browsertest.cc:368: Failure
+# Value of: hats_service->hats_next_dialog_exists_for_testing()
+#   Actual: false
+# Expected: true
 -AccuracyTipBubbleViewBrowserTest.SurveyShownAfterShowingTip
+
+# TODO(crbug.com/1326645):
+# triggerDOMChangesOnTabsUpdated: API Test Error in triggerDOMChangesOnTabsUpdated
+# Actual: tabs.remove
+# Expected: blinkRequestResource XMLHttpRequest
 -ActivityLogApiTest.TriggerEvent
--All/BrowsingDataRemoverBrowserTestP.WebSqlDeletion/0
--All/BrowsingDataRemoverBrowserTestP.WebSqlDeletion/1
--All/BrowsingDataRemoverBrowserTestP.WebSqlIncognitoDeletion/0
--All/BrowsingDataRemoverBrowserTestP.WebSqlIncognitoDeletion/1
--All/CastV2PerformanceTest.Performance/0
--All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/1
--All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/3
+
+# TODO(crbug.com/1311019): [hid_manager_impl.cc(28)] Check failed: hid_service_]
 -All/CryptotokenBrowserTest.SignWithEnterprisePolicyDoesNotShowPrompt/0
 -All/CryptotokenBrowserTest.SignWithEnterprisePolicyDoesNotShowPrompt/1
 -All/CryptotokenBrowserTest.SignWithOriginTrialDoesNotShowPrompt/0
 -All/CryptotokenBrowserTest.SignWithOriginTrialDoesNotShowPrompt/1
 -All/CryptotokenBrowserTest.SignWithOriginTrialInCrossOriginIframeDoesNotShowPrompt/0
 -All/CryptotokenBrowserTest.SignWithOriginTrialInCrossOriginIframeDoesNotShowPrompt/1
+
+# TODO(crbug.com/1326647): Comparison of a couple of very long strings in spanish has an unexpected
+# diff
+-AllForms/FormStructureBrowserTest.DataDrivenHeuristics/153
+
+# TODO(crbug.com/1326648):
+# ../../chrome/browser/ui/views/frame/browser_view_browsertest.cc:343: Failure
+# Expected equality of these values:
+#   browser_view()->GetAccessibleWindowTitle()
+#     Which is: u"about:blank - Chromium"
+#   delegate_observer->GetTitle()
+#     Which is: u"Dialog Title"
+-BrowserViewTest.GetAccessibleTabModalDialogTitle
+
+# TODO(crbug.com/1325504): [html_media_element.cc(4705)] SetError: {code=4,
+# message="MEDIA_ELEMENT_ERROR: Media load rejected by URL safety check"}
 -All/DeclarativeNetRequestBrowserTest.PacRequestsBypassRules/0
 -All/DeclarativeNetRequestBrowserTest.PacRequestsBypassRules/1
--All/MediaEngagementAutoplayBrowserTest.PreloadedDataAndHighVisits/0
--All/MediaEngagementAutoplayBrowserTest.PreloadedDataAndHighVisits/1
--All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Allowed/0
--All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Allowed/1
--All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/0
--All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/1
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/0
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/2
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/0
--All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/2
--All/MediaHistoryBrowserTest.RecordWatchtime_VideoOnly/0
--All/NetworkRequestMetricsBrowserTest.FileURLSuccess/2
--All/PermissionPromptBubbleViewBrowserTest.ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest/0
--All/PermissionPromptBubbleViewBrowserTest.ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest/1
--All/PrintBackendPrintBrowserTest.UpdatePrintSettings/2
--All/PrintBackendPrintBrowserTestService.StartPrinting/0
--All/PrintBackendPrintBrowserTestService.StartPrinting/1
--All/PrintBackendPrintBrowserTestService.StartPrintingSpoolingSharedMemoryError/0
--All/PrintBackendPrintBrowserTestService.StartPrintingSpoolingSharedMemoryError/1
--All/ReportingBrowserTest.CrashReportUnresponsive/1
--All/SubresourceFilterWebSocketBrowserTest.BlockWebSocket/1
--AllForms/FormStructureBrowserTest.DataDrivenHeuristics/153
--AppSessionRestoreTest.RestoreAppMinimized
--AppSessionRestoreTest.RestoreMaximizedApp
--AppSettingsAppTest.All
--AppWindowApiTest.OnMaximizedEvent
--AppWindowApiTest.OnMinimizedEvent
--AppWindowApiTest.OnRestoredEvent
--BackForwardCacheSiteDetailsBrowserTest.MemoryDetailsForBackForwardCache
--BluetoothApiTest.Discovery
--BrowserViewTest.GetAccessibleTabModalDialogTitle
--BrowsingDataRemoverBrowserTest.Database
--BrowsingDataRemoverBrowserTest.SessionOnlyStorageRemoved
--BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
--ChromeAcceptHeaderTest.Check
--ChromeBackForwardCacheBrowserTest.DoNotShowSameSiteSubframeInTaskManager
--ChromeBackForwardCacheBrowserTest.ShowCrossSiteOOPIFInTaskManager
--ChromeBackForwardCacheBrowserTest.ShowMainFrameInTaskManager
--ChromeBrowserCloudManagementEnrollmentTest/ChromeBrowserCloudManagementEnrollmentTest.Test/1
--ChromeBrowserCloudManagementEnrollmentTest/ChromeBrowserCloudManagementEnrollmentTest.Test/3
--ChromeMimeHandlerViewTest.ActivatePostMessageSupportOnce
--ChromeMimeHandlerViewTest.BackgroundPage
--ChromeMimeHandlerViewTest.Basic
--ChromeMimeHandlerViewTest.BeforeUnloadEnabled_WithUserActivation
--ChromeMimeHandlerViewTest.BeforeUnloadEnabled_WithoutUserActivation
--ChromeMimeHandlerViewTest.BeforeUnload_NoDialog
--ChromeMimeHandlerViewTest.BeforeUnload_ShowDialog
--ChromeMimeHandlerViewTest.DataUrl
--ChromeMimeHandlerViewTest.DoNotLoadInSandboxedFrame
--ChromeMimeHandlerViewTest.EmbedWithInitialCrossOriginFrame
--ChromeMimeHandlerViewTest.EmbedWithInitialFrameAcceptBeforeUnloadDialog
--ChromeMimeHandlerViewTest.Embedded
--ChromeMimeHandlerViewTest.EmbeddedDataUrlEmbed
--ChromeMimeHandlerViewTest.EmbeddedDataUrlLong
--ChromeMimeHandlerViewTest.EmbeddedDataUrlObject
--ChromeMimeHandlerViewTest.EmbeddedThenPrint
--ChromeMimeHandlerViewTest.EmbedderFrameRemovedNoCrash
--ChromeMimeHandlerViewTest.Iframe
--ChromeMimeHandlerViewTest.MimeHandlerViewInDisplayNoneFrameForGoogleApps
--ChromeMimeHandlerViewTest.NonAsciiHeaders
--ChromeMimeHandlerViewTest.PostMessage
--ChromeMimeHandlerViewTest.RejectPointLock
--ChromeMimeHandlerViewTest.SingleRequest
--ChromeMimeHandlerViewTest.TargetBlankAnchor
--ChromeMojoProxyResolverFactoryBrowserTest.DestroyAndCreateService
--ChromeMojoProxyResolverFactoryBrowserTest.DestroyFactory
--ChromeMojoProxyResolverFactoryBrowserTest.ServiceLifecycle
--ChromeNavigationBrowserTest.CrossSiteRedirectionToPDF
--ChromeNavigationBrowserTestWithMobileEmulation.CrossSiteRedirectionToPDFWithMobileEmulation
--ChromeNavigationBrowserTestWithMobileEmulation.NavigateToPDFWithMobileEmulation
--ChromePasswordProtectionServiceSyncBrowserTest.GSuitePasswordAlertMode
--ChromeSitePerProcessPDFTest.EmbeddedPDFInsideCrossOriginFrame
--ChromeSitePerProcessTest.PopupWindowFocus
--ChromeTracingDelegateBrowserTestFromCommandLine.IgnoreThrottle
 -ChromeURLDataManagerWebUITrustedTypesTest.NoTrustedTypesViolation/chrome___browser_switch
 -ChromeURLDataManagerWebUITrustedTypesTest.NoTrustedTypesViolation/chrome___nacl
 -ChromeURLDataManagerWebUITrustedTypesTest.NoTrustedTypesViolation/chrome___sandbox
--ClientHintsBrowserTest.SwitchAcceptCHInvalid
--ClientHintsBrowserTest.SwitchAppliesStorage
--ClientHintsBrowserTest.SwitchAppliesStorageOneOrigin
--ClientHintsBrowserTest.SwitchNotJson
--ClientHintsBrowserTest.SwitchOriginNotSecure
--CommerceHintAgentTest.PurchaseByURL
+-HttpProxyScriptBrowserTest.Verify
+-LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithPrediction
+-LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithoutPrediction
+-MyIpAddressProxyScriptBrowserTest.Verify
+
+# TODO(crbug.com/1326652):
+# ../../chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.cc:518: Failure
+# Expected equality of these values:
+#   *value->FindString(field_key)
+#     Which is: "B9045A713CAED5DFF3D3B783E98D1CE5778D8BC331EE4119D707072312AF06A7"
+#   expected_value.value()
+#     Which is: "E061612733D5D991F3BD676A51F77B1F0C824282909B7C1C89BD1612FC52E073"
 -ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/0
 -ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/1
 -ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/2
 -ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/3
--ContentVerifierTest.UnreadableContentScriptFailsContentVerification
--ContextMenuBrowserTest.OpenProfileNoneReferrer
--CookieControlsBubbleViewTest.InvokeUi_NotWorkingClicked
--CookiePolicyBrowserTest.NestedFirstPartyIFrameStorageForFrame
--CorbAndCorsExtensionBrowserTest.ContentScriptVsHostBlockedByPolicy_AllowedTextResource
--CorbAndCorsExtensionBrowserTest.ContentScriptVsHostBlockedByPolicy_NoSniffXml
--CorbAndCorsExtensionBrowserTest.ContentScript_CorsAllowedByServer_NoPermissionToTarget
--CorbAndCorsExtensionBrowserTest.ContentScript_CorsIgnoredByServer_NoPermissionToTarget
--CorbAndCorsExtensionBrowserTest.ExtensionWithNoHttpPermissions
--CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedAfterSniffing
--CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedTextResource
--CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedTextResource_SubdomainPermissions
--CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_SameOrigin
--CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_UnloadedExtension
--CrExtensionsA11yTestWithMultipleExensions.WithExtensions_scope_attr_valid
--CrExtensionsA11yTestWithMultipleExensions.WithExtensions_table_fake_caption
--CrSettingsBasicPageTest.BasicPage
--CrSettingsPeoplePageTest.All
+
+# TODO(crbug.com/1326657): #manageCertificates not found, so click can't fire
 -CrSettingsSecurityPageTest.All
--CrossProfileDebuggerApiTest.Attach
--CrossProfileDebuggerApiTest.GetTargets
--DebuggerExtensionApiTest.AttachToPdf
--DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/0
--DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/1
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/0
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/1
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/0
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/1
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/0
--DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/1
+
+# TODO(crbug.com/1326662):
+# ../../chrome/browser/devtools/devtools_browsertest.cc:186: Failure
+# Expected equality of these values:
+#   "[OK]"
+#   result
+#     Which is: "[FAILED] Expected: ''Abbf'', but was ''''"
 -DevToolsTest.TestDispatchKeyEventShowsAutoFill
--DiceWebSigninInterceptionBubbleBrowserTest.ProfileKeepAlive
--DownloadTest.DownloadErrorReadonlyFolder
--DownloadTestSplitCacheEnabled.SaveMainFramePdfFromContextMenu_IsolationInfo
--DownloadTestSplitCacheEnabled.SaveSubframePdfFromContextMenu_IsolationInfo
--DownloadTestSplitCacheEnabled.SaveSubframePdfFromPdfUI_IsolationInfo
--EncryptedMediaSupportedTypesClearKeyTest.Video_MP4
--EncryptedMediaSupportedTypesClearKeyTest.Video_WebM
+
+# TODO(crbug.com/1326663): Unsupported keySystem
 -EncryptedMediaSupportedTypesExternalClearKeyTest.EncryptionScheme
 -EncryptedMediaSupportedTypesExternalClearKeyTest.Robustness
 -EncryptedMediaSupportedTypesExternalClearKeyTest.SessionType
--ExtensionApiTabTest.UpdateWindowResize
--ExtensionApiTest.FontSettings
--ExtensionApiTest.FontSettingsIncognito
--ExtensionApiTest.Storage
--ExtensionApiTest.TemporaryAddressSpoof
--ExtensionBackForwardCacheBrowserTest.StorageCallbackEvicts
--ExtensionDialogTest.TextInputViaKeyEvent
--ExtensionLoadingTest.RuntimeValidWhileDevToolsOpen
--ExtensionWebRequestApiTest.WebRequestPacRequestProtection
--ExtensionWebRequestApiTest.WebSocketRequestOnWorker
+
+# TODO(crbug.com/1326667): WebGL blocked when it should be allowed
 -ExtensionWebstoreGetWebGLStatusTest.Allowed
+
+# TODO(crbug.com/1326669): Minimizing window not yet supported
+# Value of: new_window->window()->IsMinimized()
+#   Actual: false
+# Expected: true
 -ExtensionWindowCreateTest.AcceptState
--ExternalProtocolDialogBrowserTest.TestFocus
+
+# TODO(crbug.com/1326670) Crash because KERN: channel (5583773) has 3501 messages
 -ExtractorBrowserTest.ExtractBigFile
+-ExtractorBrowserTest.ZeroByteFile
+
+# TODO(crbug.com/1326595): Page title count expected to be 1, but it is 0
+-BackForwardCacheSiteDetailsBrowserTest.MemoryDetailsForBackForwardCache
 -FencedFrameSiteDetailsBrowserTest.MemoryDetailsForFencedFrame
--FetchBehaviorTests/ContentVerifierHashTest.FetchFailureWithDefaultResourceExtension/1
--FileSystemApiTest.FileSystemApiRetainDirectoryEntry
+-PrerenderSiteDetailsBrowserTest.MemoryDetailsForPrerender
+
+# TODO(crbug.com/1326672): Timed out waiting for tab title
+-TaskManagerBrowserTest.IdleWakeups
+
+# TODO(crbug.com/1326675): Cancel button should be focused, but nothing is focused
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
--HistoryManipulationInterventionBrowserTest.PDFDoNotSkipOnBackForwardDueToUserGesture
--HistoryManipulationInterventionBrowserTest.PDFSkipOnBackForwardNoUserGesture
--HttpProxyScriptBrowserTest.Verify
+
+# TODO(crbug.com/1326678): Dialog not focused as expected
+-ExternalProtocolDialogBrowserTest.TestFocus
+
+# TODO(crbug.com/1326682): Failed to read file to string
 -I18nProcessTest.All
--IconLoaderBrowserTest.LoadGroup
--IconModuleTest.All
--InProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
--InProcessBrowserTest.RunsScheduledLayoutOnAnchoredBubbles
--IncognitoBrowsingDataBrowserTest.Database
--IncognitoBrowsingDataBrowserTest.StorageDoesntWriteToDisk
--IncognitoBrowsingDataBrowserTest.WebSqlDeletion
+
+
+# TODO(crbug.com/1326681):
+# ../../chrome/browser/infobars/infobars_browsertest.cc:215: Failure
+# Unexpected infobar hung_plugin
 -InfoBarUiTest.InvokeUi_multiple_infobars
--InlineLoginHelperBrowserTest.InvokeUi_default
--InlineLoginHelperBrowserTest.SigninCreatesSyncStarter1
--InlineLoginHelperBrowserTest.SigninCreatesSyncStarter2
--InlineLoginHelperBrowserTest.SigninCreatesSyncStarter4
--InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
--InlineLoginHelperBrowserTest.WithAuthCode
--IntentChipButtonAppIconBrowserTest.ShowsAppIconInChip
--IntentChipButtonBrowserTest.IconVisibilityAfterTabSwitching
--IntentChipButtonBrowserTest.NavigationToInScopeLinkShowsIntentChip
--IntentChipButtonBrowserTest.NavigationToOutOfScopeLinkDoesNotShowsIntentChip
--IntentChipButtonBrowserTest.ShowsIntentChipCollapsed
--IntentChipButtonBrowserTest.ShowsIntentPickerWhenMultipleApps
--IntentChipButtonIPHBubbleBrowserTest.ShowAndCloseIPH
--IsolatedAppTest.SessionStorage
--LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithPrediction
--LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithoutPrediction
--LocalCardMigrationBrowserTestForStatusChip.Feedback_CardSavingAnimation
--LocalCardMigrationBrowserTest.DeleteSuccessfullyMigratedCardsFromLocal
--LocalCardMigrationBrowserUiTest.InvokeUi_default
--MediaEngagementBrowserTest.RecordSingleVisitOnSameOrigin
--MediaEngagementBrowserTest.SessionNewTabNavigateSameURLWithOpener_Typed
--MediaEngagementPreloadBrowserTest.EnsureSingletonListIsLoaded
--MessagingApiTest.Messaging
+
+# TODO(crbug.com/1326968): [loopback_server.cc(887)] Loopback sync cannot read the persistent state
+# file (/tmp/.org.chromium.Chromium.JpoHmf/user_data/FakeSyncServer/profile.pb) with error
+# FILE_ERROR_NOT_FOUND Possibly broken because profile sign in isn't supported, although it could be
+# because /tmp isn't being created
 -MetricsServiceUserDemographicsBrowserTest.AddSyncedUserBirthYearAndGenderToProtoData/0
 -MetricsServiceUserDemographicsBrowserTest.AddSyncedUserBirthYearAndGenderToProtoData/1
--MyIpAddressProxyScriptBrowserTest.Verify
--NetworkingPrivateServiceClientApiTest.OnNetworkListChangedEvent
--NetworkingPrivateServiceClientApiTest.OnNetworksChangedEventConnect
--NetworkingPrivateServiceClientApiTest.OnNetworksChangedEventDisconnect
--NetworkingPrivateServiceClientApiTest.RequestNetworkScan
--NetworkConnectionTrackerBrowserTest.SimulateNetworkServiceCrash
+
+# TODO(crbug.com/1326969): Expects click to deselect text, but click seems like it might not be
+# hitting the right location
 -OmniboxPopupContentsViewTest.ClickOmnibox
 -OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
--OutOfMemoryReporterPrerenderBrowserTest.NotReportedOnPrerenderPage
--OutOfMemoryReporterPrerenderBrowserTest.ReportedOnActivatedPrerenderPage
--OutOfProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
+
+# TODO(crbug.com/1325427): [paint_preview_compositor_collection_impl.cc(97)] Check failed:
+# SkFontMgr::RefDefault()->countFamilies()
 -PaintPreviewCompositorBrowserTest.CompositorCreate
 -PaintPreviewCompositorBrowserTest.KillWithActiveCompositors
 -PaintPreviewCompositorBrowserTest.MultipleCompositorCreate
 -PaintPreviewCompositorBrowserTest.TestInitializationSuccess
--PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest.RecordUse
+
+# TODO(crbug.com/1325427): Empty font list
+-ExtensionApiTest.FontSettings
+-ExtensionApiTest.FontSettingsIncognito
+-ExtensionLoadingTest.RuntimeValidWhileDevToolsOpen
+-ExtensionWebRequestApiTest.WebRequestPacRequestProtection
+-ExtensionWebRequestApiTest.WebSocketRequestOnWorker
+
+# TODO(crbug.com/1326970): //chrome/test/data/policy/policy_test_cases.json doesn't seem to account
+# for "fuchsia"
 -PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase
--PortalOutOfMemoryReporterBrowserTest.ReportForActivatedPortal
--PrerenderSiteDetailsBrowserTest.MemoryDetailsForPrerender
--PrintBackendPrintBrowserTestSandboxedService.StartPrintingAccessDenied
--PrintBackendPrintBrowserTestSandboxedService.StartPrintingDocumentDoneAccessDenied
--PrintBackendPrintBrowserTestSandboxedService.StartPrintingRenderDocumentAccessDenied
--PrintBackendPrintBrowserTestSandboxedService.StartPrintingRepeatedAccessDenied
+
+# TODO(crbug.com/1326971):
+# ../../chrome/browser/privacy_budget/privacy_budget_browsertest.cc:505: Failure
+# Value of: base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)
+#   Actual: false
+# Expected: true
 -PrivacyBudgetFieldtrialConfigTest.LoadsSettingsFromFieldTrialConfig
--PrivateNetworkAccessWithFeatureEnabledBrowserTest.DoesNotRecordAddressSpaceFeatureForBlockedRequests
+
+# TODO(crbug.com/1326641): [backend_impl.cc(1705)] Check failed: hash & mask_ ==
+# cache_entry->entry()->Data()->hash & mask_ (63255 vs. 61987)
 -ProcessManagementTest.ProcessOverflow
--ProcessMemoryMetricsEmitterTest.FetchAndEmitMetrics
--ProcessMemoryMetricsEmitterTest.FetchAndEmitMetricsWithExtensions
--ProcessMemoryMetricsEmitterTest.FetchDuringTrace
--ProcessMemoryMetricsEmitterTest.ForegroundAndBackgroundPages
+-IsolatedAppTest.SessionStorage
+
+# TODO(crbug.com/1316169): Google profile signin not supported yet
+-CrSettingsPeoplePageTest.All
 -ProfileCustomizationBubbleBrowserTest.InvokeUi_default
 -ProfileCustomizationBubbleBrowserTest.IPH
 -ProfileHelperTest.OpenNewWindowForProfile
--ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/2
--ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/9
 -ProfileMenuViewExtensionsTest.CloseIPH
 -ProfileWindowBrowserTest.OpenBrowserWindowForProfileWithSigninRequired
+
+# TODO(crbug.com/1326978):
+# [remote_test_server.cc(43)] getting an unexpected server type TYPE_BASIC_AUTH_PROXY
+# Linux is set to the same type, but it never gets to this line, not sure why yet.
 -ProxyBrowserTest.BasicAuthWSConnect
 -ProxyBrowserTest.ProxyAuthHTTP
 -ProxyBrowserTest.ProxyAuthHTTPS
--ProxySettingsApiTest.ProxyEventsParseError
--RecordLanguagesMetricsBrowserTest.ContentLanguageEmpty
--RecordLanguagesMetricsBrowserTest.ContentLanguageIsWildcard
--RecordLanguagesMetricsBrowserTest.ContentLanguageMatchTopMostAcceptLanguage
--RecordLanguagesMetricsBrowserTest.ContentLanguageMatchesAnyAcceptLanguage
--RecordLanguagesMetricsBrowserTest.IframeBothParentAndChildContentLanguageIsEmpty
--RecordLanguagesMetricsBrowserTest.IframeContentLanguageChildDifferFromParent
--RecordLanguagesMetricsBrowserTest.IframeParentAndChildContentLanguageAreStar
--RecordLanguagesMetricsBrowserTest.IframeParentAndChildContentLanguageHasSameValue
--RecordLanguagesMetricsBrowserTest.IframeParentContentLanguageIsEmptyAndChildContentLanguageHasValue
--RecordLanguagesMetricsBrowserTest.IframeParentContentLanuageIsStarAndChildContentLanguageHasValue
--RecordLanguagesMetricsBrowserTest.IframeParentHasConentLanguageAndChildContentLanguageIsEmpty
--RecordLanguagesMetricsBrowserTest.IframeParentHasConentLanguageAndChildContentLanguageIsStar
--RecordLanguagesMetricsBrowserTest.LargeAcceptLanguageList
+
+# TODO(crbug.com/1325420): Sharing handler is null. Probably because remote copy isn't supported on
+# fuchsia yet.
 -RemoteCopyBrowserTest.ImageUrl
 -RemoteCopyBrowserTest.Text
 -RemoteCopyBrowserTest.TextThenImageUrl
--RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/0
--RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/1
--RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/2
--RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/3
--RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/4
--RssLinksFetcherTest.FetchSuccessfulFromBody
--RssLinksFetcherTest.FetchSuccessfulFromHead
--SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest.NoShowOnDigitalAssetLinkMatch
--SaveAsCompleteHtml/SavePageOriginalVsSavedComparisonTest.CrossSiteObject/0
--SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_SubmittingFormWithExpirationDateMonthAndYearExpired
--SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Local_TransportMode_InfoTextIconDoesNotExist
--SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Upload_TransportMode_ClickingSaveClosesBubble
--SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Upload_TransportMode_InfoTextIconExists
--SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName
--SavePackageDeepScanningBrowserTest.Allowed
--SavePackageDeepScanningBrowserTest.Blocked
--SavePackageDeepScanningBrowserTest.DiscardAfterWarning
--SavePackageDeepScanningBrowserTest.KeepAfterWarning
--SavePackageDeepScanningBrowserTest.OpenNow
--SaveUpdateAddressProfileBubbleControllerImplTest.CloseTabWhileBubbleIsOpen
+
+# TODO(crbug.com/1326640):
+# [FAIL] nestedWebContents: API Test Error in nestedWebContents
+# Actual: 1
+# Expected: 2
 -ScriptingAPITest.NestedWebContents
--ServiceWorkerTest.MimeHandlerView
--SessionRestorePageLoadMetricsBrowserTest.MultipleSessionRestores
--SessionRestorePageLoadMetricsBrowserTest.RestoreForeignSession
--SessionRestorePageLoadMetricsBrowserTest.RestoreForeignTab
+
+# TODO(crbug.com/1325495): [thread_restrictions.cc(105)] Check failed: !*GetBlockingDisallowedTls().
+# Function marked as blocking was called from a scope that disallows blocking!
 -SessionRestoreTest.RestoreAfterClosingTabbedBrowserWithAppAndLaunching
+
+# TODO(crbug.com/1326637) [account_fetcher_service.cc(387)] Failed to get UserInfo for
+# gaia_id_for_test_example.com, network error
 -SigninInterceptFirstRunExperienceDialogBrowserTest.AcceptSync
 -SigninInterceptFirstRunExperienceDialogBrowserTest.AcceptSync_ExtensionTheme
 -SigninInterceptFirstRunExperienceDialogBrowserTest.AcceptSync_SyncPassphrase
@@ -290,52 +192,41 @@
 -SigninInterceptFirstRunExperienceDialogBrowserTest.ProfileColorPolicy
 -SigninInterceptFirstRunExperienceDialogBrowserTest.SyncDisabled
 -SigninInterceptFirstRunExperienceDialogBrowserTest.SyncSettings
--SingleProcessBrowserTest.Test
--StartupMetricsTest.ReportsValues
--SyncAwareCounterTest.AutofillCounter
--SyncAwareCounterTest.HistoryCounter
--SyncAwareCounterTest.PasswordCounter
--TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
--TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
--TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnTabCloseButtonFocusAfterTabFocus
--TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnTabFocus
--TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnTabFocusFromKeyboardAccelerator
--TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
--TaskManagerBrowserTest.IdleWakeups
+
+# TODO(crbug.com/1326980): Actual function call count doesn't match
+# EXPECT_CALL(*mock_hats_service_,
+#   LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _, expected_product_specific_data,
+#   _))...
+# Expected: to be called once
+# Actual: never called - unsatisfied and active
 -TrustSafetySentimentServiceBrowserTest.PageInfoTriggersSurvey_Interaction
 -TrustSafetySentimentServiceBrowserTest.PageInfoTriggersSurvey_NoInteraction
--UkmBrowserTest.ConsentAddedButNoSyncCheck
--UkmBrowserTest.HistoryDeleteCheck
--UkmBrowserTest.IncognitoPlusRegularCheck
--UkmBrowserTest.LogProtoData
--UkmBrowserTest.MetricsConsentCheck
--UkmBrowserTest.MetricsReportingCheck
--UkmBrowserTest.MultiDisableExtensionsSyncCheck
--UkmBrowserTest.MultiSyncSignoutCheck
--UkmBrowserTest.NetworkProviderPopulatesSystemProfile
--UkmBrowserTest.OpenNonSyncCheck
--UkmBrowserTest.RegularPlusGuestCheck
--UkmBrowserTest.RegularPlusIncognitoCheck
--UkmBrowserTest.ServiceListenerInitFailedCheck
--UkmBrowserTest.SingleDisableExtensionsSyncCheck
--UkmBrowserTestWithSyncTransport.NotEnabledForSecondaryAccountSync
--UkmConsentParamBrowserTests/UkmConsentParamBrowserTest.GroupPolicyConsentCheck/0
--UkmConsentParamBrowserTests/UkmConsentParamBrowserTest.GroupPolicyConsentCheck/1
+
+# TODO(crbug.com/1316203): JS error. Probalby because usb isn't supported yet 
 -UsbInternalsTest.WebUIValueRenderTest
--VariationsSafeModeEndToEndBrowserTest.ExtendedSafeModeEndToEnd
--WebAudioBrowserTest.VerifyDynamicsCompressorFingerprint
--WebNavigationApiBackForwardCacheTest.ForwardBack
--WebSocketBrowserTest.WebSocketSplitSegments
--WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsDisabled
--WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsEnabled
--WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsDisabled
--WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsEnabled
 
 # TODO(crbug.com/1306610): crbug.com/1306610: Enable once PDF rendering can be
 # enabled without PPAPI.
 -All/PrintBackendPrintBrowserTest.UpdatePrintSettings/0
 -All/PrintBackendPrintBrowserTest.UpdatePrintSettings/1
+-All/PrintBackendPrintBrowserTest.UpdatePrintSettings/2
+-All/PrintBackendPrintBrowserTestService.StartPrinting/0
+-All/PrintBackendPrintBrowserTestService.StartPrinting/1
+-All/PrintBackendPrintBrowserTestService.StartPrintingSpoolingSharedMemoryError/0
+-All/PrintBackendPrintBrowserTestService.StartPrintingSpoolingSharedMemoryError/1
 -BackForwardCachePrintBrowserTest.DisableCaching
+-ChromeAcceptHeaderTest.Check
+-ChromeNavigationBrowserTest.CrossSiteRedirectionToPDF
+-ChromeNavigationBrowserTestWithMobileEmulation.CrossSiteRedirectionToPDFWithMobileEmulation
+-ChromeNavigationBrowserTestWithMobileEmulation.NavigateToPDFWithMobileEmulation
+-ChromeSitePerProcessPDFTest.EmbeddedPDFInsideCrossOriginFrame
+-DebuggerExtensionApiTest.AttachToPdf
+-DownloadTestSplitCacheEnabled.SaveMainFramePdfFromContextMenu_IsolationInfo
+-DownloadTestSplitCacheEnabled.SaveSubframePdfFromContextMenu_IsolationInfo
+-DownloadTestSplitCacheEnabled.SaveSubframePdfFromPdfUI_IsolationInfo
+-ExtensionApiTest.TemporaryAddressSpoof
+-HistoryManipulationInterventionBrowserTest.PDFDoNotSkipOnBackForwardDueToUserGesture
+-HistoryManipulationInterventionBrowserTest.PDFSkipOnBackForwardNoUserGesture
 -PdfPluginContextMenuBrowserTest.FullPagePdfFullscreenItems
 -PdfPluginContextMenuBrowserTest.FullPagePdfHasPageItems
 -PdfPluginContextMenuBrowserTest.IframedPdfHasNoPageItems
@@ -344,6 +235,10 @@
 -PdfToPwgRasterBrowserTest.TestSuccessLongDuplex
 -PdfToPwgRasterBrowserTest.TestSuccessMono
 -PortalBrowserTest.PdfViewerLoadsInPortal
+-PrintBackendPrintBrowserTestSandboxedService.StartPrintingAccessDenied
+-PrintBackendPrintBrowserTestSandboxedService.StartPrintingDocumentDoneAccessDenied
+-PrintBackendPrintBrowserTestSandboxedService.StartPrintingRenderDocumentAccessDenied
+-PrintBackendPrintBrowserTestSandboxedService.StartPrintingRepeatedAccessDenied
 -PrintBackendPrintBrowserTestService.StartPrintingAccessDenied
 -PrintBackendPrintBrowserTestService.StartPrintingRepeatedAccessDenied
 -PrintBrowserTest.LazyLoadedIframeFetched
@@ -402,6 +297,7 @@
 -OnDiskApp/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
 -OnDiskApp/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
 -OnDiskApp/NetworkContextConfigurationReportingAndNelBrowserTest.PersistReportingAndNel/0
+-OnDiskApp/NetworkContextConfigurationReportingAndNelBrowserTest.PersistReportingAndNel/1
 -OnDiskAppWithIncognitoProfile/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
 -OnDiskAppWithIncognitoProfile/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
 -OnDiskAppWithIncognitoProfile/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
@@ -441,6 +337,8 @@
 
 # TODO(crbug.com/1321162) OpenTab gets stuck waiting for the page to render. Possibly isn't
 # rendering because it isn't visible
+-CrossProfileDebuggerApiTest.Attach
+-CrossProfileDebuggerApiTest.GetTargets
 -LocalCardMigrationBrowserTest.AcceptingDialogAddsLocalCardMigrationStrikes
 -LocalCardMigrationBrowserTest.CardIdentifierString
 -LocalCardMigrationBrowserTest.ClickingCancelClosesDialog
@@ -515,6 +413,7 @@
 -SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_ShouldNotRequestExpirationDateInHappyPath
 -SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_SubmittingFormWithExpirationDateMonthAndCurrentYear
 -SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_SubmittingFormWithExpirationDateMonthAndWithYearIsOutOfRange
+-SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_SubmittingFormWithExpirationDateMonthAndYearExpired
 -SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_SubmittingFormWithExpiredExpirationDateRequestsExpirationDate
 -SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_SubmittingFormWithMissingExpirationDateMonthAndWithValidYear
 -SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream.Upload_SubmittingFormWithMissingExpirationDateRequestsExpirationDate
@@ -539,6 +438,7 @@
 -All/NetworkRequestMetricsBrowserTest.FileURLError/3
 -All/NetworkRequestMetricsBrowserTest.FileURLSuccess/0
 -All/NetworkRequestMetricsBrowserTest.FileURLSuccess/1
+-All/NetworkRequestMetricsBrowserTest.FileURLSuccess/2
 -All/NetworkRequestMetricsBrowserTest.FileURLSuccess/3
 -All/NetworkRequestMetricsBrowserTest.InterruptedBeforeHeaders/1
 -All/NetworkRequestMetricsBrowserTest.InterruptedBeforeHeaders/2
@@ -575,6 +475,7 @@
 -CommerceHintAgentTest.ExtractCart_ScriptFromComponent
 -CommerceHintAgentTest.ExtractCart_ScriptFromResource
 -CommerceHintAgentTest.PurchaseByForm
+-CommerceHintAgentTest.PurchaseByURL
 -CommerceHintAgentTest.VisitCart
 -CommerceHintAgentTest.VisitCart_GeneralPattern_FromComponent
 -CommerceHintAgentTest.VisitCart_PerDomain_FromComponent
@@ -587,8 +488,40 @@
 -CommerceHintPurchaseURLPatternTest.PurchaseByURL
 -CommerceHintSkippAddToCartTest.AddToCartByForm
 -CommerceHintTimeoutTest.ExtractCart
+-CorbAndCorsExtensionBrowserTest.ContentScriptVsHostBlockedByPolicy_AllowedTextResource
+-CorbAndCorsExtensionBrowserTest.ContentScriptVsHostBlockedByPolicy_NoSniffXml
+-CorbAndCorsExtensionBrowserTest.ContentScript_CorsAllowedByServer_NoPermissionToTarget
+-CorbAndCorsExtensionBrowserTest.ContentScript_CorsIgnoredByServer_NoPermissionToTarget
+-CorbAndCorsExtensionBrowserTest.ExtensionWithNoHttpPermissions
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedAfterSniffing
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedTextResource
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedTextResource_SubdomainPermissions
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_SameOrigin
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_UnloadedExtension
+-PrivateNetworkAccessWithFeatureEnabledBrowserTest.DoesNotRecordAddressSpaceFeatureForBlockedRequests
+-ProcessMemoryMetricsEmitterTest.FetchAndEmitMetrics
+-ProcessMemoryMetricsEmitterTest.FetchAndEmitMetricsWithExtensions
+-ProcessMemoryMetricsEmitterTest.FetchDuringTrace
+-ProcessMemoryMetricsEmitterTest.ForegroundAndBackgroundPages
+-RecordLanguagesMetricsBrowserTest.ContentLanguageEmpty
+-RecordLanguagesMetricsBrowserTest.ContentLanguageMatchTopMostAcceptLanguage
+-RecordLanguagesMetricsBrowserTest.ContentLanguageMatchesAnyAcceptLanguage
+-RecordLanguagesMetricsBrowserTest.ContentLanguageIsWildcard
+-RecordLanguagesMetricsBrowserTest.IframeBothParentAndChildContentLanguageIsEmpty
+-RecordLanguagesMetricsBrowserTest.IframeContentLanguageChildDifferFromParent
+-RecordLanguagesMetricsBrowserTest.IframeParentAndChildContentLanguageAreStar
+-RecordLanguagesMetricsBrowserTest.IframeParentAndChildContentLanguageHasSameValue
+-RecordLanguagesMetricsBrowserTest.IframeParentContentLanguageIsEmptyAndChildContentLanguageHasValue
+-RecordLanguagesMetricsBrowserTest.IframeParentContentLanuageIsStarAndChildContentLanguageHasValue
+-RecordLanguagesMetricsBrowserTest.IframeParentHasConentLanguageAndChildContentLanguageIsEmpty
+-RecordLanguagesMetricsBrowserTest.IframeParentHasConentLanguageAndChildContentLanguageIsStar
+-RecordLanguagesMetricsBrowserTest.LargeAcceptLanguageList
+-RssLinksFetcherTest.FetchSuccessfulFromBody
+-RssLinksFetcherTest.FetchSuccessfulFromHead
+-StartupMetricsTest.ReportsValues
 
 # TODO(crbug.com/1316456): Capture not yet supported
+-All/CastV2PerformanceTest.Performance/0
 -All/CastV2PerformanceTest.Performance/1
 -All/CastV2PerformanceTest.Performance/2
 -All/CastV2PerformanceTest.Performance/3
@@ -612,6 +545,7 @@
 # TODO(crbug.com/1251347): Bluetooth not yet supported
 -BluetoothApiTest.DeviceEvents
 -BluetoothApiTest.DeviceInfo
+-BluetoothApiTest.Discovery
 -BluetoothApiTest.DiscoveryCallback
 -BluetoothApiTest.DiscoveryInProgress
 -BluetoothApiTest.GetAdapterState
@@ -629,7 +563,12 @@
 -BluetoothPrivateApiTest.PincodePairing
 -BluetoothPrivateApiTest.SetAdapterState
 
-# TODO(crbug.com/1321153): SQLite database could not set locking_mode to normal, Unable to turn on incremental auto-vacuum (3850 disk I/O error)
+# TODO(crbug.com/1321153): SQLite database could not set locking_mode to normal, Unable to turn on
+# incremental auto-vacuum (3850 disk I/O error)
+-All/BrowsingDataRemoverBrowserTestP.WebSqlDeletion/0
+-All/BrowsingDataRemoverBrowserTestP.WebSqlDeletion/1
+-All/BrowsingDataRemoverBrowserTestP.WebSqlIncognitoDeletion/0
+-All/BrowsingDataRemoverBrowserTestP.WebSqlIncognitoDeletion/1
 -AccessContextAuditBrowserTest.CheckSessionOnly
 -AccessContextAuditBrowserTest.MultipleAccesses
 -AccessContextAuditBrowserTest.RemoveHistory
@@ -641,3 +580,227 @@
 -All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.KeepsOtherWindowData/0
 -All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.SiteData/0
 -All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.SiteData/1
+-BrowsingDataRemoverBrowserTest.Database
+-BrowsingDataRemoverBrowserTest.SessionOnlyStorageRemoved
+-BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
+-CookiePolicyBrowserTest.NestedFirstPartyIFrameStorageForFrame
+-ExtensionApiTest.Storage
+-ExtensionBackForwardCacheBrowserTest.StorageCallbackEvicts
+-IncognitoBrowsingDataBrowserTest.Database
+-IncognitoBrowsingDataBrowserTest.StorageDoesntWriteToDisk
+-IncognitoBrowsingDataBrowserTest.WebSqlDeletion
+
+# TODO(crbug.com/1326988): GPU process isn't usable
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/0
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/1
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/2
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/3
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/4
+
+# TODO(crbug.com/1311066): SysInfo::GetHardwareInfo not supported by Fuchsia
+-ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/2
+-ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/4
+-ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/5
+-ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/7
+-ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/8
+-ProfileMenuClickTest_SyncError.ProfileMenuClickTest_SyncError/9
+-SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Local_TransportMode_InfoTextIconDoesNotExist
+-SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Upload_TransportMode_ClickingSaveClosesBubble
+-SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Upload_TransportMode_InfoTextIconExists
+-SaveCardBubbleViewsSyncTransportFullFormBrowserTest.Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName
+-SyncAwareCounterTest.AutofillCounter
+-SyncAwareCounterTest.HistoryCounter
+-SyncAwareCounterTest.PasswordCounter
+-UkmBrowserTest.ConsentAddedButNoSyncCheck
+-UkmBrowserTest.HistoryDeleteCheck
+-UkmBrowserTest.IncognitoPlusRegularCheck
+-UkmBrowserTest.LogProtoData
+-UkmBrowserTest.MetricsConsentCheck
+-UkmBrowserTest.MetricsReportingCheck
+-UkmBrowserTest.MultiDisableExtensionsSyncCheck
+-UkmBrowserTest.MultiSyncSignoutCheck
+-UkmBrowserTest.NetworkProviderPopulatesSystemProfile
+-UkmBrowserTest.OpenNonSyncCheck
+-UkmBrowserTest.RegularPlusGuestCheck
+-UkmBrowserTest.RegularPlusIncognitoCheck
+-UkmBrowserTest.ServiceListenerInitFailedCheck
+-UkmBrowserTest.SingleDisableExtensionsSyncCheck
+-UkmBrowserTestWithSyncTransport.NotEnabledForSecondaryAccountSync
+-UkmConsentParamBrowserTests/UkmConsentParamBrowserTest.GroupPolicyConsentCheck/0
+-UkmConsentParamBrowserTests/UkmConsentParamBrowserTest.GroupPolicyConsentCheck/1
+
+# TODO(crbug.com/1295538): Not implemented reached in static IconLoader::IconGroup
+# IconLoader::GroupForFilepath(const base::FilePath &)
+-ChromeMimeHandlerViewTest.ActivatePostMessageSupportOnce
+-ChromeMimeHandlerViewTest.BackgroundPage
+-ChromeMimeHandlerViewTest.Basic
+-ChromeMimeHandlerViewTest.BeforeUnloadEnabled_WithUserActivation
+-ChromeMimeHandlerViewTest.BeforeUnloadEnabled_WithoutUserActivation
+-ChromeMimeHandlerViewTest.BeforeUnload_NoDialog
+-ChromeMimeHandlerViewTest.BeforeUnload_ShowDialog
+-ChromeMimeHandlerViewTest.DataUrl
+-ChromeMimeHandlerViewTest.DoNotLoadInSandboxedFrame
+-ChromeMimeHandlerViewTest.EmbedWithInitialCrossOriginFrame
+-ChromeMimeHandlerViewTest.EmbedWithInitialFrameAcceptBeforeUnloadDialog
+-ChromeMimeHandlerViewTest.Embedded
+-ChromeMimeHandlerViewTest.EmbeddedDataUrlEmbed
+-ChromeMimeHandlerViewTest.EmbeddedDataUrlLong
+-ChromeMimeHandlerViewTest.EmbeddedDataUrlObject
+-ChromeMimeHandlerViewTest.EmbeddedThenPrint
+-ChromeMimeHandlerViewTest.EmbedderFrameRemovedNoCrash
+-ChromeMimeHandlerViewTest.Iframe
+-ChromeMimeHandlerViewTest.MimeHandlerViewInDisplayNoneFrameForGoogleApps
+-ChromeMimeHandlerViewTest.NonAsciiHeaders
+-ChromeMimeHandlerViewTest.PostMessage
+-ChromeMimeHandlerViewTest.RejectPointLock
+-ChromeMimeHandlerViewTest.SingleRequest
+-ChromeMimeHandlerViewTest.TargetBlankAnchor
+-DownloadTest.DownloadErrorReadonlyFolder
+-IconLoaderBrowserTest.LoadGroup
+-IconModuleTest.All
+-SaveAsCompleteHtml/SavePageOriginalVsSavedComparisonTest.CrossSiteObject/0
+-SavePackageDeepScanningBrowserTest.Allowed
+-SavePackageDeepScanningBrowserTest.Blocked
+-SavePackageDeepScanningBrowserTest.DiscardAfterWarning
+-SavePackageDeepScanningBrowserTest.KeepAfterWarning
+-SavePackageDeepScanningBrowserTest.OpenNow
+
+# TODO(crbug.com/1292144): Attempts to spawn a python3 process
+-All/MediaEngagementAutoplayBrowserTest.PreloadedDataAndHighVisits/0
+-All/MediaEngagementAutoplayBrowserTest.PreloadedDataAndHighVisits/1
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Allowed/0
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Allowed/1
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/0
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/1
+
+# TODO(crbug.com/1278123): PWA not supported yet
+-AppSessionRestoreTest.RestoreAppMinimized
+-AppSessionRestoreTest.RestoreMaximizedApp
+-AppSettingsAppTest.All
+-AppWindowApiTest.OnMaximizedEvent
+-AppWindowApiTest.OnMinimizedEvent
+-AppWindowApiTest.OnRestoredEvent
+-IntentChipButtonAppIconBrowserTest.ShowsAppIconInChip
+-IntentChipButtonBrowserTest.IconVisibilityAfterTabSwitching
+-IntentChipButtonBrowserTest.NavigationToInScopeLinkShowsIntentChip
+-IntentChipButtonBrowserTest.NavigationToOutOfScopeLinkDoesNotShowsIntentChip
+-IntentChipButtonBrowserTest.ShowsIntentChipCollapsed
+-IntentChipButtonBrowserTest.ShowsIntentPickerWhenMultipleApps
+-IntentChipButtonIPHBubbleBrowserTest.ShowAndCloseIPH
+
+# TODO(crbug.com/1326984): These tests pass when run locally
+-AdsPageLoadMetricsObserverResourceBrowserTest.HeavyAdInterventionFired_ReportsToAllChildren
+-All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/1
+-All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/3
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/0
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/2
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/0
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/2
+-All/MediaHistoryBrowserTest.RecordWatchtime_VideoOnly/0
+-All/PermissionPromptBubbleViewBrowserTest.ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest/0
+-All/PermissionPromptBubbleViewBrowserTest.ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest/1
+-All/ReportingBrowserTest.CrashReportUnresponsive/1
+-All/SubresourceFilterWebSocketBrowserTest.BlockWebSocket/0
+-All/SubresourceFilterWebSocketBrowserTest.BlockWebSocket/1
+-ChromeBackForwardCacheBrowserTest.DoNotShowSameSiteSubframeInTaskManager
+-ChromeBackForwardCacheBrowserTest.ShowCrossSiteOOPIFInTaskManager
+-ChromeBackForwardCacheBrowserTest.ShowMainFrameInTaskManager
+-ChromeBrowserCloudManagementEnrollmentTest/ChromeBrowserCloudManagementEnrollmentTest.Test/1
+-ChromeBrowserCloudManagementEnrollmentTest/ChromeBrowserCloudManagementEnrollmentTest.Test/3
+-ChromeTracingDelegateBrowserTestFromCommandLine.IgnoreThrottle
+-ChromeTracingDelegateBrowserTestFromCommandLine.ScenarioFromCommandLine
+-ContentScriptApiTest.ContentScriptExtensionProcess
+-CookieControlsBubbleViewTest.InvokeUi_NotWorkingClicked
+-CookieControlsBubbleViewTest.NotWorkingClicked
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_button_name
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_definition_list
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_scope_attr_valid
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_table_fake_caption
+-CrSettingsBasicPageTest.BasicPage
+-EncryptedMediaSupportedTypesClearKeyTest.Video_MP4
+-EncryptedMediaSupportedTypesClearKeyTest.Video_WebM
+-ExtensionApiTabTest.UpdateWindowResize
+-FetchBehaviorTests/ContentVerifierHashTest.FetchFailureWithDefaultResourceExtension/0
+-FetchBehaviorTests/ContentVerifierHashTest.FetchFailureWithDefaultResourceExtension/1
+-FileSystemApiTest.FileSystemApiRetainDirectoryEntry
+-InProcessBrowserTest.RunsScheduledLayoutOnAnchoredBubbles
+-InlineLoginHelperBrowserTest.InvokeUi_default
+-InlineLoginHelperBrowserTest.SigninCreatesSyncStarter1
+-InlineLoginHelperBrowserTest.SigninCreatesSyncStarter2
+-InlineLoginHelperBrowserTest.SigninCreatesSyncStarter4
+-InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
+-InlineLoginHelperBrowserTest.WithAuthCode
+-MediaEngagementBrowserTest.RecordSingleVisitOnSameOrigin
+-MediaEngagementBrowserTest.SessionNewTabNavigateSameURLWithOpener_Typed
+-MediaEngagementBrowserTest.SessionNewTabSameOrigin
+-MessagingApiTest.Messaging
+-NetworkConnectionTrackerBrowserTest.SimulateNetworkServiceCrash
+-OutOfMemoryReporterPrerenderBrowserTest.NotReportedOnPrerenderPage
+-OutOfMemoryReporterPrerenderBrowserTest.ReportedOnActivatedPrerenderPage
+-PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest.Called_False_Shown_UserAborted
+-PaymentRequestContactAddressUseStatsTest.RecordUse
+-PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest.RecordUse
+-PredictionManagerBrowserTest.ModelsAndFeaturesStoreInitialized
+-PredictionManagerBrowserTest.PredictionModelFetchFailed
+-PredictionManagerNoUserPermissionsTest.FieldTrialsNotPassedWhenNoUserPermissions
+-SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest.NoShowOnDigitalAssetLinkMatch
+-SaveUpdateAddressProfileBubbleControllerImplTest.CloseTabWhileBubbleIsOpen
+-SessionRestorePageLoadMetricsBrowserTest.RestoreForeignSession
+-SessionRestorePageLoadMetricsBrowserTest.MultipleSessionRestores
+-SessionRestorePageLoadMetricsBrowserTest.RestoreForeignTab
+-SingleProcessBrowserTest.Test
+-TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
+-TranslateModelServiceBrowserTest.LanguageDetectionWithBackgroundTab
+-WebAudioBrowserTest.VerifyDynamicsCompressorFingerprint
+-WebNavigationApiBackForwardCacheTest.ForwardBack
+
+# TODO(crbug.com/1326983): These tests time out, root cause hasn't been established yet
+-ChromeMojoProxyResolverFactoryBrowserTest.DestroyAndCreateService
+-ChromeMojoProxyResolverFactoryBrowserTest.DestroyFactory
+-ChromeMojoProxyResolverFactoryBrowserTest.ServiceLifecycle
+-ChromePasswordProtectionServiceSyncBrowserTest.GSuitePasswordAlertMode
+-ChromeSitePerProcessTest.PopupWindowFocus
+-ClientHintsBrowserTest.SwitchAcceptCHInvalid
+-ClientHintsBrowserTest.SwitchAppliesStorage
+-ClientHintsBrowserTest.SwitchAppliesStorageOneOrigin
+-ClientHintsBrowserTest.SwitchNotJson
+-ClientHintsBrowserTest.SwitchOriginNotSecure
+-ContentVerifierTest.UnreadableContentScriptFailsContentVerification
+-ContextMenuBrowserTest.OpenProfileNoneReferrer
+-DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/0
+-DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/1
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/0
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/1
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/0
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/1
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/0
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/1
+-DiceWebSigninInterceptionBubbleBrowserTest.ProfileKeepAlive
+-ExtensionDialogTest.TextInputViaKeyEvent
+-LocalCardMigrationBrowserTestForStatusChip.Feedback_CardSavingAnimation
+-LocalCardMigrationBrowserTest.DeleteSuccessfullyMigratedCardsFromLocal
+-LocalCardMigrationBrowserUiTest.InvokeUi_default
+-MediaEngagementPreloadBrowserTest.EnsureSingletonListIsLoaded
+-NetworkingPrivateServiceClientApiTest.OnNetworkListChangedEvent
+-NetworkingPrivateServiceClientApiTest.OnNetworksChangedEventConnect
+-NetworkingPrivateServiceClientApiTest.OnNetworksChangedEventDisconnect
+-NetworkingPrivateServiceClientApiTest.RequestNetworkScan
+-OutOfMemoryReporterBrowserTest.MemoryExhaust
+-PortalOutOfMemoryReporterBrowserTest.ReportForActivatedPortal
+-ProxySettingsApiTest.ProxyEventsParseError
+-ServiceWorkerTest.MimeHandlerView
+-StartupMetricsTest.ReportsValues
+-TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
+-TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
+-TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnTabCloseButtonFocusAfterTabFocus
+-TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnTabFocus
+-TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnTabFocusFromKeyboardAccelerator
+-WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsDisabled
+-WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsEnabled
+-WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsDisabled
+-WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsEnabled
+
+# TODO(crbug.com/1326982): Crashed with no info
+-InProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
+-OutOfProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
+-VariationsSafeModeEndToEndBrowserTest.ExtendedSafeModeEndToEnd
