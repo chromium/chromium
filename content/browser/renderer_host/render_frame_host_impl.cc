@@ -282,6 +282,12 @@
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #endif
 
+namespace features {
+const base::Feature kDisableFrameNameUpdateOnNonCurrentRenderFrameHost{
+    "DisableFrameNameUpdateOnNonCurrentRenderFrameHost",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+}
+
 namespace content {
 
 #if defined(AX_FAIL_FAST_BUILD)
@@ -5522,10 +5528,17 @@ void RenderFrameHostImpl::DidAccessInitialMainDocument() {
   frame_tree_->DidAccessInitialMainDocument();
 }
 
-// TODO(crbug.com/1270671): Avoid duplicating name when RenderFrameHostImpl is
-// not current in its FrameTreeNode.
 void RenderFrameHostImpl::DidChangeName(const std::string& name,
                                         const std::string& unique_name) {
+  // Frame name updates used to occur in the FrameTreeNode; however, as they
+  // now occur in RenderFrameHostImpl (and by extension, BrowsingContextState),
+  // ensure that invalid updates (i.e. when in the BackForwardCache or in a
+  // pending deletion state) are not applied.
+  if ((IsInBackForwardCache() || IsPendingDeletion()) &&
+      base::FeatureList::IsEnabled(
+          features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost)) {
+    return;
+  }
   if (GetParent() != nullptr) {
     // TODO(lukasza): Call ReceivedBadMessage when |unique_name| is empty.
     DCHECK(!unique_name.empty());
