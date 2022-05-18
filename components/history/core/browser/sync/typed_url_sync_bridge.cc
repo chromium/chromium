@@ -376,7 +376,6 @@ bool TypedURLSyncBridge::SupportsGetStorageKey() const {
 void TypedURLSyncBridge::OnURLVisited(HistoryBackend* history_backend,
                                       ui::PageTransition transition,
                                       const URLRow& row,
-                                      const RedirectList& redirects,
                                       base::Time visit_time) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(sync_metadata_database_);

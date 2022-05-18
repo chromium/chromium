@@ -201,7 +201,6 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
                              const GURL& icon_url) override {}
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time) override {}
   void NotifyURLsModified(const URLRows& rows,
                           bool is_from_expiration) override {

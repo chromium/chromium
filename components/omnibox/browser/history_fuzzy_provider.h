@@ -206,7 +206,6 @@ class HistoryFuzzyProvider : public HistoryProvider,
   void OnURLVisited(history::HistoryService* history_service,
                     ui::PageTransition transition,
                     const history::URLRow& row,
-                    const history::RedirectList& redirects,
                     base::Time visit_time) override;
 
   // Removes deleted (or all) URLs from trie.

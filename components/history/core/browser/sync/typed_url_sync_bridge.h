@@ -58,7 +58,6 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   void OnURLVisited(HistoryBackend* history_backend,
                     ui::PageTransition transition,
                     const URLRow& row,
-                    const RedirectList& redirects,
                     base::Time visit_time) override;
   void OnURLsModified(HistoryBackend* history_backend,
                       const std::vector<URLRow>& changed_urls,

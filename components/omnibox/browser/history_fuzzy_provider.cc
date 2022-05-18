@@ -530,7 +530,6 @@ void HistoryFuzzyProvider::OnURLVisited(
     history::HistoryService* history_service,
     ui::PageTransition transition,
     const history::URLRow& row,
-    const history::RedirectList& redirects,
     base::Time visit_time) {
   DVLOG(1) << "URL Visit: " << row.url();
   root_.Insert(UrlDomainReduction(row.url()), 0);

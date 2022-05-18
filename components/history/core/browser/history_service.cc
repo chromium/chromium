@@ -101,12 +101,11 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
 
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time) override {
     service_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&HistoryService::NotifyURLVisited, history_service_,
-                       transition, row, redirects, visit_time));
+                       transition, row, visit_time));
   }
 
   void NotifyURLsModified(const URLRows& changed_urls) override {
@@ -1354,11 +1353,10 @@ void HistoryService::OnDBLoaded() {
 
 void HistoryService::NotifyURLVisited(ui::PageTransition transition,
                                       const URLRow& row,
-                                      const RedirectList& redirects,
                                       base::Time visit_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (HistoryServiceObserver& observer : observers_)
-    observer.OnURLVisited(this, transition, row, redirects, visit_time);
+    observer.OnURLVisited(this, transition, row, visit_time);
 }
 
 void HistoryService::NotifyURLsModified(const URLRows& changed_urls) {

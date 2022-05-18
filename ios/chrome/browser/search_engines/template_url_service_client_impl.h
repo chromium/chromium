@@ -42,7 +42,6 @@ class TemplateURLServiceClientImpl : public TemplateURLServiceClient,
   void OnURLVisited(history::HistoryService* history_service,
                     ui::PageTransition transition,
                     const history::URLRow& row,
-                    const history::RedirectList& redirects,
                     base::Time visit_time) override;
 
   TemplateURLService* owner_;

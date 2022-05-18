@@ -105,10 +105,8 @@ void SimulateNotificationURLVisited(HistoryServiceObserver* observer,
     rows.push_back(*row3);
 
   base::Time visit_time;
-  RedirectList redirects;
   for (const URLRow& row : rows) {
-    observer->OnURLVisited(nullptr, ui::PAGE_TRANSITION_LINK, row, redirects,
-                           visit_time);
+    observer->OnURLVisited(nullptr, ui::PAGE_TRANSITION_LINK, row, visit_time);
   }
 }
 
@@ -148,7 +146,6 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
                              const GURL& icon_url) override;
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time) override;
   void NotifyURLsModified(const URLRows& changed_urls) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
@@ -253,10 +250,9 @@ class HistoryBackendTestBase : public testing::Test {
 
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time) {
     // Send the notifications directly to the in-memory database.
-    mem_backend_->OnURLVisited(nullptr, transition, row, redirects, visit_time);
+    mem_backend_->OnURLVisited(nullptr, transition, row, visit_time);
     url_visited_notifications_.push_back(std::make_pair(transition, row));
   }
 
@@ -347,9 +343,8 @@ void HistoryBackendTestDelegate::NotifyFaviconsChanged(
 
 void HistoryBackendTestDelegate::NotifyURLVisited(ui::PageTransition transition,
                                                   const URLRow& row,
-                                                  const RedirectList& redirects,
                                                   base::Time visit_time) {
-  test_->NotifyURLVisited(transition, row, redirects, visit_time);
+  test_->NotifyURLVisited(transition, row, visit_time);
 }
 
 void HistoryBackendTestDelegate::NotifyURLsModified(

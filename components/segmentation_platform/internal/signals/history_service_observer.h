@@ -38,7 +38,6 @@ class HistoryServiceObserver : public history::HistoryServiceObserver {
   void OnURLVisited(history::HistoryService* history_service,
                     ui::PageTransition transition,
                     const history::URLRow& row,
-                    const history::RedirectList& redirects,
                     base::Time visit_time) override;
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;

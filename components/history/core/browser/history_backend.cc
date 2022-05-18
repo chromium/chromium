@@ -1070,11 +1070,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
 
   // Broadcast a notification of the visit.
   if (visit_id) {
-    RedirectList redirects;
-    // TODO(meelapshah) Disabled due to potential PageCycler regression.
-    // Re-enable this.
-    // QueryRedirectsTo(url, &redirects);
-    NotifyURLVisited(transition, url_info, redirects, time);
+    NotifyURLVisited(transition, url_info, time);
   } else {
     DVLOG(0) << "Failed to build visit insert statement:  "
              << "url_id = " << url_id;
@@ -2558,12 +2554,11 @@ void HistoryBackend::NotifyFaviconsChanged(const std::set<GURL>& page_urls,
 
 void HistoryBackend::NotifyURLVisited(ui::PageTransition transition,
                                       const URLRow& row,
-                                      const RedirectList& redirects,
                                       base::Time visit_time) {
   for (HistoryBackendObserver& observer : observers_)
-    observer.OnURLVisited(this, transition, row, redirects, visit_time);
+    observer.OnURLVisited(this, transition, row, visit_time);
 
-  delegate_->NotifyURLVisited(transition, row, redirects, visit_time);
+  delegate_->NotifyURLVisited(transition, row, visit_time);
 }
 
 void HistoryBackend::NotifyURLsModified(const URLRows& changed_urls,

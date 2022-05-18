@@ -538,7 +538,6 @@ void HistoryMenuBridge::CancelFaviconRequest(HistoryItem* item) {
 void HistoryMenuBridge::OnURLVisited(history::HistoryService* history_service,
                                      ui::PageTransition transition,
                                      const history::URLRow& row,
-                                     const history::RedirectList& redirects,
                                      base::Time visit_time) {
   OnHistoryChanged();
 }

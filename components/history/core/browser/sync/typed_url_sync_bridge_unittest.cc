@@ -266,7 +266,6 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
                              const GURL& icon_url) override {}
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         Time visit_time) override {}
   void NotifyURLsModified(const std::vector<URLRow>& changed_urls) override {}
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {}
@@ -840,7 +839,7 @@ TEST_F(TypedURLSyncBridgeTest, MergeUrlsWithUsernameAndPassword) {
 
   // Notify typed url sync service of the update.
   bridge()->OnURLVisited(fake_history_backend_.get(), ui::PAGE_TRANSITION_TYPED,
-                         server_row, RedirectList(), SinceEpoch(7));
+                         server_row, SinceEpoch(7));
 }
 
 // Starting sync with both local and sync have same typed URL, but different
@@ -978,8 +977,7 @@ TEST_F(TypedURLSyncBridgeTest, ReloadVisitLocalTypedUrl) {
 
   // Notify typed url sync service of the update.
   bridge()->OnURLVisited(fake_history_backend_.get(),
-                         ui::PAGE_TRANSITION_RELOAD, url_row, RedirectList(),
-                         SinceEpoch(7));
+                         ui::PAGE_TRANSITION_RELOAD, url_row, SinceEpoch(7));
   // No change pass to processor
 }
 
@@ -1008,7 +1006,7 @@ TEST_F(TypedURLSyncBridgeTest, LinkVisitLocalTypedUrl) {
   ui::PageTransition transition = ui::PAGE_TRANSITION_LINK;
   // Notify typed url sync service of non-typed visit, expect no change.
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), SinceEpoch(6));
+                         SinceEpoch(6));
   // No change pass to processor
 }
 
@@ -1036,7 +1034,7 @@ TEST_F(TypedURLSyncBridgeTest, TypedVisitLocalTypedUrl) {
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   const sync_pb::TypedUrlSpecifics& url_specifics =
       entity_data.specifics.typed_url();
@@ -1296,7 +1294,7 @@ TEST_F(TypedURLSyncBridgeTest, MaxVisitLocalTypedUrl) {
   EXPECT_CALL(mock_processor_, Put(GetStorageKey(kURL), _, _))
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   const sync_pb::TypedUrlSpecifics& url_specifics =
       entity_data.specifics.typed_url();
@@ -1347,7 +1345,7 @@ TEST_F(TypedURLSyncBridgeTest, ThrottleVisitLocalTypedUrl) {
   // Notify typed url sync service of typed visit.
   ui::PageTransition transition = ui::PAGE_TRANSITION_TYPED;
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   visits.clear();
   for (; i % kVisitThrottleMultiple != 1; ++i) {
@@ -1361,7 +1359,7 @@ TEST_F(TypedURLSyncBridgeTest, ThrottleVisitLocalTypedUrl) {
   EXPECT_CALL(mock_processor_, Put(GetStorageKey(kURL), _, _))
       .WillOnce(SaveArgPointeeMove<1>(&entity_data));
   bridge()->OnURLVisited(fake_history_backend_.get(), transition, url_row,
-                         RedirectList(), Time());
+                         Time());
 
   ASSERT_EQ(i, entity_data.specifics.typed_url().visits_size());
 }

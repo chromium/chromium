@@ -145,7 +145,6 @@ HistoryEventRouter::~HistoryEventRouter() {
 void HistoryEventRouter::OnURLVisited(history::HistoryService* history_service,
                                       ui::PageTransition transition,
                                       const history::URLRow& row,
-                                      const history::RedirectList& redirects,
                                       base::Time visit_time) {
   auto args = OnVisited::Create(GetHistoryItem(row));
   DispatchEvent(profile_, events::HISTORY_ON_VISITED,

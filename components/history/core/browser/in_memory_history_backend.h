@@ -76,7 +76,6 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
   void OnURLVisited(HistoryService* history_service,
                     ui::PageTransition transition,
                     const URLRow& row,
-                    const RedirectList& redirects,
                     base::Time visit_time) override;
   void OnURLsModified(HistoryService* history_service,
                       const URLRows& changed_urls) override;

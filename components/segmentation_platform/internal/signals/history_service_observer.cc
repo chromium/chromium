@@ -38,7 +38,6 @@ void HistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
     ui::PageTransition transition,
     const history::URLRow& row,
-    const history::RedirectList& redirects,
     base::Time visit_time) {
   url_signal_handler_->OnHistoryVisit(row.url());
   history_delegate_->OnUrlAdded(row.url());

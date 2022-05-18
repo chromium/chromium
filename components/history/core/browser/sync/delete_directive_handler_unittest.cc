@@ -52,7 +52,6 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
                              const GURL& icon_url) override {}
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time) override {}
   void NotifyURLsModified(const URLRows& changed_urls) override {}
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {}

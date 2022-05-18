@@ -153,7 +153,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // be forwarded to the HistoryServiceObservers in the correct thread.
     virtual void NotifyURLVisited(ui::PageTransition transition,
                                   const URLRow& row,
-                                  const RedirectList& redirects,
                                   base::Time visit_time) = 0;
 
     // Notify HistoryService that some URLs have been modified. The event will
@@ -762,7 +761,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              const GURL& icon_url) override;
   void NotifyURLVisited(ui::PageTransition transition,
                         const URLRow& row,
-                        const RedirectList& redirects,
                         base::Time visit_time) override;
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
