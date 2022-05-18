@@ -549,6 +549,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         return mTwaCoordinator == null ? false : mTwaCoordinator.shouldUseAppModeUi();
     }
 
+    /**
+     * @return The package name of the Trusted Web Activity, if the activity is a TWA; null
+     * otherwise.
+     */
+    @Nullable
+    public String getTwaPackage() {
+        return mTwaCoordinator == null ? null : mTwaCoordinator.getTwaPackage();
+    }
+
     @Override
     public void maybePreconnect() {
         // The ids need to be set early on, this way prewarming will pick them up.

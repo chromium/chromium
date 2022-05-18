@@ -299,15 +299,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         return super.requiresFirstRunToBeCompleted(intent);
     }
 
-    /**
-     * @return The package name of the Trusted Web Activity, if the activity is a TWA; null
-     * otherwise.
-     */
-    @Nullable
-    public String getTwaPackage() {
-        return mTwaCoordinator == null ? null : mTwaCoordinator.getTwaPackage();
-    }
-
     @Override
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
         return new CustomTabLaunchCauseMetrics(this);
