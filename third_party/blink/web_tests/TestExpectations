@@ -230,14 +230,8 @@ crbug.com/1123606 virtual/fenced-frame-mparch/* [ Pass ]
 
 # These fail due to subtle anti-aliasing differences cause by the fact that
 # <canvas> renders via IOSurface and OffscreenCanvas does not.
-crbug.com/1311760 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
-crbug.com/1311760 [ Mac10.14 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
-crbug.com/1311760 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
-crbug.com/1311760 [ Mac11 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
-crbug.com/1311760 [ Mac10.13 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
-crbug.com/1311760 [ Mac10.14 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
-crbug.com/1311760 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
-crbug.com/1311760 [ Mac11 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
+crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-gradients-in-worker.html [ Failure ]
+crbug.com/1311760 [ Mac ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-paths-in-worker.html [ Failure ]
 
 # Offscreen canvas tests that are flaky because sometimes the image is not rendered in time
 # See crbug.com/1315650
