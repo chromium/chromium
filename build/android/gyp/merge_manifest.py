@@ -9,7 +9,6 @@
 import argparse
 import contextlib
 import os
-import pathlib
 import sys
 import tempfile
 import xml.etree.ElementTree as ElementTree
@@ -19,16 +18,16 @@ from util import manifest_utils
 
 _MANIFEST_MERGER_MAIN_CLASS = 'com.android.manifmerger.Merger'
 _MANIFEST_MERGER_JARS = [
-    pathlib.Path('build-system') / 'tools.manifest-merger.jar',
-    pathlib.Path('common') / 'tools.common.jar',
-    pathlib.Path('sdk-common') / 'tools.sdk-common.jar',
-    pathlib.Path('sdklib') / 'tools.sdklib.jar',
-    pathlib.Path('external') / 'com' / 'google' / 'guava' / 'guava' /
-    '30.1-jre' / 'guava-30.1-jre.jar',
-    pathlib.Path('external') / 'org' / 'jetbrains' / 'kotlin' /
-    'kotlin-stdlib' / '1.5.31' / 'kotlin-stdlib-1.5.31.jar',
-    pathlib.Path('external') / 'com' / 'google' / 'code' / 'gson' / 'gson' /
-    '2.8.6' / 'gson-2.8.6.jar',
+    os.path.join('build-system', 'manifest-merger.jar'),
+    os.path.join('common', 'common.jar'),
+    os.path.join('sdk-common', 'sdk-common.jar'),
+    os.path.join('sdklib', 'sdklib.jar'),
+    os.path.join('external', 'com', 'google', 'guava', 'guava', '30.1-jre',
+                 'guava-30.1-jre.jar'),
+    os.path.join('external', 'kotlin-plugin-ij', 'Kotlin', 'kotlinc', 'lib',
+                 'kotlin-stdlib.jar'),
+    os.path.join('external', 'com', 'google', 'code', 'gson', 'gson', '2.8.6',
+                 'gson-2.8.6.jar'),
 ]
 
 
@@ -69,13 +68,10 @@ def _SetTargetApi(manifest_path, target_sdk_version):
 
 
 def _BuildManifestMergerClasspath(android_sdk_cmdline_tools):
-  jar_paths = [
+  return ':'.join([
       os.path.join(android_sdk_cmdline_tools, 'lib', jar)
       for jar in _MANIFEST_MERGER_JARS
-  ]
-  missing_jars = '\n'.join(p for p in jar_paths if not os.path.exists(p))
-  assert not missing_jars, f'Missing jars:\n{missing_jars}'
-  return ':'.join(jar_paths)
+  ])
 
 
 def main(argv):
