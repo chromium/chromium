@@ -694,34 +694,6 @@ void WaylandWindow::UpdateCursorPositionFromEvent(const Event* orig_event) {
       toplevel_window->GetBoundsInDIP().origin().OffsetFromOrigin());
 }
 
-gfx::PointF WaylandWindow::TranslateLocationToRootWindow(
-    const gfx::PointF& location) {
-  auto* root_window = GetRootParentWindow();
-  DCHECK(root_window);
-  if (root_window == this)
-    return location;
-
-  gfx::Vector2d offset =
-      GetBoundsInPixels().origin() - root_window->GetBoundsInPixels().origin();
-  return location + gfx::Vector2dF(offset);
-}
-
-gfx::PointF WaylandWindow::ToRootWindowPixel(const gfx::PointF& location_dp) {
-  // Wayland sends coordinates in "surface-local" coordinates. In the common
-  // case, this is in DP. However, when we use surface pixel coordinates, the
-  // location is in relative pixels (so it shouldn't be scaled). Surface pixel
-  // coordinates are used to support fractional scaling in Lacros. Wayland
-  // scaling isn't used because Wayland only supports integer scaling.
-  // See crbug.com/1294417.
-  gfx::PointF location_px = TranslateLocationToRootWindow(location_dp);
-  if (!connection_->surface_submission_in_pixel_coordinates())
-    location_px.Scale(window_scale());
-
-  auto* root_window = GetRootParentWindow();
-  return location_px +
-         root_window->GetBoundsInPixels().origin().OffsetFromOrigin();
-}
-
 WaylandWindow* WaylandWindow::GetTopMostChildWindow() {
   return child_window_ ? child_window_->GetTopMostChildWindow() : this;
 }
