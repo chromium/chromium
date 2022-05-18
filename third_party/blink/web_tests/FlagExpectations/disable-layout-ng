@@ -684,6 +684,7 @@ crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-si
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-007.html [ Failure ]
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-008.html [ Failure ]
 crbug.com/591099 wpt_internal/css/css-sizing/stretch-positioned-replaced.html [ Failure ]
+crbug.com/591099 wpt_internal/css/css-sizing/stretch-positioned-non-replaced.html [ Failure ]
 
 ### external/wpt/css/css-text/boundary-shaping/
 crbug.com/591099 external/wpt/css/css-text/boundary-shaping/boundary-shaping-001.html [ Failure ]
