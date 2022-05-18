@@ -71,13 +71,14 @@ const GREYHostApplicationCrashHandler kHostApplicationCrashHandler = ^{
 // XCTestCase-recordIssue
 - (void)swizzledRecordIssue:(XCTIssue*)issue {
   NSLog(@"----------- captured issue! ------------");
-  if ([issue.compactDescription
+  NSString* description = issue.compactDescription;
+  NSLog(@"Description: %@", description);
+  if ([description
           containsString:@"Couldn’t communicate with a helper application. Try "
                          @"your operation again. If that fails, quit and "
                          @"relaunch the application and try again."] ||
-      [issue.compactDescription containsString:@" crashed in "]) {
-    [[NSException exceptionWithName:@"XCTIssue"
-                             reason:issue.compactDescription
+      [description containsString:@" crashed in "]) {
+    [[NSException exceptionWithName:@"XCTIssue" reason:description
                            userInfo:nil] raise];
   }
   INVOKE_ORIGINAL_IMP1(void, @selector(swizzledRecordIssue:), issue);
