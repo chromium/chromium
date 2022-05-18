@@ -163,7 +163,7 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
       &XDGPopupWrapperImpl::Repositioned,
   };
 
-  auto positioner = CreatePositioner(wayland_window_->parent_window());
+  auto positioner = CreatePositioner();
   if (!positioner)
     return false;
 
@@ -214,7 +214,7 @@ bool XDGPopupWrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
   params_.bounds = new_bounds;
 
   // Create a new positioner with new bounds.
-  auto positioner = CreatePositioner(wayland_window_->parent_window());
+  auto positioner = CreatePositioner();
   if (!positioner)
     return false;
 
@@ -238,8 +238,7 @@ void XDGPopupWrapperImpl::Grab(uint32_t serial) {
   xdg_popup_grab(xdg_popup_.get(), connection_->seat()->wl_object(), serial);
 }
 
-wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner(
-    WaylandWindow* parent_window) {
+wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner() {
   wl::Object<xdg_positioner> positioner(
       xdg_wm_base_create_positioner(connection_->shell()));
   if (!positioner)

@@ -159,7 +159,7 @@ bool ZXDGPopupV6WrapperImpl::Initialize(const ShellPopupParams& params) {
       &ZXDGPopupV6WrapperImpl::PopupDone,
   };
 
-  auto positioner = CreatePositioner(wayland_window_->parent_window());
+  auto positioner = CreatePositioner();
   if (!positioner)
     return false;
 
@@ -207,8 +207,7 @@ void ZXDGPopupV6WrapperImpl::Grab(uint32_t serial) {
                      serial);
 }
 
-wl::Object<zxdg_positioner_v6> ZXDGPopupV6WrapperImpl::CreatePositioner(
-    WaylandWindow* parent_window) {
+wl::Object<zxdg_positioner_v6> ZXDGPopupV6WrapperImpl::CreatePositioner() {
   wl::Object<zxdg_positioner_v6> positioner(
       zxdg_shell_v6_create_positioner(connection_->shell_v6()));
   if (!positioner)

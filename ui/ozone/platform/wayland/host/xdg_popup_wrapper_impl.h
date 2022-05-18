@@ -36,7 +36,7 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   void Grab(uint32_t serial) override;
 
  private:
-  wl::Object<xdg_positioner> CreatePositioner(WaylandWindow* parent_window);
+  wl::Object<xdg_positioner> CreatePositioner();
 
   // xdg_popup_listener
   static void Configure(void* data,

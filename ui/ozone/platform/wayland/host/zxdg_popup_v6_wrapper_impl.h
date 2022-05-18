@@ -36,7 +36,7 @@ class ZXDGPopupV6WrapperImpl : public ShellPopupWrapper {
   void Grab(uint32_t serial) override;
 
  private:
-  wl::Object<zxdg_positioner_v6> CreatePositioner(WaylandWindow* parent_window);
+  wl::Object<zxdg_positioner_v6> CreatePositioner();
 
   // zxdg_popup_v6_listener
   static void Configure(void* data,
