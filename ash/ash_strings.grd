@@ -3948,6 +3948,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS" desc="Text of the weather temperature in Celsius.">
         <ph name="TEMPERATURE_C">$1<ex>25</ex></ph>° C
       </message>
+      <message name="IDS_ASH_SCREENSAVER_STARTS" desc="Text to announce when screensaver starts.">
+        Screen saver starts
+      </message>
 
       <!-- Capture Mode -->
       <message name="IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE" desc="The text of the notification that informs the user the screen recording is blocked due to existence of protected content.">

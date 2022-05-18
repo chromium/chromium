@@ -34,6 +34,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_status.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -53,8 +54,11 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -772,7 +776,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
-  widget->SetContentsView(std::move(container_view));
+  auto* contents_view = widget->SetContentsView(std::move(container_view));
 
   widget->SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_BOTH);
@@ -781,6 +785,12 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
   ::wm::SetWindowVisibilityChangesAnimated(widget->GetNativeWindow());
 
   widget->Show();
+
+  // Only announce for the primary window.
+  if (Shell::GetPrimaryRootWindow() == container->GetRootWindow()) {
+    contents_view->GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREENSAVER_STARTS));
+  }
 
   return widget;
 }
