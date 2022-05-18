@@ -1663,7 +1663,8 @@ CreditCard* BrowserAutofillManager::GetCreditCard(int unique_id) {
   // Unpack the |unique_id| into component parts.
   std::string credit_card_id;
   std::string profile_id;
-  SplitFrontendID(unique_id, &credit_card_id, &profile_id);
+  suggestion_generator_->SplitFrontendId(unique_id, &credit_card_id,
+                                         &profile_id);
   return personal_data_->GetCreditCardByGUID(credit_card_id);
 }
 
@@ -1671,7 +1672,8 @@ AutofillProfile* BrowserAutofillManager::GetProfile(int unique_id) {
   // Unpack the |unique_id| into component parts.
   std::string credit_card_id;
   std::string profile_id;
-  SplitFrontendID(unique_id, &credit_card_id, &profile_id);
+  suggestion_generator_->SplitFrontendId(unique_id, &credit_card_id,
+                                         &profile_id);
 
   if (base::IsValidGUID(profile_id))
     return personal_data_->GetProfileByGUID(profile_id);
@@ -2015,36 +2017,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const AutofillField& autofill_field) const {
   address_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
 
-  std::vector<ServerFieldType> field_types(form.field_count());
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    field_types.push_back(form.field(i)->Type().GetStorableType());
-  }
-
-  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      autofill_field.Type(), field.value, field.is_autofilled, field_types);
-
-  // Adjust phone number to display in prefix/suffix case.
-  if (autofill_field.Type().group() == FieldTypeGroup::kPhoneHome) {
-    for (auto& suggestion : suggestions) {
-      const AutofillProfile* profile =
-          personal_data_->GetProfileByGUID(suggestion.backend_id);
-      if (profile) {
-        const std::u16string phone_home_city_and_number =
-            profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale_);
-        suggestion.main_text =
-            Suggestion::Text(FieldFiller::GetPhoneNumberValueForInput(
-                                 autofill_field, suggestion.main_text.value,
-                                 phone_home_city_and_number, field),
-                             Suggestion::Text::IsPrimary(true));
-      }
-    }
-  }
-
-  for (auto& suggestion : suggestions) {
-    suggestion.frontend_id =
-        MakeFrontendID(std::string(), suggestion.backend_id);
-  }
-  return suggestions;
+  return suggestion_generator_->GetSuggestionsForProfiles(
+      form, field, autofill_field, app_locale_);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
@@ -2058,15 +2032,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
     suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
         form_structure, field, type, app_locale_, should_display_gpay_logo);
-  }
-
-  // TODO(crbug.com/1196021): Once the profile suggestion creation is moved to
-  // AutofillSuggestionGenerator, move this part as well.
-  for (Suggestion& suggestion : suggestions) {
-    if (suggestion.frontend_id == 0) {
-      suggestion.frontend_id =
-          MakeFrontendID(suggestion.backend_id, std::string());
-    }
   }
 
   credit_card_form_event_logger_->set_suggestions(suggestions);
@@ -2145,68 +2110,6 @@ void BrowserAutofillManager::OnAfterProcessParsedForms(
   // directly comparable.
   KeyboardAccessoryMetricsLogger::OnFormsLoaded();
 #endif
-}
-
-int BrowserAutofillManager::BackendIDToInt(
-    const std::string& backend_id) const {
-  if (!base::IsValidGUID(backend_id))
-    return 0;
-
-  const auto found = backend_to_int_map_.find(backend_id);
-  if (found == backend_to_int_map_.end()) {
-    // Unknown one, make a new entry.
-    int int_id = backend_to_int_map_.size() + 1;
-    backend_to_int_map_[backend_id] = int_id;
-    int_to_backend_map_[int_id] = backend_id;
-    return int_id;
-  }
-  return found->second;
-}
-
-std::string BrowserAutofillManager::IntToBackendID(int int_id) const {
-  if (int_id == 0)
-    return std::string();
-
-  const auto found = int_to_backend_map_.find(int_id);
-  if (found == int_to_backend_map_.end()) {
-    NOTREACHED();
-    return std::string();
-  }
-  return found->second;
-}
-
-// When sending IDs (across processes) to the renderer we pack credit card and
-// profile IDs into a single integer.  Credit card IDs are sent in the high
-// word and profile IDs are sent in the low word.
-int BrowserAutofillManager::MakeFrontendID(
-    const std::string& cc_backend_id,
-    const std::string& profile_backend_id) const {
-  int cc_int_id = BackendIDToInt(cc_backend_id);
-  int profile_int_id = BackendIDToInt(profile_backend_id);
-
-  // Should fit in signed 16-bit integers. We use 16-bits each when combining
-  // below, and negative frontend IDs have special meaning so we can never use
-  // the high bit.
-  DCHECK(cc_int_id <= std::numeric_limits<int16_t>::max());
-  DCHECK(profile_int_id <= std::numeric_limits<int16_t>::max());
-
-  // Put CC in the high half of the bits.
-  return (cc_int_id << std::numeric_limits<uint16_t>::digits) | profile_int_id;
-}
-
-// When receiving IDs (across processes) from the renderer we unpack credit card
-// and profile IDs from a single integer.  Credit card IDs are stored in the
-// high word and profile IDs are stored in the low word.
-void BrowserAutofillManager::SplitFrontendID(
-    int frontend_id,
-    std::string* cc_backend_id,
-    std::string* profile_backend_id) const {
-  int cc_int_id = (frontend_id >> std::numeric_limits<uint16_t>::digits) &
-                  std::numeric_limits<uint16_t>::max();
-  int profile_int_id = frontend_id & std::numeric_limits<uint16_t>::max();
-
-  *cc_backend_id = IntToBackendID(cc_int_id);
-  *profile_backend_id = IntToBackendID(profile_int_id);
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(

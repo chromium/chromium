@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SUGGESTION_GENERATOR_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/strong_alias.h"
 
 namespace base {
 class Time;
@@ -18,6 +20,7 @@ class Time;
 namespace autofill {
 
 class AutofillClient;
+class AutofillField;
 struct AutofillOfferData;
 class AutofillType;
 class CreditCard;
@@ -26,16 +29,25 @@ class FormStructure;
 class PersonalDataManager;
 struct Suggestion;
 
+using InternalId = base::StrongAlias<class InternalIdTag, int>;
+
 // Helper class to generate Autofill suggestions, such as for credit card and
 // address profile Autofill.
 class AutofillSuggestionGenerator {
  public:
   explicit AutofillSuggestionGenerator(AutofillClient* autofill_client,
                                        PersonalDataManager* personal_data);
-  ~AutofillSuggestionGenerator() = default;
+  ~AutofillSuggestionGenerator();
   AutofillSuggestionGenerator(const AutofillSuggestionGenerator&) = delete;
   AutofillSuggestionGenerator& operator=(const AutofillSuggestionGenerator&) =
       delete;
+
+  // Generates suggestions for all available profiles.
+  std::vector<Suggestion> GetSuggestionsForProfiles(
+      const FormStructure& form,
+      const FormFieldData& field,
+      const AutofillField& autofill_field,
+      const std::string& app_locale);
 
   // Generates suggestions for all available credit cards.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
@@ -63,6 +75,14 @@ class AutofillSuggestionGenerator {
   // this case, we prefer the nickname of the local if it is defined. If only
   // one copy has a nickname, take that.
   std::u16string GetDisplayNicknameForCreditCard(const CreditCard& card) const;
+
+  // Methods for packing and unpacking credit card and profile IDs for sending
+  // and receiving to and from the renderer process.
+  int MakeFrontendId(const std::string& cc_backend_id,
+                     const std::string& profile_backend_id) const;
+  void SplitFrontendId(int frontend_id,
+                       std::string* cc_backend_id,
+                       std::string* profile_backend_id) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
@@ -96,12 +116,24 @@ class AutofillSuggestionGenerator {
   const CreditCard* GetServerCardForLocalCard(
       const CreditCard* local_card) const;
 
+  // Maps suggestion backend ID to and from an integer identifying it. Two of
+  // these intermediate integers are packed by MakeFrontendID to make the IDs
+  // that this class generates for the UI and for IPC.
+  InternalId BackendIdToInternalId(const std::string& backend_id) const;
+  std::string InternalIdToBackendId(InternalId int_id) const;
+
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
   raw_ptr<AutofillClient> autofill_client_;
 
   // personal_data_ should outlive the generator.
   raw_ptr<PersonalDataManager> personal_data_;
+
+  // Suggestion backend ID to ID mapping. We keep two maps to convert back and
+  // forth. These should be used only by BackendIDToInt and IntToBackendID.
+  // Note that the integers are not frontend IDs.
+  mutable std::map<std::string, InternalId> backend_to_int_map_;
+  mutable std::map<InternalId, std::string> int_to_backend_map_;
 };
 
 }  // namespace autofill

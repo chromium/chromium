@@ -107,7 +107,7 @@ std::string BytesToBase64(const std::vector<uint8_t> bytes) {
 
 class TestAccessor : public CreditCardAccessManager::Accessor {
  public:
-  TestAccessor() {}
+  TestAccessor() = default;
 
   base::WeakPtr<TestAccessor> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

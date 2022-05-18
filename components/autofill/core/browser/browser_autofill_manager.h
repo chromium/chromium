@@ -314,12 +314,6 @@ class BrowserAutofillManager : public AutofillManager,
                                          app_locale, submitted_form);
   }
 
-  // A public wrapper that calls |MakeFrontendID| for testing purposes only.
-  int MakeFrontendIDForTest(const std::string& cc_backend_id,
-                            const std::string& profile_backend_id) const {
-    return MakeFrontendID(cc_backend_id, profile_backend_id);
-  }
-
   // A public wrapper that calls |ShouldTriggerRefill| for testing purposes
   // only.
   bool ShouldTriggerRefillForTest(const FormStructure& form_structure) {
@@ -338,6 +332,10 @@ class BrowserAutofillManager : public AutofillManager,
   }
 #endif
 
+  base::raw_ptr<AutofillSuggestionGenerator> suggestion_generator() {
+    return suggestion_generator_.get();
+  }
+
  protected:
   // Uploads the form data to the Autofill server. |observed_submission|
   // indicates that upload is the result of a submission event.
@@ -352,20 +350,6 @@ class BrowserAutofillManager : public AutofillManager,
       const base::TimeTicks& interaction_time,
       const base::TimeTicks& submission_time,
       bool observed_submission);
-
-  // Maps suggestion backend ID to and from an integer identifying it. Two of
-  // these intermediate integers are packed by MakeFrontendID to make the IDs
-  // that this class generates for the UI and for IPC.
-  virtual int BackendIDToInt(const std::string& backend_id) const;
-  virtual std::string IntToBackendID(int int_id) const;
-
-  // Methods for packing and unpacking credit card and profile IDs for sending
-  // and receiving to and from the renderer process.
-  int MakeFrontendID(const std::string& cc_backend_id,
-                     const std::string& profile_backend_id) const;
-  void SplitFrontendID(int frontend_id,
-                       std::string* cc_backend_id,
-                       std::string* profile_backend_id) const;
 
   // AutofillManager:
   void OnFormSubmittedImpl(const FormData& form,
@@ -459,6 +443,8 @@ class BrowserAutofillManager : public AutofillManager,
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();
 
+  // TODO(crbug.com/1249665): Change unique_id to frontend_id and move the
+  // functions to AutofillSuggestionGenerator.
   // Gets the card referred to by the guid |unique_id|. Returns |nullptr| if
   // card does not exist.
   CreditCard* GetCreditCard(int unique_id);
@@ -711,12 +697,6 @@ class BrowserAutofillManager : public AutofillManager,
   FormFieldData credit_card_field_;
   CreditCard credit_card_;
   std::u16string last_unlocked_credit_card_cvc_;
-
-  // Suggestion backend ID to ID mapping. We keep two maps to convert back and
-  // forth. These should be used only by BackendIDToInt and IntToBackendID.
-  // Note that the integers are not frontend IDs.
-  mutable std::map<std::string, int> backend_to_int_map_;
-  mutable std::map<int, std::string> int_to_backend_map_;
 
   // Delegate used in test to get notifications on certain events.
   raw_ptr<BrowserAutofillManagerTestDelegate> test_delegate_ = nullptr;

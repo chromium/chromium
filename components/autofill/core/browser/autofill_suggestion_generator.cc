@@ -7,11 +7,14 @@
 #include "base/feature_list.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 
+#include "base/guid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -53,6 +56,46 @@ AutofillSuggestionGenerator::AutofillSuggestionGenerator(
     AutofillClient* autofill_client,
     PersonalDataManager* personal_data)
     : autofill_client_(autofill_client), personal_data_(personal_data) {}
+
+AutofillSuggestionGenerator::~AutofillSuggestionGenerator() = default;
+
+std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
+    const FormStructure& form,
+    const FormFieldData& field,
+    const AutofillField& autofill_field,
+    const std::string& app_locale) {
+  std::vector<ServerFieldType> field_types(form.field_count());
+  for (size_t i = 0; i < form.field_count(); ++i) {
+    field_types.push_back(form.field(i)->Type().GetStorableType());
+  }
+
+  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
+      autofill_field.Type(), field.value, field.is_autofilled, field_types);
+
+  // Adjust phone number to display in prefix/suffix case.
+  if (autofill_field.Type().group() == FieldTypeGroup::kPhoneHome) {
+    for (auto& suggestion : suggestions) {
+      const AutofillProfile* profile =
+          personal_data_->GetProfileByGUID(suggestion.backend_id);
+      if (profile) {
+        const std::u16string phone_home_city_and_number =
+            profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale);
+        suggestion.main_text =
+            Suggestion::Text(FieldFiller::GetPhoneNumberValueForInput(
+                                 autofill_field, suggestion.main_text.value,
+                                 phone_home_city_and_number, field),
+                             Suggestion::Text::IsPrimary(true));
+      }
+    }
+  }
+
+  for (auto& suggestion : suggestions) {
+    suggestion.frontend_id =
+        MakeFrontendId(std::string(), suggestion.backend_id);
+  }
+
+  return suggestions;
+}
 
 std::vector<Suggestion>
 AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
@@ -126,6 +169,13 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
         autofill_client_->GetLastCommittedURL(), suggestions);
   }
 
+  for (Suggestion& suggestion : suggestions) {
+    if (suggestion.frontend_id == 0) {
+      suggestion.frontend_id =
+          MakeFrontendId(suggestion.backend_id, std::string());
+    }
+  }
+
   return suggestions;
 }
 
@@ -187,6 +237,43 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   }
   // Fall back to nickname of |card|, which may be empty.
   return card.nickname();
+}
+
+// When sending IDs (across processes) to the renderer we pack credit card and
+// profile IDs into a single integer.  Credit card IDs are sent in the high
+// word and profile IDs are sent in the low word.
+int AutofillSuggestionGenerator::MakeFrontendId(
+    const std::string& cc_backend_id,
+    const std::string& profile_backend_id) const {
+  InternalId cc_int_id = BackendIdToInternalId(cc_backend_id);
+  InternalId profile_int_id = BackendIdToInternalId(profile_backend_id);
+
+  // Should fit in signed 16-bit integers. We use 16-bits each when combining
+  // below, and negative frontend IDs have special meaning so we can never use
+  // the high bit.
+  DCHECK(cc_int_id.value() <= std::numeric_limits<int16_t>::max());
+  DCHECK(profile_int_id.value() <= std::numeric_limits<int16_t>::max());
+
+  // Put CC in the high half of the bits.
+  return (cc_int_id.value() << std::numeric_limits<uint16_t>::digits) |
+         profile_int_id.value();
+}
+
+// When receiving IDs (across processes) from the renderer we unpack credit
+// card and profile IDs from a single integer.  Credit card IDs are stored in
+// the high word and profile IDs are stored in the low word.
+void AutofillSuggestionGenerator::SplitFrontendId(
+    int frontend_id,
+    std::string* cc_backend_id,
+    std::string* profile_backend_id) const {
+  InternalId cc_int_id =
+      InternalId((frontend_id >> std::numeric_limits<uint16_t>::digits) &
+                 std::numeric_limits<uint16_t>::max());
+  InternalId profile_int_id =
+      InternalId(frontend_id & std::numeric_limits<uint16_t>::max());
+
+  *cc_backend_id = InternalIdToBackendId(cc_int_id);
+  *profile_backend_id = InternalIdToBackendId(profile_int_id);
 }
 
 Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
@@ -354,6 +441,35 @@ const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
     return *it;
 
   return nullptr;
+}
+
+InternalId AutofillSuggestionGenerator::BackendIdToInternalId(
+    const std::string& backend_id) const {
+  if (!base::IsValidGUID(backend_id))
+    return InternalId(0);
+
+  const auto found = backend_to_int_map_.find(backend_id);
+  if (found == backend_to_int_map_.end()) {
+    // Unknown one, make a new entry.
+    InternalId int_id = InternalId(backend_to_int_map_.size() + 1);
+    backend_to_int_map_[backend_id] = int_id;
+    int_to_backend_map_[int_id] = backend_id;
+    return int_id;
+  }
+  return InternalId(found->second);
+}
+
+std::string AutofillSuggestionGenerator::InternalIdToBackendId(
+    InternalId int_id) const {
+  if (int_id.value() == 0)
+    return std::string();
+
+  const auto found = int_to_backend_map_.find(int_id);
+  if (found == int_to_backend_map_.end()) {
+    NOTREACHED();
+    return std::string();
+  }
+  return found->second;
 }
 
 }  // namespace autofill
