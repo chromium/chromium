@@ -370,6 +370,16 @@ general rules of thumb can be helpful in navigating how to structure changes:
   successful contributing across the codebase. Additions of new languages must
   be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
 
+- **When your team is making API changes or migrating between services, the
+  team mandating the change needs to do at least 80% of the work.** The
+  rationale is to reduce externalities by having the team that requires a
+  change spend the vast majority of the time required to make it happen.
+  This naturally encourages designing to minimize the cost of change, be it
+  through automation, tooling, or pooled centralized expertise. You can find
+  more detailed rationale in [this doc](https://docs.google.com/document/d/1elJisUpOb3h4-7WA4Wn754nzfgeCJ4v2kAFvMOzNfek/edit#)
+  (Google internal). If you need an exception or help, please contact
+  chromium-code-health-rotation@google.com.
+
 ## Tips
 
 ### Review etiquette
