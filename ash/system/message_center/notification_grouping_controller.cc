@@ -333,10 +333,12 @@ void NotificationGroupingController::OnNotificationAdded(
   MessageView* parent_view =
       GetActiveNotificationViewController()->GetMessageViewForNotificationId(
           parent_id);
-  if (parent_view)
+  if (parent_view) {
     parent_view->AddGroupNotification(*notification);
-  else
+    message_center->ResetPopupTimer(parent_id);
+  } else {
     message_center->ResetSinglePopup(parent_id);
+  }
 
   metrics_utils::LogCountOfNotificationsInOneGroup(
       grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
@@ -361,6 +363,7 @@ void NotificationGroupingController::OnNotificationRemoved(
         grouped_notification_list_->GetParentForChild(notification_id);
 
     RemoveGroupedChild(notification_id);
+    MessageCenter::Get()->ResetPopupTimer(parent_id);
 
     metrics_utils::LogCountOfNotificationsInOneGroup(
         grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)

@@ -189,6 +189,11 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual void MarkSinglePopupAsShown(const std::string& id,
                                       bool mark_notification_as_read) = 0;
 
+  // Resets the timer for the popup associated with the provided notification
+  // id.
+  virtual void ResetPopupTimer(const std::string& id) = 0;
+
+  // Resets the state for a popup so it is shown again.
   virtual void ResetSinglePopup(const std::string& id) = 0;
 
   // This should be called by UI classes when a notification is first displayed

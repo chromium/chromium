@@ -166,6 +166,8 @@ void FakeMessageCenter::MarkSinglePopupAsShown(const std::string& id,
                                                bool mark_notification_as_read) {
 }
 
+void FakeMessageCenter::ResetPopupTimer(const std::string& id) {}
+
 void FakeMessageCenter::ResetSinglePopup(const std::string& id) {}
 
 void FakeMessageCenter::DisplayedNotification(const std::string& id,
