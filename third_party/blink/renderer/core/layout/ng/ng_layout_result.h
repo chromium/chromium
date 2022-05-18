@@ -604,7 +604,8 @@ class CORE_EXPORT NGLayoutResult final
     }
 
     DataUnionType data_union_type() const {
-      return static_cast<DataUnionType>(bit_field.get<DataUnionTypeValue>());
+      return static_cast<DataUnionType>(
+          bit_field.get_concurrently<DataUnionTypeValue>());
     }
 
     void set_data_union_type(DataUnionType data_type) {
