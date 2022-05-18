@@ -150,15 +150,13 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
 
 namespace {
 
-// ContentBrowserClient that skips assigning a site URL for a given scheme.
+// ContentBrowserClient that skips assigning a site URL for a given URL.
 class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
  public:
-  // Any visit to |scheme_to_skip| will not cause the site to be assigned to the
-  // SiteInstance. This requires setting it as an empty document scheme.
-  explicit DontAssignSiteContentBrowserClient(const std::string& scheme_to_skip)
-      : scheme_to_skip_(scheme_to_skip) {
-    url::AddEmptyDocumentScheme(scheme_to_skip.c_str());
-  }
+  // Any visit to |url_to_skip| will not cause the site to be assigned to the
+  // SiteInstance.
+  explicit DontAssignSiteContentBrowserClient(const GURL& url_to_skip)
+      : url_to_skip_(url_to_skip) {}
 
   DontAssignSiteContentBrowserClient(
       const DontAssignSiteContentBrowserClient&) = delete;
@@ -166,12 +164,11 @@ class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
       const DontAssignSiteContentBrowserClient&) = delete;
 
   bool ShouldAssignSiteForURL(const GURL& url) override {
-    return url.scheme() != scheme_to_skip_;
+    return url != url_to_skip_;
   }
 
  private:
-  std::string scheme_to_skip_;
-  url::ScopedSchemeRegistryForTests scheme_registry_;
+  GURL url_to_skip_;
 };
 
 }  // namespace
@@ -185,9 +182,9 @@ class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
 // https://crbug.com/1012143.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
                        NavigateFromUnassignedSiteInstance) {
-  // Set up an empty page scheme whose URLs will have no site assigned.
-  DontAssignSiteContentBrowserClient content_browser_client("siteless");
-  GURL empty_site_url = GURL("siteless://test");
+  // Set up a page URL that will have no site URL.
+  GURL empty_site = embedded_test_server()->GetURL("a.com", "/title1.html");
+  DontAssignSiteContentBrowserClient content_browser_client(empty_site);
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&content_browser_client);
 
@@ -195,8 +192,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   RegisterServiceWorker();
 
   // Navigate to the empty site instance page.
-  ASSERT_TRUE(NavigateToURL(shell(), empty_site_url));
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site_url);
+  ASSERT_TRUE(NavigateToURL(shell(), empty_site));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site);
   scoped_refptr<SiteInstanceImpl> site_instance =
       web_contents()->GetMainFrame()->GetSiteInstance();
   EXPECT_EQ(GURL(), site_instance->GetSiteURL());
