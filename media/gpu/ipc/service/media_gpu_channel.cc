@@ -26,10 +26,17 @@ class DecoderProviderImpl : public mojom::GpuAcceleratedVideoDecoderProvider,
  public:
   DecoderProviderImpl(gpu::CommandBufferStub* stub,
                       const AndroidOverlayMojoFactoryCB& overlay_factory_cb)
-      : stub_(stub), overlay_factory_cb_(overlay_factory_cb) {}
+      : stub_(stub), overlay_factory_cb_(overlay_factory_cb) {
+    stub_->AddDestructionObserver(this);
+  }
+
   DecoderProviderImpl(const DecoderProviderImpl&) = delete;
   DecoderProviderImpl& operator=(const DecoderProviderImpl&) = delete;
-  ~DecoderProviderImpl() override = default;
+  ~DecoderProviderImpl() override {
+    if (stub_) {
+      stub_->RemoveDestructionObserver(this);
+    }
+  }
 
   // mojom::GpuAcceleratedVideoDecoderProvider:
   void CreateAcceleratedVideoDecoder(

@@ -271,6 +271,9 @@ GpuChannelMessageFilter::GpuChannelMessageFilter(
               gpu_channel,
               static_cast<int32_t>(
                   GpuChannelReservedRoutes::kImageDecodeAccelerator))) {
+  // GpuChannel and CommandBufferStub implementations assume that it is not
+  // possible to simultaneously execute tasks on these two task runners.
+  DCHECK_EQ(main_task_runner_, gpu_channel->task_runner());
   io_thread_checker_.DetachFromThread();
   allow_process_kill_for_testing_ = gpu_channel->gpu_channel_manager()
                                         ->gpu_preferences()
