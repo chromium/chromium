@@ -159,9 +159,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kPaymentRequestBasicCard:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kPaymentRequestBasicCard);
-    case WebFeature::kPaymentRequestShowWithoutGesture:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kPaymentRequestShowWithoutGesture);
     case WebFeature::kPictureSourceSrc:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kPictureSourceSrc);

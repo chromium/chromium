@@ -529,10 +529,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type =
           protocol::Audits::DeprecationIssueTypeEnum::PaymentRequestBasicCard;
       break;
-    case DeprecationIssueType::kPaymentRequestShowWithoutGesture:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          PaymentRequestShowWithoutGesture;
-      break;
     case DeprecationIssueType::kPictureSourceSrc:
       type = protocol::Audits::DeprecationIssueTypeEnum::PictureSourceSrc;
       break;

@@ -810,8 +810,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
       DomWindow()->IsPaymentRequestTokenActive();
 
   if (!has_transient_user_activation) {
-    Deprecation::CountDeprecation(
-        GetExecutionContext(), WebFeature::kPaymentRequestShowWithoutGesture);
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kPaymentRequestShowWithoutGesture);
 
     if (!payment_request_token_active) {
       UseCounter::Count(GetExecutionContext(),
