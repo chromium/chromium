@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Įtariamas fiksuotasis portalas</translation>
 <translation id="1290331692326790741">Silpnas signalas</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Įrašymo apsaugos įjungimas</translation>
 <translation id="1308754910631152188">Atnaujinama (atlikta <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Nėra jokių pasiekiamų „<ph name="NETWORK_NAME" />“ tinklų</translation>
 <translation id="131421566576084655">Pastarojo duomenų nustatymo iš naujo data nepasiekiama</translation>
 <translation id="1314565355471455267">„Android“ VPN</translation>
 <translation id="131461803491198646">Namų tinklas, ne tarptinklinis ryšys</translation>
+<translation id="132712914231403017">Programinės aparatinės įrangos vaizdo diegimas</translation>
 <translation id="1327977588028644528">Tinklų sietuvas</translation>
 <translation id="1328223165223065150">Ekrano fono spalva</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
 <translation id="1643449475550628585">Kasdien keisti ekrano fono vaizdą</translation>
 <translation id="1644574205037202324">Istorija</translation>
+<translation id="1645954272419197032">Įrenginio informacijos patvirtinimas</translation>
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1668469839109562275">Įtaisytasis VPN</translation>
 <translation id="1703835215927279855">Laiškas</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Jungiamumas</translation>
 <translation id="2008685064673031089">Pagrindinė paieška</translation>
 <translation id="2016697457005847575">Išbandykite trikčių šalinimo veiksmus</translation>
+<translation id="2016848882344942759">--išvalyti baltą etiketę--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2085089206770112532">Sumažinti ekrano šviesumą</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Tamsaus režimo planavimas</translation>
 <translation id="2275586345903859204">Sutvarkyta</translation>
 <translation id="2287186687001756809">Nėra jokių vaizdų. Jei norite pridėti nuotraukų, eikite adresu <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Įdėkite išorinę saugyklą, pvz., atmintuką ar SD kortelę, su atsisiųstu „Chromebook“ atkūrimo paslaugų programos vaizdu</translation>
 <translation id="2307344026739914387">Naudoti dabartinę raktų porą</translation>
 <translation id="2320295602967756579">Įgalinti šviesiąją temą</translation>
 <translation id="2323506179655536734">PRALEISTA</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS autentifikavimo raktas</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2717139507051041123">Įgalinti tamsių spalvų režimą</translation>
+<translation id="2727250716596204208">Nepavyko rasti programinės aparatinės įrangos vaizdo. Įdėkite išorinę saugyklą, pvz., atmintuką ar SD kortelę, su atsisiųstu „Chromebook“ atkūrimo paslaugų programos vaizdu.</translation>
 <translation id="2740531572673183784">Gerai</translation>
 <translation id="2751739896257479635">EAP 2 tapatybės nustatymo etapas</translation>
 <translation id="2756652381241102009">Vykdyti diagnostiką</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">Centrinis procesorius</translation>
 <translation id="3124039320086536031">Įrenginys prijungtas.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}many{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
+<translation id="3137983112374760826">Aprūpinamas įrenginys...</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
+<translation id="3383751554789092165">Keiskite įrenginio informaciją pagal poreikį.</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
 <translation id="3404770484521709967">Komponentai įdiegti tinkamai.</translation>
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
 <translation id="3771294271822695279">Vaizdo įrašų failai</translation>
+<translation id="3774059845329307709">Serijos numeris</translation>
 <translation id="3784455785234192852">Užrakinti</translation>
 <translation id="38114475217616659">Išvalyti visą istoriją</translation>
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh akumuliatorius</translation>
 <translation id="4561801978359312462">SIM kortelė atrakinta</translation>
 <translation id="4562494484721939086">Nėra paslaugos</translation>
+<translation id="4568938274596692027">Diegimas baigtas. Ruošiamasi paleisti iš naujo...</translation>
 <translation id="458794348635939462">Nepavyko nustatyti jokių prieglobų pavadinimų</translation>
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4609350030397390689">Sumažinti klaviatūros šviesumą</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="4891842000192098784">Įtampa</translation>
 <translation id="4897058166682006107">Įrenginio kairiosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
+<translation id="4908030561598728899">Įdiegiama programinė aparatinė įranga...</translation>
 <translation id="4915052247106771211">Bus atkurti gamykliniai įrenginio nustatymai („Powerwash“).</translation>
 <translation id="4917385247580444890">Stiprus</translation>
 <translation id="4917889632206600977">Sustabdyta – baigėsi popierius</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Sparčiųjų atsakymų nustatymai</translation>
 <translation id="5168185087976003268">Akumuliatoriaus būsena</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
+<translation id="5179530508336824319">Įgalinkite įrašymo apsaugą, kad galėtumėte pereiti į kitą ekraną. Instrukcijas rasite įrenginio gamintojo palaikymo puslapyje.</translation>
 <translation id="5190187232518914472">Atgaivinkite mėgstamiausius prisiminimus. Norėdami pridėti ar redaguoti albumus, eikite į <ph name="LINK_BEGIN" />„Google“ nuotraukas<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
 Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
@@ -615,8 +627,10 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="680983167891198932">Raktas</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
+<translation id="6822504384524564824">SKU reikia pakeisti tik tada, kai naujas (-i) komponentas (-ai) skiriasi nuo tų, kuriuos pakeitė. Pavyzdžiui, ne jutiklinį ekraną pakeitęs jutiklinis ekranas ar iš 8 GB į 16 GB naujovinta atmintis.</translation>
 <translation id="6840315122969944400">„<ph name="DEVICE_TYPE" />“ taisymas</translation>
 <translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
+<translation id="6876833053687020046">DRAM dalies numeris</translation>
 <translation id="6889786074662672253">Kol paleidžiama iš naujo, neatjunkite šio išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Tai gali užtrukti kelias minutes ir tuo metu išorinis įrenginys gali neveikti.</translation>
 <translation id="6905724422583748843">Atgal į puslapį „<ph name="PAGE_NAME" />“</translation>
 <translation id="6910312834584889076">Skaitytuvo dangtis atidarytas. Uždarykite dangtį ir bandykite dar kartą.</translation>
@@ -664,6 +678,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7343649194310845056">Tinklo įrenginiai</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Keisti ekrano užsklandą</translation>
 <translation id="7397270852490618635">Išjungti šviesiąją temą</translation>
 <translation id="741244894080940828">konversija</translation>
@@ -763,6 +778,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8364946094152050673">Domenų pavadinimų serveriai tušti</translation>
 <translation id="8372477600026034341">Papildomos prieglobos</translation>
 <translation id="8378855320830505539">Regionas</translation>
+<translation id="8382302752385457774">Balta etiketė</translation>
 <translation id="8395584934117017006">Šį „<ph name="DEVICE_TYPE" />“ įrenginį valdo įmonė</translation>
 <translation id="8398927464629426868">Rodiklis, nurodantis, per kiek laiko įrenginys šiuo metu įkraunamas arba išsikrauna</translation>
 <translation id="8422748173858722634">IMEI</translation>

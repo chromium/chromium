@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">படத்திலுள்ளதை Google Lens மூலம் மொழிபெயர் <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> நாட்களுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
+<translation id="13931502444227376">தொடர உங்கள் பெயர், மின்னஞ்சல் முகவரி, சுயவிவரப் படம் ஆகியவற்றை இந்தத் தளத்தில் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும். இந்தத் தளத்தின் <ph name="BEGIN_LINK1" />சேவை விதிமுறைகளைப்<ph name="END_LINK1" /> பார்க்கவும்.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> மூலம் தேடுக</translation>
 <translation id="139993653570221430">Chrome அமைப்புகளில் எப்போது வேண்டுமானாலும் மாற்றங்களைச் செய்யலாம். விளம்பரங்கள் தற்போது காட்டப்படும் வகையில் தொடர்ந்து காட்டப்படும். இந்தப் பரிசோதனைகளும் அவற்றோடு இணையாகவே நிகழும் என்பதால் மாற்றங்கள் உடனடியாக உங்களுக்குக் காட்டப்படாது.</translation>
 <translation id="1406000523432664303">'கண்காணிக்க வேண்டாம்'</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">தனியுரிமை சாண்ட்பாக்ஸைப் பற்றி</translation>
 <translation id="1736419249208073774">அறிக</translation>
 <translation id="1749561566933687563">உங்கள் புத்தகக்குறிகளை ஒத்திசைக்கவும்</translation>
+<translation id="1750259112639922169">பக்கக் குழு -<ph name="TAB_COUNT" /> பக்கங்கள்</translation>
 <translation id="17513872634828108">தாவல்களைத் திற</translation>
 <translation id="1754404134430936718">உரை நகலெடுக்கப்பட்டது</translation>
 <translation id="1779766957982586368">சாளரத்தை மூடுக</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">இந்தச் சாதனத்தில் தனிப்பட்ட முறையில் உலாவ, மறைநிலைப் பயன்முறையைப் பயன்படுத்திப் பாருங்கள்</translation>
 <translation id="5375577065097716013">Google Lens மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">உணர்வு வெளிப்பாடு மாற்றப்பட்டது</translation>
+<translation id="5401851137404501592">தொடர உங்கள் பெயர், மின்னஞ்சல் முகவரி, சுயவிவரப் படம் ஆகியவற்றை இந்தத் தளத்தில் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும்.</translation>
 <translation id="5403644198645076998">குறிப்பிட்ட தளங்களை மட்டும் அனுமதி</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> இல் <ph name="ONE_TIME_CODE" /> என்ற குறியீட்டைச் சமர்ப்பிக்கவா?</translation>
 <translation id="5414836363063783498">சரிபார்க்கிறது...</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">QR குறியீட்டை உருவாக்க முடியவில்லை. URLலில் <ph name="CHARACTER_LIMIT" /> எழுத்துகளுக்கு மேல் உள்ளன.</translation>
 <translation id="7177959540995930968">இந்த அம்சங்களைப் பற்றி Chrome அமைப்புகளில் மேலும் அறிந்துகொள்ளலாம்.</translation>
 <translation id="718226107353899806"><ph name="MAX_NUM_REACTIONS" /> உணர்வு வெளிப்பாடுகள் வரை மட்டுமே சேர்க்க முடியும்</translation>
+<translation id="7183693674623539380">பக்கக் குழு - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="7191430249889272776">தாவல் பின்புலத்தில் திறக்கப்பட்டது.</translation>
 <translation id="7196215469483532480">தனியுரிமை வழிகாட்டியின் விளக்கம் முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
@@ -1444,6 +1448,7 @@
 <translation id="8835786707922974220">நீங்கள் சேமித்துள்ள கடவுச்சொற்களை எப்போது வேண்டுமானாலும் அணுகும்படி அமைத்துக் கொள்ளுங்கள்</translation>
 <translation id="883806473910249246">உள்ளடக்கத்தைப் பதிவிறக்கும் போது பிழை ஏற்பட்டது.</translation>
 <translation id="8840953339110955557">ஆன்லைன் பதிப்பிலிருந்து இந்தப் பக்கம் வேறுபடலாம்.</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">மறைக்கப்பட்டுள்ளது</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, தாவல்</translation>
 <translation id="8854223127042600341">உங்கள் ஆஃப்லைன் ஃபைல்களைப் பாருங்கள்</translation>

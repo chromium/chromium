@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">疑似存在强制门户</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">开启写保护</translation>
 <translation id="1308754910631152188">正在更新（已完成 <ph name="PERCENTAGE_VALUE" />%）</translation>
 <translation id="1310380015393971138">无可用的“<ph name="NETWORK_NAME" />”网络</translation>
 <translation id="131421566576084655">无法获取上次重置流量使用情况的日期</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">快速解答设置</translation>
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
+<translation id="5179530508336824319">启用写保护即可继续前往下一个屏幕。如需获取说明，请前往设备制造商的支持页面。</translation>
 <translation id="5190187232518914472">重现您的美好回忆。如需添加或编辑影集，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
 请尝试通过点按麦克风图标向我提问。</translation>

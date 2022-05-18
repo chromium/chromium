@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Der blev muligvis registreret en loginportal</translation>
 <translation id="1290331692326790741">Svagt signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Aktivér Write Protect</translation>
 <translation id="1308754910631152188">Opdaterer (<ph name="PERCENTAGE_VALUE" /> % gennemført)</translation>
 <translation id="1310380015393971138">Der er ikke noget tilgængeligt <ph name="NETWORK_NAME" />-netværk</translation>
 <translation id="131421566576084655">Datoen for sidste nulstilling af data er ikke tilgængelig</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Indstillinger for Hurtig info</translation>
 <translation id="5168185087976003268">Batteriets tilstand</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
+<translation id="5179530508336824319">Aktivér Write Protect for at fortsætte til næste skærm. Gå til producentens supportside for at få vejledning.</translation>
 <translation id="5190187232518914472">Genoplev dine bedste minder. Gå til <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" /> for at tilføje eller redigere album.</translation>
 <translation id="5212543919916444558">Jeg kan ikke finde noget på skærmen, jeg kan hjælpe med. Prøv at trykke på mikrofonen for at spørge mig om noget.</translation>
 <translation id="5212593641110061691">Tabloid</translation>

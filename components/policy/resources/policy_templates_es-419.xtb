@@ -6512,15 +6512,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si esta política se inhabilita o no se establece, el acceso direcciona al usuario a los perfiles normales.</translation>
 <translation id="8151299379693359769">Habilita un control de seguridad adicional en función de la certificación remota (opcional, predeterminado: Verdadero).</translation>
 <translation id="8151490482515839285">Habilitar la generación de informes para la prevención de filtraciones de datos</translation>
-<translation id="8151949408479239790">Determina si se admiten encabezados de solicitudes sin comodín CORS.
-
-      A partir de la versión 97 de <ph name="PRODUCT_NAME" />, se puede determinar si se admiten encabezados de solicitudes sin comodín CORS. Cuando las secuencias de comandos envían una solicitud de red de orígenes cruzados a través de fetch() y XMLHttpRequest con un encabezado de autorización para agregar a la secuencia de comandos, el encabezado debe tener la autorización expresa del encabezado Access-Control-Allow-Headers en la respuesta de la solicitud preliminar de CORS. En este caso, "Expresa" significa que el símbolo comodín "*" no incluye el encabezado de autorización. Para obtener más información, visita <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
-
-      Si no estableces esta política o la estableces como verdadera, <ph name="PRODUCT_NAME" /> admitirá los encabezados de solicitudes sin comodín CORS y se comportará como se describe anteriormente.
-
-      Si la estableces como falsa, Chrome admitirá el símbolo comodín ("*") del encabezado Access-Control-Allow-Headers en la respuesta de la solicitud preliminar de CORS, a fin de incluir el encabezado de autorización.
-
-      Esta política empresarial es temporal; se planea quitarla después de la versión 103 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158758865057576716">Habilita la creación de las copias de itinerancia para los datos de perfil de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158897487095710470">Si estableces la política como verdadera, se mostrará una barra de favoritos en <ph name="PRODUCT_NAME" />. Si la estableces como falsa, los usuarios no podrán ver la barra de favoritos.
 

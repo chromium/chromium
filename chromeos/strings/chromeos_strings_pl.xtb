@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Podejrzany portal przechwytujący</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Włącz zabezpieczenie przed zapisem</translation>
 <translation id="1308754910631152188">Aktualizuję (ukończone <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Sieć <ph name="NETWORK_NAME" /> jest niedostępna</translation>
 <translation id="131421566576084655">Data ostatniego resetowania użycia danych jest niedostępna</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Ustawienia szybkich podpowiedzi</translation>
 <translation id="5168185087976003268">Kondycja baterii</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
+<translation id="5179530508336824319">Aby przejść na następny ekran, włącz zabezpieczenie przed zapisem. Instrukcje znajdziesz na stronie pomocy udostępnianej przez producenta urządzenia.</translation>
 <translation id="5190187232518914472">Przeżyj to jeszcze raz. Aby dodawać lub edytować albumy, otwórz <ph name="LINK_BEGIN" />Zdjęcia Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
 Kliknij mikrofon i zadaj pytanie.</translation>

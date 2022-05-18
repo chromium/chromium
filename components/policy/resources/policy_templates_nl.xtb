@@ -428,6 +428,18 @@ Als je dit beleid toepast of niet instelt, wordt op de webpagina naar specifieke
 
 Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragmenten scrollen via de URL uitgezet.</translation>
 <translation id="1474273443907024088">TLS False Start uitzetten</translation>
+<translation id="1476128579011024193">
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken nadat diegene is ingelogd op een beheerd account waarvoor dit beleid geldt.
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken, met de optie om bestaande browsegegevens te behouden, nadat diegene is ingelogd op een beheerd account waarvoor dit beleid geldt. Deze optie wordt ondersteund in Chrome 102 en hogere versies.
+
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken nadat diegene is ingelogd op een beheerd account waarvoor dit beleid geldt. Dit profiel mag geen secundaire accounts hebben.
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, wordt de gebruiker gevraagd een nieuw profiel voor het account te maken, met de optie om bestaande browsegegevens te behouden, nadat diegene is ingelogd op een beheerd account waarvoor dit beleid geldt. Dit profiel mag geen secundaire accounts hebben. Deze optie wordt ondersteund in Chrome 102 en hogere versies.
+
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_NONE" /> of niet is ingesteld, gelden er voor beheerde accounts geen beperkingen. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het niet mogelijk is om beleid te krijgen dat door de beheerder voor het account is ingesteld.
+
+      Als dit beleid op apparaatniveau is ingesteld, geldt het voor alle accounts in de browser.
+      Als dit beleid op accountniveau is ingesteld, geldt het alleen voor dat account in de browser.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Als je het beleid instelt, wordt de lijst met USB-apparaten gedefinieerd die door gebruikers mogen worden ontkoppeld van hun kernel-driver, zodat ze via de chrome.usb API rechtstreeks kunnen worden gebruikt in een web-app. Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat specifieke hardware kan worden geïdentificeerd.
 
@@ -4327,6 +4339,27 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 
       Als het beleid is ingesteld op 'False' of niet is ingesteld, heeft <ph name="PLUGIN_VM_NAME" /> geen toestemming om gegevens te verzamelen.
       Als het is ingesteld op 'True', kan <ph name="PLUGIN_VM_NAME" /> gebruiksgegevens verzamelen van <ph name="PLUGIN_VM_NAME" /> die daarna worden gecombineerd en grondig geanalyseerd om het gebruik van <ph name="PLUGIN_VM_NAME" /> te verbeteren.</translation>
+<translation id="5874896145772824604">Dit beleid biedt een manier om de lijst met reeksen te overschrijven die de browser gebruikt voor First-Party Sets-functies.
+
+      Elke reeks in de lijst met First-Party Sets van de browser moet voldoen aan de vereisten van een First-Party Set.
+      Een First-Party Set bestaat uit een eigenaarssite en een of meer lidsites. Alle sites in een First-Party Set moeten een registreerbaar domein zijn dat via HTTPS wordt gehost, ongeacht of het een eigenaars- of lidsite is.
+      Elke site in een First-Party Set moet ook uniek zijn. Dit betekent dat een site niet zowel eigenaar als lid kan zijn en maar één keer als lid van een First-Party Set kan worden vermeld.
+      Zie https://github.com/privacycg/first-party-sets voor meer informatie over First-Party Sets.
+
+      Als dit beleid een leeg woordenboek krijgt, gebruikt de browser de openbare lijst met First-Party Sets.
+
+      Voor alle sites in een First-Party Set uit de lijst <ph name="REPLACEMENTS" /> geldt dat als een site ook aanwezig is in een First-Party Set in de lijst van de browser, die site wordt verwijderd uit de First-Party Set van de browser.
+      Daarna wordt de First-Party Set van het beleid toegevoegd aan de lijst met First-Party Sets van de browser.
+
+      Voor alle sites in een First-Party Set uit de lijst <ph name="ADDITIONS" />, geldt dat als een site ook aanwezig is in een First-Party Set in de lijst van de browser, de First-Party Set van de browser wordt geüpdatet zodat de nieuwe First-Party Set kan worden toegevoegd aan de lijst van de browser. Nadat de lijst van de browser is geüpdatet, wordt de First-Party Set van het beleid toegevoegd aan de lijst met First-Party Sets van de browser.
+
+      De lijst met First-Party Sets van de browser vereist dat voor alle sites op de lijst geen site in meer dan 1 reeks is opgenomen. Dit is ook vereist voor zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" />. Een site kan ook niet in zowel de lijst <ph name="REPLACEMENTS" /> als de lijst <ph name="ADDITIONS" /> staan.
+
+      Jokertekens (*) worden zowel in First-Party Sets als in deze lijsten niet ondersteund als beleidswaarde.
+
+      Alle reeksen die in dit beleid worden opgegeven, moeten geldige First-Party Sets zijn. Zo niet, dan krijg je de relevante foutmelding.
+
+      Dit beleid is alleen beschikbaar voor Windows-instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, voor Windows 10 Pro- of Enterprise-instanties die zijn ingeschreven voor apparaatbeheer en voor macOS-instanties die worden beheerd via MDM of aan een domein zijn gekoppeld via MCX.</translation>
 <translation id="5875873062228321803">Hiermee configureer je de vereiste voor de minimaal toegestane versie van <ph name="PRODUCT_OS_NAME" />.
 
       Als dit beleid is ingesteld op een niet-lege lijst:
@@ -6422,15 +6455,6 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
       Als het beleid niet is toegepast of niet is ingesteld, leidt inloggen tot het gebruik van gewone profielen.</translation>
 <translation id="8151299379693359769">Een extra beveiligingscheck op basis van extern attest aanzetten (optioneel, standaard: True).</translation>
 <translation id="8151490482515839285">Rapportage van voorkoming van datalekken aanzetten</translation>
-<translation id="8151949408479239790">Hiermee stel je ondersteuning voor CORS-verzoekheaders zonder jokertekens in.
-
-      In versie 97 van <ph name="PRODUCT_NAME" /> wordt ondersteuning voor CORS-verzoekheaders zonder jokertekens geïntroduceerd. Als scripts een cross-origin-netwerkverzoek via fetch() en XMLHttpRequest doen met een door het script toegevoegde Authorization-header, moet de header expliciet worden toegestaan door de Access-Control-Allow-Headers-header in de CORS-pre-flightreactie. Expliciet houdt hier in dat het jokertekensymbool * de Authorization-header niet dekt. Zie <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> voor meer informatie.
-
-      Als je dit beleid niet instelt of instelt op True, ondersteunt <ph name="PRODUCT_NAME" /> de CORS-verzoekheaders zonder jokertekens en gedraagt het product zich zoals hierboven beschreven.
-
-      Als je dit beleid instelt op False, staat Chrome het jokertekensymbool (*) toe in de Access-Control-Allow-Headers-header in de CORS-pre-flightreactie om de Authorization-header te dekken.
-
-      Dit zakelijke beleid is tijdelijk. Het is de bedoeling het te verwijderen na <ph name="PRODUCT_NAME" /> versie 103.</translation>
 <translation id="8158758865057576716">Aanmaak van roaming-exemplaren voor <ph name="PRODUCT_NAME" />-profielgegevens aanzetten.</translation>
 <translation id="8158897487095710470">Als je het beleid instelt op 'True', wordt er een bookmarkbalk weergegeven in <ph name="PRODUCT_NAME" />. Als je het beleid instelt op 'False', krijgen gebruikers de bookmarkbalk niet te zien.
 

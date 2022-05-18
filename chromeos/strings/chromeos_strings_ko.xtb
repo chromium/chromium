@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">종속 포털로 의심됨</translation>
 <translation id="1290331692326790741">신호 약함</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">쓰기 방지 사용 설정</translation>
 <translation id="1308754910631152188">업데이트 중(<ph name="PERCENTAGE_VALUE" />% 완료)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> 네트워크를 사용할 수 없음</translation>
 <translation id="131421566576084655">마지막 데이터 재설정 날짜가 없음</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">홈 네트워크 로밍 안함</translation>
+<translation id="132712914231403017">펌웨어 이미지 설치</translation>
 <translation id="1327977588028644528">게이트웨이</translation>
 <translation id="1328223165223065150">배경화면 색상</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">서류 급지(단면)</translation>
 <translation id="1643449475550628585">매일 배경화면 이미지 변경</translation>
 <translation id="1644574205037202324">방문 기록</translation>
+<translation id="1645954272419197032">기기 정보를 확인하세요</translation>
 <translation id="1662989795263954667">중지됨 - 잉크 부족</translation>
 <translation id="1668469839109562275">기본 제공 VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">연결</translation>
 <translation id="2008685064673031089">Prime 검색</translation>
 <translation id="2016697457005847575">문제 해결 단계 시도해 보기</translation>
+<translation id="2016848882344942759">--허용 목록 라벨 없음--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
 <translation id="2085089206770112532">디스플레이 밝기 낮추기</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">어두운 모드 예약</translation>
 <translation id="2275586345903859204">수리 완료</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
+<translation id="2294753434210277304">Chromebook 복구 유틸리티 이미지를 다운로드한 USB 드라이브 또는 SD 카드와 같은 외부 저장소를 삽입합니다.</translation>
 <translation id="2307344026739914387">현재 키 쌍 사용</translation>
 <translation id="2320295602967756579">밝은 테마 사용 설정</translation>
 <translation id="2323506179655536734">건너뜀</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS 인증 키</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2717139507051041123">어두운 색상 모드 사용</translation>
+<translation id="2727250716596204208">펌웨어 이미지를 찾을 수 없습니다. Chromebook 복구 유틸리티 이미지를 다운로드한 USB 드라이브 또는 SD 카드와 같은 외부 저장소를 삽입하세요.</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
 <translation id="2756652381241102009">진단 실행</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">기기가 연결되어 있습니다.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{페이지를 삭제하시겠습니까?}=1{{PAGE_NUMBER}페이지를 삭제하시겠습니까?}other{{PAGE_NUMBER}페이지를 삭제하시겠습니까?}}</translation>
+<translation id="3137983112374760826">기기 프로비저닝 중...</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />페이지 스캔 중…</translation>
 <translation id="315738237743207937">종속 포털 감지됨</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
+<translation id="3383751554789092165">필요하면 기기 정보를 변경합니다.</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
 <translation id="3404770484521709967">구성요소가 제대로 설치되었습니다.</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
+<translation id="3774059845329307709">일련번호</translation>
 <translation id="3784455785234192852">잠금</translation>
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 배터리</translation>
 <translation id="4561801978359312462">SIM이 잠금 해제됨</translation>
 <translation id="4562494484721939086">서비스 불가</translation>
+<translation id="4568938274596692027">설치가 완료되었습니다. 다시 시작 준비 중...</translation>
 <translation id="458794348635939462">모든 호스트를 확인할 수 없습니다.</translation>
 <translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4609350030397390689">키보드 밝기 낮추기</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">지금 바로 새 비밀번호를 선택하세요.</translation>
 <translation id="4891842000192098784">스트레스</translation>
 <translation id="4897058166682006107">기기의 왼쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
+<translation id="4908030561598728899">펌웨어 설치 중...</translation>
 <translation id="4915052247106771211">기기가 기본 설정으로 재설정됩니다(파워워시).</translation>
 <translation id="4917385247580444890">강함</translation>
 <translation id="4917889632206600977">중지됨 - 용지 부족</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">빠른 답변 설정</translation>
 <translation id="5168185087976003268">배터리 상태</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
+<translation id="5179530508336824319">다음 화면으로 넘어가려면 쓰기 방지를 사용 설정하세요. 자세한 내용은 기기 제조업체의 지원 페이지를 참고하세요.</translation>
 <translation id="5190187232518914472">소중한 추억을 되새겨 보세요. 앨범을 추가하거나 수정하려면 <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />로 이동하세요.</translation>
 <translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
 마이크를 탭하여 무엇이든지 물어보세요.</translation>
@@ -615,8 +627,10 @@
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="680983167891198932">키</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
+<translation id="6822504384524564824">SKU는 새 구성요소가 교체하는 요소와 다를 때만 변경해야 합니다. 예를 들어 일반 스크린을 터치스크린으로 교체하거나 8GB 메모리를 16GB로 업그레이드하는 경우입니다.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> 수리</translation>
 <translation id="6853312040151791195">방전 속도</translation>
+<translation id="6876833053687020046">DRAM 부품 번호</translation>
 <translation id="6889786074662672253">다시 시작하는 동안 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 다시 시작하는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 페이지로 돌아가기</translation>
 <translation id="6910312834584889076">스캐너의 덮개가 열려 있습니다. 덮개를 닫은 후 다시 시도해 보세요.</translation>
@@ -664,6 +678,7 @@
 <translation id="7343649194310845056">네트워크 기기</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">화면 보호기 변경</translation>
 <translation id="7397270852490618635">밝은 테마 사용 중지</translation>
 <translation id="741244894080940828">변환</translation>
@@ -763,6 +778,7 @@
 <translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>
 <translation id="8372477600026034341">추가 호스트</translation>
 <translation id="8378855320830505539">지역</translation>
+<translation id="8382302752385457774">허용 목록 라벨</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> 기기는 기업에서 관리합니다.</translation>
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
 <translation id="8422748173858722634">IMEI</translation>

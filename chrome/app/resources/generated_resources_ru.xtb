@@ -3100,7 +3100,7 @@
 <translation id="3955896417885489542">Посмотреть параметры Google Play после настройки</translation>
 <translation id="3957079323242030166">Резервные копии не занимают места на Google Диске.</translation>
 <translation id="3957149833646341246">{NUM_APPS,plural, =1{Одно из приложений больше не поддерживается.}one{# приложение больше не поддерживается.}few{# приложения больше не поддерживаются.}many{# приложений больше не поддерживаются.}other{# приложения больше не поддерживаются.}}</translation>
-<translation id="3957844511978444971">Нажмите "Принять", чтобы подтвердить правильность настроек, выбранных в сервисах Google.</translation>
+<translation id="3957844511978444971">Нажмите "Принять", чтобы подтвердить выбор настроек для сервисов Google.</translation>
 <translation id="3958088479270651626">Импорт закладок и настроек</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3962119236270174787">Стандартная защита от опасных сайтов, расширений и скачанных файлов.</translation>
@@ -3441,6 +3441,7 @@
 <translation id="4307992518367153382">Основные</translation>
 <translation id="4309165024397827958">Предоставить приложениям и сервисам Android доступ к данным о местоположении устройства. Чтобы повышать точность геолокации и улучшать некоторые сервисы, компания Google может периодически собирать анонимные геоданные пользователей.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> КБ (<ph name="NUM_KILOBYTES_LIVE" /> КБ активно)</translation>
+<translation id="4310132194679586591">Выберите на устройстве приложение, в котором откроется эта ссылка.</translation>
 <translation id="4310139701823742692">Неверный формат файла PPD. Исправьте проблему и повторите попытку.</translation>
 <translation id="431076611119798497">&amp;Подробнее</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 аккаунт Google}one{<ph name="EXTRA_ACCOUNTS" /> аккаунт Google}few{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}many{<ph name="EXTRA_ACCOUNTS" /> аккаунтов Google}other{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}}</translation>
@@ -4666,6 +4667,7 @@
 <translation id="5554403733534868102">Вам больше не придется ждать завершения обновлений</translation>
 <translation id="5554489410841842733">Значок будет видимым, если расширение может работать на текущей странице.</translation>
 <translation id="5554720593229208774">Центр сертификации электронной почты</translation>
+<translation id="5554866693883022680">Выберите на устройстве (<ph name="DEVICE_TYPE" />) приложение, в котором откроется эта ссылка.</translation>
 <translation id="5555363196923735206">Переключить камеру</translation>
 <translation id="5555525474779371165">Выберите режим работы Безопасного просмотра</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>

@@ -6483,15 +6483,6 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
       Si la règle est désactivée ou si elle n'est pas paramétrée, les profils standards sont activés au moment de la connexion.</translation>
 <translation id="8151299379693359769">Activer un contrôle de sécurité supplémentaire basée sur l'attestation à distance (facultatif, par défaut : True).</translation>
 <translation id="8151490482515839285">Activer la création de rapports sur la prévention des fuites de données</translation>
-<translation id="8151949408479239790">Permet de configurer la prise en charge des en-têtes de requêtes CORS sans caractères génériques.
-
-      La prise en charge des en-têtes de requêtes CORS sans caractères génériques est une nouveauté de <ph name="PRODUCT_NAME" /> version 97. Lorsque des scripts établissent une requête de réseau multi-origine via fetch() et XMLHttpRequest avec un en-tête Authorization ajouté par script, l'en-tête doit être explicitement autorisé par l'en-tête Access-Control-Allow-Headers de la réponse à la requête préliminaire CORS. "Explicitement" signifie que le caractère générique "*" ne couvre pas l'en-tête Authorization. Consultez <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> pour plus de détails.
-
-      Si cette règle n'est pas définie ou qu'elle est définie sur "True", <ph name="PRODUCT_NAME" /> prendra en charge les en-têtes de requêtes CORS sans caractères génériques et se comportera comme décrit ci-dessus.
-
-      Si cette règle est définie sur "False", Chrome autorisera le caractère générique ("*") dans l'en-tête Access-Control-Allow-Headers de la réponse à la requête préliminaire CORS pour couvrir l'en-tête Authorization.
-
-      Cette règle d'entreprise est temporaire et sera normalement supprimée après la version 103 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158758865057576716">Permet de créer des copies itinérantes pour les données de profil <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158897487095710470">Si cette règle est définie sur "True", une barre de favoris est affichée dans <ph name="PRODUCT_NAME" />. Si cette règle est définie sur "False", cette barre de favoris n'est jamais affichée.
 

@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">এটি একটি অন্তরীণ পোর্টাল হতে পারে</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">'রাইট প্রটেক্ট' চালু করুন</translation>
 <translation id="1308754910631152188">আপডেট হচ্ছে (<ph name="PERCENTAGE_VALUE" />% সম্পূর্ণ হয়েছে)</translation>
 <translation id="1310380015393971138">কোনও <ph name="NETWORK_NAME" /> নেটওয়ার্ক উপলভ্য নেই</translation>
 <translation id="131421566576084655">ডেটা রিসেট করার শেষ তারিখ উপলভ্য নেই</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">হোম নেটওয়ার্ক, রোমিং নয়</translation>
+<translation id="132712914231403017">ফার্মওয়্যার সম্পর্কিত ছবি ইনস্টল করুন</translation>
 <translation id="1327977588028644528">গেটওয়ে</translation>
 <translation id="1328223165223065150">ওয়ালপেপারের রঙ</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
 <translation id="1643449475550628585">ওয়ালপেপারের ছবি প্রতিদিন পরিবর্তন করুন</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
+<translation id="1645954272419197032">ডিভাইসের তথ্য নিশ্চিত করুন</translation>
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">সংযোজকতা</translation>
 <translation id="2008685064673031089">প্রাইম সার্চ</translation>
 <translation id="2016697457005847575">সমস্যার সমাধান করার বিভিন্ন ধাপ অনুসরণ করে দেখুন</translation>
+<translation id="2016848882344942759">--কোনও সাদা-লেবেল নেই--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">'ডার্ক মোড'-এর শিডিউল</translation>
 <translation id="2275586345903859204">রিপেয়ার হয়ে গেছে</translation>
 <translation id="2287186687001756809">কোনও ছবি নেই। ছবি যোগ করতে, <ph name="LINK" /> লিঙ্কে যান</translation>
+<translation id="2294753434210277304">ডাউনলোড করা Chromebook রিকভারি ইউটিলিটি সম্পর্কিত ছবির সাথে, এক্সটার্নাল স্টোরেজ ঢোকান যেমন, ইউএসবি ড্রাইভ বা এসডি কার্ড</translation>
 <translation id="2307344026739914387">বর্তমান কী পেয়ার ব্যবহার করুন</translation>
 <translation id="2320295602967756579">হালকা থিম চালু করুন</translation>
 <translation id="2323506179655536734">এড়ানো হয়েছে</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS যাচাইকরণ কী</translation>
 <translation id="2713444072780614174">সাদা</translation>
 <translation id="2717139507051041123">'ডার্ক কালার' মোড চালু করুন</translation>
+<translation id="2727250716596204208">ফার্মওয়্যার সম্পর্কিত ছবি খুঁজে পাওয়া যায়নি। ডাউনলোড করা Chromebook রিকভারি ইউটিলিটি সম্পর্কিত ছবির সাথে, এক্সটার্নাল স্টোরেজ ঢোকান যেমন ইউএসবি ড্রাইভ বা এসডি কার্ড।</translation>
 <translation id="2740531572673183784">ঠিক আছে</translation>
 <translation id="2751739896257479635">EAP ফেজ ২ যাচাইকরণ</translation>
 <translation id="2756652381241102009">ডায়গনিস্টিক চালান</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3124039320086536031">ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{পৃষ্ঠাটি সরাতে চান?}=1{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}one{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}other{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}}</translation>
+<translation id="3137983112374760826">ডিভাইস প্রভিশন করা হচ্ছে...</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে...</translation>
 <translation id="315738237743207937">অন্তরীণ পোর্টাল শনাক্ত করা হয়েছে</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">ডিভাইসের ডানদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
 <translation id="3368922792935385530">সংযুক্ত</translation>
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
+<translation id="3383751554789092165">ডিভাইসের তথ্য পরিবর্তন করতে হবে।</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="3404770484521709967">কম্পোনেন্ট সঠিকভাবে ইনস্টল করা হয়েছে।</translation>
 <translation id="3413935475507503304">আপডেটগুলি ব্যবহার করে চালিয়ে যাওয়ার জন্য, 'পরবর্তী' বিকল্পে ক্লিক করুন।</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
 <translation id="3771294271822695279">ভিডিও ফাইল</translation>
+<translation id="3774059845329307709">সিরিয়াল নম্বর</translation>
 <translation id="3784455785234192852">লক করুন</translation>
 <translation id="38114475217616659">সব ইতিহাস মুছে ফেলুন</translation>
 <translation id="3820172043799983114">ভুল পিন।</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ব্যাটারি</translation>
 <translation id="4561801978359312462">সিম আনলক করা হয়েছে</translation>
 <translation id="4562494484721939086">কোনও পরিষেবা নেই</translation>
+<translation id="4568938274596692027">ইনস্টল করা সম্পূর্ণ হয়েছে। রিস্টার্ট করার জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="458794348635939462">সব হোস্ট নেম যাচাই করা ব্যর্থ হয়েছে</translation>
 <translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4609350030397390689">কীবোর্ড উজ্জ্বলতা কমান</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="4891842000192098784">স্ট্রেস</translation>
 <translation id="4897058166682006107">ডিভাইসের বাঁদিকের বাডে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
+<translation id="4908030561598728899">ফার্মওয়্যার ইনস্টল করা হচ্ছে...</translation>
 <translation id="4915052247106771211">এটি ডিভাইসটিকে ফ্যাক্টরি সেটিংসে (পাওয়ারওয়াশ) রিসেট করবে।</translation>
 <translation id="4917385247580444890">জোরালো</translation>
 <translation id="4917889632206600977">বন্ধ হয়ে গেছে - কাগজ শেষ হয়ে গেছে</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">'কুইক আন্সার' সেটিংস</translation>
 <translation id="5168185087976003268">ব্যাটারির স্বাস্থ্য</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
+<translation id="5179530508336824319">পরবর্তী স্ক্রিনে চালিয়ে যাওয়ার জন্য 'রাইট প্রটেক্ট' চালু করুন। নির্দেশাবলীর জন্য ডিভাইস প্রস্তুতকারকের সহায়তা পৃষ্ঠায় যান।</translation>
 <translation id="5190187232518914472">আপনার প্রিয় স্মৃতিগুলি রোমন্থন করুন। অ্যালবাম যোগ ও এডিট করতে, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ যান।</translation>
 <translation id="5212543919916444558">আপনাকে সাহায্য করতে পারি এমন কিছুই আপনার স্ক্রিনে আমি খুঁজে পাইনি। আমাকে কিছু জিজ্ঞাসা করতে মাইকে ট্যাপ করুন।</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -614,8 +626,10 @@
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
+<translation id="6822504384524564824">পরিবর্তন করা কম্পোনেন্টের থেকে নতুন কম্পোনেন্ট আলাদা হলে তবেই শুধুমাত্র SKU পরিবর্তন করতে হবে। যেমন, টাচস্ক্রিনের মাধ্যমে নন-টাচস্ক্রিন পরিবর্তন করা বা মেমরি ৮ জিবি থেকে ১৬ জিবি স্টোরেজে আপগ্রেড করা।</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> রিপেয়ার করুন</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>
+<translation id="6876833053687020046">DRAM অংশের নম্বর</translation>
 <translation id="6889786074662672253">রিস্টার্ট হলে, এই এক্সটার্নাল ডিভাইস আনপ্লাগ করবে না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। রিস্টার্ট হতে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> এ ফিরুন</translation>
 <translation id="6910312834584889076">স্ক্যানারের কভার খোলা আছে। কভার বন্ধ করে আবার চেষ্টা করুন।</translation>
@@ -663,6 +677,7 @@
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">স্ক্রিন সেভার পরিবর্তন করুন</translation>
 <translation id="7397270852490618635">হালকা থিম বন্ধ করুন</translation>
 <translation id="741244894080940828">রূপান্তর</translation>
@@ -762,6 +777,7 @@
 <translation id="8364946094152050673">ডোমেন নেম সার্ভার খালি রয়েছে</translation>
 <translation id="8372477600026034341">এক্সট্রা হোস্ট</translation>
 <translation id="8378855320830505539">অঞ্চল</translation>
+<translation id="8382302752385457774">সাদা-লেবেল</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ ম্যানেজ করে</translation>
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
 <translation id="8422748173858722634">IMEI</translation>

@@ -6501,15 +6501,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Nếu chính sách được đặt ở trạng thái tắt hoặc không được đặt, việc đăng nhập sẽ dẫn tới cấu hình thông thường.</translation>
 <translation id="8151299379693359769">Bật tính năng kiểm tra bảo mật bổ sung dựa trên quy trình chứng thực từ xa (không bắt buộc, mặc định: Bật).</translation>
 <translation id="8151490482515839285">Bật tùy chọn báo cáo ngăn rò rỉ dữ liệu</translation>
-<translation id="8151949408479239790">Những thiết lập hỗ trợ các tiêu đề của yêu cầu không phải ký tự đại diện CORS.
-
-      <ph name="PRODUCT_NAME" /> phiên bản 97 hỗ trợ cho các tiêu đề của yêu cầu không phải ký tự đại diện CORS. Khi các tập lệnh thực hiện một yêu cầu mạng nhiều nguồn gốc thông qua tính năng tìm nạp() và XMLHttpRequest với tiêu đề Uỷ quyền đã thêm vào tập lệnh, tiêu đề này phải được tiêu đề Access-Control-Allow-Headers cho phép rõ ràng trong phản hồi về yêu cầu kiểm tra CORS. "Rõ ràng" ở đây có nghĩa là biểu tượng ký tự đại diện "*" không che tiêu đề Uỷ quyền. Hãy xem <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> để biết thêm thông tin chi tiết.
-
-      Nếu bạn không đặt hoặc bật chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ hỗ trợ các tiêu đề của yêu cầu không phải ký tự đại diện CORS và hoạt động theo mô tả ở trên.
-
-      Khi bạn tắt chính sách này, Chrome sẽ cho phép biểu tượng ký tự đại diện ("*") trong tiêu đề Access-Control-Allow-Headers trong phản hồi về yêu cầu kiểm tra CORS che tiêu đề Uỷ quyền.
-
-      Chính sách Doanh nghiệp này là tạm thời và dự kiến sẽ bị xoá sau phiên bản 103 của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158758865057576716">Bật tạo bản sao chuyển vùng cho dữ liệu hồ sơ của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8158897487095710470">Nếu bạn đặt chính sách này thành True, thì thanh dấu trang sẽ hiển trị trong <ph name="PRODUCT_NAME" />. Nếu bạn đặt chính sách này thành False, thì người dùng sẽ không thấy thanh dấu trang.
 

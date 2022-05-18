@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">संशयास्पद कॅप्टिव्ह पोर्टल</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">राइट प्रोटेक्ट सुरू करा</translation>
 <translation id="1308754910631152188">अपडेट करत आहे (<ph name="PERCENTAGE_VALUE" />% पूर्ण झाले)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> नेटवर्क उपलब्ध नाही</translation>
 <translation id="131421566576084655">शेवटच्या डेटा रीसेटची तारीख उपलब्ध नाही</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">घरगुती नेटवर्क, रोमिंग नाही</translation>
+<translation id="132712914231403017">फर्मवेअर इमेज इंस्टॉल करा</translation>
 <translation id="1327977588028644528">गेटवे</translation>
 <translation id="1328223165223065150">वॉलपेपरचा रंग</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">दस्तऐवज फीडर (एक बाजू असलेले)</translation>
 <translation id="1643449475550628585">वॉलपेपर इमेज रोज बदला</translation>
 <translation id="1644574205037202324">इतिहास</translation>
+<translation id="1645954272419197032">कृपया डिव्हाइसची माहिती कंफर्म करा</translation>
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
 <translation id="1668469839109562275">बिल्ट-इन VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">कनेक्टिव्हिटी</translation>
 <translation id="2008685064673031089">प्राइम शोध</translation>
 <translation id="2016697457005847575">ट्रबलशूटिंगच्या पायऱ्या वापरून पहा</translation>
+<translation id="2016848882344942759">--व्हाइट-लेबल नाही--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2085089206770112532">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">गडद मोडचे शेड्युल</translation>
 <translation id="2275586345903859204">दुरुस्ती पूर्ण झाली आहे</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
+<translation id="2294753434210277304">डाउनलोड केलेल्या Chromebook Recovery Utility इमेजसह बाह्य स्टोरेज, जसे की USB ड्राइव्ह किंवा SD कार्ड घाला</translation>
 <translation id="2307344026739914387">सध्याचे कीपेअर वापरा</translation>
 <translation id="2320295602967756579">फिकट थीम सुरू करा</translation>
 <translation id="2323506179655536734">वगळली</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS ऑथेंटिकेशन की</translation>
 <translation id="2713444072780614174">पांढरा</translation>
 <translation id="2717139507051041123">गडद रंगाचा मोड सुरू करा</translation>
+<translation id="2727250716596204208">फर्मवेअर इमेज शोधता आली नाही. डाउनलोड केलेल्या Chromebook Recovery Utility इमेजसह बाह्य स्टोरेज, जसे की USB ड्राइव्ह किंवा SD कार्ड घाला.</translation>
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2751739896257479635">EAP टप्पा 2 ऑथेंटिकेशन</translation>
 <translation id="2756652381241102009">निदान रन करा</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">सीपीयू</translation>
 <translation id="3124039320086536031">डिव्हाइस हे कनेक्ट केलेले आहे.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{{PAGE_NUMBER} पेज काढून टाकायचे का?}other{{PAGE_NUMBER} पेज काढून टाकायची का?}}</translation>
+<translation id="3137983112374760826">डिव्हाइसची तरतूद करत आहे…</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे...</translation>
 <translation id="315738237743207937">कॅप्टिव्ह पोर्टल डिटेक्ट केले</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">डिव्हाइसच्या उजव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
+<translation id="3383751554789092165">आवश्यकतेनुसार डिव्हाइसची माहिती बदला.</translation>
 <translation id="3404249063913988450">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="3404770484521709967">घटक योग्यरीत्या इंस्टॉल केले आहेत.</translation>
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
 <translation id="3771294271822695279">व्हिडिओ फाइल</translation>
+<translation id="3774059845329307709">सिरीअल नंबर</translation>
 <translation id="3784455785234192852">लॉक करा</translation>
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh बॅटरी</translation>
 <translation id="4561801978359312462">सिम अनलॉक केले</translation>
 <translation id="4562494484721939086">सेवा नाही</translation>
+<translation id="4568938274596692027">इंस्टॉल करणे पूर्ण झाले. रीस्टार्ट करण्यासाठी तयार करत आहे…</translation>
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">तत्काळ नवीन निवडा</translation>
 <translation id="4891842000192098784">ताण</translation>
 <translation id="4897058166682006107">डिव्हाइसच्या डाव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
+<translation id="4908030561598728899">फर्मवेअर इंस्टॉल करत आहे…</translation>
 <translation id="4915052247106771211">यामुळे डिव्हाइस फॅक्टरी सेटिंग्जवर रीसेट केले जाईल (Powerwash).</translation>
 <translation id="4917385247580444890">मजबूत</translation>
 <translation id="4917889632206600977">थांबले - कागद संपला आहे</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">क्विक आन्सर्स सेटिंग्ज</translation>
 <translation id="5168185087976003268">बॅटरीची स्थिती</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
+<translation id="5179530508336824319">पुढील स्क्रीनवर सुरू ठेवण्यासाठी राइट प्रोटेक्ट सुरू करा. सूचनांसाठी डिव्हाइस निर्मात्याच्या सपोर्ट पेजवर जा.</translation>
 <translation id="5190187232518914472">तुमच्या आवडत्या आठवणी पुन्हा अनुभवा. अल्बम जोडण्यासाठी किंवा संपादित करण्यासाठी, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> वर जा.</translation>
 <translation id="5212543919916444558">मी मदत करू शकेन असे मला तुमच्या स्क्रीनवर काही आढळले नाही. 
 मला काहीही विचारण्यासाठी माइकवर टॅप करून पहा.</translation>
@@ -615,8 +627,10 @@
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
+<translation id="6822504384524564824">नवीन घटक हे बदललेल्या घटकांपेक्षा वेगळे असतील तरच SKU बदलले जावे. उदाहरणार्थ, टचस्क्रीन नाही ते टचस्क्रीनने बदलले जात आहे किंवा मेमरी ही ८GB वरून १६GB पर्यंत अपग्रेड केली जात आहे.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> दुरुस्त करा</translation>
 <translation id="6853312040151791195">डिस्चार्ज होण्याचा रेट</translation>
+<translation id="6876833053687020046">DRAM भाग क्रमांक</translation>
 <translation id="6889786074662672253">रीस्टार्ट करत असताना, हे बाह्य डिव्हाइस अनप्लग किंवा तुमचा कॉंप्युटर बंद करू नका. तुम्ही ही विंडो लहान करू शकता. याला काही मिनिटे लागू शकतात आणि यादरम्यान तुमचे बाह्य डिव्हाइस कदाचित काम करणार नाही.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> वर परत या</translation>
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -664,6 +678,7 @@
 <translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
 <translation id="7359657277149375382">फाइल प्रकार</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">स्क्रीनसेव्हर बदला</translation>
 <translation id="7397270852490618635">फिकट थीम बंद करा</translation>
 <translation id="741244894080940828">रूपांतर</translation>
@@ -763,6 +778,7 @@
 <translation id="8364946094152050673">रिकामे नेम सर्व्हर</translation>
 <translation id="8372477600026034341">अतिरिक्त होस्ट</translation>
 <translation id="8378855320830505539">प्रदेश</translation>
+<translation id="8382302752385457774">व्हाइट-लेबल</translation>
 <translation id="8395584934117017006">हे <ph name="DEVICE_TYPE" /> एंटरप्राइझद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="8398927464629426868">ज्या गतीने डिव्हाइस सध्या चार्ज किंवा डिस्चार्ज होत आहे</translation>
 <translation id="8422748173858722634">IMEI</translation>

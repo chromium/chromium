@@ -37,6 +37,7 @@
 <translation id="131421566576084655">Дата апошняга скіду недаступная</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
+<translation id="132712914231403017">Усталяванне вобраза ўбудаванага праграмнага забеспячэння</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Колер шпалер</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">Прылада для падачы дакументаў (адным бокам)</translation>
 <translation id="1643449475550628585">Змяняць відарыс шпалер штодня</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
+<translation id="1645954272419197032">Пацвердзіце звесткі пра прыладу</translation>
 <translation id="1662989795263954667">Спынена: скончылася чарніла</translation>
 <translation id="1668469839109562275">Убудаваная сетка VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">Магчымасць падключэння</translation>
 <translation id="2008685064673031089">Пошук простых лікаў</translation>
 <translation id="2016697457005847575">Паспрабуйце знайсці і выправіць непаладку</translation>
+<translation id="2016848882344942759">--без рэбрэндынгу--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
 <translation id="2085089206770112532">Паменшыць яркасць дысплэя</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">Расклад уключэння цёмнага рэжыму</translation>
 <translation id="2275586345903859204">Рамонт завершаны</translation>
 <translation id="2287186687001756809">Відарыс недаступны. Дадаць фота можна з сайта <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Устаўце знешняе сховішча, напрыклад, USB-дыск або SD-карту, са спампаваным вобразам Утыліты аднаўлення Chromebook</translation>
 <translation id="2307344026739914387">Выкарыстанне бягучай пары ключоў</translation>
 <translation id="2320295602967756579">Уключыць светлую тэму</translation>
 <translation id="2323506179655536734">ПРАПУШЧАНА</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">Ключ аўтэнтыфікацыі TLS</translation>
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2717139507051041123">Уключыць рэжым цёмных колераў</translation>
+<translation id="2727250716596204208">Не ўдалося знайсці вобраз убудаванага праграмнага забеспячэння. Устаўце знешняе сховішча, напрыклад, USB-дыск або SD-карту, са спампаваным вобразам Утыліты аднаўлення Chromebook.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Фаза 2 аўтэнтыфікацыі EAP</translation>
 <translation id="2756652381241102009">Запусціць дыягностыку</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3124039320086536031">Прылада падключана.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Выдаліць старонку?}=1{Выдаліць старонку {PAGE_NUMBER}?}one{Выдаліць старонку {PAGE_NUMBER}?}few{Выдаліць старонку {PAGE_NUMBER}?}many{Выдаліць старонку {PAGE_NUMBER}?}other{Выдаліць старонку {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Ідзе падрыхтоўка прылады...</translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
 <translation id="3156846309055100599">Сканіруецца старонка <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Выяўлены партал узаемадзеяння</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
+<translation id="3383751554789092165">Змяняйце звесткі пра прыладу так, як вам трэба.</translation>
 <translation id="3404249063913988450">Уключыць застаўку</translation>
 <translation id="3404770484521709967">Кампаненты ўсталяваны правільна.</translation>
 <translation id="3413935475507503304">Каб працягнуць абнаўленне, націсніце "Далей".</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
 <translation id="3771294271822695279">Відэафайлы</translation>
+<translation id="3774059845329307709">Серыйны нумар</translation>
 <translation id="3784455785234192852">Блакіроўка</translation>
 <translation id="38114475217616659">Ачысціць усю гісторыю</translation>
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930">Магутнасць акумулятара: <ph name="CHARGE_VALUE" /> мА·г</translation>
 <translation id="4561801978359312462">SIM-карта разблакіравана</translation>
 <translation id="4562494484721939086">Не абслугоўваецца</translation>
+<translation id="4568938274596692027">Усталяванне завершана. Ідзе падрыхтоўка да перазапуску...</translation>
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4609350030397390689">Паменшыць яркасць клавіятуры</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">Неадкладна задайце новы</translation>
 <translation id="4891842000192098784">Нагрузка</translation>
 <translation id="4897058166682006107">Узровень зараду акумулятара ў левым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4908030561598728899">Усталёўваецца ўбудаванае праграмнае забеспячэнне...</translation>
 <translation id="4915052247106771211">Налады прылады будуць скінуты да заводскіх значэнняў (з дапамогай Powerwash).</translation>
 <translation id="4917385247580444890">Моцны</translation>
 <translation id="4917889632206600977">Спынена: скончылася папера</translation>
@@ -615,8 +625,10 @@
 <translation id="6768237774506518020">Высокі працэнт збояў супастаўленняў імён DNS</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Ёсць інфармацыя, звязаная з вылучаным вамі фрагментам. Каб атрымаць да яе доступ, націсніце стрэлку ўверх.</translation>
+<translation id="6822504384524564824">Ідэнтыфікатар SKU трэба змяняць, толькі калі новыя кампаненты адрозніваюцца ад замененых – напрыклад, калі замест звычайнага экрана ўстаноўлены сэнсарны або калі аб'ём памяці быў павялічаны з 8 ГБ да 16 ГБ.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" />: выпраўленне непаладак</translation>
 <translation id="6853312040151791195">Хуткасць разрадкі</translation>
+<translation id="6876833053687020046">Нумар кампанента DRAM</translation>
 <translation id="6889786074662672253">Падчас перазапуску не адключайце гэту знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Перазапуск зойме некалькі хвілін – у гэты час знешняя прылада можа не працаваць.</translation>
 <translation id="6905724422583748843">Вярнуцца на старонку "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Вечка сканера адкрыта. Закрыйце вечка і паўтарыце спробу.</translation>
@@ -664,6 +676,7 @@
 <translation id="7343649194310845056">Сеткавыя прылады</translation>
 <translation id="7359657277149375382">Тып файла</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">Ідэнтыфікатар SKU</translation>
 <translation id="7378886533986123738">Змяніць застаўку</translation>
 <translation id="7397270852490618635">Выключыць светлую тэму</translation>
 <translation id="741244894080940828">перавод адзінак вымярэння</translation>
@@ -763,6 +776,7 @@
 <translation id="8364946094152050673">Поле сервераў даменных імён пустое</translation>
 <translation id="8372477600026034341">Дадатковыя хосты</translation>
 <translation id="8378855320830505539">Рэгіён</translation>
+<translation id="8382302752385457774">Рэбрэндынг</translation>
 <translation id="8395584934117017006">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе арганізацыя</translation>
 <translation id="8398927464629426868">Цяперашняя хуткасць зарадкі або разрадкі прылады</translation>
 <translation id="8422748173858722634">IMEI</translation>

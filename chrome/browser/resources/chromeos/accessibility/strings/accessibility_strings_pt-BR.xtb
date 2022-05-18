@@ -6,7 +6,7 @@
 <translation id="1012173283529841972">Item da lista</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">Deslize para a direita usando dois dedos</translation>
-<translation id="1022586497894531524">Está usando o feedback falado do ChromeVox pela primeira vez? Este tutorial rápido explica os fundamentos para começar a usar o ChromeVox.</translation>
+<translation id="1022586497894531524">Está usando a resposta falada do ChromeVox pela primeira vez? Este tutorial rápido explica os fundamentos para começar a usar o ChromeVox.</translation>
 <translation id="1025074108959230262">Modo aderente desativado</translation>
 <translation id="1031961866430398710">e depois</translation>
 <translation id="1038643060055067718">Linhas:</translation>
@@ -477,7 +477,7 @@
 <translation id="4148180433151187540">{COUNT,plural, =1{chave direita}one{# chaves direitas}other{# chaves direitas}}</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4161104397932142764">{COUNT,plural, =1{segundo}one{segundo}other{segundos}}</translation>
-<translation id="4161663686871496107">O feedback falado do ChromeVox está pronto</translation>
+<translation id="4161663686871496107">O recurso de resposta falada do ChromeVox está pronto</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4187322598335821254">Deslize para cima ou para baixo para mover por linha</translation>
 <translation id="4188530942454211480">Frase anterior</translation>
@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">tab <ph name="TABLENAME" />: <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorando o uso da tecla "Próximo"</translation>
 <translation id="4623097797855662355">Colofão</translation>
+<translation id="4624970070706497034">O TalkBack não oferece mais personalizações para Chromebooks. Ele ainda pode ser usado, mas apenas com os atalhos de teclado padrão. Pressione Pesquisa + A e depois K para ver os atalhos disponíveis. Se ainda quiser usar o TalkBack, pressione o comando novamente.</translation>
 <translation id="463135993322337640">Pressione "ChromeVox" "o", "n" para conhecer as novidades</translation>
 <translation id="4649220074413114917">Você pode tocar na tela com dois dedos para interromper a fala atual. Faça isso quando não quiser que o ChromeVox leia algum elemento. Para continuar, toque na tela com dois dedos.</translation>
 <translation id="4660783501463101648">ChromeVox Classic removido. O botão do teclado para voltar para o ChromeVox Classic foi removido.</translation>

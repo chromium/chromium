@@ -6416,15 +6416,6 @@
       如果此政策设为停用或未设置，用户登录时系统会使用常规个人资料。</translation>
 <translation id="8151299379693359769">允许根据远程认证结果进行额外的安全检查（可选，默认为 True）。</translation>
 <translation id="8151490482515839285">启用数据泄露预防报告</translation>
-<translation id="8151949408479239790">旨在配置对 CORS 非通配符式请求标头的支持情况。
-
-      <ph name="PRODUCT_NAME" /> 97 版引入了对 CORS 非通配符式请求标头的支持。如果脚本通过 fetch() 和已在所含授权标头中添加了脚本的 XMLHttpRequest 发出跨源网络请求，该标头必须在 CORS 预检响应中获得 Access-Control-Allow-Headers 标头的明确允许。这里的“明确”意味着通配符“*”不会涵盖授权标头。详见 <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />。
-
-      如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 将会支持 CORS 非通配符式请求标头，并会具有上述行为。
-
-      如果此政策设为 False，Chrome 将会允许在 CORS 预检响应中的 Access-Control-Allow-Headers 标头内使用通配符“*”涵盖授权标头。
-
-      这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 103 版之后移除。</translation>
 <translation id="8158758865057576716">允许创建 <ph name="PRODUCT_NAME" /> 个人资料数据的漫游副本。</translation>
 <translation id="8158897487095710470">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 中会显示书签栏。如果此政策设为 False，用户一律不会看到书签栏。
 

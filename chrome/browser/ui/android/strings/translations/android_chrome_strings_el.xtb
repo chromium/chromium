@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1384704387250346179">Μετάφραση εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ενεργή <ph name="LAST_UPDATED" /> ημέρες πριν</translation>
+<translation id="13931502444227376">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το όνομα, τη διεύθυνση ηλεκτρονικού ταχυδρομείου και τη φωτογραφία προφίλ σας σε αυτόν τον ιστότοπο. Ανατρέξτε στους <ph name="BEGIN_LINK1" />όρους παροχής υπηρεσιών<ph name="END_LINK1" /> αυτού του ιστοτόπου.</translation>
 <translation id="1397811292916898096">Αναζήτηση με <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Μπορείτε να αλλάξετε γνώμη ανά πάσα στιγμή στις ρυθμίσεις του Chrome. Οι δοκιμές εκτελούνται παράλληλα με τον τρέχοντα τρόπο προβολής των διαφημίσεων, επομένως δεν θα παρατηρήσετε αλλαγές αμέσως.</translation>
 <translation id="1406000523432664303">"Να μην γίνεται εντοπισμός"</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">Σχετικά με το Πλαίσιο ιδιωτικότητας</translation>
 <translation id="1736419249208073774">Εξερεύνηση</translation>
 <translation id="1749561566933687563">Συγχρονίστε τους σελιδοδείκτες σας</translation>
+<translation id="1750259112639922169">Ομάδα καρτελών – <ph name="TAB_COUNT" /> καρτέλες</translation>
 <translation id="17513872634828108">Ανοικτές καρτέλες</translation>
 <translation id="1754404134430936718">Το κείμενο αντιγράφηκε.</translation>
 <translation id="1779766957982586368">Κλείσιμο παραθύρου</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">Για ιδιωτική περιήγηση σε αυτήν τη συσκευή, δοκιμάστε την Ανώνυμη περιήγηση.</translation>
 <translation id="5375577065097716013">Αναζήτ. εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Η αντίδραση άλλαξε</translation>
+<translation id="5401851137404501592">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το όνομα, τη διεύθυνση ηλεκτρονικού ταχυδρομείου και τη φωτογραφία προφίλ σας σε αυτόν τον ιστότοπο.</translation>
 <translation id="5403644198645076998">Να επιτρέπονται μόνο συγκεκριμένοι ιστότοποι</translation>
 <translation id="5409881200985013443">Υποβολή <ph name="ONE_TIME_CODE" /> σε <ph name="CLIENT_NAME" />;</translation>
 <translation id="5414836363063783498">Γίνεται επαλήθευση…</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">Δεν είναι δυνατή η δημιουργία κωδικού QR. Το URL περιέχει περισσότερους από <ph name="CHARACTER_LIMIT" /> χαρακτήρες.</translation>
 <translation id="7177959540995930968">Μπορείτε να μάθετε περισσότερα σχετικά με αυτές τις λειτουργίες στις ρυθμίσεις του Chrome.</translation>
 <translation id="718226107353899806">Μπορείτε να προσθέσετε έως <ph name="MAX_NUM_REACTIONS" /> αντιδράσεις.</translation>
+<translation id="7183693674623539380">Ομάδα καρτελών – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
 <translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>
@@ -1444,6 +1448,7 @@
 <translation id="8835786707922974220">Βεβαιωθείτε ότι έχετε πάντα πρόσβαση στους αποθηκευμένους κωδικούς πρόσβασης</translation>
 <translation id="883806473910249246">Παρουσιάστηκε σφάλμα κατά τη λήψη του περιεχομένου.</translation>
 <translation id="8840953339110955557">Αυτή η σελίδα μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Κρυφή</translation>
 <translation id="8853345339104747198">Καρτέλα <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Δείτε τα αρχεία εκτός σύνδεσης</translation>

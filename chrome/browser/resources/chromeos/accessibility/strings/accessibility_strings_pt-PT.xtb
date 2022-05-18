@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorar tecla premida seguinte</translation>
 <translation id="4623097797855662355">Colofão</translation>
+<translation id="4624970070706497034">O TalkBack já não disponibiliza personalização para Chromebooks. Ainda o pode usar, mas com os atalhos de teclado predefinidos do TalkBack. Prima Pesquisar + A e, em seguida, K para ver os atalhos disponíveis. Se ainda quiser usar o TalkBack, prima o comando novamente.</translation>
 <translation id="463135993322337640">Prima ChromeVox o, n para saber quais são as novidades.</translation>
 <translation id="4649220074413114917">Pode tocar no ecrã com dois dedos para parar qualquer leitura atual. Isto é útil se não pretender que o ChromeVox leia algo. Para continuar, toque no ecrã com dois dedos.</translation>
 <translation id="4660783501463101648">A opção Classic foi removida. O interruptor do teclado para voltar ao ChromeVox Classic foi removido.</translation>
