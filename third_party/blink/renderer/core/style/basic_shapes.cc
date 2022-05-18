@@ -173,4 +173,35 @@ bool BasicShapeRectCommon::IsEqualAssumingSameType(const BasicShape& o) const {
          bottom_left_radius_ == other.bottom_left_radius_;
 }
 
+void BasicShapeXYWH::GetPath(Path& path,
+                             const gfx::RectF& bounding_box,
+                             float) {
+  DCHECK(path.IsEmpty());
+  gfx::RectF rect(FloatValueForLength(x_, bounding_box.width()),
+                  FloatValueForLength(y_, bounding_box.height()),
+                  FloatValueForLength(width_, bounding_box.height()),
+                  FloatValueForLength(height_, bounding_box.height()));
+
+  gfx::SizeF box_size = bounding_box.size();
+  auto radii = FloatRoundedRect::Radii(
+      SizeForLengthSize(top_left_radius_, box_size),
+      SizeForLengthSize(top_right_radius_, box_size),
+      SizeForLengthSize(bottom_left_radius_, box_size),
+      SizeForLengthSize(bottom_right_radius_, box_size));
+
+  FloatRoundedRect final_rect(rect, radii);
+  final_rect.ConstrainRadii();
+  path.AddRoundedRect(final_rect);
+}
+
+bool BasicShapeXYWH::IsEqualAssumingSameType(const BasicShape& o) const {
+  const BasicShapeXYWH& other = To<BasicShapeXYWH>(o);
+  return x_ == other.x_ && y_ == other.y_ && width_ == other.width_ &&
+         height_ == other.height_ &&
+         top_left_radius_ == other.top_left_radius_ &&
+         top_right_radius_ == other.top_right_radius_ &&
+         bottom_right_radius_ == other.bottom_right_radius_ &&
+         bottom_left_radius_ == other.bottom_left_radius_;
+}
+
 }  // namespace blink

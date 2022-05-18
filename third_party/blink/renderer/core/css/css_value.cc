@@ -181,6 +181,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
                                                                    other);
       case kBasicShapeRectClass:
         return CompareCSSValues<cssvalue::CSSBasicShapeRectValue>(*this, other);
+      case kBasicShapeXYWHClass:
+        return CompareCSSValues<cssvalue::CSSBasicShapeXYWHValue>(*this, other);
       case kBorderImageSliceClass:
         return CompareCSSValues<cssvalue::CSSBorderImageSliceValue>(*this,
                                                                     other);
@@ -322,6 +324,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSBasicShapeInsetValue>(this)->CustomCSSText();
     case kBasicShapeRectClass:
       return To<cssvalue::CSSBasicShapeRectValue>(this)->CustomCSSText();
+    case kBasicShapeXYWHClass:
+      return To<cssvalue::CSSBasicShapeXYWHValue>(this)->CustomCSSText();
     case kBorderImageSliceClass:
       return To<cssvalue::CSSBorderImageSliceValue>(this)->CustomCSSText();
     case kColorClass:
@@ -461,6 +465,9 @@ void CSSValue::FinalizeGarbageCollectedObject() {
       return;
     case kBasicShapeRectClass:
       To<cssvalue::CSSBasicShapeRectValue>(this)->~CSSBasicShapeRectValue();
+      return;
+    case kBasicShapeXYWHClass:
+      To<cssvalue::CSSBasicShapeXYWHValue>(this)->~CSSBasicShapeXYWHValue();
       return;
     case kBorderImageSliceClass:
       To<cssvalue::CSSBorderImageSliceValue>(this)->~CSSBorderImageSliceValue();
@@ -662,6 +669,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kBasicShapeRectClass:
       To<cssvalue::CSSBasicShapeRectValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kBasicShapeXYWHClass:
+      To<cssvalue::CSSBasicShapeXYWHValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kBorderImageSliceClass:
       To<cssvalue::CSSBorderImageSliceValue>(this)->TraceAfterDispatch(visitor);

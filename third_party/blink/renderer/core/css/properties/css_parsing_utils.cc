@@ -405,6 +405,28 @@ cssvalue::CSSBasicShapeRectValue* ConsumeBasicShapeRect(
   return shape;
 }
 
+cssvalue::CSSBasicShapeXYWHValue* ConsumeBasicShapeXYWH(
+    CSSParserTokenRange& args,
+    const CSSParserContext& context) {
+  CSSPrimitiveValue* lengths[4];
+  for (size_t i = 0; i < 4; i++) {
+    // The last 2 values are width/height which must be positive.
+    auto value_range = i > 1 ? CSSPrimitiveValue::ValueRange::kNonNegative
+                             : CSSPrimitiveValue::ValueRange::kAll;
+    lengths[i] = ConsumeLengthOrPercent(args, context, value_range);
+    if (!lengths[i])
+      return nullptr;
+  }
+
+  auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeXYWHValue>(
+      lengths[0], lengths[1], lengths[2], lengths[3]);
+
+  if (!ConsumeBorderRadiusCommon(args, context, shape))
+    return nullptr;
+
+  return shape;
+}
+
 bool ConsumeNumbers(CSSParserTokenRange& args,
                     const CSSParserContext& context,
                     CSSFunctionValue*& transform_value,
@@ -5154,7 +5176,8 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
 CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
                             const CSSParserContext& context,
                             AllowPathValue allow_path,
-                            AllowBasicShapeRectValue allow_rect) {
+                            AllowBasicShapeRectValue allow_rect,
+                            AllowBasicShapeXYWHValue allow_xywh) {
   CSSValue* shape = nullptr;
   if (range.Peek().GetType() != kFunctionToken)
     return nullptr;
@@ -5174,6 +5197,9 @@ CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
   else if (id == CSSValueID::kRect &&
            allow_rect == AllowBasicShapeRectValue::kAllow)
     shape = ConsumeBasicShapeRect(args, context);
+  else if (id == CSSValueID::kXywh &&
+           allow_xywh == AllowBasicShapeXYWHValue::kAllow)
+    shape = ConsumeBasicShapeXYWH(args, context);
   if (!shape || !args.AtEnd())
     return nullptr;
 

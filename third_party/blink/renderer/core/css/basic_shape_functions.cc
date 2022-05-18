@@ -122,10 +122,10 @@ static CSSValue* BasicShapeRadiusToCSSValue(const ComputedStyle& style,
   return nullptr;
 }
 
-template <typename T>
-static void InitializeBorderRadius(BasicShapeRectCommon* rect,
+template <typename BasicShapeClass, typename CSSValueClass>
+static void InitializeBorderRadius(BasicShapeClass* rect,
                                    const StyleResolverState& state,
-                                   const T& rect_value) {
+                                   const CSSValueClass& rect_value) {
   rect->SetTopLeftRadius(
       ConvertToLengthSize(state, rect_value.TopLeftRadius()));
   rect->SetTopRightRadius(
@@ -136,10 +136,10 @@ static void InitializeBorderRadius(BasicShapeRectCommon* rect,
       ConvertToLengthSize(state, rect_value.BottomLeftRadius()));
 }
 
-template <typename T>
-static void InitializeBorderRadius(T* css_value,
+template <typename BasicShapeClass, typename CSSValueClass>
+static void InitializeBorderRadius(CSSValueClass* css_value,
                                    const ComputedStyle& style,
-                                   const BasicShapeRectCommon* rect) {
+                                   const BasicShapeClass* rect) {
   css_value->SetTopLeftRadius(ValueForLengthSize(rect->TopLeftRadius(), style));
   css_value->SetTopRightRadius(
       ValueForLengthSize(rect->TopRightRadius(), style));
@@ -245,6 +245,24 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
       cssvalue::CSSBasicShapeRectValue* rect_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(top, right,
                                                                  bottom, left);
+      InitializeBorderRadius(rect_value, style, rect);
+      return rect_value;
+    }
+    case BasicShape::kBasicShapeXYWHType: {
+      const BasicShapeXYWH* rect = To<BasicShapeXYWH>(basic_shape);
+
+      CSSValue* x =
+          CSSPrimitiveValue::CreateFromLength(rect->X(), style.EffectiveZoom());
+      CSSValue* y =
+          CSSPrimitiveValue::CreateFromLength(rect->Y(), style.EffectiveZoom());
+      CSSValue* width = CSSPrimitiveValue::CreateFromLength(
+          rect->Width(), style.EffectiveZoom());
+      CSSValue* height = CSSPrimitiveValue::CreateFromLength(
+          rect->Height(), style.EffectiveZoom());
+
+      cssvalue::CSSBasicShapeRectValue* rect_value =
+          MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(x, y, width,
+                                                                 height);
       InitializeBorderRadius(rect_value, style, rect);
       return rect_value;
     }
@@ -409,6 +427,20 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     rect->SetRight(get_length(rect_value.Right()));
     rect->SetBottom(get_length(rect_value.Bottom()));
     rect->SetLeft(get_length(rect_value.Left()));
+
+    InitializeBorderRadius(rect.get(), state, rect_value);
+    basic_shape = std::move(rect);
+  } else if (IsA<cssvalue::CSSBasicShapeXYWHValue>(basic_shape_value)) {
+    const cssvalue::CSSBasicShapeXYWHValue& rect_value =
+        To<cssvalue::CSSBasicShapeXYWHValue>(basic_shape_value);
+    scoped_refptr<BasicShapeXYWH> rect = BasicShapeXYWH::Create();
+
+    rect->SetX(ConvertToLength(state, To<CSSPrimitiveValue>(rect_value.X())));
+    rect->SetY(ConvertToLength(state, To<CSSPrimitiveValue>(rect_value.Y())));
+    rect->SetWidth(
+        ConvertToLength(state, To<CSSPrimitiveValue>(rect_value.Width())));
+    rect->SetHeight(
+        ConvertToLength(state, To<CSSPrimitiveValue>(rect_value.Height())));
 
     InitializeBorderRadius(rect.get(), state, rect_value);
     basic_shape = std::move(rect);

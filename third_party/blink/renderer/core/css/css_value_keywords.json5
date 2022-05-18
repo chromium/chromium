@@ -1490,5 +1490,8 @@
     "AA-large",
     "AAA",
     "AAA-large",
+
+    // basic-shape functions.
+    "xywh",
   ],
 }

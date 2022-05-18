@@ -71,6 +71,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsBasicShapeRectValue() const {
     return class_type_ == kBasicShapeRectClass;
   }
+  bool IsBasicShapeXYWHValue() const {
+    return class_type_ == kBasicShapeXYWHClass;
+  }
 
   bool IsBorderImageSliceValue() const {
     return class_type_ == kBorderImageSliceClass;
@@ -225,6 +228,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kBasicShapePolygonClass,
     kBasicShapeInsetClass,
     kBasicShapeRectClass,
+    kBasicShapeXYWHClass,
 
     // Image classes.
     kImageClass,

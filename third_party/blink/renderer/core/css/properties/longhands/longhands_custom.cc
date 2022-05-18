@@ -4930,11 +4930,11 @@ const CSSValue* ObjectViewBox::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(range);
   auto* css_value = css_parsing_utils::ConsumeBasicShape(
       range, context, css_parsing_utils::AllowPathValue::kForbid,
-      css_parsing_utils::AllowBasicShapeRectValue::kAllow);
+      css_parsing_utils::AllowBasicShapeRectValue::kAllow,
+      css_parsing_utils::AllowBasicShapeXYWHValue::kAllow);
 
-  // TODO(khushalsagar) : Also allow xywh().
   if (!css_value || css_value->IsBasicShapeInsetValue() ||
-      css_value->IsBasicShapeRectValue())
+      css_value->IsBasicShapeRectValue() || css_value->IsBasicShapeXYWHValue())
     return css_value;
 
   return nullptr;

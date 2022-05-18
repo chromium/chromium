@@ -47,6 +47,7 @@ enum class AllowInsetAndSpread { kAllow, kForbid };
 enum class AllowTextValue { kAllow, kForbid };
 enum class AllowPathValue { kAllow, kForbid };
 enum class AllowBasicShapeRectValue { kAllow, kForbid };
+enum class AllowBasicShapeXYWHValue { kAllow, kForbid };
 enum class DefaultFill { kFill, kNoFill };
 enum class ParsingStyle { kLegacy, kNotLegacy };
 enum class TrackListType {
@@ -462,7 +463,8 @@ CSSValue* ConsumeBasicShape(
     CSSParserTokenRange&,
     const CSSParserContext&,
     AllowPathValue,
-    AllowBasicShapeRectValue = AllowBasicShapeRectValue::kForbid);
+    AllowBasicShapeRectValue = AllowBasicShapeRectValue::kForbid,
+    AllowBasicShapeXYWHValue = AllowBasicShapeXYWHValue::kForbid);
 bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   CSSValue* vertical_radii[4],
                   CSSParserTokenRange&,

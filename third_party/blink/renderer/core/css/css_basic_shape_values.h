@@ -246,6 +246,58 @@ class CSSBasicShapeRectValue final : public CSSValue {
   Member<CSSValuePair> bottom_left_radius_;
 };
 
+class CSSBasicShapeXYWHValue final : public CSSValue {
+ public:
+  CSSBasicShapeXYWHValue(CSSPrimitiveValue* x,
+                         CSSPrimitiveValue* y,
+                         CSSPrimitiveValue* width,
+                         CSSPrimitiveValue* height)
+      : CSSValue(kBasicShapeXYWHClass),
+        x_(x),
+        y_(y),
+        width_(width),
+        height_(height) {
+    Validate();
+  }
+
+  CSSValue* X() const { return x_.Get(); }
+  CSSValue* Y() const { return y_.Get(); }
+  CSSValue* Width() const { return width_.Get(); }
+  CSSValue* Height() const { return height_.Get(); }
+
+  CSSValuePair* TopLeftRadius() const { return top_left_radius_.Get(); }
+  CSSValuePair* TopRightRadius() const { return top_right_radius_.Get(); }
+  CSSValuePair* BottomRightRadius() const { return bottom_right_radius_.Get(); }
+  CSSValuePair* BottomLeftRadius() const { return bottom_left_radius_.Get(); }
+
+  void SetTopLeftRadius(CSSValuePair* radius) { top_left_radius_ = radius; }
+  void SetTopRightRadius(CSSValuePair* radius) { top_right_radius_ = radius; }
+  void SetBottomRightRadius(CSSValuePair* radius) {
+    bottom_right_radius_ = radius;
+  }
+  void SetBottomLeftRadius(CSSValuePair* radius) {
+    bottom_left_radius_ = radius;
+  }
+
+  String CustomCSSText() const;
+  bool Equals(const CSSBasicShapeXYWHValue&) const;
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  void Validate() const;
+
+  Member<CSSPrimitiveValue> x_;
+  Member<CSSPrimitiveValue> y_;
+  Member<CSSPrimitiveValue> width_;
+  Member<CSSPrimitiveValue> height_;
+
+  Member<CSSValuePair> top_left_radius_;
+  Member<CSSValuePair> top_right_radius_;
+  Member<CSSValuePair> bottom_right_radius_;
+  Member<CSSValuePair> bottom_left_radius_;
+};
+
 }  // namespace cssvalue
 
 template <>
@@ -280,6 +332,13 @@ template <>
 struct DowncastTraits<cssvalue::CSSBasicShapeRectValue> {
   static bool AllowFrom(const CSSValue& value) {
     return value.IsBasicShapeRectValue();
+  }
+};
+
+template <>
+struct DowncastTraits<cssvalue::CSSBasicShapeXYWHValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsBasicShapeXYWHValue();
   }
 };
 
