@@ -35,8 +35,8 @@ class AssistantSidePanelCoordinatorImpl : public AssistantSidePanelCoordinator,
 
  private:
   std::unique_ptr<views::View> CreateSidePanelView();
-  SidePanelCoordinator* SidePanelCoordinator();
-  SidePanelRegistry* SidePanelRegistry();
+  SidePanelCoordinator* GetSidePanelCoordinator();
+  SidePanelRegistry* GetSidePanelRegistry();
 
   raw_ptr<views::View> side_panel_view_host_ = nullptr;
   // Used to store the view set by |SetView()| in case it is called before
@@ -45,4 +45,5 @@ class AssistantSidePanelCoordinatorImpl : public AssistantSidePanelCoordinator,
 
   raw_ptr<content::WebContents> web_contents_;
 };
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_SIDE_PANEL_COORDINATOR_H_
+
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_SIDE_PANEL_COORDINATOR_IMPL_H_

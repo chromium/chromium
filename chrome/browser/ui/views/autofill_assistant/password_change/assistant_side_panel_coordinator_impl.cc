@@ -37,11 +37,11 @@ AssistantSidePanelCoordinatorImpl::AssistantSidePanelCoordinatorImpl(
               &AssistantSidePanelCoordinatorImpl::CreateSidePanelView,
               base::Unretained(this))));
   AddObserver(this);
-  SidePanelCoordinator()->Show(SidePanelEntry::Id::kAssistant);
+  GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kAssistant);
 }
 
 AssistantSidePanelCoordinatorImpl::~AssistantSidePanelCoordinatorImpl() {
-  SidePanelRegistry()->Deregister(SidePanelEntry::Id::kAssistant);
+  GetSidePanelRegistry()->Deregister(SidePanelEntry::Id::kAssistant);
 }
 
 bool AssistantSidePanelCoordinatorImpl::Shown() {
@@ -49,13 +49,13 @@ bool AssistantSidePanelCoordinatorImpl::Shown() {
 }
 
 SidePanelCoordinator*
-AssistantSidePanelCoordinatorImpl::SidePanelCoordinator() {
+AssistantSidePanelCoordinatorImpl::GetSidePanelCoordinator() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   return browser_view->side_panel_coordinator();
 }
 
-SidePanelRegistry* AssistantSidePanelCoordinatorImpl::SidePanelRegistry() {
+SidePanelRegistry* AssistantSidePanelCoordinatorImpl::GetSidePanelRegistry() {
   return SidePanelRegistry::Get(web_contents_);
 }
 
@@ -85,7 +85,7 @@ void AssistantSidePanelCoordinatorImpl::RemoveView() {
 
 void AssistantSidePanelCoordinatorImpl::AddObserver(
     SidePanelEntryObserver* observer) {
-  SidePanelRegistry()
+  GetSidePanelRegistry()
       ->GetEntryForId(SidePanelEntry::Id::kAssistant)
       ->AddObserver(observer);
 }
