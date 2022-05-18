@@ -21,6 +21,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -46,7 +47,7 @@ class FirstPartySetsManager {
     return enabled_;
   }
 
-  // Computes the First-Party Set metadata related to the given context.
+  // Computes the First-Party Set metadata related to the given request context.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
   // with the result. The callback will be invoked iff the return value is
@@ -56,6 +57,7 @@ class FirstPartySetsManager {
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Computes a mapping from owner to set members. For convenience of iteration,
@@ -66,6 +68,7 @@ class FirstPartySetsManager {
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
   [[nodiscard]] absl::optional<SetsByOwner> Sets(
+      const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(SetsByOwner)> callback);
 
   // Stores the First-Party Sets data.
@@ -88,6 +91,7 @@ class FirstPartySetsManager {
   // not both, and not neither.
   [[nodiscard]] absl::optional<OwnerResult> FindOwner(
       const net::SchemefulSite& site,
+      const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(OwnerResult)> callback);
 
   // Batched version of `FindOwner`. Returns the mapping of sites to owners for
@@ -104,6 +108,7 @@ class FirstPartySetsManager {
   // not both, and not neither.
   [[nodiscard]] absl::optional<OwnersResult> FindOwners(
       const base::flat_set<net::SchemefulSite>& sites,
+      const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(OwnersResult)> callback);
 
  private:
@@ -113,6 +118,7 @@ class FirstPartySetsManager {
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
       base::TimeTicks enqueued_at) const;
 
@@ -121,7 +127,8 @@ class FirstPartySetsManager {
   net::FirstPartySetMetadata ComputeMetadataInternal(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const;
+      const std::set<net::SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Returns whether the `site` is same-party with the `party_context`, and
   // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
@@ -133,6 +140,7 @@ class FirstPartySetsManager {
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config,
       bool infer_singleton_sets) const;
 
   // Computes the "type" of the context. I.e., categorizes contexts based on
@@ -147,43 +155,52 @@ class FirstPartySetsManager {
   net::FirstPartySetsContextType ComputeContextType(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const;
+      const std::set<net::SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Same as `FindOwner`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
   void FindOwnerAndInvoke(const net::SchemefulSite& site,
+                          const FirstPartySetsContextConfig& fps_context_config,
                           base::OnceCallback<void(OwnerResult)> callback,
                           base::TimeTicks enqueued_at) const;
 
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
-  // `infer_singleton_sets` is true.
+  // `infer_singleton_sets` is true. `fps_context_config` is the configuration
+  // to be used in this context.
   //
   // This is synchronous, and must not be called
   // until the instance is fully initialized.
   const absl::optional<net::SchemefulSite> FindOwnerInternal(
       const net::SchemefulSite& site,
+      const FirstPartySetsContextConfig& fps_context_config,
       bool infer_singleton_sets) const;
 
   // Same as `FindOwners`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
-  void FindOwnersAndInvoke(const base::flat_set<net::SchemefulSite>& sites,
-                           base::OnceCallback<void(OwnersResult)> callback,
-                           base::TimeTicks enqueued_at) const;
+  void FindOwnersAndInvoke(
+      const base::flat_set<net::SchemefulSite>& sites,
+      const FirstPartySetsContextConfig& fps_context_config,
+      base::OnceCallback<void(OwnersResult)> callback,
+      base::TimeTicks enqueued_at) const;
 
   // Synchronous version of `FindOwners`, to be run only once the instance is
   // initialized.
   OwnersResult FindOwnersInternal(
-      const base::flat_set<net::SchemefulSite>& sites) const;
+      const base::flat_set<net::SchemefulSite>& sites,
+      const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Same as `Sets`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
-  void SetsAndInvoke(base::OnceCallback<void(SetsByOwner)> callback,
+  void SetsAndInvoke(const FirstPartySetsContextConfig& fps_context_config,
+                     base::OnceCallback<void(SetsByOwner)> callback,
                      base::TimeTicks enqueued_at) const;
 
   // Synchronous version of `Sets`, to be run only once the instance is
   // initialized.
-  SetsByOwner SetsInternal() const;
+  SetsByOwner SetsInternal(
+      const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Enqueues a query to be answered once the instance is fully initialized.
   void EnqueuePendingQuery(base::OnceClosure run_query);

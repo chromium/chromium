@@ -47,7 +47,7 @@ class FirstPartySetsManagerTest : public ::testing::Test {
   FirstPartySetsManager::SetsByOwner SetsAndWait() {
     base::test::TestFuture<FirstPartySetsManager::SetsByOwner> future;
     absl::optional<FirstPartySetsManager::SetsByOwner> result =
-        manager_.Sets(future.GetCallback());
+        manager_.Sets(fps_context_config_, future.GetCallback());
     return result.has_value() ? result.value() : future.Get();
   }
 
@@ -58,7 +58,7 @@ class FirstPartySetsManagerTest : public ::testing::Test {
     base::test::TestFuture<net::FirstPartySetMetadata> future;
     absl::optional<net::FirstPartySetMetadata> result =
         manager_.ComputeMetadata(site, top_frame_site, party_context,
-                                 future.GetCallback());
+                                 fps_context_config_, future.GetCallback());
     return result.has_value() ? std::move(result).value() : future.Take();
   }
 
@@ -66,7 +66,7 @@ class FirstPartySetsManagerTest : public ::testing::Test {
       const net::SchemefulSite& site) {
     base::test::TestFuture<FirstPartySetsManager::OwnerResult> future;
     absl::optional<FirstPartySetsManager::OwnerResult> result =
-        manager_.FindOwner(site, future.GetCallback());
+        manager_.FindOwner(site, fps_context_config_, future.GetCallback());
     return result.has_value() ? result.value() : future.Get();
   }
 
@@ -74,22 +74,35 @@ class FirstPartySetsManagerTest : public ::testing::Test {
       const base::flat_set<net::SchemefulSite>& site) {
     base::test::TestFuture<FirstPartySetsManager::OwnersResult> future;
     absl::optional<FirstPartySetsManager::OwnersResult> result =
-        manager_.FindOwners(site, future.GetCallback());
+        manager_.FindOwners(site, fps_context_config_, future.GetCallback());
     return result.has_value() ? result.value() : future.Get();
   }
 
   FirstPartySetsManager& manager() { return manager_; }
 
+  FirstPartySetsContextConfig& fps_context_config() {
+    return fps_context_config_;
+  }
+
   base::test::TaskEnvironment& env() { return env_; }
+
+ protected:
+  void SetFirstPartySetsContextConfig(bool enabled) {
+    fps_context_config_ = FirstPartySetsContextConfig(enabled);
+  }
 
  private:
   base::test::TaskEnvironment env_;
   FirstPartySetsManager manager_;
+  FirstPartySetsContextConfig fps_context_config_;
 };
 
 class FirstPartySetsManagerDisabledTest : public FirstPartySetsManagerTest {
  public:
-  FirstPartySetsManagerDisabledTest() : FirstPartySetsManagerTest(false) {}
+  FirstPartySetsManagerDisabledTest() : FirstPartySetsManagerTest(false) {
+    // FPS setting by the browser overrules FPS setting by a profile.
+    SetFirstPartySetsContextConfig(true);
+  }
 };
 
 TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
@@ -163,7 +176,9 @@ TEST_F(FirstPartySetsManagerDisabledTest, Sets_IsEmpty) {
 
 class FirstPartySetsEnabledTest : public FirstPartySetsManagerTest {
  public:
-  FirstPartySetsEnabledTest() : FirstPartySetsManagerTest(true) {}
+  FirstPartySetsEnabledTest() : FirstPartySetsManagerTest(true) {
+    SetFirstPartySetsContextConfig(true);
+  }
 };
 
 TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {
@@ -243,8 +258,8 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
   net::SchemefulSite owner(GURL("https://example.test"));
 
   base::test::TestFuture<net::FirstPartySetMetadata> future;
-  EXPECT_FALSE(manager().ComputeMetadata(member, &member, {member},
-                                         future.GetCallback()));
+  EXPECT_FALSE(manager().ComputeMetadata(
+      member, &member, {member}, fps_context_config(), future.GetCallback()));
 
   Populate();
 
@@ -256,8 +271,9 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
 
 TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindOwner) {
   base::test::TestFuture<FirstPartySetsManager::OwnerResult> future;
-  EXPECT_FALSE(manager().FindOwner(
-      net::SchemefulSite(GURL("https://member1.test")), future.GetCallback()));
+  EXPECT_FALSE(
+      manager().FindOwner(net::SchemefulSite(GURL("https://member1.test")),
+                          fps_context_config(), future.GetCallback()));
 
   Populate();
 
@@ -273,7 +289,7 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindOwners) {
           net::SchemefulSite(GURL("https://member1.test")),
           net::SchemefulSite(GURL("https://member2.test")),
       },
-      future.GetCallback()));
+      fps_context_config(), future.GetCallback()));
 
   Populate();
 
@@ -286,7 +302,7 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindOwners) {
 
 TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_Sets) {
   base::test::TestFuture<FirstPartySetsManager::SetsByOwner> future;
-  EXPECT_FALSE(manager().Sets(future.GetCallback()));
+  EXPECT_FALSE(manager().Sets(fps_context_config(), future.GetCallback()));
 
   Populate();
 
@@ -940,40 +956,117 @@ TEST_F(PopulatedFirstPartySetsManagerTest, ComputeContextType) {
   });
   net::SchemefulSite singleton(GURL("https://implicit-singleton.test"));
 
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-            manager().ComputeContextType(example, nullptr, {}));
   EXPECT_EQ(
       net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-      manager().ComputeContextType(example, nullptr, homogeneous_context));
+      manager().ComputeContextType(example, nullptr, {}, fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
+            manager().ComputeContextType(example, nullptr, homogeneous_context,
+                                         fps_context_config()));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredMixed,
-            manager().ComputeContextType(example, nullptr, mixed_context));
+            manager().ComputeContextType(example, nullptr, mixed_context,
+                                         fps_context_config()));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            manager().ComputeContextType(example, &member1, {}));
+            manager().ComputeContextType(example, &member1, {},
+                                         fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
+            manager().ComputeContextType(example, &member1, homogeneous_context,
+                                         fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
+            manager().ComputeContextType(singleton, &singleton, {singleton},
+                                         fps_context_config()));
+
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            manager().ComputeContextType(example, &member1, {foo},
+                                         fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            manager().ComputeContextType(example, &member1, mixed_context,
+                                         fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            manager().ComputeContextType(example, &member1, {singleton},
+                                         fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            manager().ComputeContextType(singleton, &singleton, mixed_context,
+                                         fps_context_config()));
+
   EXPECT_EQ(
-      net::FirstPartySetsContextType::kHomogeneous,
-      manager().ComputeContextType(example, &member1, homogeneous_context));
-  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            manager().ComputeContextType(singleton, &singleton, {singleton}));
+      net::FirstPartySetsContextType::kTopResourceMismatch,
+      manager().ComputeContextType(example, &foo, {}, fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
+            manager().ComputeContextType(example, &foo, homogeneous_context,
+                                         fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
+            manager().ComputeContextType(example, &foo, mixed_context,
+                                         fps_context_config()));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
+            manager().ComputeContextType(example, &singleton, mixed_context,
+                                         fps_context_config()));
+}
 
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(example, &member1, {foo}));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(example, &member1, mixed_context));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(example, &member1, {singleton}));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(singleton, &singleton, mixed_context));
+class DisabledContextFirstPartySetsManagerTest
+    : public PopulatedFirstPartySetsManagerTest {
+ public:
+  DisabledContextFirstPartySetsManagerTest() {
+    SetFirstPartySetsContextConfig(false);
+  }
+};
 
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            manager().ComputeContextType(example, &foo, {}));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            manager().ComputeContextType(example, &foo, homogeneous_context));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            manager().ComputeContextType(example, &foo, mixed_context));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            manager().ComputeContextType(example, &singleton, mixed_context));
+TEST_F(DisabledContextFirstPartySetsManagerTest, FindOwners) {
+  EXPECT_THAT(
+      FindOwnersAndWait({net::SchemefulSite(GURL("https://example.test"))}),
+      IsEmpty());
+}
+
+TEST_F(DisabledContextFirstPartySetsManagerTest, FindOwner) {
+  EXPECT_FALSE(
+      FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))));
+  EXPECT_FALSE(
+      FindOwnerAndWait(net::SchemefulSite(GURL("https://member.test"))));
+}
+
+TEST_F(DisabledContextFirstPartySetsManagerTest, Sets_IsEmpty) {
+  EXPECT_THAT(SetsAndWait(), IsEmpty());
+}
+
+TEST_F(DisabledContextFirstPartySetsManagerTest, ComputeMetadata) {
+  net::SchemefulSite member(GURL("https://member1.test"));
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite wss_member(GURL("wss://member1.test"));
+
+  // Works if the site is provided with WSS scheme instead of HTTPS.
+  EXPECT_THAT(
+      ComputeMetadataAndWait(wss_member, &member, {member, example}).context(),
+      net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                            Type::kSameParty));
+
+  EXPECT_THAT(ComputeMetadataAndWait(example, &member, {member}).context(),
+              net::SamePartyContext(Type::kCrossParty));
+  EXPECT_THAT(ComputeMetadataAndWait(member, &example, {member}).context(),
+              net::SamePartyContext(Type::kCrossParty));
+
+  // Top&resource differs from Ancestors.
+  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {example}).context(),
+
+              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                                    Type::kSameParty));
+
+  // Metrics values infer singleton sets when appropriate.
+  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {member}).context(),
+              net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
+                                    Type::kSameParty));
+  EXPECT_THAT(ComputeMetadataAndWait(member, &example, {member}).context(),
+              net::SamePartyContext(Type::kCrossParty));
+  EXPECT_THAT(ComputeMetadataAndWait(example, &member, {member}).context(),
+              net::SamePartyContext(Type::kCrossParty));
+  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {example}).context(),
+              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                                    Type::kSameParty));
+
+  EXPECT_THAT(
+      ComputeMetadataAndWait(member, &member, {member, example}).context(),
+      net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                            Type::kSameParty));
 }
 
 }  // namespace network
