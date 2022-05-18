@@ -90,8 +90,8 @@ TestDevToolsAgentClient::RunCommandAndWaitForResult(Channel channel,
   return WaitForEvent(base::BindRepeating(
       [](int call_id, const Event& event) {
         return event.type == Event::Type::kResponse &&
-               event.call_id == call_id &&
-               event.value.FindIntKey("id").value_or(-call_id) == call_id;
+               event.call_id == call_id && event.value.is_dict() &&
+               event.value.GetDict().FindInt("id") == call_id;
       },
       call_id));
 }
@@ -120,7 +120,7 @@ TestDevToolsAgentClient::WaitForMethodNotification(std::string method) {
           return false;
 
         const std::string* candidate_method =
-            event.value.FindStringKey("method");
+            event.value.GetDict().FindString("method");
         return (candidate_method && *candidate_method == method);
       },
       method));
@@ -167,7 +167,7 @@ void TestDevToolsAgentClient::LogEvent(
   event.value = std::move(val.value());
 
   // Make sure it has proper session ID.
-  const std::string* session = event.value.FindStringPath("sessionId");
+  const std::string* session = event.value.GetDict().FindString("sessionId");
   ASSERT_TRUE(session);
   EXPECT_EQ(session_id_, *session);
 

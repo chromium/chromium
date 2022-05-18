@@ -559,75 +559,89 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
   {
     TestChannel::Event message =
         channel->WaitForMethodNotification("Runtime.consoleAPICalled");
-    const std::string* type = message.value.FindStringPath("params.type");
+    const std::string* type =
+        message.value.GetDict().FindStringByDottedPath("params.type");
     ASSERT_TRUE(type);
     EXPECT_EQ("debug", *type);
-    const base::Value* args = message.value.FindListPath("params.args");
+    const base::Value::List* args =
+        message.value.GetDict().FindListByDottedPath("params.args");
     ASSERT_TRUE(args);
-    ASSERT_EQ(1u, args->GetListDeprecated().size());
-    EXPECT_EQ("string", *args->GetListDeprecated()[0].FindStringKey("type"));
-    EXPECT_EQ("debug is there",
-              *args->GetListDeprecated()[0].FindStringKey("value"));
-    const base::Value* stack_trace =
-        message.value.FindListPath("params.stackTrace.callFrames");
-    ASSERT_EQ(1u, stack_trace->GetListDeprecated().size());
-    EXPECT_EQ(
-        "", *stack_trace->GetListDeprecated()[0].FindStringKey("functionName"));
-    EXPECT_EQ("https://foo.test/",
-              *stack_trace->GetListDeprecated()[0].FindStringKey("url"));
-    EXPECT_EQ(1, *stack_trace->GetListDeprecated()[0].FindIntKey("lineNumber"));
+    ASSERT_EQ(1u, args->size());
+    const base::Value::Dict* args_dict = (*args)[0].GetIfDict();
+    ASSERT_TRUE(args_dict);
+    EXPECT_EQ("string", *args_dict->FindString("type"));
+    EXPECT_EQ("debug is there", *args_dict->FindString("value"));
+    const base::Value::List* stack_trace =
+        message.value.GetDict().FindListByDottedPath(
+            "params.stackTrace.callFrames");
+    ASSERT_TRUE(stack_trace);
+    ASSERT_EQ(1u, stack_trace->size());
+    const base::Value::Dict* trace_dict = (*stack_trace)[0].GetIfDict();
+    ASSERT_TRUE(trace_dict);
+    EXPECT_EQ("", *trace_dict->FindString("functionName"));
+    EXPECT_EQ("https://foo.test/", *trace_dict->FindString("url"));
+    EXPECT_EQ(1, trace_dict->FindInt("lineNumber"));
   }
 
   {
     TestChannel::Event message =
         channel->WaitForMethodNotification("Runtime.consoleAPICalled");
-    const std::string* type = message.value.FindStringPath("params.type");
+    const std::string* type =
+        message.value.GetDict().FindStringByDottedPath("params.type");
     ASSERT_TRUE(type);
     EXPECT_EQ("log", *type);
-    const base::Value* args = message.value.FindListPath("params.args");
+    const base::Value::List* args =
+        message.value.GetDict().FindListByDottedPath("params.args");
     ASSERT_TRUE(args);
-    ASSERT_EQ(5u, args->GetListDeprecated().size());
-    EXPECT_EQ("string", *args->GetListDeprecated()[0].FindStringKey("type"));
-    EXPECT_EQ("can", *args->GetListDeprecated()[0].FindStringKey("value"));
-    EXPECT_EQ("string", *args->GetListDeprecated()[1].FindStringKey("type"));
-    EXPECT_EQ("log", *args->GetListDeprecated()[1].FindStringKey("value"));
-    EXPECT_EQ("string", *args->GetListDeprecated()[2].FindStringKey("type"));
-    EXPECT_EQ("multiple", *args->GetListDeprecated()[2].FindStringKey("value"));
-    EXPECT_EQ("string", *args->GetListDeprecated()[3].FindStringKey("type"));
-    EXPECT_EQ("things", *args->GetListDeprecated()[3].FindStringKey("value"));
-    EXPECT_EQ("boolean", *args->GetListDeprecated()[4].FindStringKey("type"));
-    EXPECT_EQ(true, *args->GetListDeprecated()[4].FindBoolKey("value"));
+    ASSERT_EQ(5u, args->size());
+    EXPECT_EQ("string", *(*args)[0].GetDict().FindString("type"));
+    EXPECT_EQ("can", *(*args)[0].GetDict().FindString("value"));
+    EXPECT_EQ("string", *(*args)[1].GetDict().FindString("type"));
+    EXPECT_EQ("log", *(*args)[1].GetDict().FindString("value"));
+    EXPECT_EQ("string", *(*args)[2].GetDict().FindString("type"));
+    EXPECT_EQ("multiple", *(*args)[2].GetDict().FindString("value"));
+    EXPECT_EQ("string", *(*args)[3].GetDict().FindString("type"));
+    EXPECT_EQ("things", *(*args)[3].GetDict().FindString("value"));
+    EXPECT_EQ("boolean", *(*args)[4].GetDict().FindString("type"));
+    EXPECT_EQ(true, (*args)[4].GetDict().FindBool("value"));
 
-    const base::Value* stack_trace =
-        message.value.FindListPath("params.stackTrace.callFrames");
-    ASSERT_EQ(1u, stack_trace->GetListDeprecated().size());
-    EXPECT_EQ("foo", *stack_trace->GetListDeprecated()[0].FindStringKey(
-                         "functionName"));
-    EXPECT_EQ("https://foo.test/",
-              *stack_trace->GetListDeprecated()[0].FindStringKey("url"));
-    EXPECT_EQ(4, *stack_trace->GetListDeprecated()[0].FindIntKey("lineNumber"));
+    const base::Value::List* stack_trace =
+        message.value.GetDict().FindListByDottedPath(
+            "params.stackTrace.callFrames");
+    ASSERT_TRUE(stack_trace);
+    ASSERT_EQ(1u, stack_trace->size());
+    const base::Value::Dict* stack_trace_dict = (*stack_trace)[0].GetIfDict();
+    ASSERT_TRUE(stack_trace_dict);
+    EXPECT_EQ("foo", *stack_trace_dict->FindString("functionName"));
+    EXPECT_EQ("https://foo.test/", *stack_trace_dict->FindString("url"));
+    EXPECT_EQ(4, stack_trace_dict->FindInt("lineNumber"));
   }
 
   {
     TestChannel::Event message =
         channel->WaitForMethodNotification("Runtime.consoleAPICalled");
-    const std::string* type = message.value.FindStringPath("params.type");
+    const std::string* type =
+        message.value.GetDict().FindStringByDottedPath("params.type");
     ASSERT_TRUE(type);
     EXPECT_EQ("table", *type);
-    const base::Value* args = message.value.FindListPath("params.args");
+    const base::Value::List* args =
+        message.value.GetDict().FindListByDottedPath("params.args");
     ASSERT_TRUE(args);
-    ASSERT_EQ(1u, args->GetListDeprecated().size());
-    EXPECT_EQ("string", *args->GetListDeprecated()[0].FindStringKey("type"));
-    EXPECT_EQ("even table!",
-              *args->GetListDeprecated()[0].FindStringKey("value"));
-    const base::Value* stack_trace =
-        message.value.FindListPath("params.stackTrace.callFrames");
-    ASSERT_EQ(1u, stack_trace->GetListDeprecated().size());
-    EXPECT_EQ("foo", *stack_trace->GetListDeprecated()[0].FindStringKey(
-                         "functionName"));
-    EXPECT_EQ("https://foo.test/",
-              *stack_trace->GetListDeprecated()[0].FindStringKey("url"));
-    EXPECT_EQ(5, *stack_trace->GetListDeprecated()[0].FindIntKey("lineNumber"));
+    ASSERT_EQ(1u, args->size());
+    const base::Value::Dict* args_dict = (*args)[0].GetIfDict();
+    ASSERT_TRUE(args_dict);
+    EXPECT_EQ("string", *args_dict->FindString("type"));
+    EXPECT_EQ("even table!", *args_dict->FindString("value"));
+    const base::Value::List* stack_trace =
+        message.value.GetDict().FindListByDottedPath(
+            "params.stackTrace.callFrames");
+    ASSERT_TRUE(stack_trace);
+    ASSERT_EQ(1u, stack_trace->size());
+    const base::Value::Dict* stack_trace_dict = (*stack_trace)[0].GetIfDict();
+    ASSERT_TRUE(stack_trace_dict);
+    EXPECT_EQ("foo", *stack_trace_dict->FindString("functionName"));
+    EXPECT_EQ("https://foo.test/", *stack_trace_dict->FindString("url"));
+    EXPECT_EQ(5, stack_trace_dict->FindInt("lineNumber"));
   }
 
   id->AbortDebuggerPauses();
@@ -745,7 +759,8 @@ TEST_F(AuctionV8HelperTest, DebuggerBasics) {
   TestChannel::Event context_created_event =
       channel->WaitForMethodNotification("Runtime.executionContextCreated");
   const std::string* name =
-      context_created_event.value.FindStringPath("params.context.name");
+      context_created_event.value.GetDict().FindStringByDottedPath(
+          "params.context.name");
   ASSERT_TRUE(name);
   EXPECT_EQ(kURL, *name);
 
@@ -755,18 +770,20 @@ TEST_F(AuctionV8HelperTest, DebuggerBasics) {
   TestChannel::Event context_created2_event =
       channel->WaitForMethodNotification("Runtime.executionContextCreated");
   const std::string* name2 =
-      context_created2_event.value.FindStringPath("params.context.name");
+      context_created2_event.value.GetDict().FindStringByDottedPath(
+          "params.context.name");
   ASSERT_TRUE(name2);
   EXPECT_EQ(kURL, *name2);
 
   TestChannel::Event script_parsed_event =
       channel->WaitForMethodNotification("Debugger.scriptParsed");
   const std::string* url =
-      script_parsed_event.value.FindStringPath("params.url");
+      script_parsed_event.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url);
   EXPECT_EQ(kURL, *url);
   const std::string* script_id =
-      script_parsed_event.value.FindStringPath("params.scriptId");
+      script_parsed_event.value.GetDict().FindStringByDottedPath(
+          "params.scriptId");
   ASSERT_TRUE(script_id);
 
   TestChannel::Event context_destroyed2_event =
@@ -782,7 +799,8 @@ TEST_F(AuctionV8HelperTest, DebuggerBasics) {
       3, "Debugger.getScriptSource",
       base::StringPrintf(kGetScriptSourceTemplate, script_id->c_str()));
   const std::string* parsed_src =
-      source_response.value.FindStringPath("result.scriptSource");
+      source_response.value.GetDict().FindStringByDottedPath(
+          "result.scriptSource");
   ASSERT_TRUE(parsed_src);
   EXPECT_EQ(kScriptSrc, *parsed_src);
 
@@ -893,26 +911,27 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
 
     TestDevToolsAgentClient::Event script_parsed =
         debug_client.WaitForMethodNotification("Debugger.scriptParsed");
-    const std::string* url = script_parsed.value.FindStringPath("params.url");
+    const std::string* url =
+        script_parsed.value.GetDict().FindStringByDottedPath("params.url");
     ASSERT_TRUE(url);
     EXPECT_EQ(*url, "https://example.com/test.js");
     absl::optional<int> context_id =
-        script_parsed.value.FindIntPath("params.executionContextId");
+        script_parsed.value.GetDict().FindIntByDottedPath(
+            "params.executionContextId");
     ASSERT_TRUE(context_id.has_value());
 
     // Wait for breakpoint to hit.
     TestDevToolsAgentClient::Event breakpoint_hit =
         debug_client.WaitForMethodNotification("Debugger.paused");
 
-    base::Value* hit_breakpoints =
-        breakpoint_hit.value.FindListPath("params.hitBreakpoints");
+    const base::Value::List* hit_breakpoints =
+        breakpoint_hit.value.GetDict().FindListByDottedPath(
+            "params.hitBreakpoints");
     ASSERT_TRUE(hit_breakpoints);
-    base::Value::ConstListView hit_breakpoints_list =
-        hit_breakpoints->GetListDeprecated();
-    ASSERT_EQ(1u, hit_breakpoints_list.size());
-    ASSERT_TRUE(hit_breakpoints_list[0].is_string());
+    ASSERT_EQ(1u, hit_breakpoints->size());
+    ASSERT_TRUE((*hit_breakpoints)[0].is_string());
     EXPECT_EQ("1:2:0:https://example.com/test.js",
-              hit_breakpoints_list[0].GetString());
+              (*hit_breakpoints)[0].GetString());
 
     const char kCommandTemplate[] = R"({
       "id": 4,
@@ -1014,23 +1033,26 @@ TEST_F(AuctionV8HelperTest, DevToolsAgentDebuggerInstrumentationBreakpoint) {
         // inside the 'data.reasons' list, and top-level 'reason' field to say
         // 'ambiguous' to reflect it.
         const std::string* reason =
-            breakpoint_hit.value.FindStringPath("params.reason");
+            breakpoint_hit.value.GetDict().FindStringByDottedPath(
+                "params.reason");
         ASSERT_TRUE(reason);
         EXPECT_EQ("ambiguous", *reason);
 
-        const base::Value* reasons =
-            breakpoint_hit.value.FindListPath("params.data.reasons");
+        const base::Value::List* reasons =
+            breakpoint_hit.value.GetDict().FindListByDottedPath(
+                "params.data.reasons");
         ASSERT_TRUE(reasons);
-        base::Value::ConstListView reasons_list = reasons->GetListDeprecated();
-        ASSERT_EQ(2u, reasons_list.size());
-        ASSERT_TRUE(reasons_list[0].is_dict());
-        ASSERT_TRUE(reasons_list[1].is_dict());
+        ASSERT_EQ(2u, reasons->size());
+        ASSERT_TRUE((*reasons)[0].is_dict());
+        ASSERT_TRUE((*reasons)[1].is_dict());
         const std::string* ev1 =
-            reasons_list[0].FindStringPath("auxData.eventName");
+            (*reasons)[0].GetDict().FindStringByDottedPath("auxData.eventName");
         const std::string* ev2 =
-            reasons_list[1].FindStringPath("auxData.eventName");
-        const std::string* r1 = reasons_list[0].FindStringPath("reason");
-        const std::string* r2 = reasons_list[1].FindStringPath("reason");
+            (*reasons)[1].GetDict().FindStringByDottedPath("auxData.eventName");
+        const std::string* r1 =
+            (*reasons)[0].GetDict().FindStringByDottedPath("reason");
+        const std::string* r2 =
+            (*reasons)[1].GetDict().FindStringByDottedPath("reason");
         ASSERT_TRUE(ev1);
         ASSERT_TRUE(ev2);
         ASSERT_TRUE(r1);
@@ -1043,14 +1065,17 @@ TEST_F(AuctionV8HelperTest, DevToolsAgentDebuggerInstrumentationBreakpoint) {
         // Here we expect 'start' to be the only event, since we remove
         // 'start2', and 'start3' isn't checked by
         // CompileAndRunScriptOnV8Thread.
-        EXPECT_FALSE(breakpoint_hit.value.FindPath("params.data.reasons"));
+        EXPECT_FALSE(breakpoint_hit.value.GetDict().FindStringByDottedPath(
+            "params.data.reasons"));
         const std::string* reason =
-            breakpoint_hit.value.FindStringPath("params.reason");
+            breakpoint_hit.value.GetDict().FindStringByDottedPath(
+                "params.reason");
         ASSERT_TRUE(reason);
         EXPECT_EQ("EventListener", *reason);
 
         const std::string* event_name =
-            breakpoint_hit.value.FindStringPath("params.data.eventName");
+            breakpoint_hit.value.GetDict().FindStringByDottedPath(
+                "params.data.eventName");
         ASSERT_TRUE(event_name);
         EXPECT_EQ("instrumentation:start", *event_name);
       }
@@ -1089,7 +1114,8 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerInvalidCommand) {
         debug_client.RunCommandAndWaitForResult(
             TestDevToolsAgentClient::Channel::kMain, 1, "NoSuchThing.enable",
             R"({"id":1,"method":"NoSuchThing.enable","params":{}})");
-    EXPECT_TRUE(result.value.FindDictKey("error"));
+    ASSERT_TRUE(result.value.is_dict());
+    EXPECT_TRUE(result.value.GetDict().FindDict("error"));
 
     id->AbortDebuggerPauses();
   }
@@ -1330,7 +1356,8 @@ TEST_F(AuctionV8HelperTest, CompileWasmDebug) {
   TestDevToolsAgentClient::Event script_parsed =
       debug_client.WaitForMethodNotification("Debugger.scriptParsed");
   const std::string* lang =
-      script_parsed.value.FindStringPath("params.scriptLanguage");
+      script_parsed.value.GetDict().FindStringByDottedPath(
+          "params.scriptLanguage");
   ASSERT_TRUE(lang);
   EXPECT_EQ(*lang, "WebAssembly");
 

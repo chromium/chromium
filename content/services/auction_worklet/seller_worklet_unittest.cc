@@ -2416,7 +2416,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
     if (event.type != TestChannel::Event::Type::Notification)
       return false;
 
-    const std::string* candidate_method = event.value.FindStringKey("method");
+    const std::string* candidate_method =
+        event.value.GetDict().FindString("method");
     return (candidate_method && *candidate_method == "Debugger.scriptParsed");
   };
 
@@ -2482,7 +2483,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   // channel1 should have had a parsed notification for kUrl1.
   TestChannel::Event script_parsed1 =
       channel1->WaitForMethodNotification("Debugger.scriptParsed");
-  const std::string* url1 = script_parsed1.value.FindStringPath("params.url");
+  const std::string* url1 =
+      script_parsed1.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url1);
   EXPECT_EQ(kUrl1.spec(), *url1);
 
@@ -2500,7 +2502,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   // channel2 should have had a parsed notification for kUrl2.
   TestChannel::Event script_parsed2 =
       channel2->WaitForMethodNotification("Debugger.scriptParsed");
-  const std::string* url2 = script_parsed2.value.FindStringPath("params.url");
+  const std::string* url2 =
+      script_parsed2.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url2);
   EXPECT_EQ(kUrl2, *url2);
 
@@ -2540,7 +2543,8 @@ TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
   // Should have gotten a parse error notification.
   TestChannel::Event parse_error =
       channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
-  const std::string* error_url = parse_error.value.FindStringPath("params.url");
+  const std::string* error_url =
+      parse_error.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(error_url);
   EXPECT_EQ(decision_logic_url_.spec(), *error_url);
 }
@@ -2625,26 +2629,27 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
 
   TestDevToolsAgentClient::Event script_parsed1 =
       debug1.WaitForMethodNotification("Debugger.scriptParsed");
-  const std::string* url1 = script_parsed1.value.FindStringPath("params.url");
+  const std::string* url1 =
+      script_parsed1.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url1);
   EXPECT_EQ(*url1, kUrl1);
   absl::optional<int> context_id1 =
-      script_parsed1.value.FindIntPath("params.executionContextId");
+      script_parsed1.value.GetDict().FindIntByDottedPath(
+          "params.executionContextId");
   ASSERT_TRUE(context_id1.has_value());
 
   // Next there is the breakpoint.
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug1.WaitForMethodNotification("Debugger.paused");
 
-  base::Value* hit_breakpoints1 =
-      breakpoint_hit1.value.FindListPath("params.hitBreakpoints");
-  ASSERT_TRUE(hit_breakpoints1);
-  base::Value::ConstListView hit_breakpoints_list1 =
-      hit_breakpoints1->GetListDeprecated();
-  ASSERT_EQ(1u, hit_breakpoints_list1.size());
-  ASSERT_TRUE(hit_breakpoints_list1[0].is_string());
+  base::Value::List* hit_breakpoints =
+      breakpoint_hit1.value.GetDict().FindListByDottedPath(
+          "params.hitBreakpoints");
+  ASSERT_TRUE(hit_breakpoints);
+  ASSERT_EQ(1u, hit_breakpoints->size());
+  ASSERT_TRUE((*hit_breakpoints)[0].is_string());
   EXPECT_EQ("1:2:0:http://example.com/first.js",
-            hit_breakpoints_list1[0].GetString());
+            (*hit_breakpoints)[0].GetString());
 
   // Override the score value.
   const char kCommandTemplate[] = R"({
@@ -2676,11 +2681,13 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
 
   TestDevToolsAgentClient::Event script_parsed2 =
       debug2.WaitForMethodNotification("Debugger.scriptParsed");
-  const std::string* url2 = script_parsed2.value.FindStringPath("params.url");
+  const std::string* url2 =
+      script_parsed2.value.GetDict().FindStringByDottedPath("params.url");
   ASSERT_TRUE(url2);
   EXPECT_EQ(*url2, kUrl2);
   absl::optional<int> context_id2 =
-      script_parsed2.value.FindIntPath("params.executionContextId");
+      script_parsed2.value.GetDict().FindIntByDottedPath(
+          "params.executionContextId");
   ASSERT_TRUE(context_id2.has_value());
 
   // Wait for breakpoint, and then change the result to be trouble.
@@ -2751,7 +2758,8 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
       debug.WaitForMethodNotification("Debugger.paused");
 
   const std::string* breakpoint1 =
-      breakpoint_hit1.value.FindStringPath("params.data.eventName");
+      breakpoint_hit1.value.GetDict().FindStringByDottedPath(
+          "params.data.eventName");
   ASSERT_TRUE(breakpoint1);
   EXPECT_EQ("instrumentation:beforeSellerWorkletScoringStart", *breakpoint1);
 
@@ -2771,7 +2779,8 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug.WaitForMethodNotification("Debugger.paused");
   const std::string* breakpoint2 =
-      breakpoint_hit2.value.FindStringPath("params.data.eventName");
+      breakpoint_hit2.value.GetDict().FindStringByDottedPath(
+          "params.data.eventName");
   ASSERT_TRUE(breakpoint2);
   EXPECT_EQ("instrumentation:beforeSellerWorkletReportingStart", *breakpoint2);
 
@@ -2794,7 +2803,8 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
       debug.WaitForMethodNotification("Debugger.paused");
 
   const std::string* breakpoint3 =
-      breakpoint_hit1.value.FindStringPath("params.data.eventName");
+      breakpoint_hit1.value.GetDict().FindStringByDottedPath(
+          "params.data.eventName");
   ASSERT_TRUE(breakpoint3);
   EXPECT_EQ("instrumentation:beforeSellerWorkletScoringStart", *breakpoint3);
 

@@ -57,9 +57,8 @@ TestChannel::Event TestChannel::RunCommandAndWaitForResult(
   return WaitForEvent(base::BindRepeating(
       [](int call_id, const Event& event) {
         return event.type == Event::Type::Response &&
-               event.call_id == call_id &&
-               event.value.FindIntKey("id").has_value() &&
-               event.value.FindIntKey("id").value() == call_id;
+               event.call_id == call_id && event.value.is_dict() &&
+               event.value.GetDict().FindInt("id") == call_id;
       },
       call_id));
 }
@@ -92,7 +91,7 @@ TestChannel::Event TestChannel::WaitForMethodNotification(
           return false;
 
         const std::string* candidate_method =
-            event.value.FindStringKey("method");
+            event.value.GetDict().FindString("method");
         return (candidate_method && *candidate_method == method);
       },
       method));
