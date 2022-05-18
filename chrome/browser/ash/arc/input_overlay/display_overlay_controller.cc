@@ -445,21 +445,27 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  if (!action_edit_menu_ && !error_)
+  if (!action_edit_menu_ && !error_ && !input_menu_view_)
     return;
+
+  auto root_location = event.root_location();
 
   if (action_edit_menu_) {
     auto bounds = action_edit_menu_->GetBoundsInScreen();
-    auto root_location = event.root_location();
     if (!bounds.Contains(root_location))
       RemoveActionEditMenu();
   }
 
   if (error_) {
     auto bounds = error_->GetBoundsInScreen();
-    auto root_location = event.root_location();
     if (!bounds.Contains(root_location))
       RemoveEditErrorMsg();
+  }
+
+  if (input_menu_view_) {
+    auto bounds = input_menu_view_->GetBoundsInScreen();
+    if (!bounds.Contains(root_location))
+      SetDisplayMode(DisplayMode::kView);
   }
 }
 
