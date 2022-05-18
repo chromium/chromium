@@ -1498,4 +1498,43 @@ TEST_F(ScrollableShelfViewWithAppScalingTest,
   EXPECT_EQ(HotseatDensity::kNormal, hotseat_widget->target_hotseat_density());
 }
 
+// Verifies that right-click on scroll arrows shows shelf's context menu
+// (https://crbug.com/1324741).
+TEST_F(ScrollableShelfViewTest, RightClickArrows) {
+  AddAppShortcutsUntilOverflow();
+  ASSERT_EQ(ScrollableShelfView::kShowRightArrowButton,
+            scrollable_shelf_view_->layout_strategy_for_test());
+
+  // Right click on the right arrow. Shelf context menu should show.
+  gfx::Rect right_arrow =
+      scrollable_shelf_view_->right_arrow()->GetBoundsInScreen();
+  GetEventGenerator()->MoveMouseTo(right_arrow.CenterPoint());
+  GetEventGenerator()->ClickRightButton();
+
+  EXPECT_TRUE(
+      shelf_view_->IsShowingMenuForView(scrollable_shelf_view_->right_arrow()));
+
+  // Now click on the right arrow. Hotseat layout should show the left arrow.
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(
+      shelf_view_->IsShowingMenuForView(scrollable_shelf_view_->right_arrow()));
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_EQ(ScrollableShelfView::kShowLeftArrowButton,
+            scrollable_shelf_view_->layout_strategy_for_test());
+
+  // Right-click on the left arrow. Shelf context menu should show.
+  gfx::Rect left_arrow =
+      scrollable_shelf_view_->left_arrow()->GetBoundsInScreen();
+  GetEventGenerator()->MoveMouseTo(left_arrow.CenterPoint());
+  GetEventGenerator()->ClickRightButton();
+
+  EXPECT_TRUE(
+      shelf_view_->IsShowingMenuForView(scrollable_shelf_view_->left_arrow()));
+
+  // After left-click, the context menu should be closed.
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_FALSE(
+      shelf_view_->IsShowingMenuForView(scrollable_shelf_view_->left_arrow()));
+}
+
 }  // namespace ash

@@ -91,17 +91,18 @@ class ScrollableShelfView::ScrollableShelfArrowView
  public:
   explicit ScrollableShelfArrowView(ArrowType arrow_type,
                                     bool is_horizontal_alignment,
-                                    Shelf* shelf,
+                                    ShelfView* shelf_view,
                                     ShelfButtonDelegate* shelf_button_delegate)
       : ScrollArrowView(arrow_type,
                         is_horizontal_alignment,
-                        shelf,
+                        shelf_view->shelf(),
                         shelf_button_delegate),
-        shelf_(shelf) {
+        shelf_(shelf_view->shelf()) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
+    set_context_menu_controller(shelf_view);
 
     // When the spoken feedback is enabled, scrollable shelf should ensure that
     // the hidden icon which receives the accessibility focus shows through
@@ -343,12 +344,12 @@ void ScrollableShelfView::Init() {
 
   // Initialize the left arrow button.
   left_arrow_ = AddChildView(std::make_unique<ScrollableShelfArrowView>(
-      ScrollArrowView::kLeft, GetShelf()->IsHorizontalAlignment(), GetShelf(),
+      ScrollArrowView::kLeft, GetShelf()->IsHorizontalAlignment(), shelf_view_,
       this));
 
   // Initialize the right arrow button.
   right_arrow_ = AddChildView(std::make_unique<ScrollableShelfArrowView>(
-      ScrollArrowView::kRight, GetShelf()->IsHorizontalAlignment(), GetShelf(),
+      ScrollArrowView::kRight, GetShelf()->IsHorizontalAlignment(), shelf_view_,
       this));
 
   gradient_layer_delegate_ =
