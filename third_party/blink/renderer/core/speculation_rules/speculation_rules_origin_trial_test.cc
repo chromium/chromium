@@ -8,6 +8,7 @@
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
@@ -40,13 +41,13 @@ namespace {
 //  Expiry: 1936881669 (2031-05-18 14:41:09 UTC)
 //  Signature (Base64):
 //  dLwu1RhLf1iAH+NzRrTitAhWF9oFZFtDt7CjwaQENvBK7m/RECTJuFe2wj+5WTB7HIUkgbgtzhp50pelkGG4BA==
-constexpr char kSpeculationRulesPrefetchToken[] =
+[[maybe_unused]] constexpr char kSpeculationRulesPrefetchToken[] =
     "A3S8LtUYS39YgB/jc0a04rQIVhfaBWRbQ7ewo8GkBDbwSu5v0RAkybhXtsI/uVkwex"
     "yFJIG4Lc4aedKXpZBhuAQAAABseyJvcmlnaW4iOiAiaHR0cHM6Ly9zcGVjdWxhdGlv"
     "bnJ1bGVzLnRlc3Q6NDQzIiwgImZlYXR1cmUiOiAiU3BlY3VsYXRpb25SdWxlc1ByZW"
     "ZldGNoIiwgImV4cGlyeSI6IDE5MzY4ODE2Njl9";
 
-constexpr char kSimplePrefetchProxyRuleSet[] =
+[[maybe_unused]] constexpr char kSimplePrefetchProxyRuleSet[] =
     R"({
         "prefetch": [{
           "source": "list",
@@ -56,8 +57,9 @@ constexpr char kSimplePrefetchProxyRuleSet[] =
       })";
 
 // Similar to SpeculationRuleSetTest.PropagatesToDocument.
-::testing::AssertionResult DocumentAcceptsRuleSet(const char* trial_token,
-                                                  const char* json) {
+[[maybe_unused]] ::testing::AssertionResult DocumentAcceptsRuleSet(
+    const char* trial_token,
+    const char* json) {
   DummyPageHolder page_holder;
   Document& document = page_holder.GetDocument();
   LocalFrame& frame = page_holder.GetFrame();
@@ -115,6 +117,10 @@ constexpr char kSimplePrefetchProxyRuleSet[] =
              : ::testing::AssertionSuccess() << "a rule set was found";
 }
 
+// These tests only work on platforms where the feature is not already enabled
+// by default -- at which point an origin trial token is not required.
+#if !BUILDFLAG(IS_ANDROID)
+
 // Without the corresponding base::Feature, this trial token should not be
 // accepted.
 TEST(SpeculationRulesOriginTrialTest, RequiresBaseFeature) {
@@ -148,6 +154,8 @@ TEST(SpeculationRulesOriginTrialTest, BaseFeatureAndValidTokenSuffice) {
   EXPECT_TRUE(DocumentAcceptsRuleSet(kSpeculationRulesPrefetchToken,
                                      kSimplePrefetchProxyRuleSet));
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace blink

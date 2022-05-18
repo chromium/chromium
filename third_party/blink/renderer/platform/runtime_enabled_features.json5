@@ -2194,6 +2194,7 @@
     {
       name: "SpeculationRulesPrefetchProxy",
       origin_trial_feature_name: "SpeculationRulesPrefetch",
+      status: {"Android": "stable"},
     },
     {
       "name": "SpeculationRulesPrefetchWithSubresources",
