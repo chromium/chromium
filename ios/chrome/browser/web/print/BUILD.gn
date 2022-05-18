@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("print") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -47,9 +47,10 @@ source_set("unit_tests") {
   ]
 }
 
-optimize_js("print_js") {
+optimize_ts("print_js") {
   visibility = [ ":print" ]
 
-  primary_script = "resources/print.js"
-  sources = [ "resources/print.js" ]
+  sources = [ "resources/print.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
