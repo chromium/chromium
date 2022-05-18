@@ -5,7 +5,9 @@
 #include "ash/in_session_auth/authentication_dialog.h"
 
 #include "ash/test/ash_test_base.h"
+#include "base/logging.h"
 #include "base/test/bind.h"
+#include "base/unguessable_token.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -15,30 +17,27 @@ class AuthenticationDialogTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-    dialog_ = AuthenticationDialog::Show(base::BindLambdaForTesting(
-        [&](AuthenticationDialog::Result result, const std::u16string& token,
-            base::TimeDelta timeout) {
-          result_ = result;
-          called_ = true;
-        }));
+    dialog_ = new AuthenticationDialog(base::BindLambdaForTesting(
+        [&](bool success, const base::UnguessableToken& token,
+            base::TimeDelta timeout) { success_ = success; }));
+    dialog_->Show();
   }
 
  protected:
-  bool called_ = false;
-  AuthenticationDialog::Result result_;
-  AuthenticationDialog* dialog_;
+  absl::optional<bool> success_;
+  base::raw_ptr<AuthenticationDialog> dialog_;
 };
 
 TEST_F(AuthenticationDialogTest, CallbackCalledOnCancel) {
   dialog_->Cancel();
-  EXPECT_TRUE(called_);
-  EXPECT_EQ(result_, AuthenticationDialog::Result::kAborted);
+  EXPECT_TRUE(success_.has_value());
+  EXPECT_EQ(success_.value(), false);
 }
 
 TEST_F(AuthenticationDialogTest, CallbackCalledOnClose) {
   dialog_->Close();
-  EXPECT_TRUE(called_);
-  EXPECT_EQ(result_, AuthenticationDialog::Result::kAborted);
+  EXPECT_TRUE(success_.has_value());
+  EXPECT_EQ(success_.value(), false);
 }
 
 }  // namespace

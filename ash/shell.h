@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
+#include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
@@ -458,6 +459,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   WebAuthNDialogControllerImpl* webauthn_dialog_controller() {
     return webauthn_dialog_controller_.get();
   }
+  InSessionAuthDialogControllerImpl* in_session_auth_dialog_controller() {
+    return in_session_auth_dialog_controller_.get();
+  }
   KeyAccessibilityEnabler* key_accessibility_enabler() {
     return key_accessibility_enabler_.get();
   }
@@ -802,6 +806,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<WebAuthNDialogControllerImpl> webauthn_dialog_controller_;
   std::unique_ptr<KeyboardBacklightColorController>
       keyboard_backlight_color_controller_;
+  std::unique_ptr<InSessionAuthDialogControllerImpl>
+      in_session_auth_dialog_controller_;
   std::unique_ptr<KeyboardBrightnessControlDelegate>
       keyboard_brightness_control_delegate_;
   std::unique_ptr<LocaleUpdateControllerImpl> locale_update_controller_;

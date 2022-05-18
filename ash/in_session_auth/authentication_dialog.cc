@@ -3,11 +3,17 @@
 // found in the LICENSE file.
 
 #include "ash/in_session_auth/authentication_dialog.h"
+
 #include <memory>
+
+#include "ash/components/login/auth/cryptohome_error.h"
+#include "ash/components/login/auth/user_context.h"
+#include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -62,64 +68,11 @@ void CenterWidgetOnPrimaryDisplay(views::Widget* widget) {
 
 }  // namespace
 
-// static
-AuthenticationDialog* AuthenticationDialog::Show(
-    OnSubmitCallback submit_callback) {
-  auto* authentication_dialog =
-      new AuthenticationDialog(std::move(submit_callback));
-  auto* widget = DialogDelegateView::CreateDialogWidget(authentication_dialog,
-                                                        /*context=*/nullptr,
-                                                        /*parent=*/nullptr);
-  CenterWidgetOnPrimaryDisplay(widget);
-  widget->Show();
-  authentication_dialog->Init();
-  return authentication_dialog;
-}
-
-AuthenticationDialog::~AuthenticationDialog() = default;
-
-void AuthenticationDialog::Init() {
-  ConfigureOkButton();
-  password_field_->RequestFocus();
-}
-
-void AuthenticationDialog::NotifyResult(Result result,
-                                        const std::u16string& token,
-                                        base::TimeDelta timeout) {
-  std::move(on_submit_).Run(result, token, timeout);
-}
-
-void AuthenticationDialog::CancelAuthAttempt() {
-  NotifyResult(Result::kAborted, u"", base::Seconds(0));
-}
-
-void AuthenticationDialog::OnSubmit() {
-  // TODO(crbug.com/1271551): Call appropriate backends to get token
-  // and notify interested parties with |AuthenticationDialog::NotifyResult|
-  // For now, we always assume the given password is invalid
-  password_field_->SetInvalid(true);
-  password_field_->SelectAll(false);
-  invalid_password_label_->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING));
-}
-
-void AuthenticationDialog::ConfigureChildViews() {
-  ConfigurePasswordField(password_field_);
-  ConfigureInvalidPasswordLabel(invalid_password_label_);
-}
-
-void AuthenticationDialog::ConfigureOkButton() {
-  views::LabelButton* ok_button = GetOkButton();
-  ok_button->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
-  ok_button->SetCallback(base::BindRepeating(&AuthenticationDialog::OnSubmit,
-                                             base::Unretained(this)));
-}
-
-AuthenticationDialog::AuthenticationDialog(OnSubmitCallback submit_callback)
+AuthenticationDialog::AuthenticationDialog(
+    InSessionAuthDialogController::OnAuthComplete on_auth_complete)
     : password_field_(AddChildView(std::make_unique<views::Textfield>())),
       invalid_password_label_(AddChildView(std::make_unique<views::Label>())),
-      on_submit_(std::move(submit_callback)) {
+      on_auth_complete_(std::move(on_auth_complete)) {
   // Dialog setup
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -137,6 +90,87 @@ AuthenticationDialog::AuthenticationDialog(OnSubmitCallback submit_callback)
       .SetCollapseMargins(true);
 
   ConfigureChildViews();
+}
+
+AuthenticationDialog::~AuthenticationDialog() = default;
+
+void AuthenticationDialog::Show() {
+  auto* widget = DialogDelegateView::CreateDialogWidget(this,
+                                                        /*context=*/nullptr,
+                                                        /*parent=*/nullptr);
+  CenterWidgetOnPrimaryDisplay(widget);
+  Init();
+  widget->Show();
+}
+
+void AuthenticationDialog::Init() {
+  ConfigureOkButton();
+  password_field_->RequestFocus();
+}
+
+void AuthenticationDialog::NotifyResult(bool success,
+                                        const base::UnguessableToken& token,
+                                        base::TimeDelta timeout) {
+  if (on_auth_complete_) {
+    std::move(on_auth_complete_).Run(success, token, timeout);
+  }
+}
+
+void AuthenticationDialog::ConfigureOkButton() {
+  views::LabelButton* ok_button = GetOkButton();
+  ok_button->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
+  ok_button->SetCallback(base::BindRepeating(
+      &AuthenticationDialog::ValidateAuthFactor, base::Unretained(this)));
+}
+
+void AuthenticationDialog::SetUIDisabled(bool is_disabled) {
+  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_OK, is_disabled);
+  SetButtonEnabled(ui::DialogButton::DIALOG_BUTTON_CANCEL, is_disabled);
+  password_field_->SetReadOnly(is_disabled);
+}
+
+void AuthenticationDialog::ValidateAuthFactor() {
+  // Clear warning message.
+  invalid_password_label_->SetText({});
+
+  SetUIDisabled(true);
+
+  auto user_context = std::make_unique<UserContext>();
+  // TODO(b/231568585): call AuthPerformer::AuthenticateWithPassword
+  // Right now, we just assume that the password is correct no matter what
+  OnAuthFactorValidityChecked(std::move(user_context), absl::nullopt);
+}
+
+void AuthenticationDialog::OnAuthFactorValidityChecked(
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<CryptohomeError> cryptohome_error) {
+  if (cryptohome_error.has_value()) {
+    password_field_->SetInvalid(true);
+    password_field_->SelectAll(false);
+    invalid_password_label_->SetText(
+        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING));
+    SetUIDisabled(false);
+    return;
+  }
+
+  is_closing_ = true;
+  CancelDialog();
+  return;
+}
+
+void AuthenticationDialog::CancelAuthAttempt() {
+  // If dialog is closing after the submission of a valid auth factor,
+  // we should not notify any parties, as they would have already been
+  // notified after `AuthenticationDialog::OnAuthFactorValidityChecked`
+  if (!is_closing_) {
+    NotifyResult(/*success=*/false, /*token=*/{}, /*timeout=*/{});
+  }
+}
+
+void AuthenticationDialog::ConfigureChildViews() {
+  ConfigurePasswordField(password_field_);
+  ConfigureInvalidPasswordLabel(invalid_password_label_);
 }
 
 }  // namespace ash
