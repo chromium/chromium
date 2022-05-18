@@ -442,7 +442,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   // (pointer_grab_owner_) so it can be retrieved later on through
   // |Screen::GetCursorScreenPoint| API.
   if (pointer_grab_owner_)
-    pointer_grab_owner_->UpdateCursorPositionFromEvent(Event::Clone(*event));
+    pointer_grab_owner_->UpdateCursorPositionFromEvent(event);
 
   // Notify listeners about window bounds change (i.e: re-positioning) event.
   // To do so, set the new bounds as per the motion event location and the drag

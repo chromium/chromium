@@ -367,7 +367,7 @@ class WaylandWindow : public PlatformWindow,
   // Initializes the WaylandWindow with supplied properties.
   bool Initialize(PlatformWindowInitProperties properties);
 
-  void UpdateCursorPositionFromEvent(std::unique_ptr<Event> event);
+  void UpdateCursorPositionFromEvent(const Event* event);
 
   // Adjusts the |location| to account for the offset of a popup window. If this
   // is the root window, the location is unchanged.

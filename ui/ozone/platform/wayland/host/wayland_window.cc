@@ -451,7 +451,7 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
 
     // Wayland sends locations in DIP so they need to be translated to
     // physical pixels.
-    UpdateCursorPositionFromEvent(Event::Clone(*event));
+    UpdateCursorPositionFromEvent(event);
     event->AsLocatedEvent()->set_location_f(gfx::ScalePoint(
         event->AsLocatedEvent()->location_f(), window_scale(), window_scale()));
 
@@ -658,9 +658,8 @@ void WaylandWindow::OnLeftOutput() {
   UpdateWindowScale(true);
 }
 
-void WaylandWindow::UpdateCursorPositionFromEvent(
-    std::unique_ptr<Event> event) {
-  DCHECK(event->IsLocatedEvent());
+void WaylandWindow::UpdateCursorPositionFromEvent(const Event* orig_event) {
+  DCHECK(orig_event->IsLocatedEvent());
 
   // This is a tricky part. Initially, Wayland sends events to surfaces the
   // events are targeted for. But, in order to fulfill Chromium's assumptions
@@ -675,18 +674,24 @@ void WaylandWindow::UpdateCursorPositionFromEvent(
   // to use it as the target. Thus, the location of the |event| is always
   // converted using the top-level window's bounds as the target excluding
   // cases, when the mouse/touch is over a top-level window.
+  auto* cursor_position = connection_->wayland_cursor_position();
+  if (!cursor_position)
+    return;
+  const LocatedEvent* located_event = orig_event->AsLocatedEvent();
+  std::unique_ptr<Event> event;
+
   auto* toplevel_window = GetRootParentWindow();
   if (toplevel_window != this) {
+    event = Event::Clone(*orig_event);
     ConvertEventLocationToTargetWindowLocation(
         toplevel_window->GetBoundsInPixels().origin(),
         GetBoundsInPixels().origin(), event->AsLocatedEvent());
+    located_event = event->AsLocatedEvent();
   }
-  auto* cursor_position = connection_->wayland_cursor_position();
-  if (cursor_position) {
-    cursor_position->OnCursorPositionChanged(
-        event->AsLocatedEvent()->location() +
-        toplevel_window->GetBoundsInDIP().origin().OffsetFromOrigin());
-  }
+
+  cursor_position->OnCursorPositionChanged(
+      located_event->location() +
+      toplevel_window->GetBoundsInDIP().origin().OffsetFromOrigin());
 }
 
 gfx::PointF WaylandWindow::TranslateLocationToRootWindow(
