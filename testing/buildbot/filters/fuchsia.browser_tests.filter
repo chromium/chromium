@@ -291,7 +291,6 @@
 -SigninInterceptFirstRunExperienceDialogBrowserTest.SyncDisabled
 -SigninInterceptFirstRunExperienceDialogBrowserTest.SyncSettings
 -SingleProcessBrowserTest.Test
--SpellcheckServiceBrowserTest.DeleteCorruptedBDICT
 -StartupMetricsTest.ReportsValues
 -SyncAwareCounterTest.AutofillCounter
 -SyncAwareCounterTest.HistoryCounter
