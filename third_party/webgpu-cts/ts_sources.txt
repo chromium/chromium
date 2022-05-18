@@ -333,6 +333,11 @@ src/webgpu/shader/execution/expression/call/builtin/min.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/mix.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/modf.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/normalize.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/pack2x16float.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/pack2x16snorm.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/pack2x16unorm.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/pack4x8snorm.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/pack4x8unorm.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/pow.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/quantizeToF16.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/radians.spec.ts
@@ -347,6 +352,7 @@ src/webgpu/shader/execution/expression/call/builtin/sinh.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/smoothstep.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/step.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/storageBarrier.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureDimension.spec.ts
@@ -362,8 +368,16 @@ src/webgpu/shader/execution/expression/call/builtin/textureSampleBias.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleCompare.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleCompareLevel.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureSampleGrad.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/textureSampleLevel.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/textureStore.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/transpose.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/trunc.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/unpack2x16float.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/unpack2x16snorm.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/unpack2x16unorm.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/unpack4x8snorm.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/unpack4x8unorm.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/workgroupBarrier.spec.ts
 src/webgpu/shader/execution/expression/unary/unary.ts
 src/webgpu/shader/execution/expression/unary/f32_arithmetic.spec.ts
 src/webgpu/shader/execution/memory_model/memory_model_setup.ts
