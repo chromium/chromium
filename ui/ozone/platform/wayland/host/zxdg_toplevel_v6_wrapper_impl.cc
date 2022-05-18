@@ -203,4 +203,8 @@ void ZXDGToplevelV6WrapperImpl::SetSystemModal(bool modal) {
   NOTREACHED();
 }
 
+bool ZXDGToplevelV6WrapperImpl::SupportsScreenCoordinates() const {
+  return false;
+}
+
 }  // namespace ui

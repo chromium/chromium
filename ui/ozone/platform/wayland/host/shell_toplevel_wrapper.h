@@ -115,6 +115,10 @@ class ShellToplevelWrapper {
 
   // Request that the window be made a system modal.
   virtual void SetSystemModal(bool modal) = 0;
+
+  // Checks if the server supports chrome to control the window position in
+  // screen coordinates.
+  virtual bool SupportsScreenCoordinates() const = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

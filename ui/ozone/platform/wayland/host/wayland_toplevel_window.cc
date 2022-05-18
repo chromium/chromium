@@ -88,6 +88,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
                             ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
 
+  screen_coordinates_enabled_ &= shell_toplevel_->SupportsScreenCoordinates();
   if (screen_coordinates_enabled_)
     SetBounds(GetBounds());
 
