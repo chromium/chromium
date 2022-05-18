@@ -3090,6 +3090,18 @@ crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-005.html [ Fail
 # WebRTC: Perfect Negotiation times out in Plan B. This is expected.
 crbug.com/980872 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Skip Timeout ]
 
+# DevTools: disable while porting to DevTools e2e tests.
+crbug.com/1261822 http/tests/devtools/elements/elements-panel-styles.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-2/inactive-properties-with-shorthands.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-2/inactive-properties-with-variables.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-2/inactive-properties.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-2/inherited-mixed-case-properties.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-2/inject-stylesheet.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-2/lazy-computed-style.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-2/region-style-crash.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-3/computed-properties-retain-expanded.js [ Skip ]
+crbug.com/1261822 http/tests/devtools/elements/styles-3/styles-variables.js [ Skip ]
+
 # WebRTC: there's an open bug with some capture scenarios not working.
 crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-relay-canvas.https.html [ Failure Pass Timeout ]
 
