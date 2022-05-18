@@ -5,14 +5,17 @@
 # Variables will be pulled into globals() from the ColorSync framework, and will
 # trigger undefined-variables.
 # pylint: disable=undefined-variable
+# pytype: disable=name-error
 
 
 import sys
 if sys.platform.startswith('darwin'):
   # pylint: disable=import-error
+  # pytype: disable=import-error
   import Foundation
   import Quartz
   import objc
+  # pytype: enable=import-error
   # pylint: enable=import-error
   # There is no module for the ColorSync framework, so synthesize one using
   # bridge # support.
@@ -47,7 +50,7 @@ if sys.platform.startswith('darwin'):
 
 # Set |display_id| to use the color profile specified in |profile_url|. If
 # |profile_url| is None, then use the factor default.
-def SetDisplayCustomProfile(device_id, profile_url):
+def SetDisplayCustomProfile(device_id: int, profile_url: str) -> None:
   if profile_url is None:
     profile_url = Foundation.kCFNull
   profile_info = {
@@ -61,7 +64,7 @@ def SetDisplayCustomProfile(device_id, profile_url):
 
 
 # Returns the URL for the system's sRGB color profile.
-def GetSRGBProfileURL():
+def GetSRGBProfileURL() -> str:
   srgb_profile_path = '/System/Library/ColorSync/Profiles/sRGB Profile.icc'
   srgb_profile_url = Foundation.CFURLCreateFromFileSystemRepresentation(
       None, srgb_profile_path.encode('utf-8'), len(srgb_profile_path), False)
@@ -70,7 +73,7 @@ def GetSRGBProfileURL():
 
 # Return a map from display ID to custom color profiles set on the display or
 # None if no custom color profile is set.
-def GetDisplaysToProfileURLMap():
+def GetDisplaysToProfileURLMap() -> dict:
   display_profile_url_map = {}
   online_display_list_result = Quartz.CGGetOnlineDisplayList(32, None, None)
   error = online_display_list_result[0]
