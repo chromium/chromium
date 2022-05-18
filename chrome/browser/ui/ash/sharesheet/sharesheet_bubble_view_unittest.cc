@@ -103,6 +103,17 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     return intent;
   }
 
+  void CloseBubbleWithEscKey() {
+    GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
+    // |bubble_delegate_| and |sharesheet_bubble_view_| destruct on close.
+    bubble_delegate_ = nullptr;
+    sharesheet_bubble_view_ = nullptr;
+
+    ASSERT_FALSE(IsSharesheetVisible());
+  }
+
+  bool IsSharesheetVisible() { return sharesheet_widget_->IsVisible(); }
+
   SharesheetBubbleView* sharesheet_bubble_view() {
     return sharesheet_bubble_view_;
   }
@@ -146,6 +157,24 @@ TEST_F(SharesheetBubbleViewTest, EmptyState) {
   // Footer should be an empty view that just acts as padding.
   ASSERT_TRUE(footer_view()->GetVisible());
   ASSERT_EQ(footer_view()->children().size(), 0);
+}
+
+TEST_F(SharesheetBubbleViewTest, CloseWithEscKey) {
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText("text", "title"));
+  CloseBubbleWithEscKey();
+}
+
+TEST_F(SharesheetBubbleViewTest, CloseMultipleTimes) {
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText("text", "title"));
+  CloseBubbleWithEscKey();
+  CloseBubbleWithEscKey();
+}
+
+TEST_F(SharesheetBubbleViewTest, HoldEscapeKey) {
+  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText("text", "title"));
+  GetEventGenerator()->ReleaseKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+  CloseBubbleWithEscKey();
 }
 
 }  // namespace sharesheet
