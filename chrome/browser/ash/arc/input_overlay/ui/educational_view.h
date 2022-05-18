@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/view_shadow.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
@@ -22,7 +23,7 @@ class DisplayOverlayController;
 // information on how to use the feature.
 class EducationalView : public views::View {
  public:
-  static std::unique_ptr<EducationalView> BuildMenu(
+  static EducationalView* Show(
       DisplayOverlayController* display_overlay_controller,
       views::View* parent);
 
@@ -36,9 +37,16 @@ class EducationalView : public views::View {
  private:
   void Init(views::View* parent);
   void OnAcceptedPressed();
+  // Shadow has to be added after the view is added to its parent to display the
+  // shadow correctly.
+  void AddShadow();
+
+  // views::View:
   gfx::Size CalculatePreferredSize() const override;
 
   raw_ptr<ash::PillButton> accept_button_ = nullptr;
+  // View shadow for this view.
+  std::unique_ptr<ash::ViewShadow> view_shadow_;
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;

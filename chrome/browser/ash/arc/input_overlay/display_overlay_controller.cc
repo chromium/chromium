@@ -201,8 +201,7 @@ void DisplayOverlayController::AddEducationalView() {
   if (educational_view_)
     return;
 
-  educational_view_ = parent_view->AddChildView(
-      EducationalView::BuildMenu(this, GetParentView()));
+  educational_view_ = EducationalView::Show(this, GetParentView());
 }
 
 void DisplayOverlayController::RemoveEducationalView() {

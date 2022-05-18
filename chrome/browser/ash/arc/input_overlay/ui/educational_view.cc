@@ -27,9 +27,24 @@ namespace arc {
 namespace input_overlay {
 
 namespace {
-// General menu size.
-constexpr int kMenuWidth = 416;
-constexpr int kMenuHeight = 380;
+// About the dialog view style.
+constexpr int kDialogWidth = 416;
+constexpr int kDialogHeight = 380;
+constexpr int kDialogShadowElevation = 3;
+constexpr int kDialogCornerRadius = 12;
+
+// About title style.
+constexpr int kTitleFontSize = 20;
+
+// About description style.
+constexpr int kDescriptionFontSize = 13;
+
+// About Beta style.
+constexpr int kBetaFontSize = 11;
+constexpr int kBetaCornerRadius = 4;
+constexpr int kBetaHeight = 16;
+constexpr int kBetaSidePadding = 4;
+constexpr int kBetaLeftMargin = 12;
 
 // Misc spacing.
 constexpr int kBorderRow1 = 16;
@@ -37,24 +52,19 @@ constexpr int kBorderRow2 = 20;
 constexpr int kBorderRow3 = 32;
 constexpr int kBorderRow4 = 36;
 constexpr int kBorderSides = 40;
-constexpr int kBlankCol = 12;
-
-// Fonts sizes, styles.
-constexpr int kTitleFontSize = 20;
-constexpr int kBetaFontSize = 11;
-constexpr int kDescriptionFontSize = 13;
-constexpr int kCornerRadius = 12;
 }  // namespace
 
 // static
-std::unique_ptr<EducationalView> EducationalView::BuildMenu(
+EducationalView* EducationalView::Show(
     DisplayOverlayController* display_overlay_controller,
     views::View* parent) {
   auto educational_view =
       std::make_unique<EducationalView>(display_overlay_controller);
   educational_view->Init(parent);
+  auto* view_ptr = parent->AddChildView(std::move(educational_view));
+  view_ptr->AddShadow();
 
-  return educational_view;
+  return view_ptr;
 }
 
 EducationalView::EducationalView(
@@ -66,16 +76,13 @@ EducationalView::~EducationalView() {}
 void EducationalView::Init(views::View* parent) {
   DCHECK(parent);
   DCHECK(display_overlay_controller_);
-  DCHECK(ash::AshColorProvider::Get());
+
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  auto* color_provider = ash::AshColorProvider::Get();
-  // TODO(djacobo): Unspecified color for UI's background, it doesn't match
-  // system's background so need to confirm color.
-  SetBackground(
-      views::CreateRoundedRectBackground(SK_ColorWHITE, kCornerRadius));
+  SetBackground(views::CreateRoundedRectBackground(
+      GetDialogBackgroundBaseColor(), kDialogCornerRadius));
 
   {
     // UI's banner.
@@ -85,62 +92,69 @@ void EducationalView::Init(views::View* parent) {
     CHECK(skia_banner);
     auto banner = std::make_unique<views::ImageView>(
         ui::ImageModel::FromImageSkia(*skia_banner));
-    banner->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kBorderRow4, kBorderRow4, kBorderRow1, kBorderRow4)));
+    banner->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(kBorderRow4, kBorderRow4, kBorderRow1, kBorderRow4));
     AddChildView(std::move(banner));
   }
   {
-    // |Game Control [beta]| tittle tag.
+    // |Game Control [beta]| title tag.
     auto container_view = std::make_unique<views::View>();
     container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-    // TODO(djacobo): Although this is using |kTextColorPrimary| as in specs the
-    // color does not correspond to what specs visually look like.
-    SkColor color_primary = color_provider->GetContentLayerColor(
-        ash::AshColorProvider::ContentLayerType::kTextColorPrimary);
     auto* game_control = ash::login_views_utils::CreateBubbleLabel(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE),
-        /*view_defining_max_width=*/nullptr, color_primary,
+        /*view_defining_max_width=*/nullptr,
+        /*color=*/
+        GetContentLayerColor(
+            ash::AshColorProvider::ContentLayerType::kTextColorPrimary),
         /*font_list=*/
         gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                       gfx::Font::FontStyle::NORMAL, kTitleFontSize,
                       gfx::Font::Weight::MEDIUM));
     container_view->AddChildView(std::move(game_control));
 
-    SkColor color_beta =
-        arc::GetCrOSColor(cros_styles::ColorName::kTextColorSelection);
     auto* beta_label = ash::login_views_utils::CreateBubbleLabel(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_BETA),
-        /*view_defining_max_width=*/nullptr, color_beta,
+        /*view_defining_max_width=*/nullptr, /*color=*/
+        arc::GetCrOSColor(cros_styles::ColorName::kTextColorSelection),
         /*font_list=*/
         gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                       gfx::Font::FontStyle::NORMAL, kBetaFontSize,
                       gfx::Font::Weight::MEDIUM));
-    beta_label->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets::TLBR(0, kBlankCol, 0, 0)));
-    beta_label->SetBackgroundColor(
-        arc::GetCrOSColor(cros_styles::ColorName::kHighlightColor));
+    beta_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    beta_label->SetPreferredSize(
+        gfx::Size(beta_label->GetPreferredSize().width() + 2 * kBetaSidePadding,
+                  kBetaHeight));
+    beta_label->SetBackground(views::CreateRoundedRectBackground(
+        arc::GetCrOSColor(cros_styles::ColorName::kHighlightColor),
+        kBetaCornerRadius));
+    beta_label->SetProperty(views::kMarginsKey,
+                            gfx::Insets::TLBR(0, kBetaLeftMargin, 0, 0));
     container_view->AddChildView(std::move(beta_label));
-    container_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kBorderRow1, kBorderSides, 0, kBorderSides)));
+    container_view->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(kBorderRow1, kBorderSides, 0, kBorderSides));
     AddChildView(std::move(container_view));
   }
   {
     // Feature's description text.
-    SkColor color_secondary = color_provider->GetContentLayerColor(
-        ash::AshColorProvider::ContentLayerType::kTextColorSecondary);
     auto* description_label = ash::login_views_utils::CreateBubbleLabel(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION),
-        /*view_defining_max_width=*/this, color_secondary,
+        /*view_defining_max_width=*/this,
+        /*color=*/
+        GetContentLayerColor(
+            ash::AshColorProvider::ContentLayerType::kTextColorSecondary),
         /*font_list=*/
         gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                       gfx::Font::FontStyle::NORMAL, kDescriptionFontSize,
                       gfx::Font::Weight::MEDIUM));
     description_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_CENTER);
-    description_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        kBorderRow2, kBorderSides, kBorderRow3, kBorderSides)));
+    description_label->SetProperty(
+        views::kMarginsKey, gfx::Insets::TLBR(kBorderRow2, kBorderSides,
+                                              kBorderRow3, kBorderSides));
     description_label->SetMultiLine(true);
     description_label->SetSize(gfx::Size());
     AddChildView(std::move(description_label));
@@ -153,7 +167,8 @@ void EducationalView::Init(views::View* parent) {
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_ACCEPT_BUTTON),
         ash::PillButton::Type::kIconless,
         /*icon=*/nullptr));
-    accept_button_->SetBackgroundColor(gfx::kGoogleBlue300);
+    accept_button_->SetBackgroundColor(GetContentLayerColor(
+        ash::AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
   }
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kBorderRow4, 0)));
   const auto ui_size = GetPreferredSize();
@@ -161,6 +176,12 @@ void EducationalView::Init(views::View* parent) {
   const auto parent_size = parent->size();
   SetPosition(gfx::Point((parent_size.width() - ui_size.width()) / 2,
                          (parent_size.height() - ui_size.height()) / 2));
+}
+
+void EducationalView::AddShadow() {
+  view_shadow_ =
+      std::make_unique<ash::ViewShadow>(this, kDialogShadowElevation);
+  view_shadow_->SetRoundedCornerRadius(kDialogCornerRadius);
 }
 
 void EducationalView::OnAcceptedPressed() {
@@ -171,7 +192,7 @@ gfx::Size EducationalView::CalculatePreferredSize() const {
   // TODO(djacobo): This is needed as in portrait mode width() may be smaller
   // than the banner at the top. Compare against specs and this.parent() size.
   auto available_size = View::CalculatePreferredSize();
-  auto spec_size = gfx::Size(kMenuWidth, kMenuHeight);
+  auto spec_size = gfx::Size(kDialogWidth, kDialogHeight);
 
   return gfx::Size(std::min(available_size.width(), spec_size.width()),
                    std::min(available_size.height(), spec_size.height()));
