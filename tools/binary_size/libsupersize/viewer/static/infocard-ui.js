@@ -123,7 +123,7 @@ const displayInfocard = (() => {
           const eltAnchor = document.createElement('a')
           eltAnchor.appendChild(document.createTextNode('Show Disassembly'))
           eltAnchor.href = '#';
-          eltAnchor.addEventListener(`click`, (e) => {
+          eltAnchor.addEventListener('click', (e) => {
             e.preventDefault();
             this._showDisassemblyOverlay(node.disassembly)
           });
