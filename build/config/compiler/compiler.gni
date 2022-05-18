@@ -30,7 +30,7 @@ if (is_ios) {
 
 declare_args() {
   # Set to true to use the android unwinder V2 implementation.
-  use_android_unwinder_v2 = true
+  use_android_unwinder_v2 = false
 }
 
 declare_args() {
