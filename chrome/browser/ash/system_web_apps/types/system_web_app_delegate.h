@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -21,6 +20,10 @@
 
 class Browser;
 class Profile;
+
+namespace apps {
+struct AppLaunchParams;
+}
 
 namespace web_app {
 class WebAppProvider;
