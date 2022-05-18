@@ -6921,3 +6921,7 @@ crbug.com/1323246 external/wpt/web-animations/timing-model/timelines/sibling-ifr
 
 # Sheriff 2022-05-16
 crbug.com/1325858 virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Skip ]
+
+# Pending Beacon API: Not enabled by default so skip these tests.
+crbug.com/1293679 pending_beacon/pending_beacon-basic.html [ Skip ]
+crbug.com/1293679 pending_beacon/pending_beacon-deactivate.html [ Skip ]

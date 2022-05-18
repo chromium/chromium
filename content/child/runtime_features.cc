@@ -363,6 +363,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"OriginPolicy", features::kOriginPolicy},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
           {"Parakeet", blink::features::kParakeet},
+          {"PendingBeaconAPI", blink::features::kPendingBeaconAPI},
           {"PrefersColorSchemeClientHintHeader",
            blink::features::kPrefersColorSchemeClientHintHeader},
           {"FirstPartySets", features::kFirstPartySets},

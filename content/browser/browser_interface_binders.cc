@@ -117,6 +117,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
+#include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -901,6 +902,11 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
           features::kEnableMachineLearningModelLoaderWebPlatformApi)) {
     map->Add<ml::model_loader::mojom::MLService>(
         base::BindRepeating(&CreateMLService));
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kPendingBeaconAPI)) {
+    map->Add<blink::mojom::PendingBeaconHost>(base::BindRepeating(
+        &RenderFrameHostImpl::GetPendingBeaconHost, base::Unretained(host)));
   }
 
   map->Add<blink::mojom::WebBluetoothService>(base::BindRepeating(

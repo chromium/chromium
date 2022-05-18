@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+    test(() => {
+        let beacon = new PendingBeacon('https://www.google.com',
+                            {method: 'GET', pageHideTimeout: 200});
+        assert_equals("pending", beacon.state);
+        beacon.deactivate();
+        assert_equals("deactivated", beacon.state);
+    }, "Tests deactivating a pending beacon");
+</script>
+</body>
+</html>

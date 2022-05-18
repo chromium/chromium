@@ -975,6 +975,7 @@ mojom("mojom_core") {
     "frame/intrinsic_sizing_info.mojom",
     "frame/lifecycle.mojom",
     "frame/media_player_action.mojom",
+    "frame/pending_beacon.mojom",
     "frame/policy_container.mojom",
     "frame/reporting_observer.mojom",
     "frame/sudden_termination_disabler_type.mojom",

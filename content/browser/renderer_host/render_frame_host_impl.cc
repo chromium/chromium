@@ -113,6 +113,8 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
+#include "content/browser/renderer_host/pending_beacon_host.h"
+#include "content/browser/renderer_host/pending_beacon_service.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -10283,6 +10285,14 @@ void RenderFrameHostImpl::GetGeolocationService(
         std::make_unique<GeolocationServiceImpl>(geolocation_context, this);
   }
   geolocation_service_->Bind(std::move(receiver));
+}
+
+void RenderFrameHostImpl::GetPendingBeaconHost(
+    mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver) {
+  PendingBeaconHost::CreateForCurrentDocument(
+      this, PendingBeaconService::GetInstance());
+  PendingBeaconHost* pbh = PendingBeaconHost::GetForCurrentDocument(this);
+  pbh->SetReceiver(std::move(receiver));
 }
 
 void RenderFrameHostImpl::GetDeviceInfoService(

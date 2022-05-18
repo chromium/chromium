@@ -757,6 +757,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebRtcExposeNonStandardStats;
 BLINK_COMMON_EXPORT extern const base::Feature
     kSubstringSetTreeForAttributeBuckets;
 
+// Whether the pending beacon API is enabled or not.
+// https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
+BLINK_COMMON_EXPORT extern const base::Feature kPendingBeaconAPI;
+
 }  // namespace features
 }  // namespace blink
 

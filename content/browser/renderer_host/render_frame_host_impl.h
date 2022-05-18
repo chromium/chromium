@@ -51,6 +51,7 @@
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
 #include "content/browser/renderer_host/page_impl.h"
+#include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/transient_allow_popup.h"
@@ -2269,6 +2270,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::CookieAccessDetailsPtr details) override;
 
   void GetSavableResourceLinksFromRenderer();
+  void GetPendingBeaconHost(
+      mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver);
 
   // Helper for checking if a navigation to an error page should be excluded
   // from CanAccessDataForOrigin and/or CanCommitOriginAndUrl security checks.

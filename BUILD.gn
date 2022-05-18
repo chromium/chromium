@@ -1342,6 +1342,7 @@ if (!is_ios) {
       "//third_party/blink/web_tests/overflow/",
       "//third_party/blink/web_tests/paint/",
       "//third_party/blink/web_tests/payments/",
+      "//third_party/blink/web_tests/pending_beacon/",
       "//third_party/blink/web_tests/permissionclient/",
       "//third_party/blink/web_tests/plugins/",
       "//third_party/blink/web_tests/pointer-lock/",
