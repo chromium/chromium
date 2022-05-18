@@ -113,8 +113,9 @@ export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 
 PersonalizationStore.getInstance().init(emptyState());
 const link = document.querySelector('link[rel=\'icon\']') as HTMLLinkElement;
-if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
-  link!.href = '/hub_icon_192.png';
+if (link && loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+  // |link| may be null in tests.
+  link.href = '/hub_icon_192.png';
 }
 document.title = loadTimeData.getBoolean('isPersonalizationHubEnabled') ?
     loadTimeData.getString('personalizationTitle') :
