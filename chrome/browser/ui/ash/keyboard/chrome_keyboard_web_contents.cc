@@ -216,7 +216,7 @@ void ChromeKeyboardWebContents::SetInitialContentsSize(const gfx::Size& size) {
 
 void ChromeKeyboardWebContents::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
-  if (frame_host->GetParent())
+  if (!frame_host->IsInPrimaryMainFrame())
     return;
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetDefaultForBrowserContext(
