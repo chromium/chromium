@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,26 +59,15 @@ class FakeTaskQueue : public webrtc::TaskQueueBase {
 
   void PostLastTask() {
     if (last_task_) {
-      PostOnRunner(FROM_HERE,
-                   base::BindOnce(
-                       [](FakeTaskQueue* thiz,
-                          std::unique_ptr<webrtc::QueuedTask> task) {
-                         if (!task->Run())
-                           task.release();
-                       },
-                       base::Unretained(this), std::move(last_task_)));
+      runner_->PostTask(FROM_HERE,
+                        base::BindOnce(
+                            [](FakeTaskQueue* thiz,
+                               std::unique_ptr<webrtc::QueuedTask> task) {
+                              if (!task->Run())
+                                task.release();
+                            },
+                            base::Unretained(this), std::move(last_task_)));
     }
-  }
-
-  void PostOnRunner(base::Location from_here, base::OnceClosure cb) {
-    runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](FakeTaskQueue* thiz, base::OnceClosure cb) {
-              webrtc::TaskQueueBase::CurrentTaskQueueSetter setter(thiz);
-              std::move(cb).Run();
-            },
-            base::Unretained(this), std::move(cb)));
   }
 
  private:
@@ -342,10 +330,7 @@ TEST_F(MetronomeSourceTest, WebRtcMetronomeAdapterAddsHandler) {
   auto metronome_adapter = metronome_source_->CreateWebRtcMetronome();
 
   EXPECT_FALSE(metronome_source_->HasListenersForTesting());
-  fake_queue.PostOnRunner(FROM_HERE, base::BindLambdaForTesting([&] {
-                            metronome_adapter->AddListener(&tick_listener);
-                          }));
-  task_environment_.RunUntilIdle();
+  metronome_adapter->AddListener(&tick_listener);
   EXPECT_TRUE(metronome_source_->HasListenersForTesting());
 
   // Next tick should trigger callback.
@@ -357,9 +342,7 @@ TEST_F(MetronomeSourceTest, WebRtcMetronomeAdapterAddsHandler) {
   EXPECT_EQ(11, callback_count);
 
   // Removing should not fire callback.
-  fake_queue.PostOnRunner(FROM_HERE, base::BindLambdaForTesting([&] {
-                            metronome_adapter->RemoveListener(&tick_listener);
-                          }));
+  metronome_adapter->RemoveListener(&tick_listener);
   task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(11, callback_count);
 
@@ -378,9 +361,7 @@ TEST_F(MetronomeSourceTest,
       &fake_queue);
   auto metronome_adapter = metronome_source_->CreateWebRtcMetronome();
 
-  fake_queue.PostOnRunner(FROM_HERE, base::BindLambdaForTesting([&] {
-                            metronome_adapter->AddListener(&tick_listener);
-                          }));
+  metronome_adapter->AddListener(&tick_listener);
   task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(0, callback_count);
   // Now task should have been posted to fake queue. Running it should increase
@@ -396,9 +377,7 @@ TEST_F(MetronomeSourceTest,
   task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(1, callback_count);
 
-  fake_queue.PostOnRunner(FROM_HERE, base::BindLambdaForTesting([&] {
-                            metronome_adapter->RemoveListener(&tick_listener);
-                          }));
+  metronome_adapter->RemoveListener(&tick_listener);
   fake_queue.PostLastTask();
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, callback_count);
