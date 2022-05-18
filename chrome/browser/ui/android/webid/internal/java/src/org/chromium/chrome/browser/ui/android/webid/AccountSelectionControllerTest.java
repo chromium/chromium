@@ -13,7 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +39,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
@@ -130,7 +132,8 @@ public class AccountSelectionControllerTest {
 
     public AccountSelectionControllerTest() {
         MockitoAnnotations.initMocks(this);
-        IDP_METADATA = new IdentityProviderMetadata(Color.BLACK, Color.BLACK, mock(Bitmap.class));
+        IDP_METADATA =
+                new IdentityProviderMetadata(Color.BLACK, Color.BLACK, "https://icon-url.example");
     }
 
     @Before
@@ -154,6 +157,20 @@ public class AccountSelectionControllerTest {
 
     @Test
     public void testShowAccountSignInHeader() {
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) {
+                Callback<Bitmap> callback = (Callback<Bitmap>) invocation.getArguments()[1];
+
+                Bitmap brandIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+                brandIcon.eraseColor(Color.RED);
+                callback.onResult(brandIcon);
+                return null;
+            }
+        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(), any(Callback.class));
+
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
 

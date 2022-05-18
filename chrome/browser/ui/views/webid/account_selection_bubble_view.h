@@ -15,6 +15,11 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
 
+namespace views {
+class ImageView;
+class Label;
+}  // namespace views
+
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
 // account chooser for the user, and it changes the content of that dialog as
 // user moves through the FedCM flow steps.
@@ -37,8 +42,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
  private:
   // Returns a View containing the logo of the identity provider and the title
   // of the bubble, properly formatted.
-  std::unique_ptr<views::View> CreateHeaderView(gfx::ImageSkia icon,
-                                                const std::u16string& title);
+  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title);
 
   void CloseBubble();
 
@@ -70,6 +74,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
                              const std::u16string& account_name,
                              const gfx::Image& image,
                              const image_fetcher::RequestMetadata& metadata);
+
+  // Called when the brand icon image has beend downloaded.
+  void OnBrandImageFetched(const gfx::Image& image,
+                           const image_fetcher::RequestMetadata& metadata);
 
   // Called when the user clicks on the privacy policy or terms of service URL.
   // Opens the URL in a new tab.
@@ -114,6 +122,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
 
   // View containing the logo of the identity provider and the title.
   views::View* header_view_{nullptr};
+
+  // View containing the bubble icon.
+  views::ImageView* bubble_icon_view_{nullptr};
 
   // View containing the bubble title.
   views::Label* title_label_{nullptr};

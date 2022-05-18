@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -149,19 +150,22 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
       base::UTF8ToUTF16(rp_etld_plus_one), idp_etld_plus_one_);
-  gfx::ImageSkia icon =
-      gfx::ImageSkia::CreateFrom1xBitmap(skia::ImageOperations::Resize(
-          idp_metadata.brand_icon, skia::ImageOperations::RESIZE_LANCZOS3,
-          kDesiredIconSize, kDesiredIconSize));
-  header_view_ = AddChildView(CreateHeaderView(icon, title));
+  header_view_ = AddChildView(CreateHeaderView(title));
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateAccountChooser(accounts));
+
+  image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
+                                           kImageFetcherUmaClient);
+  image_fetcher_->FetchImage(
+      idp_metadata.brand_icon_url,
+      base::BindOnce(&AccountSelectionBubbleView::OnBrandImageFetched,
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(params));
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
-    gfx::ImageSkia icon,
     const std::u16string& title) {
   auto header = std::make_unique<views::View>();
   // Do not use a top margin as it has already been set in the bubble.
@@ -171,10 +175,9 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
   // Add the icon.
   auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(icon);
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_right(kLeftRightPadding));
-  header->AddChildView(image_view.release());
+  bubble_icon_view_ = header->AddChildView(image_view.release());
 
   // Add the title.
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
@@ -418,6 +421,18 @@ void AccountSelectionBubbleView::OnAccountImageFetched(
         profiles::SHAPE_CIRCLE));
   }
   image_view->SetImage(avatar);
+}
+
+void AccountSelectionBubbleView::OnBrandImageFetched(
+    const gfx::Image& image,
+    const image_fetcher::RequestMetadata& metadata) {
+  if (image.Width() == image.Height() &&
+      image.Width() >= AccountSelectionView::GetBrandIconMinimumSize()) {
+    gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        image.AsImageSkia(), skia::ImageOperations::RESIZE_LANCZOS3,
+        gfx::Size(kDesiredIconSize, kDesiredIconSize));
+    bubble_icon_view_->SetImage(resized_image);
+  }
 }
 
 void AccountSelectionBubbleView::OnLinkClicked(const GURL& gurl) {
