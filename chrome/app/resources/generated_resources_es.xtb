@@ -553,7 +553,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1542514202066550870">Esta pestaña está proyectando contenido de realidad virtual a un visor.</translation>
 <translation id="1543284117603151572">Importado desde Edge</translation>
 <translation id="1544588554445317666">Intenta utilizar un nombre de archivo más corto o guardarlo en otra carpeta.</translation>
-<translation id="1545177026077493356">Modo kiosco automático</translation>
+<translation id="1545177026077493356">Modo Kiosco automático</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
 <translation id="1545775234664667895">El tema <ph name="THEME_NAME" /> se ha instalado.</translation>
 <translation id="1546280085599573572">Esta extensión ha cambiado la página que se muestra al hacer clic en el botón de página principal.</translation>
@@ -2344,7 +2344,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3238192140106069382">Conectando y verificando</translation>
 <translation id="3239373508713281971">Se ha quitado el límite de tiempo de <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Selecciona el directorio raíz de las extensiones que quieras empaquetar. Para actualizar una extensión, debes seleccionar también el archivo de clave privada que se va a volver a usar.</translation>
-<translation id="3242289508736283383">La aplicación con el atributo del archivo de manifiesto "kiosk_only" se debe instalar en el modo kiosco de ChromeOS</translation>
+<translation id="3242289508736283383">La aplicación con el atributo del archivo de manifiesto "kiosk_only" se debe instalar en el modo Kiosco de ChromeOS</translation>
 <translation id="3242665648857227438">Este perfil usa la configuración de proxy de ChromeOS.</translation>
 <translation id="3244294424315804309">Seguir silenciando el sonido</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: error de red</translation>
@@ -4119,7 +4119,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5008936837313706385">Nombre de la actividad</translation>
 <translation id="5009463889040999939">Cambiando el nombre del perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="5010043101506446253">Entidad emisora de certificados</translation>
-<translation id="501057610015570208">La aplicación con el atributo del archivo de manifiesto "kiosk_only" se debe instalar en el modo kiosco de ChromeOS Flex</translation>
+<translation id="501057610015570208">La aplicación con el atributo del archivo de manifiesto "kiosk_only" se debe instalar en el modo Kiosco de ChromeOS Flex</translation>
 <translation id="5015344424288992913">Resolviendo proxy...</translation>
 <translation id="5016491575926936899">Puedes enviar mensajes de texto desde tu ordenador, compartir tu conexión a Internet, responder a notificaciones de conversaciones y desbloquear tu <ph name="DEVICE_TYPE" /> con el teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Puedes desplazarte por las páginas con un cursor de texto. Pulsa Ctrl + tecla de búsqueda + 7 para desactivar esta función.</translation>
@@ -6296,7 +6296,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7198503619164954386">Debes usar un dispositivo registrado por una empresa</translation>
 <translation id="7199158086730159431">Obtener a&amp;yuda</translation>
 <translation id="7200083590239651963">Seleccionar configuración</translation>
-<translation id="720110658997053098">Mantener este dispositivo en modo kiosco de forma permanente</translation>
+<translation id="720110658997053098">Mantener este dispositivo en modo Kiosco de forma permanente</translation>
 <translation id="7201118060536064622">Se ha eliminado "<ph name="DELETED_ITEM_NAME" />"</translation>
 <translation id="7201420661433230412">Ver archivos</translation>
 <translation id="7203150201908454328">Ampliado</translation>
@@ -6367,7 +6367,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7269736181983384521">Uso de datos de Compartir con Nearby</translation>
 <translation id="7272674038937250585">No se ha especificado ninguna descripción</translation>
 <translation id="7273110280511444812">fecha de última conexión: <ph name="DATE" /></translation>
-<translation id="7273970016743909808">Usarás una Licencia de Kiosco y Señalización, que solo permite que el dispositivo funcione en modo kiosco o de señalización. Si quieres que los usuarios inicien sesión en el dispositivo, vuelve y regístrate usando la Licencia de Chrome Enterprise.</translation>
+<translation id="7273970016743909808">Usarás una Licencia de Kiosco y Señalización, que solo permite que el dispositivo funcione en modo Kiosco o de señalización. Si quieres que los usuarios inicien sesión en el dispositivo, vuelve y regístrate usando la Licencia de Chrome Enterprise.</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> hasta completar la carga</translation>
 <translation id="727952162645687754">Error de descarga</translation>
 <translation id="7280041992884344566">Chrome no ha podido buscar software dañino</translation>

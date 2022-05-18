@@ -493,7 +493,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="385300504083504382">Começo</translation>
 <translation id="3886872229787704059">Aberto hoje</translation>
 <translation id="3891340733213178823">Pressione Ctrl+Shift+Q duas vezes para sair.</translation>
-<translation id="3893630138897523026">ChromeVox (feedback falado)</translation>
+<translation id="3893630138897523026">ChromeVox (resposta falada)</translation>
 <translation id="3897533311200664389">Iniciar uma consulta por texto</translation>
 <translation id="3899995891769452915">Entrada de texto por voz</translation>
 <translation id="3900355044994618856">Sua sessão terminará em <ph name="SESSION_TIME_REMAINING" /></translation>
@@ -764,7 +764,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5577281275355252094">Confira se o Bluetooth está ativado no smartphone para usar o recurso Seu smartphone</translation>
 <translation id="558849140439112033">Arraste para selecionar uma área para a captura</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
-<translation id="5600837773213129531">Pressione Ctrl + Alt + Z para desativar o feedback falado.</translation>
+<translation id="5600837773213129531">Pressione Ctrl + Alt + Z para desativar a resposta falada.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5618148318840095371">Trocamos sua rede por uma melhor</translation>
 <translation id="5619862035903135339">A captura de tela foi desativada pela política do administrador</translation>
@@ -1097,7 +1097,7 @@ Nova instalação</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
 <translation id="7647488630410863958">Desbloquear dispositivo para ver as notificações</translation>
 <translation id="7649070708921625228">Ajuda</translation>
-<translation id="7654687942625752712">Pressione as duas teclas de volumes e as mantenha pressionadas por cinco segundos para desativar o feedback falado.</translation>
+<translation id="7654687942625752712">Pressione as duas teclas de volumes e as mantenha pressionadas por cinco segundos para desativar a resposta falada.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659861092419699379">O espaço de trabalho e as janelas foram fechadas</translation>
 <translation id="7660160718439869192">Seu dispositivo <ph name="NAME" /> será mostrado nos dispositivos vinculados a <ph name="EMAIL" /></translation>

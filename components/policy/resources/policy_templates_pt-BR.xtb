@@ -1583,7 +1583,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2623014935069176671">Aguardar atividade inicial do usuário</translation>
 <translation id="2625398797484317969">Controla as configurações das Respostas rápidas.</translation>
 <translation id="262740370354162807">Ativar o envio de documentos para <ph name="CLOUD_PRINT_NAME" /></translation>
-<translation id="2633084400146331575">Ativar feedback falado</translation>
+<translation id="2633084400146331575">Ativar resposta falada</translation>
 <translation id="2635872253077105112">Se a política for definida, ela controlará a abertura da lista de sites em um navegador alternativo. Cada item será tratado como uma regra para abrir algo em um navegador alternativo. No <ph name="PRODUCT_NAME" />, essas regras são usadas para determinar se um URL será aberto em um navegador alternativo ou não. Quando o suplemento do <ph name="IE_PRODUCT_NAME" /> estiver ativado, o <ph name="IE_PRODUCT_NAME" /> retornará ao <ph name="PRODUCT_NAME" /> quando não houver correspondência com as regras. Se as regras forem contraditórias, o <ph name="PRODUCT_NAME" /> usará a regra mais específica.
 
       Se a política não for definida, nenhum site será adicionado à lista.
@@ -2972,15 +2972,15 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Veja mais detalhes em https://developer.chrome.com/blog/immutable-document-domain/
       (link em inglês).
       </translation>
-<translation id="4169692397912242417">Ativar o recurso de acessibilidade de feedback falado na tela de login.
+<translation id="4169692397912242417">Ativar o recurso de acessibilidade de resposta falada na tela de login.
 
-          Se esta política for definida como verdadeira, o feedback falado sempre ficará ativado na tela de login.
+          Se esta política for definida como verdadeira, a resposta falada vai ficar sempre ativada na tela de login.
 
-          Se esta política for definida como falsa, o feedback falado sempre ficará desativado na tela de login.
+          Se esta política for definida como falsa, a resposta falada vai ficar sempre desativada na tela de login.
 
-          Se você definir esta política, os usuários não poderão alterá-la ou substituí-la.
+          Se você definir esta política, os usuários não vão poder alterar nem substituir a política.
 
-          Se esta política não for definida, o feedback falado ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+          Se ela não for definida, a resposta falada fica inicialmente desativada na tela de login, mas pode ser ativada pelo usuário a qualquer momento.</translation>
 <translation id="417956245902013347">Ativar o recurso de acessibilidade de destaque de circunflexos na tela de login.
 
           Se esta política for definida como verdadeira, o destaque de circunflexos sempre ficará ativado na tela de login.
@@ -3571,13 +3571,13 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
       O valor padrão (0) significa que esse recurso está desativado.</translation>
 <translation id="4940810901775798837">Permitir que sites não seguros façam solicitações para qualquer endpoint da rede</translation>
-<translation id="4942681160308347946">Se esta política for definida como verdadeira, o feedback falado será ativado na tela de login. Se esta política for definida como falsa, o feedback falado será desativado na tela.
+<translation id="4942681160308347946">Se esta política for definida como verdadeira, a resposta falada vai ficar ativado na tela de login. Se ela for definida como falsa, a resposta falada vai ficar desativado na tela.
 
-      Se você definir a política, os usuários poderão ativar ou desativar o feedback falado temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, o feedback falado retornará ao estado original.
+      Se você definir a política, os usuários podem ativar ou desativar A resposta falada temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, A resposta falada vai voltar ao estado original.
 
-      Se a política não for definida o feedback falado será desativado na tela de login. Os usuários podem ativá-lo sempre que quiserem, e o estado na tela de login irá persistir para todos os usuários.
+      Se a política não for definida, a resposta falada vai ser desativada na tela de login. Os usuários podem ativar o recurso sempre que quiserem, e o estado na tela de login vai ser persistente para todos os usuários.
 
-          Observação: se <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
+          Observação: se <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> for especificada, ela substitui esta política.</translation>
 <translation id="4945419595339133946">Especifica se as informações do sistema (por exemplo, o número de série
 da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na tela de login.
 
@@ -3934,7 +3934,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  A política só faz a correspondência com base na origem, então os caminhos no padrão do URL serão ignorados.</translation>
 <translation id="5318185076587284965">Ativar o uso de servidores relay pelo host de acesso remoto</translation>
-<translation id="5323200200131319468">Ativar o feedback falado na tela de login.</translation>
+<translation id="5323200200131319468">Ativar a resposta falada na tela de login.</translation>
 <translation id="532848608876725157">Ativar DNS sobre HTTPS com substituto inseguro</translation>
 <translation id="5328965694451556034">Informar login/logout</translation>
 <translation id="5329007337159326804">Aviso: a política de versão máxima de TLS será completamente removida do <ph name="PRODUCT_NAME" /> por volta da versão 75 (aproximadamente em junho de 2019).
@@ -4369,7 +4369,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5806128552675651249">Permitir impressão apenas sem gráficos de segundo plano</translation>
 <translation id="5809210507920527553">Controla configurações do contêiner Linux (Crostini).</translation>
 <translation id="5809728392451418079">Definir o nome de exibição das contas locais de dispositivo</translation>
-<translation id="5814301096961727113">Definir estado padrão do feedback falado na tela de login</translation>
+<translation id="5814301096961727113">Definir estado padrão da resposta falada na tela de login</translation>
 <translation id="5815129011704381141">Reinicializar automaticamente após a atualização</translation>
 <translation id="5815990343032461023">Comportamento legado: os apps do Chrome para quiosque serão atualizados pelo sistema de extensão usando o URL de atualização do manifesto de extensão e armazenando o gerenciador em cache com o URL definido na política</translation>
 <translation id="582857022372205358">Ativar impressão duplex de borda curta</translation>
@@ -7012,9 +7012,9 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
        Se a política for desativada ou não for definida, o Chrome usará o ícone padrão em conexões seguras.</translation>
 <translation id="8650974590712548439">Local do registro do Windows para clientes do Windows:</translation>
 <translation id="8653085952260859632">Envia informações sobre a memória</translation>
-<translation id="8653561013005884087">Se esta política for definida como verdadeira, o feedback falado será ativado. Se esta política for definida como falsa, o feedback falado será desativado.
+<translation id="8653561013005884087">Se esta política for definida como verdadeira, a resposta falada será ativada. Se esta política for definida como falsa, a resposta falada será desativada.
 
-       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, o feedback falado será desativado inicialmente, mas os usuários podem mudá-lo a qualquer momento.</translation>
+       Se você definir a política, os usuários não podem mudá-la. Se a política não for definida, a resposta falada é desativada inicialmente, mas os usuários podem mudar isso a qualquer momento.</translation>
 <translation id="8656110680728938054">Ativa o Selecionar para ouvir</translation>
 <translation id="8661297125441579970">Bloquear migração de dados e ARC.</translation>
 <translation id="8665314828727504286">Nível de proteção do "Navegação segura"</translation>
