@@ -414,6 +414,7 @@ absl_cc_library(
     absl::core_headers
     absl::numeric_representation
     absl::type_traits
+    absl::utility
     absl::int128
     absl::span
 )

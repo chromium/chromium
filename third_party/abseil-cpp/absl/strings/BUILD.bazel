@@ -1116,6 +1116,7 @@ cc_library(
         "//absl/numeric:representation",
         "//absl/types:optional",
         "//absl/types:span",
+        "//absl/utility",
     ],
 )
 

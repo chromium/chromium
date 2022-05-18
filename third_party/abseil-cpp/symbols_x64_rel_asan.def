@@ -164,7 +164,6 @@ EXPORTS
     ??1Notification@absl@@QEAA@XZ
     ??1SeedGenException@absl@@UEAA@XZ
     ??1TimeZoneIf@cctz@time_internal@absl@@UEAA@XZ
-    ??1Waiter@synchronization_internal@absl@@QEAA@XZ
     ??1ZoneInfoSource@cctz@time_internal@absl@@UEAA@XZ
     ??1bad_optional_access@absl@@UEAA@XZ
     ??1bad_variant_access@absl@@UEAA@XZ
@@ -343,7 +342,6 @@ EXPORTS
     ?Destroy@CordRepBtree@cord_internal@absl@@SAXPEAV123@@Z
     ?Destroy@CordRepCrc@cord_internal@absl@@SAXPEAU123@@Z
     ?Destroy@CordRepRing@cord_internal@absl@@CAXPEAV123@@Z
-    ?Destroy@PerThreadSem@synchronization_internal@absl@@CAXPEAUThreadIdentity@base_internal@3@@Z
     ?DestroyContents@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@AEAAXXZ
     ?DestroyCordSlow@Cord@absl@@AEAAXXZ
     ?DiagnosticsGetDeleteQueue@CordzHandle@cord_internal@absl@@SA?AV?$vector@PEBVCordzHandle@cord_internal@absl@@V?$allocator@PEBVCordzHandle@cord_internal@absl@@@__1@std@@@__1@std@@XZ
@@ -357,7 +355,6 @@ EXPORTS
     ?DummyFunction@?$AtomicHook@P6AXPEBDPEBX_J@Z@base_internal@absl@@CAXPEBDPEBX_J@Z
     ?DummyFunction@?$AtomicHook@P6AXPEBX_J@Z@base_internal@absl@@CAXPEBX_J@Z
     ?DummyFunction@?$AtomicHook@P6AX_J@Z@base_internal@absl@@CAX_J@Z
-    ?DummyFunction@?$AtomicHook@P6A_NW4LogSeverity@absl@@PEBDHPEAPEADPEAH@Z@base_internal@absl@@CA_NW4LogSeverity@3@PEBDHPEAPEADPEAH@Z
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPEBUCordRep@23@AEAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPEBUCordRep@23@Vstring_view@3@AEAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
     ?Dump@CordRepBtree@cord_internal@absl@@SAXPEBUCordRep@23@Vstring_view@3@_NAEAV?$basic_ostream@DU?$char_traits@D@__1@std@@@__1@std@@@Z
@@ -609,6 +606,7 @@ EXPORTS
     ?Now@CycleClock@base_internal@absl@@SA_JXZ
     ?Now@absl@@YA?AVTime@1@XZ
     ?NumCPUs@base_internal@absl@@YAHXZ
+    ?OneTimeInitThreadIdentity@synchronization_internal@absl@@YAXPEAUThreadIdentity@base_internal@2@@Z
     ?OutOfRangeError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?ParseCivilTime@absl@@YA_NVstring_view@1@PEAV?$civil_time@Uday_tag@time_internal@absl@@@detail@cctz@time_internal@1@@Z
     ?ParseCivilTime@absl@@YA_NVstring_view@1@PEAV?$civil_time@Uhour_tag@time_internal@absl@@@detail@cctz@time_internal@1@@Z
@@ -668,7 +666,6 @@ EXPORTS
     ?ReaderUnlock@Mutex@absl@@QEAAXXZ
     ?Rebuild@CordRepBtree@cord_internal@absl@@CAXPEAPEAV123@PEAV123@_N@Z
     ?Rebuild@CordRepBtree@cord_internal@absl@@SAPEAV123@PEAV123@@Z
-    ?ReclaimThreadIdentity@synchronization_internal@absl@@YAXPEAX@Z
     ?RecordInsertSlow@container_internal@absl@@YAXPEAUHashtablezInfo@12@_K1@Z
     ?Register@CycleClockSource@base_internal@absl@@CAXP6A_JXZ@Z
     ?RegisterAbortHook@raw_logging_internal@absl@@YAXP6AXPEBDH000@Z@Z
