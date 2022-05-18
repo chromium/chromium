@@ -15,6 +15,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 
+namespace ash {
+
 class SystemExtensionsInternalsPageHandler
     : public ash::mojom::system_extensions_internals::PageHandler {
  public:
@@ -36,5 +38,7 @@ class SystemExtensionsInternalsPageHandler
   base::WeakPtrFactory<SystemExtensionsInternalsPageHandler> weak_ptr_factory_{
       this};
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_INTERNALS_PAGE_HANDLER_H_

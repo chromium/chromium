@@ -31,6 +31,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace ash {
+
 SystemExtensionsInstallManager::SystemExtensionsInstallManager(Profile* profile)
     : profile_(profile) {
   InstallFromCommandLineIfNecessary();
@@ -219,3 +221,5 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionByURL(
   }
   return nullptr;
 }
+
+}  // namespace ash

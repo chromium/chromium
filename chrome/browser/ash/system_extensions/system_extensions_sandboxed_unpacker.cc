@@ -18,6 +18,8 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
+namespace ash {
+
 namespace {
 
 const constexpr char kManifestName[] = "manifest.json";
@@ -212,3 +214,5 @@ SystemExtensionsSandboxedUnpacker::IOHelper::ReadManifestInDirectory(
 
   return manifest_contents;
 }
+
+}  // namespace ash

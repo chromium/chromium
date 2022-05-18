@@ -350,14 +350,14 @@ void ChromeContentBrowserClient::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1253318): Only add this mapping if the System Extension type
   // is Window Manager.
-  if (SystemExtensionsProvider::IsEnabled()) {
+  if (ash::SystemExtensionsProvider::IsEnabled()) {
     map->Add<blink::mojom::CrosWindowManagement>(base::BindRepeating(
         [](const content::ServiceWorkerVersionBaseInfo& info,
            mojo::PendingReceiver<blink::mojom::CrosWindowManagement> receiver) {
           DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-          if (!SystemExtensionsProvider::IsDebugMode() &&
-              !SystemExtension::IsSystemExtensionOrigin(
+          if (!ash::SystemExtensionsProvider::IsDebugMode() &&
+              !ash::SystemExtension::IsSystemExtensionOrigin(
                   info.storage_key.origin())) {
             return;
           }
@@ -382,14 +382,14 @@ void ChromeContentBrowserClient::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(b/210738172): Only add this mapping if the System Extension type
   // is HID.
-  if (SystemExtensionsProvider::IsEnabled()) {
+  if (ash::SystemExtensionsProvider::IsEnabled()) {
     map->Add<blink::mojom::CrosHID>(base::BindRepeating(
         [](const content::ServiceWorkerVersionBaseInfo& info,
            mojo::PendingReceiver<blink::mojom::CrosHID> receiver) {
           DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-          if (!SystemExtensionsProvider::IsDebugMode() &&
-              !SystemExtension::IsSystemExtensionOrigin(
+          if (!ash::SystemExtensionsProvider::IsDebugMode() &&
+              !ash::SystemExtension::IsSystemExtensionOrigin(
                   info.storage_key.origin())) {
             return;
           }

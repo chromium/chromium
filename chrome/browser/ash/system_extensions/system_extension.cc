@@ -9,6 +9,8 @@
 #include "content/public/common/url_constants.h"
 #include "url/origin.h"
 
+namespace ash {
+
 // static
 bool SystemExtension::IsSystemExtensionOrigin(const url::Origin& origin) {
   // TODO(crbug.com/1253318): Use a custom scheme instead of overloading
@@ -35,3 +37,5 @@ absl::optional<SystemExtensionId> SystemExtension::StringToId(
     return id;
   return absl::nullopt;
 }
+
+}  // namespace ash

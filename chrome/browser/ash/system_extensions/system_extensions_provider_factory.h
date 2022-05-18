@@ -13,6 +13,9 @@ class BrowserContext;
 }
 
 class Profile;
+
+namespace ash {
+
 class SystemExtensionsProvider;
 
 // Singleton that owns all SystemExtensionsFactories and associates them with
@@ -43,5 +46,7 @@ class SystemExtensionsProviderFactory
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_FACTORY_H_

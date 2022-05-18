@@ -16,6 +16,8 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 
+namespace ash {
+
 namespace {
 
 constexpr char kDefaultMime[] = "text/html";
@@ -99,3 +101,5 @@ std::string SystemExtensionsDataSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {
   return content::URLDataSource::GetContentSecurityPolicy(directive);
 }
+
+}  // namespace ash

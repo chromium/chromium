@@ -6,6 +6,8 @@
 
 #include "base/debug/stack_trace.h"
 
+namespace ash {
+
 SystemExtensionsInternalsPageHandler::SystemExtensionsInternalsPageHandler(
     Profile* profile)
     : profile_(profile) {}
@@ -44,3 +46,5 @@ void SystemExtensionsInternalsPageHandler::OnInstallFinished(
 
   std::move(callback).Run(result.ok());
 }
+
+}  // namespace ash

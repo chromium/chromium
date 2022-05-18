@@ -17,6 +17,8 @@ namespace content {
 class RenderProcessHost;
 }
 
+namespace ash {
+
 // Manages the installation, storage, and execution of System Extensions.
 class SystemExtensionsProvider : public KeyedService {
  public:
@@ -50,5 +52,7 @@ class SystemExtensionsProvider : public KeyedService {
  private:
   std::unique_ptr<SystemExtensionsInstallManager> install_manager_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROVIDER_H_

@@ -8,6 +8,8 @@
 #include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "content/public/browser/webui_config.h"
 
+namespace ash {
+
 // Generic config for System Extensions. Each installed System Extension
 // register a WebUIConfig to load its resources.
 class SystemExtensionsWebUIConfig : public content::WebUIConfig {
@@ -24,5 +26,7 @@ class SystemExtensionsWebUIConfig : public content::WebUIConfig {
   const SystemExtensionId system_extension_id_;
   const GURL system_extension_base_url_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_WEBUI_CONFIG_H_

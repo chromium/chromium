@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_status_or.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+namespace ash {
+
 class SystemExtensionsSandboxedUnpacker {
  public:
   SystemExtensionsSandboxedUnpacker();
@@ -62,5 +64,7 @@ class SystemExtensionsSandboxedUnpacker {
   base::WeakPtrFactory<SystemExtensionsSandboxedUnpacker> weak_ptr_factory_{
       this};
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_SANDBOXED_UNPACKER_H_

@@ -2640,11 +2640,11 @@ void ChromeContentBrowserClient::WillStartServiceWorker(
   DCHECK(context);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!SystemExtensionsProvider::IsEnabled())
+  if (!ash::SystemExtensionsProvider::IsEnabled())
     return;
 
   auto* system_extensions_provider =
-      SystemExtensionsProvider::Get(Profile::FromBrowserContext(context));
+      ash::SystemExtensionsProvider::Get(Profile::FromBrowserContext(context));
   if (system_extensions_provider)
     system_extensions_provider->WillStartServiceWorker(script_url,
                                                        render_process_host);

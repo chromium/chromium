@@ -546,8 +546,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   SupervisedUserServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (SystemExtensionsProvider::IsEnabled())
-    SystemExtensionsProviderFactory::GetInstance();
+  if (ash::SystemExtensionsProvider::IsEnabled())
+    ash::SystemExtensionsProviderFactory::GetInstance();
 #endif
   TabRestoreServiceFactory::GetInstance();
   safe_browsing::TailoredSecurityServiceFactory::GetInstance();

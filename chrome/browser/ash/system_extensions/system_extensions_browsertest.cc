@@ -23,6 +23,8 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 
+namespace ash {
+
 namespace {
 
 constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
@@ -90,8 +92,8 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
  public:
   SystemExtensionsBrowserTest() {
     feature_list_.InitWithFeatures(
-        {ash::features::kSystemExtensions,
-         features::kEnableServiceWorkersForChromeUntrusted},
+        {features::kSystemExtensions,
+         ::features::kEnableServiceWorkersForChromeUntrusted},
         {});
   }
   ~SystemExtensionsBrowserTest() override = default;
@@ -181,3 +183,5 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsSwitchBrowserTest, ExtensionInstalled) {
   run_loop.Run();
   TestInstalledTestExtensionWorks();
 }
+
+}  // namespace ash

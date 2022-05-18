@@ -12,6 +12,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user_manager.h"
 
+namespace ash {
+
 // static
 SystemExtensionsProvider*
 SystemExtensionsProviderFactory::GetForProfileIfExists(Profile* profile) {
@@ -70,3 +72,5 @@ SystemExtensionsProviderFactory::GetBrowserContextToUse(
 
   return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
 }
+
+}  // namespace ash

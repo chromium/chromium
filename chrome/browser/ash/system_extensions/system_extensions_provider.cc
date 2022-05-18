@@ -14,6 +14,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 
+namespace ash {
+
 // TODO:(https://crbug.com/1192426): Change this to system extension scheme when
 // it's ready.
 const char* kSystemExtensionScheme = content::kChromeUIUntrustedScheme;
@@ -62,3 +64,5 @@ void SystemExtensionsProvider::WillStartServiceWorker(
 }
 
 SystemExtensionsProvider::~SystemExtensionsProvider() = default;
+
+}  // namespace ash

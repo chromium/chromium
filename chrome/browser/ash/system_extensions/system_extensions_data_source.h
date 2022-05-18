@@ -12,6 +12,8 @@
 
 class Profile;
 
+namespace ash {
+
 class SystemExtensionsDataSource : public content::URLDataSource {
  public:
   SystemExtensionsDataSource(Profile* profile,
@@ -42,5 +44,7 @@ class SystemExtensionsDataSource : public content::URLDataSource {
   const SystemExtensionId system_extension_id_;
   const GURL system_extension_base_url_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_DATA_SOURCE_H_

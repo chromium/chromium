@@ -13,9 +13,13 @@ class FilePath;
 
 class Profile;
 
+namespace ash {
+
 base::FilePath GetDirectoryForSystemExtension(Profile& profile,
                                               const SystemExtensionId& id);
 
 base::FilePath GetSystemExtensionsProfileDir(Profile& profile);
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_PROFILE_UTILS_H_

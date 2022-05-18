@@ -19,6 +19,8 @@
 
 class Profile;
 
+namespace ash {
+
 class SystemExtensionsInstallManager {
  public:
   class Observer : public base::CheckedObserver {
@@ -103,5 +105,7 @@ class SystemExtensionsInstallManager {
 
   base::WeakPtrFactory<SystemExtensionsInstallManager> weak_ptr_factory_{this};
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_SYSTEM_EXTENSIONS_INSTALL_MANAGER_H_
