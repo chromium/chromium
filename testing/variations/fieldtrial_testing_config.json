@@ -7739,6 +7739,25 @@
             ]
         }
     ],
+    "UseSnappyForParkableStrings": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseSnappyForParkableStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseThreadPriorityLowest": [
         {
             "platforms": [
