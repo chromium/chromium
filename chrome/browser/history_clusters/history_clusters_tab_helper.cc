@@ -385,17 +385,26 @@ void HistoryClustersTabHelper::DidFinishNavigation(
 
   logger->set_navigation_id(navigation_handle->GetNavigationId());
 
-  // If the transition type is typed (meaning directly entered into the
-  // address bar), PAGE_TRANSITION_TYPED, or is partially typed and selected
-  // from the omnibox history, which results in PAGE_TRANSITION_RELOADS, this
-  // usage of the history clusters UI is considered a "direct" navigation.
+  // Indirect navigation is kind of our catch-all, although in practice it
+  // pretty much means the omnibox action chip.
   auto initial_state =
-      PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
-                               ui::PAGE_TRANSITION_TYPED) ||
-              PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
-                                       ui::PAGE_TRANSITION_RELOAD)
-          ? history_clusters::HistoryClustersInitialState::kDirectNavigation
-          : history_clusters::HistoryClustersInitialState::kIndirectNavigation;
+      history_clusters::HistoryClustersInitialState::kIndirectNavigation;
+
+  if (navigation_handle->IsSameDocument()) {
+    initial_state =
+        history_clusters::HistoryClustersInitialState::kSameDocument;
+  } else if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                      ui::PAGE_TRANSITION_TYPED) ||
+             PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                      ui::PAGE_TRANSITION_RELOAD)) {
+    // If the transition type is typed (meaning directly entered into the
+    // address bar), PAGE_TRANSITION_TYPED, or is partially typed and selected
+    // from the omnibox history, which results in PAGE_TRANSITION_RELOADS, this
+    // usage of the history clusters UI is considered a "direct" navigation.
+    initial_state =
+        history_clusters::HistoryClustersInitialState::kDirectNavigation;
+  }
+
   logger->set_initial_state(initial_state);
 }
 

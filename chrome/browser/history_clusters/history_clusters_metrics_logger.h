@@ -21,11 +21,14 @@ enum class HistoryClustersInitialState {
   // The HistoryClusters UI was opened via direct URL, i.e., not opened via any
   // other surface/path such as an omnibox action or other UI surface.
   kDirectNavigation = 1,
-  // The HistoryClusters UI was opened indirectly; e.g., using the link the
-  // chrome://history sidebar.
+  // The HistoryClusters UI was opened indirectly; e.g., using an omnibox
+  // action.
   kIndirectNavigation = 2,
+  // The HistoryClusters UI was opened via a same-document navigation, which
+  // means the user likely clicked the tab over from History to Journeys.
+  kSameDocument = 3,
   // Add new values above this line.
-  kMaxValue = kIndirectNavigation,
+  kMaxValue = kSameDocument,
 };
 
 // The final state, or outcome, of an interaction on the HistoryClusters UI.

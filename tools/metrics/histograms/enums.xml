@@ -46988,10 +46988,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </summary>
   <int value="0" label="Unknown"/>
   <int value="1" label="kDirectNavigation">
-    The UI was reached via direct navigation, not through any dedicated surface.
+    The UI was reached via direct navigation, like the user typing the WebUI URL
+    in the omnibox.
   </int>
   <int value="2" label="kIndirectNavigation">
-    The UI was reached via indirect navigation, e.g. a link.
+    The UI was reached via indirect navigation, e.g. clicking on the omnibox
+    action chip.
+  </int>
+  <int value="3" label="kSameDocument">
+    The UI was reached via same-document navigation, like the user visiting
+    History first, and then clicking the Journeys Tab. This also includes other
+    edge cases, like if the user clicked over from 'Tabs on other devices'.
   </int>
 </enum>
 
