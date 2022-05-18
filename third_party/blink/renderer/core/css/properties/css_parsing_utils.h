@@ -46,6 +46,7 @@ namespace css_parsing_utils {
 enum class AllowInsetAndSpread { kAllow, kForbid };
 enum class AllowTextValue { kAllow, kForbid };
 enum class AllowPathValue { kAllow, kForbid };
+enum class AllowBasicShapeRectValue { kAllow, kForbid };
 enum class DefaultFill { kFill, kNoFill };
 enum class ParsingStyle { kLegacy, kNotLegacy };
 enum class TrackListType {
@@ -457,9 +458,11 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumePathOrNone(CSSParserTokenRange&);
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange&, const CSSParserContext&);
 
-CSSValue* ConsumeBasicShape(CSSParserTokenRange&,
-                            const CSSParserContext&,
-                            AllowPathValue);
+CSSValue* ConsumeBasicShape(
+    CSSParserTokenRange&,
+    const CSSParserContext&,
+    AllowPathValue,
+    AllowBasicShapeRectValue = AllowBasicShapeRectValue::kForbid);
 bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   CSSValue* vertical_radii[4],
                   CSSParserTokenRange&,

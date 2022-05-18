@@ -194,6 +194,58 @@ class CSSBasicShapeInsetValue final : public CSSValue {
   Member<CSSValuePair> bottom_left_radius_;
 };
 
+class CSSBasicShapeRectValue final : public CSSValue {
+ public:
+  CSSBasicShapeRectValue(CSSValue* top,
+                         CSSValue* right,
+                         CSSValue* bottom,
+                         CSSValue* left)
+      : CSSValue(kBasicShapeRectClass),
+        top_(top),
+        right_(right),
+        bottom_(bottom),
+        left_(left) {
+    Validate();
+  }
+
+  CSSValue* Top() const { return top_.Get(); }
+  CSSValue* Right() const { return right_.Get(); }
+  CSSValue* Bottom() const { return bottom_.Get(); }
+  CSSValue* Left() const { return left_.Get(); }
+
+  CSSValuePair* TopLeftRadius() const { return top_left_radius_.Get(); }
+  CSSValuePair* TopRightRadius() const { return top_right_radius_.Get(); }
+  CSSValuePair* BottomRightRadius() const { return bottom_right_radius_.Get(); }
+  CSSValuePair* BottomLeftRadius() const { return bottom_left_radius_.Get(); }
+
+  void SetTopLeftRadius(CSSValuePair* radius) { top_left_radius_ = radius; }
+  void SetTopRightRadius(CSSValuePair* radius) { top_right_radius_ = radius; }
+  void SetBottomRightRadius(CSSValuePair* radius) {
+    bottom_right_radius_ = radius;
+  }
+  void SetBottomLeftRadius(CSSValuePair* radius) {
+    bottom_left_radius_ = radius;
+  }
+
+  String CustomCSSText() const;
+  bool Equals(const CSSBasicShapeRectValue&) const;
+
+  void TraceAfterDispatch(blink::Visitor*) const;
+
+ private:
+  void Validate() const;
+
+  Member<CSSValue> top_;
+  Member<CSSValue> right_;
+  Member<CSSValue> bottom_;
+  Member<CSSValue> left_;
+
+  Member<CSSValuePair> top_left_radius_;
+  Member<CSSValuePair> top_right_radius_;
+  Member<CSSValuePair> bottom_right_radius_;
+  Member<CSSValuePair> bottom_left_radius_;
+};
+
 }  // namespace cssvalue
 
 template <>
@@ -223,6 +275,14 @@ struct DowncastTraits<cssvalue::CSSBasicShapeInsetValue> {
     return value.IsBasicShapeInsetValue();
   }
 };
+
+template <>
+struct DowncastTraits<cssvalue::CSSBasicShapeRectValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsBasicShapeRectValue();
+  }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_BASIC_SHAPE_VALUES_H_

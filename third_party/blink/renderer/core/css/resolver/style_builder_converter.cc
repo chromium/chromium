@@ -2036,8 +2036,9 @@ scoped_refptr<BasicShape> StyleBuilderConverter::ConvertOffsetPath(
 scoped_refptr<BasicShape> StyleBuilderConverter::ConvertObjectViewBox(
     StyleResolverState& state,
     const CSSValue& value) {
-  return value.IsBasicShapeInsetValue() ? BasicShapeForValue(state, value)
-                                        : nullptr;
+  if (!value.IsBasicShapeInsetValue() && !value.IsBasicShapeRectValue())
+    return nullptr;
+  return BasicShapeForValue(state, value);
 }
 
 static const CSSValue& ComputeRegisteredPropertyValue(

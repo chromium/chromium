@@ -4929,10 +4929,15 @@ const CSSValue* ObjectViewBox::ParseSingleValue(
   if (range.Peek().Id() == CSSValueID::kNone)
     return css_parsing_utils::ConsumeIdent(range);
   auto* css_value = css_parsing_utils::ConsumeBasicShape(
-      range, context, css_parsing_utils::AllowPathValue::kForbid);
-  // TODO(khushalsagar) : Also allow rect() and xywh().
-  return (css_value && css_value->IsBasicShapeInsetValue()) ? css_value
-                                                            : nullptr;
+      range, context, css_parsing_utils::AllowPathValue::kForbid,
+      css_parsing_utils::AllowBasicShapeRectValue::kAllow);
+
+  // TODO(khushalsagar) : Also allow xywh().
+  if (!css_value || css_value->IsBasicShapeInsetValue() ||
+      css_value->IsBasicShapeRectValue())
+    return css_value;
+
+  return nullptr;
 }
 
 const CSSValue* ObjectViewBox::CSSValueFromComputedStyleInternal(

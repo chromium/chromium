@@ -137,9 +137,9 @@ bool BasicShapePolygon::IsEqualAssumingSameType(const BasicShape& o) const {
   return wind_rule_ == other.wind_rule_ && values_ == other.values_;
 }
 
-void BasicShapeInset::GetPath(Path& path,
-                              const gfx::RectF& bounding_box,
-                              float) {
+void BasicShapeRectCommon::GetPath(Path& path,
+                                   const gfx::RectF& bounding_box,
+                                   float) {
   DCHECK(path.IsEmpty());
   float left = FloatValueForLength(left_, bounding_box.width());
   float top = FloatValueForLength(top_, bounding_box.height());
@@ -163,8 +163,8 @@ void BasicShapeInset::GetPath(Path& path,
   path.AddRoundedRect(final_rect);
 }
 
-bool BasicShapeInset::IsEqualAssumingSameType(const BasicShape& o) const {
-  const BasicShapeInset& other = To<BasicShapeInset>(o);
+bool BasicShapeRectCommon::IsEqualAssumingSameType(const BasicShape& o) const {
+  const BasicShapeRectCommon& other = To<BasicShapeRectCommon>(o);
   return right_ == other.right_ && top_ == other.top_ &&
          bottom_ == other.bottom_ && left_ == other.left_ &&
          top_left_radius_ == other.top_left_radius_ &&

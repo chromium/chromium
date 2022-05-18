@@ -319,6 +319,31 @@ cssvalue::CSSBasicShapePolygonValue* ConsumeBasicShapePolygon(
   return shape;
 }
 
+template <typename T>
+bool ConsumeBorderRadiusCommon(CSSParserTokenRange& args,
+                               const CSSParserContext& context,
+                               T* shape) {
+  if (ConsumeIdent<CSSValueID::kRound>(args)) {
+    CSSValue* horizontal_radii[4] = {nullptr};
+    CSSValue* vertical_radii[4] = {nullptr};
+    if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context, false))
+      return false;
+    shape->SetTopLeftRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[0], vertical_radii[0],
+        CSSValuePair::kDropIdenticalValues));
+    shape->SetTopRightRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[1], vertical_radii[1],
+        CSSValuePair::kDropIdenticalValues));
+    shape->SetBottomRightRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[2], vertical_radii[2],
+        CSSValuePair::kDropIdenticalValues));
+    shape->SetBottomLeftRadius(MakeGarbageCollected<CSSValuePair>(
+        horizontal_radii[3], vertical_radii[3],
+        CSSValuePair::kDropIdenticalValues));
+  }
+  return true;
+}
+
 cssvalue::CSSBasicShapeInsetValue* ConsumeBasicShapeInset(
     CSSParserTokenRange& args,
     const CSSParserContext& context) {
@@ -348,24 +373,35 @@ cssvalue::CSSBasicShapeInsetValue* ConsumeBasicShapeInset(
   else
     shape->UpdateShapeSize1Value(top);
 
-  if (ConsumeIdent<CSSValueID::kRound>(args)) {
-    CSSValue* horizontal_radii[4] = {nullptr};
-    CSSValue* vertical_radii[4] = {nullptr};
-    if (!ConsumeRadii(horizontal_radii, vertical_radii, args, context, false))
+  if (!ConsumeBorderRadiusCommon(args, context, shape))
+    return nullptr;
+
+  return shape;
+}
+
+cssvalue::CSSBasicShapeRectValue* ConsumeBasicShapeRect(
+    CSSParserTokenRange& args,
+    const CSSParserContext& context) {
+  CSSValue* lengths[4];
+  for (auto*& length : lengths) {
+    length = ConsumeLengthOrPercent(args, context,
+                                    CSSPrimitiveValue::ValueRange::kAll);
+    if (length)
+      continue;
+
+    if (args.Peek().Id() == CSSValueID::kAuto)
+      length = css_parsing_utils::ConsumeIdent(args);
+
+    if (!length)
       return nullptr;
-    shape->SetTopLeftRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[0], vertical_radii[0],
-        CSSValuePair::kDropIdenticalValues));
-    shape->SetTopRightRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[1], vertical_radii[1],
-        CSSValuePair::kDropIdenticalValues));
-    shape->SetBottomRightRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[2], vertical_radii[2],
-        CSSValuePair::kDropIdenticalValues));
-    shape->SetBottomLeftRadius(MakeGarbageCollected<CSSValuePair>(
-        horizontal_radii[3], vertical_radii[3],
-        CSSValuePair::kDropIdenticalValues));
   }
+
+  auto* shape = MakeGarbageCollected<cssvalue::CSSBasicShapeRectValue>(
+      lengths[0], lengths[1], lengths[2], lengths[3]);
+
+  if (!ConsumeBorderRadiusCommon(args, context, shape))
+    return nullptr;
+
   return shape;
 }
 
@@ -5117,7 +5153,8 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
 
 CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
                             const CSSParserContext& context,
-                            AllowPathValue allow_path) {
+                            AllowPathValue allow_path,
+                            AllowBasicShapeRectValue allow_rect) {
   CSSValue* shape = nullptr;
   if (range.Peek().GetType() != kFunctionToken)
     return nullptr;
@@ -5134,6 +5171,9 @@ CSSValue* ConsumeBasicShape(CSSParserTokenRange& range,
     shape = ConsumeBasicShapeInset(args, context);
   else if (id == CSSValueID::kPath && allow_path == AllowPathValue::kAllow)
     shape = ConsumeBasicShapePath(args);
+  else if (id == CSSValueID::kRect &&
+           allow_rect == AllowBasicShapeRectValue::kAllow)
+    shape = ConsumeBasicShapeRect(args, context);
   if (!shape || !args.AtEnd())
     return nullptr;
 
