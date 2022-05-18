@@ -298,11 +298,11 @@ class MouseoverLCPTest : public MetricIntegrationTest {
                     .error,
                 "");
     }
+    waiter->Wait();
 
     // Need to navigate away from the test html page to force metrics to get
     // flushed/synced.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-    waiter->Wait();
     ExpectUKMPageLoadMetricFlagSet(
         PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
         LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
@@ -310,7 +310,7 @@ class MouseoverLCPTest : public MetricIntegrationTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
-                       DISABLED_LargestContentfulPaint_MouseoverOverLCPImage) {
+                       LargestContentfulPaint_MouseoverOverLCPImage) {
   test_mouseover("/mouseover.html",
                  blink::mojom::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
@@ -320,9 +320,8 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MouseoverLCPTest,
-    DISABLED_LargestContentfulPaint_MouseoverOverLCPImageReplace) {
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverLCPImageReplace) {
   test_mouseover("/mouseover.html?replace",
                  blink::mojom::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
@@ -343,9 +342,8 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*expected=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    MouseoverLCPTest,
-    DISABLED_LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
+IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
+                       LargestContentfulPaint_MouseoverOverLCPImageThenBody) {
   test_mouseover("/mouseover.html?dispatch",
                  blink::mojom::LargestContentfulPaintType::kAfterMouseover,
                  /*entries=*/"2",
