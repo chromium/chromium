@@ -215,6 +215,12 @@
     "args": ["--enable-blink-features=FractionalScrollOffsets"]
   },
   {
+    "prefix": "font-access",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/font-access"],
+    "args": ["--enable-features=FontAccess"]
+  },
+  {
     "prefix": "compute-pressure",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/compute-pressure"],

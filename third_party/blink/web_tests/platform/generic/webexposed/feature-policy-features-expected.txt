@@ -44,7 +44,6 @@ gyroscope
 hid
 idle-detection
 keyboard-map
-local-fonts
 magnetometer
 microphone
 midi
