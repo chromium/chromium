@@ -5,7 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "sheriff_rotations")
+load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
@@ -28,7 +28,7 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.linux",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["release", "debug"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
@@ -115,27 +115,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Deterministic Fuchsia (dbg)",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "det",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fuchsia ci",
-            short_name = "det",
-        ),
-    ],
-    executable = "recipe:swarming/deterministic_build",
-    execution_timeout = 6 * time.hour,
-    goma_jobs = None,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
-)
-
-ci.builder(
     name = "Deterministic Linux",
     console_view_entry = consoles.console_view_entry(
         category = "release",
@@ -161,87 +140,6 @@ ci.builder(
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
     reclient_jobs = rbe_jobs.DEFAULT,
-)
-
-ci.builder(
-    name = "Fuchsia ARM64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|a64",
-            short_name = "rel",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "arm64",
-        ),
-    ],
-    cq_mirrors_console_view = "mirrors",
-    notifies = ["cr-fuchsia"],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_arm64",
-                "fuchsia_arm64_host",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
-)
-
-ci.builder(
-    name = "Fuchsia x64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "rel",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "x64",
-        ),
-    ],
-    cq_mirrors_console_view = "mirrors",
-    notifies = ["cr-fuchsia"],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_x64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -435,50 +333,6 @@ ci.thin_tester(
 )
 
 ci.builder(
-    name = "fuchsia-arm64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|cast",
-            short_name = "a64",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "arm64-cast",
-        ),
-    ],
-    cq_mirrors_console_view = "mirrors",
-    # Set tree_closing to false to disable the defaualt tree closer, which
-    # filters by step name, and instead enable tree closing for any step
-    # failure.
-    tree_closing = False,
-    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_arm64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
-)
-
-ci.builder(
     name = "Network Service Linux",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -502,86 +356,6 @@ ci.builder(
         short_name = "nsl",
     ),
     reclient_jobs = rbe_jobs.DEFAULT,
-)
-
-ci.builder(
-    name = "fuchsia-x64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|cast",
-            short_name = "x64",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "x64-cast",
-        ),
-    ],
-    cq_mirrors_console_view = "mirrors",
-    # Set tree_closing to false to disable the defaualt tree closer, which
-    # filters by step name, and instead enable tree closing for any step
-    # failure.
-    tree_closing = False,
-    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_x64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
-)
-
-ci.builder(
-    name = "fuchsia-x64-dbg",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "dbg",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "x64-dbg",
-        ),
-    ],
-    notifies = ["cr-fuchsia"],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_x64",
-                "enable_reclient",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
 )
 
 ci.builder(

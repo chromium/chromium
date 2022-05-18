@@ -2515,6 +2515,63 @@
     },
   },
   {
+    'name': 'chromium.fuchsia',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'Fuchsia ARM64': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
+          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
+        },
+        'mixins': [
+          'arm64',
+          'docker',
+          'linux-focal',
+        ],
+      },
+      'Fuchsia x64': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
+        'mixins': [
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'fuchsia_isolated_scripts',
+        },
+      },
+      'fuchsia-arm64-cast': {
+        'additional_compile_targets': [
+          'cast_test_lists',
+        ],
+      },
+      'fuchsia-x64-cast': {
+        'additional_compile_targets': [
+          'cast_test_lists',
+        ],
+      },
+      'fuchsia-x64-dbg': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+    },
+  },
+  {
     'name': 'chromium.fuchsia.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -4934,42 +4991,6 @@
           'core_runtime_simple',
         ],
       },
-      'Fuchsia ARM64': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
-          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-focal',
-        ],
-      },
-      'Fuchsia x64': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-bionic',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
-        },
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
-      },
       'Leak Detection Linux': {
         'mixins': [
           'linux-bionic',
@@ -5039,21 +5060,6 @@
         'test_suites': {
           'gtest_tests': 'network_service_extra_gtests',
         },
-      },
-      'fuchsia-arm64-cast': {
-        'additional_compile_targets': [
-          'cast_test_lists',
-        ],
-      },
-      'fuchsia-x64-cast': {
-        'additional_compile_targets': [
-          'cast_test_lists',
-        ],
-      },
-      'fuchsia-x64-dbg': {
-        'additional_compile_targets': [
-          'all',
-        ],
       },
       'linux-bfcache-rel': {
         'mixins': [

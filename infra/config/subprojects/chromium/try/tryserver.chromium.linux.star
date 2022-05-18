@@ -26,10 +26,7 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.linux",
-    branch_selector = [
-        branches.CROS_LTS_MILESTONE,
-        branches.FUCHSIA_LTS_MILESTONE,
-    ],
+    branch_selector = branches.CROS_LTS_MILESTONE,
 )
 
 try_.builder(
@@ -74,107 +71,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-binary-size",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = True,
-    executable = "recipe:binary_size_fuchsia_trybot",
-    properties = {
-        "$build/binary_size": {
-            "analyze_targets": [
-                "//tools/fuchsia/size_tests:fuchsia_sizes",
-            ],
-            "compile_targets": [
-                "fuchsia_sizes",
-            ],
-        },
-    },
-    tryjob = try_.job(
-        experiment_percentage = 20,
-    ),
-)
-
-try_.builder(
-    name = "fuchsia-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    goma_jobs = goma.jobs.J150,
-)
-
-try_.builder(
-    name = "fuchsia-arm64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    main_list_view = "try",
-    tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromecast/.+",
-        ],
-    ),
-    mirrors = [
-        "ci/fuchsia-arm64-cast",
-    ],
-)
-
-try_.builder(
-    name = "fuchsia-compile-x64-dbg",
-    tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/base/fuchsia/.+",
-            ".+/[+]/fuchsia/.+",
-            ".+/[+]/media/fuchsia/.+",
-        ],
-    ),
-    mirrors = [
-        "ci/fuchsia-x64-dbg",
-    ],
-    try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-)
-
-try_.builder(
-    name = "fuchsia-deterministic-dbg",
-    executable = "recipe:swarming/deterministic_build",
-)
-
-try_.builder(
     name = "fuchsia-fyi-arm64-rel",
 )
 
 try_.builder(
     name = "fuchsia-fyi-x64-rel",
-)
-
-try_.builder(
-    name = "fuchsia-x64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
-    mirrors = [
-        "ci/fuchsia-x64-cast",
-    ],
-)
-
-try_.builder(
-    name = "fuchsia_arm64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
-    mirrors = [
-        "ci/Fuchsia ARM64",
-    ],
-)
-
-try_.builder(
-    name = "fuchsia_x64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
-    mirrors = [
-        "ci/Fuchsia x64",
-    ],
 )
 
 try_.builder(
