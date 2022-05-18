@@ -2069,6 +2069,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
 
   if (!containing_block->IsFragmentationContextRoot()) {
     DCHECK_NE(containing_block, container_builder_->GetLayoutObject());
+    DCHECK(!box.IsColumnSpanAll());
     for (const auto& parent_fragment : containing_block->PhysicalFragments()) {
       if (parent_fragment.HasItems()) {
         // Look inside the inline formatting context to find and replace the
@@ -2086,6 +2087,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
         return;
     }
   } else if (containing_block == container_builder_->GetLayoutObject()) {
+    DCHECK(!box.IsColumnSpanAll());
     // We're currently laying out |containing_block|, and it's a multicol
     // container. Search inside fragmentainer children in the builder.
     for (const NGContainerFragmentBuilder::ChildWithOffset& child :
@@ -2098,9 +2100,15 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
     // container. Search inside fragmentainer children of the fragments
     // generated for the containing block.
     for (const auto& multicol : containing_block->PhysicalFragments()) {
-      for (const auto& child : multicol.Children()) {
-        if (ReplaceFragmentainerChild(*child.fragment))
+      if (box.IsColumnSpanAll()) {
+        // Column spanners are found as direct children of the multicol.
+        if (ReplaceChild(multicol))
           return;
+      } else {
+        for (const auto& child : multicol.Children()) {
+          if (ReplaceFragmentainerChild(*child.fragment))
+            return;
+        }
       }
     }
   }
