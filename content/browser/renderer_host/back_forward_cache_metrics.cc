@@ -161,9 +161,8 @@ void BackForwardCacheMetrics::DidCommitNavigation(
 
     TRACE_EVENT1("navigation", "HistoryNavigationOutcome", "outcome",
                  page_store_result_->ToString());
-    RecordMetricsForHistoryNavigationCommit(navigation,
-                                            back_forward_cache_allowed);
-    RecordHistoryNavigationUkm(navigation);
+    RecordHistoryNavigationUMA(navigation, back_forward_cache_allowed);
+    RecordHistoryNavigationUKM(navigation);
     if (!navigation->IsServedFromBackForwardCache()) {
       devtools_instrumentation::BackForwardCacheNotUsed(
           navigation, page_store_result_.get(), page_store_tree_result_.get());
@@ -191,31 +190,25 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   browsing_instance_swap_result_ = absl::nullopt;
 }
 
-void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
-    NavigationRequest* navigation) {
-  // If |IsHistoryNavigation| is true and
-  // |last_committed_cross_document_main_frame_navigation_id_| is not -1, it's a
-  // history navigation which we're interested in.
-  //
-  // |IsHistoryNavigation| is true when the navigation is history navigation,
-  // but just after cloning, the metrics object is missing. Then, checking this
-  // is not enough. |last_committed_cross_document_main_frame_navigation_id_| is
-  // not -1 when the metrics object is available.
-  if (!IsHistoryNavigation(navigation))
-    return;
-  if (last_committed_cross_document_main_frame_navigation_id_ == -1)
-    return;
-
+void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
+    NavigationRequest* navigation) const {
+  DCHECK(IsHistoryNavigation(navigation));
   // We've visited an entry associated with this main frame document before,
   // so record metrics to determine whether it might be a back-forward cache
   // hit.
   ukm::SourceId source_id = ukm::ConvertToSourceId(
       navigation->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
   ukm::builders::HistoryNavigation builder(source_id);
-  builder.SetLastCommittedCrossDocumentNavigationSourceIdForTheSameDocument(
-      ukm::ConvertToSourceId(
-          last_committed_cross_document_main_frame_navigation_id_,
-          ukm::SourceIdType::NAVIGATION_ID));
+  if (last_committed_cross_document_main_frame_navigation_id_ != -1) {
+    // Only record `last_committed_cross_document_main_frame_navigation_id_`
+    // when it's set. It won't be set if the NavigationEntry this history
+    // navigation is targeting hasn't been navigated to in this session (e.g.
+    // due to session restore or cloning a tab).
+    builder.SetLastCommittedCrossDocumentNavigationSourceIdForTheSameDocument(
+        ukm::ConvertToSourceId(
+            last_committed_cross_document_main_frame_navigation_id_,
+            ukm::SourceIdType::NAVIGATION_ID));
+  }
   builder.SetMainFrameFeatures(main_frame_features_.ToEnumBitmask());
   builder.SetSameOriginSubframesFeatures(
       same_origin_frames_features_.ToEnumBitmask());
@@ -376,7 +369,7 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
               *(page_store_result_.get()));
 }
 
-void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
+void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
     NavigationRequest* navigation,
     bool back_forward_cache_allowed) const {
   HistoryNavigationOutcome outcome = HistoryNavigationOutcome::kNotRestored;

@@ -262,12 +262,13 @@ class BackForwardCacheMetrics
   void CollectFeatureUsageFromSubtree(RenderFrameHostImpl* rfh,
                                       const url::Origin& main_frame_origin);
 
-  // Dumps the current recorded information.
+  // Dumps the current recorded information for a history navigation for UMA.
   // |back_forward_cache_allowed| indicates whether back-forward cache is
   // allowed for the URL of |navigation_request|.
-  void RecordMetricsForHistoryNavigationCommit(
-      NavigationRequest* navigation,
-      bool back_forward_cache_allowed) const;
+  void RecordHistoryNavigationUMA(NavigationRequest* navigation,
+                                  bool back_forward_cache_allowed) const;
+  // Records UKM for a history navigation.
+  void RecordHistoryNavigationUKM(NavigationRequest* navigation) const;
 
   // Record metrics for the number of reloads after history navigation. In
   // particular we are interested in number of reloads after a restore from
@@ -280,8 +281,6 @@ class BackForwardCacheMetrics
   // Record additional reason why navigation was not served from bfcache which
   // are known only at the commit time.
   void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation);
-
-  void RecordHistoryNavigationUkm(NavigationRequest* navigation);
 
   bool DidSwapBrowsingInstance() const;
 
