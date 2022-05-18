@@ -1786,6 +1786,7 @@
       'aura_unittests': {},
       'base_unittests': {},
       'blink_common_unittests': {},
+      'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {},
       'blink_unittests': {},
@@ -1875,7 +1876,6 @@
     },
 
     'fuchsia_experimental_gtests': {
-      'blink_fuzzer_unittests': {},
       'browser_tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter',
