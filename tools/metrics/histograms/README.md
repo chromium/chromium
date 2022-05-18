@@ -210,6 +210,9 @@ private static void logNewTabPageAction(@NewTabPageAction int action) {
 }
 ```
 
+Finally, regardless of the programming language you are using, add the
+definition of the enumerator to [enums.xml](./enums.xml).
+
 #### Legacy Enums
 
 **Note: this method of defining histogram enums is deprecated. Do not use this
