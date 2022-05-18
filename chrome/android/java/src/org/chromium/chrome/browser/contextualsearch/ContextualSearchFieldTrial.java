@@ -85,7 +85,6 @@ public class ContextualSearchFieldTrial {
          */
         int IS_TRANSLATION_DISABLED = 0;
         /**
-         * @deprecated
          * Whether detection of device-online should be disabled (default false).
          * (safety switch for disabling online-detection also used to disable detection when
          * running tests).
