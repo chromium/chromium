@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -16,21 +17,9 @@
 
 namespace web_app {
 
-SystemAppBackgroundTaskInfo::~SystemAppBackgroundTaskInfo() = default;
-SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo() = default;
-
-SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo(
-    const SystemAppBackgroundTaskInfo& other) = default;
-
-SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo(
-    const absl::optional<base::TimeDelta>& period,
-    const GURL& url,
-    bool open_immediately)
-    : period(period), url(url), open_immediately(open_immediately) {}
-
 SystemAppBackgroundTask::SystemAppBackgroundTask(
     Profile* profile,
-    const SystemAppBackgroundTaskInfo& info)
+    const ash::SystemWebAppBackgroundTaskInfo& info)
     : profile_(profile),
       web_contents_(nullptr),
       web_app_url_loader_(std::make_unique<WebAppUrlLoader>()),

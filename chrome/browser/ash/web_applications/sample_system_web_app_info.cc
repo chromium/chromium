@@ -96,8 +96,8 @@ bool SampleSystemAppDelegate::ShouldReuseExistingWindow() const {
   return false;
 }
 
-absl::optional<web_app::SystemAppBackgroundTaskInfo>
+absl::optional<ash::SystemWebAppBackgroundTaskInfo>
 SampleSystemAppDelegate::GetTimerInfo() const {
-  return web_app::SystemAppBackgroundTaskInfo(
+  return ash::SystemWebAppBackgroundTaskInfo(
       base::Seconds(30), GURL("chrome://sample-system-web-app/timer.html"));
 }

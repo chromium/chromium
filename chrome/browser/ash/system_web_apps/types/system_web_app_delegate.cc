@@ -96,7 +96,7 @@ bool SystemWebAppDelegate::ShouldHandleFileOpenIntents() const {
   return ShouldShowInLauncher();
 }
 
-absl::optional<web_app::SystemAppBackgroundTaskInfo>
+absl::optional<SystemWebAppBackgroundTaskInfo>
 SystemWebAppDelegate::GetTimerInfo() const {
   return absl::nullopt;
 }

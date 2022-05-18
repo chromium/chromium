@@ -29,7 +29,7 @@ class HelpAppSystemAppDelegate : public ash::SystemWebAppDelegate {
   gfx::Rect GetDefaultBounds(Browser*) const override;
   gfx::Size GetMinimumWindowSize() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
-  absl::optional<web_app::SystemAppBackgroundTaskInfo> GetTimerInfo()
+  absl::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
       const override;
   bool ShouldCaptureNavigations() const override;
 };

@@ -24,7 +24,7 @@ class SampleSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
-  absl::optional<web_app::SystemAppBackgroundTaskInfo> GetTimerInfo()
+  absl::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
       const override;
 };
 

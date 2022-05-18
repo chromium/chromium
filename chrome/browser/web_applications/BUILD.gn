@@ -16,6 +16,8 @@ source_set("web_applications") {
   sources = [
     # TODO(crbug.com/1321984): Move system_web_app_delegate.cc/h and
     # system_web_app_types.cc/h to /ash/system_web_apps/types/
+    "../ash/system_web_apps/types/system_web_app_background_task_info.cc",
+    "../ash/system_web_apps/types/system_web_app_background_task_info.h",
     "../ash/system_web_apps/types/system_web_app_delegate.cc",
     "../ash/system_web_apps/types/system_web_app_delegate.h",
     "../ash/system_web_apps/types/system_web_app_delegate_map.cc",

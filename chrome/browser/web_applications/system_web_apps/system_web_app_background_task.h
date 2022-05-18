@@ -14,6 +14,7 @@
 #include "base/one_shot_event.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -26,32 +27,6 @@
 class Profile;
 
 namespace web_app {
-
-// A struct used to configure a periodic background task for a SWA.
-struct SystemAppBackgroundTaskInfo {
-  SystemAppBackgroundTaskInfo();
-  SystemAppBackgroundTaskInfo(const SystemAppBackgroundTaskInfo& other);
-  SystemAppBackgroundTaskInfo(const absl::optional<base::TimeDelta>& period,
-                              const GURL& url,
-                              bool open_immediately = false);
-  ~SystemAppBackgroundTaskInfo();
-  // The amount of time between each opening of the background url.
-  // The url is opened using the same WebContents, so if the
-  // previous task is still running, it will be closed.
-  // You should have at least one of period or open_immediately set for the task
-  // to do anything.
-  absl::optional<base::TimeDelta> period;
-
-  // The url of the background page to open. This should do one specific thing.
-  // (Probably opening a shared worker, waiting for a response, and closing)
-  GURL url;
-
-  // A flag to indicate that the task should be opened soon upon user
-  // login, after the SWAs are done installing as opposed to waiting for the
-  // first period to be reached. "Soon" means about 2 minutes, to give the
-  // login time processing a chance to settle down.
-  bool open_immediately;
-};
 
 // Used to manage a running periodic background task for a SWA.
 class SystemAppBackgroundTask {
@@ -79,7 +54,7 @@ class SystemAppBackgroundTask {
   static const int kIdlePollMaxTimeToWaitSeconds = 3600;
 
   SystemAppBackgroundTask(Profile* profile,
-                          const SystemAppBackgroundTaskInfo& info);
+                          const ash::SystemWebAppBackgroundTaskInfo& info);
   ~SystemAppBackgroundTask();
 
   // Start the timer, at the specified period. This will also run immediately if

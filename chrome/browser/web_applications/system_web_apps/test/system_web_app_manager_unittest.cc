@@ -1084,17 +1084,18 @@ class TimerSystemAppDelegate : public UnittestingSystemAppDelegate {
       : UnittestingSystemAppDelegate(type, name, url, std::move(info_factory)),
         period_(period),
         open_immediately_(open_immediately) {}
-  absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const override;
+  absl::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
+      const override;
 
  private:
   absl::optional<base::TimeDelta> period_;
   bool open_immediately_;
 };
 
-absl::optional<SystemAppBackgroundTaskInfo>
+absl::optional<ash::SystemWebAppBackgroundTaskInfo>
 TimerSystemAppDelegate::GetTimerInfo() const {
-  return SystemAppBackgroundTaskInfo(period_, GetInstallUrl(),
-                                     open_immediately_);
+  return ash::SystemWebAppBackgroundTaskInfo(period_, GetInstallUrl(),
+                                             open_immediately_);
 }
 
 class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {

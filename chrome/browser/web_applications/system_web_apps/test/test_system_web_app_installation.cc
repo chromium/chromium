@@ -157,7 +157,7 @@ bool UnittestingSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
 bool UnittestingSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return allow_scripts_to_close_windows_;
 }
-absl::optional<SystemAppBackgroundTaskInfo>
+absl::optional<ash::SystemWebAppBackgroundTaskInfo>
 UnittestingSystemAppDelegate::GetTimerInfo() const {
   return timer_info_;
 }
@@ -252,7 +252,7 @@ void UnittestingSystemAppDelegate::SetShouldAllowScriptsToCloseWindows(
   allow_scripts_to_close_windows_ = value;
 }
 void UnittestingSystemAppDelegate::SetTimerInfo(
-    const SystemAppBackgroundTaskInfo& timer_info) {
+    const ash::SystemWebAppBackgroundTaskInfo& timer_info) {
   timer_info_ = timer_info;
 }
 void UnittestingSystemAppDelegate::SetDefaultBounds(
@@ -542,7 +542,7 @@ TestSystemWebAppInstallation::SetUpAppWithBackgroundTask() {
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
 
-  SystemAppBackgroundTaskInfo background_task(
+  ash::SystemWebAppBackgroundTaskInfo background_task(
       base::Days(1), GURL("chrome://test-system-app/page2.html"), true);
   delegate->SetTimerInfo(background_task);
 

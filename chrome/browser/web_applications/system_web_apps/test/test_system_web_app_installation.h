@@ -53,7 +53,8 @@ class UnittestingSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldHaveTabStrip() const override;
   bool ShouldHaveReloadButtonInMinimalUi() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
-  absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const override;
+  absl::optional<ash::SystemWebAppBackgroundTaskInfo> GetTimerInfo()
+      const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
   Browser* LaunchAndNavigateSystemWebApp(
       Profile* profile,
@@ -83,7 +84,7 @@ class UnittestingSystemAppDelegate : public ash::SystemWebAppDelegate {
   void SetShouldHaveTabStrip(bool);
   void SetShouldHaveReloadButtonInMinimalUi(bool);
   void SetShouldAllowScriptsToCloseWindows(bool);
-  void SetTimerInfo(const SystemAppBackgroundTaskInfo&);
+  void SetTimerInfo(const ash::SystemWebAppBackgroundTaskInfo&);
   void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
   void SetLaunchAndNavigateSystemWebApp(LaunchAndNavigateSystemWebAppCallback);
   void SetIsAppEnabled(bool);
@@ -124,7 +125,7 @@ class UnittestingSystemAppDelegate : public ash::SystemWebAppDelegate {
   LaunchAndNavigateSystemWebAppCallback launch_and_navigate_system_web_apps_ =
       base::NullCallback();
 
-  absl::optional<SystemAppBackgroundTaskInfo> timer_info_;
+  absl::optional<ash::SystemWebAppBackgroundTaskInfo> timer_info_;
 };
 
 // Class to setup the installation of a test System Web App.
