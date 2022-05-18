@@ -44,7 +44,6 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -86,7 +85,6 @@ base::FilePath GetDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
       kCsdDebugFeatureDirectoryFlag);
 }
-
 }  // namespace
 
 typedef base::OnceCallback<void(bool)> ShouldClassifyUrlCallback;
@@ -136,50 +134,42 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     base::UmaHistogramBoolean("SBClientPhishing.ClassificationStart", true);
 
     if (url_.SchemeIs(content::kChromeUIScheme)) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_CHROME_UI_PAGE);
+      DontClassifyForPhishing(NO_CLASSIFY_CHROME_UI_PAGE);
     }
 
     if (csd_service_->IsLocalResource(remote_endpoint_.address())) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE);
+      DontClassifyForPhishing(NO_CLASSIFY_LOCAL_RESOURCE);
     }
 
     // Only classify [X]HTML documents.
     if (mime_type_ != "text/html" && mime_type_ != "application/xhtml+xml") {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_UNSUPPORTED_MIME_TYPE);
+      DontClassifyForPhishing(NO_CLASSIFY_UNSUPPORTED_MIME_TYPE);
     }
 
     if (csd_service_->IsPrivateIPAddress(remote_endpoint_.address())) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP);
+      DontClassifyForPhishing(NO_CLASSIFY_PRIVATE_IP);
     }
 
     // For phishing we only classify HTTP or HTTPS pages.
     if (!url_.SchemeIsHTTPOrHTTPS()) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_SCHEME_NOT_SUPPORTED);
+      DontClassifyForPhishing(NO_CLASSIFY_SCHEME_NOT_SUPPORTED);
     }
 
     // Don't run any classifier if the tab is incognito.
     if (web_contents_->GetBrowserContext()->IsOffTheRecord()) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_OFF_THE_RECORD);
+      DontClassifyForPhishing(NO_CLASSIFY_OFF_THE_RECORD);
     }
 
     // Don't start classification if |url_| is allowlisted by enterprise policy.
     if (host_->delegate_->GetPrefs() &&
         IsURLAllowlistedByPolicy(url_, *host_->delegate_->GetPrefs())) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
+      DontClassifyForPhishing(NO_CLASSIFY_ALLOWLISTED_BY_POLICY);
     }
 
     // If the tab has a delayed warning, ignore this second verdict. We don't
     // want to immediately undelay a page that's already blocked as phishy.
     if (host_->delegate_->HasSafeBrowsingUserInteractionObserver()) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_HAS_DELAYED_WARNING);
+      DontClassifyForPhishing(NO_CLASSIFY_HAS_DELAYED_WARNING);
     }
 
     // We lookup the csd-allowlist before we lookup the cache because
@@ -196,7 +186,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   }
 
   void Cancel() {
-    DontClassifyForPhishing(PreClassificationCheckResult::NO_CLASSIFY_CANCEL);
+    DontClassifyForPhishing(NO_CLASSIFY_CANCEL);
     // Just to make sure we don't do anything stupid we reset all these
     // pointers except for the safebrowsing service class which may be
     // accessed by CheckSafeBrowsingDatabase().
@@ -210,7 +200,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       ClientSideDetectionHost::ShouldClassifyUrlRequest>;
 
   // Enum used to keep stats about why the pre-classification check failed.
-  enum class PreClassificationCheckResult {
+  enum PreClassificationCheckResult {
     OBSOLETE_NO_CLASSIFY_PROXY_FETCH = 0,
     NO_CLASSIFY_PRIVATE_IP = 1,
     NO_CLASSIFY_OFF_THE_RECORD = 2,
@@ -235,18 +225,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   // The destructor can be called either from the UI or the IO thread.
   virtual ~ShouldClassifyUrlRequest() = default;
 
-  void LogPreClassificationCheckResult(PreClassificationCheckResult result) {
-    base::UmaHistogramEnumeration(
-        "SBClientPhishing.PreClassificationCheckResult", result,
-        PreClassificationCheckResult::NO_CLASSIFY_MAX);
-
-    ukm::SourceId ukm_source =
-        web_contents_->GetMainFrame()->GetPageUkmSourceId();
-    ukm::builders::SBClientPhishing_ClassificationStart builder(ukm_source);
-    builder.SetPreClassificationCheckResult(static_cast<int>(result));
-    builder.Record(ukm::UkmRecorder::Get());
-  }
-
   bool ShouldClassifyForPhishing() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     return !start_phishing_classification_cb_.is_null();
@@ -255,7 +233,10 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   void DontClassifyForPhishing(PreClassificationCheckResult reason) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (ShouldClassifyForPhishing()) {
-      LogPreClassificationCheckResult(reason);
+      // Track the first reason why we stopped classifying for phishing.
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.PreClassificationCheckResult", reason,
+          NO_CLASSIFY_MAX);
       std::move(start_phishing_classification_cb_).Run(false);
     }
     start_phishing_classification_cb_.Reset();
@@ -263,13 +244,11 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
   void CheckSafeBrowsingDatabase(const GURL& url) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    PreClassificationCheckResult phishing_reason =
-        PreClassificationCheckResult::NO_CLASSIFY_MAX;
+    PreClassificationCheckResult phishing_reason = NO_CLASSIFY_MAX;
 
     // When doing debug feature dumps, ignore the allowlist.
     if (HasDebugFeatureDirectory()) {
-      OnAllowlistCheckDoneOnIO(url,
-                               PreClassificationCheckResult::NO_CLASSIFY_MAX,
+      OnAllowlistCheckDoneOnIO(url, NO_CLASSIFY_MAX,
                                /*match_allowlist=*/false);
       return;
     }
@@ -277,9 +256,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     if (!database_manager_.get()) {
       // We cannot check the Safe Browsing allowlists so we stop here
       // for safety.
-      OnAllowlistCheckDoneOnIO(
-          url, PreClassificationCheckResult::NO_CLASSIFY_NO_DATABASE_MANAGER,
-          /*match_allowlist=*/false);
+      OnAllowlistCheckDoneOnIO(url, NO_CLASSIFY_NO_DATABASE_MANAGER,
+                               /*match_allowlist=*/false);
       return;
     }
 
@@ -301,8 +279,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // thread so we simply pass the results of this method to CheckCache()
     // which is called on the UI thread;
     if (match_allowlist) {
-      phishing_reason =
-          PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
+      phishing_reason = NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
     }
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&ShouldClassifyUrlRequest::CheckCache, this,
@@ -311,7 +288,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
   void CheckCache(PreClassificationCheckResult phishing_reason) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (phishing_reason != PreClassificationCheckResult::NO_CLASSIFY_MAX)
+    if (phishing_reason != NO_CLASSIFY_MAX)
       DontClassifyForPhishing(phishing_reason);
     if (!ShouldClassifyForPhishing()) {
       return;  // No point in doing anything else.
@@ -327,8 +304,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       // Since we are already on the UI thread, this is safe.
       host_->MaybeShowPhishingWarning(/*is_from_cache=*/true, url_,
                                       is_phishing);
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_RESULT_FROM_CACHE);
+      DontClassifyForPhishing(NO_CLASSIFY_RESULT_FROM_CACHE);
     }
 
     // We want to limit the number of requests, though we will ignore the
@@ -340,15 +316,16 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     // limit.
     if (!HasDebugFeatureDirectory() && !csd_service_->IsInCache(url_) &&
         csd_service_->OverPhishingReportLimit()) {
-      DontClassifyForPhishing(
-          PreClassificationCheckResult::NO_CLASSIFY_TOO_MANY_REPORTS);
+      DontClassifyForPhishing(NO_CLASSIFY_TOO_MANY_REPORTS);
     }
 
     // Everything checks out, so start classification.
     // |web_contents_| is safe to call as we will be destructed
     // before it is.
     if (ShouldClassifyForPhishing()) {
-      LogPreClassificationCheckResult(PreClassificationCheckResult::CLASSIFY);
+      base::UmaHistogramEnumeration(
+          "SBClientPhishing.PreClassificationCheckResult", CLASSIFY,
+          NO_CLASSIFY_MAX);
       std::move(start_phishing_classification_cb_).Run(true);
       // Reset the callback to make sure ShouldClassifyForPhishing()
       // returns false.
@@ -561,12 +538,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
                               verdict->is_phishing());
 
-    ukm::SourceId ukm_source =
-        web_contents()->GetMainFrame()->GetPageUkmSourceId();
-    ukm::builders::SBClientPhishing_ClassificationDone builder(ukm_source);
-    builder.SetIsPhishing(verdict->is_phishing());
-    builder.Record(ukm::UkmRecorder::Get());
-
     // We only send phishing verdict to the server if the verdict is phishing.
     if (!verdict->is_phishing())
       return;
@@ -594,12 +565,6 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
                               is_phishing);
   }
 
-  ukm::SourceId ukm_source =
-      web_contents()->GetMainFrame()->GetPageUkmSourceId();
-  ukm::builders::SBClientPhishing_ServerClassificationDone builder(ukm_source);
-  builder.SetIsPhishing(is_phishing);
-  builder.Record(ukm::UkmRecorder::Get());
-
   if (is_phishing) {
     DCHECK(web_contents());
     if (ui_manager_.get()) {
@@ -615,7 +580,6 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
       resource.render_process_id = primary_main_frame_id.child_id;
       resource.render_frame_id = primary_main_frame_id.frame_routing_id;
-      resource.ukm_id = web_contents()->GetMainFrame()->GetPageUkmSourceId();
       if (!ui_manager_->IsAllowlisted(resource)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.

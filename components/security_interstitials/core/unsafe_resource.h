@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "url/gurl.h"
 
@@ -100,11 +99,7 @@ struct UnsafeResource {
 
   // If true, this UnsafeResource is created because of the Delayed Warnings
   // experiment.
-  bool is_delayed_warning = false;
-
-  // The UKM ID of the navigation to the unsafe resource. This is currently only
-  // populated when `threat_source` is `CLIENT_SIDE_PHISHING`.
-  ukm::SourceId ukm_id;
+  bool is_delayed_warning;
 };
 
 }  // namespace security_interstitials

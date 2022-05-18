@@ -14,6 +14,5 @@ include_rules = [
   "+net/cert",
   "+net/ssl",
   "+services/network/public/mojom",
-  "+services/metrics/public/cpp",
   "+ui/base"
 ]
