@@ -4762,6 +4762,21 @@
             ]
         }
     ],
+    "MetricsReportingEnabledAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "MetricsReportingEnabledAndroid",
+                    "enable_features": [
+                        "ActivateMetricsReportingEnabledPolicyAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "MigrateAlwaysTranslateLanguagesFix": [
         {
             "platforms": [
