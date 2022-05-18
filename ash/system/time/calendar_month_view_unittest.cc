@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
@@ -146,6 +147,49 @@ TEST_F(CalendarMonthViewTest, Basics) {
             static_cast<views::LabelButton*>(month_view()->children()[30])
                 ->GetText());
   EXPECT_EQ(u"3", static_cast<views::LabelButton*>(month_view()->children()[34])
+                      ->GetText());
+}
+
+// Regression test for https://crbug.com/1325533
+// Test the `CalendarMonthView` with time zone that has DST starts from 00:00.
+TEST_F(CalendarMonthViewTest, AzoreSummerTime) {
+  // Create a monthview based on Mar,1st 2022. DST starts from 00:00 on Mar
+  // 27th in 2022 with Azore Summer Time.
+  //
+  // 27, 28, 1 , 2 , 3 , 4 , 5
+  // 6,  7,  8 , 9 , 10, 11, 12
+  // 13, 14, 15, 16, 17, 18, 19
+  // 20, 21, 22, 23, 24, 25, 26
+  // 27, 28, 29, 30, 31, 1 , 2
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Mar 2022 10:00 GMT", &date));
+
+  // Sets the timezone to "Azore Summer Time";
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
+      u"Atlantic/Azores");
+  CreateMonthView(date);
+
+  base::Time date_without_DST;
+  ASSERT_TRUE(
+      base::Time::FromString("26 Mar 2022 10:00 GMT", &date_without_DST));
+
+  base::Time date_with_DST;
+  ASSERT_TRUE(base::Time::FromString("28 Mar 2022 10:00 GMT", &date_with_DST));
+
+  // Before daylight saving the time difference is 1 hour.
+  EXPECT_EQ(-60, calendar_utils::GetTimeDifferenceInMinutes(date_without_DST));
+
+  // After daylight saving the time difference is 0 hours.
+  EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date_with_DST));
+
+  // Randomly checks some dates in this month view.
+  EXPECT_EQ(
+      u"27",
+      static_cast<views::LabelButton*>(month_view()->children()[0])->GetText());
+  EXPECT_EQ(u"29",
+            static_cast<views::LabelButton*>(month_view()->children()[30])
+                ->GetText());
+  EXPECT_EQ(u"2", static_cast<views::LabelButton*>(month_view()->children()[34])
                       ->GetText());
 }
 

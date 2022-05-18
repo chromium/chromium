@@ -860,7 +860,7 @@ CalendarMonthView* CalendarView::AddMonth(base::Time month_first_date,
   }
 }
 
-void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
+void CalendarView::OnMonthChanged() {
   if (!should_header_animate_) {
     UpdateHeaders();
     RestoreHeadersStatus();

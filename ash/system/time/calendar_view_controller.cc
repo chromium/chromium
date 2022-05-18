@@ -76,8 +76,7 @@ void CalendarViewController::UpdateMonth(
 
   currently_shown_date_ = current_month_first_date;
   for (auto& observer : observers_) {
-    observer.OnMonthChanged(
-        calendar_utils::GetExplodedLocal(current_month_first_date));
+    observer.OnMonthChanged();
   }
 }
 

@@ -134,7 +134,12 @@ void DateHelper::ResetFormatters() {
 
 void DateHelper::CalculateLocalWeekTitles() {
   week_titles_.clear();
+
+  // To avoid the DST difference, use a certain date here to calculate the week
+  // titles, since there are no daylight saving starts/ends in June worldwide.
+  // If the `DCHECK` fails, use `Now()`.
   base::Time start_date = base::Time::Now();
+  DCHECK(base::Time::FromString("15 Jun 2021 10:00 GMT", &start_date));
   start_date = GetLocalMidnight(start_date);
   std::u16string day_of_week =
       GetFormattedTime(&day_of_week_formatter_, start_date);

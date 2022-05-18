@@ -53,6 +53,16 @@ constexpr base::TimeDelta kResetToTodayFadeAnimationDuration =
 // Duration of moving animation.
 constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
 
+// This duration is added to a midnight `base::Time` to adjust the DST when
+// adding days by `base::Day`.
+//
+// For example, in PST time zone, when we add 1 week (7 days) to Nov 3rd 00:00,
+// the expected result is Nov 10th 00:00, but the actual result is Nov 9th
+// 23:00. Because in Nov 6th is the DST end day and there are 25 hours in that
+// day. By adding this time delta, the result is Nov 10th 4:00, which is the
+// expected date.
+constexpr base::TimeDelta kDurationForAdjustingDST = base::Hours(5);
+
 // Event fetch will terminate if we don't receive a response sooner than this.
 constexpr base::TimeDelta kEventFetchTimeout = base::Seconds(10);
 
@@ -79,9 +89,6 @@ bool IsTheSameDay(absl::optional<base::Time> date_a,
 // |num_months_out| before and after.
 std::set<base::Time> GetSurroundingMonthsUTC(const base::Time& selected_date,
                                              int num_months_out);
-
-// Gets the given `date`'s `Exploded` instance, in local time.
-base::Time::Exploded GetExplodedLocal(const base::Time& date);
 
 // Gets the given `date`'s `Exploded` instance, in UTC time.
 base::Time::Exploded GetExplodedUTC(const base::Time& date);

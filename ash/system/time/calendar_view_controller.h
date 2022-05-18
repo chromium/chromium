@@ -33,7 +33,7 @@ class ASH_EXPORT CalendarViewController {
   class Observer : public base::CheckedObserver {
    public:
     // Gets called when `currently_shown_date_ ` changes.
-    virtual void OnMonthChanged(const base::Time::Exploded current_month) {}
+    virtual void OnMonthChanged() {}
 
     // Invoked when a date cell is clicked to open the event list.
     virtual void OpenEventList() {}

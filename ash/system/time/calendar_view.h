@@ -74,7 +74,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   ~CalendarView() override;
 
   // CalendarViewController::Observer:
-  void OnMonthChanged(const base::Time::Exploded current_month) override;
+  void OnMonthChanged() override;
   void OpenEventList() override;
   void CloseEventList() override;
 

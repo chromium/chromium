@@ -4,6 +4,7 @@
 
 #include "ash/system/time/calendar_utils.h"
 
+#include <map>
 #include <string>
 
 #include "ash/components/settings/timezone_settings.h"
@@ -20,6 +21,13 @@
 #include "ui/views/layout/table_layout.h"
 
 namespace ash {
+
+namespace {
+// Map of week index from string to number.
+std::map<std::u16string, int> kDayOfWeekMap = {{u"1", 1}, {u"2", 2}, {u"3", 3},
+                                               {u"4", 4}, {u"5", 5}, {u"6", 6},
+                                               {u"7", 7}};
+}  // namespace
 
 namespace calendar_utils {
 
@@ -58,12 +66,6 @@ ASH_EXPORT std::set<base::Time> GetSurroundingMonthsUTC(
   }
 
   return months;
-}
-
-base::Time::Exploded GetExplodedLocal(const base::Time& date) {
-  base::Time::Exploded exploded;
-  date.LocalExplode(&exploded);
-  return exploded;
 }
 
 base::Time::Exploded GetExplodedUTC(const base::Time& date) {
@@ -203,21 +205,11 @@ int GetTimeDifferenceInMinutes(base::Time date) {
 }
 
 base::Time GetFirstDayOfWeekLocalMidnight(base::Time date) {
-  base::Time first_day = DateHelper::GetInstance()->GetLocalMidnight(date);
-  std::u16string day_of_week = GetDayOfWeek(first_day);
-  int days = 0;
-  // Find the first day of the week.
-  while (day_of_week != kFirstDayOfWeekString) {
-    // 5 hours ago from midnight should be the previous day.
-    first_day -= base::Hours(5);
-    first_day = DateHelper::GetInstance()->GetLocalMidnight(first_day);
-    day_of_week = GetDayOfWeek(first_day);
-    ++days;
-    // Should already find the first day within 7 times, since there are only 7
-    // days in a week.
-    DCHECK_NE(days, kDateInOneWeek);
-  }
-  return first_day;
+  std::u16string day_of_week = GetDayOfWeek(date);
+  base::Time first_day_of_week =
+      DateHelper::GetInstance()->GetLocalMidnight(date) -
+      base::Days(kDayOfWeekMap[day_of_week] - 1) + kDurationForAdjustingDST;
+  return DateHelper::GetInstance()->GetLocalMidnight(first_day_of_week);
 }
 
 ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(

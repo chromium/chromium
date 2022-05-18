@@ -397,11 +397,11 @@ CalendarMonthView::CalendarMonthView(
 
   // Adds the first several days from the next month if the last day is not the
   // end day of this week. The end date of the last row should be 6 day's away
-  // from the first day of this week. Adds 5 more hours just to cover the case
-  // 25 hours in a day due to daylight saving.
+  // from the first day of this week. Adds `kDurationForAdjustingDST` hours to
+  // cover the case 25 hours in a day due to daylight saving.
   base::Time end_of_the_last_row_local =
       calendar_utils::GetFirstDayOfWeekLocalMidnight(current_date) +
-      base::Days(6) + base::Hours(5) +
+      base::Days(6) + calendar_utils::kDurationForAdjustingDST +
       base::Minutes(calendar_view_controller_->time_difference_minutes());
   base::Time::Exploded end_of_row_exploded =
       calendar_utils::GetExplodedUTC(end_of_the_last_row_local);
