@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.components.autofill_assistant.AssistantAddressEditorGms;
-import org.chromium.components.autofill_assistant.AssistantContactEditorAccount;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
@@ -648,7 +647,7 @@ class AssistantCollectUserDataBinder
         if (shouldShowContactDetails(model)) {
             updateContactEditor(model, view, webContents);
         }
-        updatePhoneNumberEditor(model, view);
+        updatePhoneNumberEditor(model, view, webContents);
         updateAddressEditor(model, view, webContents);
         updatePaymentEditor(model, view, webContents);
 
@@ -657,40 +656,39 @@ class AssistantCollectUserDataBinder
 
     private void updateContactEditor(
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
-        AssistantContactEditor editor = null;
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
-            view.mContactDetailsSection.setRequestReloadOnChange(true);
-            editor = new AssistantContactEditorAccount(view.mActivity, view.mWindowAndroid,
-                    model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                    /* requestPhone= */ false);
-        } else {
-            view.mContactDetailsSection.setRequestReloadOnChange(false);
-            // All flows reaching here must have access to Chrome dependent editors. Otherwise the
-            // flow was configured wrongly.
-            assert view.mEditorFactory != null;
-            editor = view.mEditorFactory.createContactEditor(webContents, view.mActivity,
-                    model.get(AssistantCollectUserDataModel.REQUEST_NAME),
-                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
-                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                    model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
-        }
+        assert !model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)
+                || !model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
+
+        // TODO(b/232484145): Create non-Autofill editors.
+        // All flows reaching here must have access to Chrome dependent editors. Otherwise the
+        // flow was configured wrongly.
+        assert view.mEditorFactory != null;
+        AssistantContactEditor editor = view.mEditorFactory.createContactEditor(webContents,
+                view.mActivity, model.get(AssistantCollectUserDataModel.REQUEST_NAME),
+                model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
+                model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
+                model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
 
         view.mContactDetailsSection.setEditor(editor);
     }
 
-    private void updatePhoneNumberEditor(AssistantCollectUserDataModel model, ViewHolder view) {
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
-            view.mPhoneNumberSection.setRequestReloadOnChange(true);
-            view.mPhoneNumberSection.setEditor(new AssistantContactEditorAccount(view.mActivity,
-                    view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
-                    /* requestEmail= */ false, /* requestPhone= */ true));
-        } else {
-            view.mPhoneNumberSection.setRequestReloadOnChange(false);
-            // Separate phone number section is only supposed to be used with backend data, we
-            // do not offer an Autofill editor in this case.
-            view.mPhoneNumberSection.setEditor(null);
-        }
+    private void updatePhoneNumberEditor(
+            AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
+        assert !model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)
+                || !model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
+
+        // TODO(b/232484145): Create non-Autofill editors.
+        // All flows reaching here must have access to Chrome dependent editors. Otherwise the
+        // flow was configured wrongly.
+        assert view.mEditorFactory != null;
+        AssistantContactEditor editor =
+                view.mEditorFactory.createContactEditor(webContents, view.mActivity,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ false,
+                        model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES));
+
+        view.mPhoneNumberSection.setEditor(editor);
     }
 
     private void updateAddressEditor(

@@ -92,6 +92,22 @@ bool ShouldReloadData(const CollectUserDataOptions& options,
   }
 }
 
+bool ShouldStoreTemporaryData(const CollectUserDataOptions& options,
+                              UserDataEventType event_type) {
+  if (!options.use_gms_core_edit_dialogs) {
+    return false;
+  }
+  switch (event_type) {
+    case UserDataEventType::ENTRY_CREATED:
+    case UserDataEventType::ENTRY_EDITED:
+      return true;
+    case UserDataEventType::UNKNOWN:
+    case UserDataEventType::NO_NOTIFICATION:
+    case UserDataEventType::SELECTION_CHANGED:
+      return false;
+  }
+}
+
 }  // namespace
 
 UiController::UiController(
@@ -857,9 +873,10 @@ void UiController::HandleContactInfoChange(
   collect_user_data_options_->selected_user_data_changed_callback.Run(
       UserDataEventField::CONTACT_EVENT, event_type);
 
-  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
-    ReloadUserData(UserDataEventField::CONTACT_EVENT, event_type);
-    return;
+  if (ShouldStoreTemporaryData(*collect_user_data_options_, event_type)) {
+    UserData* user_data = GetUserData();
+    DCHECK(user_data);
+    user_data::UpsertContact(*profile, user_data->transient_contacts_);
   }
 
   DCHECK(!collect_user_data_options_->contact_details_name.empty());
@@ -877,9 +894,10 @@ void UiController::HandlePhoneNumberChange(
   collect_user_data_options_->selected_user_data_changed_callback.Run(
       UserDataEventField::PHONE_NUMBER_EVENT, event_type);
 
-  if (ShouldReloadData(*collect_user_data_options_, event_type)) {
-    ReloadUserData(UserDataEventField::PHONE_NUMBER_EVENT, event_type);
-    return;
+  if (ShouldStoreTemporaryData(*collect_user_data_options_, event_type)) {
+    UserData* user_data = GetUserData();
+    DCHECK(user_data);
+    user_data::UpsertPhoneNumber(*profile, user_data->transient_phone_numbers_);
   }
 
   GetUserData()->SetSelectedPhoneNumber(std::move(profile));

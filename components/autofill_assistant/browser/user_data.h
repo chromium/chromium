@@ -129,6 +129,7 @@ struct Contact {
 
   absl::optional<std::string> identifier;
   std::unique_ptr<autofill::AutofillProfile> profile;
+  bool can_edit = true;
 };
 
 // Struct for holding a phone number. This is a wrapper around AutofillProfile
@@ -140,6 +141,7 @@ struct PhoneNumber {
 
   absl::optional<std::string> identifier;
   std::unique_ptr<autofill::AutofillProfile> profile;
+  bool can_edit = true;
 };
 
 // Struct for holding an address. This is a wrapper around AutofillProfile to
@@ -226,6 +228,9 @@ class UserData {
       available_payment_instruments_;
 
   absl::optional<WebsiteLoginManager::Login> selected_login_;
+
+  std::vector<std::unique_ptr<Contact>> transient_contacts_;
+  std::vector<std::unique_ptr<PhoneNumber>> transient_phone_numbers_;
 
   // Return true if address has been selected, otherwise return false.
   // Note that selected_address() might return nullptr when
@@ -319,7 +324,6 @@ struct CollectUserDataOptions {
   std::vector<RequiredDataPiece> required_billing_address_data_pieces;
 
   bool should_store_data_changes = false;
-  bool can_edit_contacts = true;
   bool use_gms_core_edit_dialogs = false;
 
   absl::optional<std::string> add_payment_instrument_action_token;

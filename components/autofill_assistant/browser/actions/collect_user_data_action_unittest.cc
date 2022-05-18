@@ -2597,10 +2597,10 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
   ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
-        EXPECT_FALSE(collect_user_data_options->can_edit_contacts);
         ASSERT_EQ(user_data_.available_contacts_.size(), 1u);
         EXPECT_THAT(user_data_.available_contacts_[0]->profile->guid(),
                     Not(IsEmpty()));
+        EXPECT_FALSE(user_data_.available_contacts_[0]->can_edit);
         auto mappings = field_formatter::CreateAutofillMappings(
             *user_data_.available_contacts_[0]->profile, "en-US");
         EXPECT_THAT(mappings,
@@ -2654,11 +2654,10 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
   ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
-        EXPECT_FALSE(collect_user_data_options->can_edit_contacts);
-
         ASSERT_EQ(user_data_.available_contacts_.size(), 1u);
         EXPECT_THAT(user_data_.available_contacts_[0]->profile->guid(),
                     Not(IsEmpty()));
+        EXPECT_FALSE(user_data_.available_contacts_[0]->can_edit);
         auto contact_mappings = field_formatter::CreateAutofillMappings(
             *user_data_.available_contacts_[0]->profile, "en-US");
         // Initially the contact contains the backend data.

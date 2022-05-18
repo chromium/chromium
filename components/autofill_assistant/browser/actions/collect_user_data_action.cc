@@ -999,7 +999,6 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
   collect_user_data_options_->should_store_data_changes =
       !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
       !should_use_backend_data;
-  collect_user_data_options_->can_edit_contacts = !should_use_backend_data;
   collect_user_data_options_->use_gms_core_edit_dialogs =
       should_use_backend_data;
 
@@ -1417,6 +1416,12 @@ void CollectUserDataAction::UpdateUserDataFromProto(
 
   if (RequiresContact(*collect_user_data_options_)) {
     user_data->available_contacts_.clear();
+    for (const auto& transient_contact : user_data->transient_contacts_) {
+      auto contact = std::make_unique<Contact>(
+          user_data::MakeUniqueFromProfile(*transient_contact->profile));
+      contact->identifier = transient_contact->identifier;
+      user_data->available_contacts_.emplace_back(std::move(contact));
+    }
     for (const auto& profile_data : proto_data.available_contacts()) {
       auto profile = std::make_unique<autofill::AutofillProfile>();
       AddProtoDataToAutofillDataModel(profile_data.values(),
@@ -1431,6 +1436,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       if (profile_data.has_identifier()) {
         contact->identifier = profile_data.identifier();
       }
+      contact->can_edit = false;
       user_data->available_contacts_.emplace_back(std::move(contact));
     }
     if (proto_data.has_selected_contact_identifier()) {
@@ -1458,6 +1464,13 @@ void CollectUserDataAction::UpdateUserDataFromProto(
 
   if (RequiresPhoneNumberSeparately(*collect_user_data_options_)) {
     user_data->available_phone_numbers_.clear();
+    for (const auto& transient_phone_number :
+         user_data->transient_phone_numbers_) {
+      auto phone_number = std::make_unique<PhoneNumber>(
+          user_data::MakeUniqueFromProfile(*transient_phone_number->profile));
+      phone_number->identifier = transient_phone_number->identifier;
+      user_data->available_phone_numbers_.emplace_back(std::move(phone_number));
+    }
     for (const auto& phone_number_data : proto_data.available_phone_numbers()) {
       auto profile = std::make_unique<autofill::AutofillProfile>();
       AddAutofillEntryToDataModel(
@@ -1467,6 +1480,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       if (phone_number_data.has_identifier()) {
         phone_number->identifier = phone_number_data.identifier();
       }
+      phone_number->can_edit = false;
       user_data->available_phone_numbers_.emplace_back(std::move(phone_number));
     }
     if (proto_data.has_selected_phone_number_identifier()) {

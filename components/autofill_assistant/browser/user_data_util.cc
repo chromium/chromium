@@ -320,6 +320,25 @@ ClientStatus MoveAutofillValueRegexpToTextFilter(
   return re2_status;
 }
 
+template <typename T>
+void UpsertAutofillProfile(const autofill::AutofillProfile& profile,
+                           std::vector<std::unique_ptr<T>>& list) {
+  auto it =
+      base::ranges::find_if(list, [&profile](const std::unique_ptr<T>& ptr) {
+        return ptr->profile && ptr->profile->guid() == profile.guid();
+      });
+
+  auto new_profile = user_data::MakeUniqueFromProfile(profile);
+  if (it == list.end()) {
+    auto entry = std::make_unique<T>(std::move(new_profile));
+    entry->identifier = profile.guid();
+    list.emplace_back(std::move(entry));
+    return;
+  }
+
+  (*it)->profile = std::move(new_profile);
+}
+
 }  // namespace
 
 std::vector<std::string> GetContactValidationErrors(
@@ -890,6 +909,16 @@ ClientStatus ResolveSelectorUserData(SelectorProto* selector,
     }
   }
   return OkClientStatus();
+}
+
+void UpsertContact(const autofill::AutofillProfile& profile,
+                   std::vector<std::unique_ptr<Contact>>& list) {
+  UpsertAutofillProfile(profile, list);
+}
+
+void UpsertPhoneNumber(const autofill::AutofillProfile& profile,
+                       std::vector<std::unique_ptr<PhoneNumber>>& list) {
+  UpsertAutofillProfile(profile, list);
 }
 
 }  // namespace user_data

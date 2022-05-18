@@ -180,6 +180,13 @@ int GetFieldBitArrayForCreditCard(const autofill::CreditCard* card);
 ClientStatus ResolveSelectorUserData(SelectorProto* selector,
                                      const UserData* user_data);
 
+// Update or insert a contact in the list.
+void UpsertContact(const autofill::AutofillProfile& profile,
+                   std::vector<std::unique_ptr<Contact>>& list);
+// Update or insert a phone number in the list.
+void UpsertPhoneNumber(const autofill::AutofillProfile& profile,
+                       std::vector<std::unique_ptr<PhoneNumber>>& list);
+
 }  // namespace user_data
 }  // namespace autofill_assistant
 

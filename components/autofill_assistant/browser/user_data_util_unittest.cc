@@ -1611,6 +1611,106 @@ TEST_F(UserDataUtilTextValueTest, ResolveSelectorUserDataError) {
   ASSERT_FALSE(status.ok());
 }
 
+TEST(UserDataUtilTest, InsertNewContactToList) {
+  autofill::AutofillProfile new_profile;
+  autofill::test::SetProfileInfo(&new_profile, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+
+  std::unique_ptr<autofill::AutofillProfile> old_profile =
+      std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(old_profile.get(), "Berta", "", "West",
+                                 "berta.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+
+  std::vector<std::unique_ptr<Contact>> list;
+  list.emplace_back(std::make_unique<Contact>(std::move(old_profile)));
+
+  UpsertContact(new_profile, list);
+
+  ASSERT_EQ(list.size(), 2u);
+  EXPECT_EQ(list[1]->profile->guid(), new_profile.guid());
+  EXPECT_EQ(list[1]->identifier, new_profile.guid());
+  EXPECT_EQ(list[0]->profile->GetInfo(autofill::NAME_FIRST, "en-US"), u"Berta");
+  EXPECT_EQ(list[1]->profile->GetInfo(autofill::NAME_FIRST, "en-US"), u"Adam");
+}
+
+TEST(UserDataUtilTest, UpdateExistingContactInList) {
+  autofill::AutofillProfile updated_profile;
+  autofill::test::SetProfileInfo(&updated_profile, "Adam", "B.", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+
+  std::unique_ptr<autofill::AutofillProfile> old_profile =
+      std::make_unique<autofill::AutofillProfile>();
+  old_profile->set_guid(updated_profile.guid());
+  autofill::test::SetProfileInfo(old_profile.get(), "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+
+  std::vector<std::unique_ptr<Contact>> list;
+  list.emplace_back(std::make_unique<Contact>(std::move(old_profile)));
+
+  EXPECT_EQ(list[0]->profile->GetInfo(autofill::NAME_MIDDLE, "en-US"), u"");
+  UpsertContact(updated_profile, list);
+
+  ASSERT_EQ(list.size(), 1u);
+  EXPECT_EQ(list[0]->profile->guid(), updated_profile.guid());
+  EXPECT_EQ(list[0]->profile->GetInfo(autofill::NAME_MIDDLE, "en-US"), u"B.");
+}
+
+TEST(UserDataUtilTest, InsertNewPhoneNumberToList) {
+  autofill::AutofillProfile new_profile;
+  autofill::test::SetProfileInfo(&new_profile, "", "", "", "", "", "", "", "",
+                                 "", "", "", "+41441234567");
+
+  std::unique_ptr<autofill::AutofillProfile> old_profile =
+      std::make_unique<autofill::AutofillProfile>();
+  autofill::test::SetProfileInfo(old_profile.get(), "", "", "", "", "", "", "",
+                                 "", "", "", "", "+4144765432");
+
+  std::vector<std::unique_ptr<Contact>> list;
+  list.emplace_back(std::make_unique<Contact>(std::move(old_profile)));
+
+  UpsertContact(new_profile, list);
+
+  ASSERT_EQ(list.size(), 2u);
+  EXPECT_EQ(list[1]->profile->guid(), new_profile.guid());
+  EXPECT_EQ(list[1]->identifier, new_profile.guid());
+  EXPECT_EQ(
+      list[0]->profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, "en-US"),
+      u"+4144765432");
+  EXPECT_EQ(
+      list[1]->profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, "en-US"),
+      u"+41441234567");
+}
+
+TEST(UserDataUtilTest, UpdateExistingPhoneNumberInList) {
+  autofill::AutofillProfile updated_profile;
+  autofill::test::SetProfileInfo(&updated_profile, "", "", "", "", "", "", "",
+                                 "", "", "", "", "+41441234567");
+
+  std::unique_ptr<autofill::AutofillProfile> old_profile =
+      std::make_unique<autofill::AutofillProfile>();
+  old_profile->set_guid(updated_profile.guid());
+  autofill::test::SetProfileInfo(old_profile.get(), "", "", "", "", "", "", "",
+                                 "", "", "", "", "+4144765432");
+
+  std::vector<std::unique_ptr<Contact>> list;
+  list.emplace_back(std::make_unique<Contact>(std::move(old_profile)));
+
+  EXPECT_EQ(
+      list[0]->profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, "en-US"),
+      u"+4144765432");
+  UpsertContact(updated_profile, list);
+
+  ASSERT_EQ(list.size(), 1u);
+  EXPECT_EQ(list[0]->profile->guid(), updated_profile.guid());
+  EXPECT_EQ(
+      list[0]->profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, "en-US"),
+      u"+41441234567");
+}
+
 }  // namespace
 }  // namespace user_data
 }  // namespace autofill_assistant

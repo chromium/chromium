@@ -1387,7 +1387,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
               env, *user_data.available_contacts_[index]->profile,
               base::android::GetDefaultLocaleString()),
           base::android::ToJavaArrayOfStrings(env, errors),
-          collect_user_data_options->can_edit_contacts);
+          user_data.available_contacts_[index]->can_edit);
     }
     Java_AssistantCollectUserDataModel_setAvailableContacts(env, jmodel,
                                                             jcontactlist);
@@ -1468,13 +1468,26 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
     const auto& selected_contact_errors = user_data::GetContactValidationErrors(
         selected_contact_profile, *collect_user_data_options);
 
+    bool can_edit = true;
+    if (selected_contact_profile) {
+      const auto& contact_it = base::ranges::find_if(
+          user_data.available_contacts_,
+          [&](const std::unique_ptr<Contact>& contact) {
+            return contact->profile &&
+                   contact->profile->guid() == selected_contact_profile->guid();
+          });
+      if (contact_it != user_data.available_contacts_.end()) {
+        can_edit = (*contact_it)->can_edit;
+      }
+    }
+
     // In the UserDataFieldChange::CONTACT_PROFILE case the selection is
     // already known in Java, but it has no errors. The PDM off case does not
     // set updated contacts.
     Java_AssistantCollectUserDataModel_setSelectedContactDetails(
         env, jmodel, jselected_contact,
         base::android::ToJavaArrayOfStrings(env, selected_contact_errors),
-        collect_user_data_options->can_edit_contacts);
+        can_edit);
   }
 
   if (field_change == UserDataFieldChange::ALL ||
@@ -1492,13 +1505,26 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
         user_data::GetPhoneNumberValidationErrors(selected_phone_number,
                                                   *collect_user_data_options);
 
+    bool can_edit = true;
+    if (selected_phone_number) {
+      const auto& phone_number_it = base::ranges::find_if(
+          user_data.available_phone_numbers_,
+          [&](const std::unique_ptr<PhoneNumber>& phone_number) {
+            return phone_number->profile && phone_number->profile->guid() ==
+                                                selected_phone_number->guid();
+          });
+      if (phone_number_it != user_data.available_phone_numbers_.end()) {
+        can_edit = (*phone_number_it)->can_edit;
+      }
+    }
+
     // In the UserDataFieldChange::PHONE_NUMBER case the selection is already
     // known in Java, but it has no errors. The PDM off case does not set
     // updated phone numbers.
     Java_AssistantCollectUserDataModel_setSelectedPhoneNumber(
         env, jmodel, jselected_phone_number,
         base::android::ToJavaArrayOfStrings(env, selected_phone_number_errors),
-        /* canEdit = */ false);
+        can_edit);
   }
 
   if (field_change == UserDataFieldChange::ALL ||
