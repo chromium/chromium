@@ -44,6 +44,8 @@ _CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), 'cts_archive')
 
 _CTS_WEBKIT_PACKAGES = ["com.android.cts.webkit", "android.webkit.cts"]
 
+_TEST_APK_AS_INSTANT_ARG = '--test-apk-as-instant'
+
 SDK_PLATFORM_DICT = {
     version_codes.MARSHMALLOW: 'M',
     version_codes.NOUGAT: 'N',
@@ -107,6 +109,8 @@ def GetTestRunFilterArg(args, test_run, arch=None):
   # Convert cmdline filters to test-filter style
   filter_string = test_filter.InitializeFilterFromArgs(args)
 
+  test_app_mode = 'instant' if args.test_apk_as_instant else 'full'
+
   # Get all the filters for either include or exclude patterns
   # and filter where an architecture is provided and does not match
   # The architecture is used when tests only fail on one architecture
@@ -115,6 +119,7 @@ def GetTestRunFilterArg(args, test_run, arch=None):
     return [
         filter_["match"] for filter_ in filters
         if 'arch' not in filter_ or filter_['arch'] == arch
+        if 'mode' not in filter_ or filter_['mode'] == test_app_mode
     ]
 
   # Only add inclusion filters if there's not already one specified, since
@@ -319,7 +324,8 @@ def ForwardArgsToTestRunner(known_args):
     forwarded_args.extend(['--device'] + known_args.devices)
   if known_args.denylist_file:
     forwarded_args.extend(['--denylist-file', known_args.denylist_file])
-
+  if known_args.test_apk_as_instant:
+    forwarded_args.extend([_TEST_APK_AS_INSTANT_ARG])
   if known_args.verbose:
     forwarded_args.extend(['-' + 'v' * known_args.verbose])
   #TODO: Pass quiet to test runner when it becomes supported
@@ -399,6 +405,19 @@ def main():
       help='Path to the avd config textpb. '
            '(See //tools/android/avd/proto for message definition'
            ' and existing textpb files.)')
+  # We are re-using this argument that is used by our test runner
+  # to detect if we are testing against an instant app
+  # This allows us to know if we should filter tests based off the app
+  # app mode or not
+  # We are adding this filter directly instead of calling a function like
+  # we do with test_filter.AddFilterOptions below because this would make
+  # test-apk a required argument which would make this script fail
+  # because we provide this later programmatically in this script
+  parser.add_argument(
+      _TEST_APK_AS_INSTANT_ARG,
+      action='store_true',
+      help='Run CTS tests in instant app mode. '
+      'Instant apps run in a more restrictive execution environment.')
 
 
   test_filter.AddFilterOptions(parser)

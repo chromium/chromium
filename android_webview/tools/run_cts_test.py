@@ -162,6 +162,47 @@ class _RunCtsTest(unittest.TestCase):
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=-good.test1:good.test2'],
                      run_cts.GetTestRunFilterArg(mock_args, cts_run, 'x86'))
 
+  def testFilter_IncludesForMode(self):
+    mock_args = self._getArgsMock(test_apk_as_instant=True)
+
+    cts_run = {
+        'apk':
+        'module.apk',
+        'includes': [{
+            'match': 'good#test1',
+            'mode': 'instant'
+        }, {
+            'match': 'good#test2'
+        }, {
+            'match': 'exclude#test4',
+            'mode': 'full'
+        }]
+    }
+
+    self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.test1:good.test2'],
+                     run_cts.GetTestRunFilterArg(mock_args, cts_run))
+
+  def testFilter_ExcludesForMode(self):
+    mock_args = self._getArgsMock(test_apk_as_instant=True,
+                                  skip_expected_failures=True)
+
+    cts_run = {
+        'apk':
+        'module.apk',
+        'excludes': [{
+            'match': 'good#test1',
+            'mode': 'instant'
+        }, {
+            'match': 'good#test2'
+        }, {
+            'match': 'exclude#test4',
+            'mode': 'full'
+        }]
+    }
+
+    self.assertEqual([run_cts.TEST_FILTER_OPT + '=-good.test1:good.test2'],
+                     run_cts.GetTestRunFilterArg(mock_args, cts_run))
+
   def testIsolatedFilter_CombinesExcludedMatches(self):
     mock_args = self._getArgsMock(isolated_script_test_filter='good#test',
                                   skip_expected_failures=False)

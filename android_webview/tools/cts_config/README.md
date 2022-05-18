@@ -28,6 +28,7 @@ Android release basis by editing
             {
               "match": "<class#testcase (wildcard supported) expression of test to skip>",
               "arch": "<the architecture to skip for, optional, eg: x86 - if not provided, will match all architectures>",
+              "mode": "<the app mode to skip for, optional - either 'instant' or 'full' - if not provided, will run in all modes>",
               "_bug_id": "<bug reference comment, optional>"
             }
           ]
@@ -38,6 +39,7 @@ Android release basis by editing
             {
               "match": "<class#testcase (wildcard supported) expression of test to run>",
               "arch": "<the architecture to include for, optional, eg: arm64 - if not provided, will match all architectures>",
+              "mode": "<the app mode to include for, optional - either 'instant' or 'full' - if not provided, will run in all modes>"
             }
           ]
         }
@@ -59,6 +61,13 @@ please adjust them accordingly.
 
 *** note
 **Note:** The supported architectures for filtering are arm64 and x86
+***
+
+*** note
+**Note:** The `mode` is the type of test execution environment a test will be
+included or excluded in. Instant apps run in a more restrictive environment
+while full apps run in the default execution environment.
+The `--test-apk-as-instant` flag will make tests run in instant app mode.
 ***
 
 ## Disabling/Skipping tests
