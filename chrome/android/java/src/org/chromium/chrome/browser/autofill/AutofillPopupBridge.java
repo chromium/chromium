@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
@@ -46,7 +47,13 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
             @NonNull WindowAndroid windowAndroid) {
         mNativeAutofillPopup = nativeAutofillPopupViewAndroid;
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null || notEnoughScreenSpace(activity)) {
+        // currentTab may be null if the last tab has been closed by the time
+        // this function is called (e.g. when autofill suggestions are available,
+        // see crbug.com/1315617). Its web contents may be null for a frozen
+        // tab.
+        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(windowAndroid);
+        WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
+        if (activity == null || notEnoughScreenSpace(activity) || webContents == null) {
             mAutofillPopup = null;
             mContext = null;
         } else {
@@ -61,9 +68,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
                 manualFillingComponentSupplier.get().notifyPopupAvailable(mAutofillPopup);
             }
 
-            Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(windowAndroid);
-            mWebContentsAccessibility = WebContentsAccessibility.fromWebContents(
-                    currentTab == null ? null : currentTab.getWebContents());
+            mWebContentsAccessibility = WebContentsAccessibility.fromWebContents(webContents);
         }
     }
 
