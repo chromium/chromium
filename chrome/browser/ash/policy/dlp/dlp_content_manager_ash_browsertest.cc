@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   ASSERT_EQ(events_.size(), 0);
   VerifyHistogramCounts(/*blocked_count=*/0,
                         /*warned_count=*/0,
-                        /*total_count=*/2,
+                        /*total_count=*/1,
                         /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
                         /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
 
@@ -1247,9 +1247,8 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   EXPECT_CALL(stop_cb_, Run).Times(param.stopped_count);
 
   helper_->ChangeConfidentiality(web_contents, param.restriction_set);
-  // TODO(crbug.com/1326541): Remove "+1" in total count when it's deduplicated.
   VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count + 1,
+                        param.total_count,
                         /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
                         /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
 
@@ -1277,7 +1276,7 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
   // events.
   helper_->CheckRunningScreenShares();
   VerifyHistogramCounts(param.blocked_count, param.warned_count,
-                        param.total_count + 1,
+                        param.total_count,
                         /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
                         /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
 
