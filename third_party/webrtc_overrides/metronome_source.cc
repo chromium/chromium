@@ -29,39 +29,32 @@ constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
 
 namespace {
 
-// Wraps a webrtc::Metronome::TickListener to ensure that OnTick is not called
-// after it is removed from the WebRtcMetronomeAdapter, using the Deactive
-// method.
-class WebRtcMetronomeListenerWrapper
-    : public base::RefCountedThreadSafe<WebRtcMetronomeListenerWrapper> {
- public:
-  explicit WebRtcMetronomeListenerWrapper(
-      webrtc::Metronome::TickListener* listener)
-      : listener_(listener) {}
+// Stores a MetronomeSource::ListenerHandle which handles listening to handle
+// ticks, and an atomic flag for cancelling the task attached to the listener.
+// When a TickListener invokes, it will check that the cancel flag was not set.
+// To avoid a race between the cancel flag and `OnTick` being invoked after
+// `RemoveListener`, `RemoveListener` needs to be called from
+// `listener->OnTickTaskQueue()`. This is the case for the only user -
+// webrtc::DecodeSynchronizer.
+//
+// TODO(http://crbug.com/1253787): Clarify threading requirements of
+// webrtc::Metronome, or change interface.
+struct HandleWithCancelation {
+  HandleWithCancelation(
+      scoped_refptr<MetronomeSource::ListenerHandle> handle,
+      rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> task_safety)
+      : handle(std::move(handle)), task_safety(std::move(task_safety)) {}
 
-  void Deactivate() {
-    base::AutoLock auto_lock(lock_);
-    active_ = false;
-  }
-
-  webrtc::Metronome::TickListener* listener() { return listener_; }
-
-  void OnTick() {
-    base::AutoLock auto_lock(lock_);
-    if (!active_)
-      return;
-    listener_->OnTick();
-  }
-
- private:
-  friend class base::RefCountedThreadSafe<WebRtcMetronomeListenerWrapper>;
-  ~WebRtcMetronomeListenerWrapper() = default;
-
-  webrtc::Metronome::TickListener* const listener_;
-
-  base::Lock lock_;
-  bool active_ GUARDED_BY(lock_) = true;
+  scoped_refptr<MetronomeSource::ListenerHandle> handle;
+  rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> task_safety;
 };
+
+void InvokeOnTickOnWebRtcTaskQueue(
+    webrtc::Metronome::TickListener* listener,
+    rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> task_safety) {
+  listener->OnTickTaskQueue()->PostTask(webrtc::ToQueuedTask(
+      std::move(task_safety), [listener] { listener->OnTick(); }));
+}
 
 class WebRtcMetronomeAdapter : public webrtc::Metronome {
  public:
@@ -78,19 +71,17 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
   // only be added to the metronome once.
   void AddListener(TickListener* listener) override {
     DCHECK(listener);
+    auto task_safety = webrtc::PendingTaskSafetyFlag::Create();
+    // `listener` can be unretained since the `handle` will be cancelled when
+    // `listener` is removed.
+    auto handle = metronome_source_->AddListener(
+        nullptr, base::BindRepeating(&InvokeOnTickOnWebRtcTaskQueue,
+                                     base::Unretained(listener), task_safety));
     base::AutoLock auto_lock(lock_);
     auto [it, inserted] = listeners_.emplace(
-        listener,
-        base::MakeRefCounted<WebRtcMetronomeListenerWrapper>(listener));
+        std::piecewise_construct, std::forward_as_tuple(listener),
+        std::forward_as_tuple(std::move(handle), std::move(task_safety)));
     DCHECK(inserted);
-    if (listeners_.size() == 1) {
-      DCHECK(!tick_handle_);
-      tick_handle_ = metronome_source_->AddListener(
-          nullptr,
-          base::BindRepeating(&WebRtcMetronomeAdapter::OnTick,
-                              base::Unretained(this)),
-          base::TimeTicks::Min());
-    }
   }
 
   // Removes the tick listener from the metronome. Once this method has returned
@@ -98,17 +89,22 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
   // within OnTick.
   void RemoveListener(TickListener* listener) override {
     DCHECK(listener);
-    base::AutoLock auto_lock(lock_);
-    auto it = listeners_.find(listener);
-    if (it == listeners_.end()) {
-      DLOG(WARNING) << __FUNCTION__ << " called with unregistered listener.";
-      return;
+    scoped_refptr<MetronomeSource::ListenerHandle> handle;
+    rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> task_safety;
+
+    {
+      base::AutoLock auto_lock(lock_);
+      auto it = listeners_.find(listener);
+      if (it == listeners_.end()) {
+        DLOG(WARNING) << __FUNCTION__ << " called with unregistered listener.";
+        return;
+      }
+      handle = std::move(it->second.handle);
+      task_safety = std::move(it->second.task_safety);
+      listeners_.erase(listener);
     }
-    it->second->Deactivate();
-    listeners_.erase(it);
-    if (listeners_.size() == 0) {
-      metronome_source_->RemoveListener(std::move(tick_handle_));
-    }
+    task_safety->SetNotAlive();
+    metronome_source_->RemoveListener(std::move(handle));
   }
 
   // Returns the current tick period of the metronome.
@@ -117,19 +113,10 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
   }
 
  private:
-  void OnTick() {
-    base::AutoLock auto_lock(lock_);
-    for (auto [listener, wrapper] : listeners_) {
-      listener->OnTickTaskQueue()->PostTask(webrtc::ToQueuedTask(
-          [the_wrapper = std::move(wrapper)] { the_wrapper->OnTick(); }));
-    }
-  }
-
   const scoped_refptr<MetronomeSource> metronome_source_;
   base::Lock lock_;
-  base::flat_map<TickListener*, scoped_refptr<WebRtcMetronomeListenerWrapper>>
-      listeners_ GUARDED_BY(lock_);
-  scoped_refptr<MetronomeSource::ListenerHandle> tick_handle_ GUARDED_BY(lock_);
+  base::flat_map<TickListener*, HandleWithCancelation> listeners_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace
