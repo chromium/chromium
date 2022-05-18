@@ -241,7 +241,8 @@ void HTMLIFrameElement::ParseAttribute(
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
   } else if (name == html_names::kAnonymousAttr &&
-             RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
+             RuntimeEnabledFeatures::AnonymousIframeEnabled(
+                 GetExecutionContext())) {
     bool new_value = !value.IsNull();
     if (anonymous_ != new_value) {
       anonymous_ = new_value;
