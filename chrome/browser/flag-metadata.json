@@ -859,11 +859,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "close-all-tabs-modal-dialog",
-    "owners": [ "ckitagawa", "fredmello" ],
-    "expiry_milestone": 103
-  },
-  {
     "name": "closed-tab-cache",
     "owners": [
       "altimin@chromium.org",
