@@ -16,8 +16,8 @@
 #include "chrome/browser/task_manager/providers/web_contents/devtools_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/extension_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/guest_tag.h"
+#include "chrome/browser/task_manager/providers/web_contents/no_state_prefetch_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/portal_tag.h"
-#include "chrome/browser/task_manager/providers/web_contents/prerender_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/printing_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/tool_tag.h"
@@ -101,7 +101,7 @@ void WebContentsTags::CreateForNoStatePrefetchContents(
 #if !BUILDFLAG(IS_ANDROID)
   if (!WebContentsTag::FromWebContents(web_contents)) {
     TagWebContents(web_contents,
-                   base::WrapUnique(new PrerenderTag(web_contents)),
+                   base::WrapUnique(new NoStatePrefetchTag(web_contents)),
                    WebContentsTag::kTagKey);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -195,4 +195,3 @@ void WebContentsTags::ClearTag(content::WebContents* web_contents) {
 }
 
 }  // namespace task_manager
-

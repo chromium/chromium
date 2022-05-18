@@ -518,7 +518,7 @@ std::u16string PrerenderInProcessBrowserTest::MatchTaskManagerTab(
 
 std::u16string PrerenderInProcessBrowserTest::MatchTaskManagerPrerender(
     const char* page_title) {
-  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PRERENDER_PREFIX,
+  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX,
                                     base::ASCIIToUTF16(page_title));
 }
 

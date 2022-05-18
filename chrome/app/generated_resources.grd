@@ -4030,7 +4030,11 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_PLUGIN_BROKER_PREFIX" desc="Task Manager row for PPAPI plugin broker, which provides additional access for PPAPI plugins">
           Plugin Broker: <ph name="PLUGIN_NAME">$1<ex>Unknown Plugin</ex></ph>
         </message>
-        <message name="IDS_TASK_MANAGER_PRERENDER_PREFIX" desc="The prefix for a Task Manager prerender row">
+        <!-- TODO(liuwilliam): crbug/1325318 renaming the rest of existing Prerender to NoStatePrefetch -->
+        <message name="IDS_TASK_MANAGER_NO_STATE_PREFETCH_PREFIX" desc="The prefix for a Task Manager No State Prefetch row">
+          Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
+        </message>
+        <message name="IDS_TASK_MANAGER_PRERENDER_PREFIX" desc="The prefix for a Task Manager Prerender2 row">
           Prerender: <ph name="PRERENDER_CONTENTS_NAME">$1<ex>http://www.google.com</ex></ph>
         </message>
         <message name="IDS_TASK_MANAGER_SPARE_RENDERER_PREFIX" desc="Task Manager row for a 'spare' render process. That is a render process that was started in anticipation of it being needed so that when it is needed it is immediately ready for use">
@@ -4083,6 +4087,12 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_TASK_MANAGER_PORTAL_INCOGNITO_PREFIX" desc="The prefix for an Incognito portal row in the Task Manager (these processes are created when portals is enabled, in Incognito mode)">
           Incognito Portal: <ph name="SUBFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+        </message>
+        <message name="IDS_TASK_MANAGER_FENCED_FRAME_PREFIX" desc="The prefix for a fenced frame row in the Task Manager">
+          Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
+        </message>
+        <message name="IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX" desc="The prefix for an Incognito fenced frame row in the Task Manager">
+          Incognito Fenced Frame: <ph name="FENCEDFRAME_SITE">$1<ex>https://youtube.com/</ex></ph>
         </message>
         <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
           App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>

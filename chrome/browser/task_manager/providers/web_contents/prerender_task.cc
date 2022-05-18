@@ -1,59 +1,42 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/task_manager/providers/web_contents/prerender_task.h"
 
+#include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "content/public/browser/render_frame_host.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace task_manager {
 
-namespace {
-
-gfx::ImageSkia* g_prerender_icon = nullptr;
-
-// Returns the prerender icon or |nullptr| if the |ResourceBundle| is not ready
-// yet.
-gfx::ImageSkia* GetPrerenderIcon() {
-  if (g_prerender_icon)
-    return g_prerender_icon;
-
-  if (!ui::ResourceBundle::HasSharedInstance())
-    return nullptr;
-
-  g_prerender_icon =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(IDR_PRERENDER);
-  return g_prerender_icon;
+PrerenderTask::PrerenderTask(content::RenderFrameHost* render_frame_host)
+    : RendererTask(
+          /*title=*/u"",
+          /*icon=*/nullptr,
+          /*subframe=*/render_frame_host),
+      render_frame_host_(render_frame_host) {
+  DCHECK(render_frame_host_);
+  DCHECK_EQ(render_frame_host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPrerendering);
+  set_title(GetTitle());
 }
 
-std::u16string PrefixPrerenderTitle(const std::u16string& title) {
-  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PRERENDER_PREFIX, title);
-}
-
-}  // namespace
-
-PrerenderTask::PrerenderTask(content::WebContents* web_contents)
-    : RendererTask(PrefixPrerenderTitle(
-                       RendererTask::GetTitleFromWebContents(web_contents)),
-                   GetPrerenderIcon(),
-                   web_contents) {}
-
-PrerenderTask::~PrerenderTask() {
-}
+PrerenderTask::~PrerenderTask() = default;
 
 void PrerenderTask::UpdateTitle() {
-  // As long as this task lives we keep prefixing its title with "Prerender:".
-  set_title(PrefixPrerenderTitle(
-      RendererTask::GetTitleFromWebContents(web_contents())));
+  set_title(GetTitle());
 }
 
-void PrerenderTask::UpdateFavicon() {
-  // As long as this task lives we keep using the prerender icon, so we ignore
-  // this event.
+std::u16string PrerenderTask::GetTitle() const {
+  DCHECK(render_frame_host_);
+  const auto title =
+      base::UTF8ToUTF16(render_frame_host_->GetLastCommittedURL().spec());
+  return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PRERENDER_PREFIX, title);
 }
 
 }  // namespace task_manager
