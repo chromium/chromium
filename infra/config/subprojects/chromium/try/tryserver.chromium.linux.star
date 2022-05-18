@@ -450,6 +450,9 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
 )
 
 try_.compilator_builder(
