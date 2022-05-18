@@ -57,7 +57,7 @@ class MODULES_EXPORT NavigatorAuction final
                                             Navigator&,
                                             const AuctionAdInterestGroup*,
                                             ExceptionState&);
-  // implicit leaveAdInterestGroup - only supported when called from within
+  // Implicit leaveAdInterestGroup - only supported when called from within
   // a fenced frame showing FLEDGE ads.
   ScriptPromise leaveAdInterestGroupForDocument(ScriptState*, ExceptionState&);
   static ScriptPromise leaveAdInterestGroup(ScriptState*,

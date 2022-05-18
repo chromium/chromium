@@ -198,14 +198,14 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
 
   if (origin().scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis(
-        "Unexpected request: JoinAdInterestGroupForDocument only supported for "
+        "Unexpected request: LeaveInterestGroupForDocument only supported for "
         "secure origins");
     return;
   }
 
   if (!render_frame_host()->IsNestedWithinFencedFrame()) {
     ReportBadMessageAndDeleteThis(
-        "Unexpected request: JoinAdInterestGroupForDocument only supported "
+        "Unexpected request: LeaveInterestGroupForDocument only supported "
         "within fenced frames");
     return;
   }
