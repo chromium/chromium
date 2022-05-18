@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/objc_zombie.h"
 
@@ -76,7 +77,13 @@ void SwizzleUIImageImageNamed() {
 
     if (![exceptions containsObject:imageName] &&
         ![imageName containsString:@".FAUXBUNDLEID."]) {
+// TODO(crbug.com/1325334): Temporarily turn off DCHECK while bootstrapping
+// Catalyst. Log the error to the console instead.
+#if TARGET_OS_MACCATALYST
+      DLOG(ERROR) << "Missing image: " << base::SysNSStringToUTF8(imageName);
+#else
       DCHECK(image) << "Missing image: " << base::SysNSStringToUTF8(imageName);
+#endif
     }
     return image;
   };

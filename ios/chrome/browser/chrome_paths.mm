@@ -80,7 +80,10 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 
     case FILE_RESOURCES_PACK:
-      if (!base::PathService::Get(base::DIR_MODULE, &cur))
+      // Catalyst builds are packaged like macOS, with the binary and resource
+      // directories separate. On iOS they are all together in a single dir.
+      // base::DIR_ASSETS does the right thing on each platform.
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
         return false;
       cur = cur.Append(FILE_PATH_LITERAL("resources.pak"));
       break;
