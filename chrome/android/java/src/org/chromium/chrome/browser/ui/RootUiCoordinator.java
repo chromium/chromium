@@ -1349,7 +1349,10 @@ public class RootUiCoordinator
         return mScrimCoordinator;
     }
 
-    @VisibleForTesting
+    public OneshotSupplier<LayoutStateProvider> getLayoutStateProviderForTesting() {
+        return mLayoutStateProviderOneShotSupplier;
+    }
+
     public IncognitoReauthController getIncognitoReauthControllerForTesting() {
         return mIncognitoReauthController;
     }
