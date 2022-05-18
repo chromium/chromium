@@ -1628,6 +1628,64 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                                   kJoinSucceedsGroup, iframe));
 }
 
+// Test the case cross-origin joining/leaving of interest groups is blocked by
+// the ContentBrowserClient, but allowed by the .well-known URL. In this case,
+// the .well-known URL should be fetched, and the return value should be derived
+// from that fetch returned, but the database should not updated, regardless of
+// whether the .well-known URL allows it. This can happen if, for example,
+// cookies blocking is enabled for a site.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       CrossOriginJoinLeaveBlockedByContentBrowserClient) {
+  const char kGroup1[] = "aardvarks";
+  const char kGroup2[] = "wombats";
+
+  // Interest groups operations are not allowed on "*.d.test" by the
+  // ContentBrowserClient. One allows only joins, one only leaves, which should
+  // affect return values, but not whether the page can actually join or leave
+  // cross-origin interest groups.
+  url::Origin allow_join_origin = https_server_->GetOrigin("allow-join.d.test");
+  url::Origin allow_leave_origin =
+      https_server_->GetOrigin("allow-leave.d.test");
+
+  // Join kGroup2 directly for both origins, so can check leave calls have no
+  // effect.
+  blink::InterestGroup interest_group;
+  interest_group.owner = allow_join_origin;
+  interest_group.name = kGroup2;
+  interest_group.expiry = base::Time::Now() + base::Days(1);
+  // The joining URL doesn't actually matter.
+  manager_->JoinInterestGroup(
+      interest_group,
+      /*joining_url=*/https_server_->GetURL("allow-join.d.test", "/"));
+  interest_group.owner = allow_leave_origin;
+  manager_->JoinInterestGroup(
+      interest_group,
+      /*joining_url=*/https_server_->GetURL("allow-leave.d.test", "/"));
+
+  // Navigate to a cross-origin URL.
+  ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("b.test", "/echo")));
+
+  // Join/leave calls for `allow_join_origin` should claim joining succeeded,
+  // and leaving failed, but neither call should actually affect what interest
+  // groups the user is in.
+  EXPECT_EQ(kSuccess, JoinInterestGroup(allow_join_origin, kGroup1));
+  EXPECT_EQ("NotAllowedError: Permission to leave interest group denied.",
+            LeaveInterestGroup(allow_join_origin, kGroup2));
+
+  // Join/leave calls for `allow_leave_origin` should claim joining failed, and
+  // leaving succeeded, but neither call should actually affect what interest
+  // groups the user is in.
+  EXPECT_EQ("NotAllowedError: Permission to join interest group denied.",
+            JoinInterestGroup(allow_leave_origin, kGroup1));
+  EXPECT_EQ(kSuccess, LeaveInterestGroup(allow_leave_origin, kGroup2));
+
+  // The user should still be in kGroup2, but not kGroup1, for both origins.
+  std::vector<std::pair<url::Origin, std::string>> expected_groups = {
+      {allow_join_origin, kGroup2}, {allow_leave_origin, kGroup2}};
+  EXPECT_THAT(GetAllInterestGroups(),
+              testing::UnorderedElementsAreArray(expected_groups));
+}
+
 // Test cross-origin joining of interest groups requires CORS.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOriginJoinNoCors) {
   const char kGroup[] = "aardvarks";

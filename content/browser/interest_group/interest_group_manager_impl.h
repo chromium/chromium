@@ -85,10 +85,20 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Checks if `frame_origin` can join the specified InterestGroup, performing
   // .well-known fetches if needed. If joining is allowed, then joins the
-  // interest group. `network_isolation_key` must be the NetworkIsolationKey
-  // associated with `url_loader_factory`. `url_loader_factory` is the factory
-  // for renderer frame where navigator.joinInterestGroup() was invoked, and
-  // will be used for the .well-known fetch if one is needed.
+  // interest group.
+  //
+  // `network_isolation_key` must be the NetworkIsolationKey associated with
+  // `url_loader_factory`.
+  //
+  // `url_loader_factory` is the factory for renderer frame where
+  // navigator.joinInterestGroup() was invoked, and will be used for the
+  // .well-known fetch if one is needed.
+  //
+  // `report_result_only`, if true, results in calling `callback` with the
+  // result of the permissions check, but not actually joining the interest
+  // group, regardless of success or failure. This is used to avoid leaking
+  // fingerprinting information if the join operation is disallowed by the
+  // browser configuration (e.g., 3P cookie blocking).
   //
   // See JoinInterestGroup() for more details on how the join operation is
   // performed.
@@ -97,6 +107,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const GURL& joining_url,
       const url::Origin& frame_origin,
       const net::NetworkIsolationKey& network_isolation_key,
+      bool report_result_only,
       network::mojom::URLLoaderFactory& url_loader_factory,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback);
 
@@ -107,6 +118,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const std::string& name,
       const url::Origin& frame_origin,
       const net::NetworkIsolationKey& network_isolation_key,
+      bool report_result_only,
       network::mojom::URLLoaderFactory& url_loader_factory,
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback);
 
@@ -241,11 +253,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void OnJoinInterestGroupPermissionsChecked(
       blink::InterestGroup group,
       const GURL& joining_url,
+      bool report_result_only,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
       bool can_join);
   void OnLeaveInterestGroupPermissionsChecked(
       const url::Origin& owner,
       const std::string& name,
+      bool report_result_only,
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
       bool can_leave);
 

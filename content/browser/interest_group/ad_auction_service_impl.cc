@@ -134,20 +134,13 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   if (!JoinOrLeaveApiAllowedFromRenderer(group.owner))
     return;
 
-  // If the interest group API is not allowed for this origin do nothing. This
-  // is not considered a bad message because the renderer cannot currently check
-  // for this state.
-  //
-  // TODO(https://crbug.com/1316549): Move this after the permissions check, and
-  // make it not affect the invocation of the callback, to avoid leaking that
-  // joining is disabled for particular owners, through timing information.
-  if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kJoin,
-          group.owner)) {
-    // Claim this passed the well-known check.
-    std::move(callback).Run(/*failed_well_known_check=*/false);
-    return;
-  }
+  // If the interest group API is not allowed for this origin, report the result
+  // of the permissions check, but don't actually join the interest group.
+  // The return value of IsInterestGroupAPIAllowed() is potentially affected by
+  // a user's browser configuration, which shouldn't be leaked to sites to
+  // protect against fingerprinting.
+  bool report_result_only = !IsInterestGroupAPIAllowed(
+      ContentBrowserClient::InterestGroupApiOperation::kJoin, group.owner);
 
   blink::InterestGroup updated_group = group;
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
@@ -156,8 +149,8 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
   GetInterestGroupManager().CheckPermissionsAndJoinInterestGroup(
       std::move(group), main_frame_url_, origin(),
-      GetFrame()->GetNetworkIsolationKey(), *GetFrameURLLoaderFactory(),
-      std::move(callback));
+      GetFrame()->GetNetworkIsolationKey(), report_result_only,
+      *GetFrameURLLoaderFactory(), std::move(callback));
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroup(
@@ -167,23 +160,17 @@ void AdAuctionServiceImpl::LeaveInterestGroup(
   if (!JoinOrLeaveApiAllowedFromRenderer(owner))
     return;
 
-  // If the interest group API is not allowed for this origin do nothing. This
-  // is not considered a bad message because the renderer cannot currently check
-  // for this state.
-  //
-  // TODO(https://crbug.com/1316549): Move this after the permissions check, and
-  // make it not affect the invocation of the callback, to avoid leaking that
-  // joining is disabled for particular owners, through timing information.
-  if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kLeave, owner)) {
-    // Claim this passed the well-known check.
-    std::move(callback).Run(/*failed_well_known_check=*/false);
-    return;
-  }
+  // If the interest group API is not allowed for this origin, report the result
+  // of the permissions check, but don't actually join the interest group.
+  // The return value of IsInterestGroupAPIAllowed() is potentially affected by
+  // a user's browser configuration, which shouldn't be leaked to sites to
+  // protect against fingerprinting.
+  bool report_result_only = !IsInterestGroupAPIAllowed(
+      ContentBrowserClient::InterestGroupApiOperation::kLeave, owner);
 
   GetInterestGroupManager().CheckPermissionsAndLeaveInterestGroup(
       owner, name, origin(), GetFrame()->GetNetworkIsolationKey(),
-      *GetFrameURLLoaderFactory(), std::move(callback));
+      report_result_only, *GetFrameURLLoaderFactory(), std::move(callback));
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
