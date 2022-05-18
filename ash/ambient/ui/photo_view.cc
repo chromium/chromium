@@ -9,9 +9,9 @@
 #include <memory>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
-#include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -47,7 +47,7 @@ constexpr JitterCalculator::Config kGlanceableInfoJitterConfig = {
 }  // namespace
 
 // PhotoView ------------------------------------------------------------------
-PhotoView::PhotoView(AmbientViewDelegate* delegate)
+PhotoView::PhotoView(AmbientViewDelegateImpl* delegate)
     : delegate_(delegate),
       glanceable_info_jitter_calculator_(kGlanceableInfoJitterConfig) {
   DCHECK(delegate_);
@@ -104,7 +104,7 @@ void PhotoView::Init() {
   model->GetCurrentAndNextImages(&current_image, &next_image);
   UpdateImage(current_image);
   UpdateImage(next_image);
-  delegate_->GetAmbientViewEventHandler()->OnMarkerHit(
+  delegate_->NotifyObserversMarkerHit(
       AmbientPhotoConfig::Marker::kUiStartRendering);
 }
 
@@ -125,7 +125,7 @@ void PhotoView::UpdateImage(const PhotoWithDetails& next_image) {
 }
 
 void PhotoView::OnImageCycleComplete() {
-  delegate_->GetAmbientViewEventHandler()->OnMarkerHit(
+  delegate_->NotifyObserversMarkerHit(
       AmbientPhotoConfig::Marker::kUiCycleEnded);
 }
 
@@ -170,7 +170,6 @@ void PhotoView::OnImplicitAnimationsCompleted() {
   delegate_->GetAmbientBackendModel()->GetCurrentAndNextImages(
       /*current_image=*/nullptr, &next_image);
   UpdateImage(next_image);
-  delegate_->OnPhotoTransitionAnimationCompleted();
 }
 
 bool PhotoView::NeedToAnimateTransition() const {

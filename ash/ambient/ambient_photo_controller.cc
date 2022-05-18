@@ -84,6 +84,7 @@ base::FilePath GetCacheRootPath() {
 AmbientPhotoController::AmbientPhotoController(
     AmbientClient& ambient_client,
     AmbientAccessTokenController& access_token_controller,
+    AmbientViewDelegate& view_delegate,
     AmbientPhotoConfig photo_config)
     : ambient_backend_model_(std::move(photo_config)),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
@@ -99,6 +100,7 @@ AmbientPhotoController::AmbientPhotoController(
           access_token_controller)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
+  scoped_view_delegate_observation_.Observe(&view_delegate);
   ScheduleFetchBackupImages();
 }
 

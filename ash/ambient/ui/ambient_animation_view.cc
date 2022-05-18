@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <utility>
 
+#include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
@@ -18,7 +19,6 @@
 #include "ash/ambient/ui/ambient_animation_player.h"
 #include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_animation_shield_controller.h"
-#include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/ui/media_string_view.h"
@@ -165,20 +165,21 @@ std::unique_ptr<views::Border> CreateMediaStringBorder(
 }  // namespace
 
 AmbientAnimationView::AmbientAnimationView(
-    AmbientViewDelegate* view_delegate,
+    AmbientViewDelegateImpl* view_delegate,
     std::unique_ptr<const AmbientAnimationStaticResources> static_resources)
-    : event_handler_(view_delegate->GetAmbientViewEventHandler()),
+    : view_delegate_(view_delegate),
       static_resources_(std::move(static_resources)),
       animation_photo_provider_(static_resources_.get(),
                                 view_delegate->GetAmbientBackendModel()),
       animation_jitter_calculator_(kAnimationJitterConfig) {
+  DCHECK(view_delegate_);
   SetID(AmbientViewID::kAmbientAnimationView);
-  Init(view_delegate);
+  Init();
 }
 
 AmbientAnimationView::~AmbientAnimationView() = default;
 
-void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
+void AmbientAnimationView::Init() {
   SetUseDefaultFillLayout(true);
 
   views::View* animation_container_view =
@@ -267,7 +268,7 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
       views::BoxLayout::CrossAxisAlignment::kStart);
   glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder());
   glanceable_info_container_->AddChildView(std::make_unique<GlanceableInfoView>(
-      view_delegate, kTimeFontSizeDip,
+      view_delegate_.get(), kTimeFontSizeDip,
       /*time_temperature_font_color=*/gfx::kGoogleGrey900));
 
   // Media string should appear in the top-right corner of the
@@ -293,7 +294,8 @@ void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
 
 void AmbientAnimationView::AnimationCycleEnded(
     const lottie::Animation* animation) {
-  event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  view_delegate_->NotifyObserversMarkerHit(
+      AmbientPhotoConfig::Marker::kUiCycleEnded);
   base::TimeTicks now = base::TimeTicks::Now();
   if (now - last_jitter_timestamp_ >= kAnimationJitterPeriod) {
     // AnimationCycleEnded() may be called while a ui "paint" operation is still
@@ -359,7 +361,8 @@ void AmbientAnimationView::StartPlayingAnimation() {
   // |animation_player_|, so it's safe to pass a raw ptr here.
   animation_player_ =
       std::make_unique<AmbientAnimationPlayer>(animated_image_view_);
-  event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiStartRendering);
+  view_delegate_->NotifyObserversMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
   last_jitter_timestamp_ = base::TimeTicks::Now();
 }
 

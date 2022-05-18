@@ -36,16 +36,11 @@ AmbientWeatherModel* AmbientViewDelegateImpl::GetAmbientWeatherModel() {
   return ambient_controller_->GetAmbientWeatherModel();
 }
 
-AmbientViewEventHandler* AmbientViewDelegateImpl::GetAmbientViewEventHandler() {
-  AmbientViewEventHandler* event_handler =
-      ambient_controller_->ambient_photo_controller();
-  DCHECK(event_handler);
-  return event_handler;
-}
-
-void AmbientViewDelegateImpl::OnPhotoTransitionAnimationCompleted() {
-  for (auto& observer : view_delegate_observers_)
-    observer.OnPhotoTransitionAnimationCompleted();
+void AmbientViewDelegateImpl::NotifyObserversMarkerHit(
+    AmbientPhotoConfig::Marker marker) {
+  for (AmbientViewDelegateObserver& observer : view_delegate_observers_) {
+    observer.OnMarkerHit(marker);
+  }
 }
 
 }  // namespace ash

@@ -32,8 +32,7 @@ class AmbientAnimationAttributionProvider;
 class AmbientAnimationPlayer;
 class AmbientAnimationStaticResources;
 class AmbientAnimationShieldController;
-class AmbientViewDelegate;
-class AmbientViewEventHandler;
+class AmbientViewDelegateImpl;
 
 class ASH_EXPORT AmbientAnimationView : public views::View,
                                         public lottie::AnimationObserver,
@@ -42,14 +41,14 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   METADATA_HEADER(AmbientAnimationView);
 
   AmbientAnimationView(
-      AmbientViewDelegate* view_delegate,
+      AmbientViewDelegateImpl* view_delegate,
       std::unique_ptr<const AmbientAnimationStaticResources> static_resources);
   AmbientAnimationView(const AmbientAnimationView&) = delete;
   AmbientAnimationView& operator=(AmbientAnimationView&) = delete;
   ~AmbientAnimationView() override;
 
  private:
-  void Init(AmbientViewDelegate* view_delegate);
+  void Init();
 
   void AnimationCycleEnded(const lottie::Animation* animation) override;
 
@@ -60,7 +59,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   void RestartThroughputTracking();
   void ApplyJitter();
 
-  AmbientViewEventHandler* const event_handler_;
+  const base::raw_ptr<AmbientViewDelegateImpl> view_delegate_;
 
   const std::unique_ptr<const AmbientAnimationStaticResources>
       static_resources_;

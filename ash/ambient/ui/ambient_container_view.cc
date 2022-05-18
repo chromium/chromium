@@ -26,7 +26,7 @@
 namespace ash {
 
 AmbientContainerView::AmbientContainerView(
-    AmbientViewDelegate* delegate,
+    AmbientViewDelegateImpl* delegate,
     std::unique_ptr<AmbientAnimationStaticResources>
         animation_static_resources) {
   DCHECK(delegate);

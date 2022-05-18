@@ -590,7 +590,7 @@ void AmbientController::OnEnabledPrefChanged() {
 
     DCHECK(AmbientClient::Get());
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
-        *AmbientClient::Get(), access_token_controller_,
+        *AmbientClient::Get(), access_token_controller_, delegate_,
         CreatePhotoConfigForCurrentTheme());
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
