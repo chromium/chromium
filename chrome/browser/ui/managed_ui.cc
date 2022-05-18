@@ -74,11 +74,13 @@ bool ShouldDisplayManagedUi(Profile* profile) {
   // Don't show the UI in demo mode.
   if (ash::DemoSession::IsDeviceInDemoMode())
     return false;
+#endif
 
-  // Don't show the UI for Unicorn accounts.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Don't show the UI for Family Link accounts.
   if (profile->IsChild())
     return false;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   return enterprise_util::IsBrowserManaged(profile);
 }
