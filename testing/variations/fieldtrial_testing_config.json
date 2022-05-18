@@ -3119,24 +3119,6 @@
             ]
         }
     ],
-    "DownloadProgressInfoBar": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "speeding_up_message_enabled": "true"
-                    },
-                    "enable_features": [
-                        "DownloadProgressInfoBar"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadRange": [
         {
             "platforms": [
