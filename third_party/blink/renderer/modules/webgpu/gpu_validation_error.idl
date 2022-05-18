@@ -7,7 +7,6 @@
 [
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
-] interface GPUValidationError {
+] interface GPUValidationError : GPUError {
     constructor(DOMString message);
-    readonly attribute DOMString message;
 };

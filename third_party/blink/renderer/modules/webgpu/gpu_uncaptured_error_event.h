@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_UNCAPTURED_ERROR_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_UNCAPTURED_ERROR_EVENT_H_
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 
 namespace blink {
 
 class GPUUncapturedErrorEventInit;
+class GPUError;
 
 class GPUUncapturedErrorEvent : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -27,10 +27,10 @@ class GPUUncapturedErrorEvent : public Event {
   void Trace(Visitor*) const override;
 
   // gpu_uncaptured_error_event.idl
-  const V8GPUError* error() const;
+  const GPUError* error() const;
 
  private:
-  Member<V8GPUError> error_;
+  Member<GPUError> error_;
 };
 
 }  // namespace blink
