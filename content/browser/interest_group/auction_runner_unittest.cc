@@ -4401,8 +4401,14 @@ function reportResult(auctionConfig, browserSignals) {
 }
                                          )"));
 
-  // Only accept first bidder's bid. Requests will always be batched non-racily,
-  // since a mock time is in use.
+  // Response body that only accept first bidder's bid.
+  const char kTrustedScoringSignalsBody[] =
+      R"({"renderUrls":{"https://ad1.com/":"accept", "https://ad2.com/":"reject"}})";
+
+  // There may be one merged trusted scoring signals request, or two separate
+  // requests.
+
+  // Response in the case of a single merged trusted scoring signals request.
   auction_worklet::AddVersionedJsonResponse(
       &url_loader_factory_,
       GURL(trusted_scoring_signals_url_->spec() +
@@ -4410,9 +4416,27 @@ function reportResult(auctionConfig, browserSignals) {
            "&renderUrls=https%3A%2F%2Fad1.com%2F,https%3A%2F%2Fad2.com%2F"
            "&adComponentRenderUrls=https%3A%2F%2Fad1.com-component1.com%2F,"
            "https%3A%2F%2Fad2.com-component1.com%2F"),
-      R"(
-{"renderUrls":{"https://ad1.com/":"accept", "https://ad2.com/":"reject"}}
-      )",
+      kTrustedScoringSignalsBody,
+      /*data_version=*/2);
+
+  // Responses in the case of two separate trusted scoring signals requests.
+  // Extra entries in the response dictionary will be ignored, so can use the
+  // same body as in the merged request case.
+  auction_worklet::AddVersionedJsonResponse(
+      &url_loader_factory_,
+      GURL(trusted_scoring_signals_url_->spec() +
+           "?hostname=publisher1.com"
+           "&renderUrls=https%3A%2F%2Fad1.com%2F"
+           "&adComponentRenderUrls=https%3A%2F%2Fad1.com-component1.com%2F"),
+      kTrustedScoringSignalsBody,
+      /*data_version=*/2);
+  auction_worklet::AddVersionedJsonResponse(
+      &url_loader_factory_,
+      GURL(trusted_scoring_signals_url_->spec() +
+           "?hostname=publisher1.com"
+           "&renderUrls=https%3A%2F%2Fad2.com%2F"
+           "&adComponentRenderUrls=https%3A%2F%2Fad2.com-component1.com%2F"),
+      kTrustedScoringSignalsBody,
       /*data_version=*/2);
 
   RunStandardAuction();
