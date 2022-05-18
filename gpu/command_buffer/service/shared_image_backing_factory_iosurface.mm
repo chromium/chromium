@@ -10,6 +10,7 @@
 #include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
@@ -120,12 +121,15 @@ class SharedImageRepresentationDawnIOSurface
     texture_descriptor.mipLevelCount = 1;
     texture_descriptor.sampleCount = 1;
 
-    // We need to have internal usages of CopySrc for copies and
-    // RenderAttachment for clears.
+    // We need to have internal usages of CopySrc for copies. If texture is not
+    // for video frame import, which has bi-planar format, we also need
+    // RenderAttachment usage for clears.
     WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
     internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-    internalDesc.internalUsage =
-        WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment;
+    internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+    if (this->usage() & gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE)
+      internalDesc.internalUsage |= WGPUTextureUsage_RenderAttachment;
+
     texture_descriptor.nextInChain =
         reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
@@ -221,6 +225,12 @@ SharedImageBackingFactoryIOSurface::ProduceDawn(
   auto io_surface = GetIOSurfaceFromImage(image);
   if (!io_surface)
     return nullptr;
+
+  // TODO(crbug.com/1293514): Remove this if condition after using single
+  // multiplanar mailbox and actual_format could report multiplanar format
+  // correctly.
+  if (IOSurfaceGetPixelFormat(io_surface) == '420v')
+    actual_format = viz::YUV_420_BIPLANAR;
 
   absl::optional<WGPUTextureFormat> wgpu_format =
       viz::ToWGPUFormat(actual_format);

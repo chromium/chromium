@@ -12,7 +12,9 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -173,8 +175,13 @@ GPUExternalTexture* GPUExternalTexture::Create(
 
   // TODO(crbug.com/1306753): Use SharedImageProducer and CompositeSharedImage
   // rather than check 'is_webgpu_compatible'.
+  bool device_support_zero_copy =
+      device->adapter()->features()->FeatureNameSet().Contains(
+          "multi-planar-formats");
+
   if (media_video_frame->HasTextures() &&
       (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
+      device_support_zero_copy &&
       media_video_frame->metadata().is_webgpu_compatible) {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromVideoFrame(
