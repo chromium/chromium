@@ -65,6 +65,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -103,6 +104,7 @@ namespace {
                                      FeedMenuCommands,
                                      NewTabPageContentDelegate,
                                      NewTabPageDelegate,
+                                     NewTabPageFollowDelegate,
                                      OverscrollActionsControllerDelegate,
                                      PrefObserverDelegate,
                                      SceneStateObserver> {
@@ -278,6 +280,7 @@ namespace {
 
   self.feedMetricsRecorder = self.discoverFeedService->GetFeedMetricsRecorder();
   self.feedMetricsRecorder.feedControlDelegate = self;
+  self.feedMetricsRecorder.followDelegate = self;
 
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     self.headerController =
@@ -581,9 +584,7 @@ namespace {
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
   DCHECK(IsWebChannelsEnabled());
-  if (ios::GetChromeBrowserProvider()
-          .GetFollowProvider()
-          ->DoesFollowingFeedHaveContent()) {
+  if ([self doesFollowingFeedHaveContent]) {
     [self.feedHeaderViewController
         updateFollowingSegmentDotForUnseenContent:hasUnseenContent];
   }
@@ -601,6 +602,7 @@ namespace {
             (FollowingFeedSortType)self.prefService->GetInteger(
                 prefs::kNTPFollowingFeedSortType);
         self.feedMetricsRecorder.feedControlDelegate = self;
+        self.feedMetricsRecorder.followDelegate = self;
       }
     }
   }
@@ -616,13 +618,16 @@ namespace {
   // Saves scroll position before changing feed.
   CGFloat scrollPosition = [self.ntpViewController scrollPosition];
 
+  [self.feedMetricsRecorder recordFeedSelected:feedType];
+
   if (feedType == FeedTypeFollowing) {
-    // Clears dot and notifies service that the Following feed content has been
-    // seen.
+    // Clears dot and notifies service that the Following feed content has
+    // been seen.
     [self.feedHeaderViewController
         updateFollowingSegmentDotForUnseenContent:NO];
     self.discoverFeedService->SetFollowingFeedContentSeen();
   }
+
   self.selectedFeed = feedType;
   [self updateNTPForFeed];
   [self updateFeedLayout];
@@ -641,6 +646,20 @@ namespace {
 
 - (BOOL)shouldFeedBeVisible {
   return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
+}
+
+#pragma mark - NewTabPageFollowDelegate
+
+- (NSUInteger)followedPublisherCount {
+  return [ios::GetChromeBrowserProvider()
+              .GetFollowProvider()
+              ->GetFollowedWebChannels() count];
+}
+
+- (BOOL)doesFollowingFeedHaveContent {
+  return ios::GetChromeBrowserProvider()
+      .GetFollowProvider()
+      ->DoesFollowingFeedHaveContent();
 }
 
 #pragma mark - FeedMenuCommands
@@ -1167,9 +1186,7 @@ namespace {
   if (!_feedHeaderViewController) {
     // Only show the dot if the user follows available publishers.
     BOOL followingSegmentDotVisible =
-        ios::GetChromeBrowserProvider()
-            .GetFollowProvider()
-            ->DoesFollowingFeedHaveContent() &&
+        [self doesFollowingFeedHaveContent] &&
         self.discoverFeedService->GetFollowingFeedHasUnseenContent();
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
         initWithFollowingFeedSortType:(FollowingFeedSortType)

@@ -40630,6 +40630,10 @@ Called by update_permissions_policy_enum.py.-->
              interstitial."/>
   <int value="44"
       label="User tapped the Follow button on the page overflow menu."/>
+  <int value="45"
+      label="User selected the Discover feed from the feed header."/>
+  <int value="46"
+      label="User selected the Following feed from the feed header."/>
 </enum>
 
 <enum name="FeedUserCommandType">

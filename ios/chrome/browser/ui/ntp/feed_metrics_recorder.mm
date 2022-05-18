@@ -14,6 +14,7 @@
 #import "components/feed/core/v2/public/common_enums.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_follow_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -177,6 +178,13 @@ const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 // User action indicating that the feed will refresh.
 const char kFeedWillRefresh[] = "ContentSuggestions.Feed.WillRefresh";
 
+// User action indicating that the Discover feed was selected.
+const char kDiscoverFeedSelected[] = "ContentSuggestions.Feed.Selected";
+
+// User action indicating that the Following feed was selected.
+const char kFollowingFeedSelected[] =
+    "ContentSuggestions.Feed.WebFeed.Selected";
+
 // User action triggered when the NTP view hierarchy was fixed after being
 // detected as broken.
 // TODO(crbug.com/1262536): Remove this when issue is fixed.
@@ -261,6 +269,23 @@ const char kDiscoverFeedBrokenNTPHierarchy[] =
 // Histogram name for the Feed settings when the App is being start.
 const char kFeedUserSettingsOnStart[] =
     "ContentSuggestions.Feed.UserSettingsOnStart";
+
+// Histogram names for logging followed publisher count after certain events.
+// After showing Following feed with content.
+const char kFollowCountFollowingContentShown[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.ContentShown";
+// After showing Following feed without content.
+const char kFollowCountFollowingNoContentShown[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.NoContentShown";
+// After following a channel.
+const char kFollowCountAfterFollow[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow";
+// After unfollowing a channel.
+const char kFollowCountAfterUnfollow[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow";
+// After engaging with the Following feed.
+const char kFollowCountWhenEngaged[] =
+    "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged";
 
 // Minimum scrolling amount to record a FeedEngagementType::kFeedEngaged due to
 // scrolling.
@@ -606,6 +631,53 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
 }
 
+- (void)recordFeedSelected:(FeedType)feedType {
+  DCHECK(self.followDelegate);
+  switch (feedType) {
+    case FeedTypeDiscover:
+      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                      kDiscoverFeedSelected];
+      base::RecordAction(base::UserMetricsAction(kDiscoverFeedSelected));
+      break;
+    case FeedTypeFollowing:
+      [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                      kFollowingFeedSelected];
+      base::RecordAction(base::UserMetricsAction(kFollowingFeedSelected));
+      NSUInteger followCount = [self.followDelegate followedPublisherCount];
+      if (followCount > 0 &&
+          [self.followDelegate doesFollowingFeedHaveContent]) {
+        [self recordFollowCount:followCount
+                   forLogReason:FollowCountLogReasonContentShown];
+      } else {
+        [self recordFollowCount:followCount
+                   forLogReason:FollowCountLogReasonNoContentShown];
+      }
+      break;
+  }
+}
+
+- (void)recordFollowCount:(NSUInteger)followCount
+             forLogReason:(FollowCountLogReason)logReason {
+  switch (logReason) {
+    case FollowCountLogReasonContentShown:
+      base::UmaHistogramSparse(kFollowCountFollowingContentShown, followCount);
+      break;
+    case FollowCountLogReasonNoContentShown:
+      base::UmaHistogramSparse(kFollowCountFollowingNoContentShown,
+                               followCount);
+      break;
+    case FollowCountLogReasonAfterFollow:
+      base::UmaHistogramSparse(kFollowCountAfterFollow, followCount);
+      break;
+    case FollowCountLogReasonAfterUnfollow:
+      base::UmaHistogramSparse(kFollowCountAfterUnfollow, followCount);
+      break;
+    case FollowCountLogReasonEngaged:
+      base::UmaHistogramSparse(kFollowCountWhenEngaged, followCount);
+      break;
+  }
+}
+
 - (void)recordFeedSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
                                          feedVisible:(BOOL)feedVisible
                                             signedIn:(BOOL)signedIn
@@ -735,6 +807,8 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 // Records Feed engagement.
 - (void)recordEngagement:(int)scrollDistance interacted:(BOOL)interacted {
+  DCHECK(self.followDelegate);
+
   scrollDistance = abs(scrollDistance);
 
   // Determine if this interaction is part of a new 'session'.
@@ -830,6 +904,10 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
     UMA_HISTOGRAM_ENUMERATION(kFollowingFeedEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngaged);
     self.engagedReportedFollowing = YES;
+
+    // Log follow count when engaging with Following feed.
+    [self recordFollowCount:[self.followDelegate followedPublisherCount]
+               forLogReason:FollowCountLogReasonEngaged];
   }
 
   // TODO(crbug.com/1322640): Separate user action for Following feed
