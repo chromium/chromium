@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -99,6 +100,12 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   bubble_widget_->AddObserver(this);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
 
+  // Stack system tray bubble's window above message center's window, such that
+  // message center's shadow will not cover on system tray.
+  tray_->GetBubbleWindowContainer()->StackChildAbove(
+      tray_->bubble()->GetBubbleWidget()->GetNativeWindow(),
+      bubble_widget_->GetNativeWindow());
+
   ui::Layer* widget_layer = bubble_widget_->GetLayer();
   if (!features::IsNotificationsRefreshEnabled()) {
     float radius = kBubbleCornerRadius;
@@ -106,6 +113,11 @@ void UnifiedMessageCenterBubble::ShowBubble() {
     widget_layer->SetIsFastRoundedCorner(true);
     widget_layer->Add(border_->layer());
   }
+
+  // Create a shadow for bubble widget.
+  shadow_ = SystemShadow::CreateShadowForWidget(
+      bubble_widget_, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kBubbleCornerRadius);
 
   bubble_view_->InitializeAndShowBubble();
   message_center_view_->Init();
@@ -181,6 +193,8 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
     bubble_widget_->GetLayer()->StackAtTop(border_->layer());
     border_->layer()->SetBounds(message_center_view_->GetContentsBounds());
   }
+
+  shadow_->SetContentBounds(bubble_view_->GetContentsBounds());
 }
 
 void UnifiedMessageCenterBubble::FocusEntered(bool reverse) {
@@ -239,6 +253,7 @@ void UnifiedMessageCenterBubble::OnViewVisibilityChanged(
     return;
 
   bubble_view_->UpdateBubble();
+  shadow_->layer()->SetVisible(message_center_view_->GetVisible());
 }
 
 void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {
@@ -248,6 +263,7 @@ void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {
   message_center_view_->RemoveObserver(this);
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
+  shadow_.reset();
   bubble_view_->ResetDelegate();
 
   // Close the quick settings bubble as well, which may not automatically happen

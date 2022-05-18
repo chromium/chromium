@@ -30,7 +30,6 @@ class Widget;
 
 namespace ash {
 
-class SystemShadow;
 class UnifiedSystemTray;
 class UnifiedSystemTrayController;
 class UnifiedSystemTrayView;
@@ -127,8 +126,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   void OnDisplayConfigurationChanged() override;
 
   // views::WidgetObserver:
-  void OnWidgetBoundsChanged(views::Widget* widget,
-                             const gfx::Rect& new_bounds) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // ::wm::ActivationChangeObserver:
@@ -179,8 +176,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedSystemTrayView* unified_view_ = nullptr;
-
-  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash

@@ -270,9 +270,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
                                              : gfx::Insets());
 
   if (init_params.translucent) {
-    // The following code will not work with bubble's shadow.
-    DCHECK(!init_params.has_shadow);
-
     // TODO(crbug/1313073): In the dark light mode feature, remove layer
     // creation in children views of this view to improve performance.
     SetPaintToLayer(features::IsDarkLightModeEnabled() ? ui::LAYER_TEXTURED
@@ -396,15 +393,6 @@ void TrayBubbleView::StopReroutingEvents() {
   reroute_event_handler_.reset();
 }
 
-void TrayBubbleView::OnBeforeBubbleWidgetInit(Widget::InitParams* params,
-                                              Widget* bubble_widget) const {
-  if (params_.has_shadow) {
-    // Apply a WM-provided shadow (see ui/wm/core/).
-    params->shadow_type = Widget::InitParams::ShadowType::kDrop;
-    params->shadow_elevation = wm::kShadowElevationActiveWindow;
-  }
-}
-
 void TrayBubbleView::OnWidgetClosing(Widget* widget) {
   // We no longer need to watch key events for activation if the widget is
   // closing.
@@ -425,7 +413,7 @@ void TrayBubbleView::OnWidgetActivationChanged(Widget* widget, bool active) {
 }
 
 ui::LayerType TrayBubbleView::GetLayerType() const {
-  if (params_.translucent)
+  if (params_.translucent && !params_.has_shadow)
     return ui::LAYER_NOT_DRAWN;
   return ui::LAYER_TEXTURED;
 }
@@ -433,8 +421,11 @@ ui::LayerType TrayBubbleView::GetLayerType() const {
 std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
     Widget* widget) {
   // Create the customized bubble border.
-  std::unique_ptr<BubbleBorder> bubble_border =
-      std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
+  std::unique_ptr<BubbleBorder> bubble_border = std::make_unique<BubbleBorder>(
+      arrow(), params_.has_shadow ? BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW
+                                  : BubbleBorder::NO_SHADOW);
+  if (params_.has_shadow)
+    bubble_border->set_md_shadow_elevation(params_.shadow_elevation);
   if (params_.corner_radius)
     bubble_border->SetCornerRadius(params_.corner_radius);
   bubble_border->set_avoid_shadow_overlap(true);

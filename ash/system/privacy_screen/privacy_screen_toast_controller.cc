@@ -55,7 +55,6 @@ void PrivacyScreenToastController::ShowToast() {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
   init_params.insets = GetTrayBubbleInsets();
-  init_params.has_shadow = false;
   init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);

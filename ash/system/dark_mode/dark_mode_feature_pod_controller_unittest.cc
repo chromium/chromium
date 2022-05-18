@@ -60,6 +60,7 @@ TEST_F(DarkModeFeaturePodControllerTest, ToggleDarkMode) {
   EXPECT_FALSE(controller->GetAutoScheduleEnabled());
   EXPECT_EQ(dark_mode_enabled, provider->IsDarkModeEnabled());
   EXPECT_EQ(dark_mode_enabled, button->IsToggled());
+  system_tray->CloseBubble();
 }
 
 }  // namespace ash

@@ -105,6 +105,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     absl::optional<gfx::Insets> insets;
     absl::optional<gfx::Insets> margin;
     bool has_shadow = true;
+    int shadow_elevation = kBubbleShadowElevation;
     // Use half opaque widget instead of fully opaque.
     bool translucent = false;
     // Whether the view is fully transparent (only serves as a container).
@@ -176,8 +177,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   std::u16string GetAccessibleWindowTitle() const override;
 
   // views::BubbleDialogDelegateView:
-  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* bubble_widget) const override;
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   ui::LayerType GetLayerType() const override;
