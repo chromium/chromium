@@ -7634,7 +7634,8 @@ domain Page
     returns
       # Frame id that has navigated (or failed to navigate)
       FrameId frameId
-      # Loader identifier.
+      # Loader identifier. This is omitted in case of same-document navigation,
+      # as the previously committed loaderId would not change.
       optional Network.LoaderId loaderId
       # User friendly error message, present if and only if navigation has failed.
       optional string errorText
