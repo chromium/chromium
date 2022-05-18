@@ -659,6 +659,7 @@ Polymer({
   onHidePhonePermissionsSetupDialog_() {
     // Don't close the main dialog if the password sub-dialog is open.
     if (this.isPasswordDialogShowing_) {
+      this.isPasswordDialogShowing_ = false;
       return;
     }
     this.showPhonePermissionSetupDialog_ = false;
