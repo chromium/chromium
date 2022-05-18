@@ -92,12 +92,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
         // viz::SoftwareRenderer does not do color space management. Otherwise
         // (normal case), be strict about color differences.
-        // TODO(crbug/795132): SkiaRenderer temporarily uses same code as
-        // software compositor. Fix plumbing for SkiaRenderer.
-        const int max_color_diff =
-            (IsSoftwareCompositingTest() || features::IsUsingSkiaRenderer())
-                ? kVeryLooseMaxColorDifference
-                : kMaxColorDifference;
+        const int max_color_diff = IsSoftwareCompositingTest()
+                                       ? kVeryLooseMaxColorDifference
+                                       : kMaxColorDifference;
 
         // Determine the average RGB color in the three regions-of-interest in
         // the frame.
