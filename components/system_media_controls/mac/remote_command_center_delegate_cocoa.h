@@ -14,7 +14,6 @@ class RemoteCommandCenterDelegate;
 }  // namespace internal
 }  // namespace system_media_controls
 
-API_AVAILABLE(macos(10.12.2))
 @interface RemoteCommandCenterDelegateCocoa : NSObject {
  @private
   system_media_controls::internal::RemoteCommandCenterDelegate* _delegate;
