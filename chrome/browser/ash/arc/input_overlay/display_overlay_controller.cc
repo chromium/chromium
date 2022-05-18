@@ -111,6 +111,7 @@ void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   menu_entry->SetSize(gfx::Size(kMenuEntrySize, kMenuEntrySize));
   menu_entry->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   menu_entry->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  menu_entry->SetInstallFocusRingOnFocus(false);
   // TODO(djacobo): Set proper positioning based on specs and responding to
   // resize.
   menu_entry->SetPosition(CalculateMenuEntryPosition());
