@@ -543,7 +543,7 @@ public class WebViewChromiumAwInit {
 
     // Log extra information, for debugging purposes. Do the work asynchronously to avoid blocking
     // startup.
-    private static void logCommandLineAndActiveTrials() {
+    private void logCommandLineAndActiveTrials() {
         PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
             // TODO(ntfschr): CommandLine can change at any time. For simplicity, only log it
             // once during startup.
@@ -551,6 +551,10 @@ public class WebViewChromiumAwInit {
             // Field trials can be activated at any time. We'll continue logging them as they're
             // activated.
             FieldTrialList.logActiveTrials();
+            // SafeMode was already determined earlier during the startup sequence, this just
+            // fetches the cached boolean state. If SafeMode was enabled, we already logged detailed
+            // information about the SafeMode config.
+            Log.i(TAG, "SafeMode enabled: " + mFactory.isSafeModeEnabled());
         });
     }
 

@@ -175,6 +175,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     // Initialization guarded by mAwInit.getLock()
     private Statics mStaticsAdapter;
 
+    private boolean mIsSafeModeEnabled;
+
     @RequiresApi(Build.VERSION_CODES.N)
     private ObjectHolderForN mObjectHolderForN =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? new ObjectHolderForN() : null;
@@ -458,13 +460,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             SafeModeController controller = SafeModeController.getInstance();
             controller.registerActions(BrowserSafeModeActionList.sList);
             long safeModeStart = SystemClock.elapsedRealtime();
-            boolean isSafeModeEnabled = controller.isSafeModeEnabled(webViewPackageName);
+            mIsSafeModeEnabled = controller.isSafeModeEnabled(webViewPackageName);
             long safeModeEnd = SystemClock.elapsedRealtime();
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.SafeMode.CheckStateBlockingTime", safeModeEnd - safeModeStart);
             RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.SafeMode.SafeModeEnabled", isSafeModeEnabled);
-            if (isSafeModeEnabled) {
+                    "Android.WebView.SafeMode.SafeModeEnabled", mIsSafeModeEnabled);
+            if (mIsSafeModeEnabled) {
                 try {
                     long safeModeQueryExecuteStart = SystemClock.elapsedRealtime();
                     Set<String> actions = controller.queryActions(webViewPackageName);
@@ -712,6 +714,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                             + ", targetSdkVersion: " + appTargetSdkVersion);
         }
         return shouldDisable;
+    }
+
+    /**
+     * Returns the cached SafeMode state. This must only be called after initialize(), which is when
+     * the SafeMode state is cached.
+     */
+    public boolean isSafeModeEnabled() {
+        return mIsSafeModeEnabled;
     }
 
     @Override
