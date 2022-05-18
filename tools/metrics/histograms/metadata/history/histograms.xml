@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="History.AttemptedToFixProfileError" units="units"
-    expires_after="M77">
+    expires_after="M106">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1298,7 +1298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InitializationFailureStep" enum="HistoryInitStep"
-    expires_after="M77">
+    expires_after="M106">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
