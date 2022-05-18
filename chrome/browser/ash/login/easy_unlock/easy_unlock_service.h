@@ -284,11 +284,21 @@ class EasyUnlockService : public KeyedService,
       bool success,
       const EasyUnlockDeviceKeyDataList& key_data_list);
 
+  // Called inside PrepareForSuspend() and OnScreenOff() to handle shared Smart
+  // Lock state updates.
+  void OnSuspendOrScreenOff();
+
   // Updates the service to state for handling system suspend.
   void PrepareForSuspend();
 
   // Called when the system resumes from a suspended state.
   void OnSuspendDone();
+
+  // Update the service to state for handling when the screen turns off.
+  void OnScreenOff();
+
+  // Called when the system resumes after the screen turns back on.
+  void OnScreenOffDone();
 
   void EnsureTpmKeyPresentIfNeeded();
 

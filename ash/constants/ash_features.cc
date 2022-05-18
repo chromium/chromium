@@ -1339,10 +1339,13 @@ const base::Feature kSimLockPolicy{"SimLockPolicy",
 const base::Feature kSmartDimExperimentalComponent{
     "SmartDimExperimentalComponent", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Disconnects bluetooth connection when screen turns off and backs off
-// connection attempt before retrying after a timeout occurs.
-const base::Feature kSmartLockBluetoothScanningFixes{
-    "SmartLockBluetoothScanningFixes", base::FEATURE_DISABLED_BY_DEFAULT};
+// Backs off connection attempt before retrying after a timeout occurs.
+const base::Feature kSmartLockBluetoothScanningFix{
+    "SmartLockBluetoothScanningFix", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Disconnects bluetooth connection when screen turns off.
+const base::Feature kSmartLockBluetoothScreenOffFix{
+    "SmartLockBluetoothScreenOffFix", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Deprecates Sign in with Smart Lock feature. Hides Smart Lock at the sign in
 // screen, removes the Smart Lock subpage in settings, and shows a one-time
