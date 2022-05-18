@@ -130,7 +130,7 @@ suite('SearchEngine', function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     searchEngineInfo = generateSearchEngineInfo();
     browserProxy.setSearchEnginesInfo(searchEngineInfo);
-    SearchEnginesBrowserProxyImpl.instance_ = browserProxy;
+    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-search-engine');
     page.prefs = {
@@ -150,20 +150,23 @@ suite('SearchEngine', function() {
   // startup.
   test('Initialization', async () => {
     // Dialog should initially be hidden.
-    assertFalse(!!page.$$('os-settings-search-selection-dialog'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('os-settings-search-selection-dialog'));
 
     await browserProxy.whenCalled('getSearchEnginesList');
     flush();
 
     // Sublabel should initially display the first search engine's name.
-    const searchEngineSubLabel = page.$$('#currentSearchEngine');
+    const searchEngineSubLabel =
+        page.shadowRoot.querySelector('#currentSearchEngine');
     assertTrue(!!searchEngineSubLabel);
     assertEquals(
         searchEngineInfo.defaults[0].name,
         searchEngineSubLabel.innerHTML.trim());
 
     // Click the dialog button.
-    const dialogButton = page.$$('#searchSelectionDialogButton');
+    const dialogButton =
+        page.shadowRoot.querySelector('#searchSelectionDialogButton');
     assertTrue(!!dialogButton);
     dialogButton.click();
     flush();
@@ -172,16 +175,17 @@ suite('SearchEngine', function() {
     flush();
 
     // Dialog should now be showing.
-    const dialog = page.$$('os-settings-search-selection-dialog');
+    const dialog =
+        page.shadowRoot.querySelector('os-settings-search-selection-dialog');
     assertTrue(!!dialog);
-    const selectElement = dialog.$$('select');
+    const selectElement = dialog.shadowRoot.querySelector('select');
     assertTrue(!!selectElement);
     assertEquals(0, selectElement.selectedIndex);
 
     // Simulate a user initiated change of the default search engine.
     selectElement.selectedIndex = 1;
     assertEquals(1, selectElement.selectedIndex);
-    const doneButton = dialog.$$('.action-button');
+    const doneButton = dialog.shadowRoot.querySelector('.action-button');
     assertTrue(!!doneButton);
     doneButton.click();
 
@@ -219,9 +223,11 @@ suite('SearchEngine', function() {
 
   test('ControlledByExtension', async () => {
     await browserProxy.whenCalled('getSearchEnginesList');
-    const dialogButton = page.$$('#searchSelectionDialogButton');
+    const dialogButton =
+        page.shadowRoot.querySelector('#searchSelectionDialogButton');
     assertFalse(dialogButton.disabled);
-    assertFalse(!!page.$$('extension-controlled-indicator'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
 
     page.set('prefs.default_search_provider_data.template_url_data', {
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
@@ -234,15 +240,18 @@ suite('SearchEngine', function() {
     flush();
 
     assertTrue(dialogButton.disabled);
-    assertTrue(!!page.$$('extension-controlled-indicator'));
-    assertFalse(!!page.$$('cr-policy-pref-indicator'));
+    assertTrue(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+    assertFalse(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 
   test('ControlledByPolicy', async () => {
     await browserProxy.whenCalled('getSearchEnginesList');
-    const dialogButton = page.$$('#searchSelectionDialogButton');
+    const dialogButton =
+        page.shadowRoot.querySelector('#searchSelectionDialogButton');
     assertFalse(dialogButton.disabled);
-    assertFalse(!!page.$$('extension-controlled-indicator'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
 
     page.set('prefs.default_search_provider_data.template_url_data', {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
@@ -252,7 +261,8 @@ suite('SearchEngine', function() {
     flush();
 
     assertTrue(dialogButton.disabled);
-    assertFalse(!!page.$$('extension-controlled-indicator'));
-    assertTrue(!!page.$$('cr-policy-pref-indicator'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+    assertTrue(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
   });
 });

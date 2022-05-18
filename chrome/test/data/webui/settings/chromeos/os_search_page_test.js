@@ -35,12 +35,14 @@ suite('OSSearchPageTests', function() {
     let deepLinkElement;
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       const browserSearchSettingsLink =
-          page.$$('settings-search-engine').$$('#browserSearchSettingsLink');
+          page.shadowRoot.querySelector('settings-search-engine')
+              .shadowRoot.querySelector('#browserSearchSettingsLink');
       deepLinkElement =
           browserSearchSettingsLink.shadowRoot.querySelector('cr-icon-button');
     } else {
       deepLinkElement =
-          page.$$('settings-search-engine').$$('#searchSelectionDialogButton');
+          page.shadowRoot.querySelector('settings-search-engine')
+              .shadowRoot.querySelector('#searchSelectionDialogButton');
     }
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);

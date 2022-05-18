@@ -184,15 +184,16 @@ suite('OSSettingsSearchBox', () => {
     document.body.appendChild(toolbar);
     flush();
 
-    searchBox = toolbar.$$('os-settings-search-box');
+    searchBox = toolbar.shadowRoot.querySelector('os-settings-search-box');
     assertTrue(!!searchBox);
-    field = searchBox.$$('cr-toolbar-search-field');
+    field = searchBox.shadowRoot.querySelector('cr-toolbar-search-field');
     assertTrue(!!field);
-    dropDown = searchBox.$$('iron-dropdown');
+    dropDown = searchBox.shadowRoot.querySelector('iron-dropdown');
     assertTrue(!!dropDown);
-    resultList = searchBox.$$('iron-list');
+    resultList = searchBox.shadowRoot.querySelector('iron-list');
     assertTrue(!!resultList);
-    noResultsSection = searchBox.$$('#noSearchResultsContainer');
+    noResultsSection =
+        searchBox.shadowRoot.querySelector('#noSearchResultsContainer');
     assertTrue(!!noResultsSection);
   }
 
