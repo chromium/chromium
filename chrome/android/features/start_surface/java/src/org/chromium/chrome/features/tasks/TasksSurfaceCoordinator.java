@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -27,9 +28,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.profiles.OriginalProfileSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
-import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
@@ -63,7 +64,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final TasksView mView;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final TasksSurfaceMediator mMediator;
-    private QueryTileSection mQueryTileSection;
     private final PropertyModel mPropertyModel;
     private final @TabSwitcherType int mTabSwitcherType;
     private final SnackbarManager mSnackbarManager;
@@ -76,6 +76,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private MostVisitedTilesCoordinator mMostVisitedCoordinator;
     private MostVisitedSuggestionsUiDelegate mSuggestionsUiDelegate;
     private TileGroupDelegateImpl mTileGroupDelegate;
+    private OneshotSupplier<Profile> mQueryTileProfileSupplier;
+    private QueryTileSection mQueryTileSection;
 
     /**
      * This flag should be reset once {@link MostVisitedTilesCoordinator#destroyMVTiles} is called.
@@ -158,14 +160,18 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         }
 
         if (hasQueryTiles) {
-            QueryTileSection queryTileSection =
-                    new QueryTileSection(mView.findViewById(R.id.query_tiles_layout),
-                            Profile.getLastUsedRegularProfile(), this::performSearchQuery);
+            mQueryTileProfileSupplier = new OriginalProfileSupplier();
+            mQueryTileProfileSupplier.onAvailable(this::initializeQueryTileSection);
         }
     }
 
-    private void performSearchQuery(QueryInfo queryInfo) {
-        mMediator.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
+    private void initializeQueryTileSection(Profile profile) {
+        assert profile != null;
+
+        mQueryTileSection =
+                new QueryTileSection(mView.findViewById(R.id.query_tiles_layout), profile,
+                        query -> mMediator.performSearchQuery(query.queryText, query.searchParams));
+        mQueryTileProfileSupplier = null;
     }
 
     /**
