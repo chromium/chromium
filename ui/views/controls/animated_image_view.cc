@@ -62,6 +62,8 @@ void AnimatedImageView::Play(base::TimeDelta start_offset,
 
   state_ = State::kPlaying;
 
+  set_check_active_duration(style != lottie::Animation::Style::kLoop);
+
   SetCompositorFromWidget();
 
   animated_image_->StartSubsection(start_offset, duration, style);

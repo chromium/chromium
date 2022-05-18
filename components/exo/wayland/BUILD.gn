@@ -241,6 +241,7 @@ static_library("weston_test") {
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:weston_test",
     "//ui/base:test_support",
+    "//ui/compositor",
     "//ui/wm",
   ]
   sources = [ "weston_test.cc" ]

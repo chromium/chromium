@@ -12,6 +12,10 @@
 #include "base/time/time_override.h"
 
 namespace ui {
+namespace {
+// Setting to false disable the check globally.
+bool default_check_active_duration = true;
+}  // namespace
 
 // Do not fail on builds that run slow, such as SANITIZER, debug.
 #if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||           \
@@ -34,7 +38,8 @@ CompositorAnimationObserver::CompositorAnimationObserver(
 CompositorAnimationObserver::~CompositorAnimationObserver() = default;
 
 void CompositorAnimationObserver::Start() {
-  start_.emplace(base::TimeTicks::Now());
+  if (default_check_active_duration && check_active_duration_)
+    start_.emplace(base::TimeTicks::Now());
 }
 
 void CompositorAnimationObserver::Check() {
@@ -57,6 +62,10 @@ void CompositorAnimationObserver::NotifyFailure() {
         << (base::TimeTicks::Now() - *start_).InSecondsF()
         << "s) location=" << location_.ToString();
   }
+}
+
+void CompositorAnimationObserver::DisableCheckActiveDuration() {
+  default_check_active_duration = false;
 }
 
 }  // namespace ui

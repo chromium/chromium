@@ -19,6 +19,7 @@
 #include "components/exo/wm_helper.h"
 #include "components/exo/xkb_tracker.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -322,6 +323,8 @@ void bind_weston_test(wl_client* client,
 
 WestonTest::WestonTest(Server* server)
     : data_(std::make_unique<WestonTestState>(server)) {
+  ui::CompositorAnimationObserver::DisableCheckActiveDuration();
+
   wl_global_create(server->GetWaylandDisplay(), &weston_test_interface,
                    kWestonTestVersion, data_.get(), bind_weston_test);
 }
