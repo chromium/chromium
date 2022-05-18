@@ -259,6 +259,9 @@ try_.builder(
 
 try_.builder(
     name = "linux-cfm-rel",
+    mirrors = [
+        "ci/linux-cfm-rel",
+    ],
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chromeos/components/chromebox_for_meetings/.+",
