@@ -2626,7 +2626,7 @@
   {
     "name": "enable-secure-payment-confirmation-android",
     "owners": [ "web-payments-team@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 110
   },
   {
     "name": "enable-service-workers-for-chrome-untrusted",
