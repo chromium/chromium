@@ -22,6 +22,11 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy {
       'dialogClose',
       'error',
     ]);
+
+    /**
+     * @private {?AccountAdditionOptions}
+     */
+    this.dialogArguments_ = null;
   }
 
   /** @override */
@@ -39,6 +44,13 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy {
   /** @param {function} initializeEduArgsResponse */
   setInitializeEduArgsResponse(initializeEduArgsResponse) {
     this.initializeEduArgsResponse_ = initializeEduArgsResponse;
+  }
+
+  /**
+   * @param {?AccountAdditionOptions} dialogArguments
+   */
+  setDialogArguments(dialogArguments) {
+    this.dialogArguments_ = dialogArguments;
   }
 
   /** @override */
@@ -71,5 +83,10 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy {
   /** @override */
   error() {
     this.methodCalled('error');
+  }
+
+  /** @override */
+  getDialogArguments() {
+    return JSON.stringify(this.dialogArguments_);
   }
 }

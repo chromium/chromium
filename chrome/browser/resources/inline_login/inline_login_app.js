@@ -22,7 +22,7 @@ import './signin_blocked_by_policy_page.js';
 import './signin_error_page.js';
 import './welcome_page_app.js';
 import './strings.m.js';
-import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
+import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
 // </if>
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from './gaia_auth_host/authenticator.m.js';

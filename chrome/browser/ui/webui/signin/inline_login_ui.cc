@@ -126,7 +126,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"inline_login_browser_proxy.js", IDR_INLINE_LOGIN_BROWSER_PROXY_JS},
     {"webview_saml_injected.js", IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"inline_login_util.js", IDR_INLINE_LOGIN_UTIL_JS},
     {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
     {"signin_blocked_by_policy_page.js",
      IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS},

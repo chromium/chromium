@@ -8,11 +8,15 @@ import './edu_coexistence_button.js';
 import './edu_coexistence_error.js';
 import './edu_coexistence_offline.js';
 import './edu_coexistence_ui.js';
+import './arc_account_picker/arc_account_picker_app.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+
+import {getAccountAdditionOptionsFromJSON} from './arc_account_picker/arc_util.js';
 import {EduCoexistenceBrowserProxyImpl} from './edu_coexistence_browser_proxy.js';
 
 /** @enum {string} */
@@ -20,6 +24,7 @@ export const Screens = {
   ONLINE_FLOW: 'edu-coexistence-ui',
   ERROR: 'edu-coexistence-error',
   OFFLINE: 'edu-coexistence-offline',
+  ARC_ACCOUNT_PICKER: 'arc-account-picker',
 };
 
 Polymer({
@@ -39,11 +44,23 @@ Polymer({
       value: false,
     },
 
+    /*
+     * True if `kArcAccountRestrictions` feature is enabled.
+     * @private
+     */
+    isArcAccountRestrictionsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+      },
+      readOnly: true,
+    },
+
     /**
      * Specifies what the current screen is.
      * @private {Screens}
      */
-    currentScreen_: {type: Screens, value: Screens.ONLINE_FLOW},
+    currentScreen_: {type: Screens},
   },
 
   listeners: {
@@ -70,6 +87,7 @@ Polymer({
     this.currentScreen_ = screen;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
+    this.dispatchEvent(new CustomEvent('switch-view-notify-for-testing'));
   },
 
   /**
@@ -77,9 +95,43 @@ Polymer({
    * @private
    */
   setInitialScreen_(isOnline) {
-    this.currentScreen_ = isOnline ? Screens.ONLINE_FLOW : Screens.OFFLINE;
-    /** @type {CrViewManagerElement} */ (this.$.viewManager)
-        .switchView(this.currentScreen_);
+    const initialScreen = isOnline ? Screens.ONLINE_FLOW : Screens.OFFLINE;
+    if (this.isArcAccountRestrictionsEnabled_) {
+      const options = getAccountAdditionOptionsFromJSON(
+          EduCoexistenceBrowserProxyImpl.getInstance().getDialogArguments());
+      if (!!options && options.showArcAvailabilityPicker) {
+        this.$$('arc-account-picker-app')
+            .loadAccounts()
+            .then(
+                accountsFound => {
+                  this.switchToScreen_(
+                      accountsFound ? Screens.ARC_ACCOUNT_PICKER :
+                                      initialScreen);
+                },
+                reject => {
+                  this.switchToScreen_(initialScreen);
+                });
+        return;
+      }
+    }
+    this.switchToScreen_(initialScreen);
+  },
+
+  /**
+   * Switches to 'Add account' flow.
+   * @private
+   */
+  showAddAccount_() {
+    this.switchToScreen_(
+        navigator.onLine ? Screens.ONLINE_FLOW : Screens.OFFLINE);
+  },
+
+  /**
+   * Attempts to close the dialog.
+   * @private
+   */
+  closeDialog_() {
+    EduCoexistenceBrowserProxyImpl.getInstance().dialogClose();
   },
 
   /** @override */
@@ -89,13 +141,15 @@ Polymer({
     });
 
     window.addEventListener('online', () => {
-      if (this.currentScreen_ !== Screens.ERROR) {
+      if (this.currentScreen_ !== Screens.ERROR &&
+          this.currentScreen_ !== Screens.ARC_ACCOUNT_PICKER) {
         this.switchToScreen_(Screens.ONLINE_FLOW);
       }
     });
 
     window.addEventListener('offline', () => {
-      if (this.currentScreen_ !== Screens.ERROR) {
+      if (this.currentScreen_ !== Screens.ERROR &&
+          this.currentScreen_ !== Screens.ARC_ACCOUNT_PICKER) {
         this.switchToScreen_(Screens.OFFLINE);
       }
     });

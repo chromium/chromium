@@ -7,6 +7,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "ash/constants/ash_features.h"');
 
 const EduCoexistenceTest = class extends PolymerTest {
   /** @override */
@@ -69,6 +70,34 @@ TEST_F(
                             .ShowErrorScreenImmediatelyOnLoadAbort);
     });
 
+// TODO(crbug.com/1275568): Merge this test suite with the test above after the
+// feature is launched.
+// eslint-disable-next-line no-var
+var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
+    class extends EduCoexistenceAppTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kArcAccountRestrictions',
+        'chromeos::features::kLacrosSupport'
+      ]
+    };
+  }
+};
+
+TEST_F(
+    'EduCoexistenceAppTestWithArcAccountRestrictionsEnabled', 'ShowArcPicker',
+    function() {
+      this.runMochaTest(edu_coexistence_app_tests.TestNames.ShowArcPicker);
+    });
+
+TEST_F(
+    'EduCoexistenceAppTestWithArcAccountRestrictionsEnabled',
+    'ArcPickerSwitchToNormalSignin', function() {
+      this.runMochaTest(
+          edu_coexistence_app_tests.TestNames.ArcPickerSwitchToNormalSignin);
+    });
 
 var EduCoexistenceControllerTest = class extends EduCoexistenceTest {
   /** @override */

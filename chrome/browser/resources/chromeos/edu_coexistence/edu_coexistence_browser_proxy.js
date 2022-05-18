@@ -63,6 +63,11 @@ export class EduCoexistenceBrowserProxy {
    * @param {Array<string>} msg Error messages.
    */
   onError(msg) {}
+
+  /**
+   * @return {?string} JSON-encoded dialog arguments.
+   */
+  getDialogArguments() {}
 }
 
 /**
@@ -114,6 +119,11 @@ export class EduCoexistenceBrowserProxyImpl {
   /** @override */
   onError(msg) {
     chrome.send('error', msg);
+  }
+
+  /** @override */
+  getDialogArguments() {
+    return chrome.getVariableValue('dialogArguments');
   }
 }
 

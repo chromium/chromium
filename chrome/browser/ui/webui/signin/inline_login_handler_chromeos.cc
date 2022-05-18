@@ -423,6 +423,7 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
 
 void InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc(
     const base::Value::List& args) {
+  AllowJavascript();
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
   ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())

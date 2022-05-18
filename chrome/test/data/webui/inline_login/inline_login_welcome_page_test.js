@@ -4,11 +4,10 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
+import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
-import {AccountAdditionOptions} from 'chrome://chrome-signin/inline_login_util.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
