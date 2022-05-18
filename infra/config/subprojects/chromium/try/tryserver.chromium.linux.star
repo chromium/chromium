@@ -564,6 +564,9 @@ try_.orchestrator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
 )
 
 try_.compilator_builder(
