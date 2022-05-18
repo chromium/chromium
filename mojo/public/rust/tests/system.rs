@@ -158,11 +158,12 @@ tests! {
             };
             assert!(write_buf.len() >= goodbye.len());
             for i in 0..goodbye.len() {
-                write_buf[i] = goodbye[i];
+                write_buf[i].write(goodbye[i]);
             }
-            match write_buf.commit(goodbye.len()) {
-                Some((_buf, _err)) => assert!(false),
-                None => (),
+            // SAFETY: we wrote `goodbye.len()` valid elements to `write_buf`,
+            // so they are initialized.
+            unsafe {
+                write_buf.commit(goodbye.len());
             }
             // Reading.
             cons.wait(HandleSignals::READABLE).satisfied().unwrap();
@@ -179,10 +180,7 @@ tests! {
                     Ok(_bytes) => assert!(false),
                     Err(r) => assert_eq!(r, mojo::MojoResult::Busy),
                 }
-                match read_buf.commit(data_goodbye.len()) {
-                    Some((_buf, _err)) => assert!(false),
-                    None => (),
-                }
+                read_buf.commit(data_goodbye.len())
             }
             assert_eq!(data_goodbye.len(), goodbye.len());
             assert_eq!(String::from_utf8(data_goodbye).unwrap(), "goodbye".to_string());
