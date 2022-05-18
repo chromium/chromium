@@ -376,7 +376,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     public void onSizeChanged(
             float width, float height, float visibleViewportOffsetY, int orientation) {
         mWidth = width;
-        mOrientation = orientation;
+        boolean orientationChanged = false;
+        if (mOrientation != orientation) {
+            mOrientation = orientation;
+            orientationChanged = true;
+        }
         if (!LocalizationUtils.isLayoutRtl()) {
             mModelSelectorButton.setX(
                     mWidth - MODEL_SELECTOR_BUTTON_WIDTH_DP - MODEL_SELECTOR_BUTTON_END_PADDING_DP);
@@ -386,8 +390,9 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         updateStripScrim();
 
-        mNormalHelper.onSizeChanged(mWidth, mHeight);
-        mIncognitoHelper.onSizeChanged(mWidth, mHeight);
+        mNormalHelper.onSizeChanged(mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
+        mIncognitoHelper.onSizeChanged(
+                mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
 
         mStripFilterArea.set(0, 0, mWidth, Math.min(getHeight(), visibleViewportOffsetY));
         mEventFilter.setEventArea(mStripFilterArea);
