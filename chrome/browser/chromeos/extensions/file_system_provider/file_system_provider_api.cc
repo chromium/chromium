@@ -142,15 +142,14 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
   }
 
   // If the opened files limit is set, then it must be larger or equal than 0.
-  if (params->options.opened_files_limit.get() &&
-      *params->options.opened_files_limit.get() < 0) {
+  if (params->options.opened_files_limit &&
+      *params->options.opened_files_limit < 0) {
     return RespondNow(
         Error(FileErrorToString(base::File::FILE_ERROR_INVALID_OPERATION)));
   }
 
-  bool persistent = params->options.persistent.get()
-                        ? *params->options.persistent.get()
-                        : true;
+  bool persistent =
+      params->options.persistent ? *params->options.persistent : true;
   crosapi::mojom::FileSystemMetadataPtr metadata =
       crosapi::mojom::FileSystemMetadata::New();
   metadata->file_system_id = crosapi::mojom::FileSystemId::New();
@@ -159,9 +158,8 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
   metadata->display_name = params->options.display_name;
   metadata->writable = params->options.writable != nullptr;
   metadata->opened_files_limit = base::saturated_cast<uint32_t>(
-      params->options.opened_files_limit.get()
-          ? *params->options.opened_files_limit.get()
-          : 0);
+      params->options.opened_files_limit ? *params->options.opened_files_limit
+                                         : 0);
   metadata->supports_notify = params->options.supports_notify_tag != nullptr;
 
   auto callback =
@@ -259,13 +257,12 @@ ExtensionFunction::ResponseAction FileSystemProviderNotifyFunction::Run() {
   watcher->entry_path =
       base::FilePath::FromUTF8Unsafe(params->options.observed_path);
   watcher->recursive = params->options.recursive;
-  watcher->last_tag =
-      params->options.tag.get() ? *params->options.tag.get() : "";
+  watcher->last_tag = params->options.tag ? *params->options.tag : "";
   crosapi::mojom::FSPChangeType type =
       ParseChangeType(params->options.change_type);
   std::vector<crosapi::mojom::FSPChangePtr> changes;
-  if (params->options.changes.get()) {
-    changes = ParseChanges(*params->options.changes.get());
+  if (params->options.changes) {
+    changes = ParseChanges(*params->options.changes);
   }
 
   crosapi::CrosapiManager::Get()
