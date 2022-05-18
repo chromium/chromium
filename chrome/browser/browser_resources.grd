@@ -28,9 +28,9 @@
       </if>
       <if expr="enable_nacl or is_macosx">
         <!-- On Mac, the NaCl page resources need to be included in the build, regardless of whether chrome://nacl is available at runtime, because x86_64 and arm64 builds need to have identical pak files, https://crbug.com/1318358. -->
-        <include name="IDR_ABOUT_NACL_HTML" file="resources\about_nacl\about_nacl.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_ABOUT_NACL_HTML" file="resources\about_nacl\about_nacl.html" type="BINDATA" />
         <include name="IDR_ABOUT_NACL_CSS" file="resources\about_nacl\about_nacl.css" type="chrome_html" />
-        <include name="IDR_ABOUT_NACL_JS" file="resources\about_nacl\about_nacl.js" type="BINDATA" />
+        <include name="IDR_ABOUT_NACL_JS" file="${root_gen_dir}\chrome\browser\resources\about_nacl\tsc\about_nacl.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <include name="IDR_ABOUT_SYS_HTML" file="resources\about_sys\about_sys.html" type="BINDATA" />

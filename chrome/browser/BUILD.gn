@@ -7713,6 +7713,10 @@ grit("resources") {
   if (safe_browsing_mode == 1) {
     deps += [ "//chrome/browser/resources/reset_password:build_ts" ]
   }
+
+  if (enable_nacl || is_mac) {
+    deps += [ "//chrome/browser/resources/about_nacl:build_ts" ]
+  }
 }
 
 if (is_chrome_branded) {
