@@ -81,13 +81,4 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
 
 #endif  // !BUILDFLAG(IS_MAC)
 
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || \
-    (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS))
-// static
-std::unique_ptr<Border> PlatformStyle::CreateThemedLabelButtonBorder(
-    LabelButton* button) {
-  return button->CreateDefaultBorder();
-}
-#endif
-
 }  // namespace views

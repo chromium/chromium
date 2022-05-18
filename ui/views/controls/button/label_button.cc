@@ -232,7 +232,7 @@ std::unique_ptr<LabelButtonBorder> LabelButton::CreateDefaultBorder() const {
 }
 
 void LabelButton::SetBorder(std::unique_ptr<Border> border) {
-  border_is_themed_border_ = false;
+  explicitly_set_border_ = true;
   View::SetBorder(std::move(border));
 }
 
@@ -500,8 +500,8 @@ void LabelButton::OnThemeChanged() {
   Button::OnThemeChanged();
   ResetColorsFromNativeTheme();
   UpdateImage();
-  if (border_is_themed_border_)
-    View::SetBorder(PlatformStyle::CreateThemedLabelButtonBorder(this));
+  if (!explicitly_set_border_)
+    View::SetBorder(CreateDefaultBorder());
   ResetLabelEnabledColor();
   // The entire button has to be repainted here, since the native theme can
   // define the tint for the entire background/border/focus ring.

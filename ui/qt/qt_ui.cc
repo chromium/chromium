@@ -195,13 +195,6 @@ gfx::Image QtUi::GetIconForContentType(const std::string& content_type,
   return gfx::Image();
 }
 
-std::unique_ptr<views::Border> QtUi::CreateNativeBorder(
-    views::LabelButton* owning_button,
-    std::unique_ptr<views::LabelButtonBorder> border) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
   // QT doesn't have settings for the window frame action since it prefers

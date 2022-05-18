@@ -245,8 +245,8 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // current context;
   bool is_default_ = false;
 
-  // True if current border was set by UpdateThemedBorder.
-  bool border_is_themed_border_ = true;
+  // True if current border was set by SetBorder.
+  bool explicitly_set_border_ = false;
 
   // A flag indicating that this button's image should be aligned with the
   // center of the label when multiline is enabled. This shouldn't be the case

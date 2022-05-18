@@ -60,9 +60,6 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
-  std::unique_ptr<views::Border> CreateNativeBorder(
-      views::LabelButton* owning_button,
-      std::unique_ptr<views::LabelButtonBorder> border) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   float GetDeviceScaleFactor() const override;

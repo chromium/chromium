@@ -47,10 +47,7 @@ class Image;
 }
 
 namespace views {
-class Border;
 class DeviceScaleFactorObserver;
-class LabelButton;
-class LabelButtonBorder;
 class NavButtonProvider;
 class WindowButtonOrderObserver;
 class WindowFrameProvider;
@@ -151,11 +148,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   virtual gfx::Image GetIconForContentType(const std::string& content_type,
                                            int size,
                                            float scale) const = 0;
-
-  // Builds a Border which paints the native button style.
-  virtual std::unique_ptr<Border> CreateNativeBorder(
-      views::LabelButton* owning_button,
-      std::unique_ptr<views::LabelButtonBorder> border) = 0;
 
   // What action we should take when the user clicks on the non-client area.
   // |source| describes the type of click.

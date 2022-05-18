@@ -827,7 +827,6 @@ component("views") {
       if (is_linux) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_linux.h" ]
         sources += [
-          "style/platform_style_linux.cc",
           "widget/desktop_aura/desktop_screen_linux.cc",
           "widget/desktop_aura/desktop_window_tree_host_linux.cc",
           "widget/desktop_aura/window_event_filter_linux.cc",
@@ -839,7 +838,6 @@ component("views") {
         public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
         sources += [
           # TODO: do we need one for lacros?
-          "style/platform_style_linux.cc",
           "widget/desktop_aura/desktop_window_tree_host_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.cc",
           "widget/desktop_aura/window_event_filter_lacros.h",
