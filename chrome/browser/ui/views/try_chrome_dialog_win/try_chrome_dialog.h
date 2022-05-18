@@ -132,9 +132,8 @@ class TryChromeDialog : public views::WidgetObserver, public ui::EventHandler {
   void ButtonPressed(installer::ExperimentMetrics::State state);
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetCreated(views::Widget* widget) override;
-  void OnWidgetDestroyed(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   Result result() const { return result_; }
 

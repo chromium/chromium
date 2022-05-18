@@ -1402,13 +1402,6 @@ void TryChromeDialog::ButtonPressed(installer::ExperimentMetrics::State state) {
   popup_->Close();
 }
 
-void TryChromeDialog::OnWidgetClosing(views::Widget* widget) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  DCHECK_EQ(widget, popup_);
-
-  popup_->GetNativeWindow()->RemovePreTargetHandler(this);
-}
-
 void TryChromeDialog::OnWidgetCreated(views::Widget* widget) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(widget, popup_);
@@ -1416,10 +1409,11 @@ void TryChromeDialog::OnWidgetCreated(views::Widget* widget) {
   popup_->GetNativeWindow()->AddPreTargetHandler(this);
 }
 
-void TryChromeDialog::OnWidgetDestroyed(views::Widget* widget) {
+void TryChromeDialog::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   DCHECK_EQ(widget, popup_);
 
+  popup_->GetNativeWindow()->RemovePreTargetHandler(this);
   popup_->RemoveObserver(this);
   popup_ = nullptr;
   close_button_ = nullptr;
