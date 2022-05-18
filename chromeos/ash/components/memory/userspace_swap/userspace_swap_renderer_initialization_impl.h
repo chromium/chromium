@@ -10,7 +10,7 @@
 #include "chromeos/chromeos_export.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -49,6 +49,6 @@ class CHROMEOS_EXPORT UserspaceSwapRendererInitializationImpl {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_USERSPACE_SWAP_RENDERER_INITIALIZATION_IMPL_H_

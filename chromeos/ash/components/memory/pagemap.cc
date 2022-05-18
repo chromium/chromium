@@ -16,7 +16,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chromeos/ash/components/memory/aligned_memory.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 namespace {
@@ -109,4 +109,4 @@ bool Pagemap::IsFullyPresent(uint64_t address, uint64_t length) const {
 }
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

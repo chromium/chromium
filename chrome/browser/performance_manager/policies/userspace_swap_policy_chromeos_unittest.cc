@@ -26,7 +26,7 @@ namespace performance_manager {
 namespace policies {
 
 namespace {
-using chromeos::memory::userspace_swap::UserspaceSwapConfig;
+using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 using testing::_;
 using testing::Invoke;
 using testing::Return;

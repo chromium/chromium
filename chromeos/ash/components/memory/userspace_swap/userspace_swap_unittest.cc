@@ -20,7 +20,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #endif
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -96,4 +96,4 @@ TEST(UserspaceSwap, LimitSuperpagesReturned) {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 TEST(MemoryTest, ZramMmStat) {
@@ -81,4 +81,4 @@ TEST(MemoryTest, ZramIoStat) {
 }
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

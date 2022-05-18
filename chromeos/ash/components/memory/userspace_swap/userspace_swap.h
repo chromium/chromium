@@ -30,7 +30,7 @@ class UserspaceSwap;
 
 // This file is for containing the browser and renderer common userspace swap
 // components such as helper functions and structures.
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -148,8 +148,8 @@ class CHROMEOS_EXPORT RendererSwapData {
   static std::unique_ptr<RendererSwapData> Create(
       int render_process_host_id,
       base::ProcessId pid,
-      std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
-      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+      std::unique_ptr<UserfaultFD> uffd,
+      std::unique_ptr<SwapFile> swap_file,
       const Region& swap_remap_area,
       mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote);
 
@@ -192,6 +192,6 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_USERSPACE_SWAP_H_

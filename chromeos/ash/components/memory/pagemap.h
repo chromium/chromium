@@ -12,7 +12,7 @@
 #include "base/files/scoped_file.h"
 #include "chromeos/chromeos_export.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 // Pagemap fetches pagemap entries from procfs for a process.
@@ -71,6 +71,6 @@ class CHROMEOS_EXPORT Pagemap {
 };
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_PAGEMAP_H_

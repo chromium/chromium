@@ -11,7 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/chromeos_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // MlockMaping will attempt to mlock a mapping using the newer mlock2 syscall
 // if available using the MLOCK_ONFAULT option. This will allow pages to be
@@ -121,6 +121,6 @@ bool GetZramBdStats(ZramBdStat* zram_bd_stat);
 bool GetZramIoStats(ZramIoStat* zram_io_stat);
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_MEMORY_H_

@@ -16,7 +16,7 @@
 #include "chromeos/chromeos_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -122,6 +122,6 @@ struct CHROMEOS_EXPORT RegionOverlap {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_REGION_H_

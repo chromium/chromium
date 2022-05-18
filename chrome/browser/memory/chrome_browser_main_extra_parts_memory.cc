@@ -34,7 +34,7 @@ void ChromeBrowserMainExtraPartsMemory::PostBrowserStart() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (base::SysInfo::IsRunningOnChromeOS()) {
       cros_evaluator_ =
-          std::make_unique<chromeos::memory::SystemMemoryPressureEvaluator>(
+          std::make_unique<ash::memory::SystemMemoryPressureEvaluator>(
               static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
                   base::MemoryPressureMonitor::Get())
                   ->CreateVoter());

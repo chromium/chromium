@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -188,4 +188,4 @@ TEST_P(SwapStorageTest, DropFromSwap) {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

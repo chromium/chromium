@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/chromeos_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // The Kstaled experimental feature.
 extern const base::Feature kKstaled;
@@ -21,6 +21,6 @@ extern const base::FeatureParam<int> kKstaledRatio;
 // parameters for this user.
 CHROMEOS_EXPORT void InitializeKstaled();
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_KSTALED_H_

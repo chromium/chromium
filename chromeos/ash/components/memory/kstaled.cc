@@ -13,7 +13,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -73,4 +73,4 @@ void InitializeKstaled() {
                                  base::BindOnce(&OnRatioSet));
 }
 
-}  // namespace chromeos
+}  // namespace ash

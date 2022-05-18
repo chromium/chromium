@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -52,7 +52,7 @@ bool UserspaceSwapRendererInitializationImpl::PreSandboxSetup() {
   // given swap round we may need. Since we're creating this mapping as
   // PROT_NONE it will not be accessible and it will not actually account any
   // memory.
-  auto config = chromeos::memory::userspace_swap::UserspaceSwapConfig::Get();
+  auto config = UserspaceSwapConfig::Get();
   swap_area_len_ = config.number_of_pages_per_region * base::GetPageSize() *
                    config.renderer_region_limit_per_swap;
 
@@ -114,9 +114,9 @@ void UserspaceSwapRendererInitializationImpl::TransferFDsOrCleanup(
 // Static
 bool UserspaceSwapRendererInitializationImpl::
     UserspaceSwapSupportedAndEnabled() {
-  return chromeos::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
+  return ash::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

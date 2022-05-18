@@ -691,12 +691,12 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
     heap_profiler_controller_->Start();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::ConfigureSwap();
-    chromeos::InitializeKstaled();
+    ash::ConfigureSwap();
+    ash::InitializeKstaled();
 
     // If we're in an experimental group that locks the browser text we will do
     // that now.
-    chromeos::LockMainProgramText();
+    ash::LockMainProgramText();
 #endif
   }
 

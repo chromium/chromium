@@ -12,7 +12,7 @@
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
 #include "chromeos/chromeos_export.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -90,6 +90,6 @@ class CHROMEOS_EXPORT SwapFile {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_SWAP_STORAGE_H_

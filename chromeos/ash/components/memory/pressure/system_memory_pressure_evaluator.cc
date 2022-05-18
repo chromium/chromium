@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 namespace {
@@ -118,4 +118,4 @@ void SystemMemoryPressureEvaluator::OnMemoryPressure(
 }
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

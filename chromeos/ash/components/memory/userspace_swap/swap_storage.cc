@@ -29,7 +29,7 @@
 #include "crypto/random.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -474,4 +474,4 @@ bool EncryptedCompressedSwapFile::WriteToSwap(const Region& src,
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

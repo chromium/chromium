@@ -38,7 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -96,8 +96,8 @@ class RendererSwapDataImpl : public RendererSwapData {
   RendererSwapDataImpl(
       int render_process_host_id,
       base::ProcessId pid,
-      std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
-      std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+      std::unique_ptr<UserfaultFD> uffd,
+      std::unique_ptr<SwapFile> swap_file,
       const Region& swap_remap_area,
       mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap>
           pending_remote)
@@ -167,8 +167,8 @@ class RendererSwapDataImpl : public RendererSwapData {
   // Areas which can be used for moving PTEs.
   std::stack<const Region> free_swap_dest_areas_;
 
-  std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd_;
-  std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file_;
+  std::unique_ptr<UserfaultFD> uffd_;
+  std::unique_ptr<SwapFile> swap_file_;
 
   // The remote is our link to the renderer to perform the operations it needs
   // to allow for swapping a region.
@@ -418,8 +418,7 @@ CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap() {
   // We currently only support 64bit partition alloc.
   return false;
 #else
-  static bool userfault_fd_supported = chromeos::memory::userspace_swap::
-      UserfaultFD::KernelSupportsUserfaultFD();
+  static bool userfault_fd_supported = UserfaultFD::KernelSupportsUserfaultFD();
 
   // We also need to make sure the kernel supports the mremap operation with
   // MREMAP_DONTUNMAP.
@@ -458,8 +457,8 @@ RendererSwapData::~RendererSwapData() = default;
 CHROMEOS_EXPORT std::unique_ptr<RendererSwapData> RendererSwapData::Create(
     int render_process_host_id,
     base::ProcessId pid,
-    std::unique_ptr<chromeos::memory::userspace_swap::UserfaultFD> uffd,
-    std::unique_ptr<chromeos::memory::userspace_swap::SwapFile> swap_file,
+    std::unique_ptr<UserfaultFD> uffd,
+    std::unique_ptr<SwapFile> swap_file,
     const Region& swap_remap_area,
     mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote) {
   return std::make_unique<RendererSwapDataImpl>(
@@ -555,4 +554,4 @@ CHROMEOS_EXPORT bool IsSwapAllowedGlobally() {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

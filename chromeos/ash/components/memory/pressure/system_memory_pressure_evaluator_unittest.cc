@@ -22,7 +22,7 @@
 
 using PressureLevel = chromeos::ResourcedClient::PressureLevel;
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 namespace {
@@ -123,4 +123,4 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
 }
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

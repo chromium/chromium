@@ -12,7 +12,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -89,4 +89,4 @@ RegionOverlap::RegionOverlap(const RegionOverlap&) = default;
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

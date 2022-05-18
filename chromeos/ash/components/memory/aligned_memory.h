@@ -10,7 +10,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 template <typename Type>
@@ -21,6 +21,6 @@ inline bool IsPageAligned(Type val) {
 }
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_ALIGNED_MEMORY_H_

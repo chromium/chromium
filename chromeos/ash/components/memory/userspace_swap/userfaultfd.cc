@@ -28,7 +28,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/components/memory/aligned_memory.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -363,4 +363,4 @@ base::ScopedFD UserfaultFD::ReleaseFD() {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

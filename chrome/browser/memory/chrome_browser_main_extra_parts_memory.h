@@ -11,11 +11,11 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 namespace memory {
 class SystemMemoryPressureEvaluator;
 }
-}  // namespace chromeos
+}  // namespace ash
 #endif
 
 namespace memory {
@@ -50,8 +50,7 @@ class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
       memory_limit_pref_observer_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::memory::SystemMemoryPressureEvaluator>
-      cros_evaluator_;
+  std::unique_ptr<ash::memory::SystemMemoryPressureEvaluator> cros_evaluator_;
 #endif
 
   std::unique_ptr<memory::MemoryAblationStudy> memory_ablation_study_;

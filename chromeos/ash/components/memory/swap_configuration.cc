@@ -11,7 +11,7 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
 
-namespace chromeos {
+namespace ash {
 
 const base::Feature kCrOSTuneMinFilelist{"CrOSTuneMinFilelist",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -171,4 +171,4 @@ void ConfigureSwap() {
   ConfigureMinFilelistIfEnabled();
 }
 
-}  // namespace chromeos
+}  // namespace ash

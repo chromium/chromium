@@ -16,7 +16,7 @@
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 const base::Feature kCrOSLockMainProgramText{"CrOSLockMainProgramText",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -85,7 +85,7 @@ bool MlockMapping(void* addr, size_t size) {
 }
 
 CHROMEOS_EXPORT void LockMainProgramText() {
-  if (base::FeatureList::IsEnabled(chromeos::kCrOSLockMainProgramText)) {
+  if (base::FeatureList::IsEnabled(kCrOSLockMainProgramText)) {
     MlockAllText();
   }
 }
@@ -231,4 +231,4 @@ bool GetZramIoStats(ZramIoStat* zram_io_stat) {
 }
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

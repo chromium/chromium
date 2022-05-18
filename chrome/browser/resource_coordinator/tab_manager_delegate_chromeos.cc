@@ -218,7 +218,7 @@ class TabManagerDelegate::FocusedProcess {
 // Target memory to free is the amount which brings available
 // memory back to the margin.
 int TabManagerDelegate::MemoryStat::TargetMemoryToFreeKB() {
-  auto* monitor = chromeos::memory::SystemMemoryPressureEvaluator::Get();
+  auto* monitor = ash::memory::SystemMemoryPressureEvaluator::Get();
   if (monitor) {
     return monitor->GetCachedReclaimTargetKB();
   } else {

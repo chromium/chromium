@@ -16,7 +16,7 @@
 
 struct uffd_msg;
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 namespace userspace_swap {
 
@@ -213,6 +213,6 @@ class CHROMEOS_EXPORT UserfaultFD {
 
 }  // namespace userspace_swap
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_USERFAULTFD_H_

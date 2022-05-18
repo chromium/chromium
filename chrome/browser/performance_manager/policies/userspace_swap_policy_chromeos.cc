@@ -21,8 +21,8 @@ namespace performance_manager {
 namespace policies {
 
 namespace {
-using chromeos::memory::userspace_swap::SwapFile;
-using chromeos::memory::userspace_swap::UserspaceSwapConfig;
+using ::ash::memory::userspace_swap::SwapFile;
+using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 
 class UserspaceSwapPolicyData
     : public ExternalNodeAttachedDataImpl<UserspaceSwapPolicyData> {
@@ -338,7 +338,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
 
 // Static
 bool UserspaceSwapPolicy::UserspaceSwapSupportedAndEnabled() {
-  return chromeos::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
+  return ash::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
 }  // namespace policies

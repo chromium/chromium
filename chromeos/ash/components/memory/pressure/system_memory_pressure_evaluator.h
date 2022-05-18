@@ -12,7 +12,7 @@
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +64,6 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
 };
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_H_

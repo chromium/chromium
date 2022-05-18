@@ -17,7 +17,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace memory {
 
 namespace {
@@ -218,4 +218,4 @@ TEST_F(PagemapTest, VectorResizedWhenIncorrectlySized) {
 }
 
 }  // namespace memory
-}  // namespace chromeos
+}  // namespace ash

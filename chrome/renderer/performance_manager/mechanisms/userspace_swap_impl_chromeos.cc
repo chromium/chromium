@@ -26,7 +26,7 @@
 namespace performance_manager {
 namespace mechanism {
 
-using chromeos::memory::userspace_swap::UserspaceSwapConfig;
+using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 
 UserspaceSwapImpl::UserspaceSwapImpl() {
   CHECK(UserspaceSwapImpl::PlatformSupportsUserspaceSwap());
@@ -47,7 +47,7 @@ void UserspaceSwapImpl::Create(
 
 // static
 bool UserspaceSwapImpl::PlatformSupportsUserspaceSwap() {
-  return chromeos::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
+  return ash::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
 void UserspaceSwapImpl::MovePTEsLeavingMapping(MemoryRegionPtr src,
@@ -88,8 +88,8 @@ void UserspaceSwapImpl::GetPartitionAllocSuperPagesUsed(
     int32_t max_superpages,
     UserspaceSwapImpl::GetPartitionAllocSuperPagesUsedCallback callback) {
   std::vector<::userspace_swap::mojom::MemoryRegionPtr> areas;
-  chromeos::memory::userspace_swap::GetPartitionAllocSuperPagesInUse(
-      max_superpages, areas);
+  ash::memory::userspace_swap::GetPartitionAllocSuperPagesInUse(max_superpages,
+                                                                areas);
   std::move(callback).Run(std::move(areas));
 }
 
