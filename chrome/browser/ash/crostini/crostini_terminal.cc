@@ -514,9 +514,9 @@ void AddTerminalMenuShortcuts(
   }
 
   for (const auto& container : containers) {
-    // Use label 'Linux' if we have only the default container, else use
+    // Use label 'penguin' if we have only the default container, else use
     // <vm_name>:<container_name>.
-    std::string label = l10n_util::GetStringUTF8(IDS_APP_TERMINAL_LINUX);
+    std::string label = kCrostiniDefaultContainerName;
     if (containers.size() > 1 ||
         container != crostini::ContainerId::GetDefault()) {
       label = base::StrCat({container.vm_name, ":", container.container_name});
