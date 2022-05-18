@@ -1859,6 +1859,81 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Zram.{CountMetric}" units="count"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {CountMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="CountMetric">
+    <variant name="BdCount"
+        summary="the number of blocks currently written on the backing device"/>
+    <variant name="BdReads"
+        summary="the number of block reads from backing device"/>
+    <variant name="BdWrites"
+        summary="the number of block writes to backing device"/>
+    <variant name="FailedReads" summary="the number of failed reads in zram"/>
+    <variant name="FailedWrites" summary="the number of failed writes in zram"/>
+    <variant name="HugePages" summary="the number of incompressible pages"/>
+    <variant name="HugePagesSince"
+        summary="number of huge pages since zram set up"/>
+    <variant name="InvalidIo"
+        summary="number of non-page-size-aligned I/O requests in zram"/>
+    <variant name="NotifyFree"
+        summary="depending on device usage scenario it may account a) the
+                 number of pages freed because of swap slot free
+                 notifications or b) the number of pages freed because of
+                 REQ_OP_DISCARD requests sent by bio"/>
+    <variant name="PagesCompacted"
+        summary="the number of pages freed during compaction"/>
+    <variant name="SamePages"
+        summary="the number of same element filled pages written to this disk"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{PctMetric}" units="%"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {PctMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="PctMetric">
+    <variant name="CompressedSizePct"
+        summary="the overall compression ratio of data store in zram disk"/>
+    <variant name="HugePagesPct"
+        summary="the percentage of incompressible pages in zram"/>
+    <variant name="SamePagesPct"
+        summary="the percentage of stored pages which are same pages, these
+                 pages have only repeated content"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{SizeMetric}" units="MB"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {SizeMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="SizeMetric">
+    <variant name="ComprDataSizeMB"
+        summary="the compressed size of data stored in zram disk"/>
+    <variant name="MemLimitMB"
+        summary="the maximum amount of memory zram can use to store The
+                 compressed data"/>
+    <variant name="MemUsedMaxMB" summary="the peak memory that has zram used"/>
+    <variant name="MemUsedTotalMB"
+        summary="the total amount of memory in use for a zram disk"/>
+    <variant name="OrigDataSizeMB"
+        summary="the uncompressed size of data stored in zram disk"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -9,7 +9,12 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/chromeos_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -35,6 +40,43 @@ CHROMEOS_EXPORT void UpdateMemoryParameters();
 
 namespace memory {
 
+class CHROMEOS_EXPORT ZramMetrics
+    : public base::RefCountedThreadSafe<ZramMetrics> {
+ public:
+  static constexpr base::TimeDelta kZramMetricsPeriod = base::Seconds(10);
+  // Max number of pages should be the max system memory divided by the smallest
+  // possible page size, or: 16GB / 4096
+  static constexpr uint64_t kMaxNumPages =
+      (static_cast<uint64_t>(16) << 30) / (4096);
+  static constexpr int kMB = 1 << 20;
+
+  ZramMetrics();
+  ZramMetrics(const ZramMetrics&) = delete;
+  ZramMetrics& operator=(const ZramMetrics&) = delete;
+
+  // Begins data collection.
+  void Start();
+
+  // Ends data collection.
+  void Stop();
+
+ private:
+  // Friend it so it can call our private destructor.
+  friend class base::RefCountedThreadSafe<ZramMetrics>;
+
+  ~ZramMetrics();
+
+  void StartOnSequence();
+  void StopOnSequence();
+  void CollectEvents();
+
+  base::TimeDelta period_;
+  base::RepeatingTimer timer_;
+
+  // The background task runner where the collection takes place.
+  scoped_refptr<base::SequencedTaskRunner> runner_;
+};
+
 struct ZramMmStat {
   // Uncompressed size of data stored in this disk. This excludes
   // same-element-filled pages (same_pages) since no memory is allocated for
@@ -58,10 +100,10 @@ struct ZramMmStat {
   uint32_t pages_compacted;
   // The number of incompressible pages.
   // Start supporting from v4.19.
-  uint64_t huge_pages;
+  absl::optional<uint64_t> huge_pages;
   // The number of huge pages since zram set up.
   // Start supporting from v5.15.
-  uint64_t huge_pages_since;
+  absl::optional<uint64_t> huge_pages_since;
 };
 
 struct ZramBdStat {
@@ -91,6 +133,7 @@ struct ZramIoStat {
 };
 
 namespace internal {
+
 CHROMEOS_EXPORT bool ParseZramMmStat(const std::string& input,
                                      ZramMmStat* zram_mm_stat);
 

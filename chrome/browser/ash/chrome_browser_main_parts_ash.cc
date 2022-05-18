@@ -1355,6 +1355,9 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
         std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
   }
 
+  zram_detail_ = base::MakeRefCounted<memory::ZramMetrics>();
+  zram_detail_->Start();
+
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
 
@@ -1367,6 +1370,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Do this early to keep logging from taking time during shutdown.
   if (memory_pressure_detail_ != nullptr) {
     memory_pressure_detail_->Stop();
+  }
+  if (zram_detail_ != nullptr) {
+    zram_detail_->Stop();
   }
 
   SystemProxyManager::Shutdown();

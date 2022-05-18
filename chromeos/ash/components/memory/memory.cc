@@ -10,10 +10,13 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/page_size.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 
 namespace ash {
@@ -132,13 +135,19 @@ CHROMEOS_EXPORT bool ParseZramMmStat(const std::string& input,
       base::StringToUint(zram_mm_stat_list[6], &zram_mm_stat->pages_compacted);
 
   if (zram_mm_stat_list.size() >= 8) {
-    status &=
-        base::StringToUint64(zram_mm_stat_list[7], &zram_mm_stat->huge_pages);
+    uint64_t value = 0;
+    status &= base::StringToUint64(zram_mm_stat_list[7], &value);
+    if (status) {
+      zram_mm_stat->huge_pages = value;
+    }
   }
 
   if (zram_mm_stat_list.size() >= 9) {
-    status &= base::StringToUint64(zram_mm_stat_list[8],
-                                   &zram_mm_stat->huge_pages_since);
+    uint64_t value = 0;
+    status &= base::StringToUint64(zram_mm_stat_list[8], &value);
+    if (status) {
+      zram_mm_stat->huge_pages_since = value;
+    }
   }
 
   return status;
@@ -228,6 +237,134 @@ bool GetZramBdStats(ZramBdStat* zram_bd_stat) {
 bool GetZramIoStats(ZramIoStat* zram_io_stat) {
   // Get the first and default zram device io stats.
   return GetZramIoStatsForDevice(zram_io_stat, 0);
+}
+
+ZramMetrics::ZramMetrics() {
+  runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+}
+
+ZramMetrics::~ZramMetrics() = default;
+
+void ZramMetrics::StartOnSequence() {
+  timer_.Start(FROM_HERE, kZramMetricsPeriod,
+               base::BindRepeating(&ZramMetrics::CollectEvents, this));
+}
+
+void ZramMetrics::StopOnSequence() {
+  timer_.Stop();
+}
+
+void ZramMetrics::Stop() {
+  if (!runner_->RunsTasksInCurrentSequence()) {
+    // Post back to the sequence we want to run on.
+    runner_->PostTask(FROM_HERE,
+                      base::BindOnce(&ZramMetrics::StopOnSequence, this));
+    return;
+  }
+
+  StopOnSequence();
+}
+
+void ZramMetrics::Start() {
+  if (!runner_->RunsTasksInCurrentSequence()) {
+    // Post back to the sequence we want to run on.
+    runner_->PostTask(FROM_HERE,
+                      base::BindOnce(&ZramMetrics::StartOnSequence, this));
+    return;
+  }
+
+  StartOnSequence();
+}
+
+void ZramMetrics::CollectEvents() {
+  ZramMmStat zram_mm_stat;
+
+  if (!GetZramMmStats(&zram_mm_stat)) {
+    return;
+  }
+
+  const int kTotalPagesSwapped =
+      zram_mm_stat.orig_data_size / base::GetPageSize();
+
+  UMA_HISTOGRAM_MEMORY_LARGE_MB("ChromeOS.Zram.OrigDataSizeMB",
+                                zram_mm_stat.orig_data_size / kMB);
+
+  UMA_HISTOGRAM_MEMORY_LARGE_MB("ChromeOS.Zram.ComprDataSizeMB",
+                                zram_mm_stat.compr_data_size / kMB);
+
+  UMA_HISTOGRAM_PERCENTAGE(
+      "ChromeOS.Zram.CompressedSizePct",
+      zram_mm_stat.orig_data_size
+          ? (zram_mm_stat.compr_data_size * 100.0 / zram_mm_stat.orig_data_size)
+          : 0);
+
+  UMA_HISTOGRAM_MEMORY_LARGE_MB("ChromeOS.Zram.MemUsedTotalMB",
+                                zram_mm_stat.mem_used_total / kMB);
+
+  UMA_HISTOGRAM_MEMORY_LARGE_MB("ChromeOS.Zram.MemLimitMB",
+                                zram_mm_stat.mem_limit / kMB);
+
+  UMA_HISTOGRAM_MEMORY_LARGE_MB("ChromeOS.Zram.MemUsedMaxMB",
+                                zram_mm_stat.mem_used_max / kMB);
+
+  UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.SamePages",
+                              zram_mm_stat.same_pages, 1, kMaxNumPages, 50);
+
+  UMA_HISTOGRAM_PERCENTAGE(
+      "ChromeOS.Zram.SamePagesPct",
+      kTotalPagesSwapped ? zram_mm_stat.same_pages * 100.0 / kTotalPagesSwapped
+                         : 0);
+
+  UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.PagesCompacted",
+                              zram_mm_stat.pages_compacted, 1, kMaxNumPages,
+                              50);
+
+  if (zram_mm_stat.huge_pages) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.HugePages",
+                                *zram_mm_stat.huge_pages, 1, kMaxNumPages, 50);
+
+    UMA_HISTOGRAM_PERCENTAGE("ChromeOS.Zram.HugePagesPct",
+                             kTotalPagesSwapped ? *zram_mm_stat.huge_pages *
+                                                      100.0 / kTotalPagesSwapped
+                                                : 0);
+  }
+
+  if (zram_mm_stat.huge_pages_since) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.HugePagesSince",
+                                *zram_mm_stat.huge_pages_since, 1, kMaxNumPages,
+                                50);
+  }
+
+  ZramBdStat zram_bd_stat;
+
+  if (!GetZramBdStats(&zram_bd_stat)) {
+    return;
+  }
+
+  UMA_HISTOGRAM_COUNTS_1M("ChromeOS.Zram.BdCount", zram_bd_stat.bd_count);
+
+  UMA_HISTOGRAM_COUNTS_1M("ChromeOS.Zram.BdReads", zram_bd_stat.bd_reads);
+
+  UMA_HISTOGRAM_COUNTS_1M("ChromeOS.Zram.BdWrites", zram_bd_stat.bd_writes);
+
+  ZramIoStat zram_io_stat;
+
+  if (!GetZramIoStats(&zram_io_stat)) {
+    return;
+  }
+
+  UMA_HISTOGRAM_COUNTS_1000("ChromeOS.Zram.FailedReads",
+                            zram_io_stat.failed_reads);
+
+  UMA_HISTOGRAM_COUNTS_1000("ChromeOS.Zram.FailedWrites",
+                            zram_io_stat.failed_writes);
+
+  UMA_HISTOGRAM_COUNTS_1000("ChromeOS.Zram.InvalidIo", zram_io_stat.invalid_io);
+
+  UMA_HISTOGRAM_COUNTS_1000("ChromeOS.Zram.NotifyFree",
+                            zram_io_stat.notify_free);
 }
 
 }  // namespace memory
