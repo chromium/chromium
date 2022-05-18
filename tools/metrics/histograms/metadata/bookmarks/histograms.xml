@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad.Duplicate{UniquenessCriterion}"
-    units="bookmarks" expires_after="2022-06-30">
+    units="bookmarks" expires_after="2022-11-06">
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad.Unique{UniquenessCriterion}"
-    units="bookmarks" expires_after="2021-10-10">
+    units="bookmarks" expires_after="2022-11-06">
   <owner>mastiz@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
