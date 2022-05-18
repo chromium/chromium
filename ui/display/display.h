@@ -250,6 +250,10 @@ class DISPLAY_EXPORT Display final {
     display_frequency_ = display_frequency;
   }
 
+  // The label of the monitor according to the operating system.
+  const std::string& label() const { return label_; }
+  void set_label(const std::string& label) { label_ = label; }
+
   bool operator==(const Display& rhs) const;
   bool operator!=(const Display& rhs) const { return !(*this == rhs); }
 
@@ -273,6 +277,7 @@ class DISPLAY_EXPORT Display final {
   int depth_per_component_;
   bool is_monochrome_ = false;
   int display_frequency_ = 0;
+  std::string label_;
 };
 
 }  // namespace display

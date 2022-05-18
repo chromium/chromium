@@ -2783,6 +2783,10 @@
       name: "WindowPlacement",
       status: "stable",
     },
+    // Exposes OS/WM display names to sites with window-placement permission.
+    {
+      name: "WindowPlacementEnhancedScreenLabels",
+    },
     // Allows sites to request fullscreen when the set of screens change.
     {
       name: "WindowPlacementFullscreenOnScreensChange",

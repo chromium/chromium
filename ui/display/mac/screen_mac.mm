@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/sys_string_conversions.h"
 #include "ui/display/screen.h"
 
 #import <AppKit/AppKit.h>
@@ -170,6 +171,10 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   // TODO(crbug.com/1078903): Support multiple internal displays.
   if (CGDisplayIsBuiltin(display_id))
     SetInternalDisplayIds({display_id});
+
+  // TODO(crbug.com/1254885): Implement for below 10.15.
+  if (@available(macOS 10.15, *))
+    display.set_label(base::SysNSStringToUTF8(screen.localizedName));
 
   return DisplayMac{display, screen};
 }

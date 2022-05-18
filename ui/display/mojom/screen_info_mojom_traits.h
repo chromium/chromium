@@ -63,6 +63,10 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
     return r.is_internal;
   }
 
+  static const std::string& label(const display::ScreenInfo& r) {
+    return r.label;
+  }
+
   static int64_t display_id(const display::ScreenInfo& r) {
     return r.display_id;
   }

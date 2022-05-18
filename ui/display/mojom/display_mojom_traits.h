@@ -98,7 +98,9 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
   static int32_t display_frequency(const display::Display& display) {
     return display.display_frequency();
   }
-
+  static const std::string& label(const display::Display& display) {
+    return display.label();
+  }
   static bool Read(display::mojom::DisplayDataView data, display::Display* out);
 };
 

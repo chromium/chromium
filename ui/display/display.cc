@@ -321,7 +321,7 @@ bool Display::operator==(const Display& rhs) const {
          color_depth_ == rhs.color_depth_ &&
          depth_per_component_ == rhs.depth_per_component_ &&
          is_monochrome_ == rhs.is_monochrome_ &&
-         display_frequency_ == rhs.display_frequency_;
+         display_frequency_ == rhs.display_frequency_ && label_ == rhs.label_;
 }
 
 }  // namespace display
