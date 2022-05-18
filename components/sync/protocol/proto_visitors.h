@@ -692,13 +692,17 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   // etc.
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
-  VISIT(originator_cache_guid);
+VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics::RedirectEntry& proto) {
   VISIT(originator_visit_id);
   VISIT(url);
   VISIT(title);
   VISIT(hidden);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
   VISIT(visit_time_windows_epoch_micros);
+  VISIT(originator_cache_guid);
+  VISIT_REP(redirect_entries);
   VISIT(page_transition);
   VISIT(originator_referring_visit_id);
   VISIT(originator_opener_visit_id);
