@@ -36,6 +36,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -402,10 +403,14 @@ Response PageHandler::Crash() {
 }
 
 Response PageHandler::Close() {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!host_)
     return Response::ServerError("Not attached to a page");
-  web_contents->DispatchBeforeUnload(false /* auto_cancel */);
+
+  if (!host_->IsOutermostMainFrame())
+    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+
+  host_->DispatchBeforeUnload(RenderFrameHostImpl::BeforeUnloadType::TAB_CLOSE,
+                              false);
   return Response::Success();
 }
 
