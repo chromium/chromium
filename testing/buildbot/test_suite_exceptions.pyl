@@ -2103,12 +2103,6 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
-      'Optional Android Release (Pixel 4)': {
-        'args': [
-          # See above.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
@@ -2150,12 +2144,6 @@
           # only one color space, so disable wide color gamut for the test to
           # work around the issue. See https://crbug.com/1166379 for more
           # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-      'Optional Android Release (Pixel 4)': {
-        'args': [
-          # See above.
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -2606,12 +2594,6 @@
           'quickrun_shards': 2,
         },
       },
-      'Optional Android Release (Pixel 4)': {
-        'args': [
-          # See above.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'Win10 x64 Release (NVIDIA)': {
         'swarming': {
           'quickrun_shards': 2,
@@ -2658,12 +2640,6 @@
           # only one color space, so disable wide color gamut for the test to
           # work around the issue. See https://crbug.com/1166379 for more
           # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-      'Optional Android Release (Pixel 4)': {
-        'args': [
-          # See above.
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -2772,12 +2748,6 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
-      'Optional Android Release (Pixel 4)': {
-        'args': [
-          # See above.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
       'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
@@ -2795,12 +2765,6 @@
           # only one color space, so disable wide color gamut for the test to
           # work around the issue. See https://crbug.com/1166379 for more
           # information.
-          '--extra-browser-args=--disable-wcg-for-test',
-        ],
-      },
-      'Optional Android Release (Pixel 4)': {
-        'args': [
-          # See above.
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
@@ -3216,7 +3180,6 @@
   'video_decode_accelerator_gl_unittest': {
     'remove_from': [
       # Windows Intel doesn't have the GL extensions to support this test.
-      'Optional Win10 x64 Release (Intel HD 630)',
       'Win10 FYI x64 Release (Intel HD 630)',
       'Win10 FYI x64 Exp Release (Intel HD 630)',
     ],
@@ -3340,8 +3303,6 @@
       # Not enough capacity. https://crbug.com/982294
       'Mac Pro FYI Release (AMD)',
       'Mac FYI Retina Release (NVIDIA)',
-      # Only run validating on Mac Intel due to capacity http://crbug.com/1236796
-      'Optional Mac Release (Intel)',
     ],
   },
   'webgl2_conformance_gl_passthrough_tests 8086:3e9b': {
@@ -3418,9 +3379,6 @@
       # Passthrough version run on this configuration, not enough capacity for
       # both. See https://crbug.com/1238070.
       'ChromeOS FYI Release (kevin)',
-      # The Mac NVIDIA Retina bots don't have the capacity to run
-      # this test suite on mac_optional_gpu_tests_rel.
-      'Optional Mac Retina Release (NVIDIA)',
     ],
     'modifications': {
       # This VM configuration is known to be significantly slower than other

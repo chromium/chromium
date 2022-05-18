@@ -6506,12 +6506,6 @@
       # 'gpu_webgl_conformance_validating_telemetry_tests',
     ],
 
-    'gpu_fyi_mac_optional_gtests': [
-      'gpu_fyi_and_optional_non_linux_gtests',
-      'gpu_fyi_mac_specific_gtests',
-      'gpu_gles2_conform_gtests',
-    ],
-
     'gpu_fyi_mac_pro_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
@@ -6544,38 +6538,6 @@
       'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_fyi_optional_mac_passthrough_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_fyi_optional_mac_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_mediapipe_validating_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_validating_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_fyi_optional_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_mediapipe_validating_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_validating_telemetry_tests',
     ],
 
     'gpu_fyi_win_amd_release_telemetry_tests': [
@@ -6626,17 +6588,6 @@
       'rendering_desktop_representative_perf_tests_isolated_scripts',
     ],
 
-    'gpu_fyi_win_optional_gtests': [
-      'gpu_default_and_optional_win_specific_gtests',
-      'gpu_fyi_and_optional_non_linux_gtests',
-      'gpu_fyi_and_optional_win_specific_gtests',
-      'gpu_gles2_conform_gtests',
-    ],
-
-    'gpu_fyi_win_optional_isolated_scripts': [
-      'gpu_command_buffer_perf_passthrough_isolated_scripts',
-    ],
-
     'gpu_fyi_win_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
@@ -6666,29 +6617,6 @@
       'gpu_validating_telemetry_tests',
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
-    ],
-
-    'gpu_optional_win_intel_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
-      'gpu_win_intel_specific_telemetry_tests',
-    ],
-
-    'gpu_optional_win_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_mediapipe_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
     ],
 
     'gpu_pixel_4_and_6_telemetry_tests': [

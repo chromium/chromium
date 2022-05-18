@@ -1593,19 +1593,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     return bot_names
 
   def get_builders_that_do_not_actually_exist(self):
-    # Some of the bots on the chromium.gpu.fyi waterfall in particular
+    # Some of the bots on the chromium.fyi waterfall in particular
     # are defined only to be mirrored into trybots, and don't actually
     # exist on any of the waterfalls or consoles.
     return [
-        'Optional Android Release (Nexus 5X)',
-        'Optional Android Release (Pixel 4)',
-        'Optional Linux Release (Intel HD 630)',
-        'Optional Linux Release (NVIDIA)',
-        'Optional Mac Release (Intel)',
-        'Optional Mac Retina Release (AMD)',
-        'Optional Mac Retina Release (NVIDIA)',
-        'Optional Win10 x64 Release (Intel HD 630)',
-        'Optional Win10 x64 Release (NVIDIA)',
         # chromium.fyi
         'linux-blink-optional-highdpi-rel-dummy',
         'mac10.12-blink-rel-dummy',
