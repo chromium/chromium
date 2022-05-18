@@ -49,6 +49,8 @@ api::file_system_provider::FileSystemInfo ConvertFileSystemInfoMojomToExtension(
   item.display_name = info->metadata->display_name;
   item.writable = info->metadata->writable;
   item.opened_files_limit = info->metadata->opened_files_limit;
+  item.supports_notify_tag =
+      std::make_unique<bool>(info->metadata->supports_notify);
 
   for (const auto& watcher : info->watchers) {
     Watcher watcher_item;
@@ -156,11 +158,14 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
   metadata->file_system_id->provider = extension_id();
   metadata->file_system_id->id = params->options.file_system_id;
   metadata->display_name = params->options.display_name;
-  metadata->writable = params->options.writable != nullptr;
+  metadata->writable =
+      params->options.writable ? *params->options.writable : false;
   metadata->opened_files_limit = base::saturated_cast<uint32_t>(
       params->options.opened_files_limit ? *params->options.opened_files_limit
                                          : 0);
-  metadata->supports_notify = params->options.supports_notify_tag != nullptr;
+  metadata->supports_notify = params->options.supports_notify_tag
+                                  ? *params->options.supports_notify_tag
+                                  : false;
 
   auto callback =
       base::BindOnce(&FileSystemProviderMountFunction::RespondWithError, this);

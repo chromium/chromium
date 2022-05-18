@@ -95,6 +95,7 @@ crosapi::mojom::FileSystemInfoPtr ConvertFileSystemToMojom(
   item->metadata->display_name = file_system_info.display_name();
   item->metadata->writable = file_system_info.writable();
   item->metadata->opened_files_limit = file_system_info.opened_files_limit();
+  item->metadata->supports_notify = file_system_info.supports_notify_tag();
 
   return item;
 }
