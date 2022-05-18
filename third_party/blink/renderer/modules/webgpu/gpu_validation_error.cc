@@ -7,11 +7,16 @@
 namespace blink {
 
 // static
-GPUValidationError* GPUValidationError::Create(const String& message) {
+GPUValidationError* GPUValidationError::Create(const AtomicString& message) {
   return MakeGarbageCollected<GPUValidationError>(message);
 }
 
-GPUValidationError::GPUValidationError(const String& message)
-    : GPUError(message) {}
+GPUValidationError::GPUValidationError(const AtomicString& message) {
+  message_ = message;
+}
+
+const String& GPUValidationError::message() const {
+  return message_;
+}
 
 }  // namespace blink

@@ -53,3 +53,4 @@ enum GPUErrorFilter {
 };
 
 typedef sequence<(GPUBuffer or ArrayBuffer)> GPUMappedBuffer;
+typedef (GPUOutOfMemoryError or GPUValidationError) GPUError;

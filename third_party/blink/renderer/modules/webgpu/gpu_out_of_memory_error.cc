@@ -7,11 +7,10 @@
 namespace blink {
 
 // static
-GPUOutOfMemoryError* GPUOutOfMemoryError::Create(const String& message) {
-  return MakeGarbageCollected<GPUOutOfMemoryError>(message);
+GPUOutOfMemoryError* GPUOutOfMemoryError::Create() {
+  return MakeGarbageCollected<GPUOutOfMemoryError>();
 }
 
-GPUOutOfMemoryError::GPUOutOfMemoryError(const String& message)
-    : GPUError(message) {}
+GPUOutOfMemoryError::GPUOutOfMemoryError() {}
 
 }  // namespace blink
