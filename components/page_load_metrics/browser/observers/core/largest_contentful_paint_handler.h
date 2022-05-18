@@ -180,11 +180,6 @@ class LargestContentfulPaintHandler {
   void UpdateFirstInputOrScrollNotified(
       const absl::optional<base::TimeDelta>& candidate_new_time,
       const base::TimeDelta& navigation_start_offset);
-  void MergeForSubframes(
-      ContentfulPaintTimingInfo* inout_timing,
-      const absl::optional<base::TimeDelta>& candidate_new_time,
-      const uint64_t& candidate_new_size,
-      base::TimeDelta navigation_start_offset);
   bool IsValid(const absl::optional<base::TimeDelta>& time) {
     // When |time| is not present, this means that there is no current
     // candidate. If |time| is 0, it corresponds to an image that has not
