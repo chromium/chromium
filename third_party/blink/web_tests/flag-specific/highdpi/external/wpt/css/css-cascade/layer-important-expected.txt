@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS A1 Unlayered !important style
+PASS B1 Same specificity, layered !important first
+PASS C1 Same specificity, layered !important second
+FAIL D1 Same specificity, all !important assert_equals: D1 Same specificity, all !important, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+FAIL D2 Same specificity, all !important assert_equals: D2 Same specificity, all !important, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+FAIL D3 Same specificity, all !important assert_equals: D3 Same specificity, all !important, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+FAIL D4 Same specificity, all !important assert_equals: D4 Same specificity, all !important, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+FAIL E1 Different specificity, all !important assert_equals: E1 Different specificity, all !important, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+FAIL E2 Different specificity, all !important assert_equals: E2 Different specificity, all !important, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+Harness: the test ran to completion.
+

@@ -758,6 +758,13 @@
        {}
       ]
      ],
+     "out-of-flow-in-nested-spanner-multicol-crash.html": [
+      "8c8e3eefad3d9bf7efce71f3cffa8850f654c9e2",
+      [
+       null,
+       {}
+      ]
+     ],
      "out-of-flow-in-new-column-crash.html": [
       "0571af7a9793abdd5a2b317c51d91de30df0bebf",
       [
@@ -369231,8 +369238,15 @@
        {}
       ]
      ],
+     "layer-cssom-order-reverse-at-property.html": [
+      "dfa6bbfcfbdf727e622c1e0c9a3c026bc2cf98e1",
+      [
+       null,
+       {}
+      ]
+     ],
      "layer-cssom-order-reverse.html": [
-      "0bc05c2142af933b9bf4213d2c2a0e62c4125eb9",
+      "ddc5977d42c41e74455f555daf009f00d4406c8e",
       [
        null,
        {}
@@ -369247,6 +369261,13 @@
      ],
      "layer-import.html": [
       "821bc7d72f7bdd6d2028f3c52d43d2645ca6e05a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "layer-important.html": [
+      "23bfd167fd2ae7c3523fd99f30c4c0fb6231c04f",
       [
        null,
        {}
@@ -369273,6 +369294,13 @@
        {}
       ]
      ],
+     "layer-replaceSync-clears-stale.html": [
+      "c9d88681bd250bb5156936699c98829fb5139835",
+      [
+       null,
+       {}
+      ]
+     ],
      "layer-rules-cssom.html": [
       "b81960df6f6dbc8985b4101f434b9c4a0cb9990c",
       [
@@ -369288,7 +369316,7 @@
       ]
      ],
      "layer-statement-before-import.html": [
-      "7d099368d86a629aa9af138775dfc04de0ab0d92",
+      "fcde9605325b4c477ac1d81e6d53be18a6ce3afc",
       [
        null,
        {}
@@ -370065,6 +370093,13 @@
       ],
       "container-units-invalidation.html": [
        "0cb5b15f4a8e3666a5fbf60542e65fe6a5c31da8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "container-units-media-queries.html": [
+       "7b76f654e5cec341d9ee364878d9692b8a04e34d",
        [
         null,
         {}
@@ -424052,6 +424087,69 @@
           [
            "title",
            "Response: error static method"
+          ]
+         ]
+        }
+       ]
+      ],
+      "response-static-json.any.js": [
+       "3c8a2b637f70871a21a66319d6eb3f9db7c41f77",
+       [
+        "fetch/api/response/response-static-json.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: json static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-json.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: json static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-json.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: json static method"
+          ]
+         ]
+        }
+       ],
+       [
+        "fetch/api/response/response-static-json.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ],
+          [
+           "title",
+           "Response: json static method"
           ]
          ]
         }
