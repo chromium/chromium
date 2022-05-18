@@ -6018,7 +6018,7 @@
       },
       'WebRTC Chromium FYI Mac Tester': {
         'mixins': [
-          'mac_10.12',
+          'mac_11_x64',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_gtests',
