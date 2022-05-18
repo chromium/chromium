@@ -333,10 +333,12 @@ struct VisibleVisitCountToHostResult {
 
 // MostVisitedURL --------------------------------------------------------------
 
-// Holds the per-URL information of the most visited query.
+// Holds the information for a Most Visited page.
 struct MostVisitedURL {
   MostVisitedURL();
-  MostVisitedURL(const GURL& url, const std::u16string& title);
+  MostVisitedURL(const GURL& url,
+                 const std::u16string& title,
+                 double score = 0.0);
   MostVisitedURL(const MostVisitedURL& other);
   MostVisitedURL(MostVisitedURL&& other) noexcept;
   ~MostVisitedURL();
@@ -347,8 +349,9 @@ struct MostVisitedURL {
     return url == other.url;
   }
 
-  GURL url;
-  std::u16string title;
+  GURL url;              // The URL of the page.
+  std::u16string title;  // The title of the page.
+  double score{0.0};     // The frecency score of the page.
 };
 
 // FilteredURL -----------------------------------------------------------------

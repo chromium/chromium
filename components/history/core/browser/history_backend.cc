@@ -1934,7 +1934,8 @@ MostVisitedURLList HistoryBackend::QueryMostVisitedURLs(int result_count) {
 
   MostVisitedURLList result;
   for (const std::unique_ptr<PageUsageData>& current_data : data)
-    result.emplace_back(current_data->GetURL(), current_data->GetTitle());
+    result.emplace_back(current_data->GetURL(), current_data->GetTitle(),
+                        current_data->GetScore());
 
   UMA_HISTOGRAM_TIMES("History.QueryMostVisitedURLsTime",
                       base::TimeTicks::Now() - begin_time);

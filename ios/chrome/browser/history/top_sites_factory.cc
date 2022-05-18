@@ -51,10 +51,10 @@ scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  scoped_refptr<history::TopSitesImpl> top_sites(
-      new history::TopSitesImpl(browser_state->GetPrefs(), history_service,
-                                history::PrepopulatedPageList(),
-                                base::BindRepeating(CanAddURLToHistory)));
+  scoped_refptr<history::TopSitesImpl> top_sites(new history::TopSitesImpl(
+      browser_state->GetPrefs(), history_service,
+      /*template_url_service=*/nullptr, history::PrepopulatedPageList(),
+      base::BindRepeating(CanAddURLToHistory)));
   top_sites->Init(
       browser_state->GetStatePath().Append(history::kTopSitesFilename));
   return top_sites;
