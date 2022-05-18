@@ -44,10 +44,6 @@ void ensureHasNativeSmallCaps(const String& font_family_name) {
 }
 
 TEST(OpenTypeCapsSupportTest, SmallCapsForMacAATFonts) {
-  // The AAT fonts for testing are only available on macOS 10.13.
-  if (!base::mac::IsAtLeastOS10_13())
-    return;
-
   Vector<String> test_fonts = {
       [[NSFont systemFontOfSize:12] familyName],  // has OpenType small-caps
       "Apple Chancery",  // has old-style (feature id 3,"Letter Case")
