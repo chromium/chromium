@@ -3977,22 +3977,49 @@ TEST_F(CaptureModeTest, CaptureBarOpacity) {
   event_generator->ReleaseLeftButton();
 
   // The region overlaps the capture bar, so we set the opacity of the bar to
-  // 0.1f.
-  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+  // the overlapped opacity.
+  EXPECT_EQ(capture_mode::kCaptureUiOverlapOpacity,
+            capture_bar_layer->GetTargetOpacity());
 
   // When there is overlap, the toolbar turns opaque on mouseover.
   event_generator->MoveMouseTo(
       GetCaptureModeBarView()->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
 
-  // Capture bar drops back to 0.1 opacity when the mouse is no longer hovering.
+  // Capture bar drops back to the overlapped opacity when the mouse is no
+  // longer hovering.
   event_generator->MoveMouseTo(
       GetCaptureModeBarView()->GetBoundsInScreen().top_center() +
       gfx::Vector2d(0, -50));
-  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+  EXPECT_EQ(capture_mode::kCaptureUiOverlapOpacity,
+            capture_bar_layer->GetTargetOpacity());
 
   // Check that the opacity is reset when we select another region.
   SelectRegion(target_region);
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+}
+
+TEST_F(CaptureModeTest, CaptureBarOpacityOnHoveringOnCaptureLabel) {
+  UpdateDisplay("800x700");
+
+  auto* event_generator = GetEventGenerator();
+  auto* controller = StartImageRegionCapture();
+  EXPECT_TRUE(controller->IsActive());
+  ui::Layer* capture_bar_layer = GetCaptureModeBarWidget()->GetLayer();
+
+  // Set the capture region to make it overlap with the capture bar. And then
+  // move the mouse to the outside of the capture bar, verify it has the
+  // overlapped opacity.
+  const gfx::Rect capture_region(200, 500, 130, 130);
+  SelectRegion(capture_region);
+  event_generator->MoveMouseTo({10, 10});
+  EXPECT_EQ(capture_mode::kCaptureUiOverlapOpacity,
+            capture_bar_layer->GetTargetOpacity());
+
+  // Move mouse on top of the capture label, verify the bar becomes fully
+  // opaque.
+  event_generator->MoveMouseTo(
+      GetCaptureModeLabelWidget()->GetWindowBoundsInScreen().CenterPoint());
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
 }
 
@@ -4225,7 +4252,8 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
   // capture bar will always be visible no matter if the mouse is hovered on it
   // or not.
   event_generator->MoveMouseTo(target_region.origin());
-  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+  EXPECT_EQ(capture_mode::kCaptureUiOverlapOpacity,
+            capture_bar_layer->GetTargetOpacity());
   // Move mouse on top of the capture bar, verify that capture bar becomes
   // visible.
   event_generator->MoveMouseTo(
@@ -4251,10 +4279,11 @@ TEST_F(CaptureModeTest, CaptureBarAndSettingsMenuVisibilityDrawingRegion) {
   EXPECT_EQ(1.f, settings_menu->layer()->GetTargetOpacity());
 
   // Close settings menu, and move mouse to the outside of the capture bar,
-  // verify capture bar has the overlapped opacity 0.1f.
+  // verify capture bar has the overlapped opacity.
   ClickOnView(GetSettingsButton(), event_generator);
   event_generator->MoveMouseTo(target_region.origin());
-  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+  EXPECT_EQ(capture_mode::kCaptureUiOverlapOpacity,
+            capture_bar_layer->GetTargetOpacity());
 }
 
 TEST_F(CaptureModeTest, CaptureFolderSetting) {

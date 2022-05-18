@@ -171,12 +171,6 @@ constexpr float kLabelScaleDownOnPhaseChange = 0.8;
 constexpr base::TimeDelta kCaptureUIOpacityChangeDuration =
     base::Milliseconds(100);
 
-// When capture UI (capture bar, capture label) is overlapped with user
-// capture region or camera preview, and the mouse is not hovering over the
-// capture UI, drop the opacity to this value to make the region or camera
-// preview easier to see.
-constexpr float kCaptureUiOverlapOpacity = 0.1;
-
 // If the user is using keyboard only and they are on the selecting region
 // phase, they can create default region which is centered and sized to this
 // value times the root window's width and height.
@@ -1462,12 +1456,20 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
       if (is_cursor_on_top_of_widget)
         continue;
 
+      // If the cursor is hovering on top of the capture label, capture bar
+      // should be fully opaque.
+      if (capture_label_widget_ &&
+          capture_label_widget_->GetWindowBoundsInScreen().Contains(
+              *cursor_screen_location)) {
+        continue;
+      }
+
       const bool capture_bar_intersects_region =
           controller_->source() == CaptureModeSource::kRegion &&
           window_bounds_in_screen.Intersects(capture_region);
 
       if (capture_bar_intersects_region) {
-        opacity = kCaptureUiOverlapOpacity;
+        opacity = capture_mode::kCaptureUiOverlapOpacity;
         continue;
       }
 
@@ -1481,7 +1483,7 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
     }
 
     if (IsWidgetOverlappedWithCameraPreview(widget))
-      opacity = kCaptureUiOverlapOpacity;
+      opacity = capture_mode::kCaptureUiOverlapOpacity;
   }
 
   for (const auto& pair : widget_opacity_map) {

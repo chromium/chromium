@@ -76,8 +76,6 @@ constexpr char kDefaultCameraDeviceId[] = "/dev/videoX";
 constexpr char kDefaultCameraDisplayName[] = "Default Cam";
 constexpr char kDefaultCameraModelId[] = "0def:c000";
 
-constexpr float kOverlapOpacity = 0.1f;
-
 TestCaptureModeDelegate* GetTestDelegate() {
   return static_cast<TestCaptureModeDelegate*>(
       CaptureModeController::Get()->delegate_for_testing());
@@ -1472,7 +1470,8 @@ TEST_F(CaptureModeCameraTest,
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Move mouse on top of capture label, verify it's updated to fully opaque
   // even it's still overlapped with camera preview.
@@ -1487,7 +1486,8 @@ TEST_F(CaptureModeCameraTest,
   // `kOverlapOpacity`.
   const gfx::Vector2d delta1(50, 50);
   event_generator->MoveMouseTo(capture_lable_bounds.bottom_right() + delta1);
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Click on the outside of the capture region to reset it, verify capture
   // label is updated to fully opaque.
@@ -1522,7 +1522,8 @@ TEST_F(CaptureModeCameraTest,
   EXPECT_EQ(capture_session->GetSelectedWindow(), window());
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Move mouse on top of capture bar. Verify capture bar is updated to fully
   // opaque.
@@ -1538,7 +1539,8 @@ TEST_F(CaptureModeCameraTest,
       capture_bar_widget->GetWindowBoundsInScreen().origin();
   event_generator->MoveMouseTo(capture_bar_origin.x() - 10,
                                capture_bar_origin.y() - 10);
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 }
 
 TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnDisplayRotation) {
@@ -1565,7 +1567,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnDisplayRotation) {
   EXPECT_EQ(capture_session->GetSelectedWindow(), window());
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Rotate the primary display by 90 degrees. Verify that capture bar no longer
   // overlaps with camera preview and it's updated to fully opaque.
@@ -1583,7 +1586,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnDisplayRotation) {
       display::Display::ROTATE_180, display::Display::RotationSource::USER);
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 }
 
 TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnCaptureSourceChange) {
@@ -1605,7 +1609,8 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnCaptureSourceChange) {
   SelectCaptureRegion({100, 100, min_region_length, min_region_length});
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Change the capture source from `kRegion` to `kFullscreen`, verify capture
   // label is updated to fully opaque.
@@ -2200,7 +2205,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   EXPECT_EQ(capture_session->GetSelectedWindow(), window());
   EXPECT_TRUE(capture_bar_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Now tab through the capture bar, verify that as long as the focus is on
   // capture bar or capture settings menu, capture bar is updated to full
@@ -2219,7 +2225,8 @@ TEST_F(CaptureModeCameraTest, CaptureBarOpacityChangeOnKeyboardNavigation) {
   // `kOverlapOpacity` since the focus is removed from capture bar.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_bar_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Tab three times to focus on the settings button, verify capture bar is
   // updated to fully opaque again.
@@ -2263,7 +2270,8 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   SelectCaptureRegion({100, 100, min_region_length, min_region_length});
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
       camera_preview_widget->GetWindowBoundsInScreen()));
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   auto* event_generator = GetEventGenerator();
   // Tab four times to focus on the region capture source, verify capture label
@@ -2271,13 +2279,15 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/4);
   EXPECT_EQ(FocusGroup::kTypeSource, test_api.GetCurrentFocusGroup());
   EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Tab twice to focus on `kSelection`, verify capture label is still
   // `kOverlapOpacity`.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
   EXPECT_EQ(FocusGroup::kSelection, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 
   // Tab eleven times to focus on cpature label, verify capture label is updated
   // to fully opaque.
@@ -2290,7 +2300,8 @@ TEST_F(CaptureModeCameraTest, CaptureLabelOpacityChangeOnKeyboardNavigation) {
   // lable's opacity is updated to `kOverlapOpacity`.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(capture_label_layer->GetTargetOpacity(), kOverlapOpacity);
+  EXPECT_EQ(capture_label_layer->GetTargetOpacity(),
+            capture_mode::kCaptureUiOverlapOpacity);
 }
 
 // Tests that when switching capture source from `kRegion` to `kFullscreen`,

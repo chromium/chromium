@@ -79,6 +79,12 @@ constexpr int kSpaceBetweenResizeButtonAndCameraPreview = 12;
 // preview bounds or the last tap on the preview widget.
 constexpr base::TimeDelta kResizeButtonShowDuration = base::Milliseconds(4500);
 
+// When capture UI (capture bar, capture label) is overlapped with user
+// capture region or camera preview, and the mouse is not hovering over the
+// capture UI, drop the opacity to this value to make the region or camera
+// preview easier to see.
+constexpr float kCaptureUiOverlapOpacity = 0.15f;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_
