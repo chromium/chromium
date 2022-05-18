@@ -91,6 +91,10 @@ class BaseSearchPrefetchRequest {
   // stack.
   void MarkPrefetchAsServed();
 
+  // Record the time at which the user clicked a suggestion matching this
+  // prefetch.
+  void RecordClickTime();
+
   // Whether the request was started as a navigation prefetch (as opposed to a
   // suggestion prefetch).
   bool navigation_prefetch() const { return navigation_prefetch_; }

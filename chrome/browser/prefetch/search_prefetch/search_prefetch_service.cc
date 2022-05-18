@@ -260,12 +260,15 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
     }
   }
 
-  if (prefetches_.find(match_search_terms) == prefetches_.end() ||
-      prefetches_[match_search_terms]->current_status() !=
-          SearchPrefetchStatus::kCanBeServed) {
+  if (prefetches_.find(match_search_terms) == prefetches_.end()) {
     return;
   }
-  prefetches_[match_search_terms]->MarkPrefetchAsClicked();
+  BaseSearchPrefetchRequest& prefetch = *prefetches_[match_search_terms];
+  prefetch.RecordClickTime();
+  if (prefetch.current_status() != SearchPrefetchStatus::kCanBeServed) {
+    return;
+  }
+  prefetch.MarkPrefetchAsClicked();
 }
 
 void SearchPrefetchService::AddCacheEntryForPrerender(

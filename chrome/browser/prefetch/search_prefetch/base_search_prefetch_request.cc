@@ -316,7 +316,6 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsComplete() {
 void BaseSearchPrefetchRequest::MarkPrefetchAsClicked() {
   DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed);
   current_status_ = SearchPrefetchStatus::kCanBeServedAndUserClicked;
-  time_clicked_ = base::TimeTicks::Now();
 }
 
 void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
@@ -325,4 +324,8 @@ void BaseSearchPrefetchRequest::MarkPrefetchAsServed() {
   current_status_ = SearchPrefetchStatus::kServed;
   UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.ClickToNavigationIntercepted",
                       base::TimeTicks::Now() - time_clicked_);
+}
+
+void BaseSearchPrefetchRequest::RecordClickTime() {
+  time_clicked_ = base::TimeTicks::Now();
 }
