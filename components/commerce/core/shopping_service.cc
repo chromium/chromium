@@ -15,6 +15,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
+#include "components/commerce/core/web_wrapper.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -54,6 +55,10 @@ void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(commerce::kWebAndAppActivityEnabledForShopping,
                                 true);
 }
+
+void ShoppingService::WebWrapperCreated(WebWrapper* web) {}
+
+void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {}
 
 void ShoppingService::GetProductInfoForUrl(const GURL& url,
                                            ProductInfoCallback callback) {

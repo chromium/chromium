@@ -9,6 +9,7 @@ include_rules = [
   "+components/browsing_data/core",
   "+components/captive_portal",
   "+components/commerce/core",
+  "+components/commerce/ios",
   "+components/component_updater",
   "+components/content_settings/core",
   "+components/cookie_config",

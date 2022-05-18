@@ -133,6 +133,7 @@ static_library("shopping_service") {
     "shopping_bookmark_model_observer.h",
     "shopping_service.cc",
     "shopping_service.h",
+    "web_wrapper.h",
   ]
 
   deps = [

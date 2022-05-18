@@ -32,6 +32,7 @@ class OptimizationMetadata;
 namespace commerce {
 
 class ShoppingBookmarkModelObserver;
+class WebWrapper;
 
 // Information returned by the product info APIs.
 struct ProductInfo {
@@ -68,6 +69,15 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   void GetProductInfoForUrl(const GURL& url, ProductInfoCallback callback);
 
   void Shutdown() override;
+
+  // A notification that a WebWrapper has been created. This typically
+  // corresponds to a user creating a tab.
+  void WebWrapperCreated(WebWrapper* web);
+
+  // A notification that a WebWrapper has been destroyed. This signals that the
+  // web page backing the provided WebWrapper is about to be destroyed.
+  // Typically corresponds to a user closing a tab.
+  void WebWrapperDestroyed(WebWrapper* web);
 
  private:
   // Whether APIs like |GetProductInfoForURL| are enabled and allowed to be

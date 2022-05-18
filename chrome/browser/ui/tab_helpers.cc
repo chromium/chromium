@@ -21,6 +21,7 @@
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
@@ -108,6 +109,7 @@
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/content/browser/metrics/commerce_metrics_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -320,6 +322,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
   CreateSubresourceFilterWebContentsHelper(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
+  commerce::CommerceTabHelper::CreateForWebContents(
+      web_contents, profile->IsOffTheRecord(),
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile));
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSBounceDetector::CreateForWebContents(web_contents);
