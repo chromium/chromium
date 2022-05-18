@@ -322,11 +322,38 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsAmbientModePageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/ambient_mode_page_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['ash::features::kPersonalizationHub']};
+  }
+};
+
+TEST_F('OSSettingsAmbientModePageV3Test', 'All', () => mocha.run());
+
+var OSSettingsAmbientModePhotosPageV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/ambient_mode_photos_page_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['ash::features::kPersonalizationHub']};
+  }
+};
+
+TEST_F('OSSettingsAmbientModePhotosPageV3Test', 'All', () => mocha.run());
+
 [['AccessibilityPage', 'os_a11y_page_tests.js'],
  ['AboutPage', 'os_about_page_tests.js'],
  ['AccountsPage', 'add_users_tests.js'],
- ['AmbientModePage', 'ambient_mode_page_test.js'],
- ['AmbientModePhotosPage', 'ambient_mode_photos_page_test.js'],
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],

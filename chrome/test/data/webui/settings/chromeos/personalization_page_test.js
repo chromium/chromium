@@ -53,6 +53,9 @@ suite('PersonalizationHandler', function() {
   });
 
   setup(function() {
+    // Most tests rely on this feature being off. For the few that need it,
+    // explicitly turn it on again.
+    loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
     WallpaperBrowserProxy = new TestWallpaperBrowserProxy();
     WallpaperBrowserProxyImpl.instance_ = WallpaperBrowserProxy;
     PersonalizationHubBrowserProxy = new TestPersonalizationHubBrowserProxy();
