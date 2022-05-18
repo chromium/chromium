@@ -1,7 +1,7 @@
 # Checking out and building on Fuchsia
 
 ***If you have followed the instructions below and things still having trouble,
-try `#cr-fuchsia` on [Chromium Slack](https://www.chromium.org/developers/slack)
+try `#fuchsia` on [Chromium Slack](https://www.chromium.org/developers/slack)
 or [fuchsia-dev@chromium.org](mailto:fuchsia-dev@chromium.org).***
 
 There are instructions for other platforms linked from the
