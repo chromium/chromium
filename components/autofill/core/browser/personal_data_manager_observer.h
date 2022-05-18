@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_OBSERVER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_OBSERVER_H_
 
+#include "components/history/core/browser/history_types.h"
+
 namespace autofill {
 
 // An interface the PersonalDataManager uses to notify its clients (observers)
@@ -26,6 +28,10 @@ class PersonalDataManagerObserver {
   // is suceesfully saved.
   virtual void OnCreditCardSaved(bool should_show_sign_in_promo_if_applicable) {
   }
+
+  // Called when (part of) the browsing history is cleared.
+  virtual void OnBrowsingHistoryCleared(
+      const history::DeletionInfo& deletion_info) {}
 
  protected:
   virtual ~PersonalDataManagerObserver() {}
