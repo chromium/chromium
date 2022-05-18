@@ -306,6 +306,8 @@ class UnifiedMessageListView::MessageViewContainer
       return;
 
     int index = list_view_->GetIndexOf(this);
+    if (index < 0)
+      return;
     auto list_child_views = list_view_->children();
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
     below_view_ = (index == static_cast<int>(list_child_views.size()) - 1)
