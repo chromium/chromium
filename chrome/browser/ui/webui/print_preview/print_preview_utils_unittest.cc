@@ -97,6 +97,17 @@ base::Value::Dict GetCapabilitiesFull() {
   return printer;
 }
 
+base::Value::Dict* GetVendorCapabilityAtIndex(base::Value::Dict& printer,
+                                              size_t index) {
+  base::Value::List* vendor_capabilities_list =
+      printer.FindList(kVendorCapability);
+  if (!vendor_capabilities_list || index >= vendor_capabilities_list->size())
+    return nullptr;
+
+  auto& ret = (*vendor_capabilities_list)[index];
+  return ret.is_dict() ? &ret.GetDict() : nullptr;
+}
+
 base::Value::List ValidList(const base::Value::List* list) {
   base::Value::List out_list = list->Clone();
   out_list.EraseIf([](const base::Value& v) { return v.is_none(); });
@@ -167,6 +178,7 @@ void ValidateVendorCaps(const base::Value::Dict* printer_out,
   }
 
   ASSERT_TRUE(vendor_capability_out);
+  ASSERT_EQ(vendor_capability_out->size(), input_vendor_caps->size());
   size_t index = 0;
   for (const auto& input_entry : *input_vendor_caps) {
     const auto& input_entry_dict = input_entry.GetDict();
@@ -233,14 +245,19 @@ TEST_F(PrintPreviewUtilsTest, FullCddPassthrough) {
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadList) {
+  // Set up the test expectations.
   base::Value::Dict printer = GetCapabilitiesFull();
   printer.Remove(kMediaSizes);
+
+  // Clone the test expectations, and set bad media values.
+  base::Value::Dict cdd;
+  base::Value::Dict& cdd_printer =
+      cdd.Set(kPrinter, printer.Clone())->GetDict();
   base::Value::List list_media;
   list_media.Append(base::Value());
   list_media.Append(base::Value());
-  printer.Set(kMediaSizes, std::move(list_media));
-  base::Value::Dict cdd;
-  cdd.Set(kPrinter, printer.Clone());
+  cdd_printer.Set(kMediaSizes, std::move(list_media));
+
   auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
   ValidatePrinter(cdd_out, printer);
 }
@@ -294,27 +311,49 @@ TEST_F(PrintPreviewUtilsTest, FilterBadOptionAllElement) {
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityAllElement) {
+  // Start setting the test expectations.
   base::Value::Dict printer = GetCapabilitiesFull();
-  base::Value::Dict* select_cap_0 =
-      (*printer.FindList(kVendorCapability))[0].GetDict().FindDict(
-          kSelectCapKey);
-  select_cap_0->Remove(kOptionKey);
+
+  // Clone the test expectations, and set bad vendor capabilities.
+  base::Value::Dict cdd;
+  base::Value::Dict& cdd_printer =
+      cdd.Set(kPrinter, printer.Clone())->GetDict();
+  base::Value::Dict* cdd_printer_cap_0 =
+      GetVendorCapabilityAtIndex(cdd_printer, 0);
+  ASSERT_TRUE(cdd_printer_cap_0);
+  base::Value::Dict* select_cap_0 = cdd_printer_cap_0->FindDict(kSelectCapKey);
+  ASSERT_TRUE(select_cap_0);
   base::Value::List option_list;
   option_list.Append(base::Value());
   option_list.Append(base::Value());
   select_cap_0->Set(kOptionKey, std::move(option_list));
-  base::Value::Dict cdd;
-  cdd.Set(kPrinter, printer.Clone());
+
+  // Finish setting the test expectations, as the bad vendor capability should
+  // be filtered out.
+  base::Value::List* printer_vendor_capabilities_list =
+      printer.FindList(kVendorCapability);
+  ASSERT_TRUE(printer_vendor_capabilities_list);
+  ASSERT_EQ(printer_vendor_capabilities_list->size(), 2u);
+  printer_vendor_capabilities_list->erase(
+      printer_vendor_capabilities_list->begin());
+
   auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
   ValidatePrinter(cdd_out, printer);
 }
 
 TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
+  // Start setting the test expectations.
   base::Value::Dict printer = GetCapabilitiesFull();
-  base::Value::Dict* vendor_dictionary =
-      (*printer.FindList(kVendorCapability))[0].GetDict().FindDict(
-          kSelectCapKey);
-  vendor_dictionary->Remove(kOptionKey);
+
+  // Clone the test expectations, and set bad vendor capabilities.
+  base::Value::Dict cdd;
+  base::Value::Dict& cdd_printer =
+      cdd.Set(kPrinter, printer.Clone())->GetDict();
+  base::Value::Dict* cdd_printer_cap_0 =
+      GetVendorCapabilityAtIndex(cdd_printer, 0);
+  ASSERT_TRUE(cdd_printer_cap_0);
+  base::Value::Dict* vendor_dict = cdd_printer_cap_0->FindDict(kSelectCapKey);
+  ASSERT_TRUE(vendor_dict);
   base::Value::List pages_per_sheet;
   for (int i = 1; i <= 8; i *= 2) {
     if (i == 2) {
@@ -328,10 +367,21 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
       option.Set(kIsDefault, true);
     pages_per_sheet.Append(std::move(option));
   }
-  vendor_dictionary->Set(kOptionKey, std::move(pages_per_sheet));
+  vendor_dict->Set(kOptionKey, std::move(pages_per_sheet));
 
-  base::Value::Dict cdd;
-  cdd.Set(kPrinter, printer.Clone());
+  // Finish setting the test expectations, as the bad vendor capability should
+  // be filtered out.
+  base::Value::Dict* printer_cap_0 = GetVendorCapabilityAtIndex(printer, 0);
+  ASSERT_TRUE(printer_cap_0);
+  base::Value::Dict* printer_vendor_dict =
+      printer_cap_0->FindDict(kSelectCapKey);
+  ASSERT_TRUE(printer_vendor_dict);
+  base::Value::List* printer_vendor_list =
+      printer_vendor_dict->FindList(kOptionKey);
+  ASSERT_TRUE(printer_vendor_list);
+  ASSERT_EQ(printer_vendor_list->size(), 4u);
+  printer_vendor_list->erase(printer_vendor_list->begin() + 1);
+
   auto cdd_out = ValidateCddForPrintPreview(std::move(cdd));
   ValidatePrinter(cdd_out, printer);
 }
