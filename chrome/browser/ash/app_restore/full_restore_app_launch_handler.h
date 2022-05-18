@@ -14,7 +14,6 @@
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
 class AppUpdate;

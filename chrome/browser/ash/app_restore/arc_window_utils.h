@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_UTILS_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_UTILS_H_
 
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
