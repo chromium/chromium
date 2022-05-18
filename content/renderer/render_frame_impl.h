@@ -408,7 +408,7 @@ class CONTENT_EXPORT RenderFrameImpl
       network::mojom::URLResponseHeadPtr redirect_response) override;
   void NotifyResourceResponseReceived(
       int64_t request_id,
-      const GURL& response_url,
+      const url::SchemeHostPort& final_response_url,
       network::mojom::URLResponseHeadPtr head,
       network::mojom::RequestDestination request_destination) override;
   void NotifyResourceTransferSizeUpdated(int64_t request_id,

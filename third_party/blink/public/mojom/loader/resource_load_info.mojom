@@ -78,6 +78,7 @@ struct ResourceLoadInfo {
   int64 request_id;
 
   // The final URL of the response (final = after all redirects).
+  // TODO(crbug.com/973885): use SchemeHostPort if applicable.
   url.mojom.Url final_url;
 
   // The response referrer.

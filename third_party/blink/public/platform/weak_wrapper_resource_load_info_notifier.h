@@ -31,7 +31,7 @@ class BLINK_PLATFORM_EXPORT WeakWrapperResourceLoadInfoNotifier
       network::mojom::URLResponseHeadPtr redirect_response) override;
   void NotifyResourceResponseReceived(
       int64_t request_id,
-      const GURL& final_url,
+      const url::SchemeHostPort& final_response_url,
       network::mojom::URLResponseHeadPtr response_head,
       network::mojom::RequestDestination request_destination) override;
   void NotifyResourceTransferSizeUpdated(int64_t request_id,

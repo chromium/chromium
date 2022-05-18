@@ -114,7 +114,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {
       weak_wrapper_resource_load_info_notifier_->NotifyResourceResponseReceived(
-          resource_load_info_->request_id, resource_load_info_->final_url,
+          resource_load_info_->request_id,
+          url::SchemeHostPort(resource_load_info_->final_url),
           std::move(response_head), resource_load_info_->request_destination);
     }
     return;
@@ -130,7 +131,8 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
       base::BindOnce(
           &mojom::ResourceLoadInfoNotifier::NotifyResourceResponseReceived,
           weak_wrapper_resource_load_info_notifier_,
-          resource_load_info_->request_id, resource_load_info_->final_url,
+          resource_load_info_->request_id,
+          url::SchemeHostPort(resource_load_info_->final_url),
           std::move(response_head), resource_load_info_->request_destination));
 }
 

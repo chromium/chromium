@@ -2519,15 +2519,15 @@ void RenderFrameImpl::NotifyResourceRedirectReceived(
 
 void RenderFrameImpl::NotifyResourceResponseReceived(
     int64_t request_id,
-    const GURL& response_url,
+    const url::SchemeHostPort& final_response_url,
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination) {
   if (!blink::IsRequestDestinationFrame(request_destination)) {
-    GetFrameHost()->SubresourceResponseStarted(
-        url::SchemeHostPort(response_url), response_head->cert_status);
+    GetFrameHost()->SubresourceResponseStarted(final_response_url,
+                                               response_head->cert_status);
   }
-  DidStartResponse(url::SchemeHostPort(response_url), request_id,
-                   std::move(response_head), request_destination);
+  DidStartResponse(final_response_url, request_id, std::move(response_head),
+                   request_destination);
 }
 
 void RenderFrameImpl::NotifyResourceTransferSizeUpdated(
