@@ -1193,8 +1193,14 @@ void ProfilePickerHandler::UpdateAvailableAccounts() {
   AccountProfileMapper* mapper =
       g_browser_process->profile_manager()->GetAccountProfileMapper();
 
+  // For the profile creation flow, show all accounts available.
+  // For in profile Sign in/ Turn sync on flows, filter accounts already added.
+  base::FilePath profile_path = IsSelectingSecondaryAccount(web_ui())
+                                    ? GetCurrentProfilePath(web_ui())
+                                    : base::FilePath();
+
   GetAllAvailableAccounts(
-      mapper, GetCurrentProfilePath(web_ui()),
+      mapper, profile_path,
       base::BindOnce(&ProfilePickerHandler::GetAvailableAccountsInfo,
                      weak_factory_.GetWeakPtr()));
 }

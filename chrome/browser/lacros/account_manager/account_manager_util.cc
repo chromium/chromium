@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 
 namespace {
 
@@ -65,6 +66,8 @@ void GetAllAvailableAccounts(
     AccountProfileMapper::ListAccountsCallback callback) {
   DCHECK(mapper);
   DCHECK(callback);
+  DCHECK_NE(profile_path, ProfileManager::GetGuestProfilePath());
+  DCHECK_NE(profile_path, ProfileManager::GetSystemProfilePath());
   mapper->GetAccountsMap(base::BindOnce(&GetAllAvailableAccountsImpl,
                                         profile_path, std::move(callback)));
 }
