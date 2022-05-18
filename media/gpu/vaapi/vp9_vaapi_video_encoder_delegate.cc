@@ -567,10 +567,9 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.log2_tile_rows = frame_header->tile_rows_log2;
   pic_param.log2_tile_columns = frame_header->tile_cols_log2;
 
-  return vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
-                                      &seq_param) &&
-         vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
-                                      &pic_param);
+  return vaapi_wrapper_->SubmitBuffers(
+      {{VAEncSequenceParameterBufferType, sizeof(seq_param), &seq_param},
+       {VAEncPictureParameterBufferType, sizeof(pic_param), &pic_param}});
 }
 
 }  // namespace media
