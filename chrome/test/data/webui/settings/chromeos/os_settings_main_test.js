@@ -56,8 +56,11 @@ suite('MainPageTests', function() {
 
     assertTrue(showManagedHeader());
 
-    const page = settingsMain.$$('os-settings-page');
-    page.fire('subpage-expand', {});
+    const page = settingsMain.shadowRoot.querySelector('os-settings-page');
+
+    const subpageExpandEvent =
+        new CustomEvent('subpage-expand', {'bubbles': true, composed: true});
+    page.dispatchEvent(subpageExpandEvent);
 
     assertFalse(showManagedHeader());
   });
@@ -73,9 +76,9 @@ suite('MainPageTests', function() {
 
   /** @return {!HTMLElement} */
   function getToggleContainer() {
-    const page = settingsMain.$$('os-settings-page');
+    const page = settingsMain.shadowRoot.querySelector('os-settings-page');
     assertTrue(!!page);
-    const toggleContainer = page.$$('#toggleContainer');
+    const toggleContainer = page.shadowRoot.querySelector('#toggleContainer');
     assertTrue(!!toggleContainer);
     return toggleContainer;
   }
@@ -101,11 +104,13 @@ suite('MainPageTests', function() {
    */
   async function assertPageVisibility(expectedBasic, expectedAdvanced) {
     flush();
-    const page = settingsMain.$$('os-settings-page');
+    const page = settingsMain.shadowRoot.querySelector('os-settings-page');
     assertEquals(
-        expectedBasic, getComputedStyle(page.$$('#basicPage')).display);
+        expectedBasic,
+        getComputedStyle(page.shadowRoot.querySelector('#basicPage')).display);
 
-    const advancedPage = await page.$$('#advancedPageTemplate').get();
+    const advancedPage =
+        await page.shadowRoot.querySelector('#advancedPageTemplate').get();
     assertEquals(expectedAdvanced, getComputedStyle(advancedPage).display);
   }
 
