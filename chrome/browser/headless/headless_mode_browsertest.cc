@@ -26,7 +26,6 @@
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -39,10 +38,6 @@
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN)
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 const int kErrorResultCode = -1;
@@ -85,32 +80,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, OzonePlatformHeadless) {
   EXPECT_EQ(ui::OzonePlatform::GetPlatformNameForTest(), "headless");
 }
 #endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN)
-// A class to expose a protected method for testing purposes.
-class DesktopWindowTreeHostWinWrapper : public views::DesktopWindowTreeHostWin {
- public:
-  HWND GetHWND() const { return DesktopWindowTreeHostWin::GetHWND(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(HeadlessModeBrowserTestWithStartWindowMode,
-                         HeadlessModeBrowserTestWithStartWindowMode,
-                         testing::Values(kStartWindowNormal,
-                                         kStartWindowMaximized,
-                                         kStartWindowFullscreen));
-
-IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
-                       BrowserDesktopWindowHidden) {
-  // On Windows, the Native Headless Chrome browser window exists and is
-  // visible, while the underlying platform window is hidden.
-  EXPECT_TRUE(browser()->window()->IsVisible());
-
-  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
-      static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
-  EXPECT_FALSE(::IsWindowVisible(desktop_window_tree_host->GetHWND()));
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
  public:

@@ -2423,6 +2423,7 @@ if (!is_android) {
         "../browser/chrome_browser_main_win_browsertest.cc",
         "../browser/chrome_main_browsertest.cc",
         "../browser/font_prewarmer_tab_helper_browsertest.cc",
+        "../browser/headless/headless_mode_browsertest_win.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
         "../browser/net/chrome_mojo_proxy_resolver_win_browsertest.cc",
