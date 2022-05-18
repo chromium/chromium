@@ -179,4 +179,8 @@ base::FilePath ContentBrowserTest::GetTestDataFilePath() {
   return base::FilePath(FILE_PATH_LITERAL("content/test/data"));
 }
 
+#if defined(RUST_ENABLED)
+RUST_BROWSERTEST_TEST_SUITE_FACTORY(ContentBrowserTest);
+#endif
+
 }  // namespace content
