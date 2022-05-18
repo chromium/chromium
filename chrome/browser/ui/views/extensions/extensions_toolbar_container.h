@@ -242,7 +242,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void OnToolbarPinnedActionsChanged() override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // Moves the dragged extension `action_id`.

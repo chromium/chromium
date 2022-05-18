@@ -736,7 +736,7 @@ views::View::DropCallback ExtensionsToolbarContainer::GetDropCallback(
                         std::move(cleanup));
 }
 
-void ExtensionsToolbarContainer::OnWidgetClosing(views::Widget* widget) {
+void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
   auto iter = std::find_if(
       anchored_widgets_.begin(), anchored_widgets_.end(),
       [widget](const auto& info) { return info.widget == widget; });
@@ -745,10 +745,6 @@ void ExtensionsToolbarContainer::OnWidgetClosing(views::Widget* widget) {
   const std::string extension_id = std::move(iter->extension_id);
   anchored_widgets_.erase(iter);
   UpdateIconVisibility(extension_id);
-}
-
-void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
-  OnWidgetClosing(widget);
 }
 
 size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
