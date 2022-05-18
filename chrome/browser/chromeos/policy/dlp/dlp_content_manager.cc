@@ -688,6 +688,7 @@ void DlpContentManager::CheckRunningScreenShares() {
                   info.restriction_info.level, reporting_manager_);
     }
 
+    // TODO(crbug.com/1326541): Fix for new tab shares.
     if (screen_share->GetLatestRestriction() == info.restriction_info &&
         screen_share->GetConfidentialContents() == info.confidential_contents) {
       // No change in restrictions that apply to this screen share.
