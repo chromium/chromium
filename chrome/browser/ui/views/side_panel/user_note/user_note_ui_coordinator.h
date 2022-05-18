@@ -11,6 +11,10 @@
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "ui/views/view.h"
 
+namespace user_notes {
+class UserNoteInstance;
+}
+
 class SidePanelRegistry;
 
 class UserNoteUICoordinator : public user_notes::UserNotesUI,
@@ -28,6 +32,8 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   static constexpr int kUserNoteScrollContentsViewId = 174;
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void OnNoteCreationDone(const base::UnguessableToken& id,
+                          const std::string& note_content);
 
   // UserNoteUI overrides
   void FocusNote(const std::string& guid) override;

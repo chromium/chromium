@@ -7,9 +7,14 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 #include "components/user_notes/browser/user_note_instance.h"
-#include "ui/views/controls/textarea/textarea.h"
-#include "ui/views/view.h"
+
+namespace views {
+class Label;
+class Textarea;
+class View;
+}  // namespace views
 
 namespace views {
 class MenuRunner;
@@ -40,6 +45,7 @@ class UserNoteView : public views::View {
   };
 
   explicit UserNoteView(
+      UserNoteUICoordinator* coordinator,
       user_notes::UserNoteInstance* user_note_instance,
       UserNoteView::State state = UserNoteView::State::kDefault);
   UserNoteView(const UserNoteView&) = delete;
@@ -56,6 +62,10 @@ class UserNoteView : public views::View {
   }
 
  private:
+  void CreateOrUpdateNoteView(UserNoteView::State state,
+                              base::Time date,
+                              const std::string content,
+                              const std::string quote);
   void OnCancelNewUserNote();
   void OnAddUserNote();
   void OnEditUserNote(int event_flags);
@@ -63,6 +73,10 @@ class UserNoteView : public views::View {
   void OnLearnUserNote(int event_flags);
   void OnOpenMenu();
   void OnMenuClosed();
+  void SetCreatingOrEditState(const std::string content);
+  void SetDefaultOrDetachedState(base::Time date,
+                                 const std::string content,
+                                 const std::string quote);
 
   raw_ptr<user_notes::UserNoteInstance> user_note_instance_;
   raw_ptr<views::Textarea> text_area_;
@@ -70,6 +84,7 @@ class UserNoteView : public views::View {
   raw_ptr<views::Label> user_note_body_;
   raw_ptr<views::View> user_note_header_;
   raw_ptr<views::View> user_note_quote_;
+  raw_ptr<UserNoteUICoordinator> coordinator_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<ui::MenuModel> dialog_model_;
 };

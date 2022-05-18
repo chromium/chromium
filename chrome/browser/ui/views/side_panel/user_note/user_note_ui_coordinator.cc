@@ -7,10 +7,13 @@
 #include <memory>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_view.h"
+#include "chrome/browser/user_notes/user_note_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/user_notes/browser/user_note_instance.h"
 #include "components/user_notes/browser/user_note_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/scroll_view.h"
@@ -49,6 +52,14 @@ void UserNoteUICoordinator::CreateAndRegisterEntry(
                           base::Unretained(this))));
 }
 
+void UserNoteUICoordinator::OnNoteCreationDone(
+    const base::UnguessableToken& id,
+    const std::string& note_content) {
+  auto* service =
+      user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
+  service->OnNoteCreationDone(id, note_content);
+}
+
 void UserNoteUICoordinator::FocusNote(const std::string& guid) {
   // TODO(cheickcisse): Implement FocusNote, which will be called by
   // UserNoteService to inform, inform the user note side panel to scroll the
@@ -63,6 +74,11 @@ void UserNoteUICoordinator::StartNoteCreation(
 }
 
 void UserNoteUICoordinator::Invalidate() {
+  if (!browser_->tab_strip_model()->GetActiveWebContents()) {
+    scroll_contents_view_->RemoveAllChildViews();
+    return;
+  }
+
   auto* user_notes_manager = user_notes::UserNoteManager::GetForPage(
       browser_->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage());
 
@@ -97,7 +113,7 @@ void UserNoteUICoordinator::Invalidate() {
     // vector.
     if (views_index >= scroll_contents_view_->children().size()) {
       scroll_contents_view_->AddChildViewAt(
-          std::make_unique<UserNoteView>(user_note_instance,
+          std::make_unique<UserNoteView>(this, user_note_instance,
                                          UserNoteView::State::kDefault),
           views_index);
       instances_index++;
@@ -126,7 +142,7 @@ void UserNoteUICoordinator::Invalidate() {
       // Add a new UserNoteView because the current UserNoteInstance note is
       // missing from scroll_contents_view's children.
       scroll_contents_view_->AddChildViewAt(
-          std::make_unique<UserNoteView>(user_note_instance,
+          std::make_unique<UserNoteView>(this, user_note_instance,
                                          UserNoteView::State::kDefault),
           views_index);
       instances_index++;

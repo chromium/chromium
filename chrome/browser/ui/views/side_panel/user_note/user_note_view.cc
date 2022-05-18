@@ -4,12 +4,18 @@
 
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_view.h"
 
+#include <string>
+
 #include "base/i18n/time_formatting.h"
+#include "base/unguessable_token.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_notes/browser/user_note_instance.h"
+#include "components/user_notes/browser/user_note_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
@@ -24,11 +30,15 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 
 namespace {
+
+constexpr int kUserNoteDateViewId = 180;
+constexpr int kUserNoteMenuButtonViewId = 181;
 
 // Layout structure:
 //
@@ -64,6 +74,7 @@ std::unique_ptr<views::View> CreateHeaderView(std::u16string note_date,
   user_note_date->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   user_note_date->SetMultiLine(false);
   user_note_date->SetTextStyle(views::style::STYLE_HINT);
+  user_note_date->SetID(kUserNoteDateViewId);
   // User note date layout
   auto& user_note_header_layout =
       user_note_header->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -83,6 +94,7 @@ std::unique_ptr<views::View> CreateHeaderView(std::u16string note_date,
   menu_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   menu_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   views::InstallCircleHighlightPathGenerator(menu_button);
+  menu_button->SetID(kUserNoteMenuButtonViewId);
   // Button layout.
   menu_button->SetProperty(
       views::kFlexBehaviorKey,
@@ -212,9 +224,10 @@ std::u16string ConvertDate(base::Time time) {
 
 }  // namespace
 
-UserNoteView::UserNoteView(user_notes::UserNoteInstance* user_note_instance,
+UserNoteView::UserNoteView(UserNoteUICoordinator* coordinator,
+                           user_notes::UserNoteInstance* user_note_instance,
                            UserNoteView::State state)
-    : user_note_instance_(user_note_instance) {
+    : user_note_instance_(user_note_instance), coordinator_(coordinator) {
   // Creates an empty view if the user note instance or or user note model is
   // null.
   if (user_note_instance_ == nullptr)
@@ -237,34 +250,81 @@ UserNoteView::UserNoteView(user_notes::UserNoteInstance* user_note_instance,
   SetBorder(views::CreateRoundedRectBorder(rounded_border_thickness,
                                            corner_radius, border_color));
 
+  CreateOrUpdateNoteView(
+      state, user_note_instance_->model().metadata().modification_date(),
+      user_note_instance_->model().body().plain_text_value(),
+      user_note_instance_->model().target().original_text());
+}
+
+UserNoteView::~UserNoteView() = default;
+
+void UserNoteView::SetDefaultOrDetachedState(base::Time date,
+                                             const std::string content,
+                                             const std::string quote) {
+  if (user_note_header_) {
+    user_note_header_->SetVisible(true);
+    views::Label* date_view = static_cast<views::Label*>(
+        user_note_header_->GetViewByID(kUserNoteDateViewId));
+    date_view->SetText(ConvertDate(date));
+  } else {
+    user_note_header_ = AddChildView(CreateHeaderView(
+        ConvertDate(date), base::BindRepeating(&UserNoteView::OnOpenMenu,
+                                               base::Unretained(this))));
+  }
+
+  if (!quote.empty()) {
+    if (user_note_quote_) {
+      user_note_quote_->SetVisible(true);
+    } else {
+      user_note_quote_ = AddChildView(CreateTargetTextView(quote));
+    }
+  }
+
+  if (user_note_body_) {
+    user_note_body_->SetVisible(true);
+    user_note_body_->SetText(base::UTF8ToUTF16(content));
+  } else {
+    user_note_body_ = AddChildView(CreateBodyLabel(content));
+  }
+}
+
+void UserNoteView::SetCreatingOrEditState(const std::string content) {
+  if (text_area_) {
+    text_area_->SetVisible(true);
+  } else {
+    text_area_ = AddChildView(CreateTextarea());
+  }
+
+  if (!content.empty())
+    text_area_->SetText(base::UTF8ToUTF16(content));
+
+  if (button_container_) {
+    button_container_->SetVisible(true);
+  } else {
+    button_container_ = AddChildView(CreateButtonsView(
+        base::BindRepeating(&UserNoteView::OnCancelNewUserNote,
+                            base::Unretained(this)),
+        base::BindRepeating(&UserNoteView::OnAddUserNote,
+                            base::Unretained(this))));
+  }
+}
+
+void UserNoteView::CreateOrUpdateNoteView(UserNoteView::State state,
+                                          base::Time date,
+                                          const std::string content,
+                                          const std::string quote) {
   switch (state) {
     case UserNoteView::State::kDefault:
-      user_note_header_ = AddChildView(CreateHeaderView(
-          ConvertDate(
-              user_note_instance_->model().metadata().modification_date()),
-          base::BindRepeating(&UserNoteView::OnOpenMenu,
-                              base::Unretained(this))));
-      user_note_body_ = AddChildView(CreateBodyLabel(
-          user_note_instance_->model().body().plain_text_value()));
+      SetDefaultOrDetachedState(date, content, /*quote =*/std::string());
       break;
     case UserNoteView::State::kCreating:
-      text_area_ = AddChildView(CreateTextarea());
-      button_container_ = AddChildView(CreateButtonsView(
-          base::BindRepeating(&UserNoteView::OnCancelNewUserNote,
-                              base::Unretained(this)),
-          base::BindRepeating(&UserNoteView::OnAddUserNote,
-                              base::Unretained(this))));
+      SetCreatingOrEditState(/*content =*/std::string());
       break;
     case UserNoteView::State::kOrphaned:
-      user_note_header_ = AddChildView(CreateHeaderView(
-          ConvertDate(
-              user_note_instance_->model().metadata().modification_date()),
-          base::BindRepeating(&UserNoteView::OnOpenMenu,
-                              base::Unretained(this))));
-      user_note_quote_ = AddChildView(CreateTargetTextView(
-          user_note_instance_->model().target().original_text()));
-      user_note_body_ = AddChildView(CreateBodyLabel(
-          user_note_instance_->model().body().plain_text_value()));
+      SetDefaultOrDetachedState(date, content, quote);
+      break;
+    case UserNoteView::State::kEditing:
+      SetCreatingOrEditState(content);
       break;
     default:
       SetBorder(nullptr);
@@ -273,10 +333,9 @@ UserNoteView::UserNoteView(user_notes::UserNoteInstance* user_note_instance,
   }
 }
 
-UserNoteView::~UserNoteView() = default;
-
 void UserNoteView::OnOpenMenu() {
-  auto* user_note_menu_button = user_note_header_->children().at(1);
+  auto* user_note_menu_button =
+      user_note_header_->GetViewByID(kUserNoteMenuButtonViewId);
 
   dialog_model_ = std::make_unique<ui::DialogModelMenuModelAdapter>(
       ui::DialogModel::Builder()
@@ -312,7 +371,21 @@ void UserNoteView::OnCancelNewUserNote() {
 }
 
 void UserNoteView::OnAddUserNote() {
-  // TODO(cheickcisse): Add a new note.
+  const std::u16string note_content = text_area_->GetText();
+  base::Time date = base::Time::Now();
+
+  // Hide creating state
+  GetBorder()->set_color(SK_ColorLTGRAY);
+  text_area_->SetVisible(false);
+  button_container_->SetVisible(false);
+
+  // Show default state
+  CreateOrUpdateNoteView(UserNoteView::State::kDefault, date,
+                         base::UTF16ToUTF8(note_content),
+                         /*quote =*/std::string());
+
+  coordinator_->OnNoteCreationDone(UserNoteId(),
+                                   base::UTF16ToUTF8(note_content));
 }
 
 void UserNoteView::OnEditUserNote(int event_flags) {
