@@ -4244,6 +4244,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "new-overflow-menu-simple-destination-icons",
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
     "name": "new-shortcut-mapping",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com", "cros-peripherals@google.com"],
     "expiry_milestone": 105
