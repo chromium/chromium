@@ -276,6 +276,16 @@ constexpr CGFloat kImageViewWidthHeight = 32;
 
 #pragma mark - NSObject(Accessibility)
 
+- (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
+  NOTREACHED();
+}
+
+- (NSString*)accessibilityLabel {
+  return [NSString
+      stringWithFormat:@"%@ %@", self.textLabel.text,
+                       [self.primaryButton titleForState:UIControlStateNormal]];
+}
+
 - (BOOL)accessibilityActivate {
   [self accessibilityPrimaryAction:nil];
   return YES;

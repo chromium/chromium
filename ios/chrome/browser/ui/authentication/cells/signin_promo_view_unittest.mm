@@ -60,3 +60,21 @@ TEST_F(SigninPromoViewTest, SecondaryButtonVisibility) {
   view.mode = SigninPromoViewModeSyncWithPrimaryAccount;
   EXPECT_TRUE(view.secondaryButton.hidden);
 }
+
+// Tests the accessibility label (based on the |textLabel| and the primary
+// button title).
+TEST_F(SigninPromoViewTest, AccessibilityLabel) {
+  UIWindow* currentWindow = GetAnyKeyWindow();
+  SigninPromoView* view =
+      [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  [currentWindow.rootViewController.view addSubview:view];
+  NSString* primaryButtonTitle = @"Primary Button Title";
+  [view.primaryButton setTitle:primaryButtonTitle
+                      forState:UIControlStateNormal];
+  NSString* promoText = @"This is the promo text.";
+  view.textLabel.text = promoText;
+  NSString* expectedAccessibilityLabel =
+      [NSString stringWithFormat:@"%@ %@", promoText, primaryButtonTitle];
+  EXPECT_TRUE(
+      [view.accessibilityLabel isEqualToString:expectedAccessibilityLabel]);
+}

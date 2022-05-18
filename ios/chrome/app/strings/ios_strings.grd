@@ -3334,9 +3334,6 @@ New Search
       <message name="IDS_IOS_SIGNIN_PROMO_CLOSE_ACCESSIBILITY" desc="Accessibility label to describe the close button action in the sign-in promo element.">
         Close sign-in promo
       </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL" desc="Acessibility label to describe the action on the sign-in promo. The action of the sign-in promo is to open the user consent view.">
-        Turn on sync for <ph name="NAME">$1<ex>John Doe</ex>.</ph>
-      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_CONTINUE_AS" desc="Button that the user can press to login without asking the password and continue using Chrome with this acccount. [Length: 9em]">
         Continue as <ph name="NAME">$1<ex>John Doe</ex></ph>
       </message>
