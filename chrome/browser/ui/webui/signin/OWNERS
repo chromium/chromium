@@ -1,5 +1,7 @@
 file://components/signin/OWNERS
 
+# For profile picker and first run changes
+dgn@chromium.org
 
 # For ChromeOS changes
 achuith@chromium.org
