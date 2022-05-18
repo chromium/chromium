@@ -614,10 +614,9 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   qmatrix_buf.quantization_index_delta[4] =
       frame_header->quantization_hdr.uv_ac_delta;
 
-  return vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
-                                      &seq_param) &&
-         vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
-                                      &pic_param) &&
-         vaapi_wrapper_->SubmitBuffer(VAQMatrixBufferType, &qmatrix_buf);
+  return vaapi_wrapper_->SubmitBuffers(
+      {{VAEncSequenceParameterBufferType, sizeof(seq_param), &seq_param},
+       {VAEncPictureParameterBufferType, sizeof(pic_param), &pic_param},
+       {VAQMatrixBufferType, sizeof(qmatrix_buf), &qmatrix_buf}});
 }
 }  // namespace media
