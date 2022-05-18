@@ -37,8 +37,17 @@ class CrowBridge {
                 url, numDays, (result) -> callback.onResult(new VisitCounts(result[0], result[1])));
     }
 
+    /**
+     * Returns the publication ID for a hostname; empty string if host is not on the allowlist.
+     * @param host The hostname to check against the allowlist.
+     */
+    static String getPublicationIDForHost(String host) {
+        return CrowBridgeJni.get().getPublicationIDForHost(host);
+    }
+
     @NativeMethods
     interface Natives {
         void getRecentVisitCountsToHost(GURL url, int numDays, Callback<int[]> callback);
+        String getPublicationIDForHost(String host);
     }
 }

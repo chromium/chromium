@@ -12,3 +12,8 @@ proto_library("proto") {
   ]
   cc_generator_options = "lite=true:"
 }
+
+proto_library("crow_proto") {
+  sources = [ "crow_configuration.proto" ]
+  cc_generator_options = "lite=true:"
+}
