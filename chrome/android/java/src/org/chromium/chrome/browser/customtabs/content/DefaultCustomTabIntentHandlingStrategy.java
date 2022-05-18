@@ -8,11 +8,13 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -50,9 +52,22 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
         if (initialTabCreationMode == TabCreationMode.HIDDEN
                 || initialTabCreationMode == TabCreationMode.FROM_STARTUP_TAB_PRELOADER) {
-            handleInitialLoadForHiddedTab(initialTabCreationMode, intentDataProvider);
+            handleInitialLoadForHiddenTab(initialTabCreationMode, intentDataProvider);
         } else {
             LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
+
+            // If this is the start of a password change flow, notify the password change success
+            // tracker.
+            String passwordChangeUsername =
+                    IntentUtils.safeGetStringExtra(intentDataProvider.getIntent(),
+                            PasswordChangeSuccessTrackerBridge.EXTRA_MANUAL_CHANGE_USERNAME_KEY);
+            if (passwordChangeUsername != null) {
+                IntentUtils.safeRemoveExtra(intentDataProvider.getIntent(),
+                        PasswordChangeSuccessTrackerBridge.EXTRA_MANUAL_CHANGE_USERNAME_KEY);
+                PasswordChangeSuccessTrackerBridge.onManualPasswordChangeStarted(
+                        getGurlForUrl(params.getUrl()), passwordChangeUsername);
+            }
+
             mNavigationController.navigate(params, getTimestamp(intentDataProvider));
         }
     }
@@ -66,7 +81,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     }
 
     // The hidden tab case needs a bit of special treatment.
-    private void handleInitialLoadForHiddedTab(@TabCreationMode int initialTabCreationMode,
+    private void handleInitialLoadForHiddenTab(@TabCreationMode int initialTabCreationMode,
             BrowserServicesIntentDataProvider intentDataProvider) {
         Tab tab = mTabProvider.getTab();
         if (tab == null) {

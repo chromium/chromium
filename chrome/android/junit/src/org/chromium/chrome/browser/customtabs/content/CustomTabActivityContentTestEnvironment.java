@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -159,6 +160,16 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     protected void finished(Description description) {
         realAsyncTabParamsManager.getAsyncTabParams().clear();
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
+    }
+
+    /**
+     * Set an extra that triggers notifying the PasswordChangeSuccessTracker during initial intent
+     * handling.
+     * @param username The username to set as the extra parameter.
+     */
+    public void setPasswordChangeUsername(String username) {
+        mIntent.putExtra(
+                PasswordChangeSuccessTrackerBridge.EXTRA_MANUAL_CHANGE_USERNAME_KEY, username);
     }
 
     // clang-format off
