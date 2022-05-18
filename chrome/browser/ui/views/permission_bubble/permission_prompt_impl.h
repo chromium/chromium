@@ -41,10 +41,12 @@ class PermissionPromptImpl : public permissions::PermissionPrompt,
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
 
+  void CleanUpPromptBubble();
+
   views::Widget* GetPromptBubbleWidgetForTesting();
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   bool IsLocationBarDisplayed();

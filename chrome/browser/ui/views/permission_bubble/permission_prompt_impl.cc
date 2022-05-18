@@ -119,8 +119,7 @@ PermissionPromptImpl::~PermissionPromptImpl() {
   switch (prompt_style_) {
     case PermissionPromptStyle::kBubbleOnly:
       DCHECK(!chip_);
-      if (prompt_bubble_)
-        prompt_bubble_->GetWidget()->Close();
+      CleanUpPromptBubble();
       break;
     case PermissionPromptStyle::kChip:
     case PermissionPromptStyle::kQuietChip:
@@ -162,14 +161,13 @@ void PermissionPromptImpl::UpdateAnchor() {
         // Change prompt style to chip to avoid dismissing request while
         // switching UI style.
         prompt_bubble_->SetPromptStyle(PermissionPromptStyle::kChip);
-        prompt_bubble_->GetWidget()->Close();
+        CleanUpPromptBubble();
         ShowChip();
         chip_->OpenBubble();
       } else {
         // If |browser_| changed, recreate bubble for correct browser.
         if (was_browser_changed) {
-          prompt_bubble_->GetWidget()->CloseWithReason(
-              views::Widget::ClosedReason::kUnspecified);
+          CleanUpPromptBubble();
           ShowBubble();
         } else {
           prompt_bubble_->UpdateAnchorPosition();
@@ -245,6 +243,15 @@ PermissionPromptImpl::GetPromptDisposition() const {
   }
 }
 
+void PermissionPromptImpl::CleanUpPromptBubble() {
+  if (prompt_bubble_) {
+    views::Widget* widget = prompt_bubble_->GetWidget();
+    widget->RemoveObserver(this);
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    prompt_bubble_ = nullptr;
+  }
+}
+
 views::Widget* PermissionPromptImpl::GetPromptBubbleWidgetForTesting() {
   if (prompt_bubble_) {
     return prompt_bubble_->GetWidget();
@@ -253,8 +260,7 @@ views::Widget* PermissionPromptImpl::GetPromptBubbleWidgetForTesting() {
                : nullptr;
 }
 
-void PermissionPromptImpl::OnWidgetClosing(views::Widget* widget) {
-  DCHECK_EQ(widget, prompt_bubble_->GetWidget());
+void PermissionPromptImpl::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   prompt_bubble_ = nullptr;
 }
