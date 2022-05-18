@@ -752,6 +752,10 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
   // Transfer page transition directives.
   for (auto& request : commit_state.document_transition_requests)
     AddDocumentTransitionRequest(std::move(request));
+
+  SetVisualUpdateDurations(
+      commit_state.previous_surfaces_visual_update_duration,
+      commit_state.visual_update_duration);
 }
 
 void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
@@ -876,6 +880,9 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
 
   for (auto& request : TakeDocumentTransitionRequests())
     target_tree->AddDocumentTransitionRequest(std::move(request));
+
+  target_tree->SetVisualUpdateDurations(
+      previous_surfaces_visual_update_duration_, visual_update_duration_);
 }
 
 void LayerTreeImpl::HandleTickmarksVisibilityChange() {
@@ -2886,6 +2893,19 @@ bool LayerTreeImpl::HasDocumentTransitionRequests() const {
 
 bool LayerTreeImpl::IsReadyToActivate() const {
   return host_impl_->IsReadyToActivate();
+}
+
+void LayerTreeImpl::ClearVisualUpdateDurations() {
+  previous_surfaces_visual_update_duration_ = base::TimeDelta();
+  visual_update_duration_ = base::TimeDelta();
+}
+
+void LayerTreeImpl::SetVisualUpdateDurations(
+    base::TimeDelta previous_surfaces_visual_update_duration,
+    base::TimeDelta visual_update_duration) {
+  previous_surfaces_visual_update_duration_ =
+      previous_surfaces_visual_update_duration;
+  visual_update_duration_ = visual_update_duration;
 }
 
 }  // namespace cc
