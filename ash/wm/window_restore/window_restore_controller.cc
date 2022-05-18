@@ -159,9 +159,9 @@ WindowRestoreController* WindowRestoreController::Get() {
 }
 
 // static
-bool WindowRestoreController::CanActivateFullRestoredWindow(
+bool WindowRestoreController::CanActivateRestoredWindow(
     const aura::Window* window) {
-  if (!window->GetProperty(app_restore::kLaunchedFromFullRestoreKey))
+  if (!window->GetProperty(app_restore::kLaunchedFromAppRestoreKey))
     return true;
 
   // Only windows on the active desk should be activatable.
@@ -180,7 +180,7 @@ bool WindowRestoreController::CanActivateFullRestoredWindow(
   if (!desk_container || !desks_util::IsDeskContainer(desk_container))
     return true;
 
-  // Only the topmost unminimized Full Restore'd window can be activated.
+  // Only the topmost unminimize restored window can be activated.
   auto siblings = desk_container->children();
   for (auto child_iter = siblings.rbegin(); child_iter != siblings.rend();
        ++child_iter) {
@@ -216,7 +216,7 @@ bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
 
     if (topmost_visible_iter != active_desk_children.rend() &&
         (*topmost_visible_iter)
-            ->GetProperty(app_restore::kLaunchedFromFullRestoreKey)) {
+            ->GetProperty(app_restore::kLaunchedFromAppRestoreKey)) {
       return false;
     }
   }
@@ -355,7 +355,7 @@ void WindowRestoreController::OnWindowPropertyChanged(aura::Window* window,
   // the activation delay.
   if (key == app_restore::kRealArcTaskWindow &&
       window->GetProperty(app_restore::kRealArcTaskWindow)) {
-    window->SetProperty(app_restore::kLaunchedFromFullRestoreKey, true);
+    window->SetProperty(app_restore::kLaunchedFromAppRestoreKey, true);
     restore_property_clear_callbacks_.emplace(
         window, base::BindOnce(&WindowRestoreController::ClearLaunchedKey,
                                weak_ptr_factory_.GetWeakPtr(), window));
@@ -364,8 +364,8 @@ void WindowRestoreController::OnWindowPropertyChanged(aura::Window* window,
         kAllowActivationDelay);
   }
 
-  if (key != app_restore::kLaunchedFromFullRestoreKey ||
-      window->GetProperty(app_restore::kLaunchedFromFullRestoreKey)) {
+  if (key != app_restore::kLaunchedFromAppRestoreKey ||
+      window->GetProperty(app_restore::kLaunchedFromAppRestoreKey)) {
     return;
   }
 
@@ -572,7 +572,7 @@ void WindowRestoreController::ClearLaunchedKey(aura::Window* window) {
   // If the window is destroying then prevent extra work by not clearing the
   // property.
   if (!window->is_destroying())
-    window->SetProperty(app_restore::kLaunchedFromFullRestoreKey, false);
+    window->SetProperty(app_restore::kLaunchedFromAppRestoreKey, false);
 }
 
 void WindowRestoreController::CancelAndRemoveRestorePropertyClearCallback(

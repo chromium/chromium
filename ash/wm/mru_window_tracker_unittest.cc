@@ -124,10 +124,10 @@ TEST_F(MruWindowTrackerTest, RestoreMruOrder) {
 TEST_F(MruWindowTrackerTest, WindowRestoredWindowsInMruWindowList) {
   // Create an `aura::Window` using `CreateTestWindow()` so that the window is
   // parented to something. Then set its
-  // `app_restore::kLaunchedFromFullRestoreKey` to simulate it being window
+  // `app_restore::kLaunchedFromAppRestoreKey` to simulate it being window
   // restore'd.
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
-  w1->SetProperty(app_restore::kLaunchedFromFullRestoreKey, true);
+  w1->SetProperty(app_restore::kLaunchedFromAppRestoreKey, true);
 
   // Build the MRU window list. `w1` should be included despite not being
   // activatable.
