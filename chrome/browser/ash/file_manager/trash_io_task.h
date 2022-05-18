@@ -42,6 +42,23 @@ struct TrashEntry {
   // The contents of the .trashinfo file containing the deletion date and
   // original path of the trashed file.
   std::string trash_info_contents;
+
+  // The source file size.
+  int64_t source_file_size;
+};
+
+struct DirectoryInfo {
+  explicit DirectoryInfo(int64_t free_space);
+  ~DirectoryInfo();
+
+  DirectoryInfo(DirectoryInfo&& other);
+  DirectoryInfo& operator=(DirectoryInfo&& other);
+
+  // TODO(b/231830211): Store the .Trash/{files/info} storage::FileSystemURLs to
+  // enable creating the directory on the file_system_context_.
+
+  // The free space on the underlying filesystem that .Trash is located on.
+  int64_t free_space;
 };
 
 }  // namespace
@@ -77,10 +94,17 @@ class TrashIOTask : public IOTask {
 
  private:
   void Complete(State state);
-  bool ConstructTrashEntries();
-  bool UpdateTrashEntryAndIncrementRequiredSpace(
-      size_t idx,
-      const base::FilePath& trash_parent_path);
+  void UpdateTrashEntry(size_t idx);
+  void GetFileSize(size_t idx);
+  void GotFileSize(size_t idx,
+                   base::File::Error error,
+                   const base::File::Info& file_info);
+  using FreeSpaceMap = std::map<base::FilePath, DirectoryInfo>;
+  void ValidateAndDecrementFreeSpace(size_t idx, FreeSpaceMap::iterator& it);
+  void GetFreeDiskSpace(size_t idx, const base::FilePath& trash_parent_path);
+  void GotFreeDiskSpace(size_t idx,
+                        const base::FilePath& trash_parent_path,
+                        int64_t free_space);
 
   raw_ptr<Profile> profile_;
 
@@ -90,9 +114,9 @@ class TrashIOTask : public IOTask {
   // trash location to ensure enough disk space to write.
   std::vector<TrashEntry> trash_entries_;
 
-  // Stores the required size per parent location to ensure the IOTask has
-  // enough available space to write out the metadata.
-  std::map<base::FilePath, int64_t> required_sizes_;
+  // Maintains the free space required to write all the metadata files along
+  // with the underlying locations of the .Trash/{files,info} directories.
+  FreeSpaceMap free_space_map_;
 
   // Stores the id of the trash operation if one is in progress. Used so the
   // trash can be cancelled.

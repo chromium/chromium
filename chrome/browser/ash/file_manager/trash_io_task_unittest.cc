@@ -149,7 +149,7 @@ TEST_F(TrashIOTaskTest, MixedUnsupportedAndSupportedDirectoriesShouldError) {
   run_loop.Run();
 }
 
-TEST_F(TrashIOTaskTest, SupportedDirectoryOnly) {
+TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
   const base::FilePath file_path = downloads_dir_.Append("foo.txt");
   ASSERT_TRUE(base::WriteFile(file_path, foo_contents));

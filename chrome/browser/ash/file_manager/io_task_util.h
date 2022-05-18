@@ -24,6 +24,13 @@ storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
         progress_callback,
     storage::FileSystemOperation::StatusCallback complete_callback);
 
+// Obtains metadata of a URL. Used to get the filesize of the transferred files.
+void GetFileMetadataOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL& url,
+    int fields,
+    storage::FileSystemOperation::GetMetadataCallback callback);
+
 }  // namespace io_task
 }  // namespace file_manager
 
