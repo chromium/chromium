@@ -31,7 +31,7 @@ struct AuthenticatorConfig;
 class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
     : public FidoAuthenticator {
  public:
-  // IsAvailable runs |callback| with a bool incidating whether the
+  // IsAvailable runs |callback| with a bool indicating whether the
   // authenticator is available, i.e. whether the device has a Secure Enclave
   // and the current binary carries a keychain-access-groups entitlement that
   // matches the one set in |config|.

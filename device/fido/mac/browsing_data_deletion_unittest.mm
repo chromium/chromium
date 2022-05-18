@@ -29,9 +29,8 @@ extern "C" {
 // are stored. This test needs it because it tries to erase all credentials
 // belonging to the (test-only) keychain access group, and the corresponding
 // filter label (kSecAttrAccessGroup) appears to be ineffective *unless*
-// kSecAttrNoLegacy is `@YES`. Marked as weak import because the symbol is only
-// available in 10.11 or greater.
-extern const CFStringRef kSecAttrNoLegacy __attribute__((weak_import));
+// kSecAttrNoLegacy is `@YES`.
+extern const CFStringRef kSecAttrNoLegacy;
 }
 
 namespace device {
