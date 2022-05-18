@@ -57,6 +57,13 @@ template <typename F>
 TaskAttributionTracker::AncestorStatus
 TaskAttributionTrackerImpl::IsAncestorInternal(ScriptState* script_state,
                                                F is_ancestor) {
+  DCHECK(script_state);
+  if (!script_state->World().IsMainWorld()) {
+    // As RunningTaskId will not return a TaskId for non-main-world tasks,
+    // there's no point in testing their ancestry.
+    return AncestorStatus::kNotAncestor;
+  }
+
   absl::optional<TaskId> current_task_id = RunningTaskId(script_state);
   DCHECK(current_task_id);
   if (is_ancestor(current_task_id.value())) {
