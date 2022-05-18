@@ -1014,12 +1014,12 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
 bool PasswordAutofillAgent::ShouldSuppressKeyboard() {
   // The keyboard should be suppressed if we are showing the Touch To Fill UI.
   return touch_to_fill_state_ == TouchToFillState::kIsShowing;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool PasswordAutofillAgent::TryToShowTouchToFill(
     const WebFormControlElement& control_element) {
   if (touch_to_fill_state_ != TouchToFillState::kShouldShow)
@@ -1098,12 +1098,14 @@ bool PasswordAutofillAgent::ShowSuggestions(
   if (generation_popup_showing)
     return false;
 
+#if BUILDFLAG(IS_ANDROID)
   // Don't call ShowSuggestionPopup if Touch To Fill is currently showing. Since
   // Touch To Fill in spirit is very similar to a suggestion pop-up, return true
   // so that the AutofillAgent does not try to show other autofill suggestions
   // instead.
   if (touch_to_fill_state_ == TouchToFillState::kIsShowing)
     return true;
+#endif
 
   if (!HasDocumentWithValidFrame(element))
     return false;
@@ -1730,7 +1732,9 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   last_updated_field_renderer_id_ = FieldRendererId();
   last_updated_form_renderer_id_ = FormRendererId();
   field_renderer_id_to_submit_ = FieldRendererId();
+#if BUILDFLAG(IS_ANDROID)
   touch_to_fill_state_ = TouchToFillState::kShouldShow;
+#endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif

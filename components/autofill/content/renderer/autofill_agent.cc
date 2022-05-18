@@ -1098,9 +1098,12 @@ void AutofillAgent::BatchSelectOptionChange(
 bool AutofillAgent::ShouldSuppressKeyboard(
     const WebFormControlElement& element) {
   // Note: Consider supporting other autofill types in the future as well.
-  return password_autofill_agent_->ShouldSuppressKeyboard() ||
-         (autofill_assistant_agent_ &&
-          autofill_assistant_agent_->ShouldSuppressKeyboard());
+#if BUILDFLAG(IS_ANDROID)
+  if (password_autofill_agent_->ShouldSuppressKeyboard())
+    return true;
+#endif
+  return autofill_assistant_agent_ &&
+         autofill_assistant_agent_->ShouldSuppressKeyboard();
 }
 
 void AutofillAgent::FormElementReset(const WebFormElement& form) {
