@@ -2912,10 +2912,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         To get your bookmarks on all your devices, sign in and turn on sync
       </message>
       <message name="IDS_SYNC_PROMO_TITLE_NTP_CONTENT_SUGGESTIONS" desc="This string is the headline of a card that appears when the user visits Chrome's new tab page; the user may be signed in to Chrome, but isn't syncing their Chrome data. The line below this string is 'Sync to get the most relevant content from Google'. [CHAR_LIMIT=70]" meaning="This headline means that the user is missing out on more interesting and relevant news articles. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">
-        See stories for you
+        See content for you
       </message>
       <message name="IDS_SYNC_PROMO_DESCRIPTION_NTP_CONTENT_SUGGESTIONS" desc="This string is the body of a card that appears when the user visits Chrome's new tab page; the user may be signed in to Chrome, but isn't syncing their Chrome data. The headline above this string is 'See stories for you'. There's no character limit but try to keep the translation under 120 characters." meaning="This message means that the user is missing out on more interesting and relevant news articles. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">
-        Sync to get the most relevant content form Google
+        Sync to get the most relevant content from Google
       </message>
       <message name="IDS_SIGNIN_PROMO_DESCRIPTION_NTP_CONTENT_SUGGESTIONS" desc="Description string for 'Continue as' signin promo shown in NTP content suggestions screen. This version of the string is shown when there are no accounts on the device.">
         To get personalized content suggested by Google, turn on sync
@@ -2939,7 +2939,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Browse more easily
       </message>
       <message name="IDS_SYNC_PROMO_DESCRIPTION_SETTINGS" desc="This string is the body of a card that appears when the user opens Chrome's settings; the user may be signed in to Chrome, but isn't syncing their Chrome data. The headline above this string is 'Browse more easily'. There's no character limit but try to keep the translation under 120 characters." meaning="This message means that the user can use Chrome more easily by syncing their passwords, bookmarks, settings, and more.. We want users to read this card and tap the 'Continue' button and turn on sync. The tone should be inviting.">
-        Sync to get your passwords, bookmarks and more on all your other devices.
+        Sync to get your passwords, bookmarks and more on all your devices
       </message>
       <message name="IDS_SIGNIN_PROMO_DESCRIPTION_SETTINGS" desc="Description string for 'Continue as' signin promo shown in Settings screen. Turning on sync enables syncing browser settings, autofill data, bookmarks, passwords, history and other data used for browser personalization.">
         To sync and personalize across devices, turn on sync
