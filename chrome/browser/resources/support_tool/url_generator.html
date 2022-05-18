@@ -20,10 +20,20 @@
     width: 520px;
   }
 
-  #generatedURL[disabled] {
-    /* Set opacity to 1 for disabled state since we use this element disabled
-     * by default.*/
+  #generatedURL[url-generated] {
+    /* Set opacity to 1 for url-generated state to emphasize generated URL.*/
     --cr-disabled-opacity: 1;
+  }
+
+  #info-text {
+    color: var(--cr-title-text-color);
+    float: right;
+    --iron-icon-fill-color: var(--google-grey-700);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    margin-top: 8px;
+    position: relative;
+    right: 0;
   }
 
   cr-button {
@@ -48,7 +58,8 @@
 <div class="support-tool-title">Generated URL</div>
 <!-- Use cr-input in disabled mode since we don't want to accept input but want
   to have the same styling as cr-input.-->
-<cr-input id="generatedURL" disabled="true" value="[[generatedURL_]]">
+<cr-input id="generatedURL" disabled="true" value="[[generatedURL_]]"
+    url-generated$="[[urlGenerated_]]">
 </cr-input>
 <div class="navigation-buttons" hidden="[[urlGenerated_]]">
   <cr-button id="generateButton" class="action-button"
@@ -64,6 +75,10 @@
       on-click="onCopyURLClick_">
     Copy URL
   </cr-button>
+</div>
+<div id="info-text" hidden="[[!urlGenerated_]]">
+  <iron-icon icon="cr:info"></iron-icon>
+  Please copy the URL and send to the user to collect the logs
 </div>
 <cr-toast id="copyToast" duration="5000">
   <span>URL copied to clipboard</span>
