@@ -536,6 +536,9 @@ export class StatsRatesCalculator {
           totalProcessingDelay: new RateCalculator(
               'totalProcessingDelay', 'framesDecoded',
               CalculatorModifier.kMillisecondsFromSeconds),
+          'totalAssemblyTime*': new RateCalculator(
+              'totalAssemblyTime*', 'framesAssembledFromMultiplePackets*',
+              CalculatorModifier.kMillisecondsFromSeconds),
         },
       },
       {
