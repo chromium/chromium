@@ -46,8 +46,10 @@ namespace blink {
 static AdditionalBytes
 AdditionalBytesForImmutableCSSPropertyValueSetWithPropertyCount(
     unsigned count) {
-  return AdditionalBytes(sizeof(Member<CSSValue>) * count +
-                         sizeof(CSSPropertyValueMetadata) * count);
+  return AdditionalBytes(
+      base::bits::AlignUp(sizeof(Member<CSSValue>) * count,
+                          alignof(CSSPropertyValueMetadata)) +
+      sizeof(CSSPropertyValueMetadata) * count);
 }
 
 ImmutableCSSPropertyValueSet* ImmutableCSSPropertyValueSet::Create(

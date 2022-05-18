@@ -162,7 +162,7 @@ struct IdentityExtractor {
   // Assumes out points to a buffer of size at least sizeof(T).
   template <typename T>
   static void ExtractSafe(const T& t, void* out) {
-    AtomicReadMemcpy<sizeof(T)>(out, &t);
+    AtomicReadMemcpy<sizeof(T), alignof(T)>(out, &t);
   }
 };
 

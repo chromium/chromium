@@ -53,7 +53,7 @@ struct ClearMemoryAtomicallyIfNeeded {
 };
 template <typename T>
 struct ClearMemoryAtomicallyIfNeeded<T, true> {
-  static void Clear(T* slot) { AtomicMemzero<sizeof(T)>(slot); }
+  static void Clear(T* slot) { AtomicMemzero<sizeof(T), alignof(T)>(slot); }
 };
 }  // namespace
 

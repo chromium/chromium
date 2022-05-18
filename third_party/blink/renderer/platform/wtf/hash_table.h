@@ -1317,7 +1317,7 @@ struct HashTableBucketInitializer<true> {
       memset(&bucket, 0, sizeof(bucket));
       return;
     }
-    AtomicMemzero<sizeof(bucket)>(&bucket);
+    AtomicMemzero<sizeof(bucket), alignof(Value)>(&bucket);
   }
 };
 

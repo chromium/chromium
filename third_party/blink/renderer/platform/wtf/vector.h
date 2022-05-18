@@ -189,12 +189,12 @@ struct VectorTypeOperations {
                     IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
         if (dst < src) {
           for (T *s = src, *d = dst; s < src_end; ++s, ++d)
-            AtomicWriteMemcpy<sizeof(T)>(d, s);
+            AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
         } else if (dst > src) {
           T* s = src_end - 1;
           T* d = dst + (s - src);
           for (; s >= src; --s, --d)
-            AtomicWriteMemcpy<sizeof(T)>(d, s);
+            AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
         }
       } else {
         memmove(dst, src,
@@ -229,8 +229,8 @@ struct VectorTypeOperations {
       alignas(boundary) char buf[sizeof(T)];
       for (T *s = src, *d = dst; s < src_end; ++s, ++d) {
         memcpy(buf, d, sizeof(T));
-        AtomicWriteMemcpy<sizeof(T)>(d, s);
-        AtomicWriteMemcpy<sizeof(T)>(s, buf);
+        AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
+        AtomicWriteMemcpy<sizeof(T), alignof(T)>(s, buf);
       }
     } else {
       std::swap_ranges(reinterpret_cast<char*>(src),

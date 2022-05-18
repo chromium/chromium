@@ -183,8 +183,7 @@ struct SameSizeAsNode : EventTarget {
   Member<NodeData> member_;
   // Increasing size of Member increases size of Node.
   static_assert(kBlinkMemberGCHasDebugChecks ||
-                    ::WTF::internal::SizesEqual<sizeof(Member<NodeData>),
-                                                sizeof(void*)>::value,
+                    sizeof(Member<NodeData>) <= sizeof(void*),
                 "Member<NodeData> should stay small");
 };
 

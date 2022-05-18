@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGBlockBreakToken : NGBreakToken {
-  std::unique_ptr<void> data;
+  Member<LayoutBox> data;
   unsigned numbers[1];
 };
 
