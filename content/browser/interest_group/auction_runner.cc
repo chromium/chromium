@@ -607,6 +607,7 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     size_t size_limit =
         config_->auction_ad_config_non_shared_params->all_buyers_group_limit;
     const url::Origin& owner = interest_groups[0].interest_group.owner;
+    post_auction_update_owners_.push_back(owner);
     const auto limit_iter = config_->auction_ad_config_non_shared_params
                                 ->per_buyer_group_limits.find(owner);
     if (limit_iter != config_->auction_ad_config_non_shared_params
@@ -628,6 +629,21 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     interest_groups.resize(std::min(interest_groups.size(), size_limit));
 
     for (auto& bidder : interest_groups) {
+      // Report freshness metrics.
+      if (bidder.interest_group.daily_update_url.has_value()) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
+            (base::Time::Now() - bidder.last_updated).InMinutes(),
+            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
+            kGroupFreshnessBuckets);
+      } else {
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Ads.InterestGroup.Auction.GroupFreshness.NoDailyUpdates",
+            (base::Time::Now() - bidder.last_updated).InMinutes(),
+            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
+            kGroupFreshnessBuckets);
+      }
+
       // Ignore interest groups with no bidding script or no ads.
       if (!bidder.interest_group.bidding_url)
         continue;
@@ -636,25 +652,7 @@ void AuctionRunner::Auction::OnInterestGroupRead(
       bid_states_.emplace_back(BidState());
       bid_states_.back().bidder = std::move(bidder);
     }
-    post_auction_update_owners_.push_back(
-        interest_groups[0].interest_group.owner);
     ++num_owners_with_interest_groups_;
-    // Report freshness metrics.
-    for (const StorageInterestGroup& group : interest_groups) {
-      if (group.interest_group.daily_update_url.has_value()) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
-            (base::Time::Now() - group.last_updated).InMinutes(),
-            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
-            kGroupFreshnessBuckets);
-      } else {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            "Ads.InterestGroup.Auction.GroupFreshness.NoDailyUpdates",
-            (base::Time::Now() - group.last_updated).InMinutes(),
-            kGroupFreshnessMin.InMinutes(), kGroupFreshnessMax.InMinutes(),
-            kGroupFreshnessBuckets);
-      }
-    }
   }
   OnOneLoadCompleted();
 }
