@@ -39,6 +39,8 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
 #include "components/search_engines/omnibox_focus_type.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -1415,6 +1417,13 @@ bool SearchProvider::ShouldCurbDefaultSuggestions() const {
   // Only curb if the global experimental keyword feature is enabled, we're
   // in keyword mode and we believe the user selected the mode explicitly.
   if (providers_.has_keyword_provider()) {
+    const TemplateURL* turl = providers_.GetKeywordProviderURL();
+    DCHECK(turl);
+    if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+        (turl->starter_pack_id() ==
+         TemplateURLStarterPackData::StarterPackID::kBookmarks)) {
+      return true;
+    }
     return InExplicitExperimentalKeywordMode(input_,
                                              providers_.keyword_provider());
   } else {

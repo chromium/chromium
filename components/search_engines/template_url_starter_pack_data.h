@@ -20,16 +20,22 @@ struct TemplateURLData;
 
 namespace TemplateURLStarterPackData {
 
+typedef enum {
+  kBookmarks = 1,
+  kHistory = 2,
+
+  kMaxStarterPackID
+} StarterPackID;
+
 struct StarterPackEngine {
   int name_message_id;
   int keyword_message_id;
   const char* const favicon_url;
   const char* const search_url;
-  const int id;
+  const StarterPackID id;
   const SearchEngineType type;
 };
 
-extern const int kMaxStarterPackEngineID;
 extern const int kCurrentDataVersion;
 
 // Returns the current version of the starterpack data, so callers can know when

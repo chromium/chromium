@@ -31,6 +31,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/builtin_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
@@ -55,6 +56,7 @@
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
@@ -280,6 +282,7 @@ AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
     int provider_types)
     : provider_client_(std::move(provider_client)),
+      bookmark_provider_(nullptr),
       document_provider_(nullptr),
       history_url_provider_(nullptr),
       keyword_provider_(nullptr),
@@ -292,8 +295,10 @@ AutocompleteController::AutocompleteController(
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
-  if (provider_types & AutocompleteProvider::TYPE_BOOKMARK)
-    providers_.push_back(new BookmarkProvider(provider_client_.get()));
+  if (provider_types & AutocompleteProvider::TYPE_BOOKMARK) {
+    bookmark_provider_ = new BookmarkProvider(provider_client_.get());
+    providers_.push_back(bookmark_provider_.get());
+  }
   if (provider_types & AutocompleteProvider::TYPE_BUILTIN)
     providers_.push_back(new BuiltinProvider(provider_client_.get()));
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK)
@@ -457,7 +462,8 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // Start the new query.
   in_start_ = true;
   base::TimeTicks start_time = base::TimeTicks::Now();
-  for (const auto& provider : providers_) {
+  Providers providers_to_run = GetProvidersToRun();
+  for (const auto& provider : providers_to_run) {
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
     provider->Start(input_, minimal_changes);
     if (!input.want_asynchronous_matches())
@@ -1142,4 +1148,29 @@ bool AutocompleteController::OnMemoryDump(
 void AutocompleteController::SetStartStopTimerDurationForTesting(
     base::TimeDelta duration) {
   stop_timer_duration_ = duration;
+}
+
+AutocompleteController::Providers AutocompleteController::GetProvidersToRun() {
+  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+      input_.keyword_mode_entry_method() !=
+          metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID) {
+    // We're in keyword mode. Try to grab the TemplateURL to determine which
+    // provider to run.
+    AutocompleteInput keyword_input = input_;
+    const TemplateURL* keyword_turl =
+        KeywordProvider::GetSubstitutingTemplateURLForInput(
+            template_url_service_, &keyword_input);
+    if (keyword_turl &&
+        keyword_turl->starter_pack_id() ==
+            TemplateURLStarterPackData::StarterPackID::kBookmarks) {
+      Providers provider_subset;
+      provider_subset.push_back(search_provider_.get());
+      provider_subset.push_back(keyword_provider_.get());
+      provider_subset.push_back(bookmark_provider_.get());
+      return provider_subset;
+    }
+  }
+
+  // Otherwise, run all providers.
+  return providers_;
 }

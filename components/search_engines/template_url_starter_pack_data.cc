@@ -12,7 +12,6 @@
 
 namespace TemplateURLStarterPackData {
 
-const int kMaxStarterPackEngineID = 3;
 const int kCurrentDataVersion = 1;
 
 const StarterPackEngine bookmarks = {
@@ -20,7 +19,7 @@ const StarterPackEngine bookmarks = {
     IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_KEYWORD,
     nullptr,
     "chrome://bookmarks/?q={searchTerms}",
-    1,
+    StarterPackID::kBookmarks,
     SEARCH_ENGINE_STARTER_PACK_BOOKMARKS,
 };
 
@@ -29,7 +28,7 @@ const StarterPackEngine history = {
     IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_KEYWORD,
     nullptr,
     "chrome://history/?q={searchTerms}",
-    2,
+    StarterPackID::kHistory,
     SEARCH_ENGINE_STARTER_PACK_HISTORY,
 };
 
