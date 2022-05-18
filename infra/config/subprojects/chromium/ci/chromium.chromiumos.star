@@ -517,6 +517,32 @@ ci.builder(
 ci.builder(
     name = "lacros-amd64-generic-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_lacros_sdk",
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_cros_boards = [
+                "eve",
+            ],
+            target_platform = builder_config.target_platform.CHROMEOS,
+            cros_boards_with_qemu_images = [
+                "amd64-generic",
+            ],
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "rel",
