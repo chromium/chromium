@@ -110,7 +110,6 @@
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
-#include "components/commerce/content/browser/metrics/commerce_metrics_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -421,14 +420,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         web_contents,
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
   }
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(commerce::kShoppingPDPMetrics)) {
-    commerce::metrics::CommerceMetricsTabHelper::CreateForWebContents(
-        web_contents,
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-        profile->GetPrefs(), profile->IsOffTheRecord());
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementService::Helper::CreateForWebContents(
         web_contents,

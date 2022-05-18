@@ -42,7 +42,11 @@ CommerceTabHelper::~CommerceTabHelper() = default;
 void CommerceTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // TODO(mdjones): Fill in this implementation.
+  if (!shopping_service_ || navigation_context->IsSameDocument()) {
+    return;
+  }
+
+  shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
 }
 
 void CommerceTabHelper::WebStateDestroyed(web::WebState* web_state) {

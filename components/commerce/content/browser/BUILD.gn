@@ -17,22 +17,6 @@ static_library("browser") {
   ]
 }
 
-static_library("metrics") {
-  sources = [
-    "metrics/commerce_metrics_tab_helper.cc",
-    "metrics/commerce_metrics_tab_helper.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/commerce/core:metrics",
-    "//components/optimization_guide/content/browser",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/prefs",
-    "//content/public/browser",
-  ]
-}
-
 if (!is_android) {
   static_library("hint") {
     sources = [

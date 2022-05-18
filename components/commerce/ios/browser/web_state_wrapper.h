@@ -23,6 +23,8 @@ class WebStateWrapper : public WebWrapper {
 
   const GURL& GetLastCommittedURL() override;
 
+  bool IsOffTheRecord() override;
+
   void ClearWebStatePointer();
 
  private:

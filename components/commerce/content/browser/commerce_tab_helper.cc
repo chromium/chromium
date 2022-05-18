@@ -26,7 +26,12 @@ CommerceTabHelper::~CommerceTabHelper() = default;
 
 void CommerceTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(mdjones): Fill in this implementation.
+  if (!shopping_service_ || navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
 }
 
 void CommerceTabHelper::WebContentsDestroyed() {

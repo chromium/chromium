@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 
 class GURL;
+class PrefService;
 
 class PrefRegistrySimple;
 
@@ -58,7 +59,8 @@ using ProductInfoCallback =
 class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
   ShoppingService(bookmarks::BookmarkModel* bookmark_model,
-                  optimization_guide::NewOptimizationGuideDecider* opt_guide);
+                  optimization_guide::NewOptimizationGuideDecider* opt_guide,
+                  PrefService* pref_service);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;
@@ -74,6 +76,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // corresponds to a user creating a tab.
   void WebWrapperCreated(WebWrapper* web);
 
+  // A notification that a web wrapper finished a navigation in the primary
+  // main frame.
+  void DidNavigatePrimaryMainFrame(WebWrapper* web);
+
   // A notification that a WebWrapper has been destroyed. This signals that the
   // web page backing the provided WebWrapper is about to be destroyed.
   // Typically corresponds to a user closing a tab.
@@ -84,6 +90,17 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // used.
   bool IsProductInfoApiEnabled();
 
+  // Whether the PDP (product details page) state of a page is allowed to be
+  // recorded.
+  bool IsPDPMetricsRecordingEnabled();
+
+  // A callback for recording metrics after page navigation and having
+  // determined the page is shopping related.
+  void PDPMetricsCallback(
+      bool is_off_the_record,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
   void HandleOptGuideProductInfoResponse(
       const GURL& url,
       ProductInfoCallback callback,
@@ -93,6 +110,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // A handle to optimization guide for information about URLs that have
   // recently been navigated to.
   raw_ptr<optimization_guide::NewOptimizationGuideDecider> opt_guide_;
+
+  raw_ptr<PrefService> pref_service_;
 
   // The service's means of observing the bookmark model which is automatically
   // removed from the model when destroyed. This will be null if no

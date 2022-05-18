@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
 #include "components/commerce/core/web_wrapper.h"
@@ -27,15 +28,18 @@ ProductInfo::~ProductInfo() = default;
 
 ShoppingService::ShoppingService(
     bookmarks::BookmarkModel* bookmark_model,
-    optimization_guide::NewOptimizationGuideDecider* opt_guide)
-    : opt_guide_(opt_guide), weak_ptr_factory_(this) {
+    optimization_guide::NewOptimizationGuideDecider* opt_guide,
+    PrefService* pref_service)
+    : opt_guide_(opt_guide),
+      pref_service_(pref_service),
+      weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
   if (opt_guide_) {
     std::vector<optimization_guide::proto::OptimizationType> types;
 
     // Don't register for info unless we're allowed to by an experiment.
-    if (IsProductInfoApiEnabled()) {
+    if (IsProductInfoApiEnabled() || IsPDPMetricsRecordingEnabled()) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_TRACKING);
     }
@@ -58,7 +62,26 @@ void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}
 
+void ShoppingService::DidNavigatePrimaryMainFrame(WebWrapper* web) {
+  // Record metrics about the page navigation if allowed.
+  if (IsPDPMetricsRecordingEnabled() && opt_guide_) {
+    opt_guide_->CanApplyOptimization(
+        web->GetLastCommittedURL(),
+        optimization_guide::proto::OptimizationType::PRICE_TRACKING,
+        base::BindOnce(&ShoppingService::PDPMetricsCallback,
+                       weak_ptr_factory_.GetWeakPtr(), web->IsOffTheRecord()));
+  }
+}
+
 void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {}
+
+void ShoppingService::PDPMetricsCallback(
+    bool is_off_the_record,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  metrics::RecordPDPStateForNavigation(decision, metadata, pref_service_,
+                                       is_off_the_record);
+}
 
 void ShoppingService::GetProductInfoForUrl(const GURL& url,
                                            ProductInfoCallback callback) {
@@ -76,6 +99,10 @@ void ShoppingService::GetProductInfoForUrl(const GURL& url,
 
 bool ShoppingService::IsProductInfoApiEnabled() {
   return base::FeatureList::IsEnabled(kShoppingList);
+}
+
+bool ShoppingService::IsPDPMetricsRecordingEnabled() {
+  return base::FeatureList::IsEnabled(commerce::kShoppingPDPMetrics);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(

@@ -18,6 +18,9 @@ class WebWrapper {
 
   // Get the URL that is currently being displayed for the page.
   virtual const GURL& GetLastCommittedURL() = 0;
+
+  // Whether content is off the record or in incognito mode.
+  virtual bool IsOffTheRecord() = 0;
 };
 
 }  // namespace commerce

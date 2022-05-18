@@ -4,6 +4,9 @@
 
 #include "components/commerce/ios/browser/web_state_wrapper.h"
 
+#include "ios/web/public/browser_state.h"
+#include "ios/web/public/web_state.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -18,6 +21,13 @@ const GURL& WebStateWrapper::GetLastCommittedURL() {
     return std::move(GURL());
 
   return web_state_->GetLastCommittedURL();
+}
+
+bool WebStateWrapper::IsOffTheRecord() {
+  if (!web_state_ || !web_state_->GetBrowserState())
+    return false;
+
+  return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 
 void WebStateWrapper::ClearWebStatePointer() {

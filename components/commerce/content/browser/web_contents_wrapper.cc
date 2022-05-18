@@ -4,6 +4,8 @@
 
 #include "components/commerce/content/browser/web_contents_wrapper.h"
 
+#include "content/public/browser/browser_context.h"
+
 namespace commerce {
 
 WebContentsWrapper::WebContentsWrapper(content::WebContents* web_contents)
@@ -14,6 +16,13 @@ const GURL& WebContentsWrapper::GetLastCommittedURL() {
     return std::move(GURL());
 
   return web_contents_->GetLastCommittedURL();
+}
+
+bool WebContentsWrapper::IsOffTheRecord() {
+  if (!web_contents_ || !web_contents_->GetBrowserContext())
+    return false;
+
+  return web_contents_->GetBrowserContext()->IsOffTheRecord();
 }
 
 void WebContentsWrapper::ClearWebContentsPointer() {

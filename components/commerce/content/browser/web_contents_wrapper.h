@@ -23,6 +23,8 @@ class WebContentsWrapper : public WebWrapper {
 
   const GURL& GetLastCommittedURL() override;
 
+  bool IsOffTheRecord() override;
+
   void ClearWebContentsPointer();
 
  private:

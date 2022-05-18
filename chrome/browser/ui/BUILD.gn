@@ -461,7 +461,6 @@ static_library("ui") {
     "//components/captive_portal/core:buildflags",
     "//components/client_hints/browser",
     "//components/commerce/content/browser",
-    "//components/commerce/content/browser:metrics",
     "//components/commerce/core:feature_list",
     "//components/consent_auditor/",
     "//components/content_settings/browser",
