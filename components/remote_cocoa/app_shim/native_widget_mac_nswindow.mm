@@ -58,7 +58,7 @@
   return NO;
 }
 // The base implementation just tests [self class] == [NSThemeFrame class].
-- (BOOL)_shouldFlipTrafficLightsForRTL API_AVAILABLE(macos(10.12)) {
+- (BOOL)_shouldFlipTrafficLightsForRTL {
   return [[self window] windowTitlebarLayoutDirection] ==
          NSUserInterfaceLayoutDirectionRightToLeft;
 }
@@ -362,7 +362,7 @@
     [super cursorUpdate:theEvent];
 }
 
-- (NSTouchBar*)makeTouchBar API_AVAILABLE(macos(10.12.2)) {
+- (NSTouchBar*)makeTouchBar {
   return _touchBarDelegate ? [_touchBarDelegate makeTouchBar] : nil;
 }
 

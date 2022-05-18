@@ -13,7 +13,7 @@
 @protocol WindowTouchBarDelegate <NSObject>
 
 // Creates and returns a touch bar for the browser window.
-- (NSTouchBar*)makeTouchBar API_AVAILABLE(macos(10.12.2));
+- (NSTouchBar*)makeTouchBar;
 
 @end
 

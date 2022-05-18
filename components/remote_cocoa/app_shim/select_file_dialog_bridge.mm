@@ -144,15 +144,6 @@ base::scoped_nsobject<NSView> CreateAccessoryView() {
   [constraints
       addObject:[view.bottomAnchor constraintEqualToAnchor:group.bottomAnchor]];
 
-  // Maybe minimum width (through macOS 10.12).
-  if (base::mac::IsAtMostOS10_12()) {
-    // Through macOS 10.12, the file dialog didn't properly constrain the width
-    // of the accessory view. Therefore, add in a "can you please make this at
-    // least so big" constraint in so it doesn't collapse width-wise.
-    [constraints addObject:[view.widthAnchor
-                               constraintGreaterThanOrEqualToConstant:400]];
-  }
-
   [NSLayoutConstraint activateConstraints:constraints];
 
   return scoped_view;

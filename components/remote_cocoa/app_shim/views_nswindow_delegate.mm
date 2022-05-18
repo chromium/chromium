@@ -217,17 +217,6 @@
 }
 
 - (void)windowDidExitFullScreen:(NSNotification*)notification {
-  if (base::mac::IsOS10_12()) {
-    // There is a window activation/fullscreen bug present only in macOS 10.12
-    // that might cause a security surface to appear over the wrong parent
-    // window. As much as this code appears to be a no-op, it is not; it causes
-    // AppKit to shuffle all the windows around to properly obey the
-    // relationships that they should already be obeying.
-    [[NSApp orderedWindows][0] performSelector:@selector(orderFront:)
-                                    withObject:self
-                                    afterDelay:0];
-  }
-
   _parent->fullscreen_controller().OnWindowDidExitFullscreen();
 }
 

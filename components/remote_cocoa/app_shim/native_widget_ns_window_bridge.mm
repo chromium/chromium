@@ -1454,10 +1454,8 @@ void NativeWidgetNSWindowBridge::SetWindowTitle(const std::u16string& title) {
 }
 
 void NativeWidgetNSWindowBridge::ClearTouchBar() {
-  if (@available(macOS 10.12.2, *)) {
-    if ([bridged_view_ respondsToSelector:@selector(setTouchBar:)])
-      [bridged_view_ setTouchBar:nil];
-  }
+  if ([bridged_view_ respondsToSelector:@selector(setTouchBar:)])
+    [bridged_view_ setTouchBar:nil];
 }
 
 void NativeWidgetNSWindowBridge::UpdateTooltip() {
