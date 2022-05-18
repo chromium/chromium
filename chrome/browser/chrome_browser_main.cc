@@ -1850,15 +1850,15 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
   // Two different types of hang detection cannot attempt to upload crashes at
   // the same time or they would interfere with each other.
-  constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(300)};
   if (base::HangWatcher::IsCrashReportingEnabled()) {
-    // Use ShutdownWatcherHelper logic to choose delay to get identical
-    // behavior.
-    watch_hangs_scope_.emplace(
-        ShutdownWatcherHelper::GetPerChannelTimeout(kShutdownHangDelay));
+    // TODO(crbug.com/1327000): Migrate away from ShutdownWatcher and its old
+    // timing.
+    constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(30)};
+    watch_hangs_scope_.emplace(kShutdownHangDelay);
   } else {
     // Start watching for jank during shutdown. It gets disarmed when
     // |shutdown_watcher_| object is destructed.
+    constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(300)};
     shutdown_watcher_ = std::make_unique<ShutdownWatcherHelper>();
     shutdown_watcher_->Arm(kShutdownHangDelay);
   }
