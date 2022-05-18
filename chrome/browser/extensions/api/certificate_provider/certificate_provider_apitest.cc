@@ -388,7 +388,7 @@ class CertificateProviderApiMockedExtensionTest
         nullptr /* no WebContents */);
     navigation_observer.StartWatchingNewWebContents();
     ExtensionTestMessageListener sign_digest_listener(
-        "signature request received", /*will_reply=*/false);
+        "signature request received");
 
     // Navigate to a page which triggers a sign request. Navigation is blocked
     // by completion of this request, so we don't wait for navigation to finish.
@@ -507,7 +507,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
   void SetUpOnMainThread() override {
     CertificateProviderApiTest::SetUpOnMainThread();
     command_request_listener_ = std::make_unique<ExtensionTestMessageListener>(
-        "GetCommand", /*will_reply=*/true);
+        "GetCommand", ReplyBehavior::kWillReply);
     LoadRequestPinExtension();
   }
 
@@ -557,7 +557,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
   // is expected to send "Success" message after the validation and request to
   // stopPinRequest is done.
   void EnterCorrectPinAndWaitForMessage() {
-    ExtensionTestMessageListener listener("Success", false);
+    ExtensionTestMessageListener listener("Success");
     EnterCode(kCorrectPin);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
@@ -567,7 +567,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
   // extension code is expected to send "Invalid PIN" message after the
   // validation and the new requestPin (with the error) is done.
   void EnterWrongPinAndWaitForMessage() {
-    ExtensionTestMessageListener listener("Invalid PIN", false);
+    ExtensionTestMessageListener listener("Invalid PIN");
     EnterCode(kWrongPin);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -587,8 +587,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
 
   bool SendCommandAndWaitForMessage(const std::string& command,
                                     const std::string& expected_message) {
-    ExtensionTestMessageListener listener(expected_message,
-                                          /*will_reply=*/false);
+    ExtensionTestMessageListener listener(expected_message);
     if (!SendCommand(command))
       return false;
     return listener.WaitUntilSatisfied();
@@ -968,18 +967,18 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, ShowPinDialogClose) {
   for (int i = 0;
        i < extensions::api::certificate_provider::kMaxClosedDialogsPerMinute;
        i++) {
-    ExtensionTestMessageListener listener("User closed the dialog", false);
+    ExtensionTestMessageListener listener("User closed the dialog");
     GetActivePinDialogWindow()->Close();
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
 
-  ExtensionTestMessageListener close_listener("User closed the dialog", true);
+  ExtensionTestMessageListener close_listener("User closed the dialog",
+                                              ReplyBehavior::kWillReply);
   GetActivePinDialogWindow()->Close();
   ASSERT_TRUE(close_listener.WaitUntilSatisfied());
   close_listener.Reply("GetLastError");
   ExtensionTestMessageListener last_error_listener(
-      "This request exceeds the MAX_PIN_DIALOGS_CLOSED_PER_MINUTE quota.",
-      false);
+      "This request exceeds the MAX_PIN_DIALOGS_CLOSED_PER_MINUTE quota.");
   ASSERT_TRUE(last_error_listener.WaitUntilSatisfied());
   EXPECT_FALSE(GetActivePinDialogView());
 }
@@ -1014,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
   EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
 
   // Close the dialog.
-  ExtensionTestMessageListener listener("No attempt left", false);
+  ExtensionTestMessageListener listener("No attempt left");
   GetActivePinDialogWindow()->Close();
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_FALSE(GetActivePinDialogView());
@@ -1028,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
 
   EXPECT_TRUE(SendCommandAndWaitForMessage("Request", "request1:begun"));
   ExtensionTestMessageListener listener(
-      base::StringPrintf("request1:success:%s", kWrongPin), false);
+      base::StringPrintf("request1:success:%s", kWrongPin));
   EnterCode(kWrongPin);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
@@ -1143,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, ZeroAttemptsAtStart) {
   // The textfield has to be disabled, as there are no attempts left.
   EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
 
-  ExtensionTestMessageListener listener("request1:empty", false);
+  ExtensionTestMessageListener listener("request1:empty");
   GetActivePinDialogWindow()->Close();
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 }
@@ -1209,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, StartAfterStop) {
 
   EXPECT_TRUE(SendCommandAndWaitForMessage("Request", "request2:begun"));
   ExtensionTestMessageListener listener(
-      base::StringPrintf("request2:success:%s", kCorrectPin), false);
+      base::StringPrintf("request2:success:%s", kCorrectPin));
   EnterCode(kCorrectPin);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
@@ -1229,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
         "Request", base::StringPrintf("request%d:begun", i + 1)));
 
     ExtensionTestMessageListener listener(
-        base::StringPrintf("request%d:empty", i + 1), false);
+        base::StringPrintf("request%d:empty", i + 1));
     ASSERT_TRUE(GetActivePinDialogView());
     GetActivePinDialogView()->GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kCloseButtonClicked);

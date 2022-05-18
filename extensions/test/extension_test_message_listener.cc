@@ -26,6 +26,11 @@ ExtensionTestMessageListener::ExtensionTestMessageListener(
 }
 
 ExtensionTestMessageListener::ExtensionTestMessageListener(
+    const char* expected_message)
+    : ExtensionTestMessageListener(std::string(expected_message),
+                                   ReplyBehavior::kWontReply) {}
+
+ExtensionTestMessageListener::ExtensionTestMessageListener(
     const std::string& expected_message,
     bool will_reply)
     : ExtensionTestMessageListener(

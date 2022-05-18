@@ -686,8 +686,7 @@ class DeclarativeNetRequestBrowserTest
     WriteManifestAndRulesets(extension_dir, rulesets, hosts, flags_,
                              directory /* extension_name */);
 
-    ExtensionTestMessageListener background_page_ready_listener(
-        "ready", false /*will_reply*/);
+    ExtensionTestMessageListener background_page_ready_listener("ready");
     size_t current_ruleset_count = extensions_with_rulesets_count();
 
     const Extension* extension = nullptr;
@@ -3291,9 +3290,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestEvents) {
     chrome.test.sendMessage('INSTALLED');
   )";
 
-  ExtensionTestMessageListener pass_listener("PASS", false /* will_reply */);
-  ExtensionTestMessageListener installed_listener("INSTALLED",
-                                                  false /* will_reply */);
+  ExtensionTestMessageListener pass_listener("PASS");
+  ExtensionTestMessageListener installed_listener("INSTALLED");
   ExecuteScriptInBackgroundPageNoWait(
       last_loaded_extension_id(),
       base::StringPrintf(kWebRequestListenerScript, url.spec().c_str()));
@@ -3340,9 +3338,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestPriority) {
     chrome.test.sendMessage('INSTALLED');
   )";
 
-  ExtensionTestMessageListener seen_listener("SEEN", false /* will_reply */);
-  ExtensionTestMessageListener installed_listener("INSTALLED",
-                                                  false /* will_reply */);
+  ExtensionTestMessageListener seen_listener("SEEN");
+  ExtensionTestMessageListener installed_listener("INSTALLED");
   ExecuteScriptInBackgroundPageNoWait(
       last_loaded_extension_id(),
       base::StringPrintf(kWebRequestBlockScript, url.spec().c_str()));

@@ -133,7 +133,7 @@ class WakeEventPageTest : public ExtensionBrowserTest {
 
     // Start a content script to wake up the background page, if it's closed.
     {
-      ExtensionTestMessageListener listener(false /* will_reply */);
+      ExtensionTestMessageListener listener;
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_url));
       ASSERT_TRUE(listener.WaitUntilSatisfied());
       EXPECT_EQ(expect_success ? "success" : "failure", listener.message());
@@ -144,7 +144,7 @@ class WakeEventPageTest : public ExtensionBrowserTest {
     // Run the content script again. The background page will be awaken iff
     // |will_be_open| is true, but if not, this is a harmless no-op.
     {
-      ExtensionTestMessageListener listener(false /* will_reply */);
+      ExtensionTestMessageListener listener;
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_url));
       ASSERT_TRUE(listener.WaitUntilSatisfied());
       EXPECT_EQ(expect_success ? "success" : "failure", listener.message());

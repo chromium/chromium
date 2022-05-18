@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, ExtensionLifetimeRulesHandling) {
                                        kRedirectToDataConstants,
                                        kRedirectToDataRules,
                                        kRedirectToDataInstallRules));
-  ExtensionTestMessageListener ready("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener ready("ready");
   const Extension* extension = InstallExtensionWithUIAutoConfirm(
       ext_dir.Pack(), 1 /*+1 installed extension*/, browser());
   ASSERT_TRUE(extension);
@@ -244,8 +244,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, ExtensionLifetimeRulesHandling) {
       FILE_PATH_LITERAL("background.js"),
       base::StringPrintf(
           "%s%s", kRedirectToDataConstants, kRedirectToDataNoRules));
-  ExtensionTestMessageListener ready_after_update("ready",
-                                                  /*will_reply=*/false);
+  ExtensionTestMessageListener ready_after_update("ready");
   EXPECT_TRUE(UpdateExtension(
       extension_id, ext_dir.Pack(), 0 /*no new installed extension*/));
   ASSERT_TRUE(ready_after_update.WaitUntilSatisfied());
@@ -280,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, NoTracesAfterUninstalling) {
                                        kRedirectToDataConstants,
                                        kRedirectToDataRules,
                                        kRedirectToDataInstallRules));
-  ExtensionTestMessageListener ready("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener ready("ready");
   const Extension* extension = InstallExtensionWithUIAutoConfirm(
       ext_dir.Pack(), 1 /*+1 installed extension*/, browser());
   ASSERT_TRUE(extension);

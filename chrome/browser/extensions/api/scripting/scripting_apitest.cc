@@ -415,10 +415,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
 
   EXPECT_TRUE(web_contents->IsLoading());
 
-  ExtensionTestMessageListener immediate_listener("immediate complete",
-                                                  /*will_reply=*/false);
-  ExtensionTestMessageListener default_listener("default complete",
-                                                /*will_reply=*/false);
+  ExtensionTestMessageListener immediate_listener("immediate complete");
+  ExtensionTestMessageListener default_listener("default complete");
   BackgroundScriptExecutor::ExecuteScriptAsync(
       profile(), extension->id(), base::StringPrintf(kInjectScripts, tab_id));
 
@@ -456,7 +454,8 @@ class PersistentScriptingAPITest : public ScriptingAPITest {
     // race condition where the extension loads (as part of browser startup) and
     // sends a message before a message listener in C++ has been initialized.
 
-    listener_ = std::make_unique<ExtensionTestMessageListener>("ready", true);
+    listener_ = std::make_unique<ExtensionTestMessageListener>(
+        "ready", ReplyBehavior::kWillReply);
     ScriptingAPITest::SetUp();
   }
 

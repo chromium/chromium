@@ -123,8 +123,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoSplitMode) {
   catcher_incognito.RestrictToBrowserContext(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  ExtensionTestMessageListener listener("waiting", true);
-  ExtensionTestMessageListener listener_incognito("waiting_incognito", true);
+  ExtensionTestMessageListener listener("waiting", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener listener_incognito("waiting_incognito",
+                                                  ReplyBehavior::kWillReply);
 
   // Open incognito window and navigate to test page.
   OpenURLOffTheRecord(browser()->profile(), embedded_test_server()->GetURL(
@@ -148,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoSplitMode) {
 // events or callbacks.
 IN_PROC_BROWSER_TEST_F(IncognitoApiTest, IncognitoDisabled) {
   ResultCatcher catcher;
-  ExtensionTestMessageListener listener("createIncognitoTab", true);
+  ExtensionTestMessageListener listener("createIncognitoTab",
+                                        ReplyBehavior::kWillReply);
 
   // Open incognito window and navigate to test page.
   OpenURLOffTheRecord(browser()->profile(), embedded_test_server()->GetURL(

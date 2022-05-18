@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, MappedURL) {
   EXPECT_TRUE(content::ExecJs(rfh, kScript));
 
   ExtensionTestMessageListener background_page_read("ready",
-                                                    /*will_reply=*/true);
+                                                    ReplyBehavior::kWillReply);
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("webnavigation")
                         .AppendASCII("fencedFramesMappedURL"));

@@ -103,7 +103,7 @@ class TestSendMessageFunction;
 
 // The behavior specifying whether the listener will reply to the
 // incoming message. This is defined outside the class simply to save authors
-// from typing out ExtensionTestMessageListener::ReplyBehavior::kWillReply.
+// from typing out ReplyBehavior::kWillReply.
 enum class ReplyBehavior {
   // The listener will reply. The extension API callback will not be
   // triggered until `ExtensionTestMessageListener::Reply()` is called.
@@ -116,6 +116,8 @@ enum class ReplyBehavior {
 class ExtensionTestMessageListener : public extensions::TestApiObserver {
  public:
   // Listen for the `expected_message` with the specified `reply_behavior`.
+  // TODO(devlin): Possibly update this to just take a StringPiece, once the
+  // enum conversions highlighted below are done?
   explicit ExtensionTestMessageListener(
       const std::string& expected_message,
       ReplyBehavior reply_behavior = ReplyBehavior::kWontReply);
@@ -123,6 +125,13 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   // the specified `reply_behavior`.
   explicit ExtensionTestMessageListener(
       ReplyBehavior reply_behavior = ReplyBehavior::kWontReply);
+  // Temporary helper constructor. This disambiguates a caller like:
+  // ExtensionTestMessageListener listener("my message")
+  // Since otherwise it could either invoke the constructor above (by
+  // converting the const char* to a std::string) or the deprecated constructor
+  // below (by converting the const char* to a bool). This can be removed once
+  // the two constructors below are removed.
+  explicit ExtensionTestMessageListener(const char* expected_message);
 
   // DEPRECATED.
   // TODO(https://crbug.com/1324791): Convert all callers to the above

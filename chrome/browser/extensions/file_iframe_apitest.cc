@@ -31,7 +31,7 @@ class FileIFrameAPITest : public extensions::ExtensionBrowserTest {
     WriteManifest();
     WriteBackgroundPage();
 
-    ExtensionTestMessageListener listener(false /*will_reply*/);
+    ExtensionTestMessageListener listener;
     ASSERT_TRUE(LoadExtension(extension_dir_.UnpackedPath(),
                               {.allow_file_access = has_file_access_}));
     EXPECT_TRUE(listener.WaitUntilSatisfied());

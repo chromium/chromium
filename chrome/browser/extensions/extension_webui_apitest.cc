@@ -142,12 +142,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, SanityCheckUnavailableAPIs) {
 // Tests chrome.test.sendMessage, which exercises WebUI making a
 // function call and receiving a response.
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, SendMessage) {
-  ExtensionTestMessageListener ping_listener("ping", true);
+  ExtensionTestMessageListener ping_listener("ping", ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(RunTestOnExtensionsPage("send_message.js"));
   ASSERT_TRUE(ping_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener result_listener(false);
+  ExtensionTestMessageListener result_listener;
   ping_listener.Reply("pong");
 
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, SendMessage) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, OnMessage) {
   ASSERT_TRUE(RunTestOnExtensionsPage("on_message.js"));
 
-  ExtensionTestMessageListener result_listener(false);
+  ExtensionTestMessageListener result_listener;
 
   OnMessage::Info info;
   info.data = "hi";
@@ -175,19 +175,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, OnMessage) {
 // Tests chrome.runtime.lastError, which exercises WebUI accessing a property
 // on an API which it doesn't actually have access to. A bindings test really.
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, RuntimeLastError) {
-  ExtensionTestMessageListener ping_listener("ping", true);
+  ExtensionTestMessageListener ping_listener("ping", ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(RunTestOnExtensionsPage("runtime_last_error.js"));
   ASSERT_TRUE(ping_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener result_listener(false);
+  ExtensionTestMessageListener result_listener;
   ping_listener.ReplyWithError("unknown host");
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
   EXPECT_EQ("true", result_listener.message());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, CanEmbedExtensionOptions) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
 
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("extension_options")
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, CanEmbedExtensionOptions) {
   ASSERT_TRUE(RunTestOnExtensionsPage("can_embed_extension_options.js"));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener load_listener("load", false);
+  ExtensionTestMessageListener load_listener("load");
   ready_listener.Reply(extension->id());
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 }
@@ -279,7 +280,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUIEmbeddedOptionsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, ReceivesExtensionOptionsOnClose) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
 
   const Extension* extension =
       InstallExtension(test_data_dir_.AppendASCII("extension_options")
@@ -290,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, ReceivesExtensionOptionsOnClose) {
       RunTestOnExtensionsPage("receives_extension_options_on_close.js"));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener onclose_listener("onclose received", false);
+  ExtensionTestMessageListener onclose_listener("onclose received");
   ready_listener.Reply(extension->id());
   ASSERT_TRUE(onclose_listener.WaitUntilSatisfied());
 }
@@ -300,7 +302,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, ReceivesExtensionOptionsOnClose) {
 // Same setup as CanEmbedExtensionOptions but disable the extension before
 // embedding.
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedDisabledExtension) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
 
   std::string extension_id;
   {
@@ -315,26 +318,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedDisabledExtension) {
   ASSERT_TRUE(RunTestOnExtensionsPage("can_embed_extension_options.js"));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener create_failed_listener("createfailed", false);
+  ExtensionTestMessageListener create_failed_listener("createfailed");
   ready_listener.Reply(extension_id);
   ASSERT_TRUE(create_failed_listener.WaitUntilSatisfied());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedInvalidExtension) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
 
   const std::string extension_id = "thisisprobablynotrealextensionid";
 
   ASSERT_TRUE(RunTestOnExtensionsPage("can_embed_extension_options.js"));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener create_failed_listener("createfailed", false);
+  ExtensionTestMessageListener create_failed_listener("createfailed");
   ready_listener.Reply(extension_id);
   ASSERT_TRUE(create_failed_listener.WaitUntilSatisfied());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedExtensionWithoutOptionsPage) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
 
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("extension_options")
@@ -344,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedExtensionWithoutOptionsPage) {
   ASSERT_TRUE(RunTestOnExtensionsPage("can_embed_extension_options.js"));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener create_failed_listener("createfailed", false);
+  ExtensionTestMessageListener create_failed_listener("createfailed");
   ready_listener.Reply(extension->id());
   ASSERT_TRUE(create_failed_listener.WaitUntilSatisfied());
 }

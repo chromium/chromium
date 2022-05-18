@@ -89,7 +89,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleEndToEndTest) {
 
 // A simplistic app test for app-specific APIs.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleAppTest) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   ASSERT_TRUE(RunExtensionTest("native_bindings/platform_app",
                                {.launch_as_platform_app = true}))
       << message_;
@@ -97,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, SimpleAppTest) {
 
   // On reply, the extension will try to close the app window and send a
   // message.
-  ExtensionTestMessageListener close_listener(false);
+  ExtensionTestMessageListener close_listener;
   ready_listener.Reply(std::string());
   ASSERT_TRUE(close_listener.WaitUntilSatisfied());
   EXPECT_EQ("success", close_listener.message());
@@ -111,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, DeclarativeEvents) {
   // using chrome.test.runTests() and b) set up rules for declarative events for
   // a browser-driven test. Wait for both the tests to finish and the extension
   // to be ready.
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
   ResultCatcher catcher;
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("native_bindings/declarative_content"));
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, DeclarativeEvents) {
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 
   // And the extension should be notified of the click.
-  ExtensionTestMessageListener clicked_listener("clicked and removed", false);
+  ExtensionTestMessageListener clicked_listener("clicked and removed");
   ExtensionActionAPI::Get(profile())->DispatchExtensionActionClicked(
       *action, web_contents, extension);
   ASSERT_TRUE(clicked_listener.WaitUntilSatisfied());
@@ -226,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ContextMenusTest) {
 
   const Extension* extension = nullptr;
   {
-    ExtensionTestMessageListener listener("registered", false);
+    ExtensionTestMessageListener listener("registered");
     extension = LoadExtension(test_dir.UnpackedPath());
     ASSERT_TRUE(extension);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -238,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ContextMenusTest) {
       TestRenderViewContextMenu::Create(
           web_contents, GURL("https://www.example.com"), GURL(), GURL()));
 
-  ExtensionTestMessageListener listener("clicked", false);
+  ExtensionTestMessageListener listener("clicked");
   int command_id = ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
   EXPECT_TRUE(menu->IsCommandIdEnabled(command_id));
   menu->ExecuteCommand(command_id, 0);
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ErrorsInCallbackTest) {
       browser(), embedded_test_server()->GetURL(
                      "example.com", "/native_bindings/simple.html")));
 
-  ExtensionTestMessageListener listener("callback", false);
+  ExtensionTestMessageListener listener("callback");
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 }

@@ -64,9 +64,9 @@ IN_PROC_BROWSER_TEST_P(AlarmsApiTest, IncognitoSplit) {
   catcher.RestrictToBrowserContext(browser()->profile());
   EventRouter* event_router = EventRouter::Get(incognito_profile);
 
-  ExtensionTestMessageListener listener("ready: false", false);
+  ExtensionTestMessageListener listener("ready: false");
 
-  ExtensionTestMessageListener listener_incognito("ready: true", false);
+  ExtensionTestMessageListener listener_incognito("ready: true");
 
   ASSERT_TRUE(LoadAlarmsExtensionIncognito("split"));
 

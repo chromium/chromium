@@ -146,7 +146,7 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
   }
 
   const Extension* LoadXhrExtension(const std::string& host) {
-    ExtensionTestMessageListener listener("ready", false);
+    ExtensionTestMessageListener listener("ready");
     TestExtensionDir test_dir;
     test_dir.WriteManifest(R"(
     {

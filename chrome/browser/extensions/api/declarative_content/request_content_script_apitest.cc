@@ -128,8 +128,7 @@ testing::AssertionResult RequestContentScriptAPITest::RunTest(
 
   // Setup listener for actual injection of script.
   ExtensionTestMessageListener injection_succeeded_listener(
-      kInjectionSucceeded,
-      false /* won't reply */);
+      kInjectionSucceeded);
   injection_succeeded_listener.set_extension_id(extension_->id());
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
@@ -161,9 +160,7 @@ testing::AssertionResult RequestContentScriptAPITest::CreateAndLoadExtension(
     PermissionOrMatcherType manifest_permission,
     PermissionOrMatcherType script_matcher) {
   // Setup a listener to note when injection rules have been setup.
-  ExtensionTestMessageListener injection_setup_listener(
-      kInjectionSetup,
-      false /* won't reply */);
+  ExtensionTestMessageListener injection_setup_listener(kInjectionSetup);
 
   std::string manifest = base::StringPrintf(kManifest,
                                             kPermissions[manifest_permission]);

@@ -1482,7 +1482,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
       } )");
   const Extension* extension = nullptr;
   {
-    ExtensionTestMessageListener listener("Ready: not incognito", false);
+    ExtensionTestMessageListener listener("Ready: not incognito");
     extension = LoadExtension(extension_dir.UnpackedPath(),
                               {.allow_in_incognito = true});
     ASSERT_TRUE(extension);
@@ -1498,7 +1498,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // extension will be created after creating a window.)
   Browser* incognito_browser = nullptr;
   {
-    ExtensionTestMessageListener listener("Ready: incognito", false);
+    ExtensionTestMessageListener listener("Ready: incognito");
     incognito_browser = CreateIncognitoBrowser();
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }

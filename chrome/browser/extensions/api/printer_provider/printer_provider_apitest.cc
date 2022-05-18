@@ -163,8 +163,9 @@ class PrinterProviderApiTest : public ExtensionApiTest,
   void InitializePrinterProviderTestExtension(const std::string& extension_path,
                                               const std::string& test_param,
                                               std::string* extension_id_out) {
-    ExtensionTestMessageListener loaded_listener("loaded", true);
-    ExtensionTestMessageListener ready_listener("ready", false);
+    ExtensionTestMessageListener loaded_listener("loaded",
+                                                 ReplyBehavior::kWillReply);
+    ExtensionTestMessageListener ready_listener("ready");
 
     const Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII(extension_path));

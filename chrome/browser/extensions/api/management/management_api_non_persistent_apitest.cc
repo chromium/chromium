@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest,
 
   // Load extension_a and wait for browserAction.onClicked listener
   // registration.
-  ExtensionTestMessageListener listener_added("ready", false);
+  ExtensionTestMessageListener listener_added("ready");
   const Extension* extension_a = LoadExtension(test_data_dir_.AppendASCII(
       "management/uninstall_via_browser_action/extension_a"));
   ASSERT_TRUE(extension_a);

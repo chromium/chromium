@@ -413,8 +413,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
     chrome.test.sendMessage(readyMessage, () => {});
   )";
 
-  ExtensionTestMessageListener ready_listener("notCrossOriginIsolated",
-                                              false /* will_reply */);
+  ExtensionTestMessageListener ready_listener("notCrossOriginIsolated");
   TestExtensionDir coi_test_dir;
   const Extension* coi_extension =
       LoadExtension(coi_test_dir, {.coep_value = "require-corp",
@@ -674,7 +673,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
     });
   )";
 
-  ExtensionTestMessageListener ready_listener("ready", true /* will_reply */);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   TestExtensionDir coi_test_dir;
   const Extension* coi_extension =
       LoadExtension(coi_test_dir, {.coep_value = "require-corp",

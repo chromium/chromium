@@ -193,7 +193,7 @@ class ServiceWorkerTest : public ExtensionApiTest {
   // This registers a service worker with |script_name|, and fetches the
   // registration result.
   const Extension* StartTestFromBackgroundPage(const char* script_name) {
-    ExtensionTestMessageListener ready_listener("ready", false);
+    ExtensionTestMessageListener ready_listener("ready");
     const Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("service_worker/background"));
     CHECK(extension);
@@ -367,9 +367,9 @@ class ServiceWorkerWithManifestVersionTest
 // an event listener for tabs.onCreated event. The step also verifies that tab
 // creation correctly fires the listener.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
-  ExtensionTestMessageListener newtab_listener("CREATED", false);
+  ExtensionTestMessageListener newtab_listener("CREATED");
   newtab_listener.set_failure_message("CREATE_FAILED");
-  ExtensionTestMessageListener worker_listener("WORKER_RUNNING", false);
+  ExtensionTestMessageListener worker_listener("WORKER_RUNNING");
   worker_listener.set_failure_message("NON_WORKER_SCOPE");
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/basic"));
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PRE_Basic) {
 // extension. This is because the extension registered a listener before browser
 // restarted in PRE_Basic.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, Basic) {
-  ExtensionTestMessageListener newtab_listener("CREATED", false);
+  ExtensionTestMessageListener newtab_listener("CREATED");
   newtab_listener.set_failure_message("CREATE_FAILED");
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
   content::WebContents* new_web_contents =
@@ -451,7 +451,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, SyntaxError) {
   const size_t kErrorsExpected = 1u;
   ErrorObserver observer(kErrorsExpected, error_console);
 
-  ExtensionTestMessageListener test_listener("ready", true);
+  ExtensionTestMessageListener test_listener("ready",
+                                             ReplyBehavior::kWillReply);
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/syntax_error"));
   ASSERT_TRUE(extension);
@@ -478,7 +479,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, UndefinedVariable) {
   const size_t kErrorsExpected = 1u;
   ErrorObserver observer(kErrorsExpected, error_console);
 
-  ExtensionTestMessageListener test_listener("ready", true);
+  ExtensionTestMessageListener test_listener("ready",
+                                             ReplyBehavior::kWillReply);
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/undefined_variable"));
   ASSERT_TRUE(extension);
@@ -644,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WebRequestBlocking) {
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, NavigateAndGetPageType(url));
 
   // Install the extension and navigate again to the page.
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/web_request_blocking")));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -678,8 +680,7 @@ class ServiceWorkerWithEarlyMessageListenerTest
   void CreatedBrowserMainParts(content::BrowserMainParts* main_parts) override {
     // At this point, the notification service is initialized but the profile
     // and extensions have not.
-    listener_ =
-        std::make_unique<ExtensionTestMessageListener>(test_message_, false);
+    listener_ = std::make_unique<ExtensionTestMessageListener>(test_message_);
     ServiceWorkerBasedBackgroundTest::CreatedBrowserMainParts(main_parts);
   }
 
@@ -846,7 +847,7 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
         event_router_(EventRouter::EventRouter::Get(browser_context_)),
         extension_id_(extension_id),
         event_(std::move(event)),
-        listener_("PASS", false) {
+        listener_("PASS") {
     DCHECK(browser_context_);
     listener_.set_failure_message("FAIL");
     event_router_->RegisterObserver(this, event_->event_name);
@@ -1092,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateRefreshesServiceWorker) {
                                pem_path, base::FilePath());
   const char* kId = "hfaanndiiilofhfokeanhddpkfffchdi";
 
-  ExtensionTestMessageListener listener_v1("Pong from version 1", false);
+  ExtensionTestMessageListener listener_v1("Pong from version 1");
   listener_v1.set_failure_message("FAILURE_V1");
   // Install version 1.0 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
@@ -1101,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateRefreshesServiceWorker) {
                   .GetByID(kId));
   EXPECT_TRUE(listener_v1.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener listener_v2("Pong from version 2", false);
+  ExtensionTestMessageListener listener_v2("Pong from version 2");
   listener_v2.set_failure_message("FAILURE_V2");
 
   // Update to version 2.0.
@@ -1142,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
                                    ->enabled_extensions()
                                    .GetByID(kId);
 
-  ExtensionTestMessageListener listener1("Pong from version 1", false);
+  ExtensionTestMessageListener listener1("Pong from version 1");
   listener1.set_failure_message("FAILURE");
   content::WebContents* web_contents = browsertest_util::AddTab(
       browser(), extension->GetResourceURL("page.html"));
@@ -1160,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
 
   // Service worker version 2 would be installed but it won't be controlling
   // the extension page yet.
-  ExtensionTestMessageListener listener2("Pong from version 1", false);
+  ExtensionTestMessageListener listener2("Pong from version 1");
   listener2.set_failure_message("FAILURE");
   web_contents = browsertest_util::AddTab(
       browser(), extension_after_update->GetResourceURL("page.html"));
@@ -1177,7 +1178,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
   navigate_away_observer.WaitForLoadStop();
 
   // Now expect service worker version 2 to control the extension page.
-  ExtensionTestMessageListener listener3("Pong from version 2", false);
+  ExtensionTestMessageListener listener3("Pong from version 2");
   listener3.set_failure_message("FAILURE");
   web_contents = browsertest_util::AddTab(
       browser(), extension_after_update->GetResourceURL("page.html"));
@@ -1285,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, SWServedBackgroundPageReceivesEvent) {
   // Since the SW is now controlling the extension, the SW serves the background
   // script. page.html sends a message to the background script and we verify
   // that the SW served background script correctly receives the message/event.
-  ExtensionTestMessageListener listener("onMessage/SW BG.", false);
+  ExtensionTestMessageListener listener("onMessage/SW BG.");
   listener.set_failure_message("onMessage/original BG.");
   content::WebContents* web_contents = browsertest_util::AddTab(
       browser(), extension->GetResourceURL("page.html"));
@@ -1506,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                      base::StringPrintf(kScript1, kNewVersionString));
 
   {
-    ExtensionTestMessageListener ready_listener("ready1", false);
+    ExtensionTestMessageListener ready_listener("ready1");
     base::FilePath path = test_dir.Pack();
     const Extension* extension = LoadExtension(path);
     ASSERT_TRUE(extension);
@@ -1537,8 +1538,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   test_dir.WriteManifest(base::StringPrintf(kManifest2, kNewVersionString));
   test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), kScript2);
   {
-    ExtensionTestMessageListener ready_listener("ready2", false);
-    ExtensionTestMessageListener on_installed_listener("onInstalled", false);
+    ExtensionTestMessageListener ready_listener("ready2");
+    ExtensionTestMessageListener on_installed_listener("onInstalled");
     base::FilePath path = test_dir.Pack();
     ExtensionService* const extension_service =
         ExtensionSystem::Get(profile())->extension_service();
@@ -1606,8 +1607,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
                      base::StringPrintf(kScript, "install", "ready1"));
   {
-    ExtensionTestMessageListener ready_listener("ready1", false);
-    ExtensionTestMessageListener on_installed_listener("onInstalled", false);
+    ExtensionTestMessageListener ready_listener("ready1");
+    ExtensionTestMessageListener on_installed_listener("onInstalled");
 
     installer->Load(test_dir.UnpackedPath());
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -1620,8 +1621,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
                      base::StringPrintf(kScript, "update", "ready2"));
   {
-    ExtensionTestMessageListener ready_listener("ready2", false);
-    ExtensionTestMessageListener on_installed_listener("onInstalled", false);
+    ExtensionTestMessageListener ready_listener("ready2");
+    ExtensionTestMessageListener on_installed_listener("onInstalled");
 
     extension_service->ReloadExtension(id);
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -1634,8 +1635,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
                      base::StringPrintf(kScript, "update", "ready3"));
   {
-    ExtensionTestMessageListener ready_listener("ready3", false);
-    ExtensionTestMessageListener on_installed_listener("onInstalled", false);
+    ExtensionTestMessageListener ready_listener("ready3");
+    ExtensionTestMessageListener on_installed_listener("onInstalled");
 
     extension_service->ReloadExtension(id);
     EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -1687,7 +1688,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, WebAccessibleResourcesIframeSrc) {
       &result));
   EXPECT_EQ("FROM_EXTENSION_RESOURCE", result);
 
-  ExtensionTestMessageListener service_worker_ready_listener("SW_READY", false);
+  ExtensionTestMessageListener service_worker_ready_listener("SW_READY");
   EXPECT_TRUE(ExecuteScriptInBackgroundPageNoWait(
       extension->id(), "window.registerServiceWorker()"));
   EXPECT_TRUE(service_worker_ready_listener.WaitUntilSatisfied());
@@ -1729,7 +1730,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, VerifyNoApiBindings) {
 
   // Have the page script start the service worker and wait for that to
   // succeed.
-  ExtensionTestMessageListener worker_start_listener("WORKER STARTED", false);
+  ExtensionTestMessageListener worker_start_listener("WORKER STARTED");
   worker_start_listener.set_failure_message("FAILURE");
   ASSERT_TRUE(
       content::ExecuteScript(web_contents, "window.runServiceWorker()"));
@@ -1737,7 +1738,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, VerifyNoApiBindings) {
 
   // Kick off the test, which will check the available bindings and fail if
   // there is anything unexpected.
-  ExtensionTestMessageListener worker_listener("SUCCESS", false);
+  ExtensionTestMessageListener worker_listener("SUCCESS");
   worker_listener.set_failure_message("FAILURE");
   ASSERT_TRUE(content::ExecuteScript(web_contents, "window.testSendMessage()"));
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
@@ -1755,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBackgroundSyncTest, Sync) {
   // Prevent firing by going offline.
   content::background_sync_test_util::SetOnline(web_contents, false);
 
-  ExtensionTestMessageListener sync_listener("SYNC: send-chats", false);
+  ExtensionTestMessageListener sync_listener("SYNC: send-chats");
   sync_listener.set_failure_message("FAIL");
 
   std::string result;
@@ -1804,7 +1805,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Start the ServiceWorker.
-  ExtensionTestMessageListener ready_listener("SERVICE_WORKER_READY", false);
+  ExtensionTestMessageListener ready_listener("SERVICE_WORKER_READY");
   ready_listener.set_failure_message("SERVICE_WORKER_FAILURE");
   const char* kScript = "window.runServiceWorker()";
   EXPECT_TRUE(content::ExecuteScript(web_contents->GetMainFrame(), kScript));
@@ -1817,7 +1818,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPushMessagingTest, OnPush) {
 
   base::RunLoop run_loop;
   // Send a push message via gcm and expect the ServiceWorker to receive it.
-  ExtensionTestMessageListener push_message_listener("OK", false);
+  ExtensionTestMessageListener push_message_listener("OK");
   push_message_listener.set_failure_message("FAIL");
   gcm::IncomingMessage message;
   message.sender_id = "1234567890";
@@ -1892,7 +1893,7 @@ class TestWorkerObserver : public content::ServiceWorkerContextObserver {
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        EventsToStoppedWorker) {
-  ExtensionTestMessageListener event_listener_added("ready", false);
+  ExtensionTestMessageListener event_listener_added("ready");
   event_listener_added.set_failure_message("ERROR");
 
   // Note: Extension is packed to avoid reloading while loading.
@@ -1917,7 +1918,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   }
 
   // Navigate to a URL, which should wake up the service worker.
-  ExtensionTestMessageListener finished_listener("finished", false);
+  ExtensionTestMessageListener finished_listener("finished");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("page.html")));
   EXPECT_TRUE(finished_listener.WaitUntilSatisfied());
@@ -1989,9 +1990,10 @@ constexpr char kTabsOnUpdatedSpanningScript[] =
 }  // anonymous namespace
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySplit) {
-  ExtensionTestMessageListener ready_regular("Script started regular", true);
+  ExtensionTestMessageListener ready_regular("Script started regular",
+                                             ReplyBehavior::kWillReply);
   ExtensionTestMessageListener ready_incognito("Script started incognito",
-                                               true);
+                                               ReplyBehavior::kWillReply);
   // Open an incognito window.
   Browser* browser_incognito =
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
@@ -2015,7 +2017,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySplit) {
       ui_test_utils::NavigateToURL(browser_incognito, GURL("chrome:about")));
 
   {
-    ExtensionTestMessageListener tabs_listener(false);
+    ExtensionTestMessageListener tabs_listener;
     // The extension waits for the reply to the "ready" sendMessage call
     // and replies with the URLs of the tabs.
     ready_regular.Reply("");
@@ -2023,7 +2025,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySplit) {
     EXPECT_EQ(R"(["chrome://version/"])", tabs_listener.message());
   }
   {
-    ExtensionTestMessageListener tabs_listener(false);
+    ExtensionTestMessageListener tabs_listener;
     // Reply to the original message and wait for the return message.
     ready_incognito.Reply("");
     EXPECT_TRUE(tabs_listener.WaitUntilSatisfied());
@@ -2034,9 +2036,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySplit) {
 // Tests already-loaded extension activation in incognito profile.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        AlreadyLoadedSplitExtensionActivationInIncognito) {
-  ExtensionTestMessageListener ready_regular("Script started regular", true);
+  ExtensionTestMessageListener ready_regular("Script started regular",
+                                             ReplyBehavior::kWillReply);
   ExtensionTestMessageListener ready_incognito("Script started incognito",
-                                               true);
+                                               ReplyBehavior::kWillReply);
   TestExtensionDir test_dir;
   test_dir.WriteManifest(base::StringPrintf(kIncognitoManifest, "split"));
   test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kQueryWorkerScript);
@@ -2064,7 +2067,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       ui_test_utils::NavigateToURL(browser_incognito, GURL("chrome:about")));
 
   {
-    ExtensionTestMessageListener tabs_listener(false);
+    ExtensionTestMessageListener tabs_listener;
     // The extension waits for the reply to the "ready" sendMessage call
     // and replies with the URLs of the tabs.
     ready_regular.Reply("");
@@ -2072,7 +2075,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
     EXPECT_EQ(R"(["chrome://version/"])", tabs_listener.message());
   }
   {
-    ExtensionTestMessageListener tabs_listener(false);
+    ExtensionTestMessageListener tabs_listener;
     // Reply to the original message and wait for the return message.
     ready_incognito.Reply("");
     EXPECT_TRUE(tabs_listener.WaitUntilSatisfied());
@@ -2081,7 +2084,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySpanning) {
-  ExtensionTestMessageListener ready_listener("Script started regular", true);
+  ExtensionTestMessageListener ready_listener("Script started regular",
+                                              ReplyBehavior::kWillReply);
 
   // Open an incognito window.
   Browser* browser_incognito =
@@ -2104,7 +2108,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySpanning) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser_incognito, GURL("chrome:about")));
 
-  ExtensionTestMessageListener tabs_listener(false);
+  ExtensionTestMessageListener tabs_listener;
   // The extension waits for the reply to the "ready" sendMessage call
   // and replies with the URLs of the tabs.
   ready_listener.Reply("");
@@ -2114,9 +2118,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySpanning) {
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnUpdatedSplit) {
-  ExtensionTestMessageListener ready_regular("Script started regular", true);
+  ExtensionTestMessageListener ready_regular("Script started regular",
+                                             ReplyBehavior::kWillReply);
   ExtensionTestMessageListener ready_incognito("Script started incognito",
-                                               true);
+                                               ReplyBehavior::kWillReply);
   // Open an incognito window.
   Browser* browser_incognito =
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
@@ -2140,7 +2145,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnUpdatedSplit) {
       ui_test_utils::NavigateToURL(browser_incognito, GURL("chrome:about")));
 
   {
-    ExtensionTestMessageListener tabs_listener(false);
+    ExtensionTestMessageListener tabs_listener;
     // The extension waits for the reply to the "ready" sendMessage call
     // and replies with the URLs of the tabs.
     ready_regular.Reply("");
@@ -2148,7 +2153,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnUpdatedSplit) {
     EXPECT_EQ(R"(["chrome://version/"])", tabs_listener.message());
   }
   {
-    ExtensionTestMessageListener tabs_listener(false);
+    ExtensionTestMessageListener tabs_listener;
     // The extension waits for the reply to the "ready" sendMessage call
     // and replies with the URLs of the tabs.
     ready_incognito.Reply("");
@@ -2164,7 +2169,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // events have completed. This solves flakiness in the previous
   // implementation, where the browser pulled the URLs from the
   // renderer.
-  ExtensionTestMessageListener ready_listener("Script started regular", true);
+  ExtensionTestMessageListener ready_listener("Script started regular",
+                                              ReplyBehavior::kWillReply);
 
   // Open an incognito window.
   Browser* browser_incognito =
@@ -2187,7 +2193,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ready_listener.Reply(2);
 
   // This listener will catch the URLs coming back.
-  ExtensionTestMessageListener tabs_listener(false);
+  ExtensionTestMessageListener tabs_listener;
 
   // Load a new tab in both browsers.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome:version")));
@@ -2207,8 +2213,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // an additional service worker, which will fail.
   service_worker_test_utils::TestRegistrationObserver observer(
       browser()->profile());
-  ExtensionTestMessageListener registration_listener("REGISTRATION_FAILED",
-                                                     false);
+  ExtensionTestMessageListener registration_listener("REGISTRATION_FAILED");
   registration_listener.set_failure_message("WORKER_STARTED");
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/script_root_scope"));
@@ -2298,7 +2303,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Note that StopServiceWorkerForScope call below expects the worker to be
   // completely installed, so wait for the |extension| worker to see "activate"
   // event.
-  ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED", false);
+  ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/process_manager"));
   ASSERT_TRUE(extension);
@@ -2318,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // NOTE: It is not necessary to wait for "activate" event from the worker
   // for this test, but we're lazily reusing the extension from
   // ProcessManagerRegistrationOnShutdown test.
-  ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED", false);
+  ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/process_manager"));
   ASSERT_TRUE(extension);
@@ -2345,7 +2350,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // Tests that worker ref count increments while extension API function is
 // active.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
-  ExtensionTestMessageListener worker_start_listener("WORKER STARTED", false);
+  ExtensionTestMessageListener worker_start_listener("WORKER STARTED");
 
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/worker_ref_count"));
@@ -2364,7 +2369,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
   // any extension API request yet.
   EXPECT_EQ(0u, GetWorkerRefCount(extension_key));
 
-  ExtensionTestMessageListener worker_listener("CHECK_REF_COUNT", true);
+  ExtensionTestMessageListener worker_listener("CHECK_REF_COUNT",
+                                               ReplyBehavior::kWillReply);
   worker_listener.set_failure_message("FAILURE");
   ASSERT_TRUE(content::ExecuteScript(web_contents, "window.testSendMessage()"));
   ASSERT_TRUE(worker_listener.WaitUntilSatisfied());
@@ -2375,7 +2381,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
 
   // Perform another extension API request while one is ongoing.
   {
-    ExtensionTestMessageListener listener("CHECK_REF_COUNT", true);
+    ExtensionTestMessageListener listener("CHECK_REF_COUNT",
+                                          ReplyBehavior::kWillReply);
     listener.set_failure_message("FAILURE");
     ASSERT_TRUE(
         content::ExecuteScript(web_contents, "window.testSendMessage()"));
@@ -2387,8 +2394,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
     listener.Reply("Hello world");
   }
 
-  ExtensionTestMessageListener worker_completion_listener("SUCCESS_FROM_WORKER",
-                                                          false);
+  ExtensionTestMessageListener worker_completion_listener(
+      "SUCCESS_FROM_WORKER");
   // Finish executing chrome.test.sendMessage().
   worker_listener.Reply("Hello world");
   EXPECT_TRUE(worker_completion_listener.WaitUntilSatisfied());
@@ -2414,7 +2421,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        PRE_EventsAfterRestart) {
-  ExtensionTestMessageListener event_added_listener("ready", false);
+  ExtensionTestMessageListener event_added_listener("ready");
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
@@ -2448,7 +2455,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EventsAfterRestart) {
   // Verify there is no RenderProcessHost for the extension.
   EXPECT_FALSE(ExtensionHasRenderProcessHost(kTestExtensionId));
 
-  ExtensionTestMessageListener moved_tab_listener("moved-tab", false);
+  ExtensionTestMessageListener moved_tab_listener("moved-tab");
   // Add a tab, then move it.
   content::WebContents* new_web_contents =
       browsertest_util::AddTab(browser(), GURL(url::kAboutBlankURL));
@@ -2469,7 +2476,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EventsAfterRestart) {
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        MAYBE_PRE_WebRequestAfterRestart) {
-  ExtensionTestMessageListener event_added_listener("listener-added", false);
+  ExtensionTestMessageListener event_added_listener("listener-added");
 
   base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
                                       .AppendASCII("worker_based_background")
@@ -2484,7 +2491,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 // the webRequest listener.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        MAYBE_WebRequestAfterRestart) {
-  ExtensionTestMessageListener event_added_listener("listener-added", false);
+  ExtensionTestMessageListener event_added_listener("listener-added");
   EXPECT_TRUE(event_added_listener.WaitUntilSatisfied());
   // Navigate and expect the listener in the extension to be triggered.
   ResultCatcher catcher;
@@ -2510,7 +2517,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
 #endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        MAYBE_PRE_FilteredEventsAfterRestart) {
-  ExtensionTestMessageListener listener_added("ready", false);
+  ExtensionTestMessageListener listener_added("ready");
   base::FilePath test_dir =
       test_data_dir_.AppendASCII("service_worker/worker_based_background");
   base::FilePath pem_path = test_dir.AppendASCII("test_extension.pem");
@@ -2555,7 +2562,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       "filtered_events_after_restart/"
       "a.html");
   ExtensionTestMessageListener worker_filtered_event_listener(
-      "PASS_FROM_WORKER", false);
+      "PASS_FROM_WORKER");
   worker_filtered_event_listener.set_failure_message("FAIL_FROM_WORKER");
   content::WebContents* web_contents =
       browsertest_util::AddTab(browser(), page_url);
@@ -2568,7 +2575,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        BrowserActionUserGesture) {
   // First, load |extension| first so that it has browserAction.onClicked
   // listener registered.
-  ExtensionTestMessageListener listener_added("ready", false);
+  ExtensionTestMessageListener listener_added("ready");
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("service_worker/worker_based_background/"
                                  "browser_action"));
@@ -2616,7 +2623,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTestWithNotification,
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
   // First, load |extension| first so that it has browserAction.onClicked
   // listener registered.
-  ExtensionTestMessageListener worker_listener("ready", false);
+  ExtensionTestMessageListener worker_listener("ready");
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/permissions_api"));
   ASSERT_TRUE(extension);
@@ -2780,7 +2787,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
 // CSP.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
                        ExtensionCSPModification) {
-  ExtensionTestMessageListener worker_listener("ready", false);
+  ExtensionTestMessageListener worker_listener("ready");
   const Extension* extension = LoadExtensionInternal(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/extension_csp_modification"));
   ASSERT_TRUE(extension);
@@ -2792,7 +2799,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
                                   "object-src 'self' blob: filesystem:;"
                                 : "script-src 'self'; "
                                   "object-src 'self';";
-  ExtensionTestMessageListener csp_modified_listener(kDefaultCSP, false);
+  ExtensionTestMessageListener csp_modified_listener(kDefaultCSP);
   csp_modified_listener.set_extension_id(extension_id);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("extension_page.html")));
@@ -2964,7 +2971,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCheckBindingsTest, BindingsAvailability) {
   const base::FilePath path = test_dir.UnpackedPath();
 
   // Wait for the extension to load and the script to finish.
-  ExtensionTestMessageListener result_listener("SUCCESS", false);
+  ExtensionTestMessageListener result_listener("SUCCESS");
   result_listener.set_failure_message("FAILURE");
 
   scoped_refptr<const Extension> extension =

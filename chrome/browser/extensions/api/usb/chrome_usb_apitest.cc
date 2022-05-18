@@ -117,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(ChromeUsbApiTest, GetDevicesByPolicy) {
   )");
 
   // Launch the test app.
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   extensions::ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(dir.UnpackedPath());
 
@@ -145,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(ChromeUsbApiTest, GetDevicesByPolicyNoPolicySet) {
   )");
 
   // Launch the test app.
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   extensions::ResultCatcher result_catcher;
   LoadExtension(dir.UnpackedPath());
 
@@ -175,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(ChromeUsbApiTest, FindDevicesByPolicy) {
   )");
 
   // Launch the test app.
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   extensions::ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(dir.UnpackedPath());
 
@@ -206,7 +209,8 @@ IN_PROC_BROWSER_TEST_F(ChromeUsbApiTest, FindDevicesByPolicyNoPolicySet) {
   )");
 
   // Launch the test app.
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   extensions::ResultCatcher result_catcher;
   LoadExtension(dir.UnpackedPath());
 

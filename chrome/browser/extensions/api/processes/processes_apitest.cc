@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, DISABLED_ProcessesApiListeners) {
   EXPECT_EQ(0, GetListenersCount());
 
   // Load extension that adds a listener in background page
-  ExtensionTestMessageListener listener1("ready", false /* will_reply */);
+  ExtensionTestMessageListener listener1("ready");
   const extensions::Extension* extension1 = LoadExtension(
       test_data_dir_.AppendASCII("processes").AppendASCII("onupdated"));
   ASSERT_TRUE(extension1);
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, DISABLED_ProcessesApiListeners) {
   EXPECT_EQ(1, GetListenersCount());
 
   // Load another extension that listen to the onUpdatedWithMemory.
-  ExtensionTestMessageListener listener2("ready", false /* will_reply */);
+  ExtensionTestMessageListener listener2("ready");
   const extensions::Extension* extension2 = LoadExtension(
       test_data_dir_.AppendASCII("processes").AppendASCII(
           "onupdated_with_memory"));
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, OnUpdatedWithMemoryRefreshTypes) {
   EXPECT_EQ(0, GetListenersCount());
 
   // Load an extension that listen to the onUpdatedWithMemory.
-  ExtensionTestMessageListener listener("ready", false /* will_reply */);
+  ExtensionTestMessageListener listener("ready");
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("processes")
                         .AppendASCII("onupdated_with_memory"));

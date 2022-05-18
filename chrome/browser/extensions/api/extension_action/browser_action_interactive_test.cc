@@ -180,7 +180,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
         content::NotificationService::AllSources());
     std::unique_ptr<ExtensionTestMessageListener> listener;
     if (!will_reply)
-      listener = std::make_unique<ExtensionTestMessageListener>("ready", false);
+      listener = std::make_unique<ExtensionTestMessageListener>("ready");
     // Show first popup in first window and expect it to have loaded.
     ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
                                  {.page_url = "open_popup_succeeds.html"}))
@@ -253,7 +253,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
   auto browserActionBar = ExtensionActionTestHelper::Create(browser());
   // Setup extension message listener to wait for javascript to finish running.
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   {
     OpenPopupViaAPI(true);
     EXPECT_TRUE(browserActionBar->HasPopup());
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                         .AppendASCII("open_popup_background"),
                     {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
-  ExtensionTestMessageListener listener(false);
+  ExtensionTestMessageListener listener;
   listener.set_extension_id(extension->id());
 
   Browser* incognito_browser =
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
       LoadExtension(test_data_dir_.AppendASCII("browser_action/popup"));
   ASSERT_TRUE(first_extension) << message_;
 
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   // Load the test extension which will do nothing except notifyPass() to
   // return control here.
   ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
 
   // Load up the extension, which will call chrome.browserAction.openPopup()
   // when it is loaded and verify that the popup didn't open.
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   EXPECT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("browser_action/open_popup_on_reply")));
   EXPECT_TRUE(listener.WaitUntilSatisfied());

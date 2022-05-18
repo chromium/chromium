@@ -164,7 +164,8 @@ class BrowserActionApiTestWithContextType
 
  protected:
   void RunUpdateTest(base::StringPiece path, bool expect_failure) {
-    ExtensionTestMessageListener ready_listener("ready", true);
+    ExtensionTestMessageListener ready_listener("ready",
+                                                ReplyBehavior::kWillReply);
     ASSERT_TRUE(embedded_test_server()->Start());
     const Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII(path));
@@ -203,7 +204,8 @@ class BrowserActionApiTestWithContextType
   }
 
   void RunEnableTest(base::StringPiece path, bool start_enabled) {
-    ExtensionTestMessageListener ready_listener("ready", true);
+    ExtensionTestMessageListener ready_listener("ready",
+                                                ReplyBehavior::kWillReply);
     const Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
@@ -235,7 +237,7 @@ class BrowserActionApiTestWithContextType
 };
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Basic) {
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(embedded_test_server()->Start());
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("browser_action/basics"));
@@ -679,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
   ASSERT_TRUE(embedded_test_server()->Start());
   scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("browser_action/basics"));
@@ -701,7 +703,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
   // action shows up.
   // SetIsIncognitoEnabled() requires a reload of the extension, so we have to
   // wait for it.
-  ExtensionTestMessageListener incognito_ready_listener("ready", false);
+  ExtensionTestMessageListener incognito_ready_listener("ready");
   TestExtensionRegistryObserver registry_observer(
       ExtensionRegistry::Get(profile()), extension->id());
   extensions::util::SetIsIncognitoEnabled(
@@ -729,7 +731,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener incognito_not_allowed_listener(
-      "incognito not allowed", false);
+      "incognito not allowed");
   scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("browser_action/update"));
   ASSERT_TRUE(extension) << message_;
@@ -751,8 +753,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
   // execution until the transition is completed, since the script will
   // start and stop multiple times during the initial load of the extension
   // and the enabling of incognito mode.
-  ExtensionTestMessageListener incognito_allowed_listener("incognito allowed",
-                                                          true);
+  ExtensionTestMessageListener incognito_allowed_listener(
+      "incognito allowed", ReplyBehavior::kWillReply);
   // Now enable the extension in incognito mode, and test that the browser
   // action shows up. SetIsIncognitoEnabled() requires a reload of the
   // extension, so we have to wait for it to finish.
@@ -790,8 +792,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoUpdate) {
 // Tests that events are dispatched to the correct profile for split mode
 // extensions.
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
-  ExtensionTestMessageListener listener_ready("regular ready", false);
-  ExtensionTestMessageListener incognito_ready("incognito ready", false);
+  ExtensionTestMessageListener listener_ready("regular ready");
+  ExtensionTestMessageListener incognito_ready("incognito ready");
 
   // Open an incognito browser.
   // Note: It is important that we create incognito profile before loading
@@ -824,7 +826,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoSplit) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
-  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener listener("ready");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("browser_action/close_background")));
   const Extension* extension = GetSingleLoadedExtension();
@@ -965,7 +967,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 
 IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
                        WithRectangularIcon) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
 
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("browser_action").AppendASCII("rect_icon"));

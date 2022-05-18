@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
 
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("automation/tests/basic");
-  ExtensionTestMessageListener got_tree(kGotTree, false /* no reply */);
+  ExtensionTestMessageListener got_tree(kGotTree);
   LoadExtension(extension_path);
   ASSERT_TRUE(got_tree.WaitUntilSatisfied());
 
@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   // Enable automation.
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("automation/tests/basic");
-  ExtensionTestMessageListener got_tree(kGotTree, false /* no reply */);
+  ExtensionTestMessageListener got_tree(kGotTree);
   LoadExtension(extension_path);
   ASSERT_TRUE(got_tree.WaitUntilSatisfied());
 

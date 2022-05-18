@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(
   // initial empty document commits synchronously, without going through
   // ReadyToCommit step and 2) when this test was being written, the initial
   // 'about:blank' did not send a DidCommit IPC to the Browser process.
-  ExtensionTestMessageListener listener("Hello from content script!", false);
+  ExtensionTestMessageListener listener("Hello from content script!");
   content::WebContentsAddedObserver popup_observer;
   ExecuteScriptAsync(first_tab, "window.open('about:blank', '_blank')");
 
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(
   // browser-side ContentScriptTracker correctly accounts for the renderer-side
   // support for injecting contents scripts into data: URLs (see r793302).
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     const char kScript[] = R"(
         let iframe = document.createElement('iframe');
         iframe.src = 'data:text/html,contents';
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(
   // Open a new tab with 'about:blank'.  This may be tricky, because the initial
   // 'about:blank' navigation will not go through ReadyToCommit state.
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     content::WebContentsAddedObserver popup_observer;
     ASSERT_TRUE(ExecJs(first_tab, "window.open('about:blank', '_blank')"));
     content::WebContents* popup = popup_observer.GetWebContents();
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(
   // (This is "Step 1" from the doc linked in the comment right above
   // IN_PROC_BROWSER_TEST_F.)
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     const char kScript[] = R"(
         let iframe = document.createElement('iframe');
         iframe.name = 'test-child-frame';
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(
     //
     // (This is "Step 3" from the doc linked in the comment right above
     // IN_PROC_BROWSER_TEST_F.)
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     const char kDocumentWritingScript[] = R"(
         var win = window.open('', 'test-child-frame');
         win.document.open();
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_F(
         // Race step UI.3b (see below).
         did_commit_has_happened = true;
       }));
-  ExtensionTestMessageListener listener("Hello from content script!", false);
+  ExtensionTestMessageListener listener("Hello from content script!");
   ASSERT_TRUE(
       content::BeginNavigateToURLFromRenderer(web_contents, injected_url));
 
@@ -976,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   {
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest, HistoryPushState) {
   // to one that *is* covered by the URL patterns above.
   GURL url =
       embedded_test_server()->GetURL("bar.com", "/History/push_state.html");
-  ExtensionTestMessageListener listener("Hello from content script!", false);
+  ExtensionTestMessageListener listener("Hello from content script!");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Verify that content script has been injected.
@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   )";
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
 
-  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED", false);
+  ExtensionTestMessageListener script_loaded_listener("SCRIPT_LOADED");
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(script_loaded_listener.WaitUntilSatisfied());
@@ -1116,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   // above.
   {
     GURL injected_url = embedded_test_server()->GetURL("a.com", "/title1.html");
-    ExtensionTestMessageListener listener("SCRIPT_INJECTED", false);
+    ExtensionTestMessageListener listener("SCRIPT_INJECTED");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -1261,9 +1261,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
     GURL guest_url2(embedded_test_server()->GetURL("bar.com", "/title2.html"));
 
     ExtensionTestMessageListener app_script_listener(
-        "Hello from webView content script!", false);
+        "Hello from webView content script!");
     ExtensionTestMessageListener unrelated_extension_script_listener(
-        "Hello from extension content script!", false);
+        "Hello from extension content script!");
     content::TestNavigationObserver nav_observer(guest_contents);
     content::ExecuteScriptAsync(
         app_contents,
@@ -1388,7 +1388,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerAppBrowserTest,
   // Create an about:blank subframe where content script should get injected
   // into.
   {
-    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ExtensionTestMessageListener listener("Hello from content script!");
     content::TestNavigationObserver nav_observer(guest_contents);
     const char kAboutBlankScript[] = R"(
         var f = document.createElement('iframe');

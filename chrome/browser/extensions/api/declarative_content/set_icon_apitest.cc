@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Overview) {
       "    })\n"
       "  });\n"
       "});\n");
-  ExtensionTestMessageListener ready("ready", false);
+  ExtensionTestMessageListener ready("ready");
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.

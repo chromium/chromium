@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
   send_input(u"alpha current tab", WindowOpenDisposition::CURRENT_TAB);
   send_input(u"alpha new tab", WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
-  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  ExtensionTestMessageListener listener;
   send_input(u"alpha send results", WindowOpenDisposition::CURRENT_TAB);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -414,10 +414,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
   // Split-mode test: Send different input to the on-the-record and off-the-
   // record profiles, and wait for a message from each. Verify that the
   // extension received the proper input in each context.
-  ExtensionTestMessageListener on_the_record_listener(/*will_reply=*/false);
+  ExtensionTestMessageListener on_the_record_listener;
   on_the_record_listener.set_browser_context(profile());
 
-  ExtensionTestMessageListener incognito_listener(/*will_reply=*/false);
+  ExtensionTestMessageListener incognito_listener;
   incognito_listener.set_browser_context(incognito_profile);
 
   {
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   // view. We should have sufficient Mac coverage here by ensuring the result
   // matches are marked as deletable (verified above).
 #if !BUILDFLAG(IS_MAC)
-  ExtensionTestMessageListener delete_suggestion_listener(/*will_reply=*/false);
+  ExtensionTestMessageListener delete_suggestion_listener;
 
   // Skip the first (accept current input) and second (first extension-provided
   // suggestion) omnibox results.

@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                        OnCertificateListsChangedEvent) {
-  ExtensionTestMessageListener listener("eventListenerReady", false);
+  ExtensionTestMessageListener listener("eventListenerReady");
   listener.SetOnSatisfied(base::BindOnce([](const std::string& message) {
     chromeos::NetworkHandler::Get()
         ->network_certificate_handler()
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
   service_test()->RemoveService("stub_ethernet");
   service_test()->RemoveService("stub_vpn1");
 
-  ExtensionTestMessageListener listener("notifyPortalDetectorObservers", false);
+  ExtensionTestMessageListener listener("notifyPortalDetectorObservers");
   listener.SetOnSatisfied(
       base::BindLambdaForTesting([&](const std::string& message) {
         service_test()->SetServiceProperty(

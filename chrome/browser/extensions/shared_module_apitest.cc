@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModuleAllowlist) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedModuleInstallEvent) {
-  ExtensionTestMessageListener listener1("ready", false);
+  ExtensionTestMessageListener listener1("ready");
 
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("shared_module").AppendASCII("shared"));

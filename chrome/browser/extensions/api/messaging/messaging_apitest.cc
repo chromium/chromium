@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiWithoutBackForwardCacheTest, Messaging) {
 }
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingCrash) {
-  ExtensionTestMessageListener ready_to_crash("ready_to_crash", false);
+  ExtensionTestMessageListener ready_to_crash("ready_to_crash");
   ASSERT_TRUE(LoadExtension(
           test_data_dir_.AppendASCII("messaging/connect_crash")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1492,7 +1492,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnUnload) {
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("messaging/on_unload"));
-  ExtensionTestMessageListener listener("listening", false);
+  ExtensionTestMessageListener listener("listening");
   ASSERT_TRUE(extension);
   // Open a new tab to example.com. Since we'll be closing it later, we need
   // to make sure there's still a tab around to extend the life of the

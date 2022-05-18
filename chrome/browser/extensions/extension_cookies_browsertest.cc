@@ -866,7 +866,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   extension_dir.WriteFile(FILE_PATH_LITERAL("bg_worker.js"), kServiceWorker);
   extension_dir.WriteFile(FILE_PATH_LITERAL("frame.html"),
                           "<p>Extension frame</p>");
-  ExtensionTestMessageListener worker_listener("WORKER_RUNNING", false);
+  ExtensionTestMessageListener worker_listener("WORKER_RUNNING");
   const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   EXPECT_TRUE(worker_listener.WaitUntilSatisfied());

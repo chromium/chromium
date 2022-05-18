@@ -169,7 +169,7 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
   if (injection_type == CONTENT_SCRIPT) {
     extension = LoadExtension(dir->UnpackedPath());
   } else {
-    ExtensionTestMessageListener listener("ready", false);
+    ExtensionTestMessageListener listener("ready");
     extension = LoadExtension(dir->UnpackedPath());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
@@ -209,9 +209,7 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
 
-  const bool will_reply = false;
-  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
-                                                       will_reply);
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded);
   auto navigate = [this]() {
     // Navigate to an URL (which matches the explicit host specified in the
     // extension content_scripts_explicit_hosts). All extensions should
@@ -341,8 +339,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   EXPECT_FALSE(action_runner->WantsToRun(extension2.get()));
 
   // We should still be able to run the request for extension1.
-  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
-                                                       false /* won't reply */);
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded);
   inject_success_listener.set_extension_id(extension1->id());
   action_runner->RunAction(extension1.get(), true);
   EXPECT_TRUE(inject_success_listener.WaitUntilSatisfied());
@@ -364,8 +361,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
 
-  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
-                                                       false /* won't reply */);
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded);
   inject_success_listener.set_extension_id(extension->id());
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -624,8 +620,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
 
-  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
-                                                       false /* won't reply */);
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded);
   inject_success_listener.set_extension_id(extension->id());
 
   GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");

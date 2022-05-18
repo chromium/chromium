@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsEventOnDevTools) {
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("api_test/tabs/no_events")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1110,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsEventOnDevTools) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsAppWindow) {
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("api_test/tabs/no_events")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsAppWindow) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_FilteredEvents) {
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("api_test/windows/events")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1175,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_FilteredEvents) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, OnBoundsChanged) {
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("ready", true);
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("api_test/windows/bounds")));
   ASSERT_TRUE(listener.WaitUntilSatisfied());

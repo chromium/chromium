@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedWorker) {
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        SharedWorker_ControlledByServiceWorker) {
   // Load the extension. It will register a service worker.
-  ExtensionTestMessageListener listener("READY", false);
+  ExtensionTestMessageListener listener("READY");
   listener.set_failure_message("FAIL");
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("shared_worker/service_worker_controlled"));
@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 
   // Close the background page and start it again, so it is controlled
   // by the service worker.
-  ExtensionTestMessageListener listener2("CONTROLLED", false);
+  ExtensionTestMessageListener listener2("CONTROLLED");
   listener2.set_failure_message("FAIL");
   background_page->Close();
   ExtensionBackgroundPageWaiter(profile(), *extension)
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
 
   // The background page should conduct the tests.
-  ExtensionTestMessageListener listener3("PASS", false);
+  ExtensionTestMessageListener listener3("PASS");
   listener3.set_failure_message("FAIL");
   EXPECT_TRUE(listener3.WaitUntilSatisfied());
 }

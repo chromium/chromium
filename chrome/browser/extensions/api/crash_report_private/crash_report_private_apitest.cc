@@ -71,7 +71,7 @@ class CrashReportPrivateApiTest : public ExtensionApiTest {
     test_dir.WriteFile(FILE_PATH_LITERAL("test.js"),
                        R"(chrome.test.sendMessage('ready');)");
 
-    ExtensionTestMessageListener listener("ready", false);
+    ExtensionTestMessageListener listener("ready");
     extension_ = LoadExtension(test_dir.UnpackedPath());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
 

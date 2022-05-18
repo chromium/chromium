@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, Registration) {
 
   // Initialize listener and result catcher before the test page is loaded to
   // be sure not to miss any message.
-  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  ExtensionTestMessageListener listener;
   ResultCatcher result_catcher;
 
   // Load the extension test page.

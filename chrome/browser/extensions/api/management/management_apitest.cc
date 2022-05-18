@@ -95,7 +95,7 @@ class ExtensionManagementApiTest
   // be sent by the launched app, to ensure the page is fully loaded.
   void LoadAndWaitForLaunch(const std::string& app_path,
                             std::string* out_app_id) {
-    ExtensionTestMessageListener launched_app("launched app", false);
+    ExtensionTestMessageListener launched_app("launched app");
     ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(app_path),
                               {.context_type = ContextType::kFromManifest}));
 
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   // Load an extension that calls launchApp() on any app that gets
   // installed.
-  ExtensionTestMessageListener launcher_loaded("launcher loaded", false);
+  ExtensionTestMessageListener launcher_loaded("launcher loaded");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/launch_on_install")));
   ASSERT_TRUE(launcher_loaded.WaitUntilSatisfied());
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchTabApp) {
   // Load an extension that calls launchApp() on any app that gets
   // installed.
-  ExtensionTestMessageListener launcher_loaded("launcher loaded", false);
+  ExtensionTestMessageListener launcher_loaded("launcher loaded");
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("management/launch_on_install")));
   ASSERT_TRUE(launcher_loaded.WaitUntilSatisfied());

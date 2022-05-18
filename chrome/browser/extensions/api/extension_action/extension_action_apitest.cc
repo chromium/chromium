@@ -270,7 +270,7 @@ class MultiActionAPICanvasTest : public MultiActionAPITest {
 // cause a disk write (since we only persist the defaults).
 // Only browser actions persist settings.
 IN_PROC_BROWSER_TEST_F(BrowserActionAPITest, TestNoUnnecessaryIO) {
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
@@ -1461,7 +1461,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
 
   const Extension* extension = nullptr;
   {
-    ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
+    ExtensionTestMessageListener listener("ready");
     extension = LoadExtension(test_dir.UnpackedPath());
     ASSERT_TRUE(extension);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -1475,7 +1475,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
       ExtensionActionTestHelper::Create(browser());
 
   auto get_response = [extension, toolbar_helper = toolbar_helper.get()]() {
-    ExtensionTestMessageListener listener(/*will_reply=*/false);
+    ExtensionTestMessageListener listener;
     listener.set_extension_id(extension->id());
     toolbar_helper->Press(extension->id());
     EXPECT_TRUE(listener.WaitUntilSatisfied());

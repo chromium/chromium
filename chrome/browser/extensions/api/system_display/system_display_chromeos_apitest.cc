@@ -37,8 +37,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 IN_PROC_BROWSER_TEST_P(SystemDisplayChromeOSApiTest,
                        CheckOnDisplayChangedEvent) {
-  ExtensionTestMessageListener listener_for_extension_ready(
-      "ready", /*will_reply=*/false);
+  ExtensionTestMessageListener listener_for_extension_ready("ready");
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("system_display_chromeos")));
   ASSERT_TRUE(listener_for_extension_ready.WaitUntilSatisfied());
@@ -48,8 +47,7 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayChromeOSApiTest,
   {
     // Change tablet physical state then ensure that OnDisplayChangedEvent is
     // triggered.
-    ExtensionTestMessageListener listener_for_success("success",
-                                                      /*will_reply=*/false);
+    ExtensionTestMessageListener listener_for_success("success");
     ash::TabletMode::Get()->SetEnabledForTest(true);
     ASSERT_TRUE(listener_for_success.WaitUntilSatisfied());
   }

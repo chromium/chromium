@@ -57,8 +57,7 @@ class ExtensionActiveTabTest : public ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  ExtensionTestMessageListener background_page_ready("ready",
-                                                     false /*will_reply*/);
+  ExtensionTestMessageListener background_page_ready("ready");
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("active_tab"));
   ASSERT_TRUE(extension);
@@ -66,8 +65,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
 
   // Shouldn't be initially granted based on activeTab.
   {
-    ExtensionTestMessageListener navigation_count_listener(
-        "1", false /*will_reply*/);
+    ExtensionTestMessageListener navigation_count_listener("1");
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
@@ -105,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
     ExtensionTabUtil::SetPlatformDelegate(
         std::make_unique<ExtensionTabUtilDelegateChromeOS>());
 
-    ExtensionTestMessageListener listener(false);
+    ExtensionTestMessageListener listener;
     ResultCatcher catcher;
     ExtensionActionRunner::GetForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents())
@@ -122,8 +120,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
   // Navigating to a different page on the same origin should revoke extension's
   // access to the tab, unless the runtime host permissions feature is enabled.
   {
-    ExtensionTestMessageListener navigation_count_listener(
-        "2", false /*will_reply*/);
+    ExtensionTestMessageListener navigation_count_listener("2");
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
@@ -136,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
   // Navigating to a different origin should revoke extension's access to the
   // tab.
   {
-    ExtensionTestMessageListener navigation_count_listener(
-        "3", false /*will_reply*/);
+    ExtensionTestMessageListener navigation_count_listener("3");
     ResultCatcher catcher;
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
@@ -151,8 +147,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
 IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  ExtensionTestMessageListener background_page_ready("ready",
-                                                     false /*will_reply*/);
+  ExtensionTestMessageListener background_page_ready("ready");
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("active_tab_cors"));
   ASSERT_TRUE(extension);
@@ -185,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  ExtensionTestMessageListener background_page_ready("ready",
-                                                     false /*will_reply*/);
+  ExtensionTestMessageListener background_page_ready("ready");
   scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("active_tab_file_urls"),
                     {.allow_file_access = true});
@@ -238,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
 
     // Load an extension page with a file iframe.
     GURL page = extension->GetResourceURL("file_iframe.html");
-    ExtensionTestMessageListener listener(false /*will_reply*/);
+    ExtensionTestMessageListener listener;
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), page, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
