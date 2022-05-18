@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/nacl/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+
+assert(enable_nacl)
 
 js_type_check("closure_compile") {
   deps = [ ":about_nacl" ]
@@ -10,7 +13,6 @@ js_type_check("closure_compile") {
 
 js_library("about_nacl") {
   deps = [
-    "//third_party/jstemplate:jstemplate",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
   ]
