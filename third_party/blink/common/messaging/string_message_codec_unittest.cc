@@ -136,5 +136,13 @@ TEST(StringMessageCodecTest, V8ToSelfTest_NonASCIILongEnoughToForcePadding) {
   EXPECT_EQ(message, decoded);
 }
 
+TEST(StringMessageCodecTest, Overflow) {
+  const uint8_t kOverflowOneByteData[] = {'"', 0xff, 0xff, 0xff, 0x7f};
+  const uint8_t kOverflowTwoByteData[] = {'c', 0xff, 0xff, 0xff, 0x7f};
+  std::u16string result;
+  EXPECT_FALSE(DecodeStringMessage(kOverflowOneByteData, &result));
+  EXPECT_FALSE(DecodeStringMessage(kOverflowTwoByteData, &result));
+}
+
 }  // namespace
 }  // namespace blink
