@@ -2621,7 +2621,7 @@
   {
     "name": "enable-save-session-tabs-in-separate-files",
     "owners": [ "olivierrobin", "sdefresne", "bling-flags@google.org" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 108
   },
   {
     "name": "enable-secure-payment-confirmation-android",
@@ -3725,7 +3725,7 @@
   {
     "name": "ios-synthetic-crash-reports",
     "owners": [ "olivierrobin", "justincohen", "bling-flags@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 108
   },
   {
     "name": "isolate-origins",
@@ -4109,7 +4109,7 @@
   {
     "name": "metrickit-crash-reports",
     "owners": [ "olivierrobin", "bling-flags@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 108
   },
   {
     "name": "metrics-settings-android",
