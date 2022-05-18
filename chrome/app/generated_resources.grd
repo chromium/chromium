@@ -12114,6 +12114,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- File System Access file chooser. -->
+    <message name="IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_READABLE_DIRECTORY_TITLE" desc="Title of the chooser when opening a directory with only read permissions">
+      Select a folder this site can view
+    </message>
     <message name="IDS_FILE_SYSTEM_ACCESS_CHOOSER_OPEN_WRITABLE_DIRECTORY_TITLE" desc="Title of the chooser when opening a directory with read and write permissions">
       Select where this site can save changes
     </message>
