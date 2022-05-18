@@ -261,6 +261,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Compute.Event"
+    enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelComputeEvent"
+    expires_after="2023-05-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The result of compute/inference based on a web platform model loaded, which
+    can be OK or some specific error. The error code could be logged in machine
+    learning service in chromeos when the computation fails.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult.Event"
+    enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelCreateModelLoaderResultEvent"
+    expires_after="2023-05-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The result of creating web platform model loader, which can be success or
+    some specific error. The error code could be logged in machine learning
+    service in chromeos when the model loader can not be created successfully.
+  </summary>
+</histogram>
+
+<histogram
+    name="MachineLearningService.WebPlatformTfLiteFlatBufferModel.Load.Event"
+    enum="MachineLearningServiceWebPlatformTfLiteFlatBufferModelLoadEvent"
+    expires_after="2023-05-01">
+  <owner>amoylan@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <owner>honglinyu@chromium.org</owner>
+  <summary>
+    The result of loading a web platform model, which can be OK or some specific
+    error. The error code could be logged in machine learning service in
+    chromeos when model can not successfully loaded.
+  </summary>
+</histogram>
+
 <histogram name="MachineLearningService.WorkerProcessAcceptMojoConnectionTime"
     units="microseconds" expires_after="2022-10-17">
   <owner>alanlxl@chromium.org</owner>
@@ -419,6 +461,9 @@ chromium-metrics-reviews@google.com.
     <variant name="TextSuggester.Suggest"/>
     <variant name="WebPlatformHandwritingModel.GetPrediction"/>
     <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Compute"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Load"/>
   </token>
 </histogram>
 
@@ -497,6 +542,9 @@ chromium-metrics-reviews@google.com.
     <variant name="TextSuggester.Suggest"/>
     <variant name="WebPlatformHandwritingModel.GetPrediction"/>
     <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Compute"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.CreateModelLoaderResult"/>
+    <variant name="WebPlatformTfLiteFlatBufferModel.Load"/>
   </token>
 </histogram>
 
