@@ -59,7 +59,7 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
     case ui::DialogModelField::kCustom:
       return static_cast<BubbleDialogModelHost::CustomViewFactory*>(
                  field->AsCustomField(pass_key)->factory(pass_key))
-          ->GetFieldType();
+          ->field_type();
   }
 }
 
@@ -149,6 +149,18 @@ BEGIN_METADATA(CheckboxControl, Checkbox)
 END_METADATA
 
 }  // namespace
+
+BubbleDialogModelHost::CustomViewFactory::CustomViewFactory(
+    base::OnceCallback<std::unique_ptr<View>()> callback,
+    FieldType field_type)
+    : callback_(std::move(callback)), field_type_(field_type) {}
+
+BubbleDialogModelHost::CustomViewFactory::~CustomViewFactory() = default;
+
+std::unique_ptr<View> BubbleDialogModelHost::CustomViewFactory::CreateView() {
+  DCHECK(callback_);
+  return std::move(callback_).Run();
+}
 
 // TODO(pbos): Migrate most code that calls contents_view_->(some View method)
 // into this class. This was done in steps to limit the size of the diff.

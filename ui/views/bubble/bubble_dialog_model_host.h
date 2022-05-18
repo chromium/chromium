@@ -34,14 +34,21 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
 
   // TODO(pbos): Reconsider whether this should be generic outside of
   // BubbleDialogModelHost.
-  // TODO(pbos): Consider making this interface appropriate for all fields (not
-  // just custom ones). If so rename this ViewFactory (not CustomViewFactory).
-  // Interface for adding custom views to a DialogModel. This factory interface
-  // allows constructing views to be hosted in BubbleDialogModelHost.
-  class CustomViewFactory : public ui::DialogModelCustomField::Factory {
+  // TODO(pbos): Consider making this appropriate for all fields (not just
+  // custom ones). If so rename this ViewFactory (not CustomViewFactory).
+  // Factory for adding bespoke Views to BubbleDialogModelHost.
+  class CustomViewFactory final : public ui::DialogModelCustomField::Factory {
    public:
-    virtual std::unique_ptr<View> CreateView() = 0;
-    virtual FieldType GetFieldType() const = 0;
+    CustomViewFactory(base::OnceCallback<std::unique_ptr<View>()> callback,
+                      FieldType field_type);
+    ~CustomViewFactory() final;
+
+    std::unique_ptr<View> CreateView();
+    FieldType field_type() const { return field_type_; }
+
+   private:
+    base::OnceCallback<std::unique_ptr<View>()> callback_;
+    const FieldType field_type_;
   };
 
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a
