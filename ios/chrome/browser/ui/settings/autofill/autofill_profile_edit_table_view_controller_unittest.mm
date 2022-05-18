@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
@@ -67,6 +68,12 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillUseAlternativeStateNameMap)) {
+      personal_data_manager_->personal_data_manager_cleaner_for_testing()
+          ->alternative_state_name_map_updater_for_testing()
+          ->set_local_state_for_testing(local_state_.Get());
+    }
     personal_data_manager_->OnSyncServiceInitialized(nullptr);
     PersonalDataManagerFinishedProfileTasksWaiter waiter(
         personal_data_manager_);
@@ -103,6 +110,7 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   autofill::PersonalDataManager* personal_data_manager_;
   AutofillProfileEditTableViewController* autofill_profile_edit_controller_;

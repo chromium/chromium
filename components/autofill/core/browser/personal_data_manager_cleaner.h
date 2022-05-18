@@ -85,6 +85,12 @@ class PersonalDataManagerCleaner {
   void ClearCreditCardNonSettingsOriginsForTesting() {
     ClearCreditCardNonSettingsOrigins();
   }
+
+  // Getter for |alternative_state_name_map_updater_| used for testing purposes.
+  AlternativeStateNameMapUpdater*
+  alternative_state_name_map_updater_for_testing() {
+    return alternative_state_name_map_updater_;
+  }
 #endif  // defined(UNIT_TEST)
 
  private:

@@ -502,7 +502,7 @@ const base::Feature kAutofillUploadThrottling{"AutofillUploadThrottling",
 // the server.
 // TODO(crbug.com/1143516): Remove the feature when the experiment is completed.
 const base::Feature kAutofillUseAlternativeStateNameMap{
-    "AutofillUseAlternativeStateNameMap", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillUseAlternativeStateNameMap", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether suggestions' labels use the improved label disambiguation
 // format.

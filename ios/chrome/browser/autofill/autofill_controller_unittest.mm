@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -42,6 +43,7 @@
 #include "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -254,6 +256,7 @@ class AutofillControllerTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
   bool processed_a_task_ = false;
@@ -302,6 +305,14 @@ void AutofillControllerTest::SetUp() {
   autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
       browser_state_.get(), web_state(), infobar_manager, autofill_agent_,
       /*password_generation_manager=*/nullptr));
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillUseAlternativeStateNameMap)) {
+    autofill_client_->GetPersonalDataManager()
+        ->personal_data_manager_cleaner_for_testing()
+        ->alternative_state_name_map_updater_for_testing()
+        ->set_local_state_for_testing(local_state_.Get());
+  }
 
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(

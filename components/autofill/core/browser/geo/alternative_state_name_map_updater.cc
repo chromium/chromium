@@ -125,7 +125,11 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
     PrefService* pref_service,
     base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pref_service);
+
+  // Would be null in the case of tests.
+  if (!pref_service) {
+    return;
+  }
 
   // Get the states data installation path from |pref_service| which is set by
   // the component updater once it downloads the states data and should be safe

@@ -562,6 +562,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/webdata_services",
+    "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

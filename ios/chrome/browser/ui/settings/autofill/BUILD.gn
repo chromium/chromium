@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/settings:test_support",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

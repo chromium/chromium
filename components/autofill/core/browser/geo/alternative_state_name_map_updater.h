@@ -87,6 +87,11 @@ class AlternativeStateNameMapUpdater : public PersonalDataManagerObserver {
     return ContainsState(stripped_alternative_state_names,
                          stripped_state_value_from_profile);
   }
+
+  // Setter for |local_state_| used for testing purposes.
+  void set_local_state_for_testing(PrefService* pref_service) {
+    local_state_ = pref_service;
+  }
 #endif  // defined(UNIT_TEST)
 
  private:
@@ -133,7 +138,7 @@ class AlternativeStateNameMapUpdater : public PersonalDataManagerObserver {
   const raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;
 
   // The browser local_state that stores the states data installation path.
-  const raw_ptr<PrefService> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // In case of concurrent requests to load states data, the callbacks are
   // queued in |pending_init_done_callbacks_| and triggered once the

@@ -980,9 +980,7 @@ INSTANTIATE_TEST_SUITE_P(
                            u"North Carolina."},
         FillSelectTestCase{{"NC - North Carolina", "CA - California"},
                            u"CA",
-                           u"CA - California"},
-        // These are not states.
-        FillSelectTestCase{{"NCNCA", "SCNCA"}, u"NC", u""}));
+                           u"CA - California"}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectWithCountries) {
   AutofillField field;
