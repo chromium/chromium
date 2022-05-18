@@ -180,7 +180,7 @@ class AccountSelectionMediator {
                     brandIconIdealSize);
 
             mImageFetcher.fetchImage(params, bitmap -> {
-                if (bitmap.getWidth() == bitmap.getHeight()
+                if (bitmap != null && bitmap.getWidth() == bitmap.getHeight()
                         && bitmap.getWidth() >= AccountSelectionBridge.getBrandIconMinimumSize()) {
                     mBrandIcon = bitmap;
                     updateHeader();
