@@ -65,8 +65,7 @@ std::unique_ptr<HttpResponse> HandleDefaultConnect(const HttpRequest& request) {
 // Returns a cacheable response.
 std::unique_ptr<HttpResponse> HandleCacheTime(const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
-  http_response->set_content(
-      "<html><head><title>Cache: max-age=60</title></head></html>");
+  http_response->set_content("<!doctype html><title>Cache: max-age=60</title>");
   http_response->set_content_type("text/html");
   http_response->AddCustomHeader("Cache-Control", "max-age=60");
   return http_response;
@@ -185,8 +184,8 @@ std::unique_ptr<HttpResponse> HandleEcho(const HttpRequest& request) {
 std::unique_ptr<HttpResponse> HandleEchoTitle(const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_content_type("text/html");
-  http_response->set_content("<html><head><title>" + request.content +
-                             "</title></head></html>");
+  http_response->set_content("<!doctype html><title>" + request.content +
+                             "</title>");
   return http_response;
 }
 
@@ -199,9 +198,9 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
 
   std::string body =
-      "<html><head><title>EmbeddedTestServer - EchoAll</title><style>"
+      "<!doctype html><title>EmbeddedTestServer - EchoAll</title><style>"
       "pre { border: 1px solid black; margin: 5px; padding: 5px }"
-      "</style></head><body>"
+      "</style>"
       "<div style=\"float: right\">"
       "<a href=\"/echo\">back to referring page</a></div>"
       "<h1>Request Body:</h1><pre>";
@@ -218,7 +217,7 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
       "<h1>Request Headers:</h1><pre id='request-headers'>" +
       request.all_headers + "</pre>" +
       "<h1>Response nonce:</h1><pre id='response-nonce'>" +
-      base::UnguessableToken::Create().ToString() + "</pre></body></html>";
+      base::UnguessableToken::Create().ToString() + "</pre>";
 
   http_response->set_content_type("text/html");
   http_response->set_content(body);
@@ -360,9 +359,8 @@ std::unique_ptr<HttpResponse> HandleIframe(const HttpRequest& request) {
     iframe_url = GURL(base::UnescapeBinaryURLComponent(request_url.query()));
   }
 
-  http_response->set_content(
-      base::StringPrintf("<html><body><iframe src=\"%s\"></body></html>",
-                         iframe_url.spec().c_str()));
+  http_response->set_content(base::StringPrintf(
+      "<!doctype html><iframe src=\"%s\">", iframe_url.spec().c_str()));
   return http_response;
 }
 
@@ -436,9 +434,9 @@ std::unique_ptr<HttpResponse> HandleAuthBasic(const HttpRequest& request) {
       http_response->AddCustomHeader("Set-Cookie",
                                      "got_challenged=true;Secure");
     http_response->set_content(base::StringPrintf(
-        "<html><head><title>Denied: %s</title></head>"
-        "<body>auth=%s<p>b64str=%s<p>username: %s<p>userpass: %s<p>"
-        "password: %s<p>You sent:<br>%s<p></body></html>",
+        "<!doctype html><title>Denied: %s</title>"
+        "<p>auth=%s<p>b64str=%s<p>username: %s<p>userpass: %s"
+        "<p>password: %s<p>You sent:<br>%s",
         error.c_str(), auth.c_str(), b64str.c_str(), username.c_str(),
         userpass.c_str(), password.c_str(), request.all_headers.c_str()));
     return http_response;
@@ -466,8 +464,8 @@ std::unique_ptr<HttpResponse> HandleAuthBasic(const HttpRequest& request) {
   } else {
     http_response->set_content_type("text/html");
     http_response->set_content(
-        base::StringPrintf("<html><head><title>%s/%s</title></head>"
-                           "<body>auth=%s<p>You sent:<br>%s<p></body></html>",
+        base::StringPrintf("<!doctype html><title>%s/%s</title>"
+                           "<p>auth=%s<p>You sent:<br>%s",
                            username.c_str(), password.c_str(), auth.c_str(),
                            request.all_headers.c_str()));
   }
@@ -557,19 +555,19 @@ std::unique_ptr<HttpResponse> HandleAuthDigest(const HttpRequest& request) {
         "opaque=\"%s\"",
         realm.c_str(), nonce.c_str(), opaque.c_str());
     http_response->AddCustomHeader("WWW-Authenticate", auth_header);
-    http_response->set_content(base::StringPrintf(
-        "<html><head><title>Denied: %s</title></head>"
-        "<body>auth=%s<p>"
-        "You sent:<br>%s<p>We are replying:<br>%s<p></body></html>",
-        error.c_str(), auth.c_str(), request.all_headers.c_str(),
-        auth_header.c_str()));
+    http_response->set_content(
+        base::StringPrintf("<!doctype html><title>Denied: %s</title>"
+                           "<p>auth=%s"
+                           "You sent:<br>%s<p>We are replying:<br>%s",
+                           error.c_str(), auth.c_str(),
+                           request.all_headers.c_str(), auth_header.c_str()));
     return http_response;
   }
 
   http_response->set_content_type("text/html");
   http_response->set_content(
-      base::StringPrintf("<html><head><title>%s/%s</title></head>"
-                         "<body>auth=%s<p></body></html>",
+      base::StringPrintf("<!doctype html><title>%s/%s</title>"
+                         "<p>auth=%s",
                          username.c_str(), password.c_str(), auth.c_str()));
 
   return http_response;
@@ -598,9 +596,8 @@ std::unique_ptr<HttpResponse> HandleServerRedirect(HttpStatusCode redirect_code,
   http_response->AddCustomHeader("Location", dest);
   http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
   http_response->set_content_type("text/html");
-  http_response->set_content(base::StringPrintf(
-      "<html><head></head><body>Redirecting to %s</body></html>",
-      dest.c_str()));
+  http_response->set_content(
+      base::StringPrintf("<!doctype html><p>Redirecting to %s", dest.c_str()));
   return http_response;
 }
 // /server-redirect-with-cookie?URL
@@ -618,9 +615,8 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithCookie(
   http_response->AddCustomHeader("Location", dest);
   http_response->AddCustomHeader("Set-Cookie", "server-redirect=true");
   http_response->set_content_type("text/html");
-  http_response->set_content(base::StringPrintf(
-      "<html><head></head><body>Redirecting to %s</body></html>",
-      dest.c_str()));
+  http_response->set_content(
+      base::StringPrintf("<!doctype html><p>Redirecting to %s", dest.c_str()));
   return http_response;
 }
 
@@ -640,9 +636,8 @@ std::unique_ptr<HttpResponse> HandleServerRedirectWithSecureCookie(
   http_response->AddCustomHeader("Location", dest);
   http_response->AddCustomHeader("Set-Cookie", "server-redirect=true;Secure");
   http_response->set_content_type("text/html");
-  http_response->set_content(base::StringPrintf(
-      "<html><head></head><body>Redirecting to %s</body></html>",
-      dest.c_str()));
+  http_response->set_content(
+      base::StringPrintf("<!doctype html><p>Redirecting to %s", dest.c_str()));
   return http_response;
 }
 
@@ -674,9 +669,8 @@ std::unique_ptr<HttpResponse> HandleCrossSiteRedirect(
     http_response->AddCustomHeader("Set-Cookie", "server-redirect=true");
   }
   http_response->set_content_type("text/html");
-  http_response->set_content(base::StringPrintf(
-      "<html><head></head><body>Redirecting to %s</body></html>",
-      dest.c_str()));
+  http_response->set_content(
+      base::StringPrintf("<!doctype html><p>Redirecting to %s", dest.c_str()));
   return http_response;
 }
 
@@ -690,8 +684,8 @@ std::unique_ptr<HttpResponse> HandleClientRedirect(const HttpRequest& request) {
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_content_type("text/html");
   http_response->set_content(base::StringPrintf(
-      "<html><head><meta http-equiv=\"refresh\" content=\"0;url=%s\"></head>"
-      "<body>Redirecting to %s</body></html>",
+      "<!doctype html><meta http-equiv=\"refresh\" content=\"0;url=%s\">"
+      "<p>Redirecting to %s",
       dest.c_str(), dest.c_str()));
   return http_response;
 }
