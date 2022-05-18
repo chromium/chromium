@@ -5,26 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_VALIDATION_ERROR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_VALIDATION_ERROR_H_
 
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_error.h"
 
 namespace blink {
 
-class GPUValidationError : public ScriptWrappable {
+class GPUValidationError : public GPUError {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static GPUValidationError* Create(const AtomicString& message);
-  GPUValidationError(const AtomicString& message);
+  static GPUValidationError* Create(const String& message);
+  explicit GPUValidationError(const String& message);
 
   GPUValidationError(const GPUValidationError&) = delete;
   GPUValidationError& operator=(const GPUValidationError&) = delete;
-
-  // gpu_validation_error.idl
-  const String& message() const;
-
- private:
-  String message_;
 };
 
 }  // namespace blink

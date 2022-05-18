@@ -150,13 +150,9 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
 
   GPUUncapturedErrorEventInit* init = GPUUncapturedErrorEventInit::Create();
   if (errorType == WGPUErrorType_Validation) {
-    init->setError(
-        MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
-            MakeGarbageCollected<GPUValidationError>(message)));
+    init->setError(MakeGarbageCollected<GPUValidationError>(message));
   } else if (errorType == WGPUErrorType_OutOfMemory) {
-    init->setError(
-        MakeGarbageCollected<V8UnionGPUOutOfMemoryErrorOrGPUValidationError>(
-            GPUOutOfMemoryError::Create()));
+    init->setError(MakeGarbageCollected<GPUOutOfMemoryError>(message));
   } else {
     return;
   }
@@ -451,7 +447,7 @@ void GPUDevice::OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
       resolver->Resolve(v8::Null(isolate));
       break;
     case WGPUErrorType_OutOfMemory:
-      resolver->Resolve(GPUOutOfMemoryError::Create());
+      resolver->Resolve(MakeGarbageCollected<GPUOutOfMemoryError>(message));
       break;
     case WGPUErrorType_Validation:
       resolver->Resolve(MakeGarbageCollected<GPUValidationError>(message));
