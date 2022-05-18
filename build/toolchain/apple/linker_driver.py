@@ -59,6 +59,8 @@ LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
 # -Wcrl,strippath,<strip_path>
 #    Sets the path to the strip to run with -Wcrl,strip, in which case
 #    `xcrun` is not used to invoke it.
+#-Wcrl,clean_object_path_lto,<path>
+#    Cleans up the temporary directory for LTO object files.
 
 
 class LinkerDriver(object):
@@ -84,6 +86,9 @@ class LinkerDriver(object):
             ('unstripped,', self.run_save_unstripped),
             ('strippath,', self.set_strip_path),
             ('strip,', self.run_strip),
+            # TODO(lgrey): Remove if/when we start running `dsymutil` through
+            # the clang driver. See https://crbug.com/1324104
+            ('clean_object_path_lto,', self.clean_obj_path_lto),
         ]
 
         # Linker driver actions can modify the these values.
@@ -308,6 +313,21 @@ class LinkerDriver(object):
             No output - this step is run purely for its side-effect.
         """
         self._strip_cmd = [strip_path]
+        return []
+
+    def clean_obj_path_lto(self, path):
+        """Linker driver action for -Wcrl,clean_object_path_lto,<path>.
+
+      Removes the directory at `path`, which is a temporary directory for
+      intermediate LTO object files. These need to persist long enough for
+      `dsymutil` to extract their debug info, and deleted afterwards.
+
+      Args:
+          path: string, The path to delete.
+      Returns:
+          No output - this step is run purely for its side-effect.
+      """
+        _remove_path(path)
         return []
 
 

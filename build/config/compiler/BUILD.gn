@@ -680,9 +680,16 @@ config("compiler") {
       # of "all" which means number of hardware threads) is faster.
       ldflags += [ "-Wl,--thinlto-jobs=all" ]
       if (is_apple) {
-        ldflags +=
-            [ "-Wl,-cache_path_lto," +
-              rebase_path("$root_out_dir/thinlto-cache", root_build_dir) ]
+        # TODO(lgrey): Remove if/when we start running `dsymutil` through the
+        # clang driver. See https://crbug.com/1324104
+        object_path_lto =
+            rebase_path("$root_out_dir/lto-objects", root_build_dir)
+        ldflags += [
+          "-Wl,-cache_path_lto," +
+              rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
+          "-Wl,-object_path_lto,$object_path_lto",
+          "-Wcrl,clean_object_path_lto,$object_path_lto",
+        ]
       } else {
         ldflags +=
             [ "-Wl,--thinlto-cache-dir=" +
