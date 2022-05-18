@@ -172,6 +172,11 @@ void AppHooksDelegate::GetInstallState(ScriptContext* script_context,
 
 const char* AppHooksDelegate::GetRunningState(
     ScriptContext* script_context) const {
+  // If we are in a fenced frame tree then the top security origin
+  // does not make sense to look at.
+  if (script_context->web_frame()->IsInFencedFrameTree())
+    return extension_misc::kAppStateCannotRun;
+
   // To distinguish between ready_to_run and cannot_run states, we need the app
   // from the top frame.
   const RendererExtensionRegistry* extensions =
