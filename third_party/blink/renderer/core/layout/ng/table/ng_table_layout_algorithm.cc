@@ -1148,8 +1148,6 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     NGBreakStatus status = FinishFragmentation(
         Node(), ConstraintSpace(), BorderPadding().block_end,
         FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
-    if (status == NGBreakStatus::kDisableFragmentation)
-      return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
     // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, NGBreakStatus::kContinue);
   }
