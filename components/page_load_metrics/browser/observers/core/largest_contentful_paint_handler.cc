@@ -21,21 +21,6 @@ static bool g_disable_subframe_navigation_start_offset = false;
 
 namespace {
 
-absl::optional<base::TimeDelta> AdjustedTime(
-    absl::optional<base::TimeDelta> candidate_time,
-    base::TimeDelta navigation_start_offset) {
-  // If |candidate_time| is not positive, this means that the candidate is an
-  // image that has not finished loading. Preserve its meaning by not adding the
-  // |navigation_start_offset|.
-  absl::optional<base::TimeDelta> new_time = absl::nullopt;
-  if (candidate_time) {
-    new_time = candidate_time->is_positive()
-                   ? navigation_start_offset + candidate_time.value()
-                   : base::TimeDelta();
-  }
-  return new_time;
-}
-
 const ContentfulPaintTimingInfo& MergeTimingsBySizeAndTime(
     const ContentfulPaintTimingInfo& timing1,
     const ContentfulPaintTimingInfo& timing2) {
@@ -66,8 +51,13 @@ const ContentfulPaintTimingInfo& MergeTimingsBySizeAndTime(
 
 void MergeForSubframesWithAdjustedTime(
     ContentfulPaintTimingInfo* inout_timing,
-    const ContentfulPaintTimingInfo& new_candidate) {
+    const absl::optional<base::TimeDelta>& candidate_new_time,
+    const uint64_t& candidate_new_size) {
   DCHECK(inout_timing);
+  const ContentfulPaintTimingInfo new_candidate(
+      candidate_new_time, candidate_new_size, inout_timing->TextOrImage(),
+      inout_timing->ImageBPP(), inout_timing->InMainFrame(),
+      inout_timing->Type());
   const ContentfulPaintTimingInfo& merged_candidate =
       MergeTimingsBySizeAndTime(new_candidate, *inout_timing);
   inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size(),
@@ -275,60 +265,28 @@ void LargestContentfulPaintHandler::RecordSubframeTiming(
     const base::TimeDelta& navigation_start_offset) {
   UpdateFirstInputOrScrollNotified(first_input_or_scroll_notified_timestamp,
                                    navigation_start_offset);
-  // TODO(iclelland): Use the remainder of the fields from
-  // largest_contentful_paint to construct the ContentfulPaintTimingInfo here
-  ContentfulPaintTimingInfo new_text_candidate(
-      AdjustedTime(largest_contentful_paint.largest_text_paint,
-                   navigation_start_offset),
-      largest_contentful_paint.largest_text_paint_size,
-      subframe_contentful_paint_.Text().TextOrImage(),
-      subframe_contentful_paint_.Text().ImageBPP(),
-      subframe_contentful_paint_.Text().InMainFrame(),
-      subframe_contentful_paint_.Text().Type());
-  MergeForSubframesWithAdjustedTime(&subframe_contentful_paint_.Text(),
-                                    new_text_candidate);
-  // TODO(iclelland): Use the remainder of the fields from
-  // largest_contentful_paint to construct the ContentfulPaintTimingInfo here
-  ContentfulPaintTimingInfo new_image_candidate(
-      AdjustedTime(largest_contentful_paint.largest_image_paint,
-                   navigation_start_offset),
-      largest_contentful_paint.largest_image_paint_size,
-      subframe_contentful_paint_.Image().TextOrImage(),
-      subframe_contentful_paint_.Image().ImageBPP(),
-      subframe_contentful_paint_.Image().InMainFrame(),
-      subframe_contentful_paint_.Image().Type());
-  MergeForSubframesWithAdjustedTime(&subframe_contentful_paint_.Image(),
-                                    new_image_candidate);
+  MergeForSubframes(&subframe_contentful_paint_.Text(),
+                    largest_contentful_paint.largest_text_paint,
+                    largest_contentful_paint.largest_text_paint_size,
+                    navigation_start_offset);
+  MergeForSubframes(&subframe_contentful_paint_.Image(),
+                    largest_contentful_paint.largest_image_paint,
+                    largest_contentful_paint.largest_image_paint_size,
+                    navigation_start_offset);
 }
 
 void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     const base::TimeDelta& navigation_start_offset) {
-  // TODO(iclelland): Use the remainder of the fields from
-  // largest_contentful_paint to construct the ContentfulPaintTimingInfo here
-  ContentfulPaintTimingInfo new_text_candidate(
-      AdjustedTime(largest_contentful_paint.largest_text_paint,
-                   navigation_start_offset),
-      largest_contentful_paint.largest_text_paint_size,
-      cross_site_subframe_contentful_paint_.Text().TextOrImage(),
-      cross_site_subframe_contentful_paint_.Text().ImageBPP(),
-      cross_site_subframe_contentful_paint_.Text().InMainFrame(),
-      cross_site_subframe_contentful_paint_.Text().Type());
-  MergeForSubframesWithAdjustedTime(
-      &cross_site_subframe_contentful_paint_.Text(), new_text_candidate);
-  // TODO(iclelland): Use the remainder of the fields from
-  // largest_contentful_paint to construct the ContentfulPaintTimingInfo here
-  ContentfulPaintTimingInfo new_image_candidate(
-      AdjustedTime(largest_contentful_paint.largest_image_paint,
-                   navigation_start_offset),
-      largest_contentful_paint.largest_image_paint_size,
-      cross_site_subframe_contentful_paint_.Image().TextOrImage(),
-      cross_site_subframe_contentful_paint_.Image().ImageBPP(),
-      cross_site_subframe_contentful_paint_.Image().InMainFrame(),
-      cross_site_subframe_contentful_paint_.Image().Type());
-  MergeForSubframesWithAdjustedTime(
-      &cross_site_subframe_contentful_paint_.Image(), new_image_candidate);
+  MergeForSubframes(&cross_site_subframe_contentful_paint_.Text(),
+                    largest_contentful_paint.largest_text_paint,
+                    largest_contentful_paint.largest_text_paint_size,
+                    navigation_start_offset);
+  MergeForSubframes(&cross_site_subframe_contentful_paint_.Image(),
+                    largest_contentful_paint.largest_image_paint,
+                    largest_contentful_paint.largest_image_paint_size,
+                    navigation_start_offset);
 }
 
 void LargestContentfulPaintHandler::RecordMainFrameTiming(
@@ -411,6 +369,25 @@ void LargestContentfulPaintHandler::OnDidFinishSubFrameNavigation(
 
 void LargestContentfulPaintHandler::OnSubFrameDeleted(int frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
+}
+
+void LargestContentfulPaintHandler::MergeForSubframes(
+    ContentfulPaintTimingInfo* inout_timing,
+    const absl::optional<base::TimeDelta>& candidate_new_time,
+    const uint64_t& candidate_new_size,
+    base::TimeDelta navigation_start_offset) {
+  absl::optional<base::TimeDelta> new_time = absl::nullopt;
+  if (candidate_new_time) {
+    // If |candidate_new_time| is TimeDelta(), this means that the candidate is
+    // an image that has not finished loading. Preserve its meaning by not
+    // adding the |navigation_start_offset|.
+    new_time = candidate_new_time->is_positive()
+                   ? navigation_start_offset + candidate_new_time.value()
+                   : base::TimeDelta();
+  }
+  if (IsValid(new_time))
+    MergeForSubframesWithAdjustedTime(inout_timing, new_time,
+                                      candidate_new_size);
 }
 
 }  // namespace page_load_metrics
