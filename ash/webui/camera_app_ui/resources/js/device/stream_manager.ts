@@ -24,7 +24,7 @@ import {
 let instance: StreamManager|null = null;
 
 /**
- * Device information includs MediaDeviceInfo and Camera3DeviceInfo.
+ * Device information includes MediaDeviceInfo and Camera3DeviceInfo.
  */
 export interface DeviceInfo {
   v1Info: MediaDeviceInfo;
@@ -279,7 +279,7 @@ export class StreamManager {
    * navigator.mediaDevices.enumerateDevices().
    *
    * @param deviceId The id of target camera device.
-   * @param enabled True for eanbling multiple streams.
+   * @param enabled True for enabling multiple streams.
    */
   async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
       Promise<void> {

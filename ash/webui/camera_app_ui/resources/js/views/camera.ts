@@ -351,7 +351,7 @@ export class Camera extends View implements CameraViewUI {
         onUpdateConfig: () => {
           if (localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN) ||
               !state.get(Mode.SCAN) ||
-              !this.scanOptions.isDocumentModeEanbled()) {
+              !this.scanOptions.isDocumentModeEnabled()) {
             return;
           }
           localStorage.set(LocalStorageKey.DOC_MODE_DIALOG_SHOWN, true);
@@ -366,7 +366,7 @@ export class Camera extends View implements CameraViewUI {
     // to take document photo with space key as shortcut. See b/196907822.
     const checkRefocus = () => {
       if (!state.get(state.State.CAMERA_CONFIGURING) && state.get(Mode.SCAN) &&
-          this.scanOptions.isDocumentModeEanbled()) {
+          this.scanOptions.isDocumentModeEnabled()) {
         this.focusShutterButton();
       }
     };

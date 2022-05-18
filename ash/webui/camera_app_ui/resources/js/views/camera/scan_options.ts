@@ -29,7 +29,7 @@ function getScanTypeFromElement(el: HTMLInputElement): ScanType {
 /**
  * Gets HTMLInputElements that has the given scan type.
  */
-function getElemetFromScanType(type: ScanType): HTMLInputElement {
+function getElementFromScanType(type: ScanType): HTMLInputElement {
   return dom.get(`input[data-scantype=${type}]`, HTMLInputElement);
 }
 
@@ -57,7 +57,7 @@ export class ScanOptions implements CameraUI {
    */
   private barcodeScanner: BarcodeScanner|null = null;
 
-  private readonly documentCornerOverylay: DocumentCornerOverlay;
+  private readonly documentCornerOverlay: DocumentCornerOverlay;
 
   private readonly onChangeListeners = new Set<ScanOptionsChangeListener>();
 
@@ -67,7 +67,7 @@ export class ScanOptions implements CameraUI {
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
 
-    this.documentCornerOverylay = new DocumentCornerOverlay(
+    this.documentCornerOverlay = new DocumentCornerOverlay(
         (p) => this.cameraManager.setPointOfInterest(p));
 
     for (const option of [this.photoBarcodeOption, ...this.scanOptions]) {
@@ -114,7 +114,7 @@ export class ScanOptions implements CameraUI {
       barcodeChip.show(value);
     });
     const {deviceId} = video.getVideoSettings();
-    this.documentCornerOverylay.attach(deviceId);
+    this.documentCornerOverlay.attach(deviceId);
     const scanType = state.get(Mode.SCAN) ? this.getToggledScanOption() : null;
     (async () => {
       await video.onExpired;
@@ -133,8 +133,8 @@ export class ScanOptions implements CameraUI {
                                      getScanTypeFromElement(checkedEl);
   }
 
-  isDocumentModeEanbled(): boolean {
-    return this.documentCornerOverylay.isEnabled();
+  isDocumentModeEnabled(): boolean {
+    return this.documentCornerOverlay.isEnabled();
   }
 
   /**
@@ -158,9 +158,9 @@ export class ScanOptions implements CameraUI {
     }
 
     if (state.get(Mode.SCAN) && scanType === ScanType.DOCUMENT) {
-      await this.documentCornerOverylay.start();
+      await this.documentCornerOverlay.start();
     } else {
-      await this.documentCornerOverylay.stop();
+      await this.documentCornerOverlay.stop();
     }
 
     for (const listener of this.onChangeListeners) {
@@ -178,7 +178,7 @@ export class ScanOptions implements CameraUI {
   private updateOptionsUI(scanType: ScanType|null) {
     if (state.get(Mode.SCAN)) {
       assert(scanType !== null);
-      getElemetFromScanType(scanType).checked = true;
+      getElementFromScanType(scanType).checked = true;
     } else if (state.get(Mode.PHOTO)) {
       this.photoBarcodeOption.checked = scanType === ScanType.BARCODE;
     }
@@ -192,6 +192,6 @@ export class ScanOptions implements CameraUI {
       this.stopBarcodeScanner();
       this.barcodeScanner = null;
     }
-    await this.documentCornerOverylay.detach();
+    await this.documentCornerOverlay.detach();
   }
 }
