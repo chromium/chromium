@@ -1289,11 +1289,22 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_EQ(current_frame_host(), non_isolated_rfh.get());
     EXPECT_FALSE(non_isolated_rfh.IsRenderFrameDeleted());
   } else {
-    // Navigate back. Isolated into non-isolated.
-    // This DCHECKs currently because of https://crbug.com/1264104,
-    // remove the death check and add a simple load wait when the
-    // bug is fixed.
-    EXPECT_DCHECK_DEATH(web_contents()->GetController().GoBack());
+    if (features::GetBrowsingContextMode() ==
+        features::BrowsingContextStateImplementationType::
+            kLegacyOneToOneWithFrameTreeNode) {
+      // Navigate back. Isolated into non-isolated.
+      // This DCHECKs currently because of https://crbug.com/1264104,
+      // remove the death check and add a simple load wait when the
+      // bug is fixed.
+      EXPECT_DCHECK_DEATH(web_contents()->GetController().GoBack());
+    } else {
+      // Swapping BrowsingContextState on cross-origin navigations resolves
+      // https://crbug.com/1264104, as we store proxies for isolated pages
+      // separately. The death check therefore fails, and the load wait
+      // succeeds.
+      web_contents()->GetController().GoBack();
+      EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    }
   }
 }
 
