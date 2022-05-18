@@ -102,8 +102,11 @@ void ArcOverlayControllerImpl::OnWindowDestroying(aura::Window* window) {
 }
 
 void ArcOverlayControllerImpl::OnViewIsDeleting(views::View* observed_view) {
-  if (overlay_container_observer_.IsObservingSource(observed_view))
+  if (overlay_container_observer_.IsObservingSource(observed_view)) {
     OnOverlayWindowClosed();
+    overlay_container_observer_.Reset();
+    overlay_container_ = nullptr;
+  }
 }
 
 void ArcOverlayControllerImpl::OnWindowBoundsChanged(

@@ -25,7 +25,7 @@ class ArcOverlayManagerTest : public exo::test::ExoTestBase {
 
     manager_ = std::make_unique<ArcOverlayManager>();
 
-    host_widget_ = TestWidgetBuilder().BuildOwnedByNativeWidget();
+    host_widget_ = TestWidgetBuilder().BuildOwnsNativeWidget();
 
     exo::test::ShellSurfaceBuilder builder(gfx::Size(100, 100));
     overlay_shell_surface_ = builder.BuildShellSurface();
@@ -51,6 +51,8 @@ class ArcOverlayManagerTest : public exo::test::ExoTestBase {
     manager_->OnWindowVisibilityChanged(overlay_window_, true);
   }
 
+  void CloseHostWindow() { host_widget_.reset(); }
+
   void CloseOverlayWindow() { deregister_closure_.RunAndReset(); }
 
   aura::Window* host_window() { return host_widget_->GetNativeWindow(); }
@@ -58,7 +60,7 @@ class ArcOverlayManagerTest : public exo::test::ExoTestBase {
 
  private:
   std::unique_ptr<ArcOverlayManager> manager_;
-  views::Widget* host_widget_ = nullptr;
+  std::unique_ptr<views::Widget> host_widget_;
 
   std::unique_ptr<exo::ShellSurface> overlay_shell_surface_;
   aura::Window* overlay_window_ = nullptr;
@@ -93,6 +95,11 @@ TEST_F(ArcOverlayManagerTest, CanConsumeSystemKeysRestoredToFalseAfterOverlay) {
   EXPECT_FALSE(host_window_state->CanConsumeSystemKeys());
   CloseOverlayWindow();
   EXPECT_FALSE(host_window_state->CanConsumeSystemKeys());
+}
+
+TEST_F(ArcOverlayManagerTest, CanCloseHostWindowWhileOverlayIsActive) {
+  MakeOverlayWindowVisible();
+  CloseHostWindow();
 }
 
 }  // namespace
