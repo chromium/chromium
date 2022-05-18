@@ -218,9 +218,7 @@ public final class SafeModeService extends Service {
                 throw new SecurityException("setSafeMode() may only be called by a trusted app");
             }
 
-            synchronized (sLock) {
-                SafeModeService.setSafeMode(actions);
-            }
+            SafeModeService.setSafeMode(actions);
         }
     };
 
@@ -237,9 +235,19 @@ public final class SafeModeService extends Service {
     /**
      * Sets the SafeMode config. This includes persisting the set of actions, toggling component
      * state, etc.
+     *
+     * <p>This may only be called from the same process SafeModeService is declared to run in via
+     * the "android:process" attribute. Callers from other processes must bind to the Service via
+     * the AIDL interface.
      */
+    public static void setSafeMode(List<String> actions) {
+        synchronized (sLock) {
+            SafeModeService.setSafeModeLocked(actions);
+        }
+    }
+
     @GuardedBy("sLock")
-    private static void setSafeMode(List<String> actions) {
+    private static void setSafeModeLocked(List<String> actions) {
         boolean enableSafeMode = actions != null && !actions.isEmpty();
 
         SharedPreferences.Editor editor = getSharedPreferences().edit();
@@ -269,7 +277,7 @@ public final class SafeModeService extends Service {
 
     @GuardedBy("sLock")
     private static void disableSafeMode() {
-        setSafeMode(Arrays.asList());
+        setSafeModeLocked(Arrays.asList());
     }
 
     @GuardedBy("sLock")

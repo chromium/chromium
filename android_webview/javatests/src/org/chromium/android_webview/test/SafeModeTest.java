@@ -123,6 +123,28 @@ public class SafeModeTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    public void testSafeModeState_enableWithMethod() throws Throwable {
+        SafeModeService.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
+        Assert.assertTrue("SafeMode should be enabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testSafeModeState_disableWithMethod() throws Throwable {
+        SafeModeService.setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME));
+        Assert.assertTrue("SafeMode should be enabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+
+        SafeModeService.setSafeMode(Arrays.asList());
+        Assert.assertFalse("SafeMode should be re-disabled",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testSafeModeState_enableWithService() throws Throwable {
         Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         try (ServiceConnectionHelper helper =
