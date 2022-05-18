@@ -71,6 +71,24 @@ ci.builder(
 
 ci.builder(
     name = "Linux ChromiumOS Full",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "default",
         short_name = "ful",
