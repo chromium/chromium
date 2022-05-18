@@ -433,7 +433,7 @@ void MojoURLLoaderClient::OnReceiveRedirect(
     return;
   }
   if (!bypass_redirect_checks_ &&
-      !Platform::Current()->IsRedirectSafe(last_loaded_url_,
+      !Platform::Current()->IsRedirectSafe(GURL(last_loaded_url_),
                                            redirect_info.new_url)) {
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT));
     return;

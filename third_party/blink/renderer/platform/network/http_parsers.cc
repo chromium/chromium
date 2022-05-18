@@ -818,7 +818,7 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));
   return network::mojom::ConvertToBlink(
-      network::PopulateParsedHeaders(headers.get(), url));
+      network::PopulateParsedHeaders(headers.get(), GURL(url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and
@@ -830,7 +830,7 @@ ParseContentSecurityPolicies(
     network::mojom::blink::ContentSecurityPolicySource source,
     const KURL& base_url) {
   return network::mojom::ConvertToBlink(network::ParseContentSecurityPolicies(
-      raw_policies.Utf8(), type, source, base_url));
+      raw_policies.Utf8(), type, source, GURL(base_url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and

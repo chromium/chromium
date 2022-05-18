@@ -45,7 +45,8 @@ WebVector<Manifest::ImageResource> ToImageResource(
   WebVector<Manifest::ImageResource> image_resources;
   for (const auto& icon_definition : icon_definitions) {
     Manifest::ImageResource image_resource;
-    image_resource.src = execution_context->CompleteURL(icon_definition->src);
+    image_resource.src =
+        GURL(execution_context->CompleteURL(icon_definition->src));
     image_resource.type = WebString(icon_definition->type).Utf16();
     for (const auto& size :
          WebIconSizesParser::ParseIconSizes(icon_definition->sizes)) {

@@ -2651,7 +2651,7 @@ void WebLocalFrameImpl::ShowContextMenu(
   // TODO(jcivelli): http://crbug.com/45160 This prevents us from saving large
   //                 data encoded images.  We should have a way to save them.
   if (params.src_url.spec().size() > url::kMaxURLChars)
-    params.src_url = KURL();
+    params.src_url = GURL();
 
   params.selection_rect =
       LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.selection_rect);

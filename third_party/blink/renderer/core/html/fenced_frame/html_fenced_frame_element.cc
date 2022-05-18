@@ -394,7 +394,7 @@ void HTMLFencedFrameElement::Navigate() {
   }
 
   if (mode_ == mojom::blink::FencedFrameMode::kDefault &&
-      !IsValidFencedFrameURL(url)) {
+      !IsValidFencedFrameURL(GURL(url))) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -405,7 +405,7 @@ void HTMLFencedFrameElement::Navigate() {
   }
 
   if (mode_ == mojom::blink::FencedFrameMode::kOpaqueAds) {
-    if (!IsValidUrnUuidURL(url) && !IsValidFencedFrameURL(url)) {
+    if (!IsValidUrnUuidURL(GURL(url)) && !IsValidFencedFrameURL(GURL(url))) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kWarning,

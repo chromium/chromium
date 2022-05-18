@@ -864,9 +864,9 @@ TEST_P(HTMLMediaElementTest, CapturesRedirectedSrc) {
   // Should start at the original.
   EXPECT_EQ(Media()->downloadURL(), Media()->currentSrc());
 
-  GURL redirected_url("https://redirected.com");
+  KURL redirected_url("https://redirected.com");
   EXPECT_CALL(*MockMediaPlayer(), GetSrcAfterRedirects())
-      .WillRepeatedly(Return(redirected_url));
+      .WillRepeatedly(Return(GURL(redirected_url)));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   EXPECT_EQ(Media()->downloadURL(), redirected_url);

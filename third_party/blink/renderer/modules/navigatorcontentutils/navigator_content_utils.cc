@@ -60,7 +60,7 @@ static bool VerifyCustomHandlerURLSecurity(
     ProtocolHandlerSecurityLevel security_level) {
   // The specification says that the API throws SecurityError exception if the
   // URL's protocol isn't HTTP(S) or is potentially trustworthy.
-  if (!IsAllowedCustomHandlerURL(full_url, security_level)) {
+  if (!IsAllowedCustomHandlerURL(GURL(full_url), security_level)) {
     error_message = "The scheme of the url provided must be HTTP(S).";
     return false;
   }

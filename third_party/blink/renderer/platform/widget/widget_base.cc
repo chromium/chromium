@@ -703,7 +703,7 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider(
       new viz::ContextProviderCommandBuffer(
           gpu_channel_host, gpu_memory_buffer_manager, kGpuStreamIdDefault,
-          kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle, url,
+          kGpuStreamPriorityDefault, gpu::kNullSurfaceHandle, GURL(url),
           automatic_flushes, support_locking, support_grcontext, limits,
           attributes,
           viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR));

@@ -180,7 +180,7 @@ net::SiteForCookies WebServiceWorkerFetchContextImpl::SiteForCookies() const {
   // SiteForCookies, because "site for cookies" for the service worker is
   // the service worker's origin's host's registrable domain.
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site-07#section-2.1.2
-  return net::SiteForCookies::FromUrl(worker_script_url_);
+  return net::SiteForCookies::FromUrl(GURL(worker_script_url_));
 }
 
 absl::optional<WebSecurityOrigin>

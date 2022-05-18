@@ -112,7 +112,7 @@ class MockCachedMetadataSender final : public CachedMetadataSender {
             size_t size) override {
     (*code_cache_host)
         ->DidGenerateCacheableMetadata(
-            blink::mojom::CodeCacheType::kJavascript, response_url_,
+            blink::mojom::CodeCacheType::kJavascript, GURL(response_url_),
             response_time_, mojo_base::BigBuffer(base::make_span(data, size)));
   }
 

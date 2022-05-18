@@ -1186,7 +1186,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
   if (loader && loader->GetFrame() && loader->GetFrame()->GetDocument()) {
     request_info->setIsSameSite(
         loader->GetFrame()->GetDocument()->SiteForCookies().IsFirstParty(
-            request.Url()));
+            GURL(request.Url())));
   }
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),

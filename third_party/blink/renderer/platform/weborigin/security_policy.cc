@@ -171,7 +171,7 @@ bool SecurityPolicy::IsOriginAccessToURLAllowed(
     const KURL& url) {
   base::AutoLock locker(GetLock());
   return GetOriginAccessList().CheckAccessState(active_origin->ToUrlOrigin(),
-                                                url) ==
+                                                GURL(url)) ==
          network::cors::OriginAccessList::AccessState::kAllowed;
 }
 

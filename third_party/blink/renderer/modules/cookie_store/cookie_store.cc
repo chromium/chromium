@@ -136,7 +136,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   // The Cookie Store API can only set secure cookies, so it is unusable on
   // insecure origins. file:// are excluded too for consistency with
   // document.cookie.
-  if (!network::IsUrlPotentiallyTrustworthy(cookie_url) ||
+  if (!network::IsUrlPotentiallyTrustworthy(GURL(cookie_url)) ||
       base::Contains(url::GetLocalSchemes(), cookie_url.Protocol().Ascii())) {
     exception_state.ThrowTypeError(
         "Cannot modify a secure cookie on insecure origin");
@@ -165,11 +165,11 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
 
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
-          cookie_url, name.Utf8(), value.Utf8(), domain.Utf8(), path.Utf8(),
-          base::Time() /*creation*/, expires, base::Time() /*last_access*/,
-          true /*secure*/, false /*http_only*/, same_site,
-          net::CookiePriority::COOKIE_PRIORITY_DEFAULT, options->sameParty(),
-          cookie_partition_key, &status_out);
+          GURL(cookie_url), name.Utf8(), value.Utf8(), domain.Utf8(),
+          path.Utf8(), base::Time() /*creation*/, expires,
+          base::Time() /*last_access*/, true /*secure*/, false /*http_only*/,
+          same_site, net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
+          options->sameParty(), cookie_partition_key, &status_out);
 
   // TODO(crbug.com/1310444): Improve serialization validation comments and
   // associate them with ExceptionState codes.
@@ -234,7 +234,7 @@ net::SiteForCookies DefaultSiteForCookies(ExecutionContext* execution_context) {
     return window->document()->SiteForCookies();
 
   auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
-  return net::SiteForCookies::FromUrl(scope->Url());
+  return net::SiteForCookies::FromUrl(GURL(scope->Url()));
 }
 
 scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(

@@ -320,7 +320,7 @@ bool IsIconURLNullOrSecure(const KURL& url) {
   if (!url.IsValid())
     return false;
 
-  return network::IsUrlPotentiallyTrustworthy(url);
+  return network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
 // Checks if the size of the supplied ArrayBuffer or ArrayBufferView is at most

@@ -1236,7 +1236,7 @@ ScriptPromise NavigatorAuction::deprecatedURNToURL(
     const String& uuid_url_string,
     ExceptionState& exception_state) {
   KURL uuid_url(uuid_url_string);
-  if (!blink::IsValidUrnUuidURL(uuid_url)) {
+  if (!blink::IsValidUrnUuidURL(GURL(uuid_url))) {
     exception_state.ThrowTypeError("Passed URL must be a valid URN URL.");
     return ScriptPromise();
   }
@@ -1265,7 +1265,7 @@ ScriptPromise NavigatorAuction::deprecatedReplaceInURN(
     const Vector<std::pair<String, String>>& replacements,
     ExceptionState& exception_state) {
   KURL uuid_url(uuid_url_string);
-  if (!blink::IsValidUrnUuidURL(uuid_url)) {
+  if (!blink::IsValidUrnUuidURL(GURL(uuid_url))) {
     exception_state.ThrowTypeError("Passed URL must be a valid URN URL.");
     return ScriptPromise();
   }

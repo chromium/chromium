@@ -165,7 +165,7 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
 
   // TODO(http://crbug.com/1200225): Align this with the specification.
   return url.ProtocolIsInHTTPFamily() &&
-         network::IsUrlPotentiallyTrustworthy(url);
+         network::IsUrlPotentiallyTrustworthy(GURL(url));
 }
 
 void PaymentsValidators::ValidateAndStringifyObject(

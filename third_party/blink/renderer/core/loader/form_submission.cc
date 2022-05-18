@@ -232,7 +232,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
        mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests) !=
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone &&
       action_url.ProtocolIs("http") &&
-      !network::IsUrlPotentiallyTrustworthy(action_url)) {
+      !network::IsUrlPotentiallyTrustworthy(GURL(action_url))) {
     UseCounter::Count(document,
                       WebFeature::kUpgradeInsecureRequestsUpgradedRequestForm);
     action_url.SetProtocol("https");

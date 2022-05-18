@@ -7455,12 +7455,11 @@ TEST_F(WebFrameTest, SiteForCookiesForRedirect) {
 
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "first_party_redirect.html");
-  EXPECT_TRUE(
-      web_view_helper.GetWebView()
-          ->MainFrameImpl()
-          ->GetDocument()
-          .SiteForCookies()
-          .IsEquivalent(net::SiteForCookies::FromUrl(ToKURL(redirect))));
+  EXPECT_TRUE(web_view_helper.GetWebView()
+                  ->MainFrameImpl()
+                  ->GetDocument()
+                  .SiteForCookies()
+                  .IsEquivalent(net::SiteForCookies::FromUrl(GURL(redirect))));
 }
 
 class TestNewWindowWebViewClient
@@ -10331,7 +10330,7 @@ TEST_F(WebFrameTest, SiteForCookiesFromChildWithRemoteMainFrame) {
   EXPECT_TRUE(local_frame->GetDocument().SiteForCookies().IsNull());
 
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel("http");
-  EXPECT_TRUE(net::SiteForCookies::FromUrl(ToKURL(not_base_url_))
+  EXPECT_TRUE(net::SiteForCookies::FromUrl(GURL(not_base_url_))
                   .IsEquivalent(local_frame->GetDocument().SiteForCookies()));
   SchemeRegistry::RemoveURLSchemeAsFirstPartyWhenTopLevel("http");
 }

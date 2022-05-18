@@ -265,7 +265,8 @@ bool SiteForCookiesEqual(const char* path,
                          const net::SiteForCookies& site_for_cookies) {
   KURL ref_url = ToOriginA(path);
   ref_url.SetPort(80);  // url::Origin takes exception with :0.
-  return net::SiteForCookies::FromUrl(ref_url).IsEquivalent(site_for_cookies);
+  return net::SiteForCookies::FromUrl(GURL(ref_url))
+      .IsEquivalent(site_for_cookies);
 }
 
 TEST_F(WebDocumentFirstPartyTest, Empty) {

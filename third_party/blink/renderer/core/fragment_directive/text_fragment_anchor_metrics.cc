@@ -60,7 +60,7 @@ void TextFragmentAnchorMetrics::ReportMetrics() {
 
   shared_highlighting::LogLinkOpenedUkmEvent(
       document_->UkmRecorder(), document_->UkmSourceID(),
-      KURL(document_->referrer()),
+      GURL(document_->referrer().Utf8()),
       /*success=*/matches_count_ == selector_count_);
 
   std::string uma_prefix = GetPrefixForHistograms();

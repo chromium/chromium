@@ -370,7 +370,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
                                 : KURL(common_params->url);
   KURL url = original_url;
   resource_load_info_notifier_wrapper->NotifyResourceLoadInitiated(
-      request_id, url,
+      request_id, GURL(url),
       !commit_params->original_method.empty() ? commit_params->original_method
                                               : common_params->method,
       common_params->referrer->url, common_params->request_destination,

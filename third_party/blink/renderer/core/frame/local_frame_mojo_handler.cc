@@ -1127,13 +1127,13 @@ void LocalFrameMojoHandler::ExtractSmartClipData(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void LocalFrameMojoHandler::HandleRendererDebugURL(const KURL& url) {
-  DCHECK(IsRendererDebugURL(url));
+  DCHECK(IsRendererDebugURL(GURL(url)));
   if (url.ProtocolIs("javascript")) {
     // JavaScript URLs should be sent to Blink for handling.
     frame_->LoadJavaScriptURL(url);
   } else {
     // This is a Chrome Debug URL. Handle it.
-    HandleChromeDebugURL(url);
+    HandleChromeDebugURL(GURL(url));
   }
 
   // The browser sets its status as loading before calling this IPC. Inform it

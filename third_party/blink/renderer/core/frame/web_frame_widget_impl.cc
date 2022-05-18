@@ -4267,7 +4267,7 @@ bool WebFrameWidgetImpl::HasPendingPageScaleAnimation() {
 
 void WebFrameWidgetImpl::SetSourceURLForCompositor(ukm::SourceId source_id,
                                                    const KURL& url) {
-  LayerTreeHost()->SetSourceURL(source_id, url);
+  LayerTreeHost()->SetSourceURL(source_id, GURL(url));
 }
 
 base::ReadOnlySharedMemoryRegion

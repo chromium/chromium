@@ -1083,7 +1083,7 @@ TEST(KURLTest, InvalidKURLToGURL) {
 
   // This passes the original internal url to GURL, check that it arrives
   // in an internally self-consistent state.
-  GURL gurl = kurl;
+  GURL gurl = GURL(kurl);
   EXPECT_FALSE(gurl.is_valid());
   EXPECT_TRUE(gurl.SchemeIs(url::kHttpScheme));
 

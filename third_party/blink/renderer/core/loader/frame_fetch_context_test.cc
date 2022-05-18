@@ -1411,7 +1411,7 @@ TEST_F(FrameFetchContextTest, SetFirstPartyCookieWhenDetached) {
   SetFirstPartyCookie(request);
 
   EXPECT_TRUE(request.SiteForCookies().IsEquivalent(
-      net::SiteForCookies::FromUrl(document_url)));
+      net::SiteForCookies::FromUrl(GURL(document_url))));
 }
 
 TEST_F(FrameFetchContextTest, TopFrameOrigin) {

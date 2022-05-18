@@ -144,6 +144,7 @@ net::RequestPriority ConvertWebKitPriorityToNetPriority(
   }
 }
 
+// TODO(crbug.com/862940): Use KURL here.
 void SetSecurityStyleAndDetails(const GURL& url,
                                 const network::mojom::URLResponseHead& head,
                                 WebURLResponse* response,
@@ -748,7 +749,8 @@ void WebURLLoader::PopulateURLResponse(
   response->SetRecursivePrefetchToken(head.recursive_prefetch_token);
   response->SetWebBundleURL(KURL(head.web_bundle_url));
 
-  SetSecurityStyleAndDetails(KURL(url), head, response, report_security_info);
+  SetSecurityStyleAndDetails(GURL(KURL(url)), head, response,
+                             report_security_info);
 
   // If there's no received headers end time, don't set load timing.  This is
   // the case for non-HTTP requests, requests that don't go over the wire, and

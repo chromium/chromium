@@ -120,7 +120,7 @@ namespace blink {
 Manifest::ImageResource ConvertManifestImageResource(
     const ManifestImageResource* icon) {
   Manifest::ImageResource manifest_icon;
-  manifest_icon.src = blink::KURL(icon->src());
+  manifest_icon.src = GURL(icon->src().Utf8());
   if (icon->hasType())
     manifest_icon.type = WebString(mojo::ParseType(icon->type())).Utf16();
 

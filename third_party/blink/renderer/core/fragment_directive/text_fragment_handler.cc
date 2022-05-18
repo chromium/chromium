@@ -44,7 +44,7 @@ void TextFragmentHandler::Cancel() {
 
 void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   DCHECK(shared_highlighting::ShouldOfferLinkToText(
-      GetFrame()->GetDocument()->Url()));
+      GURL(GetFrame()->GetDocument()->Url())));
   DCHECK(!GetFrame()->Selection().SelectedText().IsEmpty());
 
   response_callback_ = std::move(callback);
@@ -270,7 +270,7 @@ bool TextFragmentHandler::ShouldPreemptivelyGenerateFor(LocalFrame* frame) {
   return base::FeatureList::IsEnabled(
              shared_highlighting::kSharedHighlightingAmp) &&
          shared_highlighting::SupportsLinkGenerationInIframe(
-             frame->GetDocument()->Url());
+             GURL(frame->GetDocument()->Url()));
 }
 
 // static
@@ -279,7 +279,7 @@ void TextFragmentHandler::OpenedContextMenuOverSelection(LocalFrame* frame) {
     return;
 
   if (!shared_highlighting::ShouldOfferLinkToText(
-          frame->GetDocument()->Url())) {
+          GURL(frame->GetDocument()->Url()))) {
     return;
   }
 
