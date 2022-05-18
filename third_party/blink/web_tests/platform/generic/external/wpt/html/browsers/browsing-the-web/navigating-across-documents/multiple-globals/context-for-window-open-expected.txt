@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Fetch client and URL resolution for window.open() assert_equals: Referrer should use the entry settings object expected "http://web-platform.test:8001/html/browsers/browsing-the-web/navigating-across-documents/multiple-globals/entry/entry.html" but got "http://web-platform.test:8001/html/browsers/browsing-the-web/navigating-across-documents/multiple-globals/incumbent/empty.html"
+Harness: the test ran to completion.
+
