@@ -52,6 +52,10 @@ updater_mac_builder(
 
 updater_windows_builder(
     name = "win-updater-try-builder-dbg",
+    mirrors = [
+        "ci/win-updater-builder-dbg",
+        "ci/win10-updater-tester-dbg",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
