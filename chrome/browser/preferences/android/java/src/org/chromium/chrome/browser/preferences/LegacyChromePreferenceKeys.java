@@ -123,8 +123,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SETTINGS_PRIVACY_OTHER_FORMS_OF_HISTORY_DIALOG_SHOWN,
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION,
                 ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT,
-                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_BOOKMARKS,
-                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_SETTINGS,
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES,
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION,
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED,

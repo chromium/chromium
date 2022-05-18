@@ -94,7 +94,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
         if (mSigninPromoController != null) {
             mAccountManagerFacade.removeObserver(this);
             mProfileDataCache.removeObserver(this);
-            mSigninPromoController.onPromoDestroyed();
         }
 
         mSignInManager.removeSignInStateObserver(this);

@@ -92,16 +92,6 @@ public class SyncPromoPreference extends Preference
         mSigninPromoController = null;
     }
 
-    /**
-     * Should be called when the {@link PreferenceFragmentCompat} which used {@link
-     * SyncPromoPreference} gets destroyed. Used to record "ImpressionsTilDismiss" histogram.
-     */
-    public void onPreferenceFragmentDestroyed() {
-        if (mSigninPromoController != null) {
-            mSigninPromoController.onPromoDestroyed();
-        }
-    }
-
     /** Returns the state of the preference. Not valid until registerForUpdates is called. */
     @State
     public int getState() {
