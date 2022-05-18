@@ -7,6 +7,7 @@
 #include <va/va.h>
 #include <va/va_enc_h264.h>
 
+#include <climits>
 #include <utility>
 
 #include "base/bits.h"
@@ -57,18 +58,30 @@ constexpr int kChromaFormatIDC = 1;
 constexpr uint8_t kMinSupportedH264TemporalLayers = 2;
 constexpr uint8_t kMaxSupportedH264TemporalLayers = 3;
 
-void FillVAEncRateControlParams(
-    uint32_t bps,
-    uint32_t window_size,
-    uint32_t initial_qp,
-    uint32_t min_qp,
-    uint32_t max_qp,
-    uint32_t framerate,
-    uint32_t buffer_size,
-    VAEncMiscParameterRateControl& rate_control_param,
-    VAEncMiscParameterFrameRate& framerate_param,
-    VAEncMiscParameterHRD& hrd_param) {
-  memset(&rate_control_param, 0, sizeof(rate_control_param));
+template <typename VAEncMiscParam>
+VAEncMiscParam& AllocateMiscParameterBuffer(
+    std::vector<uint8_t>& misc_buffer,
+    VAEncMiscParameterType misc_param_type) {
+  constexpr size_t buffer_size =
+      sizeof(VAEncMiscParameterBuffer) + sizeof(VAEncMiscParam);
+  misc_buffer.resize(buffer_size);
+  auto* va_buffer =
+      reinterpret_cast<VAEncMiscParameterBuffer*>(misc_buffer.data());
+  va_buffer->type = misc_param_type;
+  return *reinterpret_cast<VAEncMiscParam*>(va_buffer->data);
+}
+
+void CreateVAEncRateControlParams(uint32_t bps,
+                                  uint32_t window_size,
+                                  uint32_t initial_qp,
+                                  uint32_t min_qp,
+                                  uint32_t max_qp,
+                                  uint32_t framerate,
+                                  uint32_t buffer_size,
+                                  std::vector<uint8_t> misc_buffers[3]) {
+  auto& rate_control_param =
+      AllocateMiscParameterBuffer<VAEncMiscParameterRateControl>(
+          misc_buffers[0], VAEncMiscParameterTypeRateControl);
   rate_control_param.bits_per_second = bps;
   rate_control_param.window_size = window_size;
   rate_control_param.initial_qp = initial_qp;
@@ -76,10 +89,13 @@ void FillVAEncRateControlParams(
   rate_control_param.max_qp = max_qp;
   rate_control_param.rc_flags.bits.disable_frame_skip = true;
 
-  memset(&framerate_param, 0, sizeof(framerate_param));
+  auto& framerate_param =
+      AllocateMiscParameterBuffer<VAEncMiscParameterFrameRate>(
+          misc_buffers[1], VAEncMiscParameterTypeFrameRate);
   framerate_param.framerate = framerate;
 
-  memset(&hrd_param, 0, sizeof(hrd_param));
+  auto& hrd_param = AllocateMiscParameterBuffer<VAEncMiscParameterHRD>(
+      misc_buffers[2], VAEncMiscParameterTypeHRD);
   hrd_param.buffer_size = buffer_size;
   hrd_param.initial_buffer_fullness = buffer_size / 2;
 }
@@ -405,7 +421,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   if (pic->type == H264SliceHeader::kISlice && submit_packed_headers_) {
     // We always generate SPS and PPS with I(DR) frame. This will help for Seek
     // operation on the generated stream.
-    if (!SubmitPackedHeaders(packed_sps_, packed_pps_)) {
+    if (!SubmitPackedHeaders(*packed_sps_, *packed_pps_)) {
       DVLOGF(1) << "Failed submitting keyframe headers";
       return false;
     }
@@ -853,34 +869,6 @@ H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
   return packed_slice_header;
 }
 
-bool H264VaapiVideoEncoderDelegate::SubmitH264BitstreamBuffer(
-    const H264BitstreamBuffer& buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderDataBufferType,
-                                      buffer.BytesInBuffer(), buffer.data());
-}
-
-bool H264VaapiVideoEncoderDelegate::SubmitVAEncMiscParamBuffer(
-    VAEncMiscParameterType type,
-    const void* data,
-    size_t size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/202337642): We don't have to allocate a misc parameter by having
-  // VAEncMiscParameterBuffer + the size and filling VA enc misc data directly
-  // into VAEncMiscParameterBuffer::data.
-  const size_t temp_size = sizeof(VAEncMiscParameterBuffer) + size;
-  std::vector<uint8_t> temp(temp_size);
-
-  auto* const va_buffer =
-      reinterpret_cast<VAEncMiscParameterBuffer*>(temp.data());
-  va_buffer->type = type;
-  memcpy(va_buffer->data, data, size);
-
-  return vaapi_wrapper_->SubmitBuffer(VAEncMiscParameterBufferType, temp_size,
-                                      temp.data());
-}
-
 bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     EncodeJob& job,
     const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
@@ -1007,86 +995,69 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       slice_param.RefPicList0[j++] = va_pic_h264;
   }
 
-  VAEncMiscParameterRateControl rate_control_param;
-  VAEncMiscParameterFrameRate framerate_param;
-  VAEncMiscParameterHRD hrd_param;
-  FillVAEncRateControlParams(
+  std::vector<uint8_t> misc_buffers[3];
+  CreateVAEncRateControlParams(
       encode_params.bitrate_allocation.GetSumBps(),
       encode_params.cpb_window_size_ms,
       base::strict_cast<uint32_t>(pic_param.pic_init_qp),
       base::strict_cast<uint32_t>(encode_params.min_qp),
       base::strict_cast<uint32_t>(encode_params.max_qp),
       encode_params.framerate,
-      base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
-      rate_control_param, framerate_param, hrd_param);
+      base::strict_cast<uint32_t>(encode_params.cpb_size_bits), misc_buffers);
 
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncSequenceParameterBufferType,
-                                    &seq_param) ||
-      !vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
-                                    &pic_param) ||
-      !vaapi_wrapper_->SubmitBuffer(VAEncSliceParameterBufferType,
-                                    &slice_param) ||
-      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeRateControl,
-                                  &rate_control_param,
-                                  sizeof(rate_control_param)) ||
-      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeFrameRate,
-                                  &framerate_param, sizeof(framerate_param)) ||
-      !SubmitVAEncMiscParamBuffer(VAEncMiscParameterTypeHRD, &hrd_param,
-                                  sizeof(hrd_param))) {
-    return false;
-  }
+  std::vector<VaapiWrapper::VABufferDescriptor> va_buffers = {
+      {VAEncSequenceParameterBufferType, sizeof(seq_param), &seq_param},
+      {VAEncPictureParameterBufferType, sizeof(pic_param), &pic_param},
+      {VAEncSliceParameterBufferType, sizeof(slice_param), &slice_param},
+      {VAEncMiscParameterBufferType, misc_buffers[0].size(),
+       misc_buffers[0].data()},
+      {VAEncMiscParameterBufferType, misc_buffers[1].size(),
+       misc_buffers[1].data()},
+      {VAEncMiscParameterBufferType, misc_buffers[2].size(),
+       misc_buffers[2].data()}};
 
-  if (!submit_packed_headers_)
-    return true;
-
-  scoped_refptr<H264BitstreamBuffer> packed_slice_header =
-      GeneratePackedSliceHeader(pic_param, slice_param, *pic);
+  scoped_refptr<H264BitstreamBuffer> packed_slice_header;
   VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
-  packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
-  packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
-  packed_slice_param_buffer.has_emulation_bytes = 0;
-
-  // Submit packed slice header.
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
-                                    &packed_slice_param_buffer)) {
-    return false;
+  if (submit_packed_headers_) {
+    packed_slice_header =
+        GeneratePackedSliceHeader(pic_param, slice_param, *pic);
+    packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
+    packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
+    packed_slice_param_buffer.has_emulation_bytes = 0;
+    va_buffers.push_back({VAEncPackedHeaderParameterBufferType,
+                          sizeof(packed_slice_param_buffer),
+                          &packed_slice_param_buffer});
+    va_buffers.push_back({VAEncPackedHeaderDataBufferType,
+                          packed_slice_header->BytesInBuffer(),
+                          packed_slice_header->data()});
   }
 
-  return SubmitH264BitstreamBuffer(*packed_slice_header);
+  return vaapi_wrapper_->SubmitBuffers(va_buffers);
 }
 
 bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
-    scoped_refptr<H264BitstreamBuffer> packed_sps,
-    scoped_refptr<H264BitstreamBuffer> packed_pps) {
+    const H264BitstreamBuffer& packed_sps,
+    const H264BitstreamBuffer& packed_pps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(submit_packed_headers_);
-  DCHECK(packed_sps);
-  DCHECK(packed_pps);
 
   // Submit SPS.
-  VAEncPackedHeaderParameterBuffer par_buffer = {};
-  par_buffer.type = VAEncPackedHeaderSequence;
-  par_buffer.bit_length = packed_sps->BytesInBuffer() * 8;
+  VAEncPackedHeaderParameterBuffer packed_sps_param = {};
+  packed_sps_param.type = VAEncPackedHeaderSequence;
+  packed_sps_param.bit_length = packed_sps.BytesInBuffer() * CHAR_BIT;
+  VAEncPackedHeaderParameterBuffer packed_pps_param = {};
+  packed_pps_param.type = VAEncPackedHeaderPicture;
+  packed_pps_param.bit_length = packed_pps.BytesInBuffer() * CHAR_BIT;
 
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
-                                    &par_buffer)) {
-    return false;
-  }
-
-  if (!SubmitH264BitstreamBuffer(*packed_sps))
-    return false;
-
-  // Submit PPS.
-  par_buffer = {};
-  par_buffer.type = VAEncPackedHeaderPicture;
-  par_buffer.bit_length = packed_pps->BytesInBuffer() * 8;
-
-  if (!vaapi_wrapper_->SubmitBuffer(VAEncPackedHeaderParameterBufferType,
-                                    &par_buffer)) {
-    return false;
-  }
-
-  return SubmitH264BitstreamBuffer(*packed_pps);
+  return vaapi_wrapper_->SubmitBuffers(
+      {{VAEncPackedHeaderParameterBufferType, sizeof(packed_sps_param),
+        &packed_sps_param},
+       {VAEncPackedHeaderDataBufferType, packed_sps.BytesInBuffer(),
+        packed_sps.data()},
+       {VAEncPackedHeaderParameterBufferType, sizeof(packed_pps_param),
+        &packed_pps_param},
+       {VAEncPackedHeaderDataBufferType, packed_pps.BytesInBuffer(),
+        packed_pps.data()}});
 }
 
 }  // namespace media

@@ -98,16 +98,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // current profile and level.
   bool CheckConfigValidity(uint32_t bitrate, uint32_t framerate);
 
-  // Submits a H264BitstreamBuffer |buffer| to the driver.
-  bool SubmitH264BitstreamBuffer(const H264BitstreamBuffer& buffer);
-  // Submits a VAEncMiscParameterBuffer |data| whose size and type are |size|
-  // and |type| to the driver.
-  bool SubmitVAEncMiscParamBuffer(VAEncMiscParameterType type,
-                                  const void* data,
-                                  size_t size);
-
-  bool SubmitPackedHeaders(scoped_refptr<H264BitstreamBuffer> packed_sps,
-                           scoped_refptr<H264BitstreamBuffer> packed_pps);
+  bool SubmitPackedHeaders(const H264BitstreamBuffer& packed_sps,
+                           const H264BitstreamBuffer& packed_pps);
 
   bool SubmitFrameParameters(
       EncodeJob& job,
