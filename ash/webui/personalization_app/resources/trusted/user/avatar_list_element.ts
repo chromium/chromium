@@ -306,7 +306,7 @@ export class AvatarList extends WithPersonalizationStore {
       string {
     const defaultClass = option ? option.class : 'image-container';
     return this.getAriaSelected_(option, image) === 'true' ?
-        `${defaultClass} selected-${this.camelToKebab_(option.id)}` :
+        `${defaultClass} tast-selected-${this.camelToKebab_(option.id)}` :
         defaultClass;
   }
 }
