@@ -216,12 +216,17 @@ void VirtualCardEnrollBubbleControllerImpl::OnDeclined(JNIEnv* env) {
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnDismissed(JNIEnv* env) {
+  // If the dialog is to be shown again because user clicked on links, do not
+  // log metrics.
+  if (reprompt_required_)
+    return;
   OnBubbleClosed(PaymentsBubbleClosedReason::kNotInteracted);
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(JNIEnv* env,
                                                           jstring url,
                                                           jint link_type) {
+  reprompt_required_ = true;
   OnLinkClicked(static_cast<autofill::VirtualCardEnrollmentLinkType>(link_type),
                 GURL(base::android::ConvertJavaStringToUTF16(env, url)));
 }
@@ -238,7 +243,12 @@ bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
 void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
 #if BUILDFLAG(IS_ANDROID)
-  AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
+  if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
+      reprompt_required_ && messages::IsSaveCardMessagesUiEnabled()) {
+    Show();
+  } else if (visibility == content::Visibility::HIDDEN) {
+    HideBubble();
+  }
 #else
   if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
@@ -262,6 +272,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
       GetVirtualCardEnrollmentBubbleSource() ==
           VirtualCardEnrollmentBubbleSource::
               VIRTUAL_CARD_ENROLLMENT_UPSTREAM_SOURCE) {
+    reprompt_required_ = false;
     DCHECK(!bubble_view());
 
     set_bubble_view(
