@@ -585,12 +585,12 @@ class SkiaRenderer::ScopedSkImageBuilder {
 
   const SkImage* sk_image() const { return sk_image_; }
   const cc::PaintOpBuffer* paint_op_buffer() const { return paint_op_buffer_; }
-  const absl::optional<SkColor>& clear_color() const { return clear_color_; }
+  const absl::optional<SkColor4f>& clear_color() const { return clear_color_; }
 
  private:
   raw_ptr<const SkImage> sk_image_ = nullptr;
   raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
-  absl::optional<SkColor> clear_color_;
+  absl::optional<SkColor4f> clear_color_;
 };
 
 SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
@@ -1920,10 +1920,11 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
       constraint);
 }
 
-void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
-                                     const absl::optional<SkColor>& clear_color,
-                                     const TileDrawQuad* quad,
-                                     const DrawQuadParams* params) {
+void SkiaRenderer::DrawPaintOpBuffer(
+    const cc::PaintOpBuffer* buffer,
+    const absl::optional<SkColor4f>& clear_color,
+    const TileDrawQuad* quad,
+    const DrawQuadParams* params) {
   TRACE_EVENT0("viz", "SkiaRenderer::DrawPaintOpBuffer");
   if (!batched_quads_.empty())
     FlushBatchedQuads();

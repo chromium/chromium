@@ -184,7 +184,11 @@ bool ImageContextImpl::BeginRasterAccess(
     return false;
 
   set_paint_op_buffer(scoped_access->paint_op_buffer());
-  set_clear_color(scoped_access->clear_color());
+  // TODO(crbug.com/1308932) gpu/commmand_buffer should also store float colors.
+  absl::optional<SkColor4f> new_clear_color;
+  if (scoped_access->clear_color())
+    new_clear_color = SkColor4f::FromColor(*scoped_access->clear_color());
+  set_clear_color(new_clear_color);
 
   raster_representation_ = std::move(raster);
   representation_raster_scoped_access_ = std::move(scoped_access);

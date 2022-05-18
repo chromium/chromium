@@ -122,7 +122,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
 
   float recording_scale_factor() const { return recording_scale_factor_; }
 
-  SkColor background_color() const { return background_color_.toSkColor(); }
+  SkColor4f background_color() const { return background_color_; }
 
   bool requires_clear() const { return requires_clear_; }
 
