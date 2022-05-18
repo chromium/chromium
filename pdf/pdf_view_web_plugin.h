@@ -18,7 +18,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_engine.h"
 #include "pdf/pdf_view_plugin_base.h"
+#include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/v8_value_converter.h"
@@ -71,6 +73,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual ~Client() = default;
 
     virtual base::WeakPtr<Client> GetWeakPtr() = 0;
+
+    // Creates a new `PDFiumEngine`.
+    virtual std::unique_ptr<PDFiumEngine> CreateEngine(
+        PDFEngine::Client* client,
+        PDFiumFormFiller::ScriptOption script_option);
 
     // Passes the plugin container to the client. This is first called in
     // `Initialize()`, and cleared to null in `Destroy()`. The container may
@@ -292,8 +299,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
 
-  // Initializes the plugin using the `engine` provided by tests.
-  bool InitializeForTesting(std::unique_ptr<PDFiumEngine> engine);
+  // Initializes the plugin for testing, bypassing certain consistency checks.
+  bool InitializeForTesting();
 
   const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect(); }
 
@@ -301,6 +308,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
  protected:
   // PdfViewPluginBase:
+  std::unique_ptr<PDFiumEngine> CreateEngine(
+      PDFEngine::Client* client,
+      PDFiumFormFiller::ScriptOption script_option) override;
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
   void OnDocumentLoadComplete() override;
@@ -331,9 +341,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
-  // Passing in a null `engine_override` allows InitializeCommon() to create a
-  // PDFiumEngine normally. Otherwise, `engine_override` is used.
-  bool InitializeCommon(std::unique_ptr<PDFiumEngine> engine_override);
+  bool InitializeCommon();
 
   // Sends whether to do smooth scrolling.
   void SendSetSmoothScrolling();

@@ -197,7 +197,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Creates a new `PDFiumEngine`.
   virtual std::unique_ptr<PDFiumEngine> CreateEngine(
       PDFEngine::Client* client,
-      PDFiumFormFiller::ScriptOption script_option);
+      PDFiumFormFiller::ScriptOption script_option) = 0;
 
   // Destroys the main `PDFiumEngine`. Subclasses should call this method in
   // their destructor to ensure the engine is destroyed first.

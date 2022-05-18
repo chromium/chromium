@@ -711,12 +711,6 @@ void PdfViewPluginBase::InitializeEngineForTesting(
   engine_ = std::move(engine);
 }
 
-std::unique_ptr<PDFiumEngine> PdfViewPluginBase::CreateEngine(
-    PDFEngine::Client* client,
-    PDFiumFormFiller::ScriptOption script_option) {
-  return std::make_unique<PDFiumEngine>(client, script_option);
-}
-
 void PdfViewPluginBase::DestroyEngine() {
   engine_.reset();
 }

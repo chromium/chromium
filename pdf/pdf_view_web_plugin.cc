@@ -143,6 +143,12 @@ class PerProcessInitializer final {
 
 }  // namespace
 
+std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
+    PDFEngine::Client* client,
+    PDFiumFormFiller::ScriptOption script_option) {
+  return std::make_unique<PDFiumEngine>(client, script_option);
+}
+
 std::unique_ptr<PdfAccessibilityDataHandler>
 PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
     PdfAccessibilityActionHandler* action_handler) {
@@ -165,21 +171,25 @@ PdfViewWebPlugin::PdfViewWebPlugin(
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
+std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::CreateEngine(
+    PDFEngine::Client* client,
+    PDFiumFormFiller::ScriptOption script_option) {
+  return client_->CreateEngine(client, script_option);
+}
+
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK(container);
   client_->SetPluginContainer(container);
 
   DCHECK_EQ(container->Plugin(), this);
-  return InitializeCommon(/*engine_override=*/nullptr);
+  return InitializeCommon();
 }
 
-bool PdfViewWebPlugin::InitializeForTesting(
-    std::unique_ptr<PDFiumEngine> engine) {
-  return InitializeCommon(std::move(engine));
+bool PdfViewWebPlugin::InitializeForTesting() {
+  return InitializeCommon();
 }
 
-bool PdfViewWebPlugin::InitializeCommon(
-    std::unique_ptr<PDFiumEngine> engine_override) {
+bool PdfViewWebPlugin::InitializeCommon() {
   // Allow the plugin to handle touch events.
   client_->RequestTouchEventType(
       blink::WebPluginContainer::kTouchEventRequestTypeRaw);
@@ -208,9 +218,7 @@ bool PdfViewWebPlugin::InitializeCommon(
   base::debug::SetCrashKeyString(subresource_url, params->original_url);
 
   PerProcessInitializer::GetInstance().Acquire();
-  InitializeBase(engine_override ? std::move(engine_override)
-                                 : std::make_unique<PDFiumEngine>(
-                                       this, params->script_option),
+  InitializeBase(CreateEngine(this, params->script_option),
                  /*embedder_origin=*/client_->GetEmbedderOriginString(),
                  /*src_url=*/params->src_url,
                  /*original_url=*/params->original_url,
