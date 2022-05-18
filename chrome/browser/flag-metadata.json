@@ -3088,17 +3088,17 @@
   {
     "name": "exo-lock-notification",
     "owners": [ "cpelling@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 107
   },
   {
     "name": "exo-ordinal-motion",
     "owners": [ "hollingum@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 130
   },
   {
     "name": "exo-pointer-lock",
     "owners": [ "hollingum@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 107
   },
   {
     "name": "expanded-tab-strip",
