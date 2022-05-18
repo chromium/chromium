@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-body:not(.tab-navigation) #focus-ring {
+body:not(.keyboard-navigation) #focus-ring {
   visibility: hidden;
 }
 

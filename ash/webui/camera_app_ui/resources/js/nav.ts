@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from './assert.js';
+import {assert} from './assert.js';
 import {toggleExpertMode} from './expert.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
@@ -39,15 +39,10 @@ function* getRecursiveViews(view: View): Generator<View> {
  */
 export function setup(views: View[]): void {
   allViews = views.flatMap((v) => [...getRecursiveViews(v)]);
-  // Manage all tabindex usages in for navigation.
-  document.body.addEventListener('keydown', (event) => {
-    const e = assertInstanceof(event, KeyboardEvent);
-    if (e.key === 'Tab') {
-      state.set(state.State.TAB_NAVIGATION, true);
-    }
-  });
-  document.body.addEventListener(
-      'pointerdown', () => state.set(state.State.TAB_NAVIGATION, false));
+  document.addEventListener(
+      'pointerdown', () => state.set(state.State.KEYBOARD_NAVIGATION, false));
+  document.addEventListener(
+      'keydown', () => state.set(state.State.KEYBOARD_NAVIGATION, true));
 }
 
 /**

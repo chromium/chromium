@@ -71,7 +71,7 @@
   margin-inline: 0 8px;
 }
 
-body.tab-navigation #new-feature-toast:focus::after {
+body.keyboard-navigation #new-feature-toast:focus::after {
   --focus-ring-size: 5px;
 
   border: 2px solid var(--focus-color);

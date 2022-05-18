@@ -390,7 +390,7 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #view-crop-document .review-image .dot.dragging::after,
-body.tab-navigation #view-crop-document .review-image .dot:focus::after {
+body.keyboard-navigation #view-crop-document .review-image .dot:focus::after {
   height: var(--focus-size);
   transition-duration: var(--fast1-duration);
   transition-property: width, height;

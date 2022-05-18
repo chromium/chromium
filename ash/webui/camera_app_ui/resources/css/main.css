@@ -1355,13 +1355,13 @@ body.scan #settings-video-resolution {
   padding: 6px 18px;
 }
 
-body.tab-navigation .dialog-buttons button:focus {
+body.keyboard-navigation .dialog-buttons button:focus {
   background-color: var(--blue-300);
   border-color: var(--blue-300);
   color: white;
 }
 
-body.tab-navigation .dialog-buttons button:focus::after {
+body.keyboard-navigation .dialog-buttons button:focus::after {
   border: none;
 }
 

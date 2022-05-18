@@ -60,7 +60,11 @@ export class OptionPanel extends View {
 
           onStateChanged(isDisableOption ? null : targetState);
         }
-        nav.close(ViewName.OPTION_PANEL);
+        // Don't close the panel automatically when switching options via
+        // keyboard due to UX considerations.
+        if (!state.get(state.State.KEYBOARD_NAVIGATION)) {
+          nav.close(ViewName.OPTION_PANEL);
+        }
       });
 
       function observer(val: boolean) {
