@@ -93,6 +93,10 @@ std::u16string GetIOTaskMessage(Profile* profile,
       single_file_message_id = IDS_FILE_BROWSER_DELETE_FILE_NAME;
       multiple_file_message_id = IDS_FILE_BROWSER_DELETE_ITEMS_REMAINING;
       break;
+    case OperationType::kExtract:
+      single_file_message_id = IDS_FILE_BROWSER_EXTRACT_FILE_NAME;
+      multiple_file_message_id = IDS_FILE_BROWSER_EXTRACT_ITEMS_REMAINING;
+      break;
     case OperationType::kZip:
       single_file_message_id = IDS_FILE_BROWSER_ZIP_FILE_NAME;
       multiple_file_message_id = IDS_FILE_BROWSER_ZIP_ITEMS_REMAINING;

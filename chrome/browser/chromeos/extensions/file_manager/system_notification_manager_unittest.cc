@@ -1221,6 +1221,55 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressCopy) {
   ASSERT_EQ(0u, GetNotificationCount());
 }
 
+TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressExtract) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kQueued;
+  status.type = file_manager::io_task::OperationType::kExtract;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file.zip"),
+                              absl::nullopt);
+  status.destination_folder = CreateTestFile("volume/src_file/");
+
+  // Send the copy begin/queued progress.
+  auto* notification_manager = GetSystemNotificationManager();
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Extracting src_file.zip\x2026");
+
+  // Send the copy progress.
+  status.bytes_transferred = 30;
+  status.state = file_manager::io_task::State::kInProgress;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the same notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message, u"Extracting src_file.zip\x2026");
+
+  // Send the success progress status.
+  status.bytes_transferred = 100;
+  status.state = file_manager::io_task::State::kSuccess;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Notification should disappear.
+  ASSERT_EQ(0u, GetNotificationCount());
+}
+
 TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   // The system notification only sees the IOTask ProgressStatus.
   file_manager::io_task::ProgressStatus status;
