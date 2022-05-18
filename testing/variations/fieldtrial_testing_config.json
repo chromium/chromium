@@ -62,6 +62,26 @@
             ]
         }
     ],
+    "AnchorElementInteractionPreloader": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220428",
+                    "enable_features": [
+                        "AnchorElementInteraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBulkTabRestore": [
         {
             "platforms": [
@@ -72,6 +92,25 @@
                     "name": "Enabled_20220518",
                     "enable_features": [
                         "BulkTabRestore"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidContextualSearchM95": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_With_Partial_Translate_20220509",
+                    "params": {
+                        "promo_card_max_shown": "3"
+                    },
+                    "enable_features": [
+                        "ContextualSearchNewSettings",
+                        "ContextualSearchTranslations"
                     ]
                 }
             ]

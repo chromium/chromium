@@ -1,6 +1,7 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -21,6 +22,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace {
 class AnchorElementPreloaderBrowserTest
@@ -44,6 +47,11 @@ class AnchorElementPreloaderBrowserTest
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Without this flag, mouse events are suppressed in these tests.
+    command_line->AppendSwitch("allow-pre-commit-input");
+  }
+
   void SetUpOnMainThread() override {
     subresource_filter::SubresourceFilterBrowserTest::SetUpOnMainThread();
     host_resolver()->ClearRules();
@@ -54,6 +62,17 @@ class AnchorElementPreloaderBrowserTest
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ASSERT_TRUE(loading_predictor);
     loading_predictor->preconnect_manager()->SetObserverForTesting(this);
+  }
+
+  void SimulateMouseDownElementWithId(const std::string& id) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    gfx::Point point = gfx::ToFlooredPoint(
+        GetCenterCoordinatesOfElementWithId(web_contents, id));
+
+    content::SimulateMouseEvent(web_contents,
+                                blink::WebMouseEvent::Type::kMouseDown,
+                                blink::WebMouseEvent::Button::kLeft, point);
   }
 
   const GURL GetTestURL(const char* file) const {
@@ -102,16 +121,11 @@ class AnchorElementPreloaderBrowserTest
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorTest) {
+IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      R"(
-                const a = document.getElementById('anchor1');
-                var e = new PointerEvent('pointerdown', {isPrimary: true});
-                a.dispatchEvent(e);
-              )"));
+  SimulateMouseDownElementWithId("anchor1");
+
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
   ukm::SourceId ukm_source_id = browser()
@@ -140,13 +154,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorTest) {
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
   const GURL& url = GetTestURL("/invalid_href_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      R"(
-                const a = document.getElementById('anchor2');
-                var e = new PointerEvent('pointerdown', {isPrimary: true});
-                a.dispatchEvent(e);
-              )"));
+  SimulateMouseDownElementWithId("anchor2");
   EXPECT_EQ(0, preresolve_count_);
 
   histogram_tester()->ExpectTotalCount(
@@ -168,15 +176,10 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, DISABLED_IframeTest) {
   const GURL& url = GetTestURL("/iframe_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(content::ExecuteScript(
+  content::SimulateMouseEvent(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      R"(
-                const iframe = document.getElementById('iframe1');
-                const iframe_doc = iframe.contentWindow.document;
-                const a = iframe_doc.getElementById('iframe_anchor');
-                var e = new PointerEvent('pointerdown', {isPrimary: true});
-                a.dispatchEvent(e);
-             )"));
+      blink::WebMouseEvent::Type::kMouseDown,
+      blink::WebMouseEvent::Button::kLeft, gfx::Point(200, 200));
   WaitForPreresolveCountForURL(1);
   EXPECT_EQ(1, preresolve_count_);
 
@@ -209,13 +212,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
                                  prefetch::PreloadPagesState::kNoPreloading);
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      R"(
-                const a = document.getElementById('anchor1');
-                var e = new PointerEvent('pointerdown', {isPrimary: true});
-                a.dispatchEvent(e);
-             )"));
+  SimulateMouseDownElementWithId("anchor1");
   EXPECT_EQ(0, preresolve_count_);
 
   histogram_tester()->ExpectTotalCount(
@@ -237,13 +234,10 @@ class AnchorElementPreloaderHoldbackBrowserTest
     : public AnchorElementPreloaderBrowserTest {
  public:
   void SetFeatures() override {
-    feature_list_holdback_.InitAndEnableFeatureWithParameters(
+    feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kAnchorElementInteraction,
         {{"preconnect_holdback", "true"}});
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_holdback_;
 };
 
 IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
@@ -251,15 +245,15 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   const GURL& url = GetTestURL("/one_anchor.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  EXPECT_TRUE(content::ExecuteScript(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      R"(
-                const a = document.getElementById('anchor1');
-                var e = new PointerEvent('pointerdown', {isPrimary: true});
-                a.dispatchEvent(e);
-             )"));
+  SimulateMouseDownElementWithId("anchor1");
   EXPECT_EQ(0, preresolve_count_);
 
+  while (
+      histogram_tester()
+          ->GetAllSamples(kPreloadingAnchorElementPreloaderPreloadingTriggered)
+          .empty()) {
+    base::RunLoop().RunUntilIdle();
+  }
   histogram_tester()->ExpectTotalCount(
       kPreloadingAnchorElementPreloaderPreloadingTriggered, 1);
 

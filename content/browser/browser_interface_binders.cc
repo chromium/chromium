@@ -123,6 +123,7 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom.h"
+#include "third_party/blink/public/mojom/loader/anchor_element_interaction_host.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
@@ -1093,6 +1094,11 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<payments::mojom::PaymentRequest>));
   map->Add<blink::mojom::AnchorElementMetricsHost>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::AnchorElementMetricsHost>));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAnchorElementInteraction)) {
+    map->Add<blink::mojom::AnchorElementInteractionHost>(base::BindRepeating(
+        &EmptyBinderForFrame<blink::mojom::AnchorElementInteractionHost>));
+  }
   map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
   if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
