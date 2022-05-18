@@ -77,13 +77,15 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
 
   Element* nearest_focusgroup = utils::FindNearestFocusgroupAncestor(
       initial_element, FocusgroupType::kLinear);
-  // We only allow focusgroup navigation when we are inside of a focusgroup that
-  // supports the direction.
-  if (!nearest_focusgroup ||
-      !utils::IsAxisSupported(nearest_focusgroup->GetFocusgroupFlags(),
-                              direction)) {
+  // We only allow focusgroup navigation when we are inside of a focusgroup.
+  if (!nearest_focusgroup)
     return false;
-  }
+
+  // When the focusgroup we're in doesn't support the axis of the arrow key
+  // pressed, it might still be able to descend so we can't return just yet.
+  // However, if it can't descend, we should return right away.
+  bool can_only_descend = !utils::IsAxisSupported(
+      nearest_focusgroup->GetFocusgroupFlags(), direction);
 
   // We use the first element after the focusgroup we're in, excluding its
   // subtree, as a shortcut to determine if we exited the current focusgroup
@@ -97,6 +99,7 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
     // 1. Determine whether to descend in other focusgroup.
     bool skip_subtree = false;
     FocusgroupFlags current_flags = current->GetFocusgroupFlags();
+    bool descended = false;
     if (current_flags != FocusgroupFlags::kNone) {
       // When we're on a non-extending focusgroup, we shouldn't go into it. Same
       // for when we're at the root of an extending focusgroup that doesn't
@@ -108,8 +111,14 @@ bool FocusgroupController::AdvanceForward(Element* initial_element,
         nearest_focusgroup = current;
         first_element_after_focusgroup =
             utils::NextElement(nearest_focusgroup, /* skip_subtree */ true);
+        descended = true;
       }
     }
+
+    // See comment where |can_only_descend| is declared.
+    if (can_only_descend && !descended)
+      return false;
+
     // 2. Move |current| to the next element.
     current = utils::NextElement(current, skip_subtree);
 
