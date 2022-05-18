@@ -43,12 +43,14 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
+#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
@@ -273,26 +275,6 @@ void DedicatedWorker::terminate() {
   context_proxy_->TerminateGlobalScope();
 }
 
-BeginFrameProviderParams DedicatedWorker::CreateBeginFrameProviderParams() {
-  DCHECK(GetExecutionContext()->IsContextThread());
-  // If we don't have a frame or we are not in window, some of the SinkIds
-  // won't be initialized. If that's the case, the Worker will initialize it by
-  // itself later.
-  BeginFrameProviderParams begin_frame_provider_params;
-  if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
-    LocalFrame* frame = window->GetFrame();
-    if (frame) {
-      WebFrameWidgetImpl* widget =
-          WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
-      begin_frame_provider_params.parent_frame_sink_id =
-          widget->GetFrameSinkId();
-    }
-    begin_frame_provider_params.frame_sink_id =
-        Platform::Current()->GenerateFrameSinkId();
-  }
-  return begin_frame_provider_params;
-}
-
 void DedicatedWorker::ContextDestroyed() {
   DCHECK(GetExecutionContext()->IsContextThread());
   if (classic_script_loader_)
@@ -424,6 +406,31 @@ void DedicatedWorker::ContinueStart(
       std::move(back_forward_cache_controller_host));
 }
 
+namespace {
+
+BeginFrameProviderParams CreateBeginFrameProviderParams(
+    ExecutionContext& execution_context) {
+  DCHECK(execution_context.IsContextThread());
+  // If we don't have a frame or we are not in window, some of the SinkIds
+  // won't be initialized. If that's the case, the Worker will initialize it by
+  // itself later.
+  BeginFrameProviderParams begin_frame_provider_params;
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    LocalFrame* frame = window->GetFrame();
+    if (frame) {
+      WebFrameWidgetImpl* widget =
+          WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
+      begin_frame_provider_params.parent_frame_sink_id =
+          widget->GetFrameSinkId();
+    }
+    begin_frame_provider_params.frame_sink_id =
+        Platform::Current()->GenerateFrameSinkId();
+  }
+  return begin_frame_provider_params;
+}
+
+}  // namespace
+
 std::unique_ptr<GlobalScopeCreationParams>
 DedicatedWorker::CreateGlobalScopeCreationParams(
     const KURL& script_url,
@@ -468,7 +475,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       nullptr /* worklet_module_responses_map */,
       std::move(browser_interface_broker_),
       mojo::NullRemote() /* code_cache_host_interface */,
-      CreateBeginFrameProviderParams(),
+      CreateBeginFrameProviderParams(*execution_context),
       execution_context->GetSecurityContext().GetPermissionsPolicy(),
       execution_context->GetAgentClusterID(), execution_context->UkmSourceID(),
       execution_context->GetExecutionContextToken(),

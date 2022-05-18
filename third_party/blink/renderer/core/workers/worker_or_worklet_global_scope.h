@@ -41,6 +41,7 @@ class ModuleTreeClient;
 class ResourceFetcher;
 class WorkerResourceTimingNotifier;
 class SubresourceFilter;
+class WebContentSettingsClient;
 class WebWorkerFetchContext;
 class WorkerOrWorkletScriptController;
 class WorkerReportingProxy;
