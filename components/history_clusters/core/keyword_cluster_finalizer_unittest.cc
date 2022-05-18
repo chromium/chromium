@@ -9,6 +9,7 @@
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,10 +21,17 @@ using ::testing::UnorderedElementsAre;
 class KeywordClusterFinalizerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    cluster_finalizer_ = std::make_unique<KeywordClusterFinalizer>();
+    optimization_guide::EntityMetadata github_md;
+    github_md.human_readable_aliases = {"git hub", "github llc"};
+    base::flat_map<std::string, optimization_guide::EntityMetadata>
+        entity_metadata_map;
+    entity_metadata_map["github"] = github_md;
+    cluster_finalizer_ =
+        std::make_unique<KeywordClusterFinalizer>(entity_metadata_map);
 
-    config_.should_exclude_keywords_from_noisy_visits = true;
-    config_.should_include_categories_in_keywords = false;
+    config_.keyword_filter_on_noisy_visits = false;
+    config_.keyword_filter_on_categories = false;
+    config_.keyword_filter_on_entity_aliases = false;
     SetConfigForTesting(config_);
   }
 
@@ -73,26 +81,21 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
               UnorderedElementsAre(u"github", u"otherentity"));
 }
 
-class KeywordClusterFinalizerIncludeAllTest : public ::testing::Test {
+class KeywordClusterFinalizerIncludeAllTest
+    : public KeywordClusterFinalizerTest {
  public:
   void SetUp() override {
-    cluster_finalizer_ = std::make_unique<KeywordClusterFinalizer>();
+    KeywordClusterFinalizerTest::SetUp();
 
-    config_.should_exclude_keywords_from_noisy_visits = false;
-    config_.should_include_categories_in_keywords = true;
+    config_.keyword_filter_on_noisy_visits = true;
+    config_.keyword_filter_on_categories = true;
+    config_.keyword_filter_on_entity_aliases = true;
+    config_.max_entity_aliases_in_keywords = 1;
     SetConfigForTesting(config_);
-  }
-
-  void TearDown() override { cluster_finalizer_.reset(); }
-
-  void FinalizeCluster(history::Cluster& cluster) {
-    cluster_finalizer_->FinalizeCluster(cluster);
   }
 
  private:
   Config config_;
-  std::unique_ptr<KeywordClusterFinalizer> cluster_finalizer_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(KeywordClusterFinalizerIncludeAllTest,
@@ -128,7 +131,7 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
   FinalizeCluster(cluster);
   EXPECT_THAT(cluster.keywords,
               UnorderedElementsAre(u"github", u"category", u"onlyinnoisyvisit",
-                                   u"otherentity"));
+                                   u"otherentity", u"git hub"));
 }
 
 }  // namespace

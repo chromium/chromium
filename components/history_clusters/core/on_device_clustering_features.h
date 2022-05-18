@@ -26,6 +26,9 @@ extern const base::Feature kSplitClusteringTasksToSmallerBatches;
 // Specifies various blocklists for on-device clustering backend.
 extern const base::Feature kOnDeviceClusteringBlocklists;
 
+// Specifies how keywords get filtered and added to a cluster.
+extern const base::Feature kOnDeviceClusteringKeywordFiltering;
+
 }  // namespace features
 }  // namespace history_clusters
 

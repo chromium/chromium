@@ -27,5 +27,8 @@ const base::Feature kSplitClusteringTasksToSmallerBatches{
 const base::Feature kOnDeviceClusteringBlocklists{
     "JourneysOnDeviceClusteringBlocklist", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kOnDeviceClusteringKeywordFiltering{
+    "JourneysKeywordFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace history_clusters

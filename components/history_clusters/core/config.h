@@ -87,6 +87,22 @@ struct Config {
   // visits. This does nothing if `omnibox_action_on_urls` is false.
   bool omnibox_action_on_noisy_urls = true;
 
+  // If enabled, adds the keywords of aliases for detected entity names to a
+  // cluster.
+  bool keyword_filter_on_entity_aliases = false;
+
+  // If greater than 0, the max number of aliases to include in keywords. If <=
+  // 0, all aliases will be included.
+  size_t max_entity_aliases_in_keywords = 0;
+
+  // If enabled, adds the keywords of categories for detected entities to a
+  // cluster.
+  bool keyword_filter_on_categories = true;
+
+  // If enabled, adds the keywords of detected entities from noisy visits to a
+  // cluster.
+  bool keyword_filter_on_noisy_visits = true;
+
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
   // Does nothing if `kJourneys` is disabled.
   bool non_user_visible_debug = false;
@@ -190,13 +206,6 @@ struct Config {
   // Returns the threshold, in terms of the number of overlapping keywords, to
   // use when clustering based on intersection score.
   int cluster_interaction_threshold = 2;
-
-  // Whether to include category names in the keywords for a cluster.
-  bool should_include_categories_in_keywords = true;
-
-  // Whether to exclude keywords from visits that may be considered "noisy" to
-  // the user (i.e. highly engaged, non-SRP).
-  bool should_exclude_keywords_from_noisy_visits = false;
 
   // Returns the default batch size for annotating visits when clustering.
   size_t clustering_tasks_batch_size = 250;

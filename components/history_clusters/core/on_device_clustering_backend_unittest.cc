@@ -72,6 +72,7 @@ class TestEntityMetadataProvider
                   {"category-" + entity_id, 0.5});
               metadata.human_readable_categories.insert(
                   {"toolow-" + entity_id, 0.01});
+              metadata.human_readable_aliases.push_back("alias-" + entity_id);
               std::move(callback).Run(entity_id == "nometadata"
                                           ? absl::nullopt
                                           : absl::make_optional(metadata));
@@ -121,8 +122,10 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
   OnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
     config_.should_dedupe_similar_visits = false;
-    config_.should_include_categories_in_keywords = true;
-    config_.should_exclude_keywords_from_noisy_visits = false;
+    config_.keyword_filter_on_categories = true;
+    config_.keyword_filter_on_noisy_visits = true;
+    config_.keyword_filter_on_entity_aliases = true;
+    config_.max_entity_aliases_in_keywords = 100;
     config_.split_clusters_at_search_visits = false;
     config_.should_label_clusters = false;
     config_.entity_relevance_threshold = 60;
@@ -432,8 +435,9 @@ class OnDeviceClusteringWithContentBackendTest
   OnDeviceClusteringWithContentBackendTest() {
     config_.content_clustering_enabled = true;
     config_.should_dedupe_similar_visits = false;
-    config_.should_include_categories_in_keywords = true;
-    config_.should_exclude_keywords_from_noisy_visits = false;
+    config_.keyword_filter_on_categories = true;
+    config_.keyword_filter_on_noisy_visits = true;
+    config_.keyword_filter_on_entity_aliases = true;
     config_.should_check_hosts_to_skip_clustering_for = false;
     SetConfigForTesting(config_);
   }
@@ -656,6 +660,10 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .annotated_visit.content_annotations.model_annotations
                   .visibility_score,
               FloatEq(0.5));
+  // Cluster should have 3 keywords.
+  EXPECT_THAT(
+      cluster.keywords,
+      UnorderedElementsAre(u"rewritten-foo", u"category-foo", u"alias-foo"));
 
   history::Cluster cluster2 = result_clusters.at(1);
   ASSERT_EQ(cluster2.visits.size(), 1u);
@@ -668,6 +676,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .model_annotations.entities.empty());
   EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
                   .model_annotations.categories.empty());
+  EXPECT_TRUE(cluster2.keywords.empty());
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
@@ -676,7 +685,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Min", 0, 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumKeywordsPerCluster.Max", 2, 1);
+      "History.Clusters.Backend.NumKeywordsPerCluster.Max", 3, 1);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.Backend.BatchEntityLookupLatency2", 1);
   histogram_tester.ExpectUniqueSample(
@@ -690,8 +699,9 @@ class EngagementCacheOnDeviceClusteringWithoutContentBackendTest
   EngagementCacheOnDeviceClusteringWithoutContentBackendTest() {
     config_.content_clustering_enabled = false;
     config_.should_dedupe_similar_visits = false;
-    config_.should_include_categories_in_keywords = true;
-    config_.should_exclude_keywords_from_noisy_visits = false;
+    config_.keyword_filter_on_categories = true;
+    config_.keyword_filter_on_noisy_visits = true;
+    config_.keyword_filter_on_entity_aliases = false;
     SetConfigForTesting(config_);
 
     if (GetParam()) {
@@ -752,96 +762,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     EngagementCacheOnDeviceClusteringWithoutContentBackendTest,
     ::testing::Bool());
-
-class BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest
-    : public OnDeviceClusteringWithoutContentBackendTest,
-      public ::testing::WithParamInterface<
-          std::tuple<bool, ClusteringRequestSource>> {
- public:
-  BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest() {
-    config_.content_clustering_enabled = false;
-    config_.should_dedupe_similar_visits = false;
-    config_.should_include_categories_in_keywords = true;
-    config_.should_exclude_keywords_from_noisy_visits = false;
-    config_.clustering_tasks_batch_size = 1;
-    SetConfigForTesting(config_);
-
-    // expected_size_of_batches is 1.
-    const base::FieldTrialParams batched_clustering_feature_parameters = {
-        {"clustering_task_batch_size", "1"}};
-    base::test::ScopedFeatureList::FeatureAndParams batched_clustering(
-        features::kSplitClusteringTasksToSmallerBatches,
-        batched_clustering_feature_parameters);
-
-    if (IsBatchingEnabled()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters({{batched_clustering}},
-                                                         {});
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kSplitClusteringTasksToSmallerBatches);
-    }
-  }
-
-  bool IsBatchingEnabled() const { return std::get<0>(GetParam()); }
-
-  ClusteringRequestSource GetClusteringRequestSource() const {
-    return std::get<1>(GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  Config config_;
-};
-
-TEST_P(BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest,
-       Baseline) {
-  base::HistogramTester histogram_tester;
-  std::vector<history::AnnotatedVisit> visits;
-
-  // Add 1000 visits to |visits|.
-  for (int i = 0; i < 1000; ++i) {
-    visits.push_back(testing::CreateDefaultAnnotatedVisit(
-        i + 1, GURL("https://github.com/")));
-  }
-
-  std::vector<history::Cluster> result_clusters_1 =
-      ClusterVisits(GetClusteringRequestSource(), visits);
-
-  if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache)) {
-    EXPECT_EQ(1u, GetSiteEngagementGetScoreInvocationCount());
-  } else {
-    EXPECT_EQ(1000u, GetSiteEngagementGetScoreInvocationCount());
-  }
-
-  size_t expected_number_of_batches = 1;
-  size_t expected_size_of_batches = 1000;
-  if (IsBatchingEnabled() &&
-      GetClusteringRequestSource() ==
-          ClusteringRequestSource::kKeywordCacheGeneration) {
-    expected_number_of_batches = 1000;
-    expected_size_of_batches = 1;
-  }
-
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.ProcessBatchOfVisits.BatchSize",
-      expected_number_of_batches);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.ProcessBatchOfVisits.BatchSize",
-      expected_size_of_batches, expected_number_of_batches);
-  histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumBatchesProcessedForVisits",
-      expected_number_of_batches, 1);
-}
-
-const bool kDirectExecutorEnabled[]{true, false};
-
-INSTANTIATE_TEST_SUITE_P(
-    BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest,
-    BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest,
-    ::testing::Combine(
-        ::testing::ValuesIn(kDirectExecutorEnabled),
-        ::testing::Values(ClusteringRequestSource::kJourneysPage,
-                          ClusteringRequestSource::kKeywordCacheGeneration)));
 
 }  // namespace
 }  // namespace history_clusters

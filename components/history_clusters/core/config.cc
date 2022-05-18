@@ -77,6 +77,25 @@ Config::Config() {
       internal::kOmniboxAction, "omnibox_action_on_noisy_urls",
       omnibox_action_on_noisy_urls);
 
+  keyword_filter_on_entity_aliases = base::GetFieldTrialParamByFeatureAsBool(
+      history_clusters::features::kOnDeviceClusteringKeywordFiltering,
+      "keyword_filter_on_entity_aliases", keyword_filter_on_entity_aliases);
+
+  max_entity_aliases_in_keywords = base::GetFieldTrialParamByFeatureAsInt(
+      history_clusters::features::kOnDeviceClusteringKeywordFiltering,
+      "max_entity_aliases_in_keywords", max_entity_aliases_in_keywords);
+  if (max_entity_aliases_in_keywords <= 0) {
+    max_entity_aliases_in_keywords = SIZE_MAX;
+  }
+
+  keyword_filter_on_categories = GetFieldTrialParamByFeatureAsBool(
+      history_clusters::features::kOnDeviceClusteringKeywordFiltering,
+      "keyword_filter_on_categories", keyword_filter_on_categories);
+
+  keyword_filter_on_noisy_visits = GetFieldTrialParamByFeatureAsBool(
+      history_clusters::features::kOnDeviceClusteringKeywordFiltering,
+      "keyword_filter_on_noisy_visits", keyword_filter_on_noisy_visits);
+
   non_user_visible_debug =
       base::FeatureList::IsEnabled(internal::kNonUserVisibleDebug);
 
@@ -196,18 +215,6 @@ Config::Config() {
       features::kOnDeviceClustering,
       "content_clustering_intersection_threshold",
       cluster_interaction_threshold);
-
-  should_include_categories_in_keywords = GetFieldTrialParamByFeatureAsBool(
-      features::kOnDeviceClustering, "include_categories_in_keywords",
-      should_include_categories_in_keywords);
-
-  should_exclude_keywords_from_noisy_visits = GetFieldTrialParamByFeatureAsBool(
-      features::kOnDeviceClustering, "exclude_keywords_from_noisy_visits",
-      should_exclude_keywords_from_noisy_visits);
-
-  clustering_tasks_batch_size = GetFieldTrialParamByFeatureAsInt(
-      features::kSplitClusteringTasksToSmallerBatches,
-      "clustering_task_batch_size", clustering_tasks_batch_size);
 
   split_clusters_at_search_visits = GetFieldTrialParamByFeatureAsBool(
       features::kOnDeviceClustering, "split_clusters_at_search_visits",
