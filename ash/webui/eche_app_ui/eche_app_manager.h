@@ -39,7 +39,7 @@ namespace eche_app {
 
 class EcheConnector;
 class EcheMessageReceiver;
-class EcheNotificationGenerator;
+class EcheAlertGenerator;
 class EchePresenceManager;
 class EcheSignaler;
 class EcheUidProvider;
@@ -111,7 +111,7 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<EchePresenceManager> eche_presence_manager_;
   std::unique_ptr<EcheUidProvider> uid_;
   std::unique_ptr<EcheRecentAppClickHandler> eche_recent_app_click_handler_;
-  std::unique_ptr<EcheNotificationGenerator> notification_generator_;
+  std::unique_ptr<EcheAlertGenerator> alert_generator_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;

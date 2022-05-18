@@ -70,6 +70,11 @@ void LaunchAppHelper::ShowNotification(
   launch_notification_function_.Run(title, message, std::move(info));
 }
 
+void LaunchAppHelper::ShowToast(const std::u16string& text) const {
+  ash::ToastManager::Get()->Show(ash::ToastData(
+      kEcheAppToastId, ash::ToastCatalogName::kEcheAppToast, text));
+}
+
 void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,
                                     const std::string& package_name,
                                     const std::u16string& visible_name,

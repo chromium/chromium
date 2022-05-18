@@ -87,6 +87,8 @@ interface NotificationGenerator {
   // Show a native notification, title and message are from WebUI.
   ShowNotification(mojo_base.mojom.String16 title,
           mojo_base.mojom.String16 message, WebNotificationType type);
+  // Show a native toast, text is from WebUI.
+  ShowToast(mojo_base.mojom.String16 text);
 };
 
 // Enum representing the video streaming status from browser. Numerical

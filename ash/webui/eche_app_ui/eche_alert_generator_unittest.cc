@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/eche_app_ui/eche_notification_generator.h"
+#include "ash/webui/eche_app_ui/eche_alert_generator.h"
 
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
@@ -36,36 +36,35 @@ class MockLaunchAppHelper : public LaunchAppHelper {
                const absl::optional<std::u16string>& message,
                std::unique_ptr<NotificationInfo> info),
               (const, override));
+
+  MOCK_METHOD(void, ShowToast, (const std::u16string& text), (const, override));
 };
 
-class EcheNotificationGeneratorTest : public testing::Test {
+class EcheAlertGeneratorTest : public testing::Test {
  protected:
-  EcheNotificationGeneratorTest() = default;
-  EcheNotificationGeneratorTest(const EcheNotificationGeneratorTest&) = delete;
-  EcheNotificationGeneratorTest& operator=(
-      const EcheNotificationGeneratorTest&) = delete;
-  ~EcheNotificationGeneratorTest() override = default;
+  EcheAlertGeneratorTest() = default;
+  EcheAlertGeneratorTest(const EcheAlertGeneratorTest&) = delete;
+  EcheAlertGeneratorTest& operator=(const EcheAlertGeneratorTest&) = delete;
+  ~EcheAlertGeneratorTest() override = default;
 
   // testing::Test:
   void SetUp() override {
     launch_app_helper_ = std::make_unique<MockLaunchAppHelper>(
         &fake_phone_hub_manager_,
+        base::BindRepeating(&EcheAlertGeneratorTest::FakeLaunchEcheAppFunction,
+                            base::Unretained(this)),
+        base::BindRepeating(&EcheAlertGeneratorTest::FakeCloseEcheAppFunction,
+                            base::Unretained(this)),
         base::BindRepeating(
-            &EcheNotificationGeneratorTest::FakeLaunchEcheAppFunction,
-            base::Unretained(this)),
-        base::BindRepeating(
-            &EcheNotificationGeneratorTest::FakeCloseEcheAppFunction,
-            base::Unretained(this)),
-        base::BindRepeating(
-            &EcheNotificationGeneratorTest::FakeLaunchNotificationFunction,
+            &EcheAlertGeneratorTest::FakeLaunchNotificationFunction,
             base::Unretained(this)));
-    notification_generator_ =
-        std::make_unique<EcheNotificationGenerator>(launch_app_helper_.get());
+    alert_generator_ =
+        std::make_unique<EcheAlertGenerator>(launch_app_helper_.get());
   }
 
   void TearDown() override {
     launch_app_helper_.reset();
-    notification_generator_.reset();
+    alert_generator_.reset();
   }
 
   void FakeLaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
@@ -90,17 +89,21 @@ class EcheNotificationGeneratorTest : public testing::Test {
   void ShowNotification(const std::u16string& title,
                         const std::u16string& message,
                         mojom::WebNotificationType type) {
-    notification_generator_->ShowNotification(title, message, type);
+    alert_generator_->ShowNotification(title, message, type);
+  }
+
+  void ShowToast(const std::u16string& text) {
+    alert_generator_->ShowToast(text);
   }
 
   std::unique_ptr<MockLaunchAppHelper> launch_app_helper_;
 
  private:
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
-  std::unique_ptr<EcheNotificationGenerator> notification_generator_;
+  std::unique_ptr<EcheAlertGenerator> alert_generator_;
 };
 
-TEST_F(EcheNotificationGeneratorTest, ShowNotification) {
+TEST_F(EcheAlertGeneratorTest, ShowNotification) {
   const absl::optional<std::u16string> title = u"title";
   const absl::optional<std::u16string> message = u"message";
 
@@ -149,6 +152,13 @@ TEST_F(EcheNotificationGeneratorTest, ShowNotification) {
               ShowNotification(testing::_, testing::_, testing::_));
   ShowNotification(title.value(), message.value(),
                    mojom::WebNotificationType::TABLET_MODE);
+}
+
+TEST_F(EcheAlertGeneratorTest, ShowToast) {
+  std::u16string text = u"text";
+
+  EXPECT_CALL(*launch_app_helper_, ShowToast(testing::_));
+  ShowToast(text);
 }
 
 }  // namespace eche_app

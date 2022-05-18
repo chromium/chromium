@@ -7,6 +7,9 @@
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/callback.h"
@@ -19,6 +22,8 @@ class Image;
 
 namespace ash {
 namespace eche_app {
+
+constexpr char kEcheAppToastId[] = "eche_app_toast_id";
 
 // A helper class for launching/closing the app or show a notification.
 class LaunchAppHelper {
@@ -97,6 +102,10 @@ class LaunchAppHelper {
   virtual void ShowNotification(const absl::optional<std::u16string>& title,
                                 const absl::optional<std::u16string>& message,
                                 std::unique_ptr<NotificationInfo> info) const;
+
+  // Exposed virtual for testing.
+  // Show the native toast message.
+  virtual void ShowToast(const std::u16string& text) const;
 
   void LaunchEcheApp(absl::optional<int64_t> notification_id,
                      const std::string& package_name,

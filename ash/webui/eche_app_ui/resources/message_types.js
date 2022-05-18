@@ -91,6 +91,8 @@
   NOTIFICATION_INFO: 'notification_info',
   // Message for sending notification data in bi-directional pipes.
   SHOW_NOTIFICATION: 'show_notification',
+  // Message for sending toast data.
+  SHOW_TOAST: 'show_toast',
   // Message for sending metrics data for recording time histogram.
   TIME_HISTOGRAM_MESSAGE: 'time_histagram_message',
   // Message for sending metrics data for recording enum histogram.
