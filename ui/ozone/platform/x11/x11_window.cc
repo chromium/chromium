@@ -1096,6 +1096,43 @@ void X11Window::SetInputRegion(const gfx::Rect* region_px) {
   });
 }
 
+void X11Window::NotifyStartupComplete(const std::string& startup_id) {
+  std::string message = "remove: ID=\"";
+  for (char c : startup_id) {
+    if (c == ' ' || c == '"' || c == '\\')
+      message.push_back('\\');
+    message.push_back(c);
+  }
+  message.push_back('"');
+
+  auto window = x11::CreateDummyWindow();
+  x11::ClientMessageEvent event{
+      .format = 8,
+      .window = window,
+      .type = x11::GetAtom("_NET_STARTUP_INFO_BEGIN"),
+  };
+  constexpr size_t kChunkSize = event.data.data8.size();
+  const x11::Atom net_startup_info = x11::GetAtom("_NET_STARTUP_INFO");
+
+  // X11 ClientMessageEvents are fixed size, but we need to send a variable
+  // sized message.  Send the message `kChunkSize` bytes at a time with the
+  // first message having type _NET_STARTUP_INFO_BEGIN and subsequent messages
+  // having type _NET_STARTUP_INFO.
+  const char* data = message.c_str();
+  const size_t data_size = message.size() + 1;
+  for (size_t offset = 0; offset < data_size; offset += kChunkSize) {
+    size_t copy_size = std::min<size_t>(kChunkSize, data_size - offset);
+    uint8_t* dst = &event.data.data8[0];
+    memcpy(dst, data + offset, copy_size);
+    memset(dst + copy_size, 0, kChunkSize - copy_size);
+    SendEvent(event, x_root_window_, x11::EventMask::PropertyChange);
+    event.type = net_startup_info;
+  }
+
+  connection_->DestroyWindow(window);
+  connection_->Flush();
+}
+
 std::string X11Window::GetWorkspace() const {
   absl::optional<int> workspace_id = workspace_;
   return workspace_id.has_value() ? base::NumberToString(workspace_id.value())

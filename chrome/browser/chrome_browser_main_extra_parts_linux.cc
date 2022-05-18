@@ -132,6 +132,11 @@ void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
           switches::kOzonePlatform, MaybeFixPlatformName(ozone_platform_hint));
     }
   }
+
+  auto env = base::Environment::Create();
+  std::string desktop_startup_id;
+  if (env->GetVar("DESKTOP_STARTUP_ID", &desktop_startup_id))
+    command_line->AppendSwitchASCII("desktop-startup-id", desktop_startup_id);
 #endif  // BUILDFLAG(IS_LINUX)
 
   ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization();

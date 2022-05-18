@@ -241,6 +241,9 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // at the state of the MessageLoop.
     Browser::CreateParams params = Browser::CreateParams(profile_, false);
     params.creation_source = Browser::CreationSource::kStartupCreator;
+#if BUILDFLAG(IS_LINUX)
+    params.startup_id = command_line_.GetSwitchValueASCII("desktop-startup-id");
+#endif
     browser = Browser::Create(params);
   }
 

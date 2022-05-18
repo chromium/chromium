@@ -731,12 +731,6 @@ views::LinuxUI::WindowFrameAction GtkUi::GetWindowFrameAction(
   return window_frame_actions_[source];
 }
 
-void GtkUi::NotifyWindowManagerStartupComplete() {
-  // TODO(port) Implement this using _NET_STARTUP_INFO_BEGIN/_NET_STARTUP_INFO
-  // from http://standards.freedesktop.org/startup-notification-spec/ instead.
-  gdk_display_notify_startup_complete(gdk_display_get_default(), nullptr);
-}
-
 bool GtkUi::PreferDarkTheme() const {
   gboolean dark = false;
   g_object_get(gtk_settings_get_default(), "gtk-application-prefer-dark-theme",

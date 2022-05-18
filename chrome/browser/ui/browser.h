@@ -225,6 +225,7 @@ class Browser : public TabStripModelObserver,
     CreateParams(Type type, Profile* profile, bool user_gesture);
     CreateParams(const CreateParams& other);
     CreateParams& operator=(const CreateParams& other);
+    ~CreateParams();
 
     static CreateParams CreateForApp(const std::string& app_name,
                                      bool trusted_source,
@@ -279,6 +280,13 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(IS_CHROMEOS)
     // The id from the restore data to restore the browser window.
     int32_t restore_id = kDefaultRestoreId;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+    // When the browser window is shown, the desktop environment is notified
+    // using this ID.  In response, the desktop will stop playing the "waiting
+    // for startup" animation (if any).
+    std::string startup_id;
 #endif
 
     // Whether this browser was created by a user gesture. We track this

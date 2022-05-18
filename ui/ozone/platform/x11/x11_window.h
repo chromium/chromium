@@ -119,6 +119,7 @@ class X11Window : public PlatformWindow,
   void SetDecorationInsets(const gfx::Insets* insets_px) override;
   void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) override;
   void SetInputRegion(const gfx::Rect* region_px) override;
+  void NotifyStartupComplete(const std::string& startup_id) override;
 
   // WorkspaceExtension:
   std::string GetWorkspace() const override;

@@ -73,4 +73,6 @@ bool PlatformWindow::IsClientControlledWindowMovementSupported() const {
   return true;
 }
 
+void PlatformWindow::NotifyStartupComplete(const std::string& startup_id) {}
+
 }  // namespace ui

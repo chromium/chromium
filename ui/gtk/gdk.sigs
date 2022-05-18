@@ -31,7 +31,6 @@ GdkSurface* gdk_event_get_surface(GdkEvent* event);
 GdkModifierType gdk_event_get_modifier_state(GdkEvent *event);
 GType gdk_toplevel_get_type(void);
 void gdk_set_allowed_backends(const gchar* backends);
-void gdk_display_notify_startup_complete(GdkDisplay* display, const char* startup_id);
 guint32 gdk_keyval_to_unicode(guint keyval);
 gdouble gdk_screen_get_resolution(GdkScreen *screen);
 guint gdk_unicode_to_keyval(guint32 wc);

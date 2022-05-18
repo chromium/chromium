@@ -305,6 +305,12 @@ void WaylandToplevelWindow::SetInputRegion(const gfx::Rect* region_px) {
   root_surface()->SetInputRegion(region_px);
 }
 
+void WaylandToplevelWindow::NotifyStartupComplete(
+    const std::string& startup_id) {
+  if (auto* gtk_shell = connection()->gtk_shell1())
+    gtk_shell->SetStartupId(startup_id);
+}
+
 void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
                            ZAURA_SURFACE_SET_ASPECT_RATIO_SINCE_VERSION) {

@@ -195,6 +195,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // Wayland, for example, this returns false, unless the required protocol
   // extension is supported by the compositor.
   virtual bool IsClientControlledWindowMovementSupported() const;
+
+  // Notifies the DE that the app is done loading, so that it can dismiss any
+  // loading animations.
+  virtual void NotifyStartupComplete(const std::string& startup_id);
 };
 
 }  // namespace ui

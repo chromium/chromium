@@ -105,6 +105,8 @@ constexpr const char* kAtomsToCache[] = {
     "_NET_ACTIVE_WINDOW",
     "_NET_CURRENT_DESKTOP",
     "_NET_FRAME_EXTENTS",
+    "_NET_STARTUP_INFO",
+    "_NET_STARTUP_INFO_BEGIN",
     "_NET_SUPPORTED",
     "_NET_SUPPORTING_WM_CHECK",
     "_NET_SYSTEM_TRAY_OPCODE",

@@ -70,6 +70,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool CanSetDecorationInsets() const override;
   void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) override;
   void SetInputRegion(const gfx::Rect* region_px) override;
+  void NotifyStartupComplete(const std::string& startup_id) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
 

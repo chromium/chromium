@@ -162,12 +162,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   virtual WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) = 0;
 
-  // Notifies the window manager that start up has completed.
-  // This needs to be called explicitly both on the primary and the "remote"
-  // instances (e.g. an existing browser window already exists), since we no
-  // longer use GTK (which did this automatically) for the main windows.
-  virtual void NotifyWindowManagerStartupComplete() = 0;
-
   // Determines the device scale factor of the primary screen.
   virtual float GetDeviceScaleFactor() const = 0;
 

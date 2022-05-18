@@ -23,12 +23,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/views/linux_ui/linux_ui.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -127,16 +121,6 @@ void SetBrowserStartupIsComplete() {
     ScheduleTask(base::WrapUnique(queued_task));
   g_after_startup_tasks.Get().clear();
   g_after_startup_tasks.Get().shrink_to_fit();
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Make sure we complete the startup notification sequence, or launchers will
-  // get confused by not receiving the expected message from the main process.
-  views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  if (linux_ui)
-    linux_ui->NotifyWindowManagerStartupComplete();
-#endif
 }
 
 // Observes the first visible page load and sets the startup complete

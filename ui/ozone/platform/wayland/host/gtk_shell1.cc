@@ -57,4 +57,8 @@ std::unique_ptr<GtkSurface1> GtkShell1::GetGtkSurface1(
       gtk_shell1_get_gtk_surface(shell1_.get(), top_level_window_surface));
 }
 
+void GtkShell1::SetStartupId(const std::string& startup_id) {
+  gtk_shell1_set_startup_id(shell1_.get(), startup_id.c_str());
+}
+
 }  // namespace ui

@@ -65,7 +65,6 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
       std::unique_ptr<views::LabelButtonBorder> border) override;
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
-  void NotifyWindowManagerStartupComplete() override;
   float GetDeviceScaleFactor() const override;
   bool PreferDarkTheme() const override;
   bool AnimationsEnabled() const override;

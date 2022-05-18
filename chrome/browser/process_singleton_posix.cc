@@ -100,11 +100,6 @@
 #include "chrome/browser/ui/process_singleton_dialog_linux.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "ui/views/linux_ui/linux_ui.h"
-#endif
-
 using content::BrowserThread;
 
 namespace {
@@ -923,14 +918,6 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
         REMOTE_PROCESS_SHUTTING_DOWN);
     return PROCESS_NONE;
   } else if (strncmp(buf, kACKToken, std::size(kACKToken) - 1) == 0) {
-#if defined(TOOLKIT_VIEWS) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-    // Likely NULL in unit tests.
-    views::LinuxUI* linux_ui = views::LinuxUI::instance();
-    if (linux_ui)
-      linux_ui->NotifyWindowManagerStartupComplete();
-#endif
-
     // Assume the other process is handling the request.
     return PROCESS_NOTIFIED;
   }

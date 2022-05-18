@@ -217,10 +217,6 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
   }
 }
 
-void QtUi::NotifyWindowManagerStartupComplete() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 float QtUi::GetDeviceScaleFactor() const {
   return shim_->GetScaleFactor();
 }
