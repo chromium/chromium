@@ -2340,6 +2340,12 @@ crbug.com/1051044 external/wpt/css/filter-effects/effect-reference-feimage-003.h
 
 crbug.com/524160 [ Debug ] http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-default-buffers.html [ Timeout ]
 
+# based on Builder Win7 Tests (1) and flakyness dashboard
+crbug.com/1325545 [ Win ] external/wpt/cookie-store/cookieListItem_attributes.https.any.html [ Failure Pass ]
+crbug.com/1325515 [ Win ] external/wpt/cookie-store/cookieListItem_attributes.https.any.serviceworker.html [ Failure Pass ]
+crbug.com/1325518 [ Win ] external/wpt/cookie-store/cookieStore_set_arguments.https.any.html [ Failure Pass ]
+crbug.com/1325538 [ Win ] external/wpt/cookie-store/cookieStore_set_arguments.https.any.serviceworker.html [ Failure Pass ]
+
 # On all platforms media tests don't currently use gpu-accelerated (proprietary)
 # codecs, so no benefit to running them again with gpu acceleration enabled.
 crbug.com/555703 virtual/media-gpu-accelerated/* [ Skip ]
