@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <vector>
 
 #include "chrome/browser/policy/messaging_layer/upload/network_condition_service.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -27,6 +28,7 @@ void EventUploadSizeController::AccountForRecord(
   uploaded_size_ += record.ByteSizeLong();
 }
 
+// static
 uint64_t EventUploadSizeController::GetUploadRate(
     const NetworkConditionService& network_condition_service) {
   return std::min(network_condition_service.GetUploadRate(),
@@ -34,19 +36,43 @@ uint64_t EventUploadSizeController::GetUploadRate(
                   std::numeric_limits<uint64_t>::max() / kTimeCeiling);
 }
 
+// static
 uint64_t EventUploadSizeController::GetNewEventRate() {
   return 1UL;
 }
 
+// static
 uint64_t EventUploadSizeController::GetRemainingStorageCapacity() {
   return std::numeric_limits<uint64_t>::max();
 }
 
+// static
 uint64_t EventUploadSizeController::ComputeMaxUploadSize(
     const NetworkConditionService& network_condition_service) {
   // Estimated acceptable time that a single connection can remain open.
   const uint64_t time_open =
       std::min(GetRemainingStorageCapacity() / GetNewEventRate(), kTimeCeiling);
   return GetUploadRate(network_condition_service) * time_open - kOverhead;
+}
+
+// static
+std::vector<reporting::EncryptedRecord>
+EventUploadSizeController::BuildEncryptedRecords(
+    const google::protobuf::RepeatedPtrField<EncryptedRecord>&
+        encrypted_records,
+    const NetworkConditionService& network_condition_service) {
+  std::vector<reporting::EncryptedRecord> records;
+  reporting::EventUploadSizeController event_upload_size_controller(
+      network_condition_service,
+      /*enabled=*/false);
+  for (auto& record : encrypted_records) {
+    // Check if we have uploaded enough records after adding each record
+    event_upload_size_controller.AccountForRecord(record);
+    records.push_back(std::move(record));
+    if (event_upload_size_controller.IsMaximumUploadSizeReached()) {
+      break;
+    }
+  }
+  return records;
 }
 }  // namespace reporting

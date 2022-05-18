@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_EVENT_UPLOAD_SIZE_CONTROLLER_H_
 
 #include <cstddef>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/network_condition_service.h"
@@ -17,12 +18,13 @@ namespace reporting {
 // after a specified set of records has been uploaded.
 class EventUploadSizeController {
  public:
-  // |enabled| should always be false in production code.
-  // TODO(b/214039157): A policy needs to be
-  // added to control whether to enable this feature.
-  explicit EventUploadSizeController(
-      const NetworkConditionService& network_condition_service,
-      bool enabled = false);
+  // Build the vector of encrypted records based on the records in the upload
+  // request. Event upload size is factored in.
+  [[nodiscard]] static std::vector<reporting::EncryptedRecord>
+  BuildEncryptedRecords(
+      const google::protobuf::RepeatedPtrField<EncryptedRecord>&
+          encrypted_records,
+      const NetworkConditionService& network_condition_service);
 
   // Has the set maximum upload size been reached? Always returns false if
   // adjustment based on network condition is not enabled.
@@ -42,18 +44,27 @@ class EventUploadSizeController {
   // Size of overheads in each upload in bytes. Heuristically set by a human.
   static constexpr uint64_t kOverhead = 32;
 
+  // |enabled| should always be false in production code.
+  // TODO(b/214039157): A policy needs to be
+  // added to control whether to enable this feature.
+  explicit EventUploadSizeController(
+      const NetworkConditionService& network_condition_service,
+      bool enabled = false);
+
   // Estimates upload rate (bytes/sec).
   static uint64_t GetUploadRate(
       const NetworkConditionService& network_condition_service);
-  // Estimates the rate at which new events are coming in (bytes/sec). For now,
-  // use a low new event rate, which means no local storage limit is taken into
-  // consideration: Missive code hasn't been ready for this and storage capacity
-  // is not a concern right now. This will likely change in the future.
+  // Estimates the rate at which new events are coming in (bytes/sec). For
+  // now, use a low new event rate, which means no local storage limit is
+  // taken into consideration: Missive code hasn't been ready for this and
+  // storage capacity is not a concern right now. This will likely change in
+  // the future.
   static uint64_t GetNewEventRate();
-  // Estimates the remaining storage capacity (bytes) here. For now, use a high
-  // remaining storage capacity, which means no local storage limit is taken
-  // into consideration: Missive code hasn't been ready for this and storage
-  // capacity is not a concern right now. This will likely change in the future.
+  // Estimates the remaining storage capacity (bytes) here. For now, use a
+  // high remaining storage capacity, which means no local storage limit is
+  // taken into consideration: Missive code hasn't been ready for this and
+  // storage capacity is not a concern right now. This will likely change in
+  // the future.
   static uint64_t GetRemainingStorageCapacity();
   // Computes the maximum upload size.
   static uint64_t ComputeMaxUploadSize(

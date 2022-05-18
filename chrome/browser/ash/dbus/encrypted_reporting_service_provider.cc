@@ -157,17 +157,9 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     return;
   }
 
-  reporting::EventUploadSizeController event_upload_size_controller(
-      network_condition_service_, /*enabled=*/false);
-  auto records = std::make_unique<std::vector<reporting::EncryptedRecord>>();
-  for (auto& record : request.encrypted_record()) {
-    records->push_back(record);
-    // Check if we have uploaded enough records after adding each record
-    event_upload_size_controller.AccountForRecord(record);
-    if (event_upload_size_controller.IsMaximumUploadSizeReached()) {
-      break;
-    }
-  }
+  auto records{reporting::EventUploadSizeController::BuildEncryptedRecords(
+      request.encrypted_record(), network_condition_service_)};
+
   DCHECK(upload_provider_);
   MissiveClient* const missive_client = MissiveClient::Get();
   if (!missive_client) {
@@ -180,7 +172,9 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   }
 
   upload_provider_->RequestUploadEncryptedRecords(
-      request.need_encryption_keys(), std::move(records),
+      request.need_encryption_keys(),
+      std::make_unique<std::vector<reporting::EncryptedRecord>>(
+          std::move(records)),
       base::BindPostTask(
           origin_thread_runner_,
           base::BindOnce(&SendStatusAsResponse, std::move(response),
