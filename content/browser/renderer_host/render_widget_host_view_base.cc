@@ -538,6 +538,23 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
 
   auto new_screen_infos = GetNewScreenInfosForUpdate();
 
+  if (scale_override_for_capture_ != 1.0f) {
+    // If HiDPI capture mode is active, adjust the device scale factor to
+    // increase the rendered pixel count. |new_screen_infos| always contains the
+    // unmodified original values for the display, and a copy of it is saved in
+    // |screen_infos_|, with a modification applied if applicable. When HiDPI
+    // mode is turned off (the scale override is 1.0), the original
+    // |new_screen_infos| value gets copied unchanged to |screen_infos_|.
+    const float old_device_scale_factor =
+        new_screen_infos.current().device_scale_factor;
+    new_screen_infos.mutable_current().device_scale_factor =
+        old_device_scale_factor * scale_override_for_capture_;
+    DVLOG(1) << __func__ << ": Overriding device_scale_factor from "
+             << old_device_scale_factor << " to "
+             << new_screen_infos.current().device_scale_factor
+             << " for capture.";
+  }
+
   if (screen_infos_ == new_screen_infos && !force_sync_visual_properties)
     return;
 
@@ -623,6 +640,12 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
 
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return screen_infos_.current().device_scale_factor;
+}
+
+void RenderWidgetHostViewBase::SetScaleOverrideForCapture(float scale) {
+  DVLOG(1) << __func__ << ": override=" << scale;
+  scale_override_for_capture_ = scale;
+  UpdateScreenInfo();
 }
 
 void RenderWidgetHostViewBase::OnAutoscrollStart() {

@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -64,6 +65,12 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
   }
 
   void DecrementCapturerCount() override { capture_handle_.RunAndReset(); }
+
+  void SetScaleOverrideForCapture(float scale) override {
+    if (auto* view = GetCurrentView()) {
+      view->SetScaleOverrideForCapture(scale);
+    }
+  }
 
  private:
   RenderWidgetHostViewBase* GetCurrentView() const {
@@ -122,11 +129,48 @@ void WebContentsFrameTracker::WillStartCapturingWebContents(
 void WebContentsFrameTracker::DidStopCapturingWebContents() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (web_contents()) {
+    if (capture_scale_override_ != 1.0f) {
+      context_->SetScaleOverrideForCapture(1.0f);
+      capture_scale_override_ = 1.0f;
+    }
     DCHECK(is_capturing_);
     context_->DecrementCapturerCount();
     is_capturing_ = false;
   }
   DCHECK(!is_capturing_);
+}
+
+void WebContentsFrameTracker::SetCapturedContentSize(
+    const gfx::Size& content_size) {
+  DVLOG(3) << __func__ << ": content_size=" << content_size.ToString();
+  if (base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi)) {
+    // Check if the capture scale needs to be modified. The content_size
+    // provided here is the final pixel size, with all scale factors such as the
+    // device scale factor and HiDPI capture scale already applied.
+    //
+    // The initial content_size received here corresponds to the size of the
+    // browser tab. If region capture is active, there will be an additional
+    // call providing the region size. Lastly, if the scale was modified, there
+    // will be another call with the upscaled size.
+    float scale = capture_scale_override_;
+
+    // The heuristic used here should take additional information into account,
+    // including the capture_size, the content type (video vs mostly-static),
+    // and the available system resources. For the initial version, just apply
+    // an arbitrary threshold for ease of testing.
+    if (content_size.width() < 1920 && content_size.height() < 1080) {
+      scale = 2.0f;
+    } else {
+      // Once scaled up, keep it that way. Downscaling causes oscillations since
+      // the content_size is scaled by the capture scale.
+    }
+    if (scale != capture_scale_override_) {
+      DVLOG(1) << __func__ << ": adjusting capture scale from "
+               << capture_scale_override_ << " to " << scale;
+      context_->SetScaleOverrideForCapture(scale);
+      capture_scale_override_ = scale;
+    }
+  }
 }
 
 // We provide the WebContents with a preferred size override during its capture.
@@ -175,6 +219,13 @@ gfx::Size WebContentsFrameTracker::CalculatePreferredSize(
 void WebContentsFrameTracker::RenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   OnPossibleTargetChange();
+  if (capture_scale_override_ != 1.0f) {
+    if (auto* view = render_frame_host->GetView()) {
+      // Inside content, down-casting from the public interface class is safe.
+      static_cast<RenderWidgetHostViewBase*>(view)->SetScaleOverrideForCapture(
+          capture_scale_override_);
+    }
+  }
 }
 
 void WebContentsFrameTracker::RenderFrameDeleted(
@@ -186,6 +237,20 @@ void WebContentsFrameTracker::RenderFrameHostChanged(
     RenderFrameHost* old_host,
     RenderFrameHost* new_host) {
   OnPossibleTargetChange();
+  if (capture_scale_override_ != 1.0f) {
+    // According to WebContentsObserver docs, old_host can be nullptr.
+    if (old_host) {
+      if (auto* old_view = old_host->GetView()) {
+        // Inside content, down-casting from the public interface class is safe.
+        static_cast<RenderWidgetHostViewBase*>(old_view)
+            ->SetScaleOverrideForCapture(1.0f);
+      }
+    }
+    if (auto* new_view = new_host->GetView()) {
+      static_cast<RenderWidgetHostViewBase*>(new_view)
+          ->SetScaleOverrideForCapture(capture_scale_override_);
+    }
+  }
 }
 
 void WebContentsFrameTracker::WebContentsDestroyed() {

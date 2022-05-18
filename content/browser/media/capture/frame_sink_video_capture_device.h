@@ -94,7 +94,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
-          callbacks) final;
+          callbacks) override;
   void OnFrameWithEmptyRegionCapture() final;
   void OnStopped() final;
   void OnLog(const std::string& message) final;

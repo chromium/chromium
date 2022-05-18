@@ -221,6 +221,7 @@ MEDIA_EXPORT extern const base::Feature kVaapiVp9kSVCHWEncoding;
 MEDIA_EXPORT extern const base::Feature kVideoBlitColorAccuracy;
 MEDIA_EXPORT extern const base::Feature kVp9kSVCHWDecoding;
 MEDIA_EXPORT extern const base::Feature kWakeLockOptimisationHiddenMuted;
+MEDIA_EXPORT extern const base::Feature kWebContentsCaptureHiDpi;
 MEDIA_EXPORT extern const base::Feature kWebrtcMediaCapabilitiesParameters;
 MEDIA_EXPORT extern const base::Feature kResolutionBasedDecoderPriority;
 MEDIA_EXPORT extern const base::Feature kForceHardwareVideoDecoders;

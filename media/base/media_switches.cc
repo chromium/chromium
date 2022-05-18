@@ -666,6 +666,11 @@ const base::Feature kHardwareSecureDecryptionFallback{
 const base::Feature kWakeLockOptimisationHiddenMuted{
     "kWakeLockOptimisationHiddenMuted", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If active, enable HiDPI mode that increases the display scale factor
+// while capturing a low-resolution tab.
+const base::Feature kWebContentsCaptureHiDpi{"WebContentsCaptureHiDPI",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables handling of hardware media keys for controlling media.
 const base::Feature kHardwareMediaKeyHandling {
   "HardwareMediaKeyHandling",

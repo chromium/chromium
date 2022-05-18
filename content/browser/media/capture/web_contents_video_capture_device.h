@@ -52,6 +52,14 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
       uint32_t crop_version,
       base::OnceCallback<void(media::mojom::CropRequestResult)> callback) final;
 
+  // FrameSinkVideoConsumer overrides.
+  void OnFrameCaptured(
+      media::mojom::VideoBufferHandlePtr data,
+      media::mojom::VideoFrameInfoPtr info,
+      const gfx::Rect& content_rect,
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+          callbacks) override;
+
   // For testing, we need the ability to create a device without its tracker.
  protected:
   WebContentsVideoCaptureDevice();
@@ -61,6 +69,8 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
   // WebContents's capturer count, which causes the embedder to be notified.
   void WillStart() final;
   void DidStop() final;
+
+  gfx::Size content_size_;
 
   // A helper that runs on the UI thread to monitor changes to the
   // RenderFrameHost tree during the lifetime of a WebContents instance, and
