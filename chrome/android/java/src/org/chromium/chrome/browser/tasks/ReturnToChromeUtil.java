@@ -71,6 +71,8 @@ public final class ReturnToChromeUtil {
     @VisibleForTesting
     public static final String LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA =
             "Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch";
+    public static final String SHOWN_FROM_BACK_NAVIGATION_UMA =
+            "StartSurface.ShownFromBackNavigation.";
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
 
@@ -921,6 +923,14 @@ public final class ReturnToChromeUtil {
     public static void setSyncForTesting(boolean isSyncing) {
         SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         manager.writeBoolean(ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isSyncing);
+    }
+
+    /**
+     * Records a user action that Start surface is showing due to tapping the back button.
+     * @param from: Where the back navigation is initiated, either "FromTab" or "FromTabSwitcher".
+     */
+    public static void recordBackNavigationToStart(String from) {
+        RecordUserAction.record(SHOWN_FROM_BACK_NAVIGATION_UMA + from);
     }
 
     /**

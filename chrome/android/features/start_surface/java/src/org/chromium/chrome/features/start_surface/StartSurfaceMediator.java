@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.Controller;
@@ -436,6 +437,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         if (mPropertyModel == null || state == mStartSurfaceState) return;
 
         // Cache previous state.
+        int cachedPreviousState = mPreviousStartSurfaceState;
         if (mStartSurfaceState != StartSurfaceState.NOT_SHOWN) {
             mPreviousStartSurfaceState = mStartSurfaceState;
         }
@@ -481,6 +483,9 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
             RecordUserAction.record("StartSurface.SinglePane.Home");
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
             RecordUserAction.record("StartSurface.SinglePane.Tabswitcher");
+        } else if (mStartSurfaceState == StartSurfaceState.SHOWING_PREVIOUS
+                && cachedPreviousState == StartSurfaceState.SHOWN_HOMEPAGE) {
+            ReturnToChromeUtil.recordBackNavigationToStart("FromTab");
         }
     }
 
@@ -698,6 +703,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
                 // If we reached Tab switcher from HomePage, and there isn't any dialog shown,
                 // updates the state, and ChromeTabbedActivity will handle the back button.
                 setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
+                ReturnToChromeUtil.recordBackNavigationToStart("FromTabSwitcher");
                 return true;
             } else {
                 return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
