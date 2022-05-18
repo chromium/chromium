@@ -55,8 +55,14 @@ TEST_F(UIViewWindowCoordinatesTest, ChangeFrameAsDirectSubview) {
   view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
     callback_called = YES;
   };
+  // The callback is called when set if the view is in a window. Now reset it to
+  // check that it's called again when changing view_'s frame.
+  EXPECT_TRUE(callback_called);
+  callback_called = NO;
 
   view_.frame = CGRectMake(10, 20, 30, 40);
+  [window_ setNeedsLayout];
+  [window_ layoutIfNeeded];
 
   EXPECT_TRUE(callback_called);
 }
@@ -71,8 +77,14 @@ TEST_F(UIViewWindowCoordinatesTest, ChangeFrameOfParentView) {
   view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
     callback_called = YES;
   };
+  // The callback is called when set if the view is in a window. Now reset it to
+  // check that it's called again when changing view_'s frame.
+  EXPECT_TRUE(callback_called);
+  callback_called = NO;
 
   parent_view.frame = CGRectMake(10, 20, 30, 40);
+  [window_ setNeedsLayout];
+  [window_ layoutIfNeeded];
 
   EXPECT_TRUE(callback_called);
 }
