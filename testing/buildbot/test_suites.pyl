@@ -591,6 +591,7 @@
         'args': [
           '--test-type=integration',
         ],
+        'check_flakiness_for_new_tests': False,
         'resultdb': {
           'enable': True,
         },
@@ -4644,6 +4645,7 @@
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.desktop",
         ],
+        'check_flakiness_for_new_tests': False,
         'swarming': {},
       }
     },
@@ -4656,6 +4658,7 @@
           "--benchmarks=rendering.mobile",
           "--browser=android-chromium"
         ],
+        'check_flakiness_for_new_tests': False,
         'swarming': {},
       }
     },
@@ -4668,6 +4671,7 @@
           "--benchmarks=rendering.mobile",
           "--browser=android-chromium"
         ],
+        'check_flakiness_for_new_tests': False,
         'swarming': {},
         'experiment_percentage': 10,
       }
@@ -4979,6 +4983,7 @@
           '--passthrough',
           '--retry-limit=2',
         ],
+        'check_flakiness_for_new_tests': False,
         'isolate_name': 'telemetry_perf_unittests_android_chrome',
         'resultdb': {
           'enable': True,
@@ -5008,6 +5013,7 @@
           '--passthrough',
           '--retry-limit=2',
         ],
+        'check_flakiness_for_new_tests': False,
         'isolate_name': 'telemetry_perf_unittests',
         'resultdb': {
           'enable': True,

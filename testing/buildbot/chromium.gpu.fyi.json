@@ -1691,6 +1691,7 @@
           "--benchmarks=rendering.mobile",
           "--browser=android-chromium"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests_android_chrome",
         "merge": {
           "args": [],
@@ -11751,6 +11752,7 @@
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.desktop"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
           "args": [],
@@ -12842,6 +12844,7 @@
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.desktop"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
           "args": [],
@@ -15495,6 +15498,7 @@
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.desktop"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
           "args": [],
@@ -22381,6 +22385,7 @@
           "--benchmarks=rendering.desktop",
           "--browser=release_x64"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
           "args": [],
@@ -23180,6 +23185,7 @@
           "--benchmarks=rendering.desktop",
           "--browser=release_x64"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
           "args": [],
@@ -24004,6 +24010,7 @@
           "--benchmarks=rendering.desktop",
           "--browser=release_x64"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
           "args": [],
@@ -24828,6 +24835,7 @@
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.desktop"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
           "args": [],

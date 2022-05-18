@@ -6214,6 +6214,7 @@
         "args": [
           "--test-type=integration"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "chromedriver_py_tests",
         "isolate_profile_data": true,
         "merge": {

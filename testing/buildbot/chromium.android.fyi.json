@@ -7522,6 +7522,7 @@
           "--retry-limit=2",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {

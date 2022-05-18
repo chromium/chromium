@@ -31490,6 +31490,7 @@
           "--passthrough",
           "--retry-limit=2"
         ],
+        "check_flakiness_for_new_tests": false,
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,
         "merge": {
