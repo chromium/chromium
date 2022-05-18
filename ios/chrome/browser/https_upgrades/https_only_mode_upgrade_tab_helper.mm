@@ -304,7 +304,18 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
 
   web::NavigationItem* item_pending =
       web_state()->GetNavigationManager()->GetPendingItem();
-  DCHECK(item_pending);
+  if (!item_pending) {
+    // Clear everything.
+    timer_.Stop();
+    was_upgraded_ = false;
+    is_http_fallback_navigation_ = false;
+    stopped_loading_to_upgrade_ = false;
+    stopped_with_timeout_ = false;
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
   // Upgrade to HTTPS if the navigation wasn't upgraded before.
   if (!item_pending->IsUpgradedToHttps()) {
     if (!prefs_ || !prefs_->GetBoolean(prefs::kHttpsOnlyModeEnabled) ||
