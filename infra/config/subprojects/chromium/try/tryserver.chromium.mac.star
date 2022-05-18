@@ -197,6 +197,10 @@ try_.builder(
 
 try_.builder(
     name = "mac_chromium_asan_rel_ng",
+    mirrors = [
+        "ci/Mac ASan 64 Builder",
+        "ci/Mac ASan 64 Tests (1)",
+    ],
     goma_jobs = goma.jobs.J150,
 )
 
