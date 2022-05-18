@@ -7743,6 +7743,21 @@
             ]
         }
     ],
+    "UseThreadPriorityLowest": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseThreadPriorityLowest"
+                    ]
+                }
+            ]
+        }
+    ],
     "UserAgentOverrideExperiment": [
         {
             "platforms": [
