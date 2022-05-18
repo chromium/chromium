@@ -1691,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentOverrideClientHints) {
                                     "window.domAutomationController.send(JSON."
                                     "stringify(navigator.userAgentData));",
                                     &header_value));
-  EXPECT_EQ(R"({"brands":[],"mobile":false})", header_value);
+  EXPECT_EQ(R"({"brands":[],"mobile":false,"platform":""})", header_value);
 
   // Now actually provide values for the hints.
   blink::UserAgentOverride ua_override;
@@ -1712,9 +1712,10 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentOverrideClientHints) {
                                     "window.domAutomationController.send(JSON."
                                     "stringify(navigator.userAgentData));",
                                     &header_value));
-  EXPECT_EQ(
-      R"({"brands":[{"brand":"Foobarnator","version":"3.14"}],"mobile":true})",
-      header_value);
+  const std::string kExpected =
+      "{\"brands\":[{\"brand\":\"Foobarnator\",\"version\":\"3.14\"}],"
+      "\"mobile\":true,\"platform\":\"\"}";
+  EXPECT_EQ(kExpected, header_value);
 }
 
 class ClientHintsUAOverrideBrowserTest : public ClientHintsBrowserTest {
@@ -1761,7 +1762,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUAOverrideBrowserTest,
                                     "window.domAutomationController.send(JSON."
                                     "stringify(navigator.userAgentData));",
                                     &header_value));
-  EXPECT_EQ(R"({"brands":[],"mobile":false})", header_value);
+  EXPECT_EQ(R"({"brands":[],"mobile":false,"platform":""})", header_value);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, EmptyAcceptCH) {
