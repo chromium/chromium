@@ -6901,8 +6901,17 @@ class RenderFrameHostImplBrowsingContextStateNameTest
 // Test that, when the RenderFrameHostImpl is in the BackForwardCache, the
 // name update is blocked if kDisableFrameNameUpdateOnNonCurrentRenderFrameHost
 // is enabled
+//
+// TODO(crbug.com/1326943): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BlockNameUpdateForBackForwardCache \
+  DISABLED_BlockNameUpdateForBackForwardCache
+#else
+#define MAYBE_BlockNameUpdateForBackForwardCache \
+  BlockNameUpdateForBackForwardCache
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
-                       BlockNameUpdateForBackForwardCache) {
+                       MAYBE_BlockNameUpdateForBackForwardCache) {
   // Create the RenderFrameHost and store it in the BackForwardCache.
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -6952,8 +6961,16 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
 // Test that, when the RenderFrameHostImpl is in a pending delete state, the
 // name update is blocked if kDisableFrameNameUpdateOnNonCurrentRenderFrameHost
 // is enabled
+//
+// TODO(https://crbug.com/1326944): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BlockNameUpdateForPendingDelete \
+  DISABLED_BlockNameUpdateForPendingDelete
+#else
+#define MAYBE_BlockNameUpdateForPendingDelete BlockNameUpdateForPendingDelete
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
-                       BlockNameUpdateForPendingDelete) {
+                       MAYBE_BlockNameUpdateForPendingDelete) {
   // Disable BackForwardCache so that a pending delete state can be forced.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
       content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
