@@ -4186,6 +4186,18 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON" desc="The text of the button to proceed with the page refresh for running an extension.">
           Reload
         </message>
+        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE" desc="Title of the bubble to tell users that in order to run an extension, they'll need to refresh the page.">
+          Refresh the page to use "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>"
+        </message>
+        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON_LABEL" desc="The label of the button to proceed with the page refresh for running an extension.">
+          Refresh
+        </message>
+        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_BODY_TEXT" desc="The body text of the bubble to tell users to check the checkbox to always allow the extensions to run on the current site.">
+          Always allow the extension to run on this site if you don't want to see this message again.
+        </message>
+        <message name="IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_CHECKBOX_LABEL" desc="The label of the checkbox to always allow the extensions to run on the current site.">
+          Always allow on this site
+        </message>
       </if>
 
       <!-- Extension/App install prompt -->
