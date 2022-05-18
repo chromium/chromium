@@ -5,8 +5,10 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -708,6 +710,14 @@ NSString* SerializedValue(const base::Value* value) {
     return testing::NSErrorWithLocalizedDescription(
         @"Fail to purge cached web view pages.");
   }
+
+  // Attempt to deflake WebKit sometimes still holding on to the browser cache
+  // with a larger hammer.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath library_dir = base::mac::GetUserLibraryPath();
+  base::FilePath webkit_cache_dir = library_dir.Append("WebKit");
+  DeletePathRecursively(webkit_cache_dir);
+
   web_state->SetWebUsageEnabled(true);
   web_state->GetNavigationManager()->LoadIfNecessary();
 
