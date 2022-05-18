@@ -1025,20 +1025,14 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
       .only_expand_top_controls_at_page_top =
       rvh_delegate_view->OnlyExpandTopControlsAtPageTop();
 
-  float top_controls_height = rvh_delegate_view->GetTopControlsHeight();
-  float top_controls_min_height = rvh_delegate_view->GetTopControlsMinHeight();
-  float bottom_controls_height = rvh_delegate_view->GetBottomControlsHeight();
-  float bottom_controls_min_height =
-      rvh_delegate_view->GetBottomControlsMinHeight();
-  float browser_controls_dsf_multiplier = 1.f;
   visual_properties.browser_controls_params.top_controls_height =
-      top_controls_height / browser_controls_dsf_multiplier;
+      rvh_delegate_view->GetTopControlsHeight();
   visual_properties.browser_controls_params.top_controls_min_height =
-      top_controls_min_height / browser_controls_dsf_multiplier;
+      rvh_delegate_view->GetTopControlsMinHeight();
   visual_properties.browser_controls_params.bottom_controls_height =
-      bottom_controls_height / browser_controls_dsf_multiplier;
+      rvh_delegate_view->GetBottomControlsHeight();
   visual_properties.browser_controls_params.bottom_controls_min_height =
-      bottom_controls_min_height / browser_controls_dsf_multiplier;
+      rvh_delegate_view->GetBottomControlsMinHeight();
 
   visual_properties.auto_resize_enabled = auto_resize_enabled_;
   visual_properties.min_size_for_auto_resize = min_size_for_auto_resize_;
