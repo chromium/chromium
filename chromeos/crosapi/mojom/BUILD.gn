@@ -80,6 +80,7 @@ mojom("mojom") {
   disable_variants = true
 
   public_deps = [
+    "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors/mojom",
     "//chromeos/services/machine_learning/public/mojom",
     "//components/metrics/structured/mojom",

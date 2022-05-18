@@ -26,15 +26,17 @@
           use_base_dir="false"
           resource_path="mojo/mojo/public/js/bindings.js"
           type="BINDATA" />
-      <if expr="chromeos_ash">
-        <include name="IDR_MOJO_MOJO_BINDINGS_LITE_HTML"
-            file="mojo_bindings_lite.html"
-            resource_path="mojo/mojo/public/js/mojo_bindings_lite.html"
-            type="BINDATA" />
+      <if expr="chromeos_ash or chromeos_lacros">
         <include name="IDR_MOJO_MOJO_BINDINGS_LITE_JS"
             file="${root_gen_dir}/mojo/public/js/mojo_bindings_lite.js"
             use_base_dir="false"
             resource_path="mojo/mojo/public/js/mojo_bindings_lite.js"
+            type="BINDATA" />
+      </if>
+      <if expr="chromeos_ash">
+        <include name="IDR_MOJO_MOJO_BINDINGS_LITE_HTML"
+            file="mojo_bindings_lite.html"
+            resource_path="mojo/mojo/public/js/mojo_bindings_lite.html"
             type="BINDATA" />
         <include name="IDR_MOJO_BIG_BUFFER_MOJOM_HTML"
             file="${root_gen_dir}/mojo/public/mojom/base/big_buffer.mojom.html"

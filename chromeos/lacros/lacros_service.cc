@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
@@ -350,6 +351,10 @@ LacrosService::LacrosService()
       Crosapi::MethodMinVersions::kBindNetworkSettingsServiceMinVersion>();
   ConstructRemote<crosapi::mojom::PolicyService, &Crosapi::BindPolicyService,
                   Crosapi::MethodMinVersions::kBindPolicyServiceMinVersion>();
+  ConstructRemote<
+      chromeos::remote_apps::mojom::RemoteAppsLacrosBridge,
+      &crosapi::mojom::Crosapi::BindRemoteAppsLacrosBridge,
+      Crosapi::MethodMinVersions::kBindRemoteAppsLacrosBridgeMinVersion>();
   ConstructRemote<crosapi::mojom::Remoting,
                   &crosapi::mojom::Crosapi::BindRemoting,
                   Crosapi::MethodMinVersions::kBindRemotingMinVersion>();
@@ -585,6 +590,18 @@ void LacrosService::BindMetricsReporting(
   BindPendingReceiverOrRemote<
       mojo::PendingReceiver<crosapi::mojom::MetricsReporting>,
       &crosapi::mojom::Crosapi::BindMetricsReporting>(std::move(receiver));
+}
+
+void LacrosService::BindRemoteAppsLacrosBridge(
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
+        receiver) {
+  DCHECK(IsAvailable<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>());
+
+  BindPendingReceiverOrRemote<
+      mojo::PendingReceiver<
+          chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>,
+      &crosapi::mojom::Crosapi::BindRemoteAppsLacrosBridge>(
+      std::move(receiver));
 }
 
 void LacrosService::BindScreenManagerReceiver(

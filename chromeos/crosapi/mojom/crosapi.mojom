@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/app_service.mojom";
@@ -104,8 +105,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 74
-// Next method id: 77
+// Next version: 75
+// Next method id: 78
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -347,6 +348,12 @@ interface Crosapi {
   // Binds the prefs service which allows get, set, and notify update of prefs.
   // Added in M89.
   [MinVersion=11] BindPrefs@16(pending_receiver<Prefs> receiver);
+
+  // Binds the RemoteAppsLacrosBridge for the Remote Apps private Mojo API.
+  // Added in M103.
+  [MinVersion=74] BindRemoteAppsLacrosBridge@77(
+      pending_receiver<chromeos.remote_apps.mojom.RemoteAppsLacrosBridge>
+          receiver);
 
   // Binds the Remoting service to allow websites running in Lacros to interact
   // with Chrome Remote Desktop functionality available in ash-chrome.

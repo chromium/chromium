@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -44,8 +45,8 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
   RemoteAppsImpl& operator=(const RemoteAppsImpl&) = delete;
   ~RemoteAppsImpl() override;
 
-  void Bind(
-      const std::string& source_id,
+  void BindRemoteAppsAndAppLaunchObserver(
+      const absl::optional<std::string>& source_id,
       mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
           pending_remote_apps,
       mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
@@ -76,8 +77,13 @@ class RemoteAppsImpl : public chromeos::remote_apps::mojom::RemoteApps {
   RemoteAppsManager* manager_ = nullptr;
   std::map<std::string, mojo::RemoteSetElementId> source_id_to_remote_id_map_;
   mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteApps> receivers_;
+  // Observers with an associated source in `source_id_to_remote_id_map_`.
   mojo::RemoteSet<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
-      app_launch_observers_;
+      app_launch_observers_with_source_id_;
+  // Observers with no associated source. These observers will received all
+  // `OnRemoteAppLaunched` events.
+  mojo::RemoteSet<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
+      app_launch_broadcast_observers_;
   base::WeakPtrFactory<RemoteAppsImpl> weak_factory_{this};
 };
 

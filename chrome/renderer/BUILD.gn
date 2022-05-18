@@ -39,11 +39,13 @@ grit("resources") {
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/remote_apps/mojom:mojom_js" ]
+  }
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/enhanced_network_tts/mojom:mojom_js",
       "//ash/services/ime/public/mojom:mojom_js",
-      "//chromeos/components/remote_apps/mojom:mojom_js",
       "//chromeos/services/tts/public/mojom:mojom_js",
     ]
   }

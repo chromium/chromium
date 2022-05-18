@@ -15,13 +15,16 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
 #include "ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
-#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,6 +54,15 @@
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros.h"
+#include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "extensions/common/features/behavior_feature.h"
+#include "extensions/common/features/feature.h"
+#include "extensions/common/features/feature_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
 
@@ -91,19 +103,6 @@ void BindGoogleTtsStream(
       ->BindGoogleTtsStream(std::move(receiver));
 }
 
-void BindRemoteAppsFactory(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
-        pending_receiver) {
-  // |remote_apps_manager| will be null in non-managed guest sessions, but this
-  // is already checked in |RemoteAppsImpl::IsAllowed()|.
-  ash::RemoteAppsManager* remote_apps_manager =
-      ash::RemoteAppsManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
-  DCHECK(remote_apps_manager);
-  remote_apps_manager->BindInterface(std::move(pending_receiver));
-}
-
 void BindEnhancedNetworkTts(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<ash::enhanced_network_tts::mojom::EnhancedNetworkTts>
@@ -116,6 +115,31 @@ void BindEnhancedNetworkTts(
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+void BindRemoteAppsFactory(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsFactory>
+        pending_receiver) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // |remote_apps_manager| will be null in non-managed guest sessions, but this
+  // is already checked in |RemoteAppsImpl::IsAllowed()|.
+  ash::RemoteAppsManager* remote_apps_manager =
+      ash::RemoteAppsManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
+  DCHECK(remote_apps_manager);
+  remote_apps_manager->BindFactoryInterface(std::move(pending_receiver));
+#else   // implies BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::RemoteAppsProxyLacros* remote_apps_proxy_lacros =
+      chromeos::RemoteAppsProxyLacrosFactory::GetForBrowserContext(
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
+  DCHECK(remote_apps_proxy_lacros);
+  remote_apps_proxy_lacros->BindFactoryInterface(std::move(pending_receiver));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 void PopulateChromeFrameBindersForExtension(
@@ -204,11 +228,6 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&BindLanguagePacks));
   }
 
-  if (ash::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {
-    binder_map->Add<chromeos::remote_apps::mojom::RemoteAppsFactory>(
-        base::BindRepeating(&BindRemoteAppsFactory));
-  }
-
   // Limit the binding to EnhancedNetworkTts Extension.
   if (features::IsEnhancedNetworkVoicesEnabled() &&
       extension->id() == extension_misc::kEnhancedNetworkTtsExtensionId) {
@@ -216,6 +235,22 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&BindEnhancedNetworkTts));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {
+    binder_map->Add<chromeos::remote_apps::mojom::RemoteAppsFactory>(
+        base::BindRepeating(&BindRemoteAppsFactory));
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const extensions::Feature* feature =
+      extensions::FeatureProvider::GetBehaviorFeature(
+          extensions::behavior_feature::kImprivataInSessionExtension);
+  if (extension && feature &&
+      feature->IsAvailableToExtension(extension).is_available()) {
+    binder_map->Add<chromeos::remote_apps::mojom::RemoteAppsFactory>(
+        base::BindRepeating(&BindRemoteAppsFactory));
+  }
+#endif
 }
 
 }  // namespace extensions

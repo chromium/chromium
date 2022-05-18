@@ -150,7 +150,10 @@ void CheckIconsEqual(const gfx::ImageSkia& expected,
 class MockRemoteAppLaunchObserver
     : public chromeos::remote_apps::mojom::RemoteAppLaunchObserver {
  public:
-  MOCK_METHOD(void, OnRemoteAppLaunched, (const std::string&), (override));
+  MOCK_METHOD(void,
+              OnRemoteAppLaunched,
+              (const std::string&, const std::string&),
+              (override));
 };
 
 }  // namespace
@@ -158,8 +161,6 @@ class MockRemoteAppLaunchObserver
 class RemoteAppsManagerBrowsertest
     : public policy::DevicePolicyCrosBrowserTest {
  public:
-  RemoteAppsManagerBrowsertest() : policy::DevicePolicyCrosBrowserTest() {}
-
   // DevicePolicyCrosBrowserTest:
   void SetUp() override {
     DevicePolicyCrosBrowserTest::SetUp();
@@ -520,19 +521,29 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddToFront) {
 }
 
 // Test that app launched events are only dispatched to the extension which
-// added the app.
+// added the app, and the all events are dispatched to the Lacros observer.
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, OnAppLaunched) {
-  base::test::TestFuture<std::string> future1;
-  base::test::TestFuture<std::string> future2;
+  base::test::TestFuture<std::string>
+      on_remote_app_launched_with_app_id1_future;
+  base::test::TestFuture<std::string>
+      on_remote_app_launched_with_app_id2_future;
+  base::test::TestFuture<std::string>
+      on_remote_app_launched_with_app_id1_to_proxy_future;
+  base::test::TestFuture<std::string>
+      on_remote_app_launched_with_app_id2_to_proxy_future;
 
   testing::StrictMock<MockRemoteAppLaunchObserver> mockObserver1;
-  EXPECT_CALL(mockObserver1, OnRemoteAppLaunched(kId1))
-      .WillOnce(
-          [&future1](const std::string& app_id) { future1.SetValue(app_id); });
+  EXPECT_CALL(mockObserver1, OnRemoteAppLaunched(kId1, kExtensionId1))
+      .WillOnce([&on_remote_app_launched_with_app_id1_future](
+                    const std::string& app_id, const std::string& source_id) {
+        on_remote_app_launched_with_app_id1_future.SetValue(app_id);
+      });
   testing::StrictMock<MockRemoteAppLaunchObserver> mockObserver2;
-  EXPECT_CALL(mockObserver2, OnRemoteAppLaunched(kId2))
-      .WillOnce(
-          [&future2](const std::string& app_id) { future2.SetValue(app_id); });
+  EXPECT_CALL(mockObserver2, OnRemoteAppLaunched(kId2, kExtensionId2))
+      .WillOnce([&on_remote_app_launched_with_app_id2_future](
+                    const std::string& app_id, const std::string& source_id) {
+        on_remote_app_launched_with_app_id2_future.SetValue(app_id);
+      });
 
   mojo::Remote<chromeos::remote_apps::mojom::RemoteApps> remote1;
   mojo::Remote<chromeos::remote_apps::mojom::RemoteApps> remote2;
@@ -540,10 +551,26 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, OnAppLaunched) {
       observer1{&mockObserver1};
   mojo::Receiver<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
       observer2{&mockObserver2};
-  manager_->Get(kExtensionId1, remote1.BindNewPipeAndPassReceiver(),
-                observer1.BindNewPipeAndPassRemote());
-  manager_->Get(kExtensionId2, remote2.BindNewPipeAndPassReceiver(),
-                observer2.BindNewPipeAndPassRemote());
+  manager_->BindRemoteAppsAndAppLaunchObserver(
+      kExtensionId1, remote1.BindNewPipeAndPassReceiver(),
+      observer1.BindNewPipeAndPassRemote());
+  manager_->BindRemoteAppsAndAppLaunchObserver(
+      kExtensionId2, remote2.BindNewPipeAndPassReceiver(),
+      observer2.BindNewPipeAndPassRemote());
+
+  testing::StrictMock<MockRemoteAppLaunchObserver> mockObserver3;
+  mojo::Remote<chromeos::remote_apps::mojom::RemoteApps> remote3;
+  mojo::Receiver<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
+      proxyObserver{&mockObserver3};
+  manager_->BindRemoteAppsAndAppLaunchObserverForLacros(
+      remote3.BindNewPipeAndPassReceiver(),
+      proxyObserver.BindNewPipeAndPassRemote());
+
+  EXPECT_CALL(mockObserver3, OnRemoteAppLaunched(kId1, kExtensionId1))
+      .WillOnce([&on_remote_app_launched_with_app_id1_to_proxy_future](
+                    const std::string& app_id, const std::string& source_id) {
+        on_remote_app_launched_with_app_id1_to_proxy_future.SetValue(app_id);
+      });
 
   // App has id kId1, added by kExtensionId1.
   AddAppAndWaitForIconChange(kExtensionId1, kId1, "name", std::string(),
@@ -556,11 +583,19 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, OnAppLaunched) {
                              /*add_to_front=*/false);
 
   manager_->LaunchApp(kId1);
-  ASSERT_EQ(kId1, future1.Get());
-  ASSERT_FALSE(future2.IsReady());
+  ASSERT_EQ(kId1, on_remote_app_launched_with_app_id1_future.Get());
+  ASSERT_EQ(kId1, on_remote_app_launched_with_app_id1_to_proxy_future.Get());
+  ASSERT_FALSE(on_remote_app_launched_with_app_id2_future.IsReady());
+
+  EXPECT_CALL(mockObserver3, OnRemoteAppLaunched(kId2, kExtensionId2))
+      .WillOnce([&on_remote_app_launched_with_app_id2_to_proxy_future](
+                    const std::string& app_id, const std::string& source_id) {
+        on_remote_app_launched_with_app_id2_to_proxy_future.SetValue(app_id);
+      });
 
   manager_->LaunchApp(kId2);
-  ASSERT_EQ(kId2, future2.Get());
+  ASSERT_EQ(kId2, on_remote_app_launched_with_app_id2_future.Get());
+  ASSERT_EQ(kId2, on_remote_app_launched_with_app_id2_to_proxy_future.Get());
 }
 
 }  // namespace ash

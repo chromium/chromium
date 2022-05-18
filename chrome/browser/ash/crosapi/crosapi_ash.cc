@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_service_ash.h"
 #include "chrome/browser/ash/sync/sync_service_factory_ash.h"
 #include "chrome/browser/browser_process.h"
@@ -589,6 +590,18 @@ void CrosapiAsh::BindPower(mojo::PendingReceiver<mojom::Power> receiver) {
 
 void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
   prefs_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindRemoteAppsLacrosBridge(
+    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
+        receiver) {
+  ash::RemoteAppsManager* remote_apps_manager =
+      ash::RemoteAppsManagerFactory::GetForProfile(GetAshProfile());
+
+  // RemoteApps are only available for managed guest sessions.
+  if (!remote_apps_manager)
+    return;
+  remote_apps_manager->BindLacrosBridgeInterface(std::move(receiver));
 }
 
 void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {

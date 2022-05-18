@@ -414,7 +414,7 @@
     "dependencies": ["behavior:imprivata_in_session_extension"],
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }],
   "networking.onc": {
     "dependencies": ["permission:networking.onc"],

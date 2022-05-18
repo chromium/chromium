@@ -160,6 +160,14 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
   source_map->RegisterSource("platformKeys.SubtleCrypto",
                              IDR_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);
   source_map->RegisterSource("platformKeys.utils", IDR_PLATFORM_KEYS_UTILS_JS);
+
+  // Remote Apps.
+  source_map->RegisterSource("chromeos.remote_apps.mojom-lite",
+                             IDR_REMOTE_APPS_MOJOM_LITE_JS);
+  source_map->RegisterSource("chromeos.remote_apps",
+                             IDR_REMOTE_APPS_BINDINGS_JS);
+  source_map->RegisterSource("url/mojom/url.mojom-lite",
+                             IDR_MOJO_URL_MOJOM_LITE_JS);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -188,14 +196,6 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_GOOGLE_TTS_STREAM_MOJOM_JS);
   source_map->RegisterSource("chromeos.tts.google_stream",
                              IDR_GOOGLE_TTS_STREAM_BINDINGS_JS);
-
-  // Imprivata API.
-  source_map->RegisterSource("chromeos.remote_apps.mojom-lite",
-                             IDR_REMOTE_APPS_MOJOM_LITE_JS);
-  source_map->RegisterSource("chromeos.remote_apps",
-                             IDR_REMOTE_APPS_BINDINGS_JS);
-  source_map->RegisterSource("url/mojom/url.mojom-lite",
-                             IDR_MOJO_URL_MOJOM_LITE_JS);
 
   source_map->RegisterSource("ash.enhanced_network_tts.mojom-lite",
                              IDR_ENHANCED_NETWORK_TTS_MOJOM_LITE_JS);
