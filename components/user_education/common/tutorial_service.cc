@@ -67,6 +67,16 @@ bool TutorialService::StartTutorial(TutorialIdentifier id,
   return true;
 }
 
+void TutorialService::LogIPHLinkClicked(TutorialIdentifier id,
+                                        bool iph_link_was_clicked) {
+  TutorialDescription* description =
+      tutorial_registry_->GetTutorialDescription(id);
+  CHECK(description);
+
+  if (description->histograms)
+    description->histograms->RecordIphLinkClicked(iph_link_was_clicked);
+}
+
 bool TutorialService::RestartTutorial() {
   DCHECK(running_tutorial_ && running_tutorial_creation_params_);
   base::AutoReset<bool> resetter(&is_restarting_, true);
