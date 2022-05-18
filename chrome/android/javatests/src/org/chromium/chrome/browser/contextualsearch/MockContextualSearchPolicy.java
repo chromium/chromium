@@ -24,11 +24,6 @@ public class MockContextualSearchPolicy extends ContextualSearchPolicy {
     }
 
     @Override
-    public boolean shouldAnimateSearchProviderIcon() {
-        return false;
-    }
-
-    @Override
     public boolean isPromoAvailable() {
         return false;
     }

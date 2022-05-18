@@ -234,42 +234,12 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Records the total count of times the promo panel has *ever* been opened.  This should only
-     * be called when the user is still undecided.
-     * @param count The total historic count of times the panel has ever been opened for the
-     *        current user.
-     */
-    public static void logPromoOpenCount(int count) {
-        RecordHistogram.recordCount1MHistogram("Search.ContextualSearchPromoOpenCount", count);
-    }
-
-    /**
      * Records the total count of times the revised promo card has *ever* been opened. This should
      * only be called when the user is still undecided.
      * @param count The total historic count of times the revised promo card ever been shown.
      */
     public static void logRevisedPromoOpenCount(int count) {
         RecordHistogram.recordCount1MHistogram("Search.ContextualSearchPromoOpenCount2", count);
-    }
-
-    /**
-     * Logs the number of taps that have been counted since the user last opened the panel, for
-     * undecided users.
-     * @param tapsSinceOpen The number of taps to log.
-     */
-    public static void logTapsSinceOpenForUndecided(int tapsSinceOpen) {
-        RecordHistogram.recordCount1MHistogram(
-                "Search.ContextualSearchTapsSinceOpenUndecided", tapsSinceOpen);
-    }
-
-    /**
-     * Logs the number of taps that have been counted since the user last opened the panel, for
-     * decided users.
-     * @param tapsSinceOpen The number of taps to log.
-     */
-    public static void logTapsSinceOpenForDecided(int tapsSinceOpen) {
-        RecordHistogram.recordCount1MHistogram(
-                "Search.ContextualSearchTapsSinceOpenDecided", tapsSinceOpen);
     }
 
     /**

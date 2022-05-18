@@ -166,12 +166,6 @@ public final class ChromePreferenceKeys {
     public static final String CONTENT_SUGGESTIONS_SHOWN = "content_suggestions_shown";
 
     /**
-     * The entity-data opens count for Contextual Search, e.g. Panel opens following thumbnails
-     * shown in the Bar. Cumulative, starting at M-69.
-     */
-    public static final String CONTEXTUAL_SEARCH_LAST_ANIMATION_TIME =
-            "contextual_search_last_animation_time";
-    /**
      * An encoded set of outcomes of user interaction with Contextual Search, stored as an int.
      */
     public static final String CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_ENCODED_OUTCOMES =
@@ -187,17 +181,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String CONTEXTUAL_SEARCH_PREVIOUS_INTERACTION_TIMESTAMP =
             "contextual_search_previous_interaction_timestamp";
-    /**
-     * The number of times the Contextual Search panel was opened with the opt-in promo visible.
-     */
-    public static final String CONTEXTUAL_SEARCH_PROMO_OPEN_COUNT =
-            "contextual_search_promo_open_count";
-    /**
-     * The number of times that a tap triggered the Contextual Search panel to peek since the last
-     * time the panel was opened.  Note legacy string value without "open".
-     */
-    public static final String CONTEXTUAL_SEARCH_TAP_SINCE_OPEN_COUNT =
-            "contextual_search_tap_count";
     /**
      * The number of times a tap gesture caused a Contextual Search Quick Answer to be shown since
      * the last time the panel was opened.  Note legacy string value without "open".
