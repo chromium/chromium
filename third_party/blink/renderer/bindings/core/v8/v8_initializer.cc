@@ -657,11 +657,6 @@ void InitializeV8Common(v8::Isolate* isolate) {
   }
 }
 
-// Callback functions called when V8 encounters a fatal or OOM error.
-void ReportV8FatalError(const char* location, const char* message) {
-  LOG(FATAL) << "V8 error: " << message << " (" << location << ").";
-}
-
 struct PrintV8OOM {
   const char* location;
   const v8::OOMDetails& details;
@@ -676,6 +671,14 @@ std::ostream& operator<<(std::ostream& os, const PrintV8OOM& oom_details) {
   }
   os << ").";
   return os;
+}
+}  // namespace
+
+// Callback functions called when V8 encounters a fatal or OOM error.
+// Keep them outside the anonymous namespace such that ChromeCrash recognizes
+// them.
+void ReportV8FatalError(const char* location, const char* message) {
+  LOG(FATAL) << "V8 error: " << message << " (" << location << ").";
 }
 
 void ReportV8OOMError(const char* location, const v8::OOMDetails& details) {
@@ -693,6 +696,7 @@ void ReportV8OOMError(const char* location, const v8::OOMDetails& details) {
   OOM_CRASH(0);
 }
 
+namespace {
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
   ArrayBufferAllocator() : total_allocation_(0) {
