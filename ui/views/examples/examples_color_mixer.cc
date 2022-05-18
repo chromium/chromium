@@ -41,6 +41,7 @@ void AddExamplesColorMixers(ui::ColorProvider* color_provider,
   mixer[Ids::kColorLabelExampleUpperShadow] = {SK_ColorRED};
   mixer[Ids::kColorLabelExampleCustomBackground] = {SK_ColorLTGRAY};
   mixer[Ids::kColorLabelExampleCustomBorder] = {SK_ColorGRAY};
+  mixer[Ids::kColorMenuButtonExampleBorder] = {SK_ColorGRAY};
   mixer[Ids::kColorMultilineExampleBorder] = {SK_ColorGRAY};
   mixer[Ids::kColorMultilineExampleColorRange] = {SK_ColorRED};
   mixer[Ids::kColorMultilineExampleForeground] = {SK_ColorBLACK};
