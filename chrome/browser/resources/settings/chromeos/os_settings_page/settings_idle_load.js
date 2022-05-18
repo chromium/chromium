@@ -8,44 +8,64 @@
  * loading and rendering of elements that are accessed imperatively. A URL is
  * given that holds the elements to be loaded lazily.
  */
-import {assert} from '//resources/js/assert.m.js';
-import {html, Polymer, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-idle-load',
+/** @polymer */
+class SettingsIdleLoadElement extends PolymerElement {
+  static get is() {
+    return 'settings-idle-load';
+  }
 
-  properties: {
-    /**
-     * If specified, it will be loaded via an HTML import before stamping the
-     * template.
-     */
-    url: String,
-  },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  /** @private {?Element} */
-  child_: null,
+  static get properties() {
+    return {
+      /**
+       * If specified, it will be loaded via an HTML import before stamping the
+       * template.
+       */
+      url: String,
+    };
+  }
 
-  /** @private {?Element|?TemplateInstanceBase} */
-  instance_: null,
+  constructor() {
+    super();
 
-  /** @private {number} */
-  idleCallback_: 0,
+    /** @private {?Element} */
+    this.child_ = null;
+
+    /** @private {?Element|?TemplateInstanceBase} */
+    this.instance_ = null;
+
+    /** @private {?Promise<Element>} */
+    this.loading_ = null;
+
+    /** @private {number} */
+    this.idleCallback_ = 0;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.idleCallback_ = requestIdleCallback(() => {
       this.get();
     });
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     // No-op if callback already fired.
     cancelIdleCallback(this.idleCallback_);
-  },
+  }
 
   /**
    * @param {!function():!Promise} requestFn Requests the lazy module.
@@ -56,7 +76,10 @@ Polymer({
     return new Promise((resolve, reject) => {
       requestFn().then(() => {
         const template =
-            /** @type {!HTMLTemplateElement} */ (this.getContentChildren()[0]);
+            /** @type {!HTMLTemplateElement} */ (
+                this.shadowRoot.querySelector('slot')
+                    .assignedNodes({flatten: true})
+                    .filter(n => n.nodeType === Node.ELEMENT_NODE)[0]);
         const TemplateClass = templatize(template, this, {
           mutableData: false,
           forwardHostProp: this._forwardHostPropV2,
@@ -70,10 +93,12 @@ Polymer({
         this.parentNode.insertBefore(this.instance_.root, this);
         resolve(this.child_);
 
-        this.fire('lazy-loaded');
+        const event =
+            new CustomEvent('lazy-loaded', {bubbles: true, composed: true});
+        this.dispatchEvent(event);
       }, reject);
     });
-  },
+  }
 
   /**
    * @return {!Promise<Element>} Child element which has been stamped into the
@@ -88,7 +113,7 @@ Polymer({
 
     this.loading_ = this.requestLazyModule_(requestLazyModuleFn);
     return this.loading_;
-  },
+  }
 
   /**
    * @param {string} prop
@@ -98,5 +123,7 @@ Polymer({
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);
     }
-  },
-});
+  }
+}
+
+customElements.define(SettingsIdleLoadElement.is, SettingsIdleLoadElement);
