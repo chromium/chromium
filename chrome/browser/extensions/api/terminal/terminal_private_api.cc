@@ -21,6 +21,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -91,6 +92,15 @@ const char kSwitchStartupId[] = "startup_id";
 const char kSwitchCurrentWorkingDir[] = "cwd";
 
 const char kCwdTerminalIdPrefix[] = "terminal_id:";
+
+// Prefs that we read and observe.
+static const base::NoDestructor<std::vector<std::string>> kPrefsReadAllowList{{
+    ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+    crostini::prefs::kCrostiniContainers,
+    crostini::prefs::kCrostiniEnabled,
+    crostini::prefs::kCrostiniTerminalSettings,
+    crostini::prefs::kTerminalSshAllowedByPolicy,
+}};
 
 void CloseTerminal(const std::string& terminal_id,
                    base::OnceCallback<void(bool)> callback) {
@@ -219,11 +229,7 @@ TerminalPrivateAPI::TerminalPrivateAPI(content::BrowserContext* context)
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   Profile* profile = Profile::FromBrowserContext(context);
   pref_change_registrar_->Init(profile->GetPrefs());
-  auto prefs = {ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-                crostini::prefs::kCrostiniContainers,
-                crostini::prefs::kCrostiniEnabled,
-                crostini::prefs::kCrostiniTerminalSettings};
-  for (const auto* pref : prefs) {
+  for (const auto& pref : *kPrefsReadAllowList) {
     pref_change_registrar_->Add(pref,
                                 base::BindRepeating(&PrefChanged, profile));
   }
@@ -701,17 +707,9 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
       Profile::FromBrowserContext(browser_context())->GetPrefs();
   base::Value result(base::Value::Type::DICT);
 
-  static const base::NoDestructor<std::vector<std::string>> kAllowList{{
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-      crostini::prefs::kCrostiniContainers,
-      crostini::prefs::kCrostiniEnabled,
-      crostini::prefs::kCrostiniTerminalSettings,
-      crostini::prefs::kTerminalSshAllowedByPolicy,
-  }};
-
   for (const auto& path : params->paths) {
     // Ignore non-allowed paths.
-    if (!base::Contains(*kAllowList, path)) {
+    if (!base::Contains(*kPrefsReadAllowList, path)) {
       LOG(WARNING) << "Ignoring non-allowed GetPrefs path=" << path;
       continue;
     }
