@@ -4,6 +4,9 @@
 
 #include "components/reporting/encryption/test_encryption_module.h"
 
+#include <string>
+#include <utility>
+
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"

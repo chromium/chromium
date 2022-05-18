@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstdint>
-
 #include "components/reporting/resources/resource_interface.h"
+
+#include <cstdint>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_runner.h"

@@ -7,6 +7,8 @@
 #ifndef COMPONENTS_REPORTING_UTIL_FILE_H_
 #define COMPONENTS_REPORTING_UTIL_FILE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"

@@ -129,9 +129,6 @@ class EncryptionModuleTest : public ::testing::Test {
 
   scoped_refptr<EncryptionModuleInterface> encryption_module_;
   scoped_refptr<test::Decryptor> decryptor_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EncryptionModuleTest, EncryptAndDecrypt) {

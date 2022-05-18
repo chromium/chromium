@@ -5665,7 +5665,6 @@ test("unit_tests") {
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/storage:test_support",
     "//components/reporting/util:backoff_settings",
-    "//components/reporting/util:shared_vector",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",
     "//components/reporting/util:test_callbacks_support",

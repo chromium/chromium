@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_REPORTING_CLIENT_MOCK_DM_TOKEN_RETRIEVER_H_
 #define COMPONENTS_REPORTING_CLIENT_MOCK_DM_TOKEN_RETRIEVER_H_
 
+#include <cstddef>
 #include <string>
 
 #include "components/reporting/client/dm_token_retriever.h"
+#include "components/reporting/util/statusor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace reporting {

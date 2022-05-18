@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 #include "components/reporting/compression/compression_module.h"
 
-#include "base/feature_list.h"
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"

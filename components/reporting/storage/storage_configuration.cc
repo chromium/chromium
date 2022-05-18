@@ -4,13 +4,6 @@
 
 #include "components/reporting/storage/storage_configuration.h"
 
-#include <string>
-
-#include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
-#include "base/time/time.h"
-
 namespace reporting {
 
 StorageOptions::StorageOptions()

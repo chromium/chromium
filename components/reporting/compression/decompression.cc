@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 #include "components/reporting/compression/decompression.h"
 
-#include "base/feature_list.h"
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"

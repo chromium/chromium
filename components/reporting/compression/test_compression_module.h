@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REPORTING_COMPRESSION_TEST_COMPRESSION_MODULE_H_
 #define COMPONENTS_REPORTING_COMPRESSION_TEST_COMPRESSION_MODULE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"

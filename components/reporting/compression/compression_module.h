@@ -1,17 +1,19 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "base/feature_list.h"
 
+#ifndef COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
+#define COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
+
+#include <string>
+
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/statusor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#ifndef COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
-#define COMPONENTS_REPORTING_COMPRESSION_COMPRESSION_MODULE_H_
 
 namespace reporting {
 

@@ -13,10 +13,7 @@
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/util/statusor.h"
-
-namespace net {
-class BackoffEntry;
-}  // namespace net
+#include "net/base/backoff_entry.h"
 
 namespace reporting {
 

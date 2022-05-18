@@ -36,7 +36,6 @@ class ReportQueueProviderTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
@@ -77,7 +76,8 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
                       // Queue created successfully, enqueue the message.
                       EXPECT_CALL(*static_cast<MockReportQueue*>(
                                       report_queue_result.ValueOrDie().get()),
-                                  AddRecord(StrEq(data), Eq(FAST_BATCH), _))
+                                  AddRecord(StrEq(std::string(data)),
+                                            Eq(FAST_BATCH), _))
                           .WillOnce(WithArg<2>(
                               Invoke([](ReportQueue::EnqueueCallback cb) {
                                 std::move(cb).Run(Status::StatusOK());

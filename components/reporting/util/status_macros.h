@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 #define COMPONENTS_REPORTING_UTIL_STATUS_MACROS_H_
 
+#include <utility>
+
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 

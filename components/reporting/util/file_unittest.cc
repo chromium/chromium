@@ -4,6 +4,8 @@
 
 #include "components/reporting/util/file.h"
 
+#include <string>
+
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/test_file_util.h"
