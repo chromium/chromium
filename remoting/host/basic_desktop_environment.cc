@@ -4,6 +4,7 @@
 
 #include "remoting/host/basic_desktop_environment.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -21,6 +22,7 @@
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
+#include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 #include "remoting/protocol/capability_names.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -157,6 +159,11 @@ BasicDesktopEnvironment::CreateComposingVideoCapturer(
 #endif
   return std::make_unique<DesktopAndCursorConditionalComposer>(
       CreateVideoCapturer(std::move(monitor)));
+}
+
+std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
+  return std::make_unique<RemoteWebAuthnExtensionNotifier>();
 }
 
 std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(

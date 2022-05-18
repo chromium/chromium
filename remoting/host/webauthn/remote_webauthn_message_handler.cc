@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <limits>
-#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -15,7 +14,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
-#include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/remote_webauthn.pb.h"
 #include "remoting/protocol/message_serialization.h"
 
@@ -52,14 +51,6 @@ mojom::WebAuthnExceptionDetailsPtr CreateMojoAbortError() {
 }
 
 }  // namespace
-
-RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
-    const std::string& name,
-    std::unique_ptr<protocol::MessagePipe> pipe)
-    : RemoteWebAuthnMessageHandler(
-          name,
-          std::move(pipe),
-          std::make_unique<RemoteWebAuthnExtensionNotifier>()) {}
 
 RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
     const std::string& name,

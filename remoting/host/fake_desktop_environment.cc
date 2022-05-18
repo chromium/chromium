@@ -140,6 +140,11 @@ FakeDesktopEnvironment::CreateComposingVideoCapturer(
   return nullptr;
 }
 
+std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+FakeDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
+  return nullptr;
+}
+
 const DesktopEnvironmentOptions& FakeDesktopEnvironment::options() const {
   return options_;
 }

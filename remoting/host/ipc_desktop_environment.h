@@ -77,6 +77,8 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<DesktopAndCursorConditionalComposer>
   CreateComposingVideoCapturer(
       std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
+  std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+  CreateRemoteWebAuthnStateChangeNotifier() override;
 
  private:
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

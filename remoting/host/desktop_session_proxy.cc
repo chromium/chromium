@@ -34,6 +34,7 @@
 #include "remoting/host/ipc_url_forwarder_configurator.h"
 #include "remoting/host/ipc_video_frame_capturer.h"
 #include "remoting/host/remote_open_url/remote_open_url_util.h"
+#include "remoting/host/webauthn/remote_webauthn_delegated_state_change_notifier.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
@@ -171,6 +172,14 @@ DesktopSessionProxy::CreateUrlForwarderConfigurator() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   return std::make_unique<IpcUrlForwarderConfigurator>(this);
+}
+
+std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+DesktopSessionProxy::CreateRemoteWebAuthnStateChangeNotifier() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  return std::make_unique<RemoteWebAuthnDelegatedStateChangeNotifier>(
+      base::BindRepeating(&DesktopSessionProxy::SignalWebAuthnExtension, this));
 }
 
 std::string DesktopSessionProxy::GetCapabilities() const {
@@ -772,6 +781,14 @@ void DesktopSessionProxy::OnClipboardEvent(
 
   if (client_clipboard_) {
     client_clipboard_->InjectClipboardEvent(event);
+  }
+}
+
+void DesktopSessionProxy::SignalWebAuthnExtension() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (desktop_session_control_) {
+    desktop_session_control_->SignalWebAuthnExtension();
   }
 }
 

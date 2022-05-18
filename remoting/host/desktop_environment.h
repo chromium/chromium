@@ -31,6 +31,7 @@ class DesktopDisplayInfoMonitor;
 class FileOperations;
 class InputInjector;
 class KeyboardLayoutMonitor;
+class RemoteWebAuthnStateChangeNotifier;
 class ScreenControls;
 class UrlForwarderConfigurator;
 
@@ -74,6 +75,8 @@ class DesktopEnvironment {
   virtual std::unique_ptr<FileOperations> CreateFileOperations() = 0;
   virtual std::unique_ptr<UrlForwarderConfigurator>
   CreateUrlForwarderConfigurator() = 0;
+  virtual std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+  CreateRemoteWebAuthnStateChangeNotifier() = 0;
 
   // For platforms that require the mouse cursor to be composited into the video
   // stream when it is not rendered by the client, returns a composing capturer.

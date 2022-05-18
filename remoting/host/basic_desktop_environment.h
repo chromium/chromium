@@ -58,6 +58,8 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<DesktopAndCursorConditionalComposer>
   CreateComposingVideoCapturer(
       std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
+  std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+  CreateRemoteWebAuthnStateChangeNotifier() override;
 
  protected:
   friend class BasicDesktopEnvironmentFactory;

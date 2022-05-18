@@ -118,6 +118,11 @@ IpcDesktopEnvironment::CreateComposingVideoCapturer(
   return nullptr;
 }
 
+std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+IpcDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
+  return desktop_session_proxy_->CreateRemoteWebAuthnStateChangeNotifier();
+}
+
 IpcDesktopEnvironmentFactory::IpcDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,

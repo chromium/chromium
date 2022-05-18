@@ -124,6 +124,8 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<DesktopAndCursorConditionalComposer>
   CreateComposingVideoCapturer(
       std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
+  std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+  CreateRemoteWebAuthnStateChangeNotifier() override;
 
   base::WeakPtr<FakeInputInjector> last_input_injector() {
     return last_input_injector_;
