@@ -340,6 +340,8 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   const base::Value* create_desktop_shortcut =
       entry.FindKey(kCreateDesktopShortcutKey);
   const base::Value* fallback_app_name = entry.FindKey(kFallbackAppNameKey);
+  const base::Value* uninstall_and_replace =
+      entry.FindKey(kUninstallAndReplaceKey);
 
   DCHECK(!default_launch_container ||
          default_launch_container->GetString() ==
@@ -378,6 +380,18 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   // as the permanent name for Web Apps without a manifest.
   if (fallback_app_name)
     install_options.fallback_app_name = fallback_app_name->GetString();
+
+  // Used by default Chrome app policy migration to force install web apps and
+  // uninstall the old Chrome app equivalents.
+  if (uninstall_and_replace) {
+    const base::Value::List* list = uninstall_and_replace->GetIfList();
+    if (list) {
+      for (const base::Value& item : *list) {
+        if (item.is_string())
+          install_options.uninstall_and_replace.push_back(item.GetString());
+      }
+    }
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value* custom_name = entry.FindKey(kCustomNameKey);

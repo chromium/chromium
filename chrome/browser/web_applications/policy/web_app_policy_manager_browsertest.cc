@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
+#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -111,6 +114,15 @@ class WebAppPolicyManagerTest : public InProcessBrowserTest {
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
     return *externally_installed_app_prefs_;
+  }
+
+  void SetPolicyPrefs(base::StringPiece json,
+                      std::vector<std::string> replacements = {}) {
+    profile()->GetPrefs()->Set(
+        prefs::kWebAppInstallForceList,
+        base::JSONReader::Read(
+            base::ReplaceStringPlaceholders(json, replacements, nullptr))
+            .value());
   }
 
  private:
@@ -231,5 +243,34 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, MismatchedInstallAndStartUrl) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Scenario: A policy installed web app is replacing an existing app causing it
+// to be uninstalled after the policy app is installed.
+// This test does not yet work in Lacros because
+// AppServiceProxyLacros::UninstallSilently() has not yet been implemented.
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerTest, MigratingPolicyApp) {
+  // Install old app to replace.
+  auto install_info = std::make_unique<WebAppInstallInfo>();
+  install_info->start_url = GURL("https://some.app.com");
+  install_info->title = u"some app";
+  AppId old_app_id = test::InstallWebApp(profile(), std::move(install_info));
+
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListening({old_app_id});
+
+  // Update policy app to replace old app.
+  SetPolicyPrefs(R"([{
+    "url": "https://example.com/install",
+    "uninstall_and_replace": ["$1"]
+  }])",
+                 {old_app_id});
+
+  // Old app should get uninstalled by policy app install.
+  uninstall_observer.Wait();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app
