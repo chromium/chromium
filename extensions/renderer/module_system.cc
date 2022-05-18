@@ -186,8 +186,17 @@ ModuleSystem::ModuleSystem(ScriptContext* context, const SourceMap* source_map)
       exception_handler_(new DefaultExceptionHandler(context)) {
   v8::Local<v8::Object> global(context->v8_context()->Global());
   v8::Isolate* isolate = context->isolate();
-  SetPrivate(global, kModulesField, v8::Object::New(isolate));
-  SetPrivate(global, kModuleSystem, v8::External::New(isolate, this));
+  // Note: Ensure setting private succeeds with CHECK.
+  // TODO(1276144): remove checks once investigation finished.
+  CHECK(SetPrivate(global, kModulesField, v8::Object::New(isolate)));
+  CHECK(SetPrivate(global, kModuleSystem, v8::External::New(isolate, this)));
+  {
+    // Note: Ensure privates that were set above can be read immediately.
+    // TODO(1276144): remove checks once investigation finished.
+    v8::Local<v8::Value> dummy_value;
+    CHECK(GetPrivate(global, kModulesField, &dummy_value));
+    CHECK(GetPrivate(global, kModuleSystem, &dummy_value));
+  }
 
   if (context_->GetRenderFrame() &&
       context_->context_type() == Feature::BLESSED_EXTENSION_CONTEXT &&

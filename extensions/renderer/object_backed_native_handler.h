@@ -80,10 +80,11 @@ class ObjectBackedNativeHandler : public NativeHandler {
 
   // The following methods are convenience wrappers for methods on v8::Object
   // with the corresponding names.
-  void SetPrivate(v8::Local<v8::Object> obj,
+  // Returns whether or not setting privates was successful.
+  bool SetPrivate(v8::Local<v8::Object> obj,
                   const char* key,
                   v8::Local<v8::Value> value);
-  static void SetPrivate(v8::Local<v8::Context> context,
+  static bool SetPrivate(v8::Local<v8::Context> context,
                          v8::Local<v8::Object> obj,
                          const char* key,
                          v8::Local<v8::Value> value);
