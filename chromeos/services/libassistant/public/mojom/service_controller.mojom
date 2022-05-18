@@ -66,7 +66,6 @@ struct BootupConfig {
   bool dark_mode_enabled;
   bool hotword_enabled;
 
-  // The root path where the DLC library mounted.
-  // Empty if library is not mounted.
-  string dlc_path;
+  // Optional root path where the DLC library mounted.
+  string? dlc_path;
 };
