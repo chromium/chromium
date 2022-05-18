@@ -407,6 +407,9 @@ try_.builder(
 
 try_.builder(
     name = "linux-webkit-msan-rel",
+    mirrors = [
+        "ci/WebKit Linux MSAN",
+    ],
 )
 
 try_.builder(
