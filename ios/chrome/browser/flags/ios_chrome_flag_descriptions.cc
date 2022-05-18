@@ -242,6 +242,10 @@ const char kEnableFaviconForPasswordsDescription[] =
     "and Never Saved sections and also for the AutoFill Passwords for the "
     "Credential Provider.";
 
+const char kEnableFeedAblationName[] = "Enables Feed Ablation";
+const char kEnableFeedAblationDescription[] =
+    "If Enabled the Feed will be removed from the NTP";
+
 const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
 const char kEnableFREUIModuleIOSDescription[] =
     "Use the new FRE UI module for first run.";

@@ -41,6 +41,8 @@ const base::Feature kNTPViewHierarchyRepair{"NTPViewHierarchyRepair",
 const char kDiscoverFeedTopSyncPromoStyleParam[] = "FeedTopPromoStyle";
 const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[] = "fullWithTitle";
 const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
+const base::Feature kEnableFeedAblation{"FeedAblationEnabled",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
@@ -60,4 +62,8 @@ bool IsNTPViewHierarchyRepairEnabled() {
 
 bool IsDiscoverFeedTopSyncPromoEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedTopSyncPromo);
+}
+
+bool IsFeedAblationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedAblation);
 }

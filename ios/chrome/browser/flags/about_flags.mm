@@ -944,6 +944,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::
                             kAutofillRemoveCardExpiryFromDownstreamSuggestion)},
+    {"enable-feed-ablation", flag_descriptions::kEnableFeedAblationName,
+     flag_descriptions::kEnableFeedAblationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableFeedAblation)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
