@@ -30,6 +30,16 @@ const SETTINGS_FRAGMENT_NAMES = [
   'privacy-guide-clear-on-exit-fragment',
 ];
 
+function setupPrivacyRouteForTest() {
+  // Simulates the route of the user entering the privacy guide from the S&P
+  // settings. This is necessary as tests seem to by default define the
+  // previous route as Settings "/". On a back navigation, "/" matches the
+  // criteria for a valid Settings parent no matter how deep the subpage is in
+  // the Settings tree. This would always navigate to Settings "/" instead of
+  // to the parent of the current subpage.
+  Router.getInstance().navigateTo(routes.PRIVACY);
+}
+
 /**
  * Equivalent of the user manually navigating to the corresponding step via
  * typing the URL and step parameter in the Omnibox.
@@ -124,22 +134,15 @@ suite('PrivacyGuidePage', function() {
     shouldShowCookiesCard = true;
     shouldShowSafeBrowsingCard = true;
 
-    // Simulates the route of the user entering the privacy guide from the S&P
-    // settings. This is necessary as tests seem to by default define the
-    // previous route as Settings "/". On a back navigation, "/" matches the
-    // criteria for a valid Settings parent no matter how deep the subpage is in
-    // the Settings tree. This would always navigate to Settings "/" instead of
-    // to the parent of the current subpage.
-    Router.getInstance().navigateTo(routes.PRIVACY);
+    setupPrivacyRouteForTest();
 
     return flushTasks();
   });
 
   teardown(function() {
     page.remove();
-    // Reset route to default. The route is updated as we navigate through the
-    // cards, but the browser instance is shared among the tests, so otherwise
-    // the next test will be initialized to the same card as the previous test.
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
@@ -852,22 +855,15 @@ suite('PrivacyGuideFragmentMetrics', function() {
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
 
-    // Simulates the route of the user entering the privacy guide from the S&P
-    // settings. This is necessary as tests seem to by default define the
-    // previous route as Settings "/". On a back navigation, "/" matches the
-    // criteria for a valid Settings parent no matter how deep the subpage is in
-    // the Settings tree. This would always navigate to Settings "/" instead of
-    // to the parent of the current subpage.
-    Router.getInstance().navigateTo(routes.PRIVACY);
+    setupPrivacyRouteForTest();
 
     return flushTasks();
   });
 
   teardown(function() {
     page.remove();
-    // Reset route to default. The route is updated as we navigate through the
-    // cards, but the browser instance is shared among the tests, so otherwise
-    // the next test will be initialized to the same card as the previous test.
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
@@ -1339,13 +1335,7 @@ suite('CompletionFragment', function() {
     page = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(page);
 
-    // Simulates the route of the user entering the privacy guide from the S&P
-    // settings. This is necessary as tests seem to by default define the
-    // previous route as Settings "/". On a back navigation, "/" matches the
-    // criteria for a valid Settings parent no matter how deep the subpage is in
-    // the Settings tree. This would always navigate to Settings "/" instead of
-    // to the parent of the current subpage.
-    Router.getInstance().navigateTo(routes.PRIVACY);
+    setupPrivacyRouteForTest();
     // The user navigates to the completion step.
     navigateToStep(PrivacyGuideStep.COMPLETION);
 
@@ -1354,9 +1344,8 @@ suite('CompletionFragment', function() {
 
   teardown(function() {
     page.remove();
-    // Reset route to default. The route is updated as we navigate through the
-    // cards, but the browser instance is shared among the tests, so otherwise
-    // the next test will be initialized to the same card as the previous test.
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
@@ -1430,13 +1419,7 @@ suite('CompletionFragmentPrivacyGuide2Disabled', function() {
     page = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(page);
 
-    // Simulates the route of the user entering the privacy guide from the S&P
-    // settings. This is necessary as tests seem to by default define the
-    // previous route as Settings "/". On a back navigation, "/" matches the
-    // criteria for a valid Settings parent no matter how deep the subpage is in
-    // the Settings tree. This would always navigate to Settings "/" instead of
-    // to the parent of the current subpage.
-    Router.getInstance().navigateTo(routes.PRIVACY);
+    setupPrivacyRouteForTest();
     // The user navigates to the completion step.
     navigateToStep(PrivacyGuideStep.COMPLETION);
 
@@ -1445,9 +1428,8 @@ suite('CompletionFragmentPrivacyGuide2Disabled', function() {
 
   teardown(function() {
     page.remove();
-    // Reset route to default. The route is updated as we navigate through the
-    // cards, but the browser instance is shared among the tests, so otherwise
-    // the next test will be initialized to the same card as the previous test.
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
@@ -1480,22 +1462,15 @@ suite('PrivacyGuideDialog', function() {
     page = document.createElement('settings-privacy-guide-dialog');
     document.body.appendChild(page);
 
-    // Simulates the route of the user entering the privacy guide from the S&P
-    // settings. This is necessary as tests seem to by default define the
-    // previous route as Settings "/". On a back navigation, "/" matches the
-    // criteria for a valid Settings parent no matter how deep the subpage is in
-    // the Settings tree. This would always navigate to Settings "/" instead of
-    // to the parent of the current subpage.
-    Router.getInstance().navigateTo(routes.PRIVACY);
+    setupPrivacyRouteForTest();
 
     return flushTasks();
   });
 
   teardown(function() {
     page.remove();
-    // Reset route to default. The route is updated as we navigate through the
-    // cards, but the browser instance is shared among the tests, so otherwise
-    // the next test will be initialized to the same card as the previous test.
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
     Router.getInstance().navigateTo(routes.BASIC);
 
     // The user navigates to PG.
