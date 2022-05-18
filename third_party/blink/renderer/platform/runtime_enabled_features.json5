@@ -724,7 +724,7 @@
     {
       // https://drafts.csswg.org/css-cascade-6/#scoped-styles
       name: "CSSScope",
-      status: "test",
+      status: "experimental",
     },
     // Scrollbar styling.
     // https://drafts.csswg.org/css-scrollbars/
