@@ -696,8 +696,8 @@
   },
   {
     "name": "calendar-view",
-    "owners": ["jiamingc"],
-    "expiry_milestone" : 103
+    "owners": ["jiamingc", "cros-status-area-eng@google.com"],
+    "expiry_milestone" : 106
   },
   {
     "name": "calendar-view-debug-mode",
