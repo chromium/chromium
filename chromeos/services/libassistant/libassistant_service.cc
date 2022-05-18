@@ -77,6 +77,8 @@ class LibassistantFactoryImpl : public LibassistantFactory {
     }
 
     base::FilePath path = GetLibassisantPath(dlc_path.value());
+    // Self-resets are not allowed on unique_ptr.
+    dlc_library_.reset();
     dlc_library_ = base::ScopedNativeLibrary(path);
     if (IsDlcLibraryValid()) {
       DVLOG(3) << "Loaded libassistant shared library from: " << path;
