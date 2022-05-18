@@ -15,6 +15,7 @@
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node.h"
+#include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/node_name.h"
 #include "ipcz/sequence_number.h"
@@ -58,7 +59,8 @@ class NodeLink : public RefCounted, private msg::NodeMessageListener {
                               const NodeName& remote_node_name,
                               Node::Type remote_node_type,
                               uint32_t remote_protocol_version,
-                              Ref<DriverTransport> transport);
+                              Ref<DriverTransport> transport,
+                              Ref<NodeLinkMemory> memory);
 
   const Ref<Node>& node() const { return node_; }
   LinkSide link_side() const { return link_side_; }
@@ -67,6 +69,9 @@ class NodeLink : public RefCounted, private msg::NodeMessageListener {
   Node::Type remote_node_type() const { return remote_node_type_; }
   uint32_t remote_protocol_version() const { return remote_protocol_version_; }
   const Ref<DriverTransport>& transport() const { return transport_; }
+
+  NodeLinkMemory& memory() { return *memory_; }
+  const NodeLinkMemory& memory() const { return *memory_; }
 
   // Binds `sublink` on this NodeLink to the given `router`. `link_side`
   // specifies which side of the link this end identifies as (A or B), and
@@ -107,7 +112,8 @@ class NodeLink : public RefCounted, private msg::NodeMessageListener {
            const NodeName& remote_node_name,
            Node::Type remote_node_type,
            uint32_t remote_protocol_version,
-           Ref<DriverTransport> transport);
+           Ref<DriverTransport> transport,
+           Ref<NodeLinkMemory> memory);
   ~NodeLink() override;
 
   SequenceNumber GenerateOutgoingSequenceNumber();
@@ -123,6 +129,7 @@ class NodeLink : public RefCounted, private msg::NodeMessageListener {
   const Node::Type remote_node_type_;
   const uint32_t remote_protocol_version_;
   const Ref<DriverTransport> transport_;
+  const Ref<NodeLinkMemory> memory_;
 
   absl::Mutex mutex_;
   bool active_ ABSL_GUARDED_BY(mutex_) = true;

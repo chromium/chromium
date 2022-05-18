@@ -163,6 +163,8 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     // NodeConnector should reject this message.
     EXPECT_FALSE(rejected);
     msg::ConnectFromBrokerToNonBroker message;
+    message.params().buffer =
+        message.AppendDriverObject(DriverMemory(broker, 64).TakeDriverObject());
     non_broker_transport->Transmit(message);
     EXPECT_TRUE(rejected);
   }

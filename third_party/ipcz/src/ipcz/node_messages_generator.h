@@ -32,6 +32,10 @@ IPCZ_MSG_BEGIN(ConnectFromBrokerToNonBroker,
   // another, where one end tries to establish more initial portals than the
   // other supports.
   IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+
+  // A driver memory object to serve as the new NodeLink's primary shared
+  // buffer. That is, BufferId 0 within its NodeLinkMemory's BufferPool.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(buffer)
 IPCZ_MSG_END()
 
 // Initial greeting sent by a non-broker node when ConnectNode() is invoked with

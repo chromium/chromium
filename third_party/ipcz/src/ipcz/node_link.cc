@@ -14,6 +14,7 @@
 #include "ipcz/link_type.h"
 #include "ipcz/message.h"
 #include "ipcz/node.h"
+#include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
@@ -30,10 +31,12 @@ Ref<NodeLink> NodeLink::Create(Ref<Node> node,
                                const NodeName& remote_node_name,
                                Node::Type remote_node_type,
                                uint32_t remote_protocol_version,
-                               Ref<DriverTransport> transport) {
+                               Ref<DriverTransport> transport,
+                               Ref<NodeLinkMemory> memory) {
   return AdoptRef(new NodeLink(std::move(node), link_side, local_node_name,
                                remote_node_name, remote_node_type,
-                               remote_protocol_version, std::move(transport)));
+                               remote_protocol_version, std::move(transport),
+                               std::move(memory)));
 }
 
 NodeLink::NodeLink(Ref<Node> node,
@@ -42,14 +45,16 @@ NodeLink::NodeLink(Ref<Node> node,
                    const NodeName& remote_node_name,
                    Node::Type remote_node_type,
                    uint32_t remote_protocol_version,
-                   Ref<DriverTransport> transport)
+                   Ref<DriverTransport> transport,
+                   Ref<NodeLinkMemory> memory)
     : node_(std::move(node)),
       link_side_(link_side),
       local_node_name_(local_node_name),
       remote_node_name_(remote_node_name),
       remote_node_type_(remote_node_type),
       remote_protocol_version_(remote_protocol_version),
-      transport_(std::move(transport)) {
+      transport_(std::move(transport)),
+      memory_(std::move(memory)) {
   transport_->set_listener(this);
 }
 
