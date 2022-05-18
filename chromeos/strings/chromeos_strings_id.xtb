@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Captive portal dicurigai</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Aktifkan Proteksi Tulis</translation>
 <translation id="1308754910631152188">Mengupdate (<ph name="PERCENTAGE_VALUE" />% selesai)</translation>
 <translation id="1310380015393971138">Jaringan <ph name="NETWORK_NAME" /> tidak tersedia</translation>
 <translation id="131421566576084655">Tanggal reset data terakhir tidak tersedia</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Jaringan asal, tidak dalam jelajah</translation>
+<translation id="132712914231403017">Instal image firmware</translation>
 <translation id="1327977588028644528">Gerbang</translation>
 <translation id="1328223165223065150">Warna wallpaper</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Pengumpan Dokumen (Satu Sisi)</translation>
 <translation id="1643449475550628585">Ubah gambar wallpaper setiap hari</translation>
 <translation id="1644574205037202324">Histori</translation>
+<translation id="1645954272419197032">Konfirmasi informasi perangkat</translation>
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Konektivitas</translation>
 <translation id="2008685064673031089">Penelusuran bilangan prima</translation>
 <translation id="2016697457005847575">Coba langkah-langkah pemecahan masalah</translation>
+<translation id="2016848882344942759">--tanpa white-label--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2085089206770112532">Kurangi kecerahan layar</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Jadwal mode gelap</translation>
 <translation id="2275586345903859204">Perbaikan selesai</translation>
 <translation id="2287186687001756809">Foto tidak tersedia. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Masukkan penyimpanan eksternal, seperti drive USB atau kartu SD, yang berisi image Utilitas Pemulihan Chromebook yang telah didownload</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
 <translation id="2323506179655536734">DILEWATI</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">Kunci autentikasi TLS</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2717139507051041123">Aktifkan mode warna gelap</translation>
+<translation id="2727250716596204208">Tidak dapat menemukan image firmware. Masukkan penyimpanan eksternal, seperti drive USB atau kartu SD, yang berisi image Utilitas Pemulihan Chromebook yang telah didownload.</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2751739896257479635">Autentikasi tahap 2 EAP</translation>
 <translation id="2756652381241102009">Jalankan Diagnosis</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Perangkat terhubung.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Hapus halaman?}=1{Hapus halaman {PAGE_NUMBER}?}other{Hapus halaman {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Menyediakan perangkat ...</translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
 <translation id="315738237743207937">Captive portal terdeteksi</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
+<translation id="3383751554789092165">Ubah informasi perangkat sesuai kebutuhan.</translation>
 <translation id="3404249063913988450">Aktifkan screen saver</translation>
 <translation id="3404770484521709967">Komponen diinstal dengan benar.</translation>
 <translation id="3413935475507503304">Untuk melanjutkan update, klik Berikutnya.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
 <translation id="3771294271822695279">File Video</translation>
+<translation id="3774059845329307709">Nomor seri</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="38114475217616659">Hapus semua histori</translation>
 <translation id="3820172043799983114">PIN tidak valid.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">Baterai <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM Tidak Dikunci</translation>
 <translation id="4562494484721939086">Tidak ada layanan</translation>
+<translation id="4568938274596692027">Penginstalan selesai. Bersiap untuk memulai ulang ...</translation>
 <translation id="458794348635939462">Gagal me-resolve semua host</translation>
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4609350030397390689">Kurangi kecerahan keyboard</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="4891842000192098784">Tegangan</translation>
 <translation id="4897058166682006107">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kiri.</translation>
+<translation id="4908030561598728899">Menginstal firmware ...</translation>
 <translation id="4915052247106771211">Memilih opsi ini akan mereset perangkat ke setelan pabrik (Powerwash).</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4917889632206600977">Dihentikan - Kertas habis</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Setelan jawaban instan</translation>
 <translation id="5168185087976003268">Kesehatan baterai</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
+<translation id="5179530508336824319">Aktifkan proteksi tulis untuk melanjutkan ke layar berikutnya. Buka halaman dukungan produsen perangkat untuk mendapatkan petunjuk.</translation>
 <translation id="5190187232518914472">Hidupkan kembali memori favorit Anda. Untuk menambahkan atau mengedit album, buka <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
 Ketuk mikrofon untuk bertanya apa saja.</translation>
@@ -615,8 +627,10 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
+<translation id="6822504384524564824">Hanya ubah SKU jika komponen baru berbeda dari komponen yang diganti. Misalnya, layar sentuh menggantikan non-layar sentuh, atau memori diupgrade dari 8 GB ke 16 GB.</translation>
 <translation id="6840315122969944400">Perbaikan <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
+<translation id="6876833053687020046">Nomor suku cadang DRAM</translation>
 <translation id="6889786074662672253">Saat memulai ulang, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Proses ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama proses berlangsung.</translation>
 <translation id="6905724422583748843">Kembali ke <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Penutup pemindai terbuka. Tutup penutup dan coba lagi.</translation>
@@ -664,6 +678,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7359657277149375382">Jenis file</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Ubah screensaver</translation>
 <translation id="7397270852490618635">Nonaktifkan tema terang</translation>
 <translation id="741244894080940828">konversi</translation>
@@ -763,6 +778,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>
 <translation id="8372477600026034341">Host tambahan</translation>
 <translation id="8378855320830505539">Kawasan</translation>
+<translation id="8382302752385457774">White-label</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
 <translation id="8422748173858722634">IMEI</translation>

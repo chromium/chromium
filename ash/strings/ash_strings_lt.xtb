@@ -176,6 +176,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Sveiki, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Teksto įvestis</translation>
+<translation id="1982717156487272186">Rodyti ankstesnę savaitę</translation>
 <translation id="1989113344093894667">Negalima užfiksuoti turinio</translation>
 <translation id="1990046457226896323">Kalbos failai atsisiųsti</translation>
 <translation id="1993072747612765854">Sužinokite daugiau apie naujausią „<ph name="SYSTEM_APP_NAME" />“ naujinį</translation>
@@ -263,6 +264,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2573588302192866788">Nepavyko susieti „<ph name="NAME" />“</translation>
 <translation id="2575685495496069081">Neleidžiama prisijungti prie kelių paskyrų</translation>
 <translation id="2582112259361606227">Paleisti iš naujo, kad būtų atnaujinta</translation>
+<translation id="2586561057878260610">Paspauskite „Ctrl“ + W, kad sujungtumėte su „<ph name="DESK_NAME" />“. Paspauskite „Ctrl“ + „Shift“ + W, kad uždarytumėte darbalaukį ir langus.</translation>
 <translation id="2595239820337756193">5 tūkst. mylių</translation>
 <translation id="2596078834055697711">Sukurti lango ekrano kopiją</translation>
 <translation id="2607678425161541573">Reikia prisijungti internete</translation>
@@ -622,6 +624,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, įvertinimas žvaigždutėmis <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Grąžinkite ankstesnę įrenginio versiją per dieną}one{Grąžinkite ankstesnę įrenginio versiją per # dieną}few{Grąžinkite ankstesnę įrenginio versiją per # dienas}many{Grąžinkite ankstesnę įrenginio versiją per # dienos}other{Grąžinkite ankstesnę įrenginio versiją per # dienų}}</translation>
 <translation id="4642092649622328492">Padaryti dalinę ekrano kopiją</translation>
+<translation id="4644727592819780893">Sritis per maža, kad būtų galima pateikti fotoaparato peržiūroje</translation>
 <translation id="4648249871170053485">„<ph name="APP_NAME" />“, programos rekomendacija</translation>
 <translation id="4657775630156561295">Toliau pateiktas pasiūlymas bus visam laikui pašalintas iš jūsų paskyros pasiūlymų istorijos:
 
@@ -667,6 +670,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4917385247580444890">Stiprus</translation>
 <translation id="4918086044614829423">Priimti</translation>
 <translation id="4925542575807923399">Šios paskyros administratorius reikalauja, kad kelių paskyrų sesijoje pirmiausia būtų prisijungta naudojant šią paskyrą.</translation>
+<translation id="4938176435186993759">Slėpti visus pasiūlymus</translation>
 <translation id="4945196315133970626">Išjungti pranešimus</translation>
 <translation id="4946376291507881335">Užfiksuoti</translation>
 <translation id="495046168593986294">Slinkti į viršų</translation>
@@ -754,6 +758,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5520229639206813572">Administratorius pašalino visus „eSIM“ kortelių profilius. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
 <translation id="5523434445161341166">„<ph name="FEATURE_NAME" />“ prijungiama.</translation>
 <translation id="5532994612895037630">Palieskite bet kur, kad būtų įrašytas visas ekranas</translation>
+<translation id="5536723544185013515">„Naujausios programos“: naršykite naudodami rodyklės kairėn ar dešinėn klavišus, kad pasiektumėte visas naujausias programas</translation>
 <translation id="553675580533261935">Išeinama iš sesijos</translation>
 <translation id="5537725057119320332">Perduoti</translation>
 <translation id="554893713779400387">Perjungti diktavimą</translation>
@@ -776,10 +781,12 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5673434351075758678">Po nustatymų sinchronizavimo kalba pakeista iš „<ph name="FROM_LOCALE" />“ į „<ph name="TO_LOCALE" />“.</translation>
 <translation id="5675363643668471212">Lentynos elementas</translation>
 <translation id="5677928146339483299">Užblokuoti</translation>
+<translation id="5678564054339031017">Rodyti kitą savaitę</translation>
 <translation id="5679050765726761783">Prijungtas mažos galios adapteris</translation>
 <translation id="5682642926269496722">„Google Assistant“ nepasiekiamas dabartinėje naudotojo paskyroje.</translation>
 <translation id="5689633613396158040">Naudojant „Nakties šviesos“ funkciją bus patogiau žiūrėti į ekraną ar skaityti prietemoje. Palieskite, kad pakeistumėte, kokiu metu įjungiama funkcija „Nakties šviesa“, arba ją visiškai išjungtumėte.</translation>
 <translation id="5691772641933328258">Kontrolinis kodas neatpažintas</translation>
+<translation id="570390244361237317">„Visos programos“; naudokite rodyklių klavišus, kad pasiektumėte visas programas</translation>
 <translation id="5707775774148071965">Įrenginys palaiko didesnį duomenų dažnį nei laidas. Įrenginio našumas gali būti apribotas.</translation>
 <translation id="5710450975648804523">Netrukdymo režimas įjungtas</translation>
 <translation id="571295407079589142">Mobiliojo ryšio duomenys išjungti</translation>

@@ -176,6 +176,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Merhaba <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Metin girişi</translation>
+<translation id="1982717156487272186">Önceki haftayı göster</translation>
 <translation id="1989113344093894667">İçeriğin ekran görüntüsü alınamıyor</translation>
 <translation id="1990046457226896323">Canlı Altyazı dosyaları indirildi</translation>
 <translation id="1993072747612765854">En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin</translation>
@@ -622,6 +623,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> Yıldız puanı</translation>
 <translation id="4633185660152240791">{0,plural, =1{Cihazı bir gün içinde önceki sürüme geçirin}other{Cihazı # gün içinde önceki sürüme geçirin}}</translation>
 <translation id="4642092649622328492">Kısmi ekran görüntüsü alır</translation>
+<translation id="4644727592819780893">Bölge, kamera önizlemesi için çok küçük</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Uygulama önerisi</translation>
 <translation id="4657775630156561295">Aşağıdaki öneri, hesabınızın öneri geçmişinden kalıcı olarak kaldırılacak:
 
@@ -776,6 +778,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5673434351075758678">Ayarlarınız senkronize edildikten sonra "<ph name="FROM_LOCALE" />" olan dil "<ph name="TO_LOCALE" />" olarak değiştirildi.</translation>
 <translation id="5675363643668471212">Raf öğesi</translation>
 <translation id="5677928146339483299">Engelleniyor</translation>
+<translation id="5678564054339031017">Sonraki haftayı göster</translation>
 <translation id="5679050765726761783">Düşük güçlü bir adaptör bağlandı</translation>
 <translation id="5682642926269496722">Google Asistan geçerli kullanıcı hesabı için kullanılamaz.</translation>
 <translation id="5689633613396158040">Gece Işığı, loş ışıkta ekranınızı daha iyi görmenizi ve daha kolay okumanızı sağlar. Gece Işığı'nın ne zaman açılacağını değiştirmek veya tamamen kapatmak için dokunun.</translation>

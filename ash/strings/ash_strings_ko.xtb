@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />님, 안녕하세요.</translation>
 <translation id="1978498689038657292">텍스트 입력</translation>
+<translation id="1982717156487272186">지난주 일정 보기</translation>
 <translation id="1989113344093894667">콘텐츠를 캡처할 수 없음</translation>
 <translation id="1990046457226896323">음성 파일 다운로드됨</translation>
 <translation id="1993072747612765854">최신 <ph name="SYSTEM_APP_NAME" /> 업데이트에 관해 자세히 알아보세요.</translation>
@@ -263,6 +264,7 @@
 <translation id="2573588302192866788"><ph name="NAME" />에 연결할 수 없음</translation>
 <translation id="2575685495496069081">멀티 로그인이 사용 중지됨</translation>
 <translation id="2582112259361606227">업데이트하려면 다시 시작</translation>
+<translation id="2586561057878260610">Ctrl + W 키를 눌러 <ph name="DESK_NAME" />과(와) 결합하세요. Ctrl + Shift + W 키를 눌러 데스크와 창을 닫으세요.</translation>
 <translation id="2595239820337756193">5km를 마일로 변환</translation>
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2607678425161541573">온라인 로그인 필요</translation>
@@ -622,6 +624,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, 별표 평점 <ph name="RATING_SCORE" />점</translation>
 <translation id="4633185660152240791">{0,plural, =1{하루 안에 기기를 이전 버전으로 되돌리세요}other{#일 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="4642092649622328492">부분 스크린샷 찍기</translation>
+<translation id="4644727592819780893">영역이 너무 작아서 카메라 미리보기를 표시할 수 없습니다.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, 앱 추천</translation>
 <translation id="4657775630156561295">계정의 추천 기록에서 다음 추천 검색어가 완전히 삭제됩니다.
 
@@ -667,6 +670,7 @@
 <translation id="4917385247580444890">강함</translation>
 <translation id="4918086044614829423">수락</translation>
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
+<translation id="4938176435186993759">모든 추천 숨기기</translation>
 <translation id="4945196315133970626">알림 사용 중지</translation>
 <translation id="4946376291507881335">캡처</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
@@ -754,6 +758,7 @@
 <translation id="5520229639206813572">관리자가 모든 eSIM 프로필을 삭제했습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" />이 연결을 시도하는 중입니다.</translation>
 <translation id="5532994612895037630">전체 화면을 녹화하려면 아무 곳이나 탭하세요.</translation>
+<translation id="5536723544185013515">최근 앱, 왼쪽 또는 오른쪽 화살표 키로 이동하여 최근 사용한 모든 앱에 액세스</translation>
 <translation id="553675580533261935">세션 종료</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="554893713779400387">음성기록 전환</translation>
@@ -776,10 +781,12 @@
 <translation id="5673434351075758678">설정 동기화 후 ‘<ph name="FROM_LOCALE" />’에서 ‘<ph name="TO_LOCALE" />’(으)로 변경합니다.</translation>
 <translation id="5675363643668471212">실행기 항목</translation>
 <translation id="5677928146339483299">차단</translation>
+<translation id="5678564054339031017">다음 주 일정 보기</translation>
 <translation id="5679050765726761783">저전력 어댑터 연결됨</translation>
 <translation id="5682642926269496722">현재 사용자 계정에서 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="5689633613396158040">야간 조명을 사용하면 주위가 어두울 때도 편안하게 화면을 보고 읽을 수 있습니다. 탭하여 야간 조명을 켜거나 완전히 끌 시간을 변경하세요.</translation>
 <translation id="5691772641933328258">지문을 인식할 수 없음</translation>
+<translation id="570390244361237317">전체 앱, 화살표 키로 이동하여 모든 앱에 액세스</translation>
 <translation id="5707775774148071965">기기에서 지원하는 데이터 속도가 케이블의 지원 속도보다 빠릅니다. 기기 성능이 제한될 수 있습니다.</translation>
 <translation id="5710450975648804523">방해 금지 모드 사용 중</translation>
 <translation id="571295407079589142">모바일 데이터 사용 중지</translation>

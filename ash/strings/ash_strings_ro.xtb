@@ -264,6 +264,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2573588302192866788">Conexiunea cu <ph name="NAME" /> nu s-a putut realiza</translation>
 <translation id="2575685495496069081">Conectarea multiplă a fost dezactivată</translation>
 <translation id="2582112259361606227">Repornește pentru a actualiza</translation>
+<translation id="2586561057878260610">Apasă Ctrl + W ca să combini cu <ph name="DESK_NAME" />. Apasă Ctrl + Shift + W ca să închizi desktopul și ferestrele.</translation>
 <translation id="2595239820337756193">5 km în mile</translation>
 <translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
 <translation id="2607678425161541573">Este necesară conectarea online</translation>
@@ -669,6 +670,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4917385247580444890">Puternic</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4925542575807923399">Administratorul acestui cont solicită ca acest cont să fie primul conectat într-o sesiune de conectare multiplă.</translation>
+<translation id="4938176435186993759">Ascunde toate sugestiile</translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
 <translation id="4946376291507881335">Capturează</translation>
 <translation id="495046168593986294">Derulează în sus</translation>
@@ -756,6 +758,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5520229639206813572">Administratorul a eliminat toate profilurile eSIM. Contactează administratorul pentru mai multe informații.</translation>
 <translation id="5523434445161341166">Opțiunea <ph name="FEATURE_NAME" /> se conectează.</translation>
 <translation id="5532994612895037630">Atinge oriunde pentru a înregistra ecranul complet</translation>
+<translation id="5536723544185013515">Aplicațiile recente, navighează cu săgețile la stânga sau la dreapta pentru a le accesa</translation>
 <translation id="553675580533261935">Se iese din sesiune</translation>
 <translation id="5537725057119320332">Proiectează</translation>
 <translation id="554893713779400387">Activează/dezactivează dictarea</translation>
@@ -783,6 +786,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5682642926269496722">Asistentul Google nu este disponibil pentru contul de utilizator actual.</translation>
 <translation id="5689633613396158040">Lumină de noapte îți oferă mai multă comoditate când privești ecranul sau citești într-o lumină slabă. Atinge pentru a schimba ora la care se activează Lumina de noapte sau dezactiveaz-o complet.</translation>
 <translation id="5691772641933328258">Amprenta nu a fost recunoscută</translation>
+<translation id="570390244361237317">Toate aplicațiile, navighează cu tastele săgeți ca să le accesezi</translation>
 <translation id="5707775774148071965">Dispozitivul acceptă o rată mai mare de transfer de date decât cablul. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="5710450975648804523">Funcția Nu deranja este activată</translation>
 <translation id="571295407079589142">Datele mobile sunt dezactivate</translation>

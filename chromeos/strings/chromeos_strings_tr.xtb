@@ -37,6 +37,7 @@
 <translation id="131421566576084655">Son veri sıfırlama tarihi kullanılamıyor</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Ev ağı, dolaşımda değil</translation>
+<translation id="132712914231403017">Donanım yazılımı görüntüsü yükleme</translation>
 <translation id="1327977588028644528">Ağ geçidi</translation>
 <translation id="1328223165223065150">Duvar kağıdı rengi</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">Doküman Besleyici (Tek taraflı)</translation>
 <translation id="1643449475550628585">Duvar kağıdı resmini günlük olarak değiştir</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
+<translation id="1645954272419197032">Lütfen cihaz bilgilerini onaylayın</translation>
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">Bağlantı</translation>
 <translation id="2008685064673031089">Birincil arama</translation>
 <translation id="2016697457005847575">Sorun giderme adımlarını deneyin</translation>
+<translation id="2016848882344942759">--beyaz etiket yok--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2085089206770112532">Ekran parlaklığını azalt</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">Koyu mod programı</translation>
 <translation id="2275586345903859204">Onarım tamamlandı</translation>
 <translation id="2287186687001756809">Resim yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>
+<translation id="2294753434210277304">İndirilen Chromebook Kurtarma Yardımcı Programı görüntüsünü içeren USB sürücü veya SD kart gibi bir harici depolama cihazı takın</translation>
 <translation id="2307344026739914387">Mevcut anahtar çiftini kullanın</translation>
 <translation id="2320295602967756579">Açık temayı etkinleştir</translation>
 <translation id="2323506179655536734">ATLANDI</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">TLS kimlik doğrulama anahtarı</translation>
 <translation id="2713444072780614174">Beyaz</translation>
 <translation id="2717139507051041123">Koyu renk modunu etkinleştir</translation>
+<translation id="2727250716596204208">Donanım yazılımı görüntüsü bulunamadı İndirilen Chromebook Kurtarma Yardımcı Programı görüntüsünü içeren USB sürücü veya SD kart gibi bir harici depolama cihazı takın.</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2751739896257479635">EAP Aşama 2 kimlik doğrulaması</translation>
 <translation id="2756652381241102009">Teşhisi Çalıştır</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Cihaz bağlandı.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Sayfa kaldırılsın mı?}=1{{PAGE_NUMBER}. sayfa kaldırılsın mı?}other{{PAGE_NUMBER}. sayfa kaldırılsın mı?}}</translation>
+<translation id="3137983112374760826">Cihazın temel hazırlığı yapılıyor...</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. sayfa taranıyor...</translation>
 <translation id="315738237743207937">Giriş portalı algılandı</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
+<translation id="3383751554789092165">Cihaz bilgilerini gerektiği şekilde değiştirin.</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3404770484521709967">Bileşenler doğru şekilde yüklendi.</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">Bağlı Değil</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
 <translation id="3771294271822695279">Video Dosyaları</translation>
+<translation id="3774059845329307709">Seri numarası</translation>
 <translation id="3784455785234192852">Kilitle</translation>
 <translation id="38114475217616659">Tüm geçmişi temizle</translation>
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh Pil</translation>
 <translation id="4561801978359312462">SIM Kilidi Açıldı</translation>
 <translation id="4562494484721939086">Hizmet yok</translation>
+<translation id="4568938274596692027">Yükleme tamamlandı. Yeniden başlatmaya hazırlanılıyor...</translation>
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4609350030397390689">Klavye parlaklığını azalt</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4891842000192098784">Stres</translation>
 <translation id="4897058166682006107">Cihazın sol kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
+<translation id="4908030561598728899">Donanım yazılımı yükleniyor...</translation>
 <translation id="4915052247106771211">Bu işlemden sonra cihaz fabrika ayarlarına sıfırlanır (Powerwash).</translation>
 <translation id="4917385247580444890">Güçlü</translation>
 <translation id="4917889632206600977">Durduruldu - Kağıt bitti</translation>
@@ -615,8 +625,10 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6768237774506518020">DNS çözümleme hata oranı yüksek</translation>
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
+<translation id="6822504384524564824">Yalnızca yeni bileşenler yerine geldikleri bileşenlerden farklıysa SKU değiştirilmelidir. Örneğin, dokunmatik olmayan bir ekran dokunmatik ekranla değiştirildiğinde veya hafıza 8GB'tan 16GB'a yükseltildiğinde.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> cihazını onar</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
+<translation id="6876833053687020046">DRAM parça numarası</translation>
 <translation id="6889786074662672253">Yeniden başlatılırken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> uygulamasına geri dön</translation>
 <translation id="6910312834584889076">Tarayıcının kapağı açık. Kapağı kapatıp tekrar deneyin.</translation>
@@ -664,6 +676,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7343649194310845056">Ağ Cihazları</translation>
 <translation id="7359657277149375382">Dosya türü</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Ekran koruyucuyu değiştir</translation>
 <translation id="7397270852490618635">Açık temayı kapat</translation>
 <translation id="741244894080940828">dönüştürme</translation>
@@ -763,6 +776,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8364946094152050673">Alan adı sunucuları boş</translation>
 <translation id="8372477600026034341">Ekstra ana makineler</translation>
 <translation id="8378855320830505539">Bölge</translation>
+<translation id="8382302752385457774">Beyaz etiket</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" />, kuruluş tarafından yönetiliyor</translation>
 <translation id="8398927464629426868">Cihazın şu andaki şarj olma veya şarjının boşalma hızı</translation>
 <translation id="8422748173858722634">IMEI</translation>

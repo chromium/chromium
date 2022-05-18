@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">नमस्कार, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">पाठ इनपुट</translation>
+<translation id="1982717156487272186">अघिल्लो हप्ताका कार्यक्रम देखाइयोस्</translation>
 <translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> को पछिल्लो अद्यावधिकबारे थप जान्नुहोस्</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा चिन्ह प्रयोग गरी गरिने मूल्याङ्कन <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{एक दिनभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# दिनभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
+<translation id="4644727592819780893">यो क्षेत्र धेरै सानो भएकाले यसमा क्यामेराको प्रिभ्यू देखाउन मिल्दैन</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, एपको सिफारिस</translation>
 <translation id="4657775630156561295">तपाईंको खाताको सुझावको इतिहासबाट निम्न सुझाव सदाका लागि हटाइने छ:
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">तपाईंका सेटिङहरू सिंक पश्चात् "<ph name="TO_LOCALE" />" बाट "<ph name="FROM_LOCALE" />" मा परिवर्तन भएका छन्।</translation>
 <translation id="5675363643668471212">सेल्फको वस्तु</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>
+<translation id="5678564054339031017">आगामी हप्ताका कार्यक्रम देखाइयोस्</translation>
 <translation id="5679050765726761783">न्यून पावर भएको एड्याप्टर जोडिएको छ</translation>
 <translation id="5682642926269496722">हालको प्रयोगकर्ताको खातामा Google सहायक उपलब्ध छैन।</translation>
 <translation id="5689633613396158040">रात्रि प्रकाशले मधुरो प्रकाशमा आफ्नो स्क्रिनमा हेर्न वा पढ्न अझ सजिलो बनाउँछ। रात्रि प्रकाश सक्रिय हुने समय परिवर्तन गर्न वा यसलाई पूर्ण रूपमा निष्क्रिय पार्न ट्याप गर्नुहोस्।</translation>

@@ -1713,6 +1713,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="25899519884572181">Изход от режима за четене</translation>
 <translation id="2593499352046705383">Преди да започнете, уверете се, че имате резервно копие на данните си. При инсталирането на <ph name="DEVICE_OS" /> твърдият ви диск ще бъде презаписан. Научете повече на адрес g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Потърсете с Google или въведете URL адрес</translation>
+<translation id="2597976513418770460">Използвайте нещата си в браузъра Chrome от <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Прекарайте пръст нагоре, за да започнете</translation>
 <translation id="2603115962224169880">Почистване на компютъра</translation>
 <translation id="2603355571917519942">Функцията Voice Match е готова за използване</translation>
@@ -7439,6 +7440,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8275080796245127762">Обаждане от устройството ви</translation>
 <translation id="8275339871947079271">Преместете паролата в профила си в Google, за да имате сигурен достъп до нея, когато сте влезли в него</translation>
 <translation id="8276560076771292512">Изпразване на кеша и твърдо презареждане</translation>
+<translation id="8281721647184388851">Да се включи ли синхронизирането в браузъра Chrome?</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8283475148136688298">Кодът за удостоверяване бе отхвърлен при установяването на връзка с/ъс <ph name="DEVICE_NAME" />.</translation>
 <translation id="8284279544186306258">всички <ph name="WEBSITE_1" /> сайта</translation>
@@ -7593,6 +7595,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8448729345478502352">Смаляване или уголемяване на елементите на екрана</translation>
 <translation id="8449008133205184768">Поставяне и съобразяване със стила</translation>
 <translation id="8449036207308062757">Управление на хранилището</translation>
+<translation id="8451192282033883849">Профилът ви се управлява от <ph name="MANAGER_NAME" />. Администраторът ви може да вижда и редактира този потребителски профил в браузъра Chrome, както и данните му – например отметките, историята и паролите.</translation>
 <translation id="8456512334795994339">Намерете приложения за работа и за игра</translation>
 <translation id="845702320058262034">Не може да бъде установена връзка. Уверете се, че функцията за Bluetooth на телефона ви е включена.</translation>
 <translation id="8457451314607652708">Импортиране на отметки</translation>

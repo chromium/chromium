@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">નમસ્કાર, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ટેક્સ્ટ ઇનપુટ</translation>
+<translation id="1982717156487272186">પાછલું અઠવાડિયું બતાવો</translation>
 <translation id="1989113344093894667">કન્ટેન્ટ કૅપ્ચર કરી શકાતું નથી</translation>
 <translation id="1990046457226896323">સ્પીચ ફાઇલો ડાઉનલોડ કરી</translation>
 <translation id="1993072747612765854">નવીનતમ <ph name="SYSTEM_APP_NAME" /> અપડેટ વિશે વધુ જાણો</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, સ્ટાર રેટિંગ <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{એક દિવસની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# દિવસની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# દિવસની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="4642092649622328492">આંશિક સ્ક્રીનશૉટ લો</translation>
+<translation id="4644727592819780893">વિસ્તાર ઘણો નાનો હોવાને કારણે કૅમેરામાં બંધ બેસી શકે તેમ નથી</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ઍપ માટે સુઝાવ</translation>
 <translation id="4657775630156561295">નીચેના સૂચનોને તમારા એકાઉન્ટના સૂચનના ઇતિહાસમાંથી કાયમી રીતે કાઢી નાખવામાં આવશે:
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">તમારી સેટિંગને સિંક કર્યા પછી "<ph name="FROM_LOCALE" />" થી "<ph name="TO_LOCALE" />"માં ફેરવો.</translation>
 <translation id="5675363643668471212">શેલ્ફ આઇટમ</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
+<translation id="5678564054339031017">આગલું અઠવાડિયું બતાવો</translation>
 <translation id="5679050765726761783">ઓછી ક્ષમતાવાળું પાવર અડૅપ્ટર કનેક્ટ કરેલું છે</translation>
 <translation id="5682642926269496722">હાલના વપરાશકર્તા એકાઉન્ટ માટે Google Assistant ઉપલબ્ધ નથી.</translation>
 <translation id="5689633613396158040">રાત્રિ પ્રકાશથી તમે સરળતાથી તમારી સ્ક્રીનને જોઈ શકો છો અથવા ઓછા પ્રકાશમાં વાંચી શકો છો. રાત્રિ પ્રકાશ ચાલુ થવાનો સમય બદલવા અથવા તેને સંપૂર્ણપણે બંધ કરવા ટૅપ કરો.</translation>

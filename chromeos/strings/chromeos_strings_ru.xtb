@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Потенциальная страница входа</translation>
 <translation id="1290331692326790741">слабый сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Включение защиты от записи</translation>
 <translation id="1308754910631152188">Обновление (выполнено <ph name="PERCENTAGE_VALUE" /> %)…</translation>
 <translation id="1310380015393971138">Сеть <ph name="NETWORK_NAME" /> недоступна.</translation>
 <translation id="131421566576084655">Сведения о дате последнего сброса недоступны</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">Настройка функции "Быстрые ответы"</translation>
 <translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
+<translation id="5179530508336824319">Чтобы продолжить, включите защиту от записи. Подробную инструкцию ищите на сайте службы поддержки производителя.</translation>
 <translation id="5190187232518914472">Вспоминайте яркие моменты своей жизни. Чтобы добавить или изменить альбом, перейдите в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>

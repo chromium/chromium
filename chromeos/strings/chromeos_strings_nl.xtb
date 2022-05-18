@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Write Protect aanzetten</translation>
 <translation id="1308754910631152188">Updaten (<ph name="PERCENTAGE_VALUE" />% klaar)</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beschikbaar</translation>
 <translation id="131421566576084655">De datum van de meest recente datareset is niet beschikbaar</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Thuisnetwerk zonder roaming</translation>
+<translation id="132712914231403017">Image van firmware installeren</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Achtergrondkleur</translation>
 <translation id="1330426557709298164">Jpg</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Documentfeeder (enkelzijdig)</translation>
 <translation id="1643449475550628585">Achtergrondafbeelding dagelijks wijzigen</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
+<translation id="1645954272419197032">Bevestig de apparaatgegevens</translation>
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Connectiviteit</translation>
 <translation id="2008685064673031089">Priemgetallen zoeken</translation>
 <translation id="2016697457005847575">Probeer de stappen voor probleemoplossing</translation>
+<translation id="2016848882344942759">--geen white label--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2085089206770112532">Helderheid van scherm verlagen</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Planning voor donkere modus</translation>
 <translation id="2275586345903859204">Reparatie is klaar</translation>
 <translation id="2287186687001756809">Geen afbeelding beschikbaar. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
+<translation id="2294753434210277304">Plaats een externe opslag, zoals een USB-drive of een SD-kaart, met de gedownloade image van het Chromebook-herstelprogramma</translation>
 <translation id="2307344026739914387">Huidig sleutelpaar gebruiken</translation>
 <translation id="2320295602967756579">Licht thema aanzetten</translation>
 <translation id="2323506179655536734">OVERGESLAGEN</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2717139507051041123">Modus voor donkere kleuren aanzetten</translation>
+<translation id="2727250716596204208">Kan de image van de firmware niet vinden. Plaats een externe opslag, zoals een USB-drive of een SD-kaart, met de gedownloade image van het Chromebook-herstelprogramma.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
 <translation id="2756652381241102009">Diagnose uitvoeren</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Apparaat is verbonden.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pagina verwijderen?}=1{Pagina {PAGE_NUMBER} verwijderen?}other{Pagina {PAGE_NUMBER} verwijderen?}}</translation>
+<translation id="3137983112374760826">Het apparaat registreren...</translation>
 <translation id="315116470104423982">Mobiele data</translation>
 <translation id="3156846309055100599">Pagina <ph name="PAGE_NUMBER" /> scannen…</translation>
 <translation id="315738237743207937">Captive portal waargenomen</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
+<translation id="3383751554789092165">Wijzig zo nodig de apparaatgegevens.</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
 <translation id="3404770484521709967">Componenten zijn juist geïnstalleerd.</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Niet verbonden</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
 <translation id="3771294271822695279">Videobestanden</translation>
+<translation id="3774059845329307709">Serienummer</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">Batterij van <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Simkaart ontgrendeld</translation>
 <translation id="4562494484721939086">Geen service</translation>
+<translation id="4568938274596692027">Installatie is afgerond. Opnieuw opstarten voorbereiden...</translation>
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Kies onmiddellijk een nieuw wachtwoord</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het linkeroordopje.</translation>
+<translation id="4908030561598728899">Firmware installeren...</translation>
 <translation id="4915052247106771211">Hierdoor wordt het apparaat teruggezet naar de fabrieksinstellingen (Powerwash).</translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4917889632206600977">Gestopt: geen papier meer</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Instellingen voor Snelle antwoorden</translation>
 <translation id="5168185087976003268">Batterijprestaties</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
+<translation id="5179530508336824319">Zet Write Protect aan om door te gaan naar het volgende scherm. Ga naar de supportpagina van de fabrikant voor instructies.</translation>
 <translation id="5190187232518914472">Beleef je favoriete herinneringen opnieuw. Ga naar <ph name="LINK_BEGIN" />Google Foto's<ph name="LINK_END" /> om albums toe te voegen of te bewerken.</translation>
 <translation id="5212543919916444558">Ik heb niets gevonden op je scherm waarmee ik kan helpen.
 Tik op de microfoon om me iets te vragen.</translation>
@@ -615,8 +627,10 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
+<translation id="6822504384524564824">Je hoeft de SKU alleen te wijzigen als een of meer nieuwe componenten verschillen van de componenten die worden vervangen. Bijvoorbeeld als een niet-touchscreen wordt vervangen door een touchscreen of als het geheugen wordt geüpgraded van 8 GB naar 16 GB.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" />-reparatie</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
+<translation id="6876833053687020046">DRAM-artikelnummer</translation>
 <translation id="6889786074662672253">Koppel dit externe apparaat niet los en zet je computer niet uit tijdens het opnieuw opstarten. Je kunt dit venster minimaliseren. Dit kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens dit proces.</translation>
 <translation id="6905724422583748843">Terug naar <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">De klep van de scanner staat open. Sluit de klep en probeer het opnieuw.</translation>
@@ -664,6 +678,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Screensaver wijzigen</translation>
 <translation id="7397270852490618635">Licht thema uitzetten</translation>
 <translation id="741244894080940828">conversie</translation>
@@ -763,6 +778,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
 <translation id="8378855320830505539">Regio</translation>
+<translation id="8382302752385457774">White label</translation>
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8422748173858722634">IMEI</translation>

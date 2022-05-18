@@ -37,6 +37,7 @@
 <translation id="131421566576084655">Datum posledního resetování dat není k dispozici</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Domácí síť, bez roamingu</translation>
+<translation id="132712914231403017">Instalace obrazu firmwaru</translation>
 <translation id="1327977588028644528">Brána</translation>
 <translation id="1328223165223065150">Barva tapety</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">Podavač dokumentů (jednostranných)</translation>
 <translation id="1643449475550628585">Denně měnit tapetu</translation>
 <translation id="1644574205037202324">Historie</translation>
+<translation id="1645954272419197032">Potvrďte informace o zařízení</translation>
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">Připojení</translation>
 <translation id="2008685064673031089">Vyhledávání prvočísel</translation>
 <translation id="2016697457005847575">Vyzkoušet postup odstraňování problémů</translation>
+<translation id="2016848882344942759">--žádný bílý štítek--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2085089206770112532">Snížit jas displeje</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">Plán tmavého režimu</translation>
 <translation id="2275586345903859204">Oprava je hotová</translation>
 <translation id="2287186687001756809">Žádné snímky. Fotky můžete přidat na adrese <ph name="LINK" />.</translation>
+<translation id="2294753434210277304">Vložte externí úložiště, například jednotku USB nebo kartu SD, se staženým obrazem Nástroje na obnovení Chromebooku</translation>
 <translation id="2307344026739914387">Použít aktuální dvojici klíčů</translation>
 <translation id="2320295602967756579">Aktivovat světlý motiv</translation>
 <translation id="2323506179655536734">PŘESKOČENO</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">Ověřovací klíč TLS</translation>
 <translation id="2713444072780614174">Bílá</translation>
 <translation id="2717139507051041123">Zapnout režim tmavých barev</translation>
+<translation id="2727250716596204208">Nepodařilo se najít obraz firmwaru. Vložte externí úložiště, například jednotku USB nebo kartu SD, se staženým obrazem Nástroje na obnovení Chromebooku.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Ověření EAP Phase 2</translation>
 <translation id="2756652381241102009">Spustit diagnostiku</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Zařízení je připojeno.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Odstranit stránku?}=1{Odstranit stránku {PAGE_NUMBER}?}few{Odstranit stránku {PAGE_NUMBER}?}many{Odstranit stránku {PAGE_NUMBER}?}other{Odstranit stránku {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Konfigurace zařízení…</translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
 <translation id="3156846309055100599">Skenování stránky <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Byl nalezen captive portál</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
+<translation id="3383751554789092165">Podle potřeby informace o zařízení změňte.</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3404770484521709967">Komponenty jsou nainstalovány správně.</translation>
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
 <translation id="3771294271822695279">Soubory videa</translation>
+<translation id="3774059845329307709">Sériové číslo</translation>
 <translation id="3784455785234192852">Uzamknout</translation>
 <translation id="38114475217616659">Vymazat celou historii</translation>
 <translation id="3820172043799983114">Neplatný kód PIN.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930">Baterie s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Odemknutá SIM karta</translation>
 <translation id="4562494484721939086">Žádný signál</translation>
+<translation id="4568938274596692027">Instalace je dokončena. Příprava na restart…</translation>
 <translation id="458794348635939462">Všechny hostitele se nepodařilo vyřešit</translation>
 <translation id="4593212453765072419">Vyžadováno ověření proxy serveru</translation>
 <translation id="4609350030397390689">Snížit jas</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">Ihned si zvolte nové</translation>
 <translation id="4891842000192098784">Zátěž</translation>
 <translation id="4897058166682006107">Stav baterie levého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4908030561598728899">Instalace firmwaru…</translation>
 <translation id="4915052247106771211">Zařízení se resetuje do továrního nastavení (Powerwash).</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4917889632206600977">Zastaveno – došel papír</translation>
@@ -615,8 +625,10 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6768237774506518020">Vysoká míra selhání překladu DNS</translation>
 <translation id="680983167891198932">Klíč</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
+<translation id="6822504384524564824">Jednotka SKU by se měla změnit pouze v případě, že se nové komponenty liší od těch, které nahrazují. Příkladem může být nahrazení dotykové obrazovky nedotykovou nebo upgrade paměti z 8 GB na 16 GB.</translation>
 <translation id="6840315122969944400">Oprava zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Rychlost vybíjení</translation>
+<translation id="6876833053687020046">Číslo dílu DRAM</translation>
 <translation id="6889786074662672253">Během restartování neodpojujte externí zařízení ani nevypínejte počítač. Toto okno můžete minimalizovat. Aktualizace může trvat několik minut a externí zařízení po tuto dobu nemusí fungovat.</translation>
 <translation id="6905724422583748843">Zpět na stránku <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kryt skeneru je otevřený. Zavřete kryt a zkuste to znovu.</translation>
@@ -664,6 +676,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Změnit spořič obrazovky</translation>
 <translation id="7397270852490618635">Vypnout světlý motiv</translation>
 <translation id="741244894080940828">převod</translation>
@@ -763,6 +776,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8364946094152050673">Prázdné názvové servery</translation>
 <translation id="8372477600026034341">Extra hostitelské servery</translation>
 <translation id="8378855320830505539">Region</translation>
+<translation id="8382302752385457774">Bílý štítek</translation>
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8422748173858722634">IMEI</translation>

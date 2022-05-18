@@ -260,6 +260,7 @@
 <translation id="2573588302192866788">无法连接“<ph name="NAME" />”</translation>
 <translation id="2575685495496069081">多帐号登录已被停用</translation>
 <translation id="2582112259361606227">重启以进行更新</translation>
+<translation id="2586561057878260610">按 Ctrl + W 即可与“<ph name="DESK_NAME" />”合并。按 Ctrl + Shift + W 则可关闭桌面和窗口。</translation>
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
@@ -664,6 +665,7 @@
 <translation id="4917385247580444890">强</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4925542575807923399">此帐号的管理员规定：在多帐号登录会话中，此帐号必须是最先登录的帐号。</translation>
+<translation id="4938176435186993759">隐藏所有建议</translation>
 <translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
 <translation id="495046168593986294">向上滚动</translation>
@@ -751,6 +753,7 @@
 <translation id="5520229639206813572">您的管理员已移除所有 eSIM 卡配置文件。如需了解详情，请与您的管理员联系。</translation>
 <translation id="5523434445161341166">“<ph name="FEATURE_NAME" />”正在连接。</translation>
 <translation id="5532994612895037630">点按任意位置即可录制整个屏幕</translation>
+<translation id="5536723544185013515">“最近用过的应用”：若要访问最近用过的所有应用，请使用向左键或向右键导航</translation>
 <translation id="553675580533261935">退出会话</translation>
 <translation id="5537725057119320332">投射</translation>
 <translation id="554893713779400387">开启/关闭语音输入</translation>
@@ -777,6 +780,7 @@
 <translation id="5682642926269496722">当前用户帐号无法使用 Google 助理。</translation>
 <translation id="5689633613396158040">护眼模式可让您更舒适地在黯淡的光线下查看屏幕或阅读文字。点按即可更改护眼模式的开启时间或彻底关闭护眼模式。</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
+<translation id="570390244361237317">“所有应用”：若要访问各个应用，请使用箭头键导航</translation>
 <translation id="5707775774148071965">您的设备支持的数据传输速率高于数据线的数据传输速率。设备性能可能会受到限制。</translation>
 <translation id="5710450975648804523">“请勿打扰”模式已开启</translation>
 <translation id="571295407079589142">移动数据网络处于关闭状态</translation>

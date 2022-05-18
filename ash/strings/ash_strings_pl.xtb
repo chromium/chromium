@@ -176,6 +176,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Cześć <ph name="USERNAME" />,</translation>
 <translation id="1978498689038657292">Wprowadzanie tekstu</translation>
+<translation id="1982717156487272186">Pokaż poprzedni tydzień</translation>
 <translation id="1989113344093894667">Nie można przechwytywać treści</translation>
 <translation id="1990046457226896323">Pliki z mową zostały pobrane</translation>
 <translation id="1993072747612765854">Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +264,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2573588302192866788">Nie udało się połączyć z urządzeniem <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Wielokrotne logowanie jest wyłączone</translation>
 <translation id="2582112259361606227">Uruchom ponownie, by zaktualizować</translation>
+<translation id="2586561057878260610">Naciśnij Ctrl + W, aby połączyć z biurkiem <ph name="DESK_NAME" />. Naciśnij Ctrl + Shift + W, aby zamknąć biurko i okna.</translation>
 <translation id="2595239820337756193">Przelicz 5 km na mile</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2607678425161541573">Wymagane jest zalogowanie w trybie online</translation>
@@ -622,6 +624,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, liczba gwiazdek <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 dnia}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dni}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dni}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # dnia}}</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
+<translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomendowana aplikacja</translation>
 <translation id="4657775630156561295">Ta sugestia zostanie trwale usunięta z historii sugestii na Twoim koncie:
 
@@ -667,6 +670,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
+<translation id="4938176435186993759">Ukryj wszystkie sugestie</translation>
 <translation id="4945196315133970626">Wyłącz powiadomienia</translation>
 <translation id="4946376291507881335">Zapis</translation>
 <translation id="495046168593986294">Przewiń w górę</translation>
@@ -754,6 +758,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5520229639206813572">Administrator usunął wszystkie profile eSIM. Aby dowiedzieć się więcej, skontaktuj się z administratorem.</translation>
 <translation id="5523434445161341166">Funkcja <ph name="FEATURE_NAME" /> nawiązuje połączenie.</translation>
 <translation id="5532994612895037630">Aby zrobić zrzut całego ekranu, kliknij w dowolnym miejscu</translation>
+<translation id="5536723544185013515">Ostatnie aplikacje; aby uzyskać dostęp do wszystkich ostatnich aplikacji, poruszaj się za pomocą klawiszy strzałek w lewo lub w prawo</translation>
 <translation id="553675580533261935">Zamykanie sesji</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="554893713779400387">Włącz lub wyłącz dyktowanie</translation>
@@ -776,10 +781,12 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5673434351075758678">Z języka: „<ph name="FROM_LOCALE" />” na „<ph name="TO_LOCALE" />” po zsynchronizowaniu ustawień.</translation>
 <translation id="5675363643668471212">Element na półce</translation>
 <translation id="5677928146339483299">Zablokowane</translation>
+<translation id="5678564054339031017">Pokaż następny tydzień</translation>
 <translation id="5679050765726761783">Podłączono zasilacz o małej mocy</translation>
 <translation id="5682642926269496722">Asystent Google jest niedostępny na tym koncie użytkownika.</translation>
 <translation id="5689633613396158040">Dzięki Podświetleniu nocnemu oczy mniej się męczą podczas patrzenia na ekran lub czytania przy słabym oświetleniu. Kliknij, by zmienić godzinę włączania Podświetlenia nocnego lub całkowicie je wyłączyć.</translation>
 <translation id="5691772641933328258">Nie rozpoznano odcisku palca</translation>
+<translation id="570390244361237317">Wszystkie aplikacje; aby uzyskać dostęp do wszystkich aplikacji, poruszaj się za pomocą klawiszy strzałek</translation>
 <translation id="5707775774148071965">Twoje urządzenie obsługuje większą szybkość transmisji danych niż kabel. Wydajność urządzenia może być ograniczona.</translation>
 <translation id="5710450975648804523">Tryb Nie przeszkadzać włączony</translation>
 <translation id="571295407079589142">Mobilna transmisja danych jest wyłączona</translation>

@@ -173,6 +173,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hallo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstinvoer</translation>
+<translation id="1982717156487272186">Vorige week tonen</translation>
 <translation id="1989113344093894667">Kan geen content opnemen</translation>
 <translation id="1990046457226896323">Spraakbestanden gedownload</translation>
 <translation id="1993072747612765854">Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" /></translation>
@@ -260,6 +261,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2573588302192866788">Kan <ph name="NAME" /> niet koppelen</translation>
 <translation id="2575685495496069081">Toegang tot meerdere accounts is uitgezet</translation>
 <translation id="2582112259361606227">Opnieuw starten om updates uit te voeren</translation>
+<translation id="2586561057878260610">Druk op Ctrl + W om te combineren met <ph name="DESK_NAME" />. Druk op Ctrl + Shift + W om het bureau en de vensters te sluiten.</translation>
 <translation id="2595239820337756193">5 km in mijl</translation>
 <translation id="2596078834055697711">Een screenshot van het venster maken</translation>
 <translation id="2607678425161541573">Online inloggen vereist</translation>
@@ -619,6 +621,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, sterbeoordeling <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Zet het apparaat binnen een dag terug naar een oudere versie}other{Zet het apparaat binnen # dagen terug naar een oudere versie}}</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
+<translation id="4644727592819780893">Gebied is te klein voor het cameravoorbeeld</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app-aanbeveling</translation>
 <translation id="4657775630156561295">De volgende suggestie wordt definitief uit de suggestiegeschiedenis van je account verwijderd:
 
@@ -664,6 +667,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Accepteren</translation>
 <translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
+<translation id="4938176435186993759">Alle suggesties verbergen</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
 <translation id="4946376291507881335">Opnemen</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
@@ -751,6 +755,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5520229639206813572">Je beheerder heeft alle e-simkaartprofielen verwijderd. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> maakt verbinding.</translation>
 <translation id="5532994612895037630">Tik ergens om het hele scherm op te nemen</translation>
+<translation id="5536723544185013515">Recente apps, navigeer met de pijl-links of -rechts voor toegang tot alle recente apps</translation>
 <translation id="553675580533261935">Sessie sluiten</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Dicteren aan/uit</translation>
@@ -773,10 +778,12 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5673434351075758678">Van '<ph name="FROM_LOCALE" />' naar '<ph name="TO_LOCALE" />' na synchronisatie van je instellingen.</translation>
 <translation id="5675363643668471212">Plankitem</translation>
 <translation id="5677928146339483299">Geblokkeerd</translation>
+<translation id="5678564054339031017">Volgende week tonen</translation>
 <translation id="5679050765726761783">Adapter met laag vermogen aangesloten</translation>
 <translation id="5682642926269496722">De Google Assistent is niet beschikbaar voor het huidige gebruikersaccount.</translation>
 <translation id="5689633613396158040">Met Nachtverlichting kun je je scherm beter zien en lezen bij weinig licht. Tik om te wijzigen wanneer Nachtverlichting wordt aangezet of zet de functie helemaal uit.</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
+<translation id="570390244361237317">Alle apps, navigeer met de pijltoetsen voor toegang tot alle apps</translation>
 <translation id="5707775774148071965">Je apparaat ondersteunt een hogere datasnelheid dan je kabel. De prestaties van het apparaat kunnen beperkt zijn.</translation>
 <translation id="5710450975648804523">Niet storen staat aan</translation>
 <translation id="571295407079589142">Mobiele data staan uit</translation>

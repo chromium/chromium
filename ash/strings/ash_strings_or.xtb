@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ନମସ୍କାର, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ଟେକ୍ସଟ୍ ଇନ୍‌ପୁଟ୍</translation>
+<translation id="1982717156487272186">ଗତ ସପ୍ତାହର ଇଭେଣ୍ଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="1989113344093894667">ବିଷୟବସ୍ତୁକୁ କ୍ୟାପଚର୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1990046457226896323">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="1993072747612765854">ନବୀନତମ <ph name="SYSTEM_APP_NAME" /> ଅପ୍‌ଡେଟ୍ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ତାରା ମୂଲ୍ୟାଙ୍କନ <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{ଡିଭାଇସକୁ ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}other{ଡିଭାଇସକୁ # ଦିନ ମଧ୍ୟରେ ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ}}</translation>
 <translation id="4642092649622328492">ଆଶିଂକ ସ୍କ୍ରିନ୍‌ସଟ୍‍ ନିଅନ୍ତୁ</translation>
+<translation id="4644727592819780893">କ୍ୟାମେରା ପ୍ରିଭ୍ୟୁ ଦେଖାଇବା ପାଇଁ ଅଞ୍ଚଳଟି ବହୁତ ଛୋଟ ଅଟେ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ଆପ୍‍ର ସୁପାରିଶ</translation>
 <translation id="4657775630156561295">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ପରାମର୍ଶ ଇତିହାସରୁ ନିମ୍ନୋକ୍ତ ପରାମର୍ଶକୁ ସ୍ଥାୟୀ ଭାବେ କାଢ଼ି ଦିଆଯିବ:
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">ଆପଣଙ୍କର ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବା ପରେ "<ph name="FROM_LOCALE" />"ରୁ "<ph name="TO_LOCALE" />" ପର୍ଯ୍ୟନ୍ତ।</translation>
 <translation id="5675363643668471212">ସେଲ୍ଫ ଆଇଟମ୍</translation>
 <translation id="5677928146339483299">ବ୍ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="5678564054339031017">ପରବର୍ତ୍ତୀ ସପ୍ତାହର ଇଭେଣ୍ଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="5679050765726761783">କମ୍-ପାୱାରର ଆଡପ୍ଟର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="5682642926269496722">ବର୍ତ୍ତମାନର ଉପଯୋଗକର୍ତ୍ତା ଆକାଉଣ୍ଟ ପାଇଁ Google Assistant ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="5689633613396158040">ନାଇଟ୍ ଲାଇଟ୍ କମ୍ ଆଲୋକରେ ଆପଣଙ୍କର ସ୍କ୍ରିନକୁ ଦେଖିବା କିମ୍ବା ପଢ଼ିବା ସହଜ କରିଥାଏ। କେଉଁ ସମୟରେ ନାଇଟ୍ ଲାଇଟ୍ ଚାଲୁ କରାଯିବ କିମ୍ବା ଏହାକୁ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ବନ୍ଦ କରାଯିବ ତାହା ବଦଳାଇବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ।</translation>

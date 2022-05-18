@@ -176,6 +176,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" />:</translation>
 <translation id="1978498689038657292">Introducción de texto</translation>
+<translation id="1982717156487272186">Mostrar semana anterior</translation>
 <translation id="1989113344093894667">No se puede capturar el contenido</translation>
 <translation id="1990046457226896323">Archivos de voz descargados</translation>
 <translation id="1993072747612765854">Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
@@ -623,6 +624,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valoración por estrellas de <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 día}other{Cambia el dispositivo a la versión anterior en un plazo de # días}}</translation>
 <translation id="4642092649622328492">Hacer una captura de pantalla parcial</translation>
+<translation id="4644727592819780893">El área es demasiado pequeña para que la cámara la capte</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, aplicación recomendada</translation>
 <translation id="4657775630156561295">La siguiente sugerencia se eliminará permanentemente del historial de sugerencias de tu cuenta:
 
@@ -777,6 +779,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración.</translation>
 <translation id="5675363643668471212">Elemento de la estantería</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5678564054339031017">Mostrar semana siguiente</translation>
 <translation id="5679050765726761783">Adaptador de corriente de baja potencia conectado</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la cuenta de usuario actual.</translation>
 <translation id="5689633613396158040">Con la luz nocturna, resulta más fácil mirar la pantalla o leer con poca luz. Toca para elegir a qué hora debe activarse la luz nocturna o para desactivarla por completo.</translation>

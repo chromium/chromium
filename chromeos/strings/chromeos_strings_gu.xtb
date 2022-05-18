@@ -37,6 +37,7 @@
 <translation id="131421566576084655">છેલ્લા ડેટા રીસેટની તારીખ ઉપલબ્ધ નથી</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">હોમ નેટવર્ક, રોમિંગ નહીં</translation>
+<translation id="132712914231403017">ફર્મવેયરની છબી ઇન્સ્ટૉલ કરો</translation>
 <translation id="1327977588028644528">ગેટવે</translation>
 <translation id="1328223165223065150">વૉલપેપરનો રંગ</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +81,7 @@
 <translation id="1641857168437328880">દસ્તાવેજનું ફીડર (એક બાજુથી)</translation>
 <translation id="1643449475550628585">વૉલપેપરની છબી દરરોજ બદલો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
+<translation id="1645954272419197032">કૃપા કરીને ડિવાઇસની માહિતી કન્ફર્મ કરો</translation>
 <translation id="1662989795263954667">બંધ - શાહી ખલાસ થઈ ગઈ</translation>
 <translation id="1668469839109562275">બિલ્ટ-ઇન VPN</translation>
 <translation id="1703835215927279855">અક્ષર</translation>
@@ -118,6 +120,7 @@
 <translation id="2006864819935886708">કનેક્ટિવિટી</translation>
 <translation id="2008685064673031089">મુખ્ય શોધ</translation>
 <translation id="2016697457005847575">સમસ્યા નિવારણના પગલાં અજમાવી જુઓ</translation>
+<translation id="2016848882344942759">--કોઈ સફેદ-લેબલ નથી--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ</translation>
 <translation id="2085089206770112532">ડિસ્પ્લેનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
@@ -148,6 +151,7 @@
 <translation id="2271469253353559191">ઘેરા મોડનું શેડ્યૂલ</translation>
 <translation id="2275586345903859204">રિપેર પ્રક્રિયા પૂર્ણ થઈ</translation>
 <translation id="2287186687001756809">કોઈ છબી ઉપલબ્ધ નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
+<translation id="2294753434210277304">ડાઉનલોડ કરેલી Chromebook પુનઃપ્રાપ્તિ ઉપયોગિતા છબી ધરાવતો USB ડ્રાઇવ અથવા SD કાર્ડ જેવો બાહ્ય સ્ટોરેજ દાખલ કરો</translation>
 <translation id="2307344026739914387">હાલની કીની જોડીનો ઉપયોગ કરો</translation>
 <translation id="2320295602967756579">ઝાંખી થીમ ચાલુ કરો</translation>
 <translation id="2323506179655536734">છોડ્યું</translation>
@@ -188,6 +192,7 @@
 <translation id="2712812801627182647">TLS પ્રમાણીકરણ કી</translation>
 <translation id="2713444072780614174">શ્વેત</translation>
 <translation id="2717139507051041123">ઘેરા રંગવાળો મોડ ચાલુ કરો</translation>
+<translation id="2727250716596204208">ફર્મવેયરની છબી મળી નથી. ડાઉનલોડ કરેલી Chromebook પુનઃપ્રાપ્તિ ઉપયોગિતા છબી ધરાવતો USB ડ્રાઇવ અથવા SD કાર્ડ જેવો બાહ્ય સ્ટોરેજ દાખલ કરો.</translation>
 <translation id="2740531572673183784">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2751739896257479635">EAP તબક્કા 2 માટેનું પ્રમાણીકરણ</translation>
 <translation id="2756652381241102009">ડાયગ્નોસ્ટિક્સ ચલાવો</translation>
@@ -219,6 +224,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ડિવાઇસ કનેક્ટ થયેલું છે.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{પેજ કાઢી નાખીએ?}=1{પેજ {PAGE_NUMBER} કાઢી નાખીએ?}one{પેજ {PAGE_NUMBER} કાઢી નાખીએ?}other{પેજ {PAGE_NUMBER} કાઢી નાખીએ?}}</translation>
+<translation id="3137983112374760826">ડિવાઇસની જોગવાઈ કરી રહ્યાં છીએ...</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ...</translation>
 <translation id="315738237743207937">કૅપ્ટિવ પોર્ટલની જાણકારી મળી</translation>
@@ -240,6 +246,7 @@
 <translation id="3340011300870565703">ડિવાઇસના જમણા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
+<translation id="3383751554789092165">જરૂરિયાત પ્રમાણે ડિવાઇસની માહિતી બદલો.</translation>
 <translation id="3404249063913988450">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="3404770484521709967">ઘટકો યોગ્ય રીતે ઇન્સ્ટૉલ કરવામાં આવ્યા છે.</translation>
 <translation id="3413935475507503304">અપડેટમાં આગળ વધવા માટે આગળ પર ક્લિક કરો.</translation>
@@ -278,6 +285,7 @@
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
 <translation id="3771294271822695279">વીડિયો ફાઇલો</translation>
+<translation id="3774059845329307709">અનુક્રમ નંબર</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
 <translation id="38114475217616659">બધો ઇતિહાસ સાફ કરો</translation>
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
@@ -361,6 +369,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh બૅટરી</translation>
 <translation id="4561801978359312462">સિમ કાર્ડ અનલૉક છે</translation>
 <translation id="4562494484721939086">કોઈ સેવા નથી</translation>
+<translation id="4568938274596692027">ઇન્સ્ટૉલ કરવાનું પૂરું થયું. ફરી શરૂ કરવાની તૈયારી થઈ રહી છે...</translation>
 <translation id="458794348635939462">બધા હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4609350030397390689">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
@@ -403,6 +412,7 @@
 <translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="4891842000192098784">તાણ</translation>
 <translation id="4897058166682006107">ડિવાઇસના ડાબા ઇયરબડમાં <ph name="BATTERY_PERCENTAGE" />% બૅટરી છે.</translation>
+<translation id="4908030561598728899">ફર્મવેયર ઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="4915052247106771211">આને કારણે ડિવાઇસને ફેક્ટરી સેટિંગ (પાવરવોશ) પર રીસેટ કરવામાં આવશે.</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4917889632206600977">બંધ - કાગળ ખલાસ થઈ ગયા</translation>
@@ -614,8 +624,10 @@
 <translation id="6768237774506518020">DNS રિઝોલ્યુશન નિષ્ફળતાનો ઉચ્ચ રેટ</translation>
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
+<translation id="6822504384524564824">નવા ઘટક જેના સ્થાને આવ્યા તેના કરતાં તે અલગ હોય તો જ SKUમાં ફેરફાર કરવો જોઈએ. ઉદાહરણ તરીકે, નૉન-ટચસ્ક્રીનને બદલે ટચસ્ક્રીન આવે અથવા મેમરી અપગ્રેડ કરીને 8GBમાંથી 16GB કરાય.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> રિપૅર</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
+<translation id="6876833053687020046">DRAMનો ભાગ નંબર</translation>
 <translation id="6889786074662672253">ફરી શરૂ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> પર પાછા જાઓ</translation>
 <translation id="6910312834584889076">સ્કૅનરનું કવર ખુલ્લું છે. કવર બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
@@ -663,6 +675,7 @@
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">સ્ક્રીનસેવર બદલો</translation>
 <translation id="7397270852490618635">ઝાંખી થીમ બંધ કરો</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
@@ -762,6 +775,7 @@
 <translation id="8364946094152050673">સર્વરના કોઈ નામ આપવામાં આવ્યા નથી</translation>
 <translation id="8372477600026034341">અતિરિક્ત હોસ્ટ</translation>
 <translation id="8378855320830505539">પ્રદેશ</translation>
+<translation id="8382302752385457774">સફેદ-લેબલ</translation>
 <translation id="8395584934117017006">આ <ph name="DEVICE_TYPE" /> એન્ટરપ્રાઇઝ દ્વારા મેનેજ થાય છે</translation>
 <translation id="8398927464629426868">ડિવાઇસ હાલમાં જે ઝડપથી ચાર્જ કે ડિસ્ચાર્જ થઈ રહ્યું છે તે ઝડપ</translation>
 <translation id="8422748173858722634">IMEI</translation>

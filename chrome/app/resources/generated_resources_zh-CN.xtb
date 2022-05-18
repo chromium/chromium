@@ -1694,6 +1694,7 @@
 <translation id="25899519884572181">退出阅读器模式</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
+<translation id="2597976513418770460">从 <ph name="ACCOUNT_EMAIL" /> 获取您的 Chrome 浏览器信息</translation>
 <translation id="2602501489742255173">向上滑动即可开始使用</translation>
 <translation id="2603115962224169880">清理计算机</translation>
 <translation id="2603355571917519942">Voice Match 已设置完毕</translation>
@@ -7412,6 +7413,7 @@
 <translation id="8275080796245127762">通过您的设备拨打电话</translation>
 <translation id="8275339871947079271">将您的密码移至 Google 帐号后，无论您从哪部设备登录，都能安全地访问这个密码</translation>
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
+<translation id="8281721647184388851">开启 Chrome 浏览器同步？</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8283475148136688298">连接到“<ph name="DEVICE_NAME" />”时身份验证码遭拒。</translation>
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
@@ -7566,6 +7568,7 @@
 <translation id="8448729345478502352">缩小或放大屏幕上的内容</translation>
 <translation id="8449008133205184768">粘贴并匹配样式</translation>
 <translation id="8449036207308062757">管理存储空间</translation>
+<translation id="8451192282033883849">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据（例如书签、历史记录和密码）。</translation>
 <translation id="8456512334795994339">寻觅适合工作与娱乐的应用</translation>
 <translation id="845702320058262034">无法连接。请确保您手机的蓝牙已开启。</translation>
 <translation id="8457451314607652708">导入书签</translation>

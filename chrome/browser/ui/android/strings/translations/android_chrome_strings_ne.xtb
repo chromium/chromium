@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1384704387250346179">Google लेन्स प्रयोग गरी फोटोमा भएका कुरा अनुवाद गर्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिनअघि सक्रिय</translation>
+<translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />सेवाका सर्तहरू<ph name="END_LINK1" /> हेर्नुहोस्।</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
 <translation id="139993653570221430">तपाईं जुनसुकै बेला Chrome का सेटिङमा गई आफ्नो सहमति फिर्ता लिन सक्नुहुन्छ। यी ट्रायलहरूमा विज्ञापन देखाउने हालको तरिका नै अपनाइने भएकाले तपाईंले गर्नुभएका परिवर्तनहरू तुरुन्तै लागू हुँदैनन्।</translation>
 <translation id="1406000523432664303">“ट्रयाक नगर्नुहोस्”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">प्राइभेसी स्यान्डबक्सका बारेमा</translation>
 <translation id="1736419249208073774">अन्वेषण गर्नुहोस्</translation>
 <translation id="1749561566933687563">तपाईंका पुस्तक चिन्हहरू सिंक गर्नुहोस्</translation>
+<translation id="1750259112639922169">ट्याब समूह - <ph name="TAB_COUNT" /> वटा ट्याब</translation>
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
 <translation id="1754404134430936718">पाठ कपी गरियो</translation>
 <translation id="1779766957982586368">सन्झ्याल बन्द गर्नुहोस्</translation>
@@ -788,6 +790,7 @@
 <translation id="5368227114232678694">तपाईं यो डिभाइसमार्फत गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने इन्कोग्निटो मोड प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="5375577065097716013">Google लेन्समार्फत फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">प्रतिक्रिया परिवर्तन गरिएको छ</translation>
+<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ।</translation>
 <translation id="5403644198645076998">निश्चित साइटहरूलाई मात्र अनुमति दिनुहोस्</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="5414836363063783498">प्रमाणीकरण गर्दै...</translation>
@@ -1128,6 +1131,7 @@
 <translation id="7177873915659574692">QR कोड सिर्जना गर्न सकिएन। URL मा <ph name="CHARACTER_LIMIT" /> भन्दा बढी वर्ण प्रयोग गरिएको छ।</translation>
 <translation id="7177959540995930968">तपाईं Chrome का सेटिङमा गई यी सुविधाहरूका बारेमा थप जान्न सक्नुहुन्छ।</translation>
 <translation id="718226107353899806">तपाईं बढीमा <ph name="MAX_NUM_REACTIONS" /> वटा प्रतिक्रिया दिन सक्नुहुन्छ</translation>
+<translation id="7183693674623539380">ट्याब समूह - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">यस सुविधाले तपाईं Chrome मा साइन इन भएका बेला तपाईंको जानकारी सुरक्षित राख्छ। Google का अन्य एपहरूको सुरक्षा स्तर सुधार गर्न पनि यसको प्रयोग गरिन सक्छ।</translation>
 <translation id="7191430249889272776">पृष्ठभूमिमा ट्याब खुला छ।</translation>
 <translation id="7196215469483532480">गोपनीयतासम्बन्धी मार्गदर्शनको वर्णन स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>

@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ສະບາຍດີ, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ການປ້ອນຂໍ້ຄວາມເຂົ້າ</translation>
+<translation id="1982717156487272186">ສະແດງອາທິດກ່ອນໜ້າ</translation>
 <translation id="1989113344093894667">ບໍ່ສາມາດຖ່າຍຮູບເນື້ອຫາໄດ້</translation>
 <translation id="1990046457226896323">ດາວໂຫຼດໄຟລ໌ສຽງເວົ້າແລ້ວ</translation>
 <translation id="1993072747612765854">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການອັບເດດ <ph name="SYSTEM_APP_NAME" /> ຫຼ້າສຸດ</translation>
@@ -622,6 +623,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ການໃຫ້ຄະແນນເປັນດາວ <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນໜຶ່ງມື້}other{ປ່ຽນອຸປະກອນເປັນເວີຊັນກ່ອນໜ້າພາຍໃນ # ມື້}}</translation>
 <translation id="4642092649622328492">ຖ່າຍຮູບໜ້າຈໍບາງສ່ວນ</translation>
+<translation id="4644727592819780893">ພື້ນທີ່ນ້ອຍເກີນກວ່າທີ່ຈະສະແດງຕົວຢ່າງກ້ອງຖ່າຍຮູບໄດ້</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ການແນະນຳແອັບ</translation>
 <translation id="4657775630156561295">ການແນະນຳຕໍ່ໄປນີ້ຈະຖືກລຶບອອກຈາກປະຫວັດການແນະນຳຂອງບັນຊີທ່ານຢ່າງຖາວອນ:
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">ຈາກ "<ph name="FROM_LOCALE" />" ເປັນ "<ph name="TO_LOCALE" />" ຫຼັງຈາກຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ.</translation>
 <translation id="5675363643668471212">ລາຍການຖ້ານວາງ</translation>
 <translation id="5677928146339483299">ບລັອກແລ້ວ</translation>
+<translation id="5678564054339031017">ສະແດງອາທິດຕໍ່ໄປ</translation>
 <translation id="5679050765726761783">ເຊື່ອມຕໍ່ອະແດັບເຕີພະລັງງານຕໍ່າແລ້ວ</translation>
 <translation id="5682642926269496722">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ສຳລັບບັນຊີຜູ້ໃຊ້ປັດຈຸບັນ.</translation>
 <translation id="5689633613396158040">ແສງກາງຄືນເຮັດໃຫ້ມັນງ່າຍກວ່າໃນການເບິ່ງໜ້າຈໍຂອງທ່ານ ຫຼື ອ່ານໃນແສງທີ່ມືດ. ແຕະເພື່ອປ່ຽນວ່າຈະເປີດແສງກາງຄືນເວລາໃດ ຫຼື ປິດມັນໄປເລີຍກໍໄດ້.</translation>

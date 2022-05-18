@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">احتمالاً درگاه مهمان وجود دارد</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">روشن کردن «محافظت دربرابر نوشتن»</translation>
 <translation id="1308754910631152188">درحال به‌روزرسانی (<ph name="PERCENTAGE_VALUE" />٪ تکمیل شد)</translation>
 <translation id="1310380015393971138">هیچ شبکه‌ <ph name="NETWORK_NAME" /> دردسترس نیست</translation>
 <translation id="131421566576084655">تاریخ آخرین بازنشانی داده دردسترس نیست</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">تنظیمات پاسخ‌های سریع</translation>
 <translation id="5168185087976003268">سلامت باتری</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
+<translation id="5179530508336824319">برای رفتن به صفحه بعدی، «محافظت دربرابر نوشتن» را فعال کنید. برای دریافت دستورالعمل‌ها، به صفحه پشتیبانی سازنده دستگاه بروید.</translation>
 <translation id="5190187232518914472">‏خاطرات دلخواهتان را دوباره زنده کنید. برای افزودن یا ویرایش کردن آلبوم‌ها، به <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> بروید.</translation>
 <translation id="5212543919916444558">در صفحه‌‌تان چیزی پیدا نمی‌کنم تا درمورد آن کمکتان کنم.
 برای درخواست از من، روی میکروفون ضربه بزنید.</translation>

@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1384704387250346179">បកប្រែរូបភាពដោយប្រើ Google Lens <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">ដំណើរការ <ph name="LAST_UPDATED" /> ថ្ងៃ​មុន</translation>
+<translation id="13931502444227376">ដើម្បីបន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹងចែករំលែកឈ្មោះ អាសយដ្ឋានអ៊ីមែល និងរូបភាពកម្រងព័ត៌មានរបស់អ្នកជាមួយគេហទំព័រនេះ។ មើល<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់<ph name="END_LINK1" />របស់គេហទំព័រនេះ។</translation>
 <translation id="1397811292916898096">ស្វែងរក​ដោយ​ប្រើ <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">អ្នកអាចប្ដូរចិត្តរបស់អ្នកបានគ្រប់ពេលនៅក្នុងការកំណត់ Chrome។ ការ​សាក​ល្បងដំណើរការជាមួយវិធីបច្ចុប្បន្ន ដែលការផ្សាយពាណិជ្ជកម្មបង្ហាញ ដូច្នេះអ្នកនឹងមើលមិនឃើញការផ្លាស់ប្ដូរភ្លាមៗទេ។</translation>
 <translation id="1406000523432664303">“កុំតាមដាន”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">អំពី Privacy Sandbox</translation>
 <translation id="1736419249208073774">រុករក</translation>
 <translation id="1749561566933687563">ធ្វើសមកាលកម្មចំណាំរបស់អ្នក</translation>
+<translation id="1750259112639922169">ក្រុមផ្ទាំង - <ph name="TAB_COUNT" /> ផ្ទាំង</translation>
 <translation id="17513872634828108">បើកផ្ទាំង</translation>
 <translation id="1754404134430936718">បានចម្លង​អត្ថបទ</translation>
 <translation id="1779766957982586368">បិទផ្ទាំង</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">ដើម្បីរុករកជាលក្ខណៈឯកជននៅលើឧបករណ៍នេះ សូមសាកល្បងប្រើមុខងារឯកជន</translation>
 <translation id="5375577065097716013">ស្វែងរករូបភាពដោយប្រើ Google Lens <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">បានប្ដូរ​ប្រតិកម្ម</translation>
+<translation id="5401851137404501592">ដើម្បីបន្ត <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> នឹងចែករំលែកឈ្មោះ អាសយដ្ឋានអ៊ីមែល និងរូបភាពកម្រងព័ត៌មានរបស់អ្នកជាមួយគេហទំព័រនេះ។</translation>
 <translation id="5403644198645076998">អនុញ្ញាត​ទំព័រ​មួយចំនួន​តែ​ប៉ុណ្ណោះ</translation>
 <translation id="5409881200985013443">ដាក់បញ្ជូន <ph name="ONE_TIME_CODE" /> នៅលើ <ph name="CLIENT_NAME" /> ឬ?</translation>
 <translation id="5414836363063783498">កំពុងផ្ទៀងផ្ទាត់…</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">មិនអាចបង្កើត​កូដ QR បានទេ។ URL មានតួអក្សរ​ច្រើនជាង <ph name="CHARACTER_LIMIT" /> តួ។</translation>
 <translation id="7177959540995930968">អ្នកអាចស្វែងយល់បន្ថែមអំពីមុខងារទាំងនេះនៅក្នុងការកំណត់ Chrome។</translation>
 <translation id="718226107353899806">អ្នកអាចបញ្ចូលប្រតិកម្មបានរហូតដល់ <ph name="MAX_NUM_REACTIONS" /></translation>
+<translation id="7183693674623539380">ក្រុមផ្ទាំង - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">រក្សា​សុវត្ថិភាព​របស់អ្នក​នៅលើ Chrome និង​អាចប្រើ​សម្រាប់​កែលម្អ​សុវត្ថិភាព​របស់អ្នក​នៅក្នុង​កម្មវិធីរបស់ Google ផ្សេងទៀត នៅពេល​អ្នក​ចូលគណនី។</translation>
 <translation id="7191430249889272776">ផ្ទាំងដែលបានបើកនៅផ្ទៃខាងក្រោយ។</translation>
 <translation id="7196215469483532480">បានបើក​ការពន្យល់ពី​ការណែនាំអំពីឯកជនភាព​ពេញអេក្រង់</translation>

@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Gyaníthatóan hitelesítési portál</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Írásvédelem bekapcsolása</translation>
 <translation id="1308754910631152188">Frissítés (<ph name="PERCENTAGE_VALUE" />% kész)</translation>
 <translation id="1310380015393971138">Nincs hozzáférhető <ph name="NETWORK_NAME" />-hálózat</translation>
 <translation id="131421566576084655">Az adathasználat legutóbbi visszaállítási dátuma nem áll rendelkezésre</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Otthoni hálózat, nincs roaming</translation>
+<translation id="132712914231403017">Firmware-kép telepítése</translation>
 <translation id="1327977588028644528">Átjáró</translation>
 <translation id="1328223165223065150">Háttérkép színe</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Dokumentumadagoló (egyoldalas)</translation>
 <translation id="1643449475550628585">Háttérkép módosítása naponta</translation>
 <translation id="1644574205037202324">Előzmények</translation>
+<translation id="1645954272419197032">Erősítse meg az eszközadatokat</translation>
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
 <translation id="1668469839109562275">Beépített VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Kapcsolódási hiba</translation>
 <translation id="2008685064673031089">Prímszámkeresés</translation>
 <translation id="2016697457005847575">Problémamegoldási lépések kipróbálása</translation>
+<translation id="2016848882344942759">--nincs fehér címke--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2085089206770112532">Kijelző fényerejének csökkentése</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Sötét mód ütemezése</translation>
 <translation id="2275586345903859204">A javítás befejeződött</translation>
 <translation id="2287186687001756809">Nem található kép. Fotók hozzáadásához ugorjon a következőre: <ph name="LINK" />.</translation>
+<translation id="2294753434210277304">Helyezzen be külső tárolóeszközt (pl. USB-meghajtót vagy SD-kártyát), a letöltött Chromebook helyreállítási segédprogram képével</translation>
 <translation id="2307344026739914387">Jelenlegi kulcspár használata</translation>
 <translation id="2320295602967756579">Világos téma bekapcsolása</translation>
 <translation id="2323506179655536734">KIHAGYVA</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS-hitelesítési kulcs</translation>
 <translation id="2713444072780614174">Fehér</translation>
 <translation id="2717139507051041123">Sötét szín mód engedélyezése</translation>
+<translation id="2727250716596204208">Nem található a firmware képe. Helyezzen be külső tárolóeszközt (pl. USB-meghajtót vagy SD-kártyát), a letöltött Chromebook helyreállítási segédprogram képével.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAP hitelesítés 2. fázisa</translation>
 <translation id="2756652381241102009">Diagnosztika futtatása</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Az eszköz csatlakoztatva van.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Eltávolítja az oldalt?}=1{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}other{Eltávolítja a(z) {PAGE_NUMBER}. oldalt?}}</translation>
+<translation id="3137983112374760826">Az eszköz kiépítése…</translation>
 <translation id="315116470104423982">Mobiladatok</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. oldal beolvasása…</translation>
 <translation id="315738237743207937">Hitelesítési portál észlelve</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Jobb fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3369013195428705271">Biztosan törli a nyomtatási előzményeket? A folyamatban lévő nyomtatási feladatok nem szakadnak meg.</translation>
+<translation id="3383751554789092165">Szükség szerint módosítsa az eszközadatokat.</translation>
 <translation id="3404249063913988450">Képernyővédő engedélyezése</translation>
 <translation id="3404770484521709967">Az összetevők megfelelően vannak telepítve.</translation>
 <translation id="3413935475507503304">A frissítéssel való folytatáshoz kattintson a Tovább lehetőségre.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Nincs kapcsolódva</translation>
 <translation id="3749289110408117711">Fájlnév</translation>
 <translation id="3771294271822695279">Videofájlok</translation>
+<translation id="3774059845329307709">Sorozatszám</translation>
 <translation id="3784455785234192852">Zárolás</translation>
 <translation id="38114475217616659">Minden előzmény törlése</translation>
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-s akkumulátor</translation>
 <translation id="4561801978359312462">SIM feloldva</translation>
 <translation id="4562494484721939086">Nincs szolgáltatás</translation>
+<translation id="4568938274596692027">A telepítés kész. Felkészülés az újraindításra…</translation>
 <translation id="458794348635939462">Nem sikerült az összes gazdagép feloldása</translation>
 <translation id="4593212453765072419">Proxyhitelesítés szükséges</translation>
 <translation id="4609350030397390689">Billentyűzet fényerejének csökkentése</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Azonnal válasszon új jelszót</translation>
 <translation id="4891842000192098784">Stressz</translation>
 <translation id="4897058166682006107">Bal fülhallgató akkumulátorszintje: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4908030561598728899">Firmware telepítése…</translation>
 <translation id="4915052247106771211">Ezzel visszaállítja az eszköz gyári beállításait (Powerwash).</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4917889632206600977">Leállt – Kifogyott a papír</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Gyors válaszok beállításai</translation>
 <translation id="5168185087976003268">Akkumulátor egészsége</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
+<translation id="5179530508336824319">Kapcsolja be az írásvédelmet a következő képernyőre lépéshez. Az eszközgyártó támogatási oldalán megtalálhatja a kapcsolódó utasításokat.</translation>
 <translation id="5190187232518914472">Élje át újra kedvenc emlékeit. Albumok létrehozásához és szerkesztéséhez lépjen a <ph name="LINK_BEGIN" />Google Fotók<ph name="LINK_END" /> alkalmazásba.</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
@@ -615,8 +627,10 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6768237774506518020">Magas hibaarány DNS-feloldásnál</translation>
 <translation id="680983167891198932">Kulcs</translation>
 <translation id="6816797338148849397">Rendelkezésre áll információ a kiválasztott elemmel kapcsolatban. A felfelé nyíllal érheti el.</translation>
+<translation id="6822504384524564824">A cikkszám módosításra csak akkor van szükség, ha az új összetevők eltérnek az általuk pótolt összetevőktől. Példa erre az érintőképernyőre cserélt nem érintőképernyő, vagy a 8 GB-ról 16 GB-ra növelt memória.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> javítása</translation>
 <translation id="6853312040151791195">Lemerítési sebesség</translation>
+<translation id="6876833053687020046">DRAM-alkatrészszám</translation>
 <translation id="6889786074662672253">Az újraindítás közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A folyamat eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="6905724422583748843">Vissza ide: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">A szkenner fedele nyitva van. Zárja le, és próbálja újra.</translation>
@@ -664,6 +678,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7343649194310845056">Hálózati eszközök</translation>
 <translation id="7359657277149375382">Fájltípus</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">Cikkszám</translation>
 <translation id="7378886533986123738">Képernyőkímélő módosítása</translation>
 <translation id="7397270852490618635">Világos téma kikapcsolása</translation>
 <translation id="741244894080940828">Átváltás</translation>
@@ -763,6 +778,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>
 <translation id="8372477600026034341">További gazdagépek</translation>
 <translation id="8378855320830505539">Terület</translation>
+<translation id="8382302752385457774">Fehér címke</translation>
 <translation id="8395584934117017006">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a vállalat felügyeli</translation>
 <translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének sebessége</translation>
 <translation id="8422748173858722634">IMEI</translation>

@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">បានសន្មតថាជាច្រកចូលប្រើបណ្ដាញ</translation>
 <translation id="1290331692326790741">សេវាខ្សោយ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">បើកការការពារការសរសេរ</translation>
 <translation id="1308754910631152188">កំពុងដំឡើងកំណែ (បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />% ហើយ)</translation>
 <translation id="1310380015393971138">មិនមានបណ្ដាញ <ph name="NETWORK_NAME" /> ដែលអាចប្រើបានទេ</translation>
 <translation id="131421566576084655">មិនមានកាលបរិច្ឆេទនៃការកំណត់ទិន្នន័យឡើងវិញលើកចុងក្រោយទេ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">បណ្តាញនៅផ្ទះ មិនមែនរ៉ូមីងទេ</translation>
+<translation id="132712914231403017">ដំឡើងរូបភាពកម្មវិធី​បង្កប់</translation>
 <translation id="1327977588028644528">ច្រក​ចេញ​ចូល</translation>
 <translation id="1328223165223065150">ពណ៌​ផ្ទាំងរូបភាព</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">ឧបករណ៍​បញ្ចូល​ឯកសារ (ម្ខាង)</translation>
 <translation id="1643449475550628585">ប្ដូរផ្ទាំងរូបភាព​ជារៀងរាល់ថ្ងៃ</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
+<translation id="1645954272419197032">សូមបញ្ជាក់ព័ត៌មានឧបករណ៍</translation>
 <translation id="1662989795263954667">បានឈប់ - អស់​ទឹកថ្នាំ</translation>
 <translation id="1668469839109562275">VPN ដែលភ្ជាប់​មកជាមួយស្រាប់</translation>
 <translation id="1703835215927279855">សំបុត្រ</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">ការតភ្ជាប់</translation>
 <translation id="2008685064673031089">ការស្វែងរកចម្បង</translation>
 <translation id="2016697457005847575">សាកល្បងអនុវត្តតាមជំហានដោះស្រាយបញ្ហា</translation>
+<translation id="2016848882344942759">--មិនមានស្លាកពណ៌ស--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ការកំណត់ច្រើនទៀត</translation>
 <translation id="2085089206770112532">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺផ្ទាំងអេក្រង់</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">កាលវិភាគ​មុខងារ​ងងឹត</translation>
 <translation id="2275586345903859204">ការជួសជុលចប់ហើយ</translation>
 <translation id="2287186687001756809">មិនមាន​រូបភាពទេ។ ដើម្បី​បញ្ចូលរូបថត សូមចូល​ទៅកាន់ <ph name="LINK" /></translation>
+<translation id="2294753434210277304">បញ្ចូលទំហំផ្ទុក​ខាងក្រៅ ដូចជាឧបករណ៍ USB ឬកាត SD ជាមួយនឹងរូបភាព Chromebook Recovery Utility ដែលបានទាញយក</translation>
 <translation id="2307344026739914387">ប្រើគូសោ​បច្ចុប្បន្ន</translation>
 <translation id="2320295602967756579">បើក​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="2323506179655536734">បានរំលង</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">សោផ្ទៀងផ្ទាត់ TLS</translation>
 <translation id="2713444072780614174">ស</translation>
 <translation id="2717139507051041123">បើកមុខងារពណ៌ងងឹត</translation>
+<translation id="2727250716596204208">រកមិនឃើញរូបភាពកម្មវិធី​បង្កប់ទេ។ សូម​បញ្ចូលទំហំផ្ទុក​ខាងក្រៅ ដូចជាឧបករណ៍ USB ឬកាត SD ដែល​មាន​រូបភាព Chromebook Recovery Utility ដែលបានទាញយក។</translation>
 <translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2751739896257479635">ការផ្ទៀងផ្ទាត់ EAP ដំណាក់កាលទី 2</translation>
 <translation id="2756652381241102009">ដំណើរការ​ការវិភាគ</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ឧបករណ៍ត្រូវបានភ្ជាប់។</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{លុប​ទំព័រឬ?}=1{លុប​ទំព័រទី {PAGE_NUMBER} ឬ?}other{លុប​ទំព័រទី {PAGE_NUMBER} ឬ?}}</translation>
+<translation id="3137983112374760826">កំពុងរៀបចំឧបករណ៍...</translation>
 <translation id="315116470104423982">ទិន្នន័យទូរស័ព្ទ</translation>
 <translation id="3156846309055100599">កំពុងស្កេនទំព័រទី <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">បានរកឃើញច្រកចូលប្រើបណ្ដាញ</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">ឧបករណ៍មានថ្មកាសខាងស្ដាំ <ph name="BATTERY_PERCENTAGE" />%។</translation>
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369013195428705271">តើអ្នក​ពិតជាចង់​សម្អាត​ប្រវត្តិបោះពុម្ព​ទាំងអស់​មែនឬ? ការងារ​បោះពុម្ព​របស់អ្នកដែល​កំពុងដំណើរការ​នឹងមិនត្រូវបាន​សម្អាតទេ។</translation>
+<translation id="3383751554789092165">ផ្លាស់ប្ដូរព័ត៌មានឧបករណ៍តាមភាពចាំបាច់។</translation>
 <translation id="3404249063913988450">បើកធាតុរក្សាអេក្រង់</translation>
 <translation id="3404770484521709967">សមាសភាគ​ត្រូវបាន​ដំឡើង​ត្រឹមត្រូវ។</translation>
 <translation id="3413935475507503304">ដើម្បីបន្តការដំឡើងកំណែ សូមចុច "បន្ទាប់"។</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">មិនបានភ្ជាប់ទេ</translation>
 <translation id="3749289110408117711">ឈ្មោះឯកសារ</translation>
 <translation id="3771294271822695279">ឯកសារវីដេអូ</translation>
+<translation id="3774059845329307709">លេខស៊េរី</translation>
 <translation id="3784455785234192852">ចាក់សោរ</translation>
 <translation id="38114475217616659">សម្អាត​ប្រវត្តិ​ទាំងអស់</translation>
 <translation id="3820172043799983114">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">ថ្ម <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">បានដោះសោ​ស៊ីម</translation>
 <translation id="4562494484721939086">គ្មានសេវាទេ</translation>
+<translation id="4568938274596692027">ការដំឡើងចប់​ហើយ។ កំពុងរៀបចំចាប់ផ្ដើម​ឡើងវិញ...</translation>
 <translation id="458794348635939462">មិនអាចដោះស្រាយម៉ាស៊ីនទាំងអស់បានទេ</translation>
 <translation id="4593212453765072419">តម្រូវ​ឱ្យ​មាន​ការផ្ទៀងផ្ទាត់​ប្រូកស៊ី</translation>
 <translation id="4609350030397390689">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺក្ដារចុច</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">សូមជ្រើសរើស​ពាក្យសម្ងាត់​ថ្មីភ្លាមៗ</translation>
 <translation id="4891842000192098784">ស្ត្រេស</translation>
 <translation id="4897058166682006107">ឧបករណ៍មានថ្មកាសខាងឆ្វេង <ph name="BATTERY_PERCENTAGE" />%។</translation>
+<translation id="4908030561598728899">កំពុងដំឡើងកម្មវិធី​បង្កប់...</translation>
 <translation id="4915052247106771211">វា​នឹង​កំណត់​ឧបករណ៍​ឡើងវិញ​ទៅ​ការកំណត់​ដូចចេញពី​រោងចក្រ (Powerwash)។</translation>
 <translation id="4917385247580444890">ខ្លាំង</translation>
 <translation id="4917889632206600977">បានឈប់ - អស់​ក្រដាស</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">ការកំណត់​ចម្លើយរហ័ស</translation>
 <translation id="5168185087976003268">គុណភាព​ថ្ម</translation>
 <translation id="5170568018924773124">បង្ហាញនៅក្នុងថតឯកសារ</translation>
+<translation id="5179530508336824319">បើកការការពារ​ការសរសេរ ដើម្បីបន្តទៅអេក្រង់បន្ទាប់។ ចូលទៅកាន់ទំព័រជំនួយរបស់ក្រុមហ៊ុនផលិតឧបករណ៍ ដើម្បីទទួលបានការណែនាំ។</translation>
 <translation id="5190187232518914472">រំឭកអនុស្សាវរីយ៍​ដែលអ្នក​ចូលចិត្ត។ ដើម្បីបញ្ចូល ឬ​កែអាល់ប៊ុម សូមចូល​ទៅកាន់ <ph name="LINK_BEGIN" />Google រូបថត<ph name="LINK_END" />។</translation>
 <translation id="5212543919916444558">ខ្ញុំរកមិនឃើញអ្វីដែលខ្ញុំអាចជួយបាននៅលើអេក្រង់របស់អ្នកទេ។ សាកល្បងចុចមីក្រូហ្វូន ដើម្បីសួរខ្ញុំអំពីអ្វីម្យ៉ាង។</translation>
 <translation id="5212593641110061691">កាសែតខ្នាតតូច</translation>
@@ -614,8 +626,10 @@
 <translation id="6768237774506518020">អត្រាមិនដំណើរការ​នៃកម្រិតច្បាស់ DNS ខ្ពស់</translation>
 <translation id="680983167891198932">សោ</translation>
 <translation id="6816797338148849397">ព័ត៌មានពាក់ព័ន្ធនឹងការផ្ដល់ជូនការជ្រើសរើសរបស់អ្នក។ ប្រើគ្រាប់ចុចព្រួញឡើងលើ ដើម្បីចូលប្រើ។</translation>
+<translation id="6822504384524564824">SKU គួរត្រូវបានផ្លាស់ប្ដូរ តែក្នុង​ករណី​ដែល​សមាសធាតុថ្មីខុសពីសមាសធាតុ​ដែលអ្នក​ប្រើប្រាស់​បានជំនួស​ប៉ុណ្ណោះ។ ឧទាហរណ៍ អេក្រង់ថាច់ជំនួសអេក្រង់ដែល​មិនមែន​ជា​អេក្រង់​ថាច់ ឬអង្គចងចាំត្រូវបានដំឡើង​ពី 8GB ទៅ 16GB។</translation>
 <translation id="6840315122969944400">ជួសជុល <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">អត្រា​ឈប់សាកថ្ម</translation>
+<translation id="6876833053687020046">លេខ​ផ្នែក DRAM</translation>
 <translation id="6889786074662672253">ខណៈពេលកំពុងចាប់ផ្ដើមឡើងវិញ សូមកុំដកឧបករណ៍ខាងក្រៅនេះ ឬបិទកុំព្យូទ័ររបស់អ្នក។ អ្នកអាចបង្រួមវិនដូនេះបាន។ ការចាប់ផ្ដើមឡើងវិញនេះអាចចំណាយពេលពីរបីនាទី ហើយឧបករណ៍ខាងក្រៅរបស់អ្នកអាចមិនដំណើរការនៅអំឡុងពេលនេះទេ។</translation>
 <translation id="6905724422583748843">ត្រឡប់​ទៅ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">គម្រប​របស់ម៉ាស៊ីនស្កេន​គឺបើក។ សូមបិទ​គម្របនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
@@ -663,6 +677,7 @@
 <translation id="7343649194310845056">ឧបករណ៍​បណ្ដាញ</translation>
 <translation id="7359657277149375382">ប្រភេទ​ឯកសារ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">ប្ដូរធាតុរក្សាអេក្រង់</translation>
 <translation id="7397270852490618635">បិទ​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="741244894080940828">ការបំប្លែង</translation>
@@ -762,6 +777,7 @@
 <translation id="8364946094152050673">DNS នៅទទេ</translation>
 <translation id="8372477600026034341">ម៉ាស៊ីន​បន្ថែម</translation>
 <translation id="8378855320830505539">តំបន់</translation>
+<translation id="8382302752385457774">ស្លាក​ពណ៌​ស</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោមការគ្រប់គ្រងលក្ខណៈសហគ្រាស</translation>
 <translation id="8398927464629426868">អត្រាដែលឧបករណ៍កំពុងសាកថ្ម ឬបញ្ចេញថាមពលក្នុងពេលបច្ចុប្បន្ន</translation>
 <translation id="8422748173858722634">IMEI</translation>

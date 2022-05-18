@@ -431,6 +431,18 @@ Bu politikayı etkinleştirir veya yapılandırmazsanız web sayfasını URL yol
 
 Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli metin parçalarına kaydırma işlevi devre dışı bırakılır.</translation>
 <translation id="1474273443907024088">TLS Yanlış Başlatma'yı devre dışı bırak</translation>
+<translation id="1476128579011024193">
+      Politika <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> değerine ayarlıyken, yönetilen bir hesapta bu politikaya tabi olarak oturum açıldığında, kullanıcıdan hesap için yeni bir profil oluşturması istenir.
+      Politika <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> değerine ayarlıyken, yönetilen bir hesapta bu politikaya tabi olarak oturum açıldığında, kullanıcıdan hesap için yeni bir profil oluşturması istenir ve mevcut tarama verilerini saklama seçeneği sunulur. Bu seçenek Chrome 102 ve sonraki sürümlerde desteklenmektedir.
+
+      Politika <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> değerine ayarlıyken, yönetilen bir hesapta bu politikaya tabi olarak oturum açıldığında, kullanıcıdan hesap için yeni bir profil oluşturması istenir. Bu profilde ikincil hesaplara izin verilmez.
+      Politika <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" /> değerine ayarlıyken, yönetilen bir hesapta bu politikaya tabi olarak oturum açıldığında, kullanıcıdan hesap için yeni bir profil oluşturması istenir ve mevcut tarama verilerini saklama seçeneği sunulur. Bu profilde ikincil hesaplara izin verilmez. Bu seçenek Chrome 102 ve sonraki sürümlerde desteklenmektedir.
+
+      Bu politika <ph name="POLICY_VALUE_NONE" /> değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen hesaplarda kısıtlama olmaz. Bu durum, bir yönetilen hesabın ikincil hesap olmasına ve dolayısıyla yönetici tarafından hesapta ayarlanan politika alabilme özelliğinin devre dışı kalmasına neden olabilir.
+
+      Politika, cihaz düzeyinde ayarlanırsa tarayıcıdaki tüm hesapları etkiler.
+      Politika, hesap düzeyinde ayarlanırsa tarayıcıda yalnızca ilgili hesabı etkiler.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Politikayı ayarlamak, kullanıcıların chrome.usb API'sı aracılığıyla doğrudan bir web uygulaması içinde kullanmak için çekirdek sürücüsünden çıkarabildikleri USB cihazlarının listesini tanımlar. Girişler, belirli bir donanımı tanımlamak için kullanılan USB Tedarikçi Tanımlayıcısı ve Ürün Tanımlayıcısı çiftlerinden oluşmaktadır.
 

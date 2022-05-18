@@ -260,6 +260,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2573588302192866788">Impossibile connettere <ph name="NAME" /></translation>
 <translation id="2575685495496069081">L'accesso simultaneo è stato disattivato</translation>
 <translation id="2582112259361606227">Riavvia per aggiornare</translation>
+<translation id="2586561057878260610">Premi Ctrl + W per eseguire una combinazione con <ph name="DESK_NAME" />. Premi Ctrl + Maiusc + W per chiudere scrivania e finestre.</translation>
 <translation id="2595239820337756193">5 km in miglia</translation>
 <translation id="2596078834055697711">Consente di acquisire uno screenshot della finestra</translation>
 <translation id="2607678425161541573">Accesso online richiesto</translation>
@@ -665,6 +666,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4925542575807923399">L'amministratore di questo account richiede che questo account sia il primo account registrato in una sessione con accesso simultaneo.</translation>
+<translation id="4938176435186993759">Nascondi tutti i suggerimenti</translation>
 <translation id="4945196315133970626">Disattiva le notifiche</translation>
 <translation id="4946376291507881335">Acquisisci</translation>
 <translation id="495046168593986294">Scorri verso l'alto</translation>
@@ -752,6 +754,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
 <translation id="5532994612895037630">Tocca un punto qualsiasi per registrare l'intera schermata</translation>
+<translation id="5536723544185013515">App recenti: usa i tasti Freccia destra o Freccia sinistra per accedere a tutte le app recenti</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
 <translation id="554893713779400387">Attiva/disattiva la dettatura</translation>
@@ -760,6 +763,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
 <translation id="557563299383177668">Paragrafo successivo</translation>
 <translation id="5577281275355252094">Verifica che il Bluetooth sia attivato sul telefono per utilizzare Phone Hub</translation>
+<translation id="5580000943347215299">Raccolta</translation>
 <translation id="558849140439112033">Trascina per selezionare l'area da acquisire</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Premi CTRL + ALT + Z per disattivare la funzione di lettura vocale.</translation>
@@ -778,6 +782,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5682642926269496722">L'Assistente Google non è disponibile per l'attuale account utente.</translation>
 <translation id="5689633613396158040">Con la funzione Luminosità notturna, potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata. Tocca per cambiare l'ora di attivazione della funzione Luminosità notturna o disattiva completamente la funzione.</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
+<translation id="570390244361237317">Tutte le app: usa i tasti freccia per accedere a tutte le app</translation>
 <translation id="5707775774148071965">Il dispositivo supporta una velocità dati superiore rispetto al cavo. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="5710450975648804523">Funzione Non disturbare attiva</translation>
 <translation id="571295407079589142">I dati mobili non sono attivi</translation>

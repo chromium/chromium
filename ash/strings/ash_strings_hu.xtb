@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Üdv, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Szöveges bevitel</translation>
+<translation id="1982717156487272186">Az előző hét megjelenítése</translation>
 <translation id="1989113344093894667">Nem lehet rögzíteni tartalmat</translation>
 <translation id="1990046457226896323">Beszédfájlok letöltve</translation>
 <translation id="1993072747612765854">További információ a legújabb <ph name="SYSTEM_APP_NAME" />-frissítésről</translation>
@@ -263,6 +264,7 @@
 <translation id="2573588302192866788">Nem sikerült csatlakozni a következőhöz: <ph name="NAME" /></translation>
 <translation id="2575685495496069081">A többfiókos bejelentkezés le van tiltva</translation>
 <translation id="2582112259361606227">Újraindítás és frissítés</translation>
+<translation id="2586561057878260610">Nyomja le a Ctrl + W billentyűkombinációt a következő asztallal való egyesítéshez: <ph name="DESK_NAME" />. Az asztal és az ablakok bezárásához nyomja le a Ctrl + Shift + W billentyűkombinációt.</translation>
 <translation id="2595239820337756193">5000 mérföld</translation>
 <translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2607678425161541573">Online bejelentkezés szükséges</translation>
@@ -623,6 +625,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> csillagos értékelés</translation>
 <translation id="4633185660152240791">{0,plural, =1{Eszköz módosítása az előző verzióra egy napon belül}other{Eszköz módosítása az előző verzióra # napon belül}}</translation>
 <translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
+<translation id="4644727592819780893">A terület túl kicsi, a kamera nem tud előnézetet készíteni róla</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, javasolt alkalmazás</translation>
 <translation id="4657775630156561295">A következő javaslatot véglegesen törli a rendszer a fiók javaslatelőzményeiből:
 
@@ -668,6 +671,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4917385247580444890">Erős</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
 <translation id="4925542575807923399">A fiók rendszergazdája megköveteli, hogy ez a fiók legyen az első bejelentkezett fiók a többfiókos bejelentkezés munkamenete során.</translation>
+<translation id="4938176435186993759">Összes javaslat elrejtése</translation>
 <translation id="4945196315133970626">Az értesítések kikapcsolása</translation>
 <translation id="4946376291507881335">Rögzítés</translation>
 <translation id="495046168593986294">Görgetés felfelé</translation>
@@ -755,6 +759,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5520229639206813572">A rendszergazda az összes eSIM-profilt eltávolította. További információért forduljon a rendszergazdához.</translation>
 <translation id="5523434445161341166">A(z) <ph name="FEATURE_NAME" /> csatlakozik.</translation>
 <translation id="5532994612895037630">Koppintson bárhova felvétel készítéséhez a teljes képernyőről</translation>
+<translation id="5536723544185013515">Legutóbbi alkalmazások, a balra vagy jobbra mutató nyílbillentyű használatával férhet hozzá az összes legutóbbi alkalmazáshoz</translation>
 <translation id="553675580533261935">Kilépés a munkamenetből</translation>
 <translation id="5537725057119320332">Küldés</translation>
 <translation id="554893713779400387">Diktálás váltása</translation>
@@ -777,10 +782,12 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5673434351075758678">Módosítás <ph name="FROM_LOCALE" /> nyelvről <ph name="TO_LOCALE" /> nyelvre a beállítások szinkronizálása után.</translation>
 <translation id="5675363643668471212">Polcelem</translation>
 <translation id="5677928146339483299">Letiltva</translation>
+<translation id="5678564054339031017">A következő hét megjelenítése</translation>
 <translation id="5679050765726761783">Alacsony energiafogyasztású csatlakozó csatlakoztatva</translation>
 <translation id="5682642926269496722">A Google Segéd nem áll rendelkezésre ennél a felhasználói fióknál.</translation>
 <translation id="5689633613396158040">Az Éjszakai fény funkció kellemesebbé teszi a képernyő nézését és az olvasást gyenge fény mellett. Koppintson, ha módosítani szeretné, hogy mikor kapcsoljon be az Éjszakai mód, vagy ha teljesen ki szeretné kapcsolni.</translation>
 <translation id="5691772641933328258">Ujjlenyomat felismerése sikertelen</translation>
+<translation id="570390244361237317">Az összes alkalmazás, a nyílbillentyűk használatával férhet hozzá az összes alkalmazáshoz</translation>
 <translation id="5707775774148071965">Az eszköz nagyobb adatátviteli sebességre képes, mint amit a kábel biztosítani tud. Ez korlátozhatja az eszköz teljesítményét.</translation>
 <translation id="5710450975648804523">Ne zavarjanak mód: bekapcsolva</translation>
 <translation id="571295407079589142">A mobiladat-kapcsolat ki van kapcsolva</translation>

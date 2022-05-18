@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">ተያዥ መግቢያ ተጠርጥሯል</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
 <translation id="1301069673413256657">ጂኤስኤም</translation>
+<translation id="1308067967278144752">ጻፍ ጥበቃን ያብሩ</translation>
 <translation id="1308754910631152188">በማዘመን ላይ (<ph name="PERCENTAGE_VALUE" />% ተጠናቅቋል)</translation>
 <translation id="1310380015393971138">የሚገኝ ምንም <ph name="NETWORK_NAME" /> አውታረ መረብ የለም</translation>
 <translation id="131421566576084655">የመጨረሻው የውሂብ ዳግም ማስጀመር ቀን የለም</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">የፈጣን መልሶች ቅንብሮች</translation>
 <translation id="5168185087976003268">የባትሪ ጤንነት</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
+<translation id="5179530508336824319">ወደ ቀጣዩ ማያ ገጽ ለመቀጠል ጻፍ ጥበቃን ያንቁ። ለመመሪያዎች ወደ የመሣሪያው አምራች የድጋፍ ገጽ ይሂዱ።</translation>
 <translation id="5190187232518914472">የሚወዷቸውን ትውስታዎች ዳግም ይኑሯቸው። አልበሞችን ለማከል ወይም ለማርትዕ ወደ <ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ይሂዱ።</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
 ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>

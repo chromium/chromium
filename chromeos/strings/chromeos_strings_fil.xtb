@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">May pinaghihinalaang captive portal</translation>
 <translation id="1290331692326790741">Mahina ang signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">I-on ang Write Protect</translation>
 <translation id="1308754910631152188">Nag-a-update (<ph name="PERCENTAGE_VALUE" />% na ang natapos)</translation>
 <translation id="1310380015393971138">Walang available na <ph name="NETWORK_NAME" /> network</translation>
 <translation id="131421566576084655">Hindi available ang petsa ng huling pag-reset ng data</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
 <translation id="5168185087976003268">Tagal ng baterya</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
+<translation id="5179530508336824319">I-enable ang write-protect para magpatuloy sa susunod na screen. Pumunta sa page ng suporta ng manufacturer ng device para sa mga tagubilin.</translation>
 <translation id="5190187232518914472">Balikan ang iyong mga paboritong alaala. Para magdagdag o mag-edit ng mga album, pumunta sa <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Wala akong makitang kahit ano sa iyong screen kung saan ako makakatulong.
 Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>

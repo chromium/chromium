@@ -176,6 +176,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Introducció de text</translation>
+<translation id="1982717156487272186">Mostra la setmana anterior</translation>
 <translation id="1989113344093894667">No es pot capturar contingut</translation>
 <translation id="1990046457226896323">S'han baixat els fitxers de veu</translation>
 <translation id="1993072747612765854">Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" /></translation>
@@ -622,6 +623,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />; puntuació en estrelles: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Canvia el dispositiu a la versió anterior que tenia fa un dia}other{Canvia el dispositiu a la versió anterior que tenia fa # dies}}</translation>
 <translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
+<translation id="4644727592819780893">La zona és massa petita perquè s'ajusti a la càmera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomanació d'aplicació</translation>
 <translation id="4657775630156561295">El suggeriment següent se suprimirà permanentment de l'historial de suggeriments del teu compte:
 
@@ -776,6 +778,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Objecte de prestatge</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
+<translation id="5678564054339031017">Mostra la setmana següent</translation>
 <translation id="5679050765726761783">S'ha connectat un adaptador de baixa potència</translation>
 <translation id="5682642926269496722">L'Assistent de Google no està disponible per al compte d'usuari actual.</translation>
 <translation id="5689633613396158040">Amb la funció Llum nocturna, és més fàcil mirar la pantalla i llegir-hi amb poca llum. Toca per canviar l'hora en què s'activa o per desactivar-la completament.</translation>

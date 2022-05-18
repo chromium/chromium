@@ -89,6 +89,9 @@
 <translation id="1082214733466244292">このデバイスの一部の機能は、管理者によってブロックされています</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> が Chrome 設定を元のデフォルトに戻すことを求めています。これにより、ホームページ、新しいタブの画面、検索エンジンがリセットされ、拡張機能が無効となり、すべてのタブの固定が解除されます。また、その他の一時的なキャッシュ データ（Cookie、コンテンツ データ、サイトデータなど）も消去されます。</translation>
 <translation id="1084096383128641877">このパスワードを削除しても、<ph name="DOMAIN" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="DOMAIN_LINK" /> のアカウントを削除してください。</translation>
+<translation id="1084288067399862432">不正使用されたパスワードを変更しました。
+
+パスワードは <ph name="GOOGLE_PASSWORD_MANAGER" /> でいつでも確認できます。</translation>
 <translation id="1084824384139382525">リンクのアドレスをコピー(&amp;E)</translation>
 <translation id="1085064499066015002">すべてのサイトで常に許可</translation>
 <translation id="1085697365578766383">仮想マシンの起動中にエラーが発生しました。もう一度お試しください。</translation>
@@ -1672,6 +1675,7 @@
 <translation id="2554553592469060349">選択したファイルが大きすぎます（最大サイズ: 3 MB）。</translation>
 <translation id="2558569818338050235">閲覧履歴は表示される広告に影響します</translation>
 <translation id="2558896001721082624">システム メニューにユーザー補助オプションを常に表示する</translation>
+<translation id="2559889124253841528">デバイスに保存</translation>
 <translation id="2564520396658920462">AppleScript からの JavaScript の実行がオフになっています。オンにするには、メニューバーから [表示] &gt; [デベロッパー] &gt; [Apple Events からの JavaScript を許可] を選択してください。詳しくは、https://support.google.com/chrome/?p=applescript をご覧ください。</translation>
 <translation id="2564653188463346023">拡張スペルチェック</translation>
 <translation id="2568774940984945469">情報バー コンテナ</translation>
@@ -1682,6 +1686,7 @@
 <translation id="2575247648642144396">このアイコンは、表示中のページで拡張機能が使用できる場合に表示されます。この拡張機能を使用するには、アイコンをクリックするか、<ph name="EXTENSION_SHORTCUT" /> を押します。</translation>
 <translation id="2575407791320728464">URL が無効です。適切な形式であることを確認してください。</translation>
 <translation id="2575441894380764255">煩わしい広告や誤解を招く広告の表示を許可しないサイト</translation>
+<translation id="2575713839157415345">{YEARS,plural, =1{このデバイスは 1 年間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {YEARS} 年間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="257779572837908839">Chromebox for meetings として設定</translation>
 <translation id="2580889980133367162">複数のファイルをダウンロードすることを <ph name="HOST" /> に常に許可する</translation>
 <translation id="258095186877893873">長い</translation>
@@ -1696,6 +1701,7 @@
 <translation id="25899519884572181">リーダーモードを終了</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
 <translation id="2594999711683503743">Google で検索、または URL を入力</translation>
+<translation id="2597976513418770460">Chrome ブラウザのアイテムを <ph name="ACCOUNT_EMAIL" /> から取得</translation>
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
 <translation id="2603355571917519942">Voice Match は設定済みです</translation>
@@ -2979,6 +2985,7 @@
 <translation id="3856800405688283469">タイムゾーンを選択</translation>
 <translation id="3857807444929313943">指を放して、もう一度タッチ</translation>
 <translation id="3858860766373142691">名前</translation>
+<translation id="385939467708172187">安全なパスワードを使用</translation>
 <translation id="3861638017150647085">ユーザー名「<ph name="USERNAME" />」は使用できません</translation>
 <translation id="3861977424605124250">起動時に表示する</translation>
 <translation id="386239283124269513">グループを復元(&amp;R)</translation>
@@ -3220,6 +3227,7 @@
 <translation id="4089235344645910861">設定が保存され、同期が始まりました。</translation>
 <translation id="4090103403438682346">確認済みアクセスを有効にする</translation>
 <translation id="4090947011087001172"><ph name="SITE" /> のサイト権限をリセットしますか？</translation>
+<translation id="4092636882861724179"><ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されたパスワードを表示、管理できます。</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="4093955363990068916">ローカル ファイル:</translation>
 <translation id="4094647278880271855">サポートされていない環境変数が使用されています: <ph name="BAD_VAR" />。これにより、安全性とセキュリティが損なわれます。</translation>
@@ -3508,6 +3516,7 @@
 <translation id="4392896746540753732">設定ファイルを編集します</translation>
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{すべてを開く(&amp;O)}=1{ブックマークを開く(&amp;O)}other{すべて（{COUNT} 個）を開く(&amp;O)}}</translation>
+<translation id="4397372003838952832">このパスワードを覚えておく必要はありません。<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
 <translation id="439817266247065935">デバイスは正しく終了しませんでした。Linux アプリを使用するには、Linux を再起動してください。</translation>
 <translation id="4400367121200150367">パスワードを保存していないサイトがここに表示されます</translation>
 <translation id="4400632832271803360">キーボードの最上段にあるキーの動作を切り替えるには、ランチャー キーを押したままにします</translation>
@@ -3521,6 +3530,7 @@
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="440653823335387109">既読のページ</translation>
 <translation id="4406883609789734330">自動字幕起こし</translation>
+<translation id="4407039574263172582">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK" />利用規約<ph name="END_LINK" />を確認してください。</translation>
 <translation id="4408599188496843485">ヘルプ(&amp;H)</translation>
 <translation id="4409271659088619928">検索エンジンは <ph name="DSE" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="4409697491990005945">余白</translation>
@@ -3704,6 +3714,7 @@
 <translation id="4579453506923101210">接続済みスマートフォンの解除</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> をキャストできません。</translation>
 <translation id="4579876313423027742">ブラウザの通知は、<ph name="LINK_BEGIN" />Chrome ブラウザの設定<ph name="LINK_END" />で確認できます</translation>
+<translation id="4580596421317071374">パスワードは、このデバイスの <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
 <translation id="4581774856936278355">Linux の復元中にエラーが発生しました</translation>
 <translation id="4582297591746054421">多くのサイトは、コピーしたテキストの書式を保持するなどのためにクリップボードを読み取ります。</translation>
 <translation id="4582563038311694664">すべての設定をリセット</translation>
@@ -3875,6 +3886,7 @@
 <translation id="4761104368405085019">マイクを使用する</translation>
 <translation id="4762718786438001384">デバイスのディスク空き領域が非常に少なくなっています</translation>
 <translation id="4763408175235639573">このページを表示したときに以下の Cookie が設定されました</translation>
+<translation id="4765524037138975789">{MONTHS,plural, =1{このデバイスは 1 か月間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {MONTHS} か月間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="4765582662863429759">スマートフォンから Chromebook へのテキストの伝達を Android メッセージに許可します</translation>
 <translation id="4768332406694066911">次の機関から発行された、あなたを識別する証明書があります</translation>
 <translation id="4770119228883592393">権限がリクエストされました。対応するには、⌘+option+下矢印キーを押してください</translation>
@@ -4488,6 +4500,7 @@
 <translation id="5398497406011404839">非表示のブックマーク</translation>
 <translation id="5398572795982417028">範囲外のページを参照しています。上限は <ph name="MAXIMUM_PAGE" /> です。</translation>
 <translation id="5401426944298678474">サイトのフォローを解除</translation>
+<translation id="5401851137404501592">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。</translation>
 <translation id="5402815541704507626">モバイルデータ接続でのアップデートのダウンロード</translation>
 <translation id="540296380408672091"><ph name="HOST" /> の Cookie を常にブロックする</translation>
 <translation id="5404740137318486384">スイッチかキーボードのキーを押すと「<ph name="ACTION" />」に割り当てられます。このアクションには複数のスイッチを割り当てることができます。</translation>
@@ -5339,6 +5352,7 @@
 <translation id="6250186368828697007">画面の共有中は詳細が表示されません</translation>
 <translation id="6251870443722440887">GDI ハンドル</translation>
 <translation id="625369703868467034">ネットワークの健全性</translation>
+<translation id="6253801023880399036">パスワードは <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
 <translation id="6254503684448816922">キーが侵害された</translation>
 <translation id="6254892857036829079">非常に良い</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
@@ -6360,6 +6374,7 @@
 <translation id="7282547042039404307">滑らか</translation>
 <translation id="7282992757463864530">情報バー</translation>
 <translation id="7283555985781738399">ゲストモード</translation>
+<translation id="7284307451964417957">{DAYS,plural, =1{このデバイスは 1 日間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {DAYS} 日間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="7284411326658527427">ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="7287143125007575591">アクセスが拒否されました。</translation>
 <translation id="7287411021188441799">デフォルトの背景に戻す</translation>
@@ -6564,6 +6579,7 @@
 <translation id="7488682689406685343">このサイトは、ユーザーをだまして煩わしい通知を許可させようとする可能性があります。</translation>
 <translation id="7489761397368794366">デバイスから発信</translation>
 <translation id="749028671485790643">ユーザー <ph name="VALUE" /></translation>
+<translation id="7490683549040131791">他のパスワードを確認</translation>
 <translation id="7491962110804786152">タブ</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 件の Cookie}other{{NUM_COOKIES} 件の Cookie}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 拡張機能では、パスワードやクレジット カード番号などの個人データを含むすべての入力テキストが収集される可能性があります。この拡張機能を使用しますか？</translation>
@@ -7406,6 +7422,7 @@
 <translation id="8275080796245127762">デバイスから発信</translation>
 <translation id="8275339871947079271">パスワードを Google アカウントに移動すると、ログイン中いつでも安全にアクセスできるようになります</translation>
 <translation id="8276560076771292512">キャッシュの消去とハード再読み込み</translation>
+<translation id="8281721647184388851">Chrome ブラウザの同期をオンにしますか？</translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8283475148136688298">「<ph name="DEVICE_NAME" />」への接続中に、認証コードが拒否されました。</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
@@ -7454,6 +7471,7 @@
 <translation id="8335587457941836791">シェルフの固定解除</translation>
 <translation id="8336407002559723354">更新は <ph name="MONTH_AND_YEAR" />に終了します</translation>
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
+<translation id="8337020675372081178">{HOURS,plural, =1{このデバイスは 1 時間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {HOURS} 時間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="8337047789441383384">このセキュリティ キーは登録済みです。再度登録する必要はありません。</translation>
 <translation id="8338952601723052325">デベロッパーのウェブサイト</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> によりデータがローカルに保存されました</translation>
@@ -7560,6 +7578,7 @@
 <translation id="8448729345478502352">アイテムの表示サイズを変更します</translation>
 <translation id="8449008133205184768">ペーストしてスタイルを合わせる</translation>
 <translation id="8449036207308062757">ストレージを管理</translation>
+<translation id="8451192282033883849">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータ（ブックマーク、履歴、パスワードなど）を表示、編集できます。</translation>
 <translation id="8456512334795994339">仕事や遊びに使えるおすすめのアプリ</translation>
 <translation id="845702320058262034">接続できません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="8457451314607652708">ブックマークをインポート</translation>

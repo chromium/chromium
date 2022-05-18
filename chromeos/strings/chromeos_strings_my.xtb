@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">စတင်ဝင်ရန်စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Write Protect ဖွင့်ခြင်း</translation>
 <translation id="1308754910631152188">အပ်ဒိတ်လုပ်နေသည် (<ph name="PERCENTAGE_VALUE" />% ပြီးပါပြီ)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ကွန်ရက်ကို မရနိုင်ပါ</translation>
 <translation id="131421566576084655">နောက်ဆုံး ဒေတာပြင်ဆင်သတ်မှတ်သည့်ရက်စွဲ ရှာမတွေ့ပါ</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">အမြန်အဖြေများ ဆက်တင်</translation>
 <translation id="5168185087976003268">ဘက်ထရီအခြေအနေ</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
+<translation id="5179530508336824319">လာမည့်စခရင်သို့ ရှေ့ဆက်ရန် Write Protect ဖွင့်ပါ။ ညွှန်ကြားချက်များအတွက် စက်ထုတ်လုပ်သူ၏ အကူအညီစာမျက်နှာသို့ သွားပါ။</translation>
 <translation id="5190187232518914472">သင့်အကြိုက်ဆုံး အမှတ်တရအချိန်များကို ပြန်လည်ခံစားကြည့်ပါ။ အယ်လ်ဘမ်များ ထည့်ရန် သို့မဟုတ် တည်းဖြတ်ရန် <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> သို့သွားပါ။</translation>
 <translation id="5212543919916444558">သင့်မျက်နှာပြင်တွင် ကျွန်ုပ်ကူညီနိုင်သည့် အကြောင်းအရာများကို မတွေ့ပါ။ မိုက်ကို တို့ပြီး နှစ်သက်ရာ မေးနိုင်ပါသည်။</translation>
 <translation id="5212593641110061691">Tabloid</translation>

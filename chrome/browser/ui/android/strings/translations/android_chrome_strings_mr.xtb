@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1384704387250346179">Google Lens सह इमेजचे भाषांतर करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
+<translation id="13931502444227376">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटच्या <ph name="BEGIN_LINK1" />सेवा अटी<ph name="END_LINK1" /> पहा.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> सह शोधा</translation>
 <translation id="139993653570221430">तुम्हाला हवे, तेव्हा तुम्ही Chrome सेटिंग्जमध्ये हे बदलू शकता. चाचण्या सध्याच्या जाहिराती ज्या पद्धतीने दाखवल्या जातात त्यासोबत रन केल्या जातात, त्यामुळे तुम्हाला लगेच बदल दिसणार नाहीत.</translation>
 <translation id="1406000523432664303">“Do Not Track”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">प्रायव्हसी सॅंडबॉक्स याविषयी</translation>
 <translation id="1736419249208073774">एक्सप्लोर करा</translation>
 <translation id="1749561566933687563">तुमचे बुकमार्क सिंक करा</translation>
+<translation id="1750259112639922169">टॅब गट - <ph name="TAB_COUNT" /> टॅब</translation>
 <translation id="17513872634828108">खुले टॅब</translation>
 <translation id="1754404134430936718">मजकूर कॉपी केला</translation>
 <translation id="1779766957982586368">विंडो बंद करा</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">या डिव्हाइसवर खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त मोड वापरून पहा</translation>
 <translation id="5375577065097716013">Google Lens सह इमेज शोधा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">प्रतिक्रिया बदलली</translation>
+<translation id="5401851137404501592">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल.</translation>
 <translation id="5403644198645076998">केवळ काही साइटना अनुमती द्या</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> वर <ph name="ONE_TIME_CODE" /> सबमिट करायचा का?</translation>
 <translation id="5414836363063783498">सत्यापित करत आहे...</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">QR कोड तयार करू शकत नाही. URL मध्ये <ph name="CHARACTER_LIMIT" /> पेक्षा जास्त वर्ण आहेत.</translation>
 <translation id="7177959540995930968">तुम्ही Chrome सेटिंग्जमध्ये या वैशिष्ट्यांबाबत अधिक जाणून घेऊ शकता.</translation>
 <translation id="718226107353899806">तुम्ही कमाल <ph name="MAX_NUM_REACTIONS" /> प्रतिक्रिया जोडू शकता</translation>
+<translation id="7183693674623539380">टॅब गट - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षेत सुधारणा करण्यासाठी वापरले जाऊ शकते.</translation>
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7196215469483532480">गोपनीयता मार्गदर्शक स्पष्टीकरण पूर्ण उंचीवर उघडले आहे</translation>

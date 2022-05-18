@@ -83,6 +83,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Dispositivo activo hai <ph name="LAST_UPDATED" />días</translation>
+<translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta as <ph name="BEGIN_LINK1" />condicións de servizo<ph name="END_LINK1" /> deste sitio.</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Se cambias de idea, podes modificar a configuración de Chrome en calquera momento. Con todo, as probas inscríbense na experiencia actual de publicación de anuncios, polo que non verás cambios de inmediato.</translation>
 <translation id="1406000523432664303">Non facer seguimento</translation>
@@ -145,6 +146,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="173522743738009831">Acerca de Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explorar</translation>
 <translation id="1749561566933687563">Sincroniza os teus marcadores</translation>
+<translation id="1750259112639922169">Grupo de pestanas: <ph name="TAB_COUNT" /> pestanas</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
 <translation id="1779766957982586368">Pechar ventá</translation>
@@ -789,6 +791,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5368227114232678694">Se queres navegar de forma privada neste dispositivo, proba o modo de incógnito</translation>
 <translation id="5375577065097716013">Buscar imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reacción modificada</translation>
+<translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio.</translation>
 <translation id="5403644198645076998">Permitir só determinados sitios</translation>
 <translation id="5409881200985013443">Queres enviar o código <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando...</translation>
@@ -1129,6 +1132,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="7177873915659574692">Non se puido crear o código QR. O URL contén máis de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="7177959540995930968">Podes obter máis información sobre estas funcións na configuración de Chrome.</translation>
 <translation id="718226107353899806">Podes engadir ata <ph name="MAX_NUM_REACTIONS" /> reaccións</translation>
+<translation id="7183693674623539380">Grupo de pestanas: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7196215469483532480">A explicación sobre a Guía de privacidade está aberta a pantalla completa</translation>

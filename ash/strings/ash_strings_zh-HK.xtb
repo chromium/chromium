@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好：</translation>
 <translation id="1978498689038657292">文字輸入</translation>
+<translation id="1982717156487272186">顯示上星期的活動</translation>
 <translation id="1989113344093894667">無法擷取內容</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1993072747612765854">進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新</translation>
@@ -263,6 +264,7 @@
 <translation id="2573588302192866788">無法連接「<ph name="NAME" />」</translation>
 <translation id="2575685495496069081">已停用多重登入功能</translation>
 <translation id="2582112259361606227">重新啟動即可更新</translation>
+<translation id="2586561057878260610">㩒 Ctrl + W 制就可以同「<ph name="DESK_NAME" />」合併。㩒 Ctrl + Shift + W 制就可以閂咗桌面同埋視窗。</translation>
 <translation id="2595239820337756193">5 公里等於幾多英里</translation>
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2607678425161541573">需要網上登入</translation>
@@ -622,6 +624,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，<ph name="RATING_SCORE" /> 星</translation>
 <translation id="4633185660152240791">{0,plural, =1{在 1 天內將裝置回復為先前的版本}other{在 # 天內將裝置回復為先前的版本}}</translation>
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
+<translation id="4644727592819780893">區域太小，無法顯示攝錄機預覽畫面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推薦應用程式</translation>
 <translation id="4657775630156561295">以下建議會從帳戶的建議記錄中永久移除：
 
@@ -667,6 +670,7 @@
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求這個帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
+<translation id="4938176435186993759">隱藏所有建議</translation>
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
 <translation id="495046168593986294">向上捲動</translation>
@@ -753,6 +757,7 @@
 <translation id="5520229639206813572">管理員已移除所有 eSIM 設定檔。如需更多資訊，請聯絡管理員。</translation>
 <translation id="5523434445161341166">「<ph name="FEATURE_NAME" />」正在連線。</translation>
 <translation id="5532994612895037630">輕按任何一處即可錄影全螢幕畫面</translation>
+<translation id="5536723544185013515">最近用嘅應用程式，用向左或者向右箭咀導覽就可以存取所有最近用嘅應用程式</translation>
 <translation id="553675580533261935">正在結束工作階段</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="554893713779400387">切換語音輸入</translation>
@@ -775,10 +780,12 @@
 <translation id="5673434351075758678">同步處理您的設定後，系統會將語言從「<ph name="FROM_LOCALE" />」改為「<ph name="TO_LOCALE" />」。</translation>
 <translation id="5675363643668471212">捷徑列項目</translation>
 <translation id="5677928146339483299">已封鎖</translation>
+<translation id="5678564054339031017">顯示下星期的活動</translation>
 <translation id="5679050765726761783">已連接低功率電源適配器</translation>
 <translation id="5682642926269496722">「Google 助理」不適用於目前的使用者帳戶。</translation>
 <translation id="5689633613396158040">「夜燈模式」讓您更易在光線昏暗的環境下觀看螢幕內容或閱讀。輕按即可變更「夜燈模式」的開啟時間，或完全關閉此功能。</translation>
 <translation id="5691772641933328258">識別唔到指紋</translation>
+<translation id="570390244361237317">所有應用程式，用方向鍵導覽就可以存取所有應用程式</translation>
 <translation id="5707775774148071965">您的裝置支援比連接線更高的資料傳輸速率。裝置效能可能受到限制。</translation>
 <translation id="5710450975648804523">「請勿騷擾」模式已開啟</translation>
 <translation id="571295407079589142">流動數據已關閉</translation>

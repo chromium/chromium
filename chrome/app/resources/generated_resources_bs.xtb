@@ -1721,6 +1721,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="25899519884572181">Izađi iz načina rada za čitanje</translation>
 <translation id="2593499352046705383">Prije nego što počnete, provjerite jeste li napravili sigurnosnu kopiju podataka. Ako instalirate <ph name="DEVICE_OS" />, zamijenit će se svi podaci na tvrdom disku. Saznajte više na g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Pretražite Google ili upišite URL</translation>
+<translation id="2597976513418770460">Sadržajima u pregledniku Chrome možete pristupiti putem računa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Prevucite prema gore da počnete</translation>
 <translation id="2603115962224169880">Očisti računar</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
@@ -7461,6 +7462,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8275080796245127762">Poziv s vašeg uređaja</translation>
 <translation id="8275339871947079271">Premjestite lozinku na Google račun da joj možete pristupiti na siguran način kad god ste prijavljeni</translation>
 <translation id="8276560076771292512">Isprazni keš memoriju i ponovo učitaj bez keš memorije</translation>
+<translation id="8281721647184388851">Uključiti sinkronizaciju preglednika Chrome?</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8283475148136688298">Kôd za autentifikaciju je odbijen za vrijeme povezivanja s uređajem "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">sve web lokacije <ph name="WEBSITE_1" /></translation>
@@ -7616,6 +7618,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8448729345478502352">Smanjite ili povećajte stavke na ekranu</translation>
 <translation id="8449008133205184768">Stil lijepljenja i podudaranja</translation>
 <translation id="8449036207308062757">Upravljaj prostorom za pohranu</translation>
+<translation id="8451192282033883849">Vašim računom upravlja <ph name="MANAGER_NAME" />. Vaš administrator može pregledavati i uređivati profil ovog preglednika Chrome i njegove podatke, kao što su oznake, povijest i zaporke.</translation>
 <translation id="8456512334795994339">Pronađite aplikacije za rad i igru</translation>
 <translation id="845702320058262034">Nije se moguće povezati. Provjerite je li Bluetooth na vašem telefonu uključen.</translation>
 <translation id="8457451314607652708">Uvezi oznake</translation>

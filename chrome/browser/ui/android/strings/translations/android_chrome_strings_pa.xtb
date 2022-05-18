@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1384704387250346179">Google Lens ਨਾਲ ਚਿੱਤਰ ਦਾ ਅਨੁਵਾਦ ਕਰੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
+<translation id="13931502444227376">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ ਨਾਮ, ਈਮੇਲ ਪਤੇ ਅਤੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੇ <ph name="BEGIN_LINK1" />ਸੇਵਾ ਦੇ ਨਿਯਮ<ph name="END_LINK1" /> ਦੇਖੋ।</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ਨਾਲ ਖੋਜੋ</translation>
 <translation id="139993653570221430">ਤੁਸੀਂ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ ਆਪਣਾ ਮਨ ਬਦਲ ਸਕਦੇ ਹੋ। ਪਰਖਾਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਦੇ ਮੌਜੂਦਾ ਤਰੀਕੇ ਦੇ ਨਾਲ-ਨਾਲ ਚੱਲਦੀਆਂ ਹਨ, ਇਸ ਲਈ ਤੁਹਾਨੂੰ ਤਬਦੀਲੀਆਂ ਤੁਰੰਤ ਨਹੀਂ ਦਿਸਣਗੀਆਂ।</translation>
 <translation id="1406000523432664303">‘ਟਰੈਕ ਨਾ ਕਰੋ’</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਬਾਰੇ</translation>
 <translation id="1736419249208073774">ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="1749561566933687563">ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਸਮਕਾਲੀ ਕਰੋ</translation>
+<translation id="1750259112639922169">ਟੈਬ ਗਰੁੱਪ - <ph name="TAB_COUNT" /> ਟੈਬ</translation>
 <translation id="17513872634828108">ਟੈਬਸ ਖੋਲ੍ਹੋ</translation>
 <translation id="1754404134430936718">ਲਿਖਤ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="1779766957982586368">window ਬੰਦ ਕਰੋ</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ, ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="5375577065097716013">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">ਪ੍ਰਤਿਕਿਰਿਆ ਨੂੰ ਬਦਲਿਆ ਗਿਆ</translation>
+<translation id="5401851137404501592">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ ਨਾਮ, ਈਮੇਲ ਪਤੇ ਅਤੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ।</translation>
 <translation id="5403644198645076998">ਸਿਰਫ਼ ਕੁਝ ਸਾਈਟਾਂ ਦੀ ਮਨਜ਼ੂਰੀ ਦਿਓ</translation>
 <translation id="5409881200985013443">ਕੀ <ph name="CLIENT_NAME" /> 'ਤੇ <ph name="ONE_TIME_CODE" /> ਸਪੁਰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5414836363063783498">ਪ੍ਰਮਾਣਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। URL <ph name="CHARACTER_LIMIT" /> ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਦਾ ਹੈ।</translation>
 <translation id="7177959540995930968">ਤੁਸੀਂ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣ ਸਕਦੇ ਹੋ।</translation>
 <translation id="718226107353899806">ਤੁਸੀਂ <ph name="MAX_NUM_REACTIONS" /> ਤੱਕ ਪ੍ਰਤਿਕਿਰਿਆਵਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="7183693674623539380">ਟੈਬ ਗਰੁੱਪ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਸ਼ਾਇਦ ਹੋਰ Google ਐਪਾਂ ਵਿੱਚ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਸੁਧਾਰਨ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕੇ।</translation>
 <translation id="7191430249889272776">ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਟੈਬ ਖੋਲ੍ਹੀ ਗਈ।</translation>
 <translation id="7196215469483532480">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਵਿਆਖਿਆ ਨੂੰ ਪੂਰੀ ਸ੍ਰਕੀਨ 'ਤੇ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
