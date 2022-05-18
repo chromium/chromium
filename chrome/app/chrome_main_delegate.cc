@@ -133,10 +133,10 @@
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
+#include "chromeos/ash/components/memory/kstaled.h"
+#include "chromeos/ash/components/memory/memory.h"
+#include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/hugepage_text/hugepage_text.h"
-#include "chromeos/memory/kstaled.h"
-#include "chromeos/memory/memory.h"
-#include "chromeos/memory/swap_configuration.h"
 #include "ui/lottie/resource.h"  // nogncheck
 #endif
 

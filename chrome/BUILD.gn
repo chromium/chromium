@@ -1431,7 +1431,7 @@ group("dependencies") {
       "//ash/constants",
       "//chrome/browser/ash",
       "//chromeos",
-      "//chromeos/memory",
+      "//chromeos/ash/components/memory",
     ]
   }
 

@@ -1786,7 +1786,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.OOMKills.Daily" units="kills"
     expires_after="2022-11-11">
   <owner>vovoy@google.com</owner>
-  <owner>src/chromeos/memory/OWNERS</owner>
+  <owner>src/chromeos/ash/components/memory/OWNERS</owner>
   <summary>
     The number of OOM kills since last emit. The emit interval is at least 24
     hours, see metrics::DailyEvent for more details.

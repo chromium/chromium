@@ -219,7 +219,7 @@ static_library("test_support") {
       "//ash/constants",
       "//chrome/browser/ash",
       "//chromeos",
-      "//chromeos/memory:memory",
+      "//chromeos/ash/components/memory:memory",
     ]
     public_deps += [ "//ui/lottie" ]
   }

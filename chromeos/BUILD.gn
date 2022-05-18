@@ -121,7 +121,6 @@ test("chromeos_unittests") {
       "//chromeos/dbus:unit_tests",
       "//chromeos/language/language_packs:unit_tests",
       "//chromeos/login/login_state:unit_tests",
-      "//chromeos/memory:unit_tests",
       "//chromeos/network:test_support",
       "//chromeos/network:unit_tests",
       "//chromeos/printing:unit_tests",
@@ -141,10 +140,6 @@ test("chromeos_unittests") {
       "//services/network/public/cpp",
       "//url",
     ]
-
-    if (target_cpu == "x64") {
-      deps += [ "//chromeos/memory/userspace_swap:unit_tests" ]
-    }
   }
 
   data = [ "test/data/" ]

@@ -5068,6 +5068,7 @@ static_library("browser") {
       "//chrome/services/speech:lib",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/memory",
       "//chromeos/components/feature_usage",
       "//chromeos/components/quick_answers",
       "//chromeos/components/sync_wifi",
@@ -5081,7 +5082,6 @@ static_library("browser") {
       "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/dbus/update_engine",
       "//chromeos/login/login_state",
-      "//chromeos/memory",
       "//chromeos/network",
       "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/bluetooth_config",
@@ -5131,8 +5131,8 @@ static_library("browser") {
       ]
 
       deps += [
-        "//chromeos/memory/userspace_swap",
-        "//chromeos/memory/userspace_swap:mojom",
+        "//chromeos/ash/components/memory/userspace_swap",
+        "//chromeos/ash/components/memory/userspace_swap:mojom",
       ]
     }
   } else {  # Non - Ash.

@@ -13,8 +13,8 @@
 #include <vector>
 
 #include "base/threading/scoped_blocking_call.h"
-#include "chromeos/memory/userspace_swap/userspace_swap.h"
-#include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
+#include "chromeos/ash/components/memory/userspace_swap/userspace_swap.h"
+#include "chromeos/ash/components/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 // MREMAP_DONTUNMAP was added in the 5.7 kernel, but we've backported it to

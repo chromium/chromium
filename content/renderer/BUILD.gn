@@ -554,7 +554,7 @@ target(link_target_type, "renderer") {
   if (is_chromeos_ash) {
     deps += [ "//chromeos:chromeos_export" ]
     if (target_cpu == "x64") {
-      deps += [ "//chromeos/memory/userspace_swap" ]
+      deps += [ "//chromeos/ash/components/memory/userspace_swap" ]
     }
   }
 

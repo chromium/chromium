@@ -14,7 +14,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
 #include "base/system/sys_info.h"
-#include "chromeos/memory/pressure/system_memory_pressure_evaluator.h"
+#include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
 #endif
 
 ChromeBrowserMainExtraPartsMemory::ChromeBrowserMainExtraPartsMemory() = default;

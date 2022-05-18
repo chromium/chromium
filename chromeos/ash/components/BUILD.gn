@@ -13,5 +13,10 @@ source_set("unit_tests") {
   deps = [
     "//chromeos/ash/components/dbus:unit_tests",
     "//chromeos/ash/components/human_presence:unit_tests",
+    "//chromeos/ash/components/memory:unit_tests",
   ]
+
+  if (target_cpu == "x64") {
+    deps += [ "//chromeos/ash/components/memory/userspace_swap:unit_tests" ]
+  }
 }
