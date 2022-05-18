@@ -58,7 +58,8 @@ const displayInfocard = (() => {
     _showDisassemblyOverlay(disassembly) {
       const eltModal = document.getElementById('disassembly-modal');
       const eltCode = document.getElementById('disassembly-code');
-      const eltDownload = document.getElementById('disassembly-download');
+      const eltDownload = /** @type {!HTMLAnchorElement} */ (
+          document.getElementById('disassembly-download'));
       const eltClose = document.getElementById('disassembly-close');
       const diffHtml = Diff2Html.html(disassembly, {
         drawFileList: false,
@@ -68,9 +69,10 @@ const displayInfocard = (() => {
       eltCode.innerHTML = diffHtml;
       eltModal.style.display = '';
       const blob = new Blob([disassembly], {type: 'text/plain'});
-      eltDownload.href = URL.createObjectURL(blob);
+      const objectUrl = URL.createObjectURL(blob);
+      eltDownload.href = objectUrl;
       eltClose.onclick = function() {
-        URL.revokeObjectURL(blob);
+        URL.revokeObjectURL(objectUrl);
         eltModal.style.display = 'none';
       }
     }

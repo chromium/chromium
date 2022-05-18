@@ -481,7 +481,8 @@ const newTreeElement = (() => {
    */
   function setReviewInfo(metadata) {
     const processReviewInfo = (field) => {
-      const reviewTextElement = document.getElementById('review-text');
+      const reviewTextElement = /** @type {HTMLAnchorElement} */ (
+          document.getElementById('review-text'));
       const reviewInfoElement = document.getElementById('review-info');
       const urlExists = Boolean(
           field?.hasOwnProperty('url') && field?.hasOwnProperty('title'));

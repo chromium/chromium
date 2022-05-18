@@ -30,3 +30,8 @@ declare namespace Module {
 
   let HEAPU8: Uint8Array;
 }
+
+// Diff2Html definitions.
+declare namespace Diff2Html {
+  function html(string, Object): string;
+}
