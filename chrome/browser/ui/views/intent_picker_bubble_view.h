@@ -66,6 +66,14 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   using AppInfo = apps::IntentPickerAppInfo;
   using BubbleType = apps::IntentPickerBubbleType;
 
+  // Unique identifiers for Views within the IntentPickerBubbleView hierarchy.
+  enum ViewId {
+    // The container for app selection buttons.
+    kItemContainer = 1,
+    // The "Remember my choice" checkbox.
+    kRememberCheckbox,
+  };
+
   IntentPickerBubbleView(views::View* anchor_view,
                          BubbleType bubble_type,
                          std::vector<AppInfo> app_info,
@@ -100,59 +108,15 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   BubbleType bubble_type() const { return bubble_type_; }
 
+  const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
+
  protected:
   // LocationBarBubbleDelegateView overrides:
   std::u16string GetWindowTitle() const override;
   void CloseBubble() override;
 
  private:
-  friend class IntentPickerBubbleViewTest;
-  friend class IntentPickerBubbleViewBrowserTest;
-  friend class IntentPickerBubbleViewBrowserTestChromeOS;
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NullIcons);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, NonNullIcons);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, LabelsPtrVectorSize);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, VerifyStartingInkDrop);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, InkDropStateTransition);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, PressButtonTwice);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, ChromeNotInCandidates);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, StayInChromeTest);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WebContentsTiedToBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WindowTitle);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, ButtonLabels);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, RememberCheckbox);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTest,
-                           DoubleClickOpensApp);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           BubblePopOut);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           OutOfScopeDoesNotShowBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           PWAOnlyShowBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           NotLinkDoesNotShowBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           DismissBubble);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ShowBubbleMultipleTimes);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           PushStateLoadingTest);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           PushStateURLChangeTest);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ReloadAfterInstall);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           StayInChromePWAOnly);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           StayInChromeARCOnly);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ARCAndPWACandidateLaunchPWA);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ARCAndPWACandidateLaunchARC);
-  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           StayInChromeARCAndPWA);
-
-  const std::vector<AppInfo>& app_info_for_testing() const { return app_info_; }
 
   // views::BubbleDialogDelegateView overrides:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -188,9 +152,6 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // return false.
   bool HasCandidates() const;
 
-  // Accessory for |scroll_view_|'s contents size.
-  size_t GetScrollViewSize() const;
-
   // Ensure the selected app is within the visible region of the ScrollView.
   void AdjustScrollViewVisibleRegion();
 
@@ -206,10 +167,6 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   // Clears this bubble from being considered the currently open bubble.
   void ClearIntentPickerBubbleView();
-
-  gfx::ImageSkia GetAppImageForTesting(size_t index);
-  views::InkDropState GetInkDropStateForTesting(size_t);
-  void PressButtonForTesting(size_t index, const ui::Event& event);
 
   static IntentPickerBubbleView* intent_picker_bubble_;
 

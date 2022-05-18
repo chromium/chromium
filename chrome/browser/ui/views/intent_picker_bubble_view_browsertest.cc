@@ -30,8 +30,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 
 class IntentPickerBubbleViewBrowserTest
@@ -72,8 +74,14 @@ class IntentPickerBubbleViewBrowserTest
     return IntentPickerBubbleView::intent_picker_bubble();
   }
 
+  size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
+    return bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+        ->children()
+        .size();
+  }
+
   void VerifyBubbleWithTestWebApp() {
-    EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
+    EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
     auto& app_info = intent_picker_bubble()->app_info_for_testing();
     ASSERT_EQ(1U, app_info.size());
     EXPECT_EQ(test_web_app_id(), app_info[0].launch_name);
@@ -275,14 +283,14 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTest, DoubleClickOpensApp) {
   ASSERT_TRUE(intent_picker_bubble());
   EXPECT_TRUE(intent_picker_bubble()->GetVisible());
 
-  intent_picker_bubble()->PressButtonForTesting(
-      /* index= */ 0,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), 0, 0));
-  intent_picker_bubble()->PressButtonForTesting(
-      /* index= */ 0,
-      ui::MouseEvent(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), ui::EF_IS_DOUBLE_CLICK, 0));
+  auto event_generator = ui::test::EventGenerator(
+      views::GetRootWindow(intent_picker_bubble()->GetWidget()));
+  auto* container = intent_picker_bubble()->GetViewByID(
+      IntentPickerBubbleView::ViewId::kItemContainer);
+  ASSERT_GT(container->children().size(), 0ul);
+  event_generator.MoveMouseTo(
+      container->children()[0]->GetBoundsInScreen().CenterPoint());
+  event_generator.DoubleClickLeftButton();
 
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
