@@ -322,7 +322,8 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersion) {
       quic::AllSupportedVersionsWithQuicCrypto().front();
   std::string experimental_options =
       "{\"QUIC\":{\"quic_version\":\"" +
-      quic::QuicVersionToString(version.transport_version) + "\"}}";
+      quic::QuicVersionToString(version.transport_version) +
+      "\",\"obsolete_versions_allowed\":true}}";
 
   std::unique_ptr<URLRequestContextConfig> config =
       URLRequestContextConfig::CreateURLRequestContextConfig(
