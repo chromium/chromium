@@ -45,9 +45,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/path_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kSupportCaseIDQuery[] = "case_id";
 const char kModuleQuery[] = "module";
@@ -673,12 +670,7 @@ void SupportToolMessageHandler::OnDataExportDone(
       });
   if (export_error == errors.end()) {
     data_export_result.Set("success", true);
-    std::string displayed_path = data_path_.AsUTF8Unsafe();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    displayed_path = file_manager::util::GetPathDisplayTextForSettings(
-        Profile::FromWebUI(web_ui()), displayed_path);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    data_export_result.Set("path", displayed_path);
+    data_export_result.Set("path", path.BaseName().AsUTF8Unsafe());
     data_export_result.Set("error", std::string());
   } else {
     // If a data export error is found in the returned set of errors, send the
