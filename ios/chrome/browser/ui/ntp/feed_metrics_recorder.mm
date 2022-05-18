@@ -807,8 +807,6 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 // Records Feed engagement.
 - (void)recordEngagement:(int)scrollDistance interacted:(BOOL)interacted {
-  DCHECK(self.followDelegate);
-
   scrollDistance = abs(scrollDistance);
 
   // Determine if this interaction is part of a new 'session'.
@@ -906,8 +904,9 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
     self.engagedReportedFollowing = YES;
 
     // Log follow count when engaging with Following feed.
-    [self recordFollowCount:[self.followDelegate followedPublisherCount]
-               forLogReason:FollowCountLogReasonEngaged];
+    // TODO(crbug.com/1322640): |followDelegate| is nil when navigating to an
+    // article, since NTPCoordinator is stopped first. When this is fixed, we
+    // should call |recordFollowCount| here.
   }
 
   // TODO(crbug.com/1322640): Separate user action for Following feed
