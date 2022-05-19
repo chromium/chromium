@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.interstitial;
 import static org.chromium.chrome.browser.tab.TabViewProvider.Type.NEW_DOWNLOAD_TAB;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -16,7 +17,9 @@ import org.chromium.base.UserData;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabViewProvider;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** Represents the page shown when a CCT is created to download a file. */
 public class NewDownloadTab
@@ -89,6 +92,13 @@ public class NewDownloadTab
     }
 
     // TabObserver implementation.
+    @Override
+    public void onPageLoadStarted(Tab tab, GURL url) {
+        if (TextUtils.equals(url.getHost(), UrlConstants.RECENT_TABS_HOST)) {
+            destroy();
+        }
+    }
+
     @Override
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         if (window == null) {
