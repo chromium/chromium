@@ -7,14 +7,21 @@ static_library("browser") {
     "signals_aggregator.h",
     "signals_aggregator_impl.h",
     "signals_collector.h",
+    "user_permission_service.h",
+    "user_permission_service_impl.h",
   ]
 
-  sources = [ "signals_aggregator_impl.cc" ]
+  sources = [
+    "signals_aggregator_impl.cc",
+    "user_permission_service_impl.cc",
+  ]
 
   deps = [
     "//base",
     "//components/device_signals/core/common",
     "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/signin/public/identity_manager",
   ]
 }
 
@@ -23,6 +30,8 @@ static_library("test_support") {
   sources = [
     "mock_signals_collector.cc",
     "mock_signals_collector.h",
+    "mock_user_permission_service.cc",
+    "mock_user_permission_service.h",
   ]
 
   deps = [
@@ -34,13 +43,20 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "signals_aggregator_impl_unittest.cc" ]
+  sources = [
+    "signals_aggregator_impl_unittest.cc",
+    "user_permission_service_impl_unittest.cc",
+  ]
 
   deps = [
     ":browser",
     ":test_support",
     "//base/test:test_support",
     "//components/device_signals/core/common",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
 }
