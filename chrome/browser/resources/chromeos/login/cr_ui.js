@@ -58,13 +58,10 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Handle accelerators. These are passed from native code instead of a JS
-     * event handler in order to make sure that embedded iframes cannot swallow
-     * them.
-     * @param {string} name Accelerator name.
+     * Handle the cancel accelerator.
      */
-    static handleAccelerator(name) {
-      Oobe.getInstance().handleAccelerator(name);
+    static handleCancel() {
+      Oobe.getInstance().handleCancel();
     }
 
     /**

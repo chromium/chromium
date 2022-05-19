@@ -197,8 +197,8 @@ void CoreOobeHandler::ShowOobeUI(bool show) {
   CallJS("cr.ui.Oobe.showOobeUI", show);
 }
 
-void CoreOobeHandler::ForwardAccelerator(std::string accelerator_name) {
-  CallJS("cr.ui.Oobe.handleAccelerator", accelerator_name);
+void CoreOobeHandler::ForwardCancel() {
+  CallJS("cr.ui.Oobe.handleCancel");
 }
 
 void CoreOobeHandler::OnOSVersionLabelTextUpdated(

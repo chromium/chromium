@@ -39,6 +39,7 @@ class CoreOobeView {
   virtual void FocusReturned(bool reverse) = 0;
   virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
   virtual void ToggleSystemInfo() = 0;
+  virtual void ForwardCancel() = 0;
 };
 
 // The core handler for Javascript messages related to the "oobe" view.
@@ -81,9 +82,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // Show or hide OOBE UI.
   void ShowOobeUI(bool show);
 
-  // Forwards an accelerator value to cr.ui.Oobe.handleAccelerator.
-  void ForwardAccelerator(std::string accelerator_name);
-
  private:
   // CoreOobeView implementation:
   void ShowScreenWithData(const ash::OobeScreenId& screen,
@@ -93,6 +91,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // Updates client area size based on the primary screen size.
   void UpdateClientAreaSize(const gfx::Size& size) override;
   void ToggleSystemInfo() override;
+  // Forwards the cancel accelerator value to the shown screen.
+  void ForwardCancel() override;
 
   // ash::TabletModeObserver:
   void OnTabletModeStarted() override;

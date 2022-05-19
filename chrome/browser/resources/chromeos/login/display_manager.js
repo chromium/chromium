@@ -11,7 +11,7 @@
 // #import {loadTimeData} from './i18n_setup.js';
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
- // #import {DISPLAY_TYPE, ACCELERATOR_CANCEL, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
+ // #import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.m.js';
 // #import {MultiTapDetector} from './multi_tap_detector.m.js';
 // #import {keyboard} from './keyboard_utils.m.js'
 
@@ -208,22 +208,12 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Handle accelerators.
-     * @param {string} name Accelerator name.
-     *
-     * @suppress {missingProperties}
-     * $('reset').userActed(...)
-     * TODO(crbug.com/1229130) - Remove this suppression.
+     * Handle the cancel accelerator.
      */
-    handleAccelerator(name) {
-      if (this.currentScreen && this.currentScreen.ignoreAccelerators) {
-        return;
-      }
+    handleCancel() {
       const currentStepId = this.screens_[this.currentStep_];
-      if (name == ACCELERATOR_CANCEL) {
-        if (this.currentScreen && this.currentScreen.cancel) {
-          this.currentScreen.cancel();
-        }
+      if (this.currentScreen && this.currentScreen.cancel) {
+        this.currentScreen.cancel();
       }
     }
 

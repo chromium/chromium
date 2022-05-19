@@ -440,18 +440,14 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     return true;
   }
 
-  // There are currently no global accelerators for the lock screen that
-  // require WebUI. So we do not need to specifically load it when user is
-  // logged in.
-  if (GetOobeUI() || (!MapToWebUIAccelerator(action).empty() &&
-                      !user_manager::UserManager::Get()->IsUserLoggedIn())) {
-    // Ensure WebUI is loaded.
-    GetWizardController();
-    // TODO(crbug.com/1102393): Remove once all accelerators handling is
-    // migrated to browser side.
-    GetOobeUI()->ForwardAccelerator(MapToWebUIAccelerator(action));
+  if (action == LoginAcceleratorAction::kCancelScreenAction) {
+    if (!GetOobeUI())
+      return false;
+    GetOobeUI()->GetCoreOobeView()->ForwardCancel();
+    return true;
   }
-  return true;
+
+  return false;
 }
 
 void LoginDisplayHostCommon::SetScreenAfterManagedTos(OobeScreenId screen_id) {

@@ -86,9 +86,6 @@ class OobeUI : public ui::MojoWebUIController {
   // Shows or hides OOBE UI elements.
   void ShowOobeUI(bool show);
 
-  // Forwards an accelerator to the webui to be handled.
-  void ForwardAccelerator(std::string accelerator_name);
-
   gfx::NativeView GetNativeView();
 
   gfx::NativeWindow GetTopLevelNativeWindow();

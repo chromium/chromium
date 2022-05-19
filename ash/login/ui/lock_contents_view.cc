@@ -2490,7 +2490,8 @@ void LockContentsView::RegisterAccelerators() {
     // accelerator is pressed. So we register WebUI acceleratos here
     // and then start WebUI when needed and pass the accelerator.
     if (!kLoginAcceleratorData[i].global &&
-        MapToWebUIAccelerator(kLoginAcceleratorData[i].action).empty()) {
+        kLoginAcceleratorData[i].action !=
+            LoginAcceleratorAction::kCancelScreenAction) {
       continue;
     }
     if ((screen_type_ == LockScreen::ScreenType::kLogin) &&

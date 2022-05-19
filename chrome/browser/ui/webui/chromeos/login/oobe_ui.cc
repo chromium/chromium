@@ -767,10 +767,6 @@ void OobeUI::ShowOobeUI(bool show) {
     oobe_display_chooser_->TryToPlaceUiOnTouchDisplay();
 }
 
-void OobeUI::ForwardAccelerator(std::string accelerator_name) {
-  core_handler_->ForwardAccelerator(accelerator_name);
-}
-
 gfx::NativeView OobeUI::GetNativeView() {
   return web_ui()->GetWebContents()->GetNativeView();
 }
