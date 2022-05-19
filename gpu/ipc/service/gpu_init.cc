@@ -81,15 +81,9 @@ namespace {
 bool CollectGraphicsInfo(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
   TRACE_EVENT0("gpu,startup", "Collect Graphics Info");
-  base::ElapsedTimer elapsed_timer;
   bool success = CollectContextGraphicsInfo(gpu_info);
   if (!success)
     LOG(ERROR) << "CollectGraphicsInfo failed.";
-
-  if (success) {
-    UMA_HISTOGRAM_TIMES("GPU.CollectContextGraphicsInfo",
-                        elapsed_timer.Elapsed());
-  }
   return success;
 }
 

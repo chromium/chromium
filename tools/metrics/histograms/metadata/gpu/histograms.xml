@@ -454,15 +454,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.AtExitSurfaceCount" units="units" expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The number of surfaces that the GPU process was rendering to right before
-    exiting. This should be equal to the number of tabs (both visible and
-    hidden) rendering via the compositor.
-  </summary>
-</histogram>
-
 <histogram name="GPU.BlocklistFeatureTestResults"
     enum="GPUBlocklistFeatureTestResults" expires_after="2022-10-30">
   <owner>vmiura@chromium.org</owner>
@@ -492,21 +483,6 @@ chromium-metrics-reviews@google.com.
     Records, during GPU process initialization, the combination of the following
     two features being enabled/disabled: 1) Accelerated 2D Canvas 2) OOP
     Rasterization of Canvas.
-  </summary>
-</histogram>
-
-<histogram name="GPU.CollectContextGraphicsInfo" units="microseconds"
-    expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time that the GPU process spends collecting driver information during
-    startup.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 
@@ -1290,34 +1266,6 @@ chromium-metrics-reviews@google.com.
     started for SwiftShader WebGL. Crash buckets are based on crash count for
     disabling features. With OOP-D enabled the display compositor with software
     compositing will also run as part of the GPU process.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ProgramCache.BinaryCacheHitTime" units="microseconds"
-    expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time to load a gpu program from the program cache.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="GPU.ProgramCache.BinaryCacheMissTime" units="microseconds"
-    expires_after="M77">
-  <owner>vmiura@chromium.org</owner>
-  <summary>
-    The time to link a gpu program.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 

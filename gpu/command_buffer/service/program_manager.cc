@@ -20,7 +20,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/time/time.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -31,8 +30,6 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
-
-using base::TimeTicks;
 
 namespace gpu {
 namespace gles2 {
@@ -1241,7 +1238,6 @@ bool Program::Link(ShaderManager* manager,
     return false;
   }
 
-  TimeTicks before_time = TimeTicks::Now();
   bool link = true;
   ProgramCache* cache = manager_->program_cache_;
   // This is called before program linking, so refer to attached_shaders_.
@@ -1364,23 +1360,6 @@ bool Program::Link(ShaderManager* manager,
             effective_transform_feedback_varyings_,
             effective_transform_feedback_buffer_mode_, client);
       }
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "GPU.ProgramCache.BinaryCacheMissTime",
-          static_cast<base::HistogramBase::Sample>(
-              (TimeTicks::Now() - before_time).InMicroseconds()),
-          1,
-          static_cast<base::HistogramBase::Sample>(
-              base::Seconds(10).InMicroseconds()),
-          50);
-    } else {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "GPU.ProgramCache.BinaryCacheHitTime",
-          static_cast<base::HistogramBase::Sample>(
-              (TimeTicks::Now() - before_time).InMicroseconds()),
-          1,
-          static_cast<base::HistogramBase::Sample>(
-              base::Seconds(1).InMicroseconds()),
-          50);
     }
   } else {
     UpdateLogInfo();

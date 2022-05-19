@@ -111,9 +111,6 @@ void PassthroughProgramCache::LoadProgram(const std::string& key,
   Value entry_value(program_decoded.begin(), program_decoded.end());
 
   store_.Put(entry_key, ProgramCacheValue(std::move(entry_value), this));
-
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeAfterKb",
-                          curr_size_bytes_ / 1024);
 }
 
 size_t PassthroughProgramCache::Trim(size_t limit) {
@@ -133,9 +130,6 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
   // If the value is so big it will never fit in the cache, throw it away.
   if (value.size() > max_size_bytes())
     return;
-
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeBeforeKb",
-                          curr_size_bytes_ / 1024);
 
   // Evict any cached program with the same key in favor of the least recently
   // accessed.
@@ -164,9 +158,6 @@ void PassthroughProgramCache::Set(Key&& key, Value&& value) {
   }
 
   store_.Put(key, ProgramCacheValue(std::move(value), this));
-
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeAfterKb",
-                          curr_size_bytes_ / 1024);
 }
 
 const PassthroughProgramCache::ProgramCacheValue* PassthroughProgramCache::Get(
