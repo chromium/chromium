@@ -5008,6 +5008,21 @@
             ]
         }
     ],
+    "NearbySharingWifiLan": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NearbySharingWifiLan"
+                    ]
+                }
+            ]
+        }
+    ],
     "NeuralPalmRejectionModelV2AndAdaptiveHold": [
         {
             "platforms": [
