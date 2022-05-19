@@ -32,7 +32,6 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -117,6 +116,7 @@
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -279,7 +279,8 @@ LayoutUnit SliderIntrinsicInlineSize(const LayoutBox& box) {
 LogicalSize ThemePartIntrinsicSize(const LayoutBox& box,
                                    WebThemeEngine::Part part) {
   const auto& style = box.StyleRef();
-  PhysicalSize size(Platform::Current()->ThemeEngine()->GetSize(part));
+  PhysicalSize size(
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetSize(part));
   size.Scale(style.EffectiveZoom());
   return size.ConvertToLogical(style.GetWritingMode());
 }

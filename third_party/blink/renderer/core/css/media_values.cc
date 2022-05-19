@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/media_values.h"
 
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -24,6 +23,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/display/screen_info.h"
 
@@ -413,10 +413,7 @@ ForcedColors MediaValues::CalculateForcedColors(LocalFrame* frame) {
     if (value.IsValid())
       return CSSValueIDToForcedColors(value.Id());
   }
-  if (Platform::Current() && Platform::Current()->ThemeEngine())
-    return Platform::Current()->ThemeEngine()->GetForcedColors();
-  else
-    return ForcedColors::kNone;
+  return WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors();
 }
 
 NavigationControls MediaValues::CalculateNavigationControls(LocalFrame* frame) {

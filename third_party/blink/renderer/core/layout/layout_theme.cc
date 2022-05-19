@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ui_base_features.h"
@@ -736,9 +736,8 @@ Color LayoutTheme::SystemColorFromNativeTheme(
     default:
       return DefaultSystemColor(css_value_id, color_scheme);
   }
-  DCHECK(Platform::Current() && Platform::Current()->ThemeEngine());
   const absl::optional<SkColor> system_color =
-      Platform::Current()->ThemeEngine()->GetSystemColor(theme_color);
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColor(theme_color);
   if (system_color)
     return Color(system_color.value());
   return DefaultSystemColor(css_value_id, color_scheme);
@@ -830,9 +829,8 @@ Color LayoutTheme::GetCustomFocusRingColor() const {
 
 void LayoutTheme::UpdateForcedColorsState() {
   in_forced_colors_mode_ =
-      Platform::Current() && Platform::Current()->ThemeEngine() &&
-      Platform::Current()->ThemeEngine()->GetForcedColors() !=
-          ForcedColors::kNone;
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors() !=
+      ForcedColors::kNone;
 }
 
 }  // namespace blink

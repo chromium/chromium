@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
 using protocol::Maybe;
@@ -292,7 +293,7 @@ Response InspectorEmulationAgent::setEmulatedMedia(
     if (forced_colors_value == "active") {
       if (!forced_colors_override_) {
         initial_system_color_info_state_ =
-            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
       }
       forced_colors_override_ = true;
       bool is_dark_mode = false;
@@ -305,17 +306,18 @@ Response InspectorEmulationAgent::setEmulatedMedia(
       } else {
         is_dark_mode = prefers_color_scheme_value == "dark";
       }
-      Platform::Current()->ThemeEngine()->OverrideForcedColorsTheme(
+      WebThemeEngineHelper::GetNativeThemeEngine()->OverrideForcedColorsTheme(
           is_dark_mode);
     } else if (forced_colors_value == "none") {
       if (!forced_colors_override_) {
         initial_system_color_info_state_ =
-            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+            WebThemeEngineHelper::GetNativeThemeEngine()->GetSystemColorInfo();
       }
       forced_colors_override_ = true;
-      Platform::Current()->ThemeEngine()->SetForcedColors(ForcedColors::kNone);
+      WebThemeEngineHelper::GetNativeThemeEngine()->SetForcedColors(
+          ForcedColors::kNone);
     } else if (forced_colors_override_) {
-      Platform::Current()->ThemeEngine()->ResetToSystemColors(
+      WebThemeEngineHelper::GetNativeThemeEngine()->ResetToSystemColors(
           initial_system_color_info_state_);
     }
 

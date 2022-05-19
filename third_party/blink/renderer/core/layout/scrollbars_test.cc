@@ -3019,8 +3019,8 @@ TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
 
   Compositor().BeginFrame();
 
-  auto* theme_engine =
-      static_cast<StubWebThemeEngine*>(Platform::Current()->ThemeEngine());
+  auto* theme_engine = static_cast<StubWebThemeEngine*>(
+      WebThemeEngineHelper::GetNativeThemeEngine());
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
             theme_engine->GetPaintedPartColorScheme(
                 WebThemeEngine::kPartScrollbarHorizontalThumb));

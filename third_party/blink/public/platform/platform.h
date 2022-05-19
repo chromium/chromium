@@ -209,7 +209,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual WebSandboxSupport* GetSandboxSupport() { return nullptr; }
 
   // Returns a theme engine. Should be non-null.
-  virtual WebThemeEngine* ThemeEngine();
+  WebThemeEngine* ThemeEngine();
 
   // Audio --------------------------------------------------------------
 

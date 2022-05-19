@@ -31,7 +31,6 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
@@ -111,6 +110,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -146,8 +146,8 @@ StyleEngine::StyleEngine(Document& document)
     preferred_color_scheme_ = settings->GetPreferredColorScheme();
     UpdateColorSchemeMetrics();
   }
-  if (Platform::Current() && Platform::Current()->ThemeEngine())
-    forced_colors_ = Platform::Current()->ThemeEngine()->GetForcedColors();
+  forced_colors_ =
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetForcedColors();
   UpdateForcedBackgroundColor();
   UpdateColorScheme();
 }
@@ -3008,8 +3008,7 @@ bool StyleEngine::SupportsDarkColorScheme() {
 
 void StyleEngine::UpdateColorScheme() {
   auto* settings = GetDocument().GetSettings();
-  auto* web_theme_engine =
-      Platform::Current() ? Platform::Current()->ThemeEngine() : nullptr;
+  auto* web_theme_engine = WebThemeEngineHelper::GetNativeThemeEngine();
   if (!settings || !web_theme_engine)
     return;
 
