@@ -54,13 +54,9 @@ KeyedService* SimpleProtocolHandlerRegistryFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // We can't ensure the UserPref has been set, so we pass a nullptr
   // PrefService.
-  ProtocolHandlerRegistry* registry = new ProtocolHandlerRegistry(
-      nullptr, std::make_unique<TestProtocolHandlerRegistryDelegate>());
-
-  // Must be called as a part of the creation process.
-  registry->InitProtocolSettings();
-
-  return registry;
+  return custom_handlers::ProtocolHandlerRegistry::Create(
+             nullptr, std::make_unique<TestProtocolHandlerRegistryDelegate>())
+      .release();
 }
 
 }  // namespace custom_handlers

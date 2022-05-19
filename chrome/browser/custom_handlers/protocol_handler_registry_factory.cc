@@ -62,18 +62,7 @@ KeyedService* ProtocolHandlerRegistryFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   PrefService* prefs = user_prefs::UserPrefs::Get(context);
   DCHECK(prefs);
-  custom_handlers::ProtocolHandlerRegistry* registry =
-      new custom_handlers::ProtocolHandlerRegistry(
-          prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If installing defaults, they must be installed prior calling
-  // InitProtocolSettings
-  registry->InstallDefaultsForChromeOS();
-#endif
-
-  // Must be called as a part of the creation process.
-  registry->InitProtocolSettings();
-
-  return registry;
+  return custom_handlers::ProtocolHandlerRegistry::Create(
+             prefs, std::make_unique<ChromeProtocolHandlerRegistryDelegate>())
+      .release();
 }
