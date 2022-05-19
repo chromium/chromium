@@ -13,50 +13,58 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // ScanJobSettings histogram enumeration.
 
 // The color modes that can be used to perform a scan.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ColorMode {
-  kBlackAndWhite,
-  kGrayscale,
-  kColor,
+  kBlackAndWhite = 0,
+  kGrayscale = 1,
+  kColor = 2,
 };
 
 // The file types that can be used when saving scanned images.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum FileType {
-  kJpg,
-  kPdf,
-  kPng,
+  kJpg = 0,
+  kPdf = 1,
+  kPng = 2,
 };
 
 // The source types from which a scan can be obtained.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum SourceType {
   // An unknown source type.
-  kUnknown,
+  kUnknown = 0,
   // A flatbed that scans a single page.
-  kFlatbed,
+  kFlatbed = 1,
   // An automatic document feeder that scans a single side of each page.
-  kAdfSimplex,
+  kAdfSimplex = 2,
   // An automatic document feeder that scans both sides of each page.
-  kAdfDuplex,
+  kAdfDuplex = 3,
   // The implicit source type used for scanners that do not report any source
   // options.
-  kDefault,
+  kDefault = 4,
 };
 
 // The page sizes that can be used to perform a scan.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum PageSize {
   // ISO A3 (297 x 420 mm).
-  kIsoA3,
+  kIsoA3 = 0,
   // ISO A4 (210 x 297 mm).
-  kIsoA4,
+  kIsoA4 = 1,
   // ISO B4 [JIS] (257 x 364 mm).
-  kIsoB4,
+  kIsoB4 = 2,
   // Legal (215.9 x 355.6 mm).
-  kLegal,
+  kLegal = 3,
   // NA Letter (216 x 279 mm).
-  kNaLetter,
+  kNaLetter = 4,
   // Tabloid (279.4 x 431.8 mm).
-  kTabloid,
+  kTabloid = 5,
   // The page size resulting from scanning the scanner's entire scannable area.
-  kMax,
+  kMax = 6,
 };
 
 // The source from which a scan can be obtained.

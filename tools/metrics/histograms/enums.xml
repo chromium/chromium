@@ -26073,6 +26073,8 @@ Called by update_document_policy_enum.py.-->
   <int value="104" label="IppUsbRicoh"/>
   <int value="105" label="IppUsbSamsung"/>
   <int value="106" label="IppUsbXerox"/>
+  <int value="107" label="CanonLide70"/>
+  <int value="108" label="EpsonDs"/>
 </enum>
 
 <enum name="DocumentStateForDeferredLoading">
@@ -83590,9 +83592,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ScanJobSettingsPageSize">
-  <int value="0" label="A4"/>
-  <int value="1" label="Letter"/>
-  <int value="2" label="Max"/>
+  <int value="0" label="A3"/>
+  <int value="1" label="A4"/>
+  <int value="2" label="B4"/>
+  <int value="3" label="Legal"/>
+  <int value="4" label="Letter"/>
+  <int value="5" label="Tabloid"/>
+  <int value="6" label="Max"/>
 </enum>
 
 <enum name="ScanJobSettingsResolution">
