@@ -50,6 +50,11 @@ class RmadClientImpl : public RmadClient {
 
   void SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) override;
 
+  void RecordBrowserActionMetric(
+      const rmad::RecordBrowserActionMetricRequest request,
+      DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback)
+      override;
+
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
@@ -449,6 +454,27 @@ void RmadClientImpl::SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) {
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&RmadClientImpl::OnProtoReply<rmad::SaveLogReply>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::RecordBrowserActionMetric(
+    const rmad::RecordBrowserActionMetricRequest request,
+    DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kRecordBrowserActionMetricMethod);
+  dbus::MessageWriter writer(&method_call);
+
+  if (!writer.AppendProtoAsArrayOfBytes(request)) {
+    LOG(ERROR) << "Error constructing message for "
+               << rmad::kRecordBrowserActionMetricMethod;
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(
+          &RmadClientImpl::OnProtoReply<rmad::RecordBrowserActionMetricReply>,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void RmadClientImpl::AddObserver(Observer* observer) {

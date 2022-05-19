@@ -737,6 +737,83 @@ TEST_F(RmadClientTest, SaveLog_EmptyResponse) {
   run_loop.RunUntilIdle();
 }
 
+TEST_F(RmadClientTest, RecordBrowserActionMetric) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+
+  rmad::RecordBrowserActionMetricRequest request;
+  request.set_diagnostics(true);
+  request.set_os_update(false);
+  rmad::RecordBrowserActionMetricReply expected_reply;
+  expected_reply.set_error(rmad::RMAD_ERROR_OK);
+
+  ASSERT_TRUE(dbus::MessageWriter(response.get())
+                  .AppendProtoAsArrayOfBytes(expected_reply));
+
+  response_ = response.get();
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->RecordBrowserActionMetric(
+      request,
+      base::BindLambdaForTesting(
+          [&](absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+            EXPECT_TRUE(response.has_value());
+            EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+            run_loop.Quit();
+          }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(RmadClientTest, RecordBrowserActionMetric_NullResponse) {
+  response_ = nullptr;
+
+  rmad::RecordBrowserActionMetricRequest request;
+  request.set_diagnostics(true);
+  request.set_os_update(false);
+
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->RecordBrowserActionMetric(
+      request,
+      base::BindLambdaForTesting(
+          [&](absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+            EXPECT_FALSE(response.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(RmadClientTest, RecordBrowserActionMetric_EmptyResponse) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+
+  rmad::RecordBrowserActionMetricRequest request;
+  request.set_diagnostics(true);
+  request.set_os_update(false);
+
+  response_ = response.get();
+  EXPECT_CALL(*mock_proxy_.get(),
+              DoCallMethod(HasMember(rmad::kRecordBrowserActionMetricMethod),
+                           dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+      .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
+
+  base::RunLoop run_loop;
+  client_->RecordBrowserActionMetric(
+      request,
+      base::BindLambdaForTesting(
+          [&](absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+            EXPECT_FALSE(response.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.RunUntilIdle();
+}
+
 // Tests that synchronous observers are notified about errors that occur outside
 // of state transitions.
 TEST_F(RmadClientTest, Error) {

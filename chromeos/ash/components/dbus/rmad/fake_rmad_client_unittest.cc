@@ -509,6 +509,25 @@ TEST_F(FakeRmadClientTest, SaveLog) {
   run_loop.RunUntilIdle();
 }
 
+TEST_F(FakeRmadClientTest, RecordBrowserActionMetric) {
+  fake_client_()->SetRecordBrowserActionMetricReply(rmad::RMAD_ERROR_OK);
+  base::RunLoop run_loop;
+
+  rmad::RecordBrowserActionMetricRequest request;
+  request.set_diagnostics(true);
+  request.set_os_update(false);
+
+  client_->RecordBrowserActionMetric(
+      request,
+      base::BindLambdaForTesting(
+          [&](absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+            EXPECT_TRUE(response.has_value());
+            EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+            run_loop.Quit();
+          }));
+  run_loop.RunUntilIdle();
+}
+
 // Tests that synchronous observers are notified about errors that occur outside
 // of state transitions.
 TEST_F(FakeRmadClientTest, ErrorObservation) {

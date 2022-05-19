@@ -106,6 +106,11 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   // Save RMA logs to a USB drive.
   virtual void SaveLog(DBusMethodCallback<rmad::SaveLogReply> callback) = 0;
 
+  // Send metrics to the platform side, which will upload them.
+  virtual void RecordBrowserActionMetric(
+      const rmad::RecordBrowserActionMetricRequest request,
+      DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback) = 0;
+
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
