@@ -121,7 +121,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // AXNode::OwnerTree override.
   // Returns the globally unique ID of this accessibility tree.
-  AXTreeID GetAXTreeID() const override;
+  const AXTreeID& GetAXTreeID() const override;
 
   // AXNode::OwnerTree override.
   // Returns the AXNode with the given |id| if it is part of this AXTree.
@@ -173,6 +173,10 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // Given a child tree ID, return the node IDs of all nodes in the tree who
   // have a kChildTreeId int attribute with that value.
+  //
+  // TODO(accessibility): There should really be only one host node per child
+  // tree, so the return value should not be a set but a single node ID or
+  // `kInvalidAXNodeID`.
   std::set<AXNodeID> GetNodeIdsForChildTreeId(AXTreeID child_tree_id) const;
 
   // Get all of the child tree IDs referenced by any node in this tree.

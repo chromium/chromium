@@ -69,7 +69,7 @@ class AX_EXPORT AXNode final {
     };
 
     // See AXTree::GetAXTreeID.
-    virtual AXTreeID GetAXTreeID() const = 0;
+    virtual const AXTreeID& GetAXTreeID() const = 0;
     // See `AXTree::GetTableInfo`.
     virtual AXTableInfo* GetTableInfo(const AXNode* table_node) const = 0;
     // See AXTree::GetFromId.
