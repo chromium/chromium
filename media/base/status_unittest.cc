@@ -214,6 +214,34 @@ TEST_F(StatusTest, DifferentModesOfConstruction) {
   ASSERT_EQ(unpacked->FindIntPath("DataA"), 7);
   ASSERT_EQ(unpacked->FindIntPath("DataB"), 3);
   ASSERT_EQ(*unpacked->FindStringPath("DataC"), "apple pie");
+
+  NormalStatus root = NormalStatus::Codes::kFoo;
+  PackingStatus derrived = {PackingStatus::Codes::kFail, std::move(root)};
+  serialized = MediaSerialize(derrived);
+  unpacked = serialized.FindDictPath("cause");
+  ASSERT_NE(unpacked, nullptr);
+  ASSERT_EQ(unpacked->DictSize(), 5ul);
+  ASSERT_EQ(unpacked->FindIntPath("code").value_or(0),
+            static_cast<int>(NormalStatus::Codes::kFoo));
+
+  root = NormalStatus::Codes::kFoo;
+  derrived = {PackingStatus::Codes::kFail, "blah", std::move(root)};
+  serialized = MediaSerialize(derrived);
+  unpacked = serialized.FindDictPath("cause");
+  ASSERT_EQ(*serialized.FindStringPath("message"), "blah");
+  ASSERT_NE(unpacked, nullptr);
+  ASSERT_EQ(unpacked->DictSize(), 5ul);
+  ASSERT_EQ(unpacked->FindIntPath("code").value_or(0),
+            static_cast<int>(NormalStatus::Codes::kFoo));
+}
+
+TEST_F(StatusTest, DerefOpOnOrType) {
+  struct SimpleThing {
+    int CallMe() { return 77712; }
+  };
+  NormalStatus::Or<std::unique_ptr<SimpleThing>> sor =
+      std::make_unique<SimpleThing>();
+  ASSERT_EQ(sor->CallMe(), 77712);
 }
 
 TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {

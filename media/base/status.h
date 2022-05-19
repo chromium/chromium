@@ -287,6 +287,28 @@ class MEDIA_EXPORT TypedStatus {
     Traits::OnCreateFrom(this, data);
   }
 
+  // Used to allow returning {TypedStatus::Codes::kValue, cause}
+  template <typename CausalStatusType>
+  TypedStatus(Codes code,
+              TypedStatus<CausalStatusType>&& cause,
+              const base::Location& location = base::Location::Current())
+      : TypedStatus(code, "", location) {
+    static_assert(!std::is_same_v<CausalStatusType, Traits>);
+    DCHECK(data_);
+    AddCause(std::move(cause));
+  }
+
+  // Used to allow returning {TypedStatus::Codes::kValue, "message", cause}
+  template <typename CausalStatusType>
+  TypedStatus(Codes code,
+              base::StringPiece message,
+              TypedStatus<CausalStatusType>&& cause,
+              const base::Location& location = base::Location::Current())
+      : TypedStatus(code, message, location) {
+    DCHECK(data_);
+    AddCause(std::move(cause));
+  }
+
   // Constructor to create a new TypedStatus from a numeric code & message.
   // These are immutable; if you'd like to change them, then you likely should
   // create a new TypedStatus.
@@ -512,6 +534,13 @@ class MEDIA_EXPORT TypedStatus {
       auto value = std::move(std::get<0>(*value_));
       value_.reset();
       return value;
+    }
+
+    // Return constref of the value, if we have one.
+    // Callers should ensure that this |has_value()|.
+    const OtherType& operator->() {
+      CHECK(value_);
+      return std::get<0>(*value_);
     }
 
     typename T::Codes code() const {
