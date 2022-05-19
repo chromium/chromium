@@ -14,4 +14,20 @@ HidDetectionManager::HidDetectionManager() {
 
 HidDetectionManager::~HidDetectionManager() = default;
 
+void HidDetectionManager::StartHidDetection(Delegate* delegate) {
+  DCHECK(!delegate_);
+  delegate_ = delegate;
+  PerformStartHidDetection();
+}
+
+void HidDetectionManager::StopHidDetection() {
+  DCHECK(delegate_);
+  PerformStopHidDetection();
+  delegate_ = nullptr;
+}
+
+void HidDetectionManager::NotifyHidDetectionStatusChanged() {
+  delegate_->OnHidDetectionStatusChanged(ComputeHidDetectionStatus());
+}
+
 }  // namespace ash::hid_detection

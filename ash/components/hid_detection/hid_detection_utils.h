@@ -29,6 +29,10 @@ enum class HidType {
 // touchpad).
 bool IsDevicePointer(const device::mojom::InputDeviceInfo& device);
 
+// Returns true if |device| is a HID with touchscreen capabilities (i.e. a
+// touchscreen or tablet).
+bool IsDeviceTouchscreen(const device::mojom::InputDeviceInfo& device);
+
 // Record each HID that is connected while the HID detection screen is shown.
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device);
 

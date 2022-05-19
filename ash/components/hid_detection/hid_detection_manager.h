@@ -12,6 +12,20 @@ namespace ash::hid_detection {
 // Manages detecting and automatically connecting to human interface devices.
 class HidDetectionManager {
  public:
+  // Represents the status of HIDs on the device.
+  struct HidDetectionStatus {
+    // Indicates the device has a touchscreen connected.
+    bool touchscreen_detected;
+  };
+
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Invoked whenever any HID detection status property changes.
+    virtual void OnHidDetectionStatusChanged(HidDetectionStatus status) = 0;
+  };
+
   virtual ~HidDetectionManager();
 
   // Invokes |callback| with a result indicating whether HID detection is
@@ -20,8 +34,32 @@ class HidDetectionManager {
   virtual void GetIsHidDetectionRequired(
       base::OnceCallback<void(bool)> callback) = 0;
 
+  // Begins scanning for HIDs. Informs |delegate| every time
+  // the status of HID detection changes. This should only be called once in the
+  // lifetime of this class.
+  void StartHidDetection(Delegate* delegate);
+
+  // Stops scanning for HIDs. This should only be called while HID detection is
+  // active.
+  void StopHidDetection();
+
  protected:
   HidDetectionManager();
+
+  // Implementation-specific version of StartHidDetection().
+  virtual void PerformStartHidDetection() = 0;
+
+  // Implementation-specific version of StopHidDetection().
+  virtual void PerformStopHidDetection() = 0;
+
+  // Computes the HID detection status sent to |delegate_|.
+  virtual HidDetectionStatus ComputeHidDetectionStatus() const = 0;
+
+  // Notifies |delegate_| of status changes; should be called by derived
+  // types to notify observers of status changes.
+  void NotifyHidDetectionStatusChanged();
+
+  Delegate* delegate_ = nullptr;
 };
 
 }  // namespace ash::hid_detection

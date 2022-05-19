@@ -53,6 +53,10 @@ bool IsDevicePointer(const device::mojom::InputDeviceInfo& device) {
   return device.is_mouse || device.is_touchpad;
 }
 
+bool IsDeviceTouchscreen(const device::mojom::InputDeviceInfo& device) {
+  return device.is_touchscreen || device.is_tablet;
+}
+
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device) {
   absl::optional<HidType> hid_type = GetHidType(device);
 

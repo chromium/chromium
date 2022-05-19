@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/device_service.mojom.h"
@@ -18,7 +19,8 @@ namespace ash::hid_detection {
 
 // Concrete HidDetectionManager implementation that uses InputDeviceManager and
 // BluetoothHidDetectorImpl to detect and connect with devices.
-class HidDetectionManagerImpl : public HidDetectionManager {
+class HidDetectionManagerImpl : public HidDetectionManager,
+                                public device::mojom::InputDeviceManagerClient {
  public:
   using InputDeviceManagerBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<device::mojom::InputDeviceManager>)>;
@@ -35,6 +37,14 @@ class HidDetectionManagerImpl : public HidDetectionManager {
   // HidDetectionManager:
   void GetIsHidDetectionRequired(
       base::OnceCallback<void(bool)> callback) override;
+  void PerformStartHidDetection() override;
+  void PerformStopHidDetection() override;
+  HidDetectionManager::HidDetectionStatus ComputeHidDetectionStatus()
+      const override;
+
+  // device::mojom::InputDeviceManagerClient:
+  void InputDeviceAdded(device::mojom::InputDeviceInfoPtr info) override;
+  void InputDeviceRemoved(const std::string& id) override;
 
   void BindToInputDeviceManagerIfNeeded();
 
@@ -45,8 +55,30 @@ class HidDetectionManagerImpl : public HidDetectionManager {
       base::OnceCallback<void(bool)> callback,
       std::vector<device::mojom::InputDeviceInfoPtr> devices);
 
+  // Populates |device_id_to_device_map_| with the initial input devices
+  // connected when HID starts and sets the connected HIDs.
+  void OnGetDevicesAndSetClient(
+      std::vector<device::mojom::InputDeviceInfoPtr> devices);
+
+  // Iterates through |device_id_to_device_map_| and attempts to set each
+  // entry as a connected HID. Returns true if any of the entries were set as
+  // connected and false otherwise.
+  bool SetConnectedHids();
+
+  // Sets |device| as a connected HID if device is an applicable HID and no
+  // device of the same type is already connected. Returns true if the device
+  // was set as connected and false otherwise.
+  bool AttemptSetDeviceAsConnectedHid(
+      const device::mojom::InputDeviceInfo& device);
+
+  std::map<std::string, device::mojom::InputDeviceInfoPtr>
+      device_id_to_device_map_;
+  absl::optional<std::string> connected_touchscreen_id_;
+
   device::mojom::DeviceService* device_service_ = nullptr;
   mojo::Remote<device::mojom::InputDeviceManager> input_device_manager_;
+  mojo::AssociatedReceiver<device::mojom::InputDeviceManagerClient>
+      input_device_manager_receiver_{this};
 
   base::WeakPtrFactory<HidDetectionManagerImpl> weak_ptr_factory_{this};
 };

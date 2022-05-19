@@ -19,9 +19,31 @@ void FakeHidDetectionManager::InvokePendingIsHidDetectionRequiredCallback(
   std::move(is_hid_detection_required_callback_).Run(required);
 }
 
+void FakeHidDetectionManager::SetHidDetectionStatus(
+    HidDetectionManager::HidDetectionStatus status) {
+  hid_detection_status_ = status;
+  NotifyHidDetectionStatusChanged();
+}
+
 void FakeHidDetectionManager::GetIsHidDetectionRequired(
     base::OnceCallback<void(bool)> callback) {
   is_hid_detection_required_callback_ = std::move(callback);
+}
+
+void FakeHidDetectionManager::PerformStartHidDetection() {
+  DCHECK(!is_hid_detection_active_);
+  is_hid_detection_active_ = true;
+  NotifyHidDetectionStatusChanged();
+}
+
+void FakeHidDetectionManager::PerformStopHidDetection() {
+  DCHECK(is_hid_detection_active_);
+  is_hid_detection_active_ = false;
+}
+
+HidDetectionManager::HidDetectionStatus
+FakeHidDetectionManager::ComputeHidDetectionStatus() const {
+  return hid_detection_status_;
 }
 
 }  // namespace ash::hid_detection

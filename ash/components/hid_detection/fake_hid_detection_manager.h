@@ -19,12 +19,23 @@ class FakeHidDetectionManager : public HidDetectionManager {
   bool HasPendingIsHidDetectionRequiredCallback() const;
   void InvokePendingIsHidDetectionRequiredCallback(bool required);
 
+  // Mocks the HID detection status being updated.
+  void SetHidDetectionStatus(HidDetectionManager::HidDetectionStatus status);
+
+  bool is_hid_detection_active() const { return is_hid_detection_active_; }
+
  private:
   // HidDetectionManager:
   void GetIsHidDetectionRequired(
       base::OnceCallback<void(bool)> callback) override;
+  void PerformStartHidDetection() override;
+  void PerformStopHidDetection() override;
+  HidDetectionManager::HidDetectionStatus ComputeHidDetectionStatus()
+      const override;
 
   base::OnceCallback<void(bool)> is_hid_detection_required_callback_;
+  bool is_hid_detection_active_ = false;
+  HidDetectionManager::HidDetectionStatus hid_detection_status_;
 };
 
 }  // namespace ash::hid_detection
