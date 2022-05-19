@@ -106,6 +106,7 @@ source_set("toolbar_ui") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp:ntp",
     "//ios/chrome/browser/ui/orchestrator",
     "//ios/chrome/browser/ui/popup_menu/public",

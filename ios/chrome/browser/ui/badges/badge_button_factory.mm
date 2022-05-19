@@ -174,7 +174,7 @@ NSInteger kSymbolIncognitoFullScreenPointSize = 14;
 }
 
 - (BadgeButton*)overflowBadgeButton {
-  UIImage* image = ShouldUseUIKitPopupMenu()
+  UIImage* image = UseSymbols()
                        ? DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
                                                     kSymbolImagePointSize)
                        : [UIImage imageNamed:@"wrench_badge"];
@@ -187,7 +187,7 @@ NSInteger kSymbolIncognitoFullScreenPointSize = 14;
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_BADGE_HINT);
 
   // Configure new overflow popup menu if enabled.
-  if (ShouldUseUIKitPopupMenu()) {
+  if (UseSymbols()) {
     button.showsMenuAsPrimaryAction = YES;
 
     // Adds an empty menu so the event triggers the first time.

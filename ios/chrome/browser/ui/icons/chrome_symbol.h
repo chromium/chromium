@@ -69,7 +69,7 @@ UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbolName,
 UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
                                            NSInteger pointSize);
 
-// Returns YES if the kUseSFSymbolsSamples flag is enabled.
+// Returns YES if the kUseSFSymbols flag is enabled.
 bool UseSymbols();
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_CHROME_SYMBOL_H_

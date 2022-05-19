@@ -112,5 +112,5 @@ UIImage* CustomSymbolTemplateWithPointSize(NSString* symbolName,
 }
 
 bool UseSymbols() {
-  return base::FeatureList::IsEnabled(kUseSFSymbolsSamples);
+  return base::FeatureList::IsEnabled(kUseSFSymbols);
 }

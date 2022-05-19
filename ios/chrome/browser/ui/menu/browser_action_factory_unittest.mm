@@ -51,7 +51,7 @@ class BrowserActionFactoryTest : public PlatformTest {
   BrowserActionFactoryTest()
       : test_title_(@"SomeTitle"),
         scene_state_([[SceneState alloc] initWithAppState:nil]) {
-    feature_list_.InitAndEnableFeature(kUseSFSymbolsSamples);
+    feature_list_.InitAndEnableFeature(kUseSFSymbols);
   }
 
   void SetUp() override {

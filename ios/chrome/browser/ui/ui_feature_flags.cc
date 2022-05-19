@@ -64,15 +64,8 @@ const base::Feature kEnableShortenedPasswordAutoFillInstruction{
 const base::Feature kAddSettingForDefaultPageMode{
     "DefaultRequestedMode", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kUseSFSymbolsSamples{"UseSFSymbolsSamples",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kUseSFSymbols{"UseSFSymbols",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCalendarExperienceKit{"CalendarExperienceKit",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kUseUIKitPopupMenu{"UseUIKitPopupMenu",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool ShouldUseUIKitPopupMenu() {
-  return base::FeatureList::IsEnabled(kUseUIKitPopupMenu);
-}

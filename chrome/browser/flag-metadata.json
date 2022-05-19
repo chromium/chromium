@@ -6024,11 +6024,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "use-new-popup-menu",
-    "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "use-passthrough-command-decoder",
     "owners": [ "//third_party/angle/OWNERS" ],
     "expiry_milestone": 120
@@ -6044,8 +6039,8 @@
     "expiry_milestone": 105
   },
   {
-    "name": "use-sf-symbols-samples",
-    "owners": [ "gambard", "bling-flags@google.com" ],
+    "name": "use-sf-symbols",
+    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 110
   },
   {

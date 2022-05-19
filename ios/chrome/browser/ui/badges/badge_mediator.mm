@@ -29,8 +29,8 @@
 #import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -297,7 +297,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   // Log overflow badge tap.
   base::RecordAction(
       base::UserMetricsAction(kInfobarOverflowBadgeTappedUserAction));
-  if (!ShouldUseUIKitPopupMenu()) {
+  if (!UseSymbols()) {
     NSMutableArray<id<BadgeItem>>* popupMenuBadges =
         [[NSMutableArray alloc] init];
     // Get all non-fullscreen badges.

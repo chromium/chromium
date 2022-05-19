@@ -35,7 +35,7 @@ MenuScenario kTestMenuScenario = MenuScenario::kHistoryEntry;
 class ActionFactoryTest : public PlatformTest {
  protected:
   ActionFactoryTest() : test_title_(@"SomeTitle") {
-    feature_list_.InitAndEnableFeature(kUseSFSymbolsSamples);
+    feature_list_.InitAndEnableFeature(kUseSFSymbols);
   }
 
   // Creates a blue square.

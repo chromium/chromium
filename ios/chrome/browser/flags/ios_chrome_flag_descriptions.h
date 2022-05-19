@@ -587,14 +587,10 @@ extern const char kUseLensToSearchForImageDescription[];
 extern const char kUseLoadSimulatedRequestForOfflinePageName[];
 extern const char kUseLoadSimulatedRequestForOfflinePageDescription[];
 
-// Title and description for the flag to enable the replacement of some images
+// Title and description for the flag to enable the replacement of images
 // by SFSymbols.
-extern const char kUseSFSymbolsSamplesName[];
-extern const char kUseSFSymbolsSamplesDescription[];
-
-// Title and description for the flag to replace the popup menus by UIKit menus.
-extern const char kUseUIKitPopupMenuName[];
-extern const char kUseUIKitPopupMenuDescription[];
+extern const char kUseSFSymbolsName[];
+extern const char kUseSFSymbolsDescription[];
 
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
