@@ -244,17 +244,20 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   const HeapVector<Member<const RuleData>>* IdRules(
       const AtomicString& key) const {
+    DCHECK(!pending_rules_);
     auto it = id_rules_.find(key);
     return it != id_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* ClassRules(
       const AtomicString& key) const {
+    DCHECK(!pending_rules_);
     auto it = class_rules_.find(key);
     return it != class_rules_.end() ? it->value : nullptr;
   }
   bool HasAnyAttrRules() const { return !attr_rules_.IsEmpty(); }
   const HeapVector<Member<const RuleData>>* AttrRules(
       const AtomicString& key) const {
+    DCHECK(!pending_rules_);
     auto it = attr_rules_.find(key);
     return it != attr_rules_.end() ? it->value : nullptr;
   }
@@ -263,48 +266,61 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                            const AtomicString& value) const;
   const HeapVector<Member<const RuleData>>* TagRules(
       const AtomicString& key) const {
+    DCHECK(!pending_rules_);
     auto it = tag_rules_.find(key);
     return it != tag_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* UAShadowPseudoElementRules(
       const AtomicString& key) const {
+    DCHECK(!pending_rules_);
     auto it = ua_shadow_pseudo_element_rules_.find(key);
     return it != ua_shadow_pseudo_element_rules_.end() ? it->value : nullptr;
   }
   const HeapVector<Member<const RuleData>>* LinkPseudoClassRules() const {
+    DCHECK(!pending_rules_);
     return &link_pseudo_class_rules_;
   }
   const HeapVector<Member<const RuleData>>* CuePseudoRules() const {
+    DCHECK(!pending_rules_);
     return &cue_pseudo_rules_;
   }
   const HeapVector<Member<const RuleData>>* FocusPseudoClassRules() const {
+    DCHECK(!pending_rules_);
     return &focus_pseudo_class_rules_;
   }
   const HeapVector<Member<const RuleData>>* FocusVisiblePseudoClassRules()
       const {
+    DCHECK(!pending_rules_);
     return &focus_visible_pseudo_class_rules_;
   }
   const HeapVector<Member<const RuleData>>*
   SpatialNavigationInterestPseudoClassRules() const {
+    DCHECK(!pending_rules_);
     return &spatial_navigation_interest_class_rules_;
   }
   const HeapVector<Member<const RuleData>>* UniversalRules() const {
+    DCHECK(!pending_rules_);
     return &universal_rules_;
   }
   const HeapVector<Member<const RuleData>>* ShadowHostRules() const {
+    DCHECK(!pending_rules_);
     return &shadow_host_rules_;
   }
   const HeapVector<Member<const RuleData>>* PartPseudoRules() const {
+    DCHECK(!pending_rules_);
     return &part_pseudo_rules_;
   }
   const HeapVector<Member<const RuleData>>* VisitedDependentRules() const {
+    DCHECK(!pending_rules_);
     return &visited_dependent_rules_;
   }
   const HeapVector<Member<const RuleData>>* SelectorFragmentAnchorRules()
       const {
+    DCHECK(!pending_rules_);
     return &selector_fragment_anchor_rules_;
   }
   const HeapVector<Member<StyleRulePage>>& PageRules() const {
+    DCHECK(!pending_rules_);
     return page_rules_;
   }
   const HeapVector<Member<StyleRuleFontFace>>& FontFaceRules() const {
@@ -328,6 +344,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return scroll_timeline_rules_;
   }
   const HeapVector<Member<const RuleData>>* SlottedPseudoElementRules() const {
+    DCHECK(!pending_rules_);
     return &slotted_pseudo_element_rules_;
   }
 
@@ -340,8 +357,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   unsigned RuleCount() const { return rule_count_; }
 
   void CompactRulesIfNeeded() {
-    if (need_compaction_)
-      CompactRules();
+    if (!pending_rules_)
+      return;
+    CompactRules();
   }
 
   bool HasSlottedRules() const {
@@ -385,12 +403,15 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData);
   friend class RuleSetCascadeLayerTest;
 
-  using RuleMap =
+  using PendingRuleMap =
+      HeapHashMap<AtomicString,
+                  Member<HeapLinkedStack<Member<const RuleData>>>>;
+  using CompactRuleMap =
       HeapHashMap<AtomicString, Member<HeapVector<Member<const RuleData>>>>;
   using SubstringMatcherMap =
       HashMap<AtomicString, std::unique_ptr<base::SubstringSetMatcher>>;
 
-  void AddToRuleSet(const AtomicString& key, RuleMap&, const RuleData*);
+  void AddToRuleSet(const AtomicString& key, PendingRuleMap&, const RuleData*);
   void AddPageRule(StyleRulePage*);
   void AddViewportRule(StyleRuleViewport*);
   void AddFontFaceRule(StyleRuleFontFace*);
@@ -419,10 +440,29 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void SortKeyframesRulesIfNeeded();
 
   void CompactRules();
-  static void CompactRuleMap(RuleMap&);
+  static void CompactPendingRules(PendingRuleMap&, CompactRuleMap&);
   static void CreateSubstringMatchers(
-      RuleMap& attr_map,
+      CompactRuleMap& attr_map,
       SubstringMatcherMap& substring_matcher_map);
+
+  class PendingRuleMaps : public GarbageCollected<PendingRuleMaps> {
+   public:
+    PendingRuleMaps() = default;
+
+    PendingRuleMap id_rules;
+    PendingRuleMap class_rules;
+    PendingRuleMap attr_rules;
+    PendingRuleMap tag_rules;
+    PendingRuleMap ua_shadow_pseudo_element_rules;
+
+    void Trace(Visitor*) const;
+  };
+
+  PendingRuleMaps* EnsurePendingRules() {
+    if (!pending_rules_)
+      pending_rules_ = MakeGarbageCollected<PendingRuleMaps>();
+    return pending_rules_.Get();
+  }
 
 #if DCHECK_IS_ON()
   void AssertRuleListsSorted() const;
@@ -441,9 +481,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // May return nullptr for the implicit outer layer.
   const CascadeLayer* GetLayerForTest(const RuleData&) const;
 
-  RuleMap id_rules_;
-  RuleMap class_rules_;
-  RuleMap attr_rules_;
+  CompactRuleMap id_rules_;
+  CompactRuleMap class_rules_;
+  CompactRuleMap attr_rules_;
   // A structure for quickly rejecting an entire attribute rule set
   // (from attr_rules_). If we have many rules in the same bucket,
   // we build up a case-insensitive substring-matching structure of all
@@ -466,8 +506,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // doing a simple match.) Check GetMinimumRulesetSizeForSubstringMatcher()
   // before looking up for a cheaper test.
   SubstringMatcherMap attr_substring_matchers_;
-  RuleMap tag_rules_;
-  RuleMap ua_shadow_pseudo_element_rules_;
+  CompactRuleMap tag_rules_;
+  CompactRuleMap ua_shadow_pseudo_element_rules_;
   HeapVector<Member<const RuleData>> link_pseudo_class_rules_;
   HeapVector<Member<const RuleData>> cue_pseudo_rules_;
   HeapVector<Member<const RuleData>> focus_pseudo_class_rules_;
@@ -496,7 +536,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   bool has_bucket_for_style_attr_ = false;
 
   unsigned rule_count_ = 0;
-  bool need_compaction_ = false;
+  Member<PendingRuleMaps> pending_rules_;
 
   // nullptr if the stylesheet doesn't explicitly declare any layer.
   Member<CascadeLayer> implicit_outer_layer_;

@@ -148,13 +148,13 @@ RuleData::RuleData(Type type,
 }
 
 void RuleSet::AddToRuleSet(const AtomicString& key,
-                           RuleMap& map,
+                           PendingRuleMap& map,
                            const RuleData* rule_data) {
-  Member<HeapVector<Member<const RuleData>>>& rules =
+  Member<HeapLinkedStack<Member<const RuleData>>>& rules =
       map.insert(key, nullptr).stored_value->value;
   if (!rules)
-    rules = MakeGarbageCollected<HeapVector<Member<const RuleData>>>();
-  rules->push_back(rule_data);
+    rules = MakeGarbageCollected<HeapLinkedStack<Member<const RuleData>>>();
+  rules->Push(rule_data);
 }
 
 static void ExtractSelectorValues(const CSSSelector* selector,
@@ -288,20 +288,17 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
 
   // Prefer rule sets in order of most likely to apply infrequently.
   if (!id.IsEmpty()) {
-    need_compaction_ = true;
-    AddToRuleSet(id, id_rules_, rule_data);
+    AddToRuleSet(id, EnsurePendingRules()->id_rules, rule_data);
     return true;
   }
 
   if (!class_name.IsEmpty()) {
-    need_compaction_ = true;
-    AddToRuleSet(class_name, class_rules_, rule_data);
+    AddToRuleSet(class_name, EnsurePendingRules()->class_rules, rule_data);
     return true;
   }
 
   if (!attr_name.IsEmpty()) {
-    need_compaction_ = true;
-    AddToRuleSet(attr_name, attr_rules_, rule_data);
+    AddToRuleSet(attr_name, EnsurePendingRules()->attr_rules, rule_data);
     if (attr_name == html_names::kStyleAttr) {
       has_bucket_for_style_attr_ = true;
     }
@@ -313,10 +310,10 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     // and have a relation of ShadowPseudo between them. Therefore we should
     // never be a situation where ExtractSelectorValues finds id and
     // className in addition to custom pseudo.
-    need_compaction_ = true;
     DCHECK(id.IsEmpty());
     DCHECK(class_name.IsEmpty());
-    AddToRuleSet(custom_pseudo_element_name, ua_shadow_pseudo_element_rules_,
+    AddToRuleSet(custom_pseudo_element_name,
+                 EnsurePendingRules()->ua_shadow_pseudo_element_rules,
                  rule_data);
     return true;
   }
@@ -351,7 +348,6 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoFileSelectorButton:
       if (it->FollowsPart()) {
-        need_compaction_ = true;
         part_pseudo_rules_.push_back(rule_data);
       } else if (it->FollowsSlotted()) {
         slotted_pseudo_element_rules_.push_back(rule_data);
@@ -359,8 +355,8 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
         const auto& name = pseudo_type == CSSSelector::kPseudoFileSelectorButton
                                ? shadow_element_names::kPseudoFileUploadButton
                                : shadow_element_names::kPseudoInputPlaceholder;
-        need_compaction_ = true;
-        AddToRuleSet(name, ua_shadow_pseudo_element_rules_, rule_data);
+        AddToRuleSet(name, EnsurePendingRules()->ua_shadow_pseudo_element_rules,
+                     rule_data);
       }
       return true;
     case CSSSelector::kPseudoHost:
@@ -375,8 +371,7 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
   }
 
   if (!tag_name.IsEmpty()) {
-    need_compaction_ = true;
-    AddToRuleSet(tag_name, tag_rules_, rule_data);
+    AddToRuleSet(tag_name, EnsurePendingRules()->tag_rules, rule_data);
     return true;
   }
 
@@ -442,37 +437,38 @@ void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
 }
 
 void RuleSet::AddPageRule(StyleRulePage* rule) {
-  need_compaction_ = true;
+  EnsurePendingRules();  // So that page_rules_.ShrinkToFit() gets called.
   page_rules_.push_back(rule);
 }
 
 void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule) {
-  need_compaction_ = true;
+  EnsurePendingRules();  // So that font_face_rules_.ShrinkToFit() gets called.
   font_face_rules_.push_back(rule);
 }
 
 void RuleSet::AddKeyframesRule(StyleRuleKeyframes* rule) {
-  need_compaction_ = true;
+  EnsurePendingRules();  // So that keyframes_rules_.ShrinkToFit() gets called.
   keyframes_rules_.push_back(rule);
 }
 
 void RuleSet::AddPropertyRule(StyleRuleProperty* rule) {
-  need_compaction_ = true;
+  EnsurePendingRules();  // So that property_rules_.ShrinkToFit() gets called.
   property_rules_.push_back(rule);
 }
 
 void RuleSet::AddCounterStyleRule(StyleRuleCounterStyle* rule) {
-  need_compaction_ = true;
+  EnsurePendingRules();  // So that counter_style_rules_.ShrinkToFit() gets
+                         // called.
   counter_style_rules_.push_back(rule);
 }
 
 void RuleSet::AddFontPaletteValuesRule(StyleRuleFontPaletteValues* rule) {
-  need_compaction_ = true;
+  EnsurePendingRules();
   font_palette_values_rules_.push_back(rule);
 }
 
 void RuleSet::AddScrollTimelineRule(StyleRuleScrollTimeline* rule) {
-  need_compaction_ = true;
+  EnsurePendingRules();  // So that property_rules_.ShrinkToFit() gets called.
   scroll_timeline_rules_.push_back(rule);
 }
 
@@ -622,9 +618,28 @@ CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
   return cascade_layer->GetOrAddSubLayer(name);
 }
 
-void RuleSet::CompactRuleMap(RuleMap& map) {
-  for (auto& [key, value] : map) {
-    value->ShrinkToFit();
+void RuleSet::CompactPendingRules(PendingRuleMap& pending_map,
+                                  CompactRuleMap& compact_map) {
+  for (auto& item : pending_map) {
+    HeapLinkedStack<Member<const RuleData>>* pending_rules =
+        item.value.Release();
+    Member<HeapVector<Member<const RuleData>>>& rules =
+        compact_map.insert(item.key, nullptr).stored_value->value;
+    if (!rules) {
+      rules = MakeGarbageCollected<HeapVector<Member<const RuleData>>>();
+      rules->ReserveInitialCapacity(pending_rules->size());
+    } else {
+      rules->ReserveCapacity(pending_rules->size());
+    }
+    // Since pending_rules is a stack, we need to insert in the reversed
+    // ordering so that the resulting vector is sorted by rule position
+    wtf_size_t num_pending_rules = pending_rules->size();
+    rules->Grow(rules->size() + num_pending_rules);
+    for (auto iter = rules->rbegin(); !pending_rules->IsEmpty(); ++iter) {
+      DCHECK(iter != rules->rend());
+      *iter = pending_rules->Peek();
+      pending_rules->Pop();
+    }
   }
 }
 
@@ -650,6 +665,7 @@ bool RuleSet::CanIgnoreEntireList(
     const HeapVector<Member<const RuleData>>* list,
     const AtomicString& key,
     const AtomicString& value) const {
+  DCHECK(!pending_rules_);
   DCHECK_EQ(attr_rules_.find(key)->value, list);
   if (list->size() < GetMinimumRulesetSizeForSubstringMatcher()) {
     // Too small to build up a tree, so always check.
@@ -672,7 +688,7 @@ bool RuleSet::CanIgnoreEntireList(
 }
 
 void RuleSet::CreateSubstringMatchers(
-    RuleMap& attr_map,
+    CompactRuleMap& attr_map,
     RuleSet::SubstringMatcherMap& substring_matcher_map) {
   for (const auto& [/*AtomicString*/ attr, /*Member<RuleSet>*/ ruleset] :
        attr_map) {
@@ -728,13 +744,15 @@ void RuleSet::CreateSubstringMatchers(
 }
 
 void RuleSet::CompactRules() {
-  DCHECK(need_compaction_);
-  CompactRuleMap(id_rules_);
-  CompactRuleMap(class_rules_);
-  CompactRuleMap(attr_rules_);
+  DCHECK(pending_rules_);
+  PendingRuleMaps* pending_rules = pending_rules_.Release();
+  CompactPendingRules(pending_rules->id_rules, id_rules_);
+  CompactPendingRules(pending_rules->class_rules, class_rules_);
+  CompactPendingRules(pending_rules->attr_rules, attr_rules_);
   CreateSubstringMatchers(attr_rules_, attr_substring_matchers_);
-  CompactRuleMap(tag_rules_);
-  CompactRuleMap(ua_shadow_pseudo_element_rules_);
+  CompactPendingRules(pending_rules->tag_rules, tag_rules_);
+  CompactPendingRules(pending_rules->ua_shadow_pseudo_element_rules,
+                      ua_shadow_pseudo_element_rules_);
   link_pseudo_class_rules_.ShrinkToFit();
   cue_pseudo_rules_.ShrinkToFit();
   focus_pseudo_class_rules_.ShrinkToFit();
@@ -758,7 +776,6 @@ void RuleSet::CompactRules() {
 #if EXPENSIVE_DCHECKS_ARE_ON()
   AssertRuleListsSorted();
 #endif
-  need_compaction_ = false;
 }
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -868,6 +885,14 @@ void ExtendedRuleData::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(style_scope_);
 }
 
+void RuleSet::PendingRuleMaps::Trace(Visitor* visitor) const {
+  visitor->Trace(id_rules);
+  visitor->Trace(class_rules);
+  visitor->Trace(attr_rules);
+  visitor->Trace(tag_rules);
+  visitor->Trace(ua_shadow_pseudo_element_rules);
+}
+
 void RuleSet::LayerInterval::Trace(Visitor* visitor) const {
   visitor->Trace(layer);
 }
@@ -896,6 +921,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(scroll_timeline_rules_);
+  visitor->Trace(pending_rules_);
   visitor->Trace(implicit_outer_layer_);
   visitor->Trace(layer_intervals_);
 #ifndef NDEBUG
