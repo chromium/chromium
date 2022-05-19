@@ -578,6 +578,7 @@ android_library("chrome_java") {
     "//components/ukm/android:java",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
+    "//components/variations:variations_java",
     "//components/variations/android:variations_java",
     "//components/version_info/android:version_constants_java",
     "//components/viz/common:common_java",
