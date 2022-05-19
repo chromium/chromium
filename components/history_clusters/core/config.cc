@@ -74,6 +74,17 @@ Config::Config() {
       internal::kOmniboxAction, "omnibox_action_on_noisy_urls",
       omnibox_action_on_noisy_urls);
 
+  omnibox_action_on_navigation_intents =
+      base::GetFieldTrialParamByFeatureAsBool(
+          internal::kOmniboxAction, "omnibox_action_on_navigation_intents",
+          omnibox_action_on_navigation_intents);
+
+  omnibox_action_navigation_intent_score_threshold =
+      base::GetFieldTrialParamByFeatureAsInt(
+          internal::kOmniboxAction,
+          "omnibox_action_on_navigation_intent_score_threshold",
+          omnibox_action_navigation_intent_score_threshold);
+
   keyword_filter_on_entity_aliases = base::GetFieldTrialParamByFeatureAsBool(
       history_clusters::features::kOnDeviceClusteringKeywordFiltering,
       "keyword_filter_on_entity_aliases", keyword_filter_on_entity_aliases);

@@ -670,6 +670,11 @@ source_set("unit_tests") {
       "//components/vector_icons:vector_icons",
     ]
   }
+
+  if (!is_ios) {
+    sources += [ "actions/history_clusters_action_unittest.cc" ]
+    deps += [ "//components/history_clusters/core:test_support" ]
+  }
 }
 
 fuzzer_test("autocomplete_input_fuzzer") {

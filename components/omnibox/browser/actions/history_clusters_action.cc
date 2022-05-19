@@ -4,8 +4,9 @@
 
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 
-#include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,6 +32,20 @@
 namespace history_clusters {
 
 namespace {
+
+// Find the top relevance of either search or navigation matches. Returns 0 if
+// there are no search or navigation matches.
+int TopRelevance(const AutocompleteResult& result, bool search) {
+  DCHECK(!result.empty());
+  return base::ranges::max_element(
+             result, {},
+             [&](const auto& match) {
+               return AutocompleteMatch::IsSearchType(match.type) == search
+                          ? match.relevance
+                          : 0;
+             })
+      ->relevance;
+}
 
 class HistoryClustersAction : public OmniboxAction {
  public:
@@ -111,6 +126,21 @@ void AttachHistoryClustersActions(
   // History Clusters must be visible to the user to attach the action chip.
   if (!prefs->GetBoolean(history_clusters::prefs::kVisible)) {
     return;
+  }
+
+  if (result.empty())
+    return;
+
+  // If there's a reasonably clear navigation intent, don't distract the user
+  // with the actions chip.
+  if (!GetConfig().omnibox_action_on_navigation_intents) {
+    int top_search_relevance = TopRelevance(result, true);
+    int top_navigation_relevance = TopRelevance(result, false);
+    if (top_navigation_relevance > top_search_relevance &&
+        top_navigation_relevance >
+            GetConfig().omnibox_action_navigation_intent_score_threshold) {
+      return;
+    }
   }
 
   for (auto& match : result) {

@@ -78,8 +78,18 @@ struct Config {
   bool omnibox_action_on_urls = false;
 
   // If enabled, allows the Omnibox Action chip to appear on URLs from noisy
-  // visits. This does nothing if `omnibox_action_on_urls` is false.
+  // visits. This does nothing if `omnibox_action_on_urls` is disabled.
   bool omnibox_action_on_noisy_urls = true;
+
+  // If enabled, allows the Omnibox Action chip to appear when it's likely the
+  // user is intending to perform a navigation. This does not affect which
+  // suggestions are allowed to display the chip. Does nothing if
+  // `omnibox_action` is disabled.
+  bool omnibox_action_on_navigation_intents = true;
+
+  // If `omnibox_action_on_navigation_intents` is enabled, this threshold
+  // helps determine when the user is intending to perform a navigation.
+  int omnibox_action_navigation_intent_score_threshold = 1300;
 
   // If enabled, adds the keywords of aliases for detected entity names to a
   // cluster.

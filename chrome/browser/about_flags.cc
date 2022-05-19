@@ -970,11 +970,19 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
 const FeatureEntry::FeatureParam kJourneysOmniboxActionOnAllURLsParams[] = {
     {"omnibox_action_on_urls", "true"},
     {"omnibox_action_on_noisy_urls", "true"},
+    {"omnibox_action_on_navigation_intents", "true"},
 };
 const FeatureEntry::FeatureParam kJourneysOmniboxActionOnNonNoisyURLsParams[] =
     {
         {"omnibox_action_on_urls", "true"},
         {"omnibox_action_on_noisy_urls", "false"},
+        {"omnibox_action_on_navigation_intents", "true"},
+};
+const FeatureEntry::FeatureParam
+    kJourneysOmniboxActionOnNonNavigationIntentsParams[] = {
+        {"omnibox_action_on_urls", "false"},
+        {"omnibox_action_on_noisy_urls", "false"},
+        {"omnibox_action_on_navigation_intents", "false"},
 };
 const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips on All URLs", kJourneysOmniboxActionOnAllURLsParams,
@@ -982,6 +990,9 @@ const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips on Non-Noisy URLs",
      kJourneysOmniboxActionOnNonNoisyURLsParams,
      std::size(kJourneysOmniboxActionOnNonNoisyURLsParams), nullptr},
+    {"Action Chips Disabled on Navigation Intents",
+     kJourneysOmniboxActionOnNonNavigationIntentsParams,
+     std::size(kJourneysOmniboxActionOnNonNavigationIntentsParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
     {"labels_from_entities", "true"},

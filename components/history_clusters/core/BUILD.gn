@@ -122,8 +122,8 @@ source_set("test_support") {
     "history_clusters_service_test_api.cc",
     "history_clusters_service_test_api.h",
   ]
+  public_deps = [ ":core" ]
   deps = [
-    ":core",
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
