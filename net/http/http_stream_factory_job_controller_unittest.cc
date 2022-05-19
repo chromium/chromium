@@ -1870,11 +1870,12 @@ void HttpStreamFactoryJobControllerTest::
 
   // Run message loop to make the main job succeed.
   base::RunLoop().RunUntilIdle();
+  request_.reset();
+
   // If alt job was retried on the alternate network, the alternative service
   // should be marked broken until the default network changes.
   VerifyBrokenAlternateProtocolMapping(request_info,
                                        alt_job_retried_on_non_default_network);
-  request_.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
   if (alt_job_retried_on_non_default_network) {
     // Verify the brokenness is cleared when the default network changes.
@@ -1897,7 +1898,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 // changes.
 TEST_F(HttpStreamFactoryJobControllerTest,
        MainJobSucceedsAfterAltJobSucceededOnAlternateNetwork) {
-  TestAltJobSucceedsAfterMainJobSucceeded(true);
+  TestMainJobSucceedsAfterAltJobSucceeded(true);
 }
 
 void HttpStreamFactoryJobControllerTest::TestMainJobFailsAfterAltJobSucceeded(
