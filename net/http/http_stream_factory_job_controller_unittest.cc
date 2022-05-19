@@ -114,14 +114,6 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
 
 class HttpStreamFactoryJobPeer {
  public:
-  static void Start(HttpStreamFactory::Job* job,
-                    HttpStreamRequest::StreamType stream_type) {
-    // Start() is mocked for MockHttpStreamFactoryJob.
-    // This is the alternative method to invoke real Start() method on Job.
-    job->stream_type_ = stream_type;
-    job->StartInternal();
-  }
-
   // Returns |num_streams_| of |job|. It should be 0 for non-preconnect Jobs.
   static int GetNumStreams(const HttpStreamFactory::Job* job) {
     return job->num_streams_;
