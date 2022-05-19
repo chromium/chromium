@@ -112,7 +112,6 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
        */
       networkShowConnect_: {
         type: Boolean,
-        value: true,
       },
 
       /**
@@ -190,6 +189,10 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     const networkState = event.detail;
     const type = networkState.type;
     const displayName = OncMojo.getNetworkStateDisplayName(networkState);
+
+    this.networkShowConnect_ =
+        (networkState.connectionState ===
+         chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
 
     if (!this.canAttemptConnection_(networkState)) {
       this.showConfig_(type, networkState.guid, displayName);
@@ -271,6 +274,16 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
         /** @type {!NetworkConfigElement} */ (
             this.shadowRoot.querySelector('#networkConfig'));
     networkConfig.connect();
+  }
+
+  /** @protected */
+  disconnectNetwork_() {
+    this.networkConfig_.startDisconnect(this.guid_).then(response => {
+      if (!response.success) {
+        console.error('Disconnect failed for: ' + this.guid_);
+      }
+    });
+    this.closeConfig_();
   }
 
   /**

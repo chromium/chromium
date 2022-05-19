@@ -49,8 +49,13 @@
         [[i18n('connectNetworkDialogCancelButtonText')]]
     </cr-button>
     <cr-button id="connectButton" class="action-button"
-        on-click="connectNetwork_" disabled="[[!enableConnect_]]">
+        on-click="connectNetwork_" disabled="[[!enableConnect_]]"
+        hidden$="[[!networkShowConnect_]]">
       [[i18n('connectNetworkDialogConnectButtonText')]]
+    </cr-button>
+    <cr-button id="disconnectButton" class="action-button"
+      on-click="disconnectNetwork_"  hidden$="[[networkShowConnect_]]">
+      [[i18n('connectNetworkDialogDisconnectButtonText')]]
     </cr-button>
   </div>
 </cr-dialog>

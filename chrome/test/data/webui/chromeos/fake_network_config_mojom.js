@@ -145,6 +145,7 @@ export class FakeNetworkConfig {
      'setProperties',
      'setCellularSimState',
      'startConnect',
+     'startDisconnect',
      'configureNetwork',
      'getAlwaysOnVpn',
      'getSupportedVpnTypes',
@@ -307,6 +308,24 @@ export class FakeNetworkConfig {
       this.methodCalled('startConnect');
       resolve(
           {result: chromeos.networkConfig.mojom.StartConnectResult.kCanceled});
+    });
+  }
+
+  /**
+   * @param { !string } guid
+   * @return {!Promise<{
+        success: !boolean,
+   *  }>}
+   */
+  startDisconnect(guid) {
+    return new Promise(resolve => {
+      const network = this.networkStates_.find(state => {
+        return state.guid === guid;
+      });
+      network.connectionState =
+          chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected;
+      this.methodCalled('startDisconnect');
+      resolve({success: true});
     });
   }
 

@@ -142,6 +142,44 @@ export function onboardingNetworkPageTest() {
     assertFalse(dialog.open);
   });
 
+  test('DisconnectNetwork', async () => {
+    networkConfigService.addNetworksForTest(fakeNetworks);
+    await initializeOnboardingNetworkPage();
+    const networkList = component.shadowRoot.querySelector('#networkList');
+
+    // Add fake connected wifi.
+    const fakeWiFi = OncMojo.getDefaultNetworkState(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifi');
+    fakeWiFi.connectionState =
+        chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+    networkConfigService.addNetworksForTest(fakeWiFi);
+    component.refreshNetworks();
+    await flushTasks();
+
+    // fake WiFi connectionState should be 'Connected'.
+    const length = networkList.networks.length;
+    const network = networkList.networks[length - 1];
+    assertEquals(
+        network.connectionState,
+        chromeos.networkConfig.mojom.ConnectionStateType.kConnected);
+
+    // Show the 'disconnect' button instead of 'connect'.
+    component.onNetworkSelected_({detail: network});
+    const connectButton = /** @type {!CrDialogElement} */ (
+        component.shadowRoot.querySelector('#connectButton'));
+    const disconnectButton = /** @type {!CrDialogElement} */ (
+        component.shadowRoot.querySelector('#disconnectButton'));
+    assertTrue(connectButton.hidden);
+    assertFalse(disconnectButton.hidden);
+
+    disconnectButton.click();
+    component.refreshNetworks();
+    await flushTasks();
+    assertEquals(
+        network.connectionState,
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
+  });
+
   test('SetSkipButtonWhenNotConnected', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
 

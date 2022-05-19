@@ -2773,6 +2773,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONNECT" desc="Text for connect to wifi button.">
         Connect
       </message>
+      <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_DISCONNECT" desc="Text for disconnect to wifi button.">
+        Disconnect
+      </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CANCEL" desc="Text for cancel connect to wifi button.">
         Cancel
       </message>

@@ -97,6 +97,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CONNECT_PAGE_DESCRIPTION},
       {"connectNetworkDialogConnectButtonText",
        IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONNECT},
+      {"connectNetworkDialogDisconnectButtonText",
+       IDS_SHIMLESS_RMA_CONNECT_DIALOG_DISCONNECT},
       {"connectNetworkDialogCancelButtonText",
        IDS_SHIMLESS_RMA_CONNECT_DIALOG_CANCEL},
       {"internetConfigName", IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONFIG_NAME},
