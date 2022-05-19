@@ -7,7 +7,8 @@
 // well as feature.h, simple_feature.h, and feature_provider.h.
 //
 // Note that specifying "web_page", "blessed_web_page", or "all" as a context
-// type will require manually updating chrome/renderer/resources/dispatcher.cc.
+// type will require manually updating javascript bindings code in the
+// renderer.
 
 {
   "accessibilityFeatures": [{
