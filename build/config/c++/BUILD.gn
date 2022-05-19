@@ -27,20 +27,20 @@ config("runtime_library") {
   libs = []
 
   if (libcxx_abi_unstable) {
-    defines += [ "_LIBCPP_ABI_VERSION=2" ]
+    defines += [ "_LIBCPP_ABI_UNSTABLE" ]
   }
 
   if (libcxx_is_shared) {
     # When libcxx_is_shared is true, symbols from libc++.so are exported for
     # all DSOs to use.  If the system libc++ gets loaded (indirectly through
     # a system library), then it will conflict with our libc++.so.  Add a
-    # custom ABI namespace if we're building with _LIBCPP_ABI_VERSION=2 to avoid
+    # custom ABI version if we're building with _LIBCPP_ABI_UNSTABLE to avoid
     # conflicts.
     #
-    # Windows doesn't need to set _LIBCPP_ABI_NAMESPACE since there's no system
+    # Windows doesn't need to set _LIBCPP_ABI_VERSION since there's no system
     # C++ library we could conflict with.
     if (libcxx_abi_unstable && !is_win) {
-      defines += [ "_LIBCPP_ABI_NAMESPACE=Cr" ]
+      defines += [ "_LIBCPP_ABI_VERSION=Cr" ]
     }
   } else {
     # Don't leak any symbols on a static build.
