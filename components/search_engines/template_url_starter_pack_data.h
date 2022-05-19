@@ -38,6 +38,10 @@ struct StarterPackEngine {
 
 extern const int kCurrentDataVersion;
 
+/* Exposed for testing purposes */
+extern const StarterPackEngine bookmarks;
+extern const StarterPackEngine history;
+
 // Returns the current version of the starterpack data, so callers can know when
 // they need to re-merge.
 int GetDataVersion();

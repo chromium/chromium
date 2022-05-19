@@ -16,7 +16,7 @@
 class AutocompleteProviderClient;
 
 // This is the provider for built-in URLs, such as about:settings and
-// chrome://version.
+// chrome://version, as well as the built-in Starter Pack search engines.
 class BuiltinProvider : public AutocompleteProvider {
  public:
   explicit BuiltinProvider(AutocompleteProviderClient* client);
@@ -37,6 +37,10 @@ class BuiltinProvider : public AutocompleteProvider {
                 const std::u16string& inline_completion,
                 const ACMatchClassifications& styles);
 
+  // Constructs an AutocompleteMatch for starter pack (@bookmarks, @history,
+  // etc.) suggestions and adds it to `matches_`.
+  void AddStarterPackMatch(const TemplateURL& template_url);
+
   // Returns true if |matches_| contains a match that should be allowed to be
   // the default match. If true, the index of that match in |matches_| is
   // returned in |index|.
@@ -44,6 +48,7 @@ class BuiltinProvider : public AutocompleteProvider {
 
   raw_ptr<AutocompleteProviderClient> client_;
   Builtins builtins_;
+  TemplateURLService* template_url_service_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BUILTIN_PROVIDER_H_
