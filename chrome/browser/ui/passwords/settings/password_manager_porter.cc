@@ -100,12 +100,12 @@ void PasswordImportConsumer::ConsumePassword(
   scoped_refptr<password_manager::PasswordStoreInterface> store(
       PasswordStoreFactory::GetForProfile(profile_,
                                           ServiceAccessType::EXPLICIT_ACCESS));
+  if (!store)
+    return;
   for (const auto& pwd : seq) {
-    if (store)
-      store->AddLogin(pwd.ParseValid());
+    store->AddLogin(pwd.ToPasswordForm());
   }
-  // TODO(crbug.com/1025510): Should the length of |seq| be reported if
-  // |store| is null?
+
   UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
                           std::distance(seq.begin(), seq.end()));
 }
@@ -250,8 +250,7 @@ void PasswordManagerPorter::FileSelectionCanceled(void* params) {
 void PasswordManagerPorter::ImportPasswordsFromPath(
     const base::FilePath& path) {
   // Set up a |PasswordImportConsumer| to process each password entry.
-  std::unique_ptr<PasswordImportConsumer> form_consumer(
-      new PasswordImportConsumer(profile_));
+  auto form_consumer = std::make_unique<PasswordImportConsumer>(profile_);
   password_manager::PasswordImporter::Import(
       path, base::BindOnce(&PasswordImportConsumer::ConsumePassword,
                            std::move(form_consumer)));

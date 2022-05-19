@@ -108,7 +108,7 @@ TEST(CSVPasswordSequenceTest, Iteration) {
   size_t order = 0;
   for (const CSVPassword& pwd : seq) {
     ASSERT_LT(order, std::size(kExpectedCredentials));
-    PasswordForm parsed = pwd.ParseValid();
+    PasswordForm parsed = pwd.ToPasswordForm();
     const auto& expected = kExpectedCredentials[order];
     EXPECT_EQ(GURL(expected.url), parsed.url);
     EXPECT_EQ(base::ASCIIToUTF16(expected.username), parsed.username_value);
@@ -125,7 +125,7 @@ TEST(CSVPasswordSequenceTest, MissingEolAtEof) {
   EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
 
   ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
-  PasswordForm parsed = seq.begin()->ParseValid();
+  PasswordForm parsed = seq.begin()->ToPasswordForm();
   EXPECT_EQ(GURL("http://a.com"), parsed.url);
   EXPECT_EQ(u"l", parsed.username_value);
   EXPECT_EQ(u"p", parsed.password_value);

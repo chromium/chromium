@@ -413,6 +413,7 @@ static_library("csv") {
 
   deps = [
     ":affiliation",
+    "//components/password_manager/core/browser/form_parsing",
     "//url",
   ]
 }

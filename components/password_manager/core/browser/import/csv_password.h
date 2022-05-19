@@ -32,31 +32,20 @@ class CSVPassword {
   CSVPassword(CSVPassword&&) = delete;
   CSVPassword& operator=(const CSVPassword&) = delete;
   CSVPassword& operator=(CSVPassword&&) = delete;
-  ~CSVPassword();
 
-  // Returns whether the associated CSV row can be parsed successfully. If
-  // returning success, it also stores the parsed result in |*form|.
-  Status Parse(PasswordForm* form) const;
-  // TryParse() returns the same value as Parse(). However, TryParse() does not
-  // attempt to create and store the corresponding PasswordForm anywhere.
-  // Therefore TryParse() is faster than Parse() and a better choice for only
-  // checking a correctness of a CSV serialization of a credential.
-  Status TryParse() const;
-  // Convenience wrapper around Parse() for cases known to be correctly
-  // parseable.
-  PasswordForm ParseValid() const;
+  // Returns the status of the parse.
+  Status GetParseStatus() const;
+
+  // Returns PasswordForm populated with parsed data, if initial parsing
+  // completed successfully.
+  PasswordForm ToPasswordForm() const;
 
  private:
-  // ParseImpl is the common base of Parse() and TryParse().
-  Status ParseImpl(PasswordForm* form) const;
+  GURL url_;
+  base::StringPiece username_;
+  base::StringPiece password_;
 
-  // The members |map_| and |row_| are only modified in constructor or
-  // operator=().
-
-  // |map_| stores the meaning of particular columns in the row.
-  const ColumnMap& map_;
-  // |row_| contains the CSV row from which the PasswordForm is parsed.
-  base::StringPiece row_;
+  Status status_;
 };
 
 }  // namespace password_manager

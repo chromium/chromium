@@ -42,15 +42,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   CHECK(IsValid(seq.result()))
       << "Invalid parsing result of the whole sequence: "
       << static_cast<int>(seq.result());
-  PasswordForm form, copy;
+  PasswordForm copy;
   for (const auto& pwd : seq) {
-    const CSVPassword::Status status = pwd.Parse(&form);
+    const CSVPassword::Status status = pwd.GetParseStatus();
     CHECK(IsValid(status)) << "Invalid parsing result of one row: "
                            << static_cast<int>(status);
     if (status == CSVPassword::Status::kOK) {
       // Copy the parsed password to access all its data members and allow the
       // ASAN to detect any corrupted memory inside.
-      copy = form;
+      copy = pwd.ToPasswordForm();
     }
   }
   return 0;
