@@ -67,7 +67,7 @@ import org.chromium.ui.test.util.UiRestriction;
 /** Integration tests for showing IPH bubbles for read later. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures(ChromeFeatureList.READ_LATER)
+@Features.EnableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.ENABLE_IPH})
 @Batch(Batch.PER_CLASS)
 public class ReadLaterContextMenuTest {
     @Rule
