@@ -155,6 +155,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_script_controller.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -431,13 +432,19 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   thread->AddObserver(subresource_filter_ruleset_dealer_.get());
   thread->AddObserver(phishing_model_setter_.get());
 
-  thread->RegisterExtension(extensions_v8::LoadTimesExtension::Get());
+  blink::WebScriptController::RegisterExtension(
+      extensions_v8::LoadTimesExtension::Get());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(variations::switches::kEnableBenchmarking))
-    thread->RegisterExtension(extensions_v8::BenchmarkingExtension::Get());
-  if (command_line->HasSwitch(switches::kEnableNetBenchmarking))
-    thread->RegisterExtension(extensions_v8::NetBenchmarkingExtension::Get());
+  if (command_line->HasSwitch(variations::switches::kEnableBenchmarking)) {
+    blink::WebScriptController::RegisterExtension(
+        extensions_v8::BenchmarkingExtension::Get());
+  }
+
+  if (command_line->HasSwitch(switches::kEnableNetBenchmarking)) {
+    blink::WebScriptController::RegisterExtension(
+        extensions_v8::NetBenchmarkingExtension::Get());
+  }
 
   // chrome: is also to be permitted to embeds https:// things and have them
   // treated as first-party.

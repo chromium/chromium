@@ -28,7 +28,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
-#include "third_party/blink/public/web/web_script_controller.h"
 
 namespace content {
 
@@ -191,11 +190,6 @@ void MockRenderThread::RecordAction(const base::UserMetricsAction& action) {
 }
 
 void MockRenderThread::RecordComputedAction(const std::string& action) {
-}
-
-void MockRenderThread::RegisterExtension(
-    std::unique_ptr<v8::Extension> extension) {
-  blink::WebScriptController::RegisterExtension(std::move(extension));
 }
 
 int MockRenderThread::PostTaskToAllWebWorkers(base::RepeatingClosure closure) {

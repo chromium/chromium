@@ -148,7 +148,6 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_render_theme.h"
-#include "third_party/blink/public/web/web_script_controller.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -207,7 +206,6 @@ using ::blink::WebDocument;
 using ::blink::WebFrame;
 using ::blink::WebNetworkStateNotifier;
 using ::blink::WebRuntimeFeatures;
-using ::blink::WebScriptController;
 using ::blink::WebSecurityPolicy;
 using ::blink::WebString;
 using ::blink::WebView;
@@ -1044,11 +1042,6 @@ void RenderThreadImpl::RecordAction(const base::UserMetricsAction& action) {
 
 void RenderThreadImpl::RecordComputedAction(const std::string& action) {
   GetRendererHost()->RecordUserMetricsAction(action);
-}
-
-void RenderThreadImpl::RegisterExtension(
-    std::unique_ptr<v8::Extension> extension) {
-  WebScriptController::RegisterExtension(std::move(extension));
 }
 
 int RenderThreadImpl::PostTaskToAllWebWorkers(base::RepeatingClosure closure) {

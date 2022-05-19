@@ -182,7 +182,6 @@ class CONTENT_EXPORT RenderThreadImpl
   blink::WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate() {
     return resource_request_sender_delegate_;
   }
-  void RegisterExtension(std::unique_ptr<v8::Extension> extension) override;
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;

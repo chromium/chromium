@@ -347,7 +347,8 @@ WorkerScriptContextSet* Dispatcher::GetWorkerScriptContextSet() {
 }
 
 void Dispatcher::OnRenderThreadStarted(content::RenderThread* thread) {
-  thread->RegisterExtension(extensions::SafeBuiltins::CreateV8Extension());
+  blink::WebScriptController::RegisterExtension(
+      extensions::SafeBuiltins::CreateV8Extension());
 }
 
 void Dispatcher::OnRenderFrameCreated(content::RenderFrame* render_frame) {
