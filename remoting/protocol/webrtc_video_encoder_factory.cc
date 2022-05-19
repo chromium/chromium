@@ -31,9 +31,7 @@ WebrtcVideoEncoderFactory::WebrtcVideoEncoderFactory()
     formats_.push_back(webrtc::SdpVideoFormat("H264"));
   }
 #endif
-#if defined(USE_AV1_ENCODER)
   formats_.push_back(webrtc::SdpVideoFormat("AV1"));
-#endif
 }
 
 WebrtcVideoEncoderFactory::~WebrtcVideoEncoderFactory() = default;

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
+#include "remoting/codec/webrtc_video_encoder_av1.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
@@ -28,10 +29,6 @@
 
 #if defined(USE_H264_ENCODER)
 #include "remoting/codec/webrtc_video_encoder_gpu.h"
-#endif
-
-#if defined(USE_AV1_ENCODER)
-#include "remoting/codec/webrtc_video_encoder_av1.h"
 #endif
 
 namespace remoting::protocol {
@@ -122,12 +119,8 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
 #endif
       break;
     case webrtc::kVideoCodecAV1:
-#if defined(USE_AV1_ENCODER)
       VLOG(0) << "Creating AV1 encoder.";
       encoder_ = std::make_unique<WebrtcVideoEncoderAV1>();
-#else
-      NOTIMPLEMENTED();
-#endif
       break;
     default:
       LOG(FATAL) << "Unknown codec type: " << codec_type_;

@@ -268,10 +268,6 @@ static_library("protocol") {
     ]
   }
 
-  if (is_debug) {
-    defines += [ "USE_AV1_ENCODER" ]
-  }
-
   if (enable_remoting_host) {
     sources += [
       "audio_pump.cc",
