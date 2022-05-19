@@ -667,6 +667,7 @@ void AshNotificationView::AddGroupNotification(
       std::make_unique<AshNotificationView>(notification,
                                             /*shown_in_popup=*/false);
   notification_view->SetGroupedChildExpanded(IsExpanded());
+  notification_view->set_parent_message_view(this);
   notification_view->set_scroller(
       scroller() ? scroller() : grouped_notifications_scroll_view_);
 
@@ -696,6 +697,7 @@ void AshNotificationView::PopulateGroupNotifications(
             message_center_style::kMaxGroupedNotificationsInCollapsedState ||
         IsExpanded());
     notification_view->SetGroupedChildExpanded(IsExpanded());
+    notification_view->set_parent_message_view(this);
     notification_view->set_scroller(
         scroller() ? scroller() : grouped_notifications_scroll_view_);
 
