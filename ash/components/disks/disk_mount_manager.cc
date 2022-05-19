@@ -544,45 +544,34 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Callback for UnmountPath.
   void OnUnmountPath(UnmountPathCallback callback,
                      const std::string& mount_path,
-                     MountError error_code) {
-    MountPointMap::iterator mount_points_it = mount_points_.find(mount_path);
-    if (mount_points_it == mount_points_.end()) {
-      // The path was unmounted, but not as a result of this unmount request,
-      // so return error.
-      if (!callback.is_null())
-        std::move(callback).Run(MOUNT_ERROR_INTERNAL);
-      return;
-    }
-
-    if (error_code == MOUNT_ERROR_PATH_NOT_MOUNTED ||
-        error_code == MOUNT_ERROR_INVALID_PATH) {
+                     MountError error) {
+    if (error == MOUNT_ERROR_PATH_NOT_MOUNTED ||
+        error == MOUNT_ERROR_INVALID_PATH) {
       // The path was already unmounted by something else.
-      error_code = MOUNT_ERROR_NONE;
+      error = MOUNT_ERROR_NONE;
     }
 
-    NotifyMountStatusUpdate(
-        UNMOUNTING, error_code,
-        MountPointInfo(mount_points_it->second.source_path,
-                       mount_points_it->second.mount_path,
-                       mount_points_it->second.mount_type,
-                       mount_points_it->second.mount_condition));
+    if (const MountPointMap::const_iterator mp_it =
+            mount_points_.find(mount_path);
+        mp_it != mount_points_.end()) {
+      const MountPointInfo& mp = mp_it->second;
+      NotifyMountStatusUpdate(UNMOUNTING, error, mp);
 
-    std::string path(mount_points_it->second.source_path);
+      if (error == MOUNT_ERROR_NONE) {
+        if (const DiskMap::iterator disk_it = disks_.find(mp.source_path);
+            disk_it != disks_.end()) {
+          Disk* const disk = disk_it->second.get();
+          DCHECK(disk);
+          disk->clear_mount_path();
+          disk->set_mounted(false);
+        }
 
-    if (error_code == MOUNT_ERROR_NONE)
-      mount_points_.erase(mount_points_it);
-
-    DiskMap::iterator disk_iter = disks_.find(path);
-    if (disk_iter != disks_.end()) {
-      DCHECK(disk_iter->second);
-      if (error_code == MOUNT_ERROR_NONE) {
-        disk_iter->second->clear_mount_path();
-        disk_iter->second->set_mounted(false);
+        mount_points_.erase(mp_it);
       }
     }
 
-    if (!callback.is_null())
-      std::move(callback).Run(error_code);
+    if (callback)
+      std::move(callback).Run(error);
   }
 
   void OnUnmountPathForFormat(const std::string& device_path,
