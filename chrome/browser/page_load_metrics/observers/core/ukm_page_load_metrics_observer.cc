@@ -12,7 +12,6 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -1165,15 +1164,8 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
     return;
   }
 
-  base::ElapsedTimer timer;
   cc::UkmSmoothnessData smoothness_data;
   bool success = smoothness->Read(smoothness_data);
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryDuration",
-      timer.Elapsed(), base::Microseconds(1), base::Milliseconds(5), 100);
-  UMA_HISTOGRAM_BOOLEAN(
-      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess", success);
 
   if (!success)
     return;

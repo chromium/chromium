@@ -1064,30 +1064,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Diagnostic.ReadSharedMemoryDuration"
-    units="microseconds" expires_after="2021-09-01">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
-  <summary>
-    Diagnostic metric to track how long it takes to read the smoothness data
-    from shared memory.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess"
-    units="boolean" expires_after="2021-09-01">
-  <owner>sadrul@chromium.org</owner>
-  <owner>fangzhoug@chromium.org</owner>
-  <summary>
-    Diagnostic metric to track how often reading the smoothness data for UKM
-    from the shared memory (using atomic memcpy) fails (or succeeds).
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2022-10-09">
   <owner>sadrul@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
