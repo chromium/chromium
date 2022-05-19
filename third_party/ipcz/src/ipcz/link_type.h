@@ -77,6 +77,7 @@ struct LinkType {
   bool operator==(const LinkType& rhs) const { return value_ == rhs.value_; }
   bool operator!=(const LinkType& rhs) const { return value_ != rhs.value_; }
 
+  bool is_outward() const { return is_central() || is_peripheral_outward(); }
   bool is_central() const { return value_ == Value::kCentral; }
   bool is_peripheral_inward() const {
     return value_ == Value::kPeripheralInward;

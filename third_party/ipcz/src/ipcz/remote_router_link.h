@@ -50,6 +50,7 @@ class RemoteRouterLink : public RouterLink {
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
   void Deactivate() override;
+  std::string Describe() const override;
 
  private:
   RemoteRouterLink(Ref<NodeLink> node_link,

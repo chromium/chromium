@@ -54,6 +54,33 @@ IPCZ_MSG_BEGIN(ConnectFromNonBrokerToBroker,
   IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
 IPCZ_MSG_END()
 
+// Conveys the contents of a parcel.
+IPCZ_MSG_BEGIN(AcceptParcel, IPCZ_MSG_ID(20), IPCZ_MSG_VERSION(0))
+  // The SublinkId linking the source and destination Routers along the
+  // transmitting NodeLink.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+
+  // The SequenceNumber of this parcel within the transmitting portal's outbound
+  // parcel sequence (and the receiving portal's inbound parcel sequence.)
+  IPCZ_MSG_PARAM(SequenceNumber, sequence_number)
+
+  // Free-form array of application-provided data bytes for this parcel.
+  IPCZ_MSG_PARAM_ARRAY(uint8_t, parcel_data)
+
+  // Array of handle types, with each corresponding to a single IpczHandle
+  // attached to the parcel.
+  IPCZ_MSG_PARAM_ARRAY(HandleType, handle_types)
+
+  // For every portal handle attached, there is also a RouterDescriptor encoding
+  // the details needed to construct a new Router at the parcel's destination
+  // to extend the transmitted portal's route there.
+  IPCZ_MSG_PARAM_ARRAY(RouterDescriptor, new_routers)
+
+  // Every DriverObject boxed and attached to this parcel has an entry in this
+  // array.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT_ARRAY(driver_objects)
+IPCZ_MSG_END()
+
 // Notifies a node that the route has been closed on one side. This message
 // always pertains to the side of the route opposite of the router receiving it,
 // guaranteed by the fact that the closed side of the route only transmits this

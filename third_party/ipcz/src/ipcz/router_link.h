@@ -48,6 +48,9 @@ class RouterLink : public RefCounted {
   // will stop calling into (and generally stop referencing) the Router ASAP.
   virtual void Deactivate() = 0;
 
+  // Generates a string description of this RouterLink for debug logging.
+  virtual std::string Describe() const = 0;
+
  protected:
   ~RouterLink() override = default;
 };

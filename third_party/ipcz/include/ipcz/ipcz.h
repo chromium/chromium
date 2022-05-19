@@ -931,6 +931,10 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //    IPCZ_RESULT_INVALID_ARGUMENT if `node` is invalid, `num_initial_portals`
   //        is zero, `initial_portals` is null, or `flags` specifies one or more
   //        flags which are invalid for `node` or invalid when combined.
+  //
+  //    IPCZ_RESULT_OUT_OF_RANGE if `num_initial_portals` is larger than the
+  //        ipcz implementation allows. There is no hard limit specified, but
+  //        any ipcz implementation must support at least 8 initial portals.
   IpczResult(IPCZ_API* ConnectNode)(IpczHandle node,
                                     IpczDriverHandle driver_transport,
                                     size_t num_initial_portals,

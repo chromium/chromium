@@ -23,6 +23,16 @@ const IpczDriver* GetDriverImpl(MultinodeTest::DriverMode mode) {
   }
 }
 
+void DoConnect(const IpczAPI& ipcz,
+               IpczHandle node,
+               IpczDriverHandle transport,
+               IpczConnectNodeFlags flags,
+               IpczHandle& portal) {
+  const IpczResult result =
+      ipcz.ConnectNode(node, transport, 1, flags, nullptr, &portal);
+  ASSERT_EQ(IPCZ_RESULT_OK, result);
+}
+
 }  // namespace
 
 MultinodeTest::MultinodeTest() = default;
@@ -59,6 +69,26 @@ void MultinodeTest::CreateBrokerToNonBrokerTransports(
       IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
       nullptr, transport0, transport1);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
+}
+
+std::pair<IpczHandle, IpczHandle> MultinodeTest::ConnectBrokerToNonBroker(
+    DriverMode mode,
+    IpczHandle broker_node,
+    IpczHandle non_broker_node) {
+  IpczDriverHandle broker_transport;
+  IpczDriverHandle non_broker_transport;
+  CreateBrokerToNonBrokerTransports(mode, &broker_transport,
+                                    &non_broker_transport);
+
+  IpczHandle broker_portal;
+  DoConnect(ipcz(), broker_node, broker_transport, IPCZ_NO_FLAGS,
+            broker_portal);
+
+  IpczHandle non_broker_portal;
+  DoConnect(ipcz(), non_broker_node, non_broker_transport,
+            IPCZ_CONNECT_NODE_TO_BROKER, non_broker_portal);
+
+  return {broker_portal, non_broker_portal};
 }
 
 }  // namespace ipcz::test

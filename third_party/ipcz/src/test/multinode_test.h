@@ -72,6 +72,11 @@ class MultinodeTest : public TestBase {
       DriverMode mode,
       IpczDriverHandle* broker_transport,
       IpczDriverHandle* non_broker_transport);
+
+  std::pair<IpczHandle, IpczHandle> ConnectBrokerToNonBroker(
+      DriverMode mode,
+      IpczHandle broker_node,
+      IpczHandle non_broker_node);
 };
 
 // Helper for a MultinodeTest parameterized over DriverMode. Most integration
@@ -97,6 +102,13 @@ class MultinodeTestWithDriver
       IpczDriverHandle* non_broker_transport) {
     MultinodeTest::CreateBrokerToNonBrokerTransports(
         GetParam(), broker_transport, non_broker_transport);
+  }
+
+  std::pair<IpczHandle, IpczHandle> ConnectBrokerToNonBroker(
+      IpczHandle broker_node,
+      IpczHandle non_broker_node) {
+    return MultinodeTest::ConnectBrokerToNonBroker(GetParam(), broker_node,
+                                                   non_broker_node);
   }
 };
 

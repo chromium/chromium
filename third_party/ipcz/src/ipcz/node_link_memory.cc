@@ -35,6 +35,11 @@ struct IPCZ_ALIGN(8) NodeLinkMemory::PrimaryBuffer {
   // NodeLink. This allows each side of a NodeLink to generate new BufferIds
   // spontaneously without synchronization or risk of collisions.
   std::atomic<uint64_t> next_buffer_id;
+
+  // Atomic generator for new unique SublinkIds to use across the associated
+  // NodeLink. This allows each side of a NodeLink to generate new SublinkIds
+  // spontaneously without synchronization or risk of collisions.
+  std::atomic<uint64_t> next_sublink_id;
 };
 
 NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
@@ -64,7 +69,18 @@ NodeLinkMemory::Allocation NodeLinkMemory::Allocate(Ref<Node> node) {
       new NodeLinkMemory(std::move(node), primary_buffer_memory.Map()));
 
   PrimaryBuffer& primary_buffer = memory->primary_buffer_;
-  primary_buffer.next_buffer_id.store(1, std::memory_order_release);
+
+  // The first allocable BufferId is 1, because the primary buffer uses 0.
+  primary_buffer.next_buffer_id.store(1, std::memory_order_relaxed);
+
+  // The first allocable SublinkId is kMaxInitialPortals. This way it doesn't
+  // matter whether the two ends of a NodeLink initiate their connection with a
+  // different initial portal count: neither can request more than
+  // kMaxInitialPortals, so neither will be assuming initial ownership of any
+  // SublinkIds at or above this value.
+  primary_buffer.next_sublink_id.store(kMaxInitialPortals,
+                                       std::memory_order_release);
+
   return {
       .node_link_memory = std::move(memory),
       .primary_buffer_memory = std::move(primary_buffer_memory),
@@ -81,6 +97,11 @@ Ref<NodeLinkMemory> NodeLinkMemory::Adopt(Ref<Node> node,
 BufferId NodeLinkMemory::AllocateNewBufferId() {
   return BufferId{
       primary_buffer_.next_buffer_id.fetch_add(1, std::memory_order_relaxed)};
+}
+
+SublinkId NodeLinkMemory::AllocateSublinkIds(size_t count) {
+  return SublinkId{primary_buffer_.next_sublink_id.fetch_add(
+      count, std::memory_order_relaxed)};
 }
 
 }  // namespace ipcz

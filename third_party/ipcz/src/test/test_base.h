@@ -36,7 +36,7 @@ class TestBase : public testing::Test {
                  absl::Span<IpczHandle> handles = {});
   IpczResult Get(IpczHandle portal,
                  std::string* message = nullptr,
-                 std::vector<IpczHandle>* handles = nullptr);
+                 absl::Span<IpczHandle> handles = {});
   IpczResult Trap(IpczHandle portal,
                   const IpczTrapConditions& conditions,
                   TrapEventHandler fn,
@@ -46,6 +46,13 @@ class TestBase : public testing::Test {
                                const IpczTrapConditions& conditions);
   IpczResult WaitForConditionFlags(IpczHandle portal,
                                    IpczTrapConditionFlags flags);
+  IpczResult WaitToGet(IpczHandle portal,
+                       std::string* message = nullptr,
+                       absl::Span<IpczHandle> handles = {});
+
+  // Sends a parcel from each of two portals and waits for them to be received
+  // by each other.
+  void VerifyEndToEnd(IpczHandle a, IpczHandle b);
 
  private:
   static void HandleEvent(const IpczTrapEvent* event);

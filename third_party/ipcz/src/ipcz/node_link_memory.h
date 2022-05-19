@@ -12,6 +12,7 @@
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
@@ -25,6 +26,11 @@ class Node;
 // between the two endpoint nodes.
 class NodeLinkMemory : public RefCounted {
  public:
+  // The maximum number of initial portals supported on ConnectNode() API calls.
+  // The first kMaxInitialPortals SublinkIds on a NodeLinkMemory will always be
+  // reserved for use by initial portals.
+  static constexpr size_t kMaxInitialPortals = 12;
+
   NodeLinkMemory(NodeLinkMemory&&);
 
   // Returned by Allocate().
@@ -64,6 +70,10 @@ class NodeLinkMemory : public RefCounted {
   // allocating new a buffer to add to the BufferPool, its BufferId should be
   // procured by calling this method.
   BufferId AllocateNewBufferId();
+
+  // Returns the first of `count` newly allocated, contiguous sublink IDs for
+  // use on the corresponding NodeLink.
+  SublinkId AllocateSublinkIds(size_t count);
 
  private:
   struct PrimaryBuffer;

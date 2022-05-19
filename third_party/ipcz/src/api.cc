@@ -9,6 +9,7 @@
 #include "ipcz/api_object.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
+#include "ipcz/node_link_memory.h"
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "util/ref_counted.h"
@@ -76,6 +77,10 @@ IpczResult ConnectNode(IpczHandle node_handle,
 
   if (num_initial_portals == 0 || !initial_portals) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (num_initial_portals > ipcz::NodeLinkMemory::kMaxInitialPortals) {
+    return IPCZ_RESULT_OUT_OF_RANGE;
   }
 
   return node->ConnectNode(

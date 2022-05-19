@@ -119,6 +119,7 @@ class NodeLink : public RefCounted, private msg::NodeMessageListener {
   SequenceNumber GenerateOutgoingSequenceNumber();
 
   // NodeMessageListener overrides:
+  bool OnAcceptParcel(msg::AcceptParcel& accept) override;
   bool OnRouteClosed(msg::RouteClosed& route_closed) override;
   void OnTransportError() override;
 
