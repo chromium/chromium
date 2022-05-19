@@ -9,9 +9,7 @@ promise_test_parallel(async t => {
   document.body.appendChild(parent);
   parent.src = ORIGIN + "/common/blank.html";
   // Wait for navigation to complete.
-  await t.step_wait(() =>
-    parent.contentWindow.location.href === parent.src,
-    "Wait for the navigation to complete");
+  await new Promise(resolve => parent.onload = resolve);
   assert_true(parent.anonymous);
 
   const child = document.createElement("iframe");
@@ -25,9 +23,7 @@ promise_test_parallel(async t => {
   document.body.appendChild(parent);
   parent.src = ORIGIN + "/common/blank.html";
   // Wait for navigation to complete.
-  await t.step_wait(() =>
-    parent.contentWindow.location.href === parent.src,
-    "Wait for the navigation to complete");
+  await new Promise(resolve => parent.onload = resolve);
   assert_false(parent.anonymous);
 
   const child = document.createElement("iframe");
