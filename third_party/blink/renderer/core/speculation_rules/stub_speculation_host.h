@@ -22,6 +22,15 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
     done_closure_ = std::move(done);
   }
 
+  // It's usually easier to use `SetDoneClosure` and then check `candidates`,
+  // but this is available in case you want to inspect the exact calls that are
+  // made. For example, this might matter if multiple calls to this are made,
+  // and one might race with the run loop exit.
+  void SetCandidatesUpdatedCallback(
+      base::RepeatingCallback<void(const Candidates&)> callback) {
+    candidates_updated_callback_ = callback;
+  }
+
   void BindUnsafe(mojo::ScopedMessagePipeHandle handle);
   void Bind(mojo::PendingReceiver<SpeculationHost> receiver);
 
@@ -36,6 +45,7 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
   mojo::Receiver<SpeculationHost> receiver_{this};
   Vector<mojom::blink::SpeculationCandidatePtr> candidates_;
   base::OnceClosure done_closure_;
+  base::RepeatingCallback<void(const Candidates&)> candidates_updated_callback_;
 };
 
 }  // namespace blink

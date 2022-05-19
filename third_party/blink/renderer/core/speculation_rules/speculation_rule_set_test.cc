@@ -7,6 +7,8 @@
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -14,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -24,6 +27,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -499,6 +503,58 @@ TEST_F(SpeculationRuleSetTest, AddAndRemoveAfterReport) {
     EXPECT_EQ(candidates[0]->url, "https://example.com/foo");
     EXPECT_EQ(candidates[1]->url, "https://example.com/baz");
   }
+}
+
+// Tests that removed candidates are reported in a microtask.
+// This is somewhat difficult to observe in practice, but most sharply visible
+// if a removal occurs and then in a subsequent microtask an addition occurs.
+TEST_F(SpeculationRuleSetTest, RemoveInMicrotask) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  base::RunLoop run_loop;
+  base::MockCallback<base::RepeatingCallback<void(
+      const Vector<mojom::blink::SpeculationCandidatePtr>&)>>
+      mock_callback;
+  {
+    ::testing::InSequence sequence;
+    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)));
+    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(1)));
+    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)))
+        .WillOnce(::testing::Invoke([&]() { run_loop.Quit(); }));
+  }
+  speculation_host.SetCandidatesUpdatedCallback(mock_callback.Get());
+
+  LocalFrame& frame = page_holder.GetFrame();
+  frame.GetSettings()->SetScriptEnabled(true);
+  auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
+  broker.SetBinderForTesting(
+      mojom::blink::SpeculationHost::Name_,
+      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
+                         WTF::Unretained(&speculation_host)));
+
+  // First simulated task adds the rule sets.
+  InsertSpeculationRules(page_holder.GetDocument(),
+                         R"({"prefetch": [
+           {"source": "list", "urls": ["https://example.com/foo"]}]})");
+  HTMLScriptElement* to_remove =
+      InsertSpeculationRules(page_holder.GetDocument(),
+                             R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/bar"]}]})");
+  Microtask::PerformCheckpoint(MainThreadIsolate());
+
+  // Second simulated task removes the rule sets, then adds another one in a
+  // microtask which is queued later than any queued during the removal.
+  to_remove->remove();
+  Microtask::EnqueueMicrotask(base::BindLambdaForTesting([&] {
+    InsertSpeculationRules(page_holder.GetDocument(),
+                           R"({"prefetch": [
+           {"source": "list", "urls": ["https://example.com/baz"]}]})");
+  }));
+  Microtask::PerformCheckpoint(MainThreadIsolate());
+
+  run_loop.Run();
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
 }
 
 class ConsoleCapturingChromeClient : public EmptyChromeClient {

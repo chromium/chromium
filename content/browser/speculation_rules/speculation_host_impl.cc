@@ -4,6 +4,7 @@
 
 #include "content/browser/speculation_rules/speculation_host_impl.h"
 
+#include "base/ranges/algorithm.h"
 #include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -39,6 +40,12 @@ bool CandidatesAreValid(
 }
 
 }  // namespace
+
+struct SpeculationHostImpl::PrerenderInfo {
+  GURL url;
+  Referrer referrer;
+  int prerender_host_id;
+};
 
 // static
 void SpeculationHostImpl::Bind(
@@ -140,29 +147,43 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     if (it->action != blink::mojom::SpeculationAction::kPrerender)
       continue;
 
+    auto [begin, end] = base::ranges::equal_range(
+        started_prerenders_.begin(), started_prerenders_.end(), it->url,
+        std::less<>(), &PrerenderInfo::url);
+    if (begin != end) {
+      // A prerender with this URL was previously triggered.
+      // At the moment there is no mechanism for cancelling these.
+      continue;
+    }
+
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
 
+    Referrer referrer(*(it->referrer));
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(
             it->url, PrerenderTriggerType::kSpeculationRule,
-            /*embedder_histogram_suffix=*/"", Referrer(*(it->referrer)),
+            /*embedder_histogram_suffix=*/"", referrer,
             rfhi->GetLastCommittedOrigin(), rfhi->GetLastCommittedURL(),
             rfhi->GetProcess()->GetID(), rfhi->GetFrameToken(),
             rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
             ui::PAGE_TRANSITION_LINK,
             /*url_match_predicate=*/absl::nullopt),
         *web_contents);
-    if (prerender_host_id != RenderFrameHost::kNoFrameTreeNodeId)
-      started_prerender_host_ids_.insert(prerender_host_id);
+    started_prerenders_.insert(end, {.url = it->url,
+                                     .referrer = referrer,
+                                     .prerender_host_id = prerender_host_id});
   }
 }
 
 void SpeculationHostImpl::CancelStartedPrerenders() {
   if (registry_) {
-    for (const auto id : started_prerender_host_ids_)
-      registry_->OnTriggerDestroyed(id);
-    started_prerender_host_ids_.clear();
+    for (const auto& prerender : started_prerenders_) {
+      int host_id = prerender.prerender_host_id;
+      if (host_id != RenderFrameHost::kNoFrameTreeNodeId)
+        registry_->OnTriggerDestroyed(host_id);
+    }
+    started_prerenders_.clear();
   }
 }
 

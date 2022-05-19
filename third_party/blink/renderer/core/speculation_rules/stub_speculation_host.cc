@@ -21,6 +21,8 @@ void StubSpeculationHost::Bind(
 
 void StubSpeculationHost::UpdateSpeculationCandidates(Candidates candidates) {
   candidates_ = std::move(candidates);
+  if (candidates_updated_callback_)
+    candidates_updated_callback_.Run(candidates_);
   if (done_closure_)
     std::move(done_closure_).Run();
 }

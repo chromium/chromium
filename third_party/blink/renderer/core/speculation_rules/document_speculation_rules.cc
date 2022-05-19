@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -74,26 +75,19 @@ void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
     return;
 
   has_pending_update_ = true;
-  ExecutionContext* execution_context =
-      GetSupplementable()->GetExecutionContext();
-  if (!execution_context)
-    return;
-
-  execution_context->GetTaskRunner(TaskType::kIdleTask)
-      ->PostTask(
-          base::Location::Current(),
-          WTF::Bind(&DocumentSpeculationRules::UpdateSpeculationCandidates,
-                    WrapWeakPersistent(this)));
+  Microtask::EnqueueMicrotask(
+      WTF::Bind(&DocumentSpeculationRules::UpdateSpeculationCandidates,
+                WrapWeakPersistent(this)));
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   has_pending_update_ = false;
 
   mojom::blink::SpeculationHost* host = GetHost();
-  if (!host)
+  auto* execution_context = GetSupplementable()->GetExecutionContext();
+  if (!host || !execution_context)
     return;
 
-  auto* execution_context = GetSupplementable()->GetExecutionContext();
   network::mojom::ReferrerPolicy referrer_policy =
       execution_context->GetReferrerPolicy();
   String outgoing_referrer = execution_context->OutgoingReferrer();
@@ -142,7 +136,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
       // after the session storage has been modified by another renderer
       // process. See crbug.com/1215680 for more details.
       LocalFrame* frame = GetSupplementable()->GetFrame();
-      if (frame->IsMainFrame()) {
+      if (frame && frame->IsMainFrame()) {
         frame->SetEvictCachedSessionStorageOnFreezeOrUnload();
       }
     }
