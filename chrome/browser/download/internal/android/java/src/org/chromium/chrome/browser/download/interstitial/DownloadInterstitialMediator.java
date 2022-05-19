@@ -11,12 +11,14 @@ import static org.chromium.chrome.browser.download.interstitial.DownloadIntersti
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SECONDARY_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SECONDARY_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SHOULD_REMOVE_PENDING_MESSAGE;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.STATE;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.TITLE_TEXT;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import androidx.core.util.Pair;
 
@@ -251,9 +253,10 @@ class DownloadInterstitialMediator {
             @Override
             public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
                 if (mModel.get(DOWNLOAD_ITEM) == null) {
-                    if (!mDownloadUrl.equals(item.originalUrl)) {
-                        return;
-                    }
+                    if (!TextUtils.equals(mDownloadUrl, item.originalUrl)) return;
+                    // Run before download is first attached.
+                    mModel.set(SHOULD_REMOVE_PENDING_MESSAGE, true);
+
                 } else if (!item.id.equals(mModel.get(DOWNLOAD_ITEM).id)) {
                     return;
                 }
