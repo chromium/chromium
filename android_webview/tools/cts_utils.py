@@ -108,6 +108,12 @@ class CTSConfig:
   def get_apks(self, platform):
     return sorted([r['apk'] for r in self._config[platform]['test_runs']])
 
+  def get_additional_apks(self, platform):
+    return [
+        apk for r in self._config[platform]['test_runs']
+        for apk in r.get('additional_apks', [])
+    ]
+
 
 class CTSCIPDYaml:
   """Represents a CTS CIPD yaml file."""
@@ -277,7 +283,8 @@ def filter_cts_file(cts_config, cts_zip_file, dest_dir):
       o = cts_config.get_origin(p, a)
       base_name = os.path.basename(o)
       if base_name == os.path.basename(cts_zip_file):
-        filterzip(cts_zip_file, cts_config.get_apks(p),
+        filterzip(cts_zip_file,
+                  cts_config.get_apks(p) + cts_config.get_additional_apks(p),
                   os.path.join(dest_dir, base_name))
         return
   raise ValueError('Could not find platform and arch for: ' + cts_zip_file)

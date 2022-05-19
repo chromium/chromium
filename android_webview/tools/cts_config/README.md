@@ -24,6 +24,16 @@ Android release basis by editing
       "test_runs": [
         {
           "apk": "location of the test apk in the cts zip file",
+          "additional_apks": [
+            "<optional list of additional apks that need to be installed for the test to run>"
+          ]
+        },
+        {
+          "apk": "location of the test apk in the cts zip file",
+          "voice_service": "<An optional override to use a custom voice service, eg: android.assist.service/.MainInteractionService - used by CTS assistant tests>"
+        },
+        {
+          "apk": "location of the test apk in the cts zip file",
           "excludes": [
             {
               "match": "<class#testcase (wildcard supported) expression of test to skip>",

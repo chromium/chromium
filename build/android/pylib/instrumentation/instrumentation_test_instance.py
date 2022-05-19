@@ -685,6 +685,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._system_packages_to_remove = None
     self._initializeSystemPackagesToRemoveAttributes(args)
 
+    self._use_voice_interaction_service = None
+    self._initializeUseVoiceInteractionService(args)
+
     self._use_webview_provider = None
     self._initializeUseWebviewProviderAttributes(args)
 
@@ -901,6 +904,12 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       return
     self._system_packages_to_remove = args.system_packages_to_remove
 
+  def _initializeUseVoiceInteractionService(self, args):
+    if (not hasattr(args, 'use_voice_interaction_service')
+        or not args.use_voice_interaction_service):
+      return
+    self._use_voice_interaction_service = args.use_voice_interaction_service
+
   def _initializeUseWebviewProviderAttributes(self, args):
     if (not hasattr(args, 'use_webview_provider')
         or not args.use_webview_provider):
@@ -977,6 +986,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def replace_system_package(self):
     return self._replace_system_package
+
+  @property
+  def use_voice_interaction_service(self):
+    return self._use_voice_interaction_service
 
   @property
   def use_webview_provider(self):

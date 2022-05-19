@@ -493,7 +493,11 @@ def AddInstrumentationTestOptions(parser):
       'on the system. WARNING: THIS WILL PERMANENTLY REMOVE THE SYSTEM APP. '
       'Unlike --replace-system-package, the app will not be restored after '
       'tests are finished.')
-
+  parser.add_argument(
+      '--use-voice-interaction-service',
+      help='This can be used to update the voice interaction service to be a '
+      'custom one. This is useful for mocking assistants. eg: '
+      'android.assist.service/.MainInteractionService')
   parser.add_argument(
       '--use-webview-provider',
       type=_RealPath, default=None,

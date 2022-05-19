@@ -87,8 +87,10 @@ class FakeDownload:
     for p in config:
       for a in config[p]['arch']:
         o = config[p]['arch'][a]['_origin']
-        for apk in [e['apk'] for e in config[p]['test_runs']]:
-          self.append_to_zip_file(o, apk)
+        for test_run in config[p]['test_runs']:
+          self.append_to_zip_file(o, test_run['apk'])
+          for additional_apk in test_run.get('additional_apks', []):
+            self.append_to_zip_file(o, additional_apk)
 
   def append_to_zip_file(self, url, file_name):
     """Append files to any zip files associated with the url.

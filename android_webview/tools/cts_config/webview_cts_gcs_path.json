@@ -93,6 +93,19 @@
             "match": "android.widget.cts.RemoteViewsActivityTest#testWebView"
           }
         ]
+      },
+      {
+        "apk": "android-cts/repository/testcases/CtsAssistTestCases.apk",
+        "voice_service": "android.assist.service/.MainInteractionService",
+        "additional_apks": [
+          "android-cts/repository/testcases/CtsAssistApp.apk",
+          "android-cts/repository/testcases/CtsAssistService.apk"
+        ],
+        "includes": [
+          {
+            "match": "android.assist.cts.WebViewTest#testWebView"
+          }
+        ]
       }
     ]
   },
@@ -130,6 +143,19 @@
             "match": "android.widget.cts.RemoteViewsActivityTest#testWebView"
           }
         ]
+      },
+      {
+        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
+        "voice_service": "android.assist.service/.MainInteractionService",
+        "additional_apks": [
+          "android-cts/testcases/CtsAssistApp.apk",
+          "android-cts/testcases/CtsAssistService.apk"
+        ],
+        "includes": [
+          {
+            "match": "android.assist.cts.WebViewTest#testWebView"
+          }
+        ]
       }
     ]
   },
@@ -152,6 +178,19 @@
       },
       {
         "apk": "android-cts/testcases/CtsWebViewStartupApp.apk"
+      },
+      {
+        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
+        "voice_service": "android.assist.service/.MainInteractionService",
+        "additional_apks": [
+          "android-cts/testcases/CtsAssistApp.apk",
+          "android-cts/testcases/CtsAssistService.apk"
+        ],
+        "includes": [
+          {
+            "match": "android.assist.cts.WebViewTest#testWebView"
+          }
+        ]
       }
     ]
   },
@@ -185,6 +224,19 @@
       },
       {
         "apk": "android-cts/testcases/CtsWebViewStartupApp.apk"
+      },
+      {
+        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
+        "voice_service": "android.assist.service/.MainInteractionService",
+        "additional_apks": [
+          "android-cts/testcases/CtsAssistApp.apk",
+          "android-cts/testcases/CtsAssistService.apk"
+        ],
+        "includes": [
+          {
+            "match": "android.assist.cts.WebViewTest#testWebView"
+          }
+        ]
       }
     ]
   },
@@ -239,6 +291,19 @@
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
             "mode": "instant",
             "_bug_id": "crbug.com/1326440"
+          }
+        ]
+      },
+      {
+        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
+        "voice_service": "android.assist.service/.MainInteractionService",
+        "additional_apks": [
+          "android-cts/testcases/CtsAssistApp.apk",
+          "android-cts/testcases/CtsAssistService.apk"
+        ],
+        "includes": [
+          {
+            "match": "android.assist.cts.WebViewTest#testWebView"
           }
         ]
       }
@@ -297,6 +362,18 @@
             "_bug_id": "crbug.com/1326440"
           }
         ]
+      },
+      {
+        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
+        "additional_apks": [
+          "android-cts/testcases/CtsAssistApp.apk",
+          "android-cts/testcases/CtsAssistService.apk"
+        ],
+        "includes": [
+          {
+            "match": "android.assist.cts.WebViewTest#testWebView"
+          }
+        ]
       }
     ]
   },
@@ -351,6 +428,18 @@
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
             "mode": "instant",
             "_bug_id": "crbug.com/1326440"
+          }
+        ]
+      },
+      {
+        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
+        "additional_apks": [
+          "android-cts/testcases/CtsAssistApp.apk",
+          "android-cts/testcases/CtsAssistService.apk"
+        ],
+        "includes": [
+          {
+            "match": "android.assist.cts.WebViewTest#testWebView"
           }
         ]
       }

@@ -135,6 +135,22 @@ def _LogTestEndpoints(device, test_name):
         check_return=True)
 
 
+@contextlib.contextmanager
+def _VoiceInteractionService(device, use_voice_interaction_service):
+  def set_voice_interaction_service(service):
+    device.RunShellCommand('settings put secure voice_interaction_service %s' %
+                           service)
+
+  try:
+    default_voice_interaction_service = device.RunShellCommand(
+        'settings get secure voice_interaction_service', single_line=True)
+
+    set_voice_interaction_service(use_voice_interaction_service)
+    yield
+  finally:
+    set_voice_interaction_service(default_voice_interaction_service)
+
+
 def DismissCrashDialogs(device):
   # Dismiss any error dialogs. Limit the number in case we have an error
   # loop or we are failing to dismiss.
@@ -303,6 +319,22 @@ class LocalDeviceInstrumentationTestRun(
           self._context_managers[str(dev)].append(webview_context)
 
         steps.append(use_webview_provider)
+
+      if self._test_instance.use_voice_interaction_service:
+
+        @trace_event.traced
+        def use_voice_interaction_service(device):
+          voice_interaction_service_context = _VoiceInteractionService(
+              device, self._test_instance.use_voice_interaction_service)
+          # Pylint is not smart enough to realize that this field has
+          # an __enter__ method, and will complain loudly.
+          # pylint: disable=no-member
+          voice_interaction_service_context.__enter__()
+          # pylint: enable=no-member
+          self._context_managers[str(device)].append(
+              voice_interaction_service_context)
+
+        steps.append(use_voice_interaction_service)
 
       # The apk under test needs to be installed last since installing other
       # apks after will unintentionally clear the fake module directory.

@@ -139,7 +139,12 @@ def GetTestRunFilterArg(args, test_run, arch=None):
   return []
 
 
-def RunCTS(test_runner_args, local_cts_dir, apk, json_results_file=None):
+def RunCTS(test_runner_args,
+           local_cts_dir,
+           apk,
+           voice_service=None,
+           additional_apks=None,
+           json_results_file=None):
   """Run tests in apk using test_runner script at _TEST_RUNNER_PATH.
 
   Returns the script result code, test results will be stored in
@@ -149,9 +154,20 @@ def RunCTS(test_runner_args, local_cts_dir, apk, json_results_file=None):
   local_test_runner_args = test_runner_args + ['--test-apk',
                                                os.path.join(local_cts_dir, apk)]
 
+  if voice_service:
+    local_test_runner_args += ['--use-voice-interaction-service', voice_service]
+
+  if additional_apks:
+    for s in additional_apks:
+      local_test_runner_args += [
+          '--additional-apk',
+          os.path.join(local_cts_dir, s)
+      ]
+
   if json_results_file:
     local_test_runner_args += ['--json-results-file=%s' %
                                json_results_file]
+
   return cmd_helper.RunCmd(
       [_TEST_RUNNER_PATH, 'instrumentation'] + local_test_runner_args)
 
@@ -229,6 +245,11 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
       iteration_cts_result = 0
 
       test_apk = cts_test_run['apk']
+      voice_service = cts_test_run.get('voice_service')
+      # Some tests need additional APKs that providing mocking
+      # services to run
+      additional_apks = cts_test_run.get('additional_apks')
+
       # If --module-apk is specified then skip tests in all other modules
       if args.module_apk and os.path.basename(test_apk) != args.module_apk:
         continue
@@ -239,13 +260,15 @@ def RunAllCTSTests(args, arch, cts_release, test_runner_args):
       if json_results_file:
         with tempfile.NamedTemporaryFile() as iteration_json_file:
           iteration_cts_result = RunCTS(iter_test_runner_args, local_cts_dir,
-                                        test_apk, iteration_json_file.name)
+                                        test_apk, voice_service,
+                                        additional_apks,
+                                        iteration_json_file.name)
           with open(iteration_json_file.name) as f:
             additional_results_json = json.load(f)
             MergeTestResults(cts_results_json, additional_results_json)
       else:
         iteration_cts_result = RunCTS(iter_test_runner_args, local_cts_dir,
-                                      test_apk)
+                                      test_apk, voice_service, additional_apks)
       if iteration_cts_result:
         cts_result = iteration_cts_result
     if json_results_file:

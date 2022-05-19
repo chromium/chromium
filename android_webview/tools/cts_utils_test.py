@@ -78,10 +78,17 @@ CONFIG_DATA['json'] = """{
     },
     "test_runs": [
       {
-        "apk": "p2/test1.apk"
+        "apk": "p2/test1.apk",
+        "additional_apks": [
+          "p2/additional_apk_a_1.apk"
+        ]
       },
       {
-        "apk": "p2/test2.apk"
+        "apk": "p2/test2.apk",
+        "additional_apks": [
+          "p2/additional_apk_b_1.apk",
+          "p2/additional_apk_b_2.apk"
+        ]
       }
     ]
   }
@@ -102,6 +109,7 @@ CONFIG_DATA['base22'] = 'f4.zip'
 CONFIG_DATA['file22'] = 'arch2/platform2/file4.zip'
 CONFIG_DATA['apk2a'] = 'p2/test1.apk'
 CONFIG_DATA['apk2b'] = 'p2/test2.apk'
+
 
 DEPS_DATA = {}
 DEPS_DATA['template'] = """deps = {
@@ -412,6 +420,10 @@ class CTSUtilsTest(unittest.TestCase):
     self.assertTrue(['p1/test.apk'], cts_config.get_apks('platform1'))
     self.assertTrue(['p2/test1.apk', 'p2/test2.apk'],
                     cts_config.get_apks('platform2'))
+    self.assertTrue([
+        'p2/additional_apk_a_1.apk', 'p2/additional_apk_b_1.apk',
+        'p2/additional_apk_b_2.apk'
+    ], cts_config.get_additional_apks('platform2'))
 
   @unittest.skipIf(os.name == "nt", "This fails on Windows, probably because "
                    "the temporary directory is not empty when it gets deleted.")
