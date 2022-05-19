@@ -27,15 +27,17 @@ enum class MetalReadWriteTextureSupportTier {
 };
 
 void RecordReadWriteMetalTexturesSupportedHistogram() {
-  // Metal tiers go 0, 1, 2, but we reserve 0 for when macOS is less then 10.13
-  // and we can't query.
+  // Metal tiers are `MTLReadWriteTextureTier[None|1|2]` which correspond to the
+  // integers 0, 1, and 2. The enum `MetalReadWriteTextureSupportTier` was
+  // written to use integers one higher than the macOS API constants so that it
+  // could support the concept of "unknown". Nowadays, `kUnknown` will only be
+  // logged in the case where `MTLCopyAllDevices()` returns an empty array,
+  // perhaps when running in an environment like VMWare?
   NSUInteger best_tier = 0;
 
-  if (@available(macOS 10.13, *)) {
-    base::scoped_nsobject<NSArray<id<MTLDevice>>> devices(MTLCopyAllDevices());
-    for (id<MTLDevice> device in devices.get()) {
-      best_tier = std::max(best_tier, [device readWriteTextureSupport] + 1);
-    }
+  base::scoped_nsobject<NSArray<id<MTLDevice>>> devices(MTLCopyAllDevices());
+  for (id<MTLDevice> device in devices.get()) {
+    best_tier = std::max(best_tier, [device readWriteTextureSupport] + 1);
   }
 
   UMA_HISTOGRAM_ENUMERATION(
