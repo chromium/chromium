@@ -59,6 +59,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "adaptive-charging",
+    "owners": [ "thanhdng" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "add-passwords-in-settings",
     "owners": [ "vidhanj", "mamir", "lizapopova" ],
     "expiry_milestone": 103

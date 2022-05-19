@@ -54969,6 +54969,7 @@ from previous Chrome versions.
   <int value="-1802502753" label="enable-manual-password-generation:enabled"/>
   <int value="-1799801575" label="CookieDeprecationMessages:enabled"/>
   <int value="-1798337879" label="enable-md-downloads"/>
+  <int value="-1798258607" label="AdaptiveCharging:disabled"/>
   <int value="-1797739460" label="brotli-encoding:disabled"/>
   <int value="-1797183993" label="LacrosMergeIcuDataFile:enabled"/>
   <int value="-1794783272" label="PdfViewerDocumentProperties:disabled"/>
@@ -60807,6 +60808,7 @@ from previous Chrome versions.
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
+  <int value="2100547979" label="AdaptiveCharging:enabled"/>
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>
   <int value="2104340988" label="CrostiniUsername:disabled"/>

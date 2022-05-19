@@ -4083,6 +4083,10 @@ const char kAcceleratedMjpegDecodeDescription[] =
     "Enable hardware-accelerated mjpeg decode for captured frame where "
     "available.";
 
+const char kAdaptiveChargingName[] = "Enable adaptive charging feature";
+const char kAdaptiveChargingDescription[] =
+    "Show settings to enable/disable adaptive charging feature.";
+
 const char kAllowDisableTouchpadHapticFeedbackName[] =
     "Allow disabling touchpad haptic feedback";
 const char kAllowDisableTouchpadHapticFeedbackDescription[] =

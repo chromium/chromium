@@ -2334,6 +2334,9 @@ extern const char kUseAngleGL[];
 extern const char kAcceleratedMjpegDecodeName[];
 extern const char kAcceleratedMjpegDecodeDescription[];
 
+extern const char kAdaptiveChargingName[];
+extern const char kAdaptiveChargingDescription[];
+
 extern const char kAllowDisableTouchpadHapticFeedbackName[];
 extern const char kAllowDisableTouchpadHapticFeedbackDescription[];
 
