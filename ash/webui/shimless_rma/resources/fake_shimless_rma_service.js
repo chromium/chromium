@@ -918,12 +918,16 @@ export class FakeShimlessRmaService {
     if (this.automaticallyTriggerProvisioningObservation_) {
       // Fake progress over 4 seconds.
       this.triggerProvisioningObserver(
-          ProvisioningStatus.kInProgress, 0.25, 1000);
+          ProvisioningStatus.kInProgress, 0.25, ProvisioningError.kUnknown,
+          1000);
       this.triggerProvisioningObserver(
-          ProvisioningStatus.kInProgress, 0.5, 2000);
+          ProvisioningStatus.kInProgress, 0.5, ProvisioningError.kUnknown,
+          2000);
       this.triggerProvisioningObserver(
-          ProvisioningStatus.kInProgress, 0.75, 3000);
-      this.triggerProvisioningObserver(ProvisioningStatus.kComplete, 1.0, 4000);
+          ProvisioningStatus.kInProgress, 0.75, ProvisioningError.kUnknown,
+          3000);
+      this.triggerProvisioningObserver(
+          ProvisioningStatus.kComplete, 1.0, ProvisioningError.kUnknown, 4000);
     }
   }
 
@@ -1111,11 +1115,12 @@ export class FakeShimlessRmaService {
    * Causes the provisioning observer to fire after a delay.
    * @param {!ProvisioningStatus} status
    * @param {number} progress
+   * @param {!ProvisioningError} error
    * @param {number} delayMs
    */
-  triggerProvisioningObserver(status, progress, delayMs) {
+  triggerProvisioningObserver(status, progress, error, delayMs) {
     return this.triggerObserverAfterMs(
-        'ProvisioningObserver_onProvisioningUpdated', [status, progress],
+        'ProvisioningObserver_onProvisioningUpdated', [status, progress, error],
         delayMs);
   }
 

@@ -13,3 +13,18 @@
     </div>
   </div>
 </base-page>
+
+<cr-dialog id="wpEnabledDialog" no-cancel>
+  <div slot="title">
+    [[i18n('provisioningPageWpEnabledDialogTitle')]]
+  </div>
+  <div slot="body">
+    [[i18n('provisioningPageWpEnabledDialogBody')]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="tryAgainButton" class="text-button action-button"
+        on-click="onTryAgainButtonClick_">
+      [[i18n('tryAgainButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

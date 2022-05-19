@@ -2905,6 +2905,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">
         Provisioning the device...
       </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_WP_ENABLED_DIALOG_TITLE" desc="The title of the dialog that shows up when provisioning failed because Write Protect is still on.">
+        Turn off Write Protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_WP_ENABLED_DIALOG_BODY" desc="The body of the dialog that shows up when provisioning failed because Write Protect is still on.">
+        Write Protect has been turned on unexpectedly. Please turn off Write Protect manually before trying again.
+      </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
         Repair is complete
