@@ -128,7 +128,7 @@ class AppMenuItemViewBinder {
                 checkbox.setChecked(checked);
                 ApiCompatibilityUtils.setImageTintList(checkbox,
                         AppCompatResources.getColorStateList(
-                                checkbox.getContext(), R.color.selection_control_button_tint));
+                                checkbox.getContext(), R.color.selection_control_button_tint_list));
                 setupMenuButton(checkbox, buttonModel, appMenuClickHandler);
             } else if (subIcon != null) {
                 // Display an icon alongside the MenuItem.

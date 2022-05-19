@@ -47,7 +47,7 @@ android_resources("java_resources") {
     "java/res/color/new_tab_button_pressed_tint.xml",
     "java/res/color/new_tab_button_tint_list.xml",
     "java/res/color/progress_bar_bg_color_list.xml",
-    "java/res/color/selection_control_button_tint.xml",
+    "java/res/color/selection_control_button_tint_list.xml",
     "java/res/color/switch_thumb_tint_incognito.xml",
     "java/res/color/switch_thumb_tint_list.xml",
     "java/res/color/switch_track_tint.xml",
