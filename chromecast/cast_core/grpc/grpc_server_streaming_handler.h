@@ -120,8 +120,7 @@ class GrpcServerStreamingHandler : public GrpcHandler {
         on_request_callback_(std::move(on_request_callback)) {}
 
   static std::string rpc_name() {
-    return base::StringPrintf("/%s/%s", TService::service_full_name(),
-                              MethodName);
+    return std::string("/") + TService::service_full_name() + "/" + MethodName;
   }
 
  private:

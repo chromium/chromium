@@ -59,7 +59,7 @@ class GrpcServerStreamingCall : public GrpcCall<TGrpcStub, TRequest> {
     // gRPC doesn't support setting a deadline for individual streaming
     // requests\responses. Hence, the zero timeout is set to allow for
     // inifinitely long streaming connections.
-    Base::SetDeadline(base::Seconds(0));
+    Base::SetDeadline(0);
     auto reactor =
         new Reactor(std::move(*this).async(), std::move(*this).request(),
                     std::move(*this).options(), std::move(response_callback));

@@ -1,6 +1,7 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/rand_util.h"
@@ -15,6 +16,7 @@
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/grpc/status_matchers.h"
 #include "chromecast/cast_core/grpc/test_service.castcore.pb.h"
+#include "chromecast/cast_core/grpc/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,6 +28,7 @@ using ::cast::test::StatusIs;
 
 const auto kEventTimeout = base::Seconds(1);
 const auto kServerStopTimeout = base::Seconds(1);
+const auto kServerManualStopTimeout = base::Milliseconds(100);
 
 class GrpcServerStreamingTest : public ::testing::Test {
  protected:
@@ -106,7 +109,7 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallSucceeds) {
   ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
   ASSERT_EQ(call_count, kMaxResponseCount);
 
-  server.StopForTesting(kServerStopTimeout);
+  test::StopGrpcServer(server, kServerStopTimeout);
 }
 
 TEST_F(GrpcServerStreamingTest, ServerStreamingCallFailsRightAway) {
@@ -142,7 +145,7 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallFailsRightAway) {
     ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
   }
 
-  server.StopForTesting(kServerStopTimeout);
+  test::StopGrpcServer(server, kServerStopTimeout);
 }
 
 TEST_F(GrpcServerStreamingTest, ServerStreamingCallCancelledIfServerIsStopped) {
@@ -156,7 +159,7 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallCancelledIfServerIsStopped) {
                   ServerStreamingServiceHandler::StreamingCall::Reactor*
                       reactor) {
                 // Stop the server to trigger call cancellation.
-                server.Stop(base::Milliseconds(100),
+                server.Stop(kServerManualStopTimeout.InMilliseconds(),
                             base::BindLambdaForTesting(
                                 [&]() { server_stopped_event.Signal(); }));
               })));
@@ -175,8 +178,9 @@ TEST_F(GrpcServerStreamingTest, ServerStreamingCallCancelledIfServerIsStopped) {
           })));
   {
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_base_sync_primitives;
-    ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
     ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+    // Need to wait for server to fully stop.
+    ASSERT_TRUE(server_stopped_event.TimedWait(kEventTimeout));
   }
 }
 

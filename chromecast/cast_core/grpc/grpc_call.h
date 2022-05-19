@@ -41,9 +41,7 @@ class GrpcCall {
   Request&& request() && { return std::move(request_); }
 
   // Sets a deadline for gRPC call.
-  void SetDeadline(const base::TimeDelta& deadline) {
-    options_.SetDeadline(deadline);
-  }
+  void SetDeadline(int64_t deadline_ms) { options_.SetDeadline(deadline_ms); }
 
  protected:
   SyncInterface* sync() && {
