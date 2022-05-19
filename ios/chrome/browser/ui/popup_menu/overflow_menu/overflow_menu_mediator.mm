@@ -1170,8 +1170,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                        base::SysNSStringToUTF16(domainName))
              : l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
                                        base::SysNSStringToUTF16(domainName));
-  [self.followAction setStoredImageName:status ? @"popup_menu_unfollow"
-                                               : @"popup_menu_follow"];
+  [self.followAction setStoredImageName:status
+                                            ? @"overflow_menu_action_unfollow"
+                                            : @"overflow_menu_action_follow"];
   __weak __typeof(self) weakSelf = self;
   self.followAction.handler = ^{
     if (status) {
