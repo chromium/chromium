@@ -130,6 +130,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryContextMenuNudge;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kClipboardHistoryNudgeSessionReset;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kClipboardHistoryReorder;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kCloudGamingDevice;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kConsumerAutoUpdateToggleAllowed;
@@ -632,6 +634,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryContextMenuNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryReorderEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCloudGamingDevice();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsConsumerAutoUpdateToggleAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDesksCloseAllEnabled();

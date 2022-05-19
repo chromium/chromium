@@ -308,6 +308,11 @@ const base::Feature kClipboardHistoryContextMenuNudge{
 const base::Feature kClipboardHistoryNudgeSessionReset{
     "ClipboardHistoryNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, pasting a clipboard history item will cause that item to move to
+// the top of the history list.
+const base::Feature kClipboardHistoryReorder{"ClipboardHistoryReorder",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables cloud game features. A separate flag "LauncherGameSearch" controls
 // launcher-only cloud gaming features, since they can also be enabled on
 // non-cloud-gaming devices.
@@ -1679,6 +1684,10 @@ bool IsClipboardHistoryContextMenuNudgeEnabled() {
 
 bool IsClipboardHistoryNudgeSessionResetEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
+}
+
+bool IsClipboardHistoryReorderEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryReorder);
 }
 
 bool IsCloudGamingDevice() {
