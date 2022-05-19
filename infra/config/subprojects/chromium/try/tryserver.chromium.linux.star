@@ -483,6 +483,10 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_msan_rel_ng",
+    mirrors = [
+        "ci/Linux MSan Builder",
+        "ci/Linux MSan Tests",
+    ],
     execution_timeout = 6 * time.hour,
     goma_jobs = goma.jobs.J150,
 )
