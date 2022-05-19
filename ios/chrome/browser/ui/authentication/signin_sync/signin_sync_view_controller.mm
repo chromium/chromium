@@ -130,7 +130,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   NSLayoutConstraint* areaWidthConstraint = [self.identityControl.widthAnchor
       constraintEqualToAnchor:self.specificContentView.widthAnchor];
   areaWidthConstraint.priority = UILayoutPriorityDefaultHigh;
-  int topMargin = self.identityControlInTop ? 0 : kIdentityControlMarginDefault;
   [NSLayoutConstraint activateConstraints:@[
     [self.identityControlArea.centerXAnchor
         constraintEqualToAnchor:self.identityControlArea.owningView
@@ -140,46 +139,23 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
                                               .widthAnchor],
     [self.identityControlArea.topAnchor
         constraintEqualToAnchor:self.identityControl.topAnchor
-                       constant:-topMargin],
+                       constant:0],
     areaWidthConstraint,
     [self.identityControl.widthAnchor
         constraintEqualToAnchor:self.identityControlArea.widthAnchor],
     [self.identityControl.centerXAnchor
         constraintEqualToAnchor:self.identityControlArea.centerXAnchor],
-  ]];
-
-  // Set constraints that are dependent on the position of the identity
-  // controller button and sign-in restrictions.
-  if ([self identityControlInTop]) {
     [self.identityControlArea.topAnchor
-        constraintEqualToAnchor:self.specificContentView.topAnchor]
-        .active = YES;
+        constraintEqualToAnchor:self.specificContentView.topAnchor],
     [self.identityControlArea.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView.bottomAnchor]
+        constraintLessThanOrEqualToAnchor:self.specificContentView
+                                              .bottomAnchor],
+  ]];
+  if (self.enterpriseSignInRestrictions != kNoEnterpriseRestriction) {
+    [self.learnMoreTextView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.identityControlArea
+                                                 .bottomAnchor]
         .active = YES;
-    if (self.enterpriseSignInRestrictions != kNoEnterpriseRestriction) {
-      [self.learnMoreTextView.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.identityControlArea
-                                                   .bottomAnchor]
-          .active = YES;
-    }
-  } else {
-    [self.identityControlArea.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.specificContentView.topAnchor]
-        .active = YES;
-    if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
-      [self.identityControlArea.bottomAnchor
-          constraintEqualToAnchor:self.specificContentView.bottomAnchor]
-          .active = YES;
-    } else {
-      [self.identityControlArea.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.specificContentView
-                                                .bottomAnchor]
-          .active = YES;
-      [self.learnMoreTextView.topAnchor
-          constraintEqualToAnchor:self.identityControlArea.bottomAnchor]
-          .active = YES;
-    }
   }
 
   [self.delegate signinSyncViewController:self
@@ -299,12 +275,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 // Returns the ID of the string of the button that is used to activate sync.
 - (int)activateSyncButtonID {
-  switch (self.stringsSet) {
-    case SigninSyncScreenUIStringSet::kOld:
-      return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
-    case SigninSyncScreenUIStringSet::kNew:
-      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION;
-  }
+  return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
 }
 
 #pragma mark - SignInSyncConsumer
@@ -395,47 +366,22 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 // Returns the title string ID.
 - (int)titleTextID {
-  switch (self.stringsSet) {
-    case SigninSyncScreenUIStringSet::kOld:
-      return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE;
-    case SigninSyncScreenUIStringSet::kNew:
-      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE;
-  }
+  return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE;
 }
 
 // Returns the subtitle string ID.
 - (int)subtitleTextID {
-  switch (self.stringsSet) {
-    case SigninSyncScreenUIStringSet::kOld:
-      return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
-    case SigninSyncScreenUIStringSet::kNew:
-      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE;
-  }
+  return IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
 }
 
 // Returns the secondary action string ID.
 - (int)secondaryActionStringID {
-  switch (self.stringsSet) {
-    case SigninSyncScreenUIStringSet::kOld:
-      return IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION;
-    case SigninSyncScreenUIStringSet::kNew:
-      return IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION;
-  }
+  return IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION;
 }
 
 // Returns the disclaimer text string ID.
 - (int)disclaimerTextID {
   return IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT_WITH_LINK_TO_SETTINGS;
-}
-
-// Returns YES if the identity control button has to be in top.
-- (BOOL)identityControlInTop {
-  switch (self.identitySwitcherPosition) {
-    case SigninSyncScreenUIIdentitySwitcherPosition::kTop:
-      return YES;
-    case SigninSyncScreenUIIdentitySwitcherPosition::kBottom:
-      return NO;
-  }
 }
 
 // Updates the vertical layout of the identity control button according to its

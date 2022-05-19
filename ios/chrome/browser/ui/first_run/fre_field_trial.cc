@@ -135,15 +135,6 @@ bool IsFREDefaultBrowserScreenEnabled() {
          IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
 }
 
-SigninSyncScreenUIIdentitySwitcherPosition
-GetSigninSyncScreenUIIdentitySwitcherPosition() {
-  return SigninSyncScreenUIIdentitySwitcherPosition::kTop;
-}
-
-SigninSyncScreenUIStringSet GetSigninSyncScreenUIStringSet() {
-  return SigninSyncScreenUIStringSet::kOld;
-}
-
 NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
   if (base::FeatureList::IsEnabled(signin::kNewMobileIdentityConsistencyFRE)) {
     return kkNewMobileIdentityConsistencyFREParam.Get();

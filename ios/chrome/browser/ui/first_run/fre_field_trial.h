@@ -10,16 +10,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-enum class SigninSyncScreenUIIdentitySwitcherPosition : int {
-  kTop,
-  kBottom,
-};
-
-enum class SigninSyncScreenUIStringSet : int {
-  kOld,
-  kNew,
-};
-
 // Version of the new MICE FRE to show.
 enum class NewMobileIdentityConsistencyFRE : int {
   // Old FRE with UMA dialog.
@@ -77,15 +67,6 @@ bool IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
 
 // Returns true if the default browser screen in FRE is enabled.
 bool IsFREDefaultBrowserScreenEnabled();
-
-// TODO(crbug.com/1322292): Remove.
-// Returns the UI option for the sign-in & sync screen identity position.
-SigninSyncScreenUIIdentitySwitcherPosition
-GetSigninSyncScreenUIIdentitySwitcherPosition();
-
-// TODO(crbug.com/1322292): Remove.
-// Returns the UI option for the sign-in & sync screen strings set.
-SigninSyncScreenUIStringSet GetSigninSyncScreenUIStringSet();
 
 // Returns the FRE to display according to the feature flag and experiment.
 // See NewMobileIdentityConsistencyFRE.
