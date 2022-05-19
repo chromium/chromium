@@ -177,7 +177,7 @@ WebAppInstallTask::WebAppInstallTask(
 WebAppInstallTask::~WebAppInstallTask() {
   // If this task is still observing a WebContents, then the callbacks haven't
   // yet been run.  Run them before the task is destroyed.
-  if (web_contents())
+  if (web_contents() != nullptr)
     CallInstallCallback(AppId(),
                         webapps::InstallResultCode::kInstallTaskDestroyed);
 }
