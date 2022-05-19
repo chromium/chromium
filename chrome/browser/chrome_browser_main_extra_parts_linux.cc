@@ -5,13 +5,13 @@
 #include "chrome/browser/chrome_browser_main_extra_parts_linux.h"
 
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
