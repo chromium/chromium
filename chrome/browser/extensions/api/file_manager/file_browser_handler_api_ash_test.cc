@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/api/file_manager/file_selector.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -95,7 +96,7 @@ class MockFileSelector : public file_manager::FileSelector {
       const base::FilePath& suggested_name,
       const std::vector<std::string>& allowed_extensions,
       Browser* browser,
-      FileBrowserHandlerInternalSelectFileFunctionAsh* function) override {
+      file_manager::FileSelector::OnSelectedCallback callback) override {
     // Confirm that the function suggested us the right name.
     EXPECT_EQ(suggested_name_, suggested_name);
     // Confirm that the function allowed us the right extensions.
@@ -110,9 +111,7 @@ class MockFileSelector : public file_manager::FileSelector {
     // The callback will take a reference to the function and keep it alive.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(&FileBrowserHandlerInternalSelectFileFunctionAsh::
-                           OnFilePathSelected,
-                       function, success_, selected_path_));
+        base::BindOnce(std::move(callback), success_, selected_path_));
     delete this;
   }
 
