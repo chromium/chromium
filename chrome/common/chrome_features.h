@@ -631,9 +631,6 @@ COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kSmartDim;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSoundContentSetting;
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kSupportTool;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSysInternals;
@@ -643,6 +640,9 @@ COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kTPMFirmwareUpdate;
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kTabMetricsLogging;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSupportTool;
 #endif
 
 #if BUILDFLAG(IS_WIN)

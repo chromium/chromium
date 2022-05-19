@@ -55026,6 +55026,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentElideToRegistrableDomain:enabled"/>
   <int value="-1752118355" label="DesktopDetailedLanguageSettings:enabled"/>
   <int value="-1751928267" label="disable-icon-ntp"/>
+  <int value="-1751492305" label="SupportTool:enabled"/>
   <int value="-1750309491" label="DragWindowToNewDesk:enabled"/>
   <int value="-1750008152" label="UsernameFirstFlow:enabled"/>
   <int value="-1749689559" label="SelectToSpeakNavigationControl:disabled"/>
@@ -55856,6 +55857,7 @@ from previous Chrome versions.
       label="UseLookalikesForNavigationSuggestions:enabled"/>
   <int value="-1227660915" label="WebContentsOcclusion:disabled"/>
   <int value="-1226536953" label="DeskTemplateSync:disabled"/>
+  <int value="-1225861190" label="SupportTool:disabled"/>
   <int value="-1225772151" label="OfflineHome:disabled"/>
   <int value="-1225629234" label="SyncPseudoUSSFavicons:enabled"/>
   <int value="-1225198073" label="ReaderModeInCCT:disabled"/>

@@ -2443,6 +2443,11 @@ const char kSuggestionsWithSubStringMatchDescription[] =
     "Match Autofill suggestions based on substrings (token prefixes) rather "
     "than just prefixes.";
 
+const char kSupportTool[] = "Support Tool";
+const char kSupportToolDescription[] =
+    "Support Tool collects and exports logs to help debugging the issues. It's"
+    " available in chrome://support-tool.";
+
 const char kSuppressToolbarCapturesName[] = "Suppress Toolbar Captures";
 const char kSuppressToolbarCapturesDescription[] =
     "Suppress Toolbar Captures except when certain properties change.";

@@ -932,11 +932,6 @@ const base::Feature kSmartDim{"SmartDim", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSoundContentSetting{"SoundContentSetting",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the demo version of the Support Tool. The tool will be available in
-// chrome://support-tool. See go/support-tool-v1-design for more details.
-const base::Feature kSupportTool{"SupportTool",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables chrome://sys-internals.
 const base::Feature kSysInternals{"SysInternals",
@@ -951,6 +946,11 @@ const base::Feature kTPMFirmwareUpdate{"TPMFirmwareUpdate",
 // Enables logging UKMs for background tab activity by TabActivityWatcher.
 const base::Feature kTabMetricsLogging{"TabMetricsLogging",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables the demo version of the Support Tool. The tool will be available in
+// chrome://support-tool. See go/support-tool-v1-design for more details.
+const base::Feature kSupportTool{"SupportTool",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_WIN)
