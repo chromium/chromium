@@ -1034,6 +1034,25 @@ bool IsFailedHttpsUpgrade(NSError* error,
 - (void)webView:(WKWebView*)webView
     navigationResponse:(WKNavigationResponse*)navigationResponse
      didBecomeDownload:(WKDownload*)WKDownload API_AVAILABLE(ios(15)) {
+  // Send navigation callback if the download occurs in the main frame.
+  if (navigationResponse.forMainFrame) {
+    const GURL responseURL =
+        net::GURLWithNSURL(navigationResponse.response.URL);
+    web::NavigationContextImpl* context =
+        [self contextForPendingMainFrameNavigationWithURL:responseURL];
+
+    // Context lookup can fail in rare cases (e.g. after certain redirects,
+    // see https://crbug.com/820375 for details). In that case, it's not
+    // possible to locate the correct context to call OnNavigationFinished().
+    // Not sending this event does not cause any major issue, so do nothing
+    // if `context` cannot be found (i.e. this is not a security issue).
+    if (context) {
+      context->SetIsDownload(true);
+      context->ReleaseItem();
+      self.webStateImpl->OnNavigationFinished(context);
+    }
+  }
+
   // Discard the pending item to ensure that the current URL is not different
   // from what is displayed on the view.
   self.navigationManagerImpl->DiscardNonCommittedItems();
