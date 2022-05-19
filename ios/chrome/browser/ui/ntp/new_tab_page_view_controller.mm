@@ -244,11 +244,11 @@
     // caclculate the new adjustedContentSuggestionsHeight value.
     // TODO(crbug.com/1170995): Remove once the Feed supports a custom
     // header.
-    [[self contentSuggestionsViewController].view setNeedsLayout];
-    [[self contentSuggestionsViewController].view layoutIfNeeded];
+    [[weakSelf contentSuggestionsViewController].view setNeedsLayout];
+    [[weakSelf contentSuggestionsViewController].view layoutIfNeeded];
 
     CGFloat heightAboveFeedDifference =
-        [self heightAboveFeed] - heightAboveFeedBeforeRotation;
+        [weakSelf heightAboveFeed] - heightAboveFeedBeforeRotation;
 
     // Rotating the device can change the content suggestions height. This
     // ensures that it is adjusted if necessary.
@@ -270,15 +270,15 @@
         [weakSelf scrollPosition] < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
     }
-    if (!self.isFeedVisible) {
-      [self setMinimumHeight];
+    if (!weakSelf.isFeedVisible) {
+      [weakSelf setMinimumHeight];
     }
   };
   [coordinator
       animateAlongsideTransition:alongsideBlock
                       completion:^(
                           id<UIViewControllerTransitionCoordinatorContext>) {
-                        [self updateFeedInsetsForContentAbove];
+                        [self updateNTPLayout];
                       }];
 }
 
@@ -775,12 +775,13 @@
   // On iPhones, the fake omnibox is pinned to the top so we anchor the feed
   // header to the bottom of it. The fake omnibox is not pinned for iPads, so we
   // instead anchor the feed header to the top of the NTP.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (IsCompactWidth(self)) {
     self.feedHeaderConstraints = @[
       [self.feedHeaderViewController.view.topAnchor
-          constraintEqualToAnchor:self.view.topAnchor
-                         constant:-[self.feedHeaderViewController
-                                          customSearchEngineViewHeight]],
+          constraintEqualToAnchor:self.headerController.view.bottomAnchor
+                         constant:-(content_suggestions::headerBottomPadding() +
+                                    [self.feedHeaderViewController
+                                            customSearchEngineViewHeight])],
       [self.collectionView.topAnchor
           constraintEqualToAnchor:[self contentSuggestionsViewController]
                                       .view.bottomAnchor],
@@ -788,10 +789,9 @@
   } else {
     self.feedHeaderConstraints = @[
       [self.feedHeaderViewController.view.topAnchor
-          constraintEqualToAnchor:self.headerController.view.bottomAnchor
-                         constant:-(content_suggestions::headerBottomPadding() +
-                                    [self.feedHeaderViewController
-                                            customSearchEngineViewHeight])],
+          constraintEqualToAnchor:self.view.topAnchor
+                         constant:-[self.feedHeaderViewController
+                                          customSearchEngineViewHeight]],
       [self.collectionView.topAnchor
           constraintEqualToAnchor:[self contentSuggestionsViewController]
                                       .view.bottomAnchor],
