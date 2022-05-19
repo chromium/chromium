@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFactory;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
@@ -246,6 +247,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      *         should close the tab.
      * @param tabReparentingControllerSupplier Supplier for the {@link TabReparentingController}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
+     * @param backPressManager The {@link BackPressManager} handling back press.
      */
     public TabbedRootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -284,7 +286,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<InsetObserverView> insetObserverViewSupplier,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
-            boolean initializeUiWithIncognitoColors) {
+            boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
                 tabModelSelectorSupplier, startSurfaceSupplier, intentMetadataOneshotSupplier,
@@ -296,7 +298,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 compositorViewHolderSupplier, tabContentManagerSupplier, snackbarManagerSupplier,
                 activityType, isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
                 statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
-                ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors);
+                ephemeralTabCoordinatorSupplier, initializeUiWithIncognitoColors, backPressManager);
         mControlContainerHeightResource = controlContainerHeightResource;
         mInsetObserverViewSupplier = insetObserverViewSupplier;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;

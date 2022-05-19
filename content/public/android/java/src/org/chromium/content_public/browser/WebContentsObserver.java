@@ -174,6 +174,11 @@ public abstract class WebContentsObserver {
     public void navigationEntriesChanged() {}
 
     /**
+     * Called when a frame receives user activation.
+     */
+    public void frameReceivedUserActivation() {}
+
+    /**
      * Called when the theme color was changed.
      */
     public void didChangeThemeColor() {}

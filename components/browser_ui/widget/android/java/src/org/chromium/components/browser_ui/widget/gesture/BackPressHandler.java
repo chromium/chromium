@@ -22,7 +22,8 @@ public interface BackPressHandler {
     // The smaller the value is, the higher the priority is.
     @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.LAYOUT_MANAGER,
             Type.START_SURFACE_MEDIATOR, Type.SELECTION_POPUP, Type.MANUAL_FILLING,
-            Type.TAB_MODAL_HANDLER, Type.FULLSCREEN, Type.TAB_RETURN_TO_CHROME_START_SURFACE})
+            Type.TAB_MODAL_HANDLER, Type.FULLSCREEN, Type.TOOLBAR_TAB_CONTROLLER,
+            Type.TAB_RETURN_TO_CHROME_START_SURFACE})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
@@ -34,7 +35,8 @@ public interface BackPressHandler {
         int MANUAL_FILLING = 6;
         int FULLSCREEN = 7;
         int TAB_MODAL_HANDLER = 8;
-        int TAB_RETURN_TO_CHROME_START_SURFACE = 9;
+        int TOOLBAR_TAB_CONTROLLER = 9;
+        int TAB_RETURN_TO_CHROME_START_SURFACE = 10;
         int NUM_TYPES = TAB_RETURN_TO_CHROME_START_SURFACE + 1;
     }
 

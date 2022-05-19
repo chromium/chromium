@@ -230,6 +230,16 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         return mMediator.onBackPressed();
     }
 
+    @Override
+    public void handleBackPress() {
+        mMediator.handleBackPress();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mMediator.getHandleBackPressChangedSupplier();
+    }
+
     /**
      * Destroy any members that needs clean up.
      */

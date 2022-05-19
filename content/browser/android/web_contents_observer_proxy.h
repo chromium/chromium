@@ -61,6 +61,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void NavigationEntriesDeleted() override;
   void NavigationEntryChanged(
       const EntryChangedDetails& change_details) override;
+  void FrameReceivedUserActivation(RenderFrameHost*) override;
   void WebContentsDestroyed() override;
   void DidChangeThemeColor() override;
   void MediaStartedPlaying(const MediaPlayerInfo& video_type,

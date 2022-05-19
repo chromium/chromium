@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -147,6 +148,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -371,6 +373,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param tabReparentingControllerSupplier Supplier of {@link TabReparentingController}.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
+     * @param backPressManager The {@link BackPressManager} handling back press gesture.
      */
     public ToolbarManager(AppCompatActivity activity, BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ToolbarControlContainer controlContainer,
@@ -407,7 +410,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
             Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            boolean initializeWithIncognitoColors) {
+            boolean initializeWithIncognitoColors, @Nullable BackPressManager backPressManager) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -516,8 +519,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     return profile != null ? TrackerFactory.getTrackerForProfile(profile) : null;
                 },
                 mBottomControlsCoordinatorSupplier, ToolbarManager::homepageUrl,
-                this::updateButtonStatus);
+                this::updateButtonStatus, mTabModelSelectorSupplier);
         // clang-format on
+        if (backPressManager != null && BackPressManager.isEnabled()) {
+            backPressManager.addHandler(
+                    mToolbarTabController, BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
+        }
 
         BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
                 mBrowserControlsSizer.getBrowserVisibilityDelegate();
@@ -1479,6 +1486,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLocationBar.destroy();
             mLocationBar = null;
         }
+
+        mToolbarTabController.destroy();
 
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();

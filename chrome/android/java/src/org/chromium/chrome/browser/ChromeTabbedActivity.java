@@ -1662,7 +1662,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getTabReparentingControllerSupplier(),
                 // TODO(sinansahin): This currently only checks for incognito extras in the intent.
                 // We should make it more robust by using more signals.
-                IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()));
+                IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()), mBackPressManager);
     }
 
     @Override
@@ -2196,7 +2196,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) return true;
         }
 
-        if (getToolbarManager().back()) return true;
+        if (!BackPressManager.isEnabled() && getToolbarManager().back()) return true;
 
         // If the current tab url is HELP_URL, then the back button should close the tab to
         // get back to the previous state. The reason for startsWith check is that the

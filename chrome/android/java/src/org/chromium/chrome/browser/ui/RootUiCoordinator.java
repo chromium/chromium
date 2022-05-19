@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ChromePowerModeVoter;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
@@ -279,6 +280,8 @@ public class RootUiCoordinator
     private final OneshotSupplierImpl<HistoryClustersCoordinator>
             mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    @Nullable
+    private final BackPressManager mBackPressManager;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -299,7 +302,7 @@ public class RootUiCoordinator
      * @param windowAndroid The current {@link WindowAndroid}.
      * @param jankTracker Tracks the jank in the app.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
-     * @param layoutManagerImplSupplier Supplies the {@link LayoutManager}.
+     * @param layoutManagerSupplier Supplies the {@link LayoutManager}.
      * @param menuOrKeyboardActionController Controls the menu or keyboard action controller.
      * @param activityThemeColorSupplier Supplies the activity color theme.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
@@ -320,6 +323,7 @@ public class RootUiCoordinator
      * @param tabReparentingControllerSupplier Supplier of the {@link TabReparentingController}.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
+     * @param backPressManager The {@link BackPressManager} handling back press.
      */
     public RootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -355,7 +359,7 @@ public class RootUiCoordinator
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            boolean initializeUiWithIncognitoColors) {
+            boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager) {
         mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
         mActivity = activity;
@@ -382,6 +386,7 @@ public class RootUiCoordinator
         mIntentRequestTracker = intentRequestTracker;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mInitializeUiWithIncognitoColors = initializeUiWithIncognitoColors;
+        mBackPressManager = backPressManager;
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
@@ -1047,7 +1052,7 @@ public class RootUiCoordinator
                     mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
                     mOmniboxPedalDelegate, mEphemeralTabCoordinatorSupplier,
-                    mInitializeUiWithIncognitoColors);
+                    mInitializeUiWithIncognitoColors, mBackPressManager);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

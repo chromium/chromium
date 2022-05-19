@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuild
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -62,7 +63,7 @@ import java.util.List;
 /**
  * A mediator for the TabGroupUi. Responsible for managing the internal state of the component.
  */
-public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
+public class TabGroupUiMediator implements SnackbarManager.SnackbarController, BackPressHandler {
     /**
      * An interface to control the TabGroupUi component.
      */
@@ -540,6 +541,19 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         // TODO(crbug.com/1006421): add a regression test to make sure that the back button closes
         // the dialog when the dialog is showing.
         return mTabGridDialogController != null && mTabGridDialogController.handleBackPressed();
+    }
+
+    @Override
+    public void handleBackPress() {
+        if (mTabGridDialogController != null) mTabGridDialogController.handleBackPress();
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        if (mTabGridDialogController == null) {
+            return BackPressHandler.super.getHandleBackPressChangedSupplier();
+        }
+        return mTabGridDialogController.getHandleBackPressChangedSupplier();
     }
 
     public void destroy() {

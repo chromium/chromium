@@ -142,7 +142,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 snackbarManagerSupplier, activityType,
                 isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
                 statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(),
-                ephemeralTabCoordinatorSupplier, false);
+                ephemeralTabCoordinatorSupplier, false, null);
         // clang-format on
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mToolbarCoordinator = customTabToolbarCoordinator;

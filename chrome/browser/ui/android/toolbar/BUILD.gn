@@ -108,6 +108,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/android/features/start_surface:public_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",

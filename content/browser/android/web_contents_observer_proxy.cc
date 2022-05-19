@@ -212,6 +212,12 @@ void WebContentsObserverProxy::NavigationEntryChanged(
   Java_WebContentsObserverProxy_navigationEntriesChanged(env, java_observer_);
 }
 
+void WebContentsObserverProxy::FrameReceivedUserActivation(RenderFrameHost*) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_frameReceivedUserActivation(env,
+                                                            java_observer_);
+}
+
 void WebContentsObserverProxy::DidChangeThemeColor() {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_didChangeThemeColor(env, java_observer_);

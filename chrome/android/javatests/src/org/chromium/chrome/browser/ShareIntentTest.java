@@ -162,7 +162,7 @@ public class ShareIntentTest {
                     /* appMenuDelegate= */ mockActivity,
                     /* statusBarColorProvider= */ mockActivity,
                     mockActivity.getIntentRequestTracker(), new OneshotSupplierImpl<>(),
-                    new ObservableSupplierImpl<>(), false);
+                    new ObservableSupplierImpl<>(), false, null);
 
             ShareHelper.setLastShareComponentName(
                     null, new ComponentName("test.package", "test.activity"));

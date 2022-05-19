@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.app.Activity;
 
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+
 /**
  * Interface for the bottom controls content UI. This UI delegates various operations to
  * the implementation. This UI manages its own visibility through
  * {@link BottomControlsCoordinator.BottomControlsVisibilityController}.
  */
-public interface BottomControlsContentDelegate {
+public interface BottomControlsContentDelegate extends BackPressHandler {
     /**
      * Called by the ToolbarManager when the system back button is pressed.
      * @return Whether or not the TabGroupUi consumed the event.
