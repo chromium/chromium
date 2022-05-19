@@ -476,6 +476,16 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, InitializeWithEmptyUrl) {
   EXPECT_FALSE(plugin_->InitializeForTesting());
 }
 
+TEST_F(PdfViewWebPluginWithoutInitializeTest, InitializeForPrintPreview) {
+  SetUpPluginWithUrl("about:blank");
+
+  EXPECT_CALL(*client_ptr_, GetEmbedderOriginString)
+      .WillRepeatedly(Return("chrome://print/"));
+  EXPECT_CALL(*client_ptr_, CreateAssociatedURLLoader).Times(0);
+
+  EXPECT_TRUE(plugin_->InitializeForTesting());
+}
+
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
   EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
   TestUpdateGeometrySetsPluginRect(
@@ -1206,6 +1216,79 @@ TEST_F(PdfViewWebPluginSubmitFormTest, AbsoluteUrlInvalidDocumentUrl) {
   SetUpPluginWithUrl("https://www.%B%Ad.com/path/to/the.pdf");
 
   SubmitFailingForm("https://wwww.example.com");
+}
+
+class PdfViewWebPluginPrintPreviewTest : public PdfViewWebPluginTest {
+ protected:
+  void SetUpClient() override {
+    EXPECT_CALL(*client_ptr_, GetEmbedderOriginString)
+        .WillRepeatedly(Return("chrome://print/"));
+  }
+};
+
+TEST_F(PdfViewWebPluginPrintPreviewTest, HandleResetPrintPreviewModeMessage) {
+  EXPECT_CALL(*client_ptr_, CreateEngine)
+      .WillOnce([](PDFEngine::Client* client,
+                   PDFiumFormFiller::ScriptOption script_option) {
+        EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript, script_option);
+
+        auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(client);
+        EXPECT_CALL(*engine, ZoomUpdated);
+        EXPECT_CALL(*engine, PageOffsetUpdated);
+        EXPECT_CALL(*engine, PluginSizeUpdated);
+        EXPECT_CALL(*engine, SetGrayscale(false));
+        return engine;
+      });
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/0/0/print.pdf",
+    "grayscale": false,
+    "pageCount": 1,
+  })");
+  plugin_->OnMessage(message.GetDict());
+}
+
+TEST_F(PdfViewWebPluginPrintPreviewTest,
+       HandleResetPrintPreviewModeMessageSetGrayscale) {
+  EXPECT_CALL(*client_ptr_, CreateEngine)
+      .WillOnce([](PDFEngine::Client* client,
+                   PDFiumFormFiller::ScriptOption /*script_option*/) {
+        auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(client);
+        EXPECT_CALL(*engine, SetGrayscale(true));
+        return engine;
+      });
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/0/0/print.pdf",
+    "grayscale": true,
+    "pageCount": 1,
+  })");
+  plugin_->OnMessage(message.GetDict());
+}
+
+TEST_F(PdfViewWebPluginPrintPreviewTest,
+       HandleViewportMessageScrollRightToLeft) {
+  EXPECT_CALL(*engine_ptr_, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(14));
+  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(3));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 1,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": -2,
+    "yOffset": 3,
+    "pinchPhase": 0,
+  })");
+  plugin_->OnMessage(message.GetDict());
 }
 
 }  // namespace chrome_pdf

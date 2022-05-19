@@ -109,8 +109,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               (const char16_t*, const char16_t*, bool),
               (override));
 
-  MOCK_METHOD(bool, IsPrintPreview, (), (const override));
-
   MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
 
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
@@ -880,31 +878,6 @@ TEST_F(PdfViewPluginBaseWithEngineTest,
   fake_plugin_.HandleMessage(message.GetDict());
 }
 
-TEST_F(PdfViewPluginBaseWithEngineTest,
-       HandleViewportMessageScrollRightToLeftInPrintPreview) {
-  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
-  EXPECT_CALL(*engine, ApplyDocumentLayout)
-      .WillRepeatedly(Return(gfx::Size(16, 9)));
-  EXPECT_CALL(*engine, ScrolledToXPosition(14));
-  EXPECT_CALL(*engine, ScrolledToYPosition(3));
-  EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "viewport",
-    "userInitiated": false,
-    "zoom": 1,
-    "layoutOptions": {
-      "direction": 1,
-      "defaultPageOrientation": 0,
-      "twoUpViewEnabled": false,
-    },
-    "xOffset": -2,
-    "yOffset": 3,
-    "pinchPhase": 0,
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
-}
-
 TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScroll) {
   auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
   EXPECT_CALL(*engine, ScrolledToXPosition(0));
@@ -1078,47 +1051,6 @@ TEST_F(PdfViewPluginBaseWithEngineTest, SelectionChangedScaled) {
   fake_plugin_.SelectionChanged({-20, -40, 60, 80}, {100, 120, 140, 160});
 
   EXPECT_EQ(gfx::Point(-300, -56), viewport_info.scroll);
-}
-
-TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessage) {
-  EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
-
-  auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(&fake_plugin_);
-  EXPECT_CALL(*engine, ZoomUpdated);
-  EXPECT_CALL(*engine, PageOffsetUpdated);
-  EXPECT_CALL(*engine, PluginSizeUpdated);
-  EXPECT_CALL(*engine, SetGrayscale(false));
-  EXPECT_CALL(fake_plugin_,
-              CreateEngine(&fake_plugin_,
-                           PDFiumFormFiller::ScriptOption::kNoJavaScript))
-      .WillOnce(Return(ByMove(std::move(engine))));
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "resetPrintPreviewMode",
-    "url": "chrome-untrusted://print/0/0/print.pdf",
-    "grayscale": false,
-    "pageCount": 1,
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
-}
-
-TEST_F(PdfViewPluginBaseTest, HandleResetPrintPreviewModeMessageSetGrayscale) {
-  EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
-
-  auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(&fake_plugin_);
-  EXPECT_CALL(*engine, SetGrayscale(true));
-  EXPECT_CALL(fake_plugin_,
-              CreateEngine(&fake_plugin_,
-                           PDFiumFormFiller::ScriptOption::kNoJavaScript))
-      .WillOnce(Return(ByMove(std::move(engine))));
-
-  base::Value message = base::test::ParseJson(R"({
-    "type": "resetPrintPreviewMode",
-    "url": "chrome-untrusted://print/0/0/print.pdf",
-    "grayscale": true,
-    "pageCount": 1,
-  })");
-  fake_plugin_.HandleMessage(message.GetDict());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, NormalPrinting) {
