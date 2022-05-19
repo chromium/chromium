@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -88,20 +89,32 @@ class TouchToFillView implements BottomSheetContent {
 
         @Override
         public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-            int itemCount = state.getItemCount();
-            boolean containsFillButton = parent.getAdapter().getItemViewType(itemCount - 1)
-                    == TouchToFillProperties.ItemType.FILL_BUTTON;
-            if (containsFillButton) {
-                // The background of the button should not be changed.
-                itemCount--;
-            }
-            // Skipping the first item because it's the header.
-            for (int i = 1; i < itemCount; i++) {
-                View child = parent.getChildAt(i);
-                int position = parent.getChildAdapterPosition(child);
+            for (int posInView = 0; posInView < parent.getChildCount(); posInView++) {
+                View child = parent.getChildAt(posInView);
+                int posInAdapter = parent.getChildAdapterPosition(child);
+                if (shouldSkipItemType(parent.getAdapter().getItemViewType(posInAdapter))) continue;
                 child.setBackground(AppCompatResources.getDrawable(mContext,
-                        selectBackgroundDrawable(position, containsFillButton, itemCount)));
+                        selectBackgroundDrawable(posInAdapter, containsFillButton(parent),
+                                parent.getAdapter().getItemCount())));
             }
+        }
+
+        private static boolean shouldSkipItemType(@ItemType int type) {
+            switch (type) {
+                case ItemType.HEADER: // Fallthrough.
+                case ItemType.FILL_BUTTON:
+                    return true;
+                case ItemType.CREDENTIAL: // Fallthrough.
+                case ItemType.WEBAUTHN_CREDENTIAL:
+                    return false;
+            }
+            assert false : "Undefined whether to skip setting background for item of type: " + type;
+            return true; // Should never be reached. But if, skip to not change anything.
+        }
+
+        private static boolean containsFillButton(RecyclerView parent) {
+            return parent.getAdapter().getItemViewType(parent.getAdapter().getItemCount() - 1)
+                    == ItemType.FILL_BUTTON;
         }
     }
 
