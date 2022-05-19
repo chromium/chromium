@@ -394,54 +394,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.RegisterBlobTime" units="ms" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    The amount of time taken to complete the synchronous mojo call
-    BlobRegistry.Regsiter
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.RegisterPublicURLTime" units="ms"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    The amount of time taken to complete the synchronous mojo call
-    BlobURLStore.Register IPC.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.RendererFileSeekFailed" enum="Boolean"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Whether seeking within a file (in order to write a part of a blob) failed in
-    the renderer.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.RendererFileWriteFailed" enum="Boolean"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Whether writing part of a blob to a file failed in the renderer.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.ReusedItem" enum="BooleanReused"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    True if we reuse an item for a blob created from using Blob.slice, recorded
-    in BlobStorageContext on blob creation.
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.TotalSize" units="KB" expires_after="M95">
   <owner>mek@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>

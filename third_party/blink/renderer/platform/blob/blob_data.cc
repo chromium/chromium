@@ -45,7 +45,6 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
@@ -339,7 +338,6 @@ BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
       is_single_unknown_size_file_(data->IsSingleUnknownSizeFile()) {
   auto elements = data->ReleaseElements();
   TRACE_EVENT0("Blob", "Registry::RegisterBlob");
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_THREAD_SAFE("Storage.Blob.RegisterBlobTime");
   GetThreadSpecificRegistry()->Register(
       blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
       type_.IsNull() ? "" : type_, "", std::move(elements));

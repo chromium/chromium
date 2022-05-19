@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -208,7 +207,6 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
   int64_t seek_distance =
       file.Seek(base::File::FROM_BEGIN, SafeCast<int64_t>(file_offset));
   bool seek_failed = seek_distance < 0;
-  base::UmaHistogramBoolean("Storage.Blob.RendererFileSeekFailed", seek_failed);
   if (seek_failed) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -242,8 +240,6 @@ void BlobBytesProvider::RequestAsFile(uint64_t source_offset,
       int actual_written = file.WriteAtCurrentPos(
           data->data() + data_offset + written, writing_size);
       bool write_failed = actual_written < 0;
-      base::UmaHistogramBoolean("Storage.Blob.RendererFileWriteFailed",
-                                write_failed);
       if (write_failed) {
         std::move(callback).Run(absl::nullopt);
         return;
