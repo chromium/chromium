@@ -68,7 +68,6 @@ if (optimize_webui) {
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
       "chrome://resources/cr_components/app_management/types.mojom-webui.js",
       "chrome://resources/js/cr.m.js",
-      "chrome://resources/chromeos/colors/cros_styles.css",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
       "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js",
