@@ -299,12 +299,6 @@ const base::Feature kResumeBackgroundVideo {
 #endif
 };
 
-// Experimental: Try to avoid destroying the media player when transferring a
-// media element to a new document.  This is a work in progress, and may cause
-// security and/or stability issues.
-const base::Feature kReuseMediaPlayer{"ReuseMediaPlayer",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, MediaCapabilities will check with GPU Video Accelerator
 // Factories to determine isPowerEfficient = true/false.
 const base::Feature kMediaCapabilitiesQueryGpuFactories{

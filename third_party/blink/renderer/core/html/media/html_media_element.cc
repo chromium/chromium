@@ -645,8 +645,12 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   ignore_preload_none_ = false;
   auto new_origin = GetDocument().TopFrameOrigin();
   auto old_origin = old_document.TopFrameOrigin();
+
+  // Experimental: Try to avoid destroying the media player when transferring a
+  // media element to a new document. This is a work in progress, and may cause
+  // security and/or stability issues.
   const bool reuse_player =
-      base::FeatureList::IsEnabled(media::kReuseMediaPlayer) && new_origin &&
+      RuntimeEnabledFeatures::PictureInPictureV2Enabled() && new_origin &&
       old_origin && old_origin->IsSameOriginWith(new_origin.get());
   if (!reuse_player) {
     // Don't worry about notifications from any previous document if we're not
