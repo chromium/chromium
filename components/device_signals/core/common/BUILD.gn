@@ -7,3 +7,11 @@ static_library("common") {
 
   sources = [ "signals_constants.cc" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (is_win) {
+    deps = [ "//components/device_signals/core/common/win:unit_tests" ]
+  }
+}

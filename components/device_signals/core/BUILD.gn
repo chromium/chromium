@@ -4,5 +4,8 @@
 
 source_set("unit_tests") {
   testonly = true
-  deps = [ "//components/device_signals/core/browser:unit_tests" ]
+  deps = [
+    "//components/device_signals/core/browser:unit_tests",
+    "//components/device_signals/core/common:unit_tests",
+  ]
 }
