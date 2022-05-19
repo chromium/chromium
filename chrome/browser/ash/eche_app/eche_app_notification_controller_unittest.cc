@@ -234,9 +234,9 @@ TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
   notification_controller_->ShowNotificationFromWebUI(
       title, message, mojom::WebNotificationType::INVALID_NOTIFICATION);
   notification_controller_->CloseNotification(
-      kEcheAppFromWebWithoudButtonNotifierId);
+      kEcheAppFromWebWithoutButtonNotifierId);
   notification =
-      display_service_->GetNotification(kEcheAppFromWebWithoudButtonNotifierId);
+      display_service_->GetNotification(kEcheAppFromWebWithoutButtonNotifierId);
   ASSERT_FALSE(notification.has_value());
 }
 
@@ -263,7 +263,7 @@ TEST_F(EcheAppNotificationControllerTest,
       display_service_->GetNotification(kEcheAppInactivityNotifierId);
   ASSERT_FALSE(notification.has_value());
   notification =
-      display_service_->GetNotification(kEcheAppFromWebWithoudButtonNotifierId);
+      display_service_->GetNotification(kEcheAppFromWebWithoutButtonNotifierId);
   ASSERT_FALSE(notification.has_value());
 }
 

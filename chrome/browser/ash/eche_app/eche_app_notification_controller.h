@@ -20,7 +20,7 @@ namespace eche_app {
 extern const char kEcheAppScreenLockNotifierId[];
 extern const char kEcheAppRetryConnectionNotifierId[];
 extern const char kEcheAppInactivityNotifierId[];
-extern const char kEcheAppFromWebWithoudButtonNotifierId[];
+extern const char kEcheAppFromWebWithoutButtonNotifierId[];
 extern const char kEcheAppLearnMoreUrl[];
 extern const char kEcheAppHelpUrl[];
 

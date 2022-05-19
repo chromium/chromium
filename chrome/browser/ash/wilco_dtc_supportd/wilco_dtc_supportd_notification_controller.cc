@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -80,6 +81,7 @@ WilcoDtcSupportdNotificationController::
 std::string
 WilcoDtcSupportdNotificationController::ShowBatteryAuthNotification() const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdBatteryAuth,
+                      NotificationCatalogName::kUnauthorizedBattery,
                       IDS_WILCO_NOTIFICATION_BATTERY_AUTH_TITLE,
                       IDS_WILCO_NOTIFICATION_BATTERY_AUTH_MESSAGE,
                       message_center::SYSTEM_PRIORITY, kNotificationBatteryIcon,
@@ -92,6 +94,7 @@ std::string
 WilcoDtcSupportdNotificationController::ShowNonWilcoChargerNotification()
     const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdNonWilcoCharger,
+                      NotificationCatalogName::kNonWilcoCharger,
                       IDS_WILCO_NOTIFICATION_NON_WILCO_CHARGER_TITLE,
                       IDS_WILCO_NOTIFICATION_NON_WILCO_CHARGER_MESSAGE,
                       message_center::DEFAULT_PRIORITY,
@@ -105,6 +108,7 @@ std::string
 WilcoDtcSupportdNotificationController::ShowIncompatibleDockNotification()
     const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdIncompatibleDock,
+                      NotificationCatalogName::kIncompatibleDock,
                       IDS_WILCO_NOTIFICATION_INCOMPATIBLE_DOCK_TITLE,
                       IDS_WILCO_NOTIFICATION_INCOMPATIBLE_DOCK_MESSAGE,
                       message_center::DEFAULT_PRIORITY,
@@ -117,6 +121,7 @@ WilcoDtcSupportdNotificationController::ShowIncompatibleDockNotification()
 std::string WilcoDtcSupportdNotificationController::ShowDockErrorNotification()
     const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdDockHardwareError,
+                      NotificationCatalogName::kDockError,
                       IDS_WILCO_NOTIFICATION_DOCK_ERROR_TITLE,
                       IDS_WILCO_NOTIFICATION_DOCK_ERROR_MESSAGE,
                       message_center::DEFAULT_PRIORITY,
@@ -129,6 +134,7 @@ std::string WilcoDtcSupportdNotificationController::ShowDockErrorNotification()
 std::string
 WilcoDtcSupportdNotificationController::ShowDockDisplayNotification() const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdDockDisplay,
+                      NotificationCatalogName::KDockDisplayError,
                       IDS_WILCO_NOTIFICATION_DOCK_DISPLAY_TITLE,
                       IDS_WILCO_NOTIFICATION_DOCK_DISPLAY_MESSAGE,
                       message_center::DEFAULT_PRIORITY,
@@ -142,6 +148,7 @@ std::string
 WilcoDtcSupportdNotificationController::ShowDockThunderboltNotification()
     const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdDockThunderbolt,
+                      NotificationCatalogName::kDockThunderboltError,
                       IDS_WILCO_NOTIFICATION_DOCK_THUNDERBOLT_TITLE,
                       IDS_WILCO_NOTIFICATION_DOCK_THUNDERBOLT_MESSAGE,
                       message_center::DEFAULT_PRIORITY,
@@ -155,6 +162,7 @@ std::string
 WilcoDtcSupportdNotificationController::ShowLowPowerChargerNotification()
     const {
   DisplayNotification(kWilcoDtcSupportdNotificationIdLowPower,
+                      NotificationCatalogName::kLowPowerCharger,
                       IDS_WILCO_LOW_POWER_CHARGER_TITLE,
                       IDS_WILCO_LOW_POWER_CHARGER_MESSAGE,
                       message_center::SYSTEM_PRIORITY, kNotificationBatteryIcon,
@@ -165,6 +173,7 @@ WilcoDtcSupportdNotificationController::ShowLowPowerChargerNotification()
 
 void WilcoDtcSupportdNotificationController::DisplayNotification(
     const std::string& notification_id,
+    const NotificationCatalogName& catalog_name,
     const int title_id,
     const int message_id,
     const message_center::NotificationPriority priority,
@@ -180,7 +189,8 @@ void WilcoDtcSupportdNotificationController::DisplayNotification(
           l10n_util::GetStringUTF16(message_id),
           std::u16string() /* display_source */, GURL() /* origin_url */,
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierWilco),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierWilco,
+              catalog_name),
           rich_data,
           base::MakeRefCounted<WilcoDtcSupportdNotificationDelegate>(topic),
           small_image, color_type);

@@ -73,6 +73,12 @@ void LogUnconsentedOutcome(TailoredSecurityOutcome outcome) {
       outcome);
 }
 
+message_center::NotifierId GetNotifierId() {
+  return message_center::NotifierId(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kTailoredSecurityNotifierId);
+}
+
 }  // namespace
 
 TailoredSecurityNotificationHandler::TailoredSecurityNotificationHandler() =
@@ -178,9 +184,7 @@ void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
       description, icon,
       l10n_util::GetStringUTF16(IDS_TAILORED_SECURITY_DISPLAY_SOURCE),
-      GURL(kTailoredSecurityNotificationOrigin),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kTailoredSecurityNotifierId),
+      GURL(kTailoredSecurityNotificationOrigin), GetNotifierId(),
       message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   notification.set_buttons({message_center::ButtonInfo(primary_button),
@@ -211,9 +215,7 @@ void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile) {
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
       description, icon,
       l10n_util::GetStringUTF16(IDS_TAILORED_SECURITY_DISPLAY_SOURCE),
-      GURL(kTailoredSecurityNotificationOrigin),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kTailoredSecurityNotifierId),
+      GURL(kTailoredSecurityNotificationOrigin), GetNotifierId(),
       message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   notification.set_buttons({message_center::ButtonInfo(primary_button),

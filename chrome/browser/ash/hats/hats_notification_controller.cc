@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -246,7 +247,8 @@ void HatsNotificationController::OnPortalDetectionCompleted(
           l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME),
           GURL(kNotificationOriginUrl),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHats),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierHats,
+              NotificationCatalogName::kHats),
           message_center::RichNotificationData(), this, kNotificationGoogleIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
     }

@@ -68,6 +68,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
 #endif
@@ -277,8 +278,15 @@ DownloadItemNotification::DownloadItemNotification(
       l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE),  // display_source
       GURL(kDownloadNotificationOrigin),              // origin_url
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kDownloadNotificationNotifierId,
+          ash::NotificationCatalogName::kDownloadNotification),
+#else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDownloadNotificationNotifierId),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       rich_notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()));

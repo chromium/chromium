@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -78,7 +79,8 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNearbyNotifier),
+                                 kNearbyNotifier,
+                                 ash::NotificationCatalogName::kNearbyShare),
       /*optional_fields=*/{},
       /*delegate=*/nullptr);
 

@@ -7,6 +7,7 @@
 #include "ash/accessibility/caption_bubble_context_ash.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
@@ -107,7 +108,7 @@ void ShowNotification(
           l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_DISPLAY_SOURCE), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kProjectorNotifierId),
+              kProjectorNotifierId, NotificationCatalogName::kProjector),
           optional_fields, delegate, notification_icon, warning_level);
 
   // Remove the previous notification before showing the new one if there are

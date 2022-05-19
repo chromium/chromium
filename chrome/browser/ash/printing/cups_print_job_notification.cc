@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,7 +105,8 @@ CupsPrintJobNotification::CupsPrintJobNotification(
       l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
       GURL(kCupsPrintJobNotificationId),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kCupsPrintJobNotificationId),
+                                 kCupsPrintJobNotificationId,
+                                 NotificationCatalogName::kCupsPrintJob),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_factory_.GetWeakPtr()));

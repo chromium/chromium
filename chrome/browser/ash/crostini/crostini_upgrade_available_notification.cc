@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_upgrade_available_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -118,8 +119,10 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
       l10n_util::GetStringUTF16(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_BODY),
       ui::ImageModel(), std::u16string(), GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierCrostiniUpgradeAvailable),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kNotifierCrostiniUpgradeAvailable,
+          ash::NotificationCatalogName::kCrostiniUpgradeAvailable),
       rich_notification_data,
       base::MakeRefCounted<CrostiniUpgradeAvailableNotificationDelegate>(
           profile_, weak_ptr_factory_.GetWeakPtr(), std::move(closure)));

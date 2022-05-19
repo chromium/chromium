@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/ui/fast_pair/fast_pair_notification_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -22,7 +23,8 @@ namespace {
 
 const message_center::NotifierId kNotifierFastPair =
     message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                               "ash.fastpair");
+                               "ash.fastpair",
+                               ash::NotificationCatalogName::kFastPair);
 const char kFastPairErrorNotificationId[] =
     "cros_fast_pair_error_notification_id";
 const char kFastPairDiscoveryGuestNotificationId[] =

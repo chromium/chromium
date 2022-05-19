@@ -63,7 +63,8 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
       notification_message,
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId),
+                                 kNotifierId,
+                                 NotificationCatalogName::kAdaptiveCharging),
       notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr()),

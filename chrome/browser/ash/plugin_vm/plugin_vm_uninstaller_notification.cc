@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -53,8 +54,10 @@ PluginVmUninstallerNotification::PluginVmUninstallerNotification(
       ui::ImageModel(),  // icon
       app_name,
       GURL(),  // origin_url
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierPluginVmUninstallOperation),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kNotifierPluginVmUninstallOperation,
+          ash::NotificationCatalogName::kPluginVMUninstaller),
       rich_notification_data,
       base::MakeRefCounted<message_center::NotificationDelegate>());
   notification_->set_progress(-1);

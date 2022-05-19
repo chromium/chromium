@@ -4,6 +4,7 @@
 
 #include "ash/system/power/battery_notification.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -99,7 +100,8 @@ std::unique_ptr<Notification> CreateNotification(
       BatteryNotification::kNotificationId, std::u16string(), message,
       std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierBattery),
+                                 kNotifierBattery,
+                                 NotificationCatalogName::kBatteryNotifier),
       message_center::RichNotificationData(), nullptr,
       GetBatteryImageMD(notification_state),
       GetWarningLevelMD(notification_state));

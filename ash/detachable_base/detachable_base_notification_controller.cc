@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -69,7 +70,8 @@ void DetachableBaseNotificationController::
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kDetachableBaseNotifierId),
+              kDetachableBaseNotifierId,
+              NotificationCatalogName::kDetachableBaseRequiresUpdate),
           message_center::RichNotificationData(), nullptr,
           chromeos::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
@@ -144,7 +146,8 @@ void DetachableBaseNotificationController::ShowPairingNotificationIfNeeded() {
           title, message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kDetachableBaseNotifierId),
+              kDetachableBaseNotifierId,
+              NotificationCatalogName::kDetachableBasePairingNotification),
           options, nullptr, chromeos::kNotificationWarningIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 

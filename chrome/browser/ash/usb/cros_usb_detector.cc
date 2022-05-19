@@ -14,6 +14,7 @@
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -317,7 +318,8 @@ void ShowNotificationForDevice(const std::string& guid,
       l10n_util::GetStringUTF16(IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE),
       message, ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierUsb),
+                                 kNotifierUsb,
+                                 NotificationCatalogName::kCrosUSBDetector),
       rich_notification_data,
       base::MakeRefCounted<CrosUsbNotificationDelegate>(
           notification_id, guid, std::move(vm_names),

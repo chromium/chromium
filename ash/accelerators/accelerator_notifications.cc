@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -79,6 +80,7 @@ std::u16string GetNotificationText(int message_id,
 
 std::unique_ptr<Notification> CreateNotification(
     const std::string& notification_id,
+    const NotificationCatalogName& catalog_name,
     const std::u16string& title,
     const std::u16string& message,
     const VectorIcon& icon,
@@ -87,16 +89,19 @@ std::unique_ptr<Notification> CreateNotification(
   return CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       std::u16string() /* display source */, GURL(),
-      NotifierId(NotifierType::SYSTEM_COMPONENT, kNotifierAccelerator),
+      NotifierId(NotifierType::SYSTEM_COMPONENT, kNotifierAccelerator,
+                 catalog_name),
       rich_data, click_handler, icon, SystemNotificationWarningLevel::NORMAL);
 }
 
-void CreateAndShowStickyNotification(const std::string& notification_id,
-                                     const std::u16string& title,
-                                     const std::u16string& message,
-                                     const VectorIcon& icon) {
+void CreateAndShowStickyNotification(
+    const std::string& notification_id,
+    const NotificationCatalogName& catalog_name,
+    const std::u16string& title,
+    const std::u16string& message,
+    const VectorIcon& icon) {
   std::unique_ptr<Notification> notification =
-      CreateNotification(notification_id, title, message, icon);
+      CreateNotification(notification_id, catalog_name, title, message, icon);
 
   notification->set_priority(message_center::SYSTEM_PRIORITY);
   MessageCenter::Get()->AddNotification(std::move(notification));
@@ -104,13 +109,15 @@ void CreateAndShowStickyNotification(const std::string& notification_id,
 
 void CreateAndShowNotification(
     const std::string& notification_id,
+    const NotificationCatalogName& catalog_name,
     const std::u16string& title,
     const std::u16string& message,
     const VectorIcon& icon,
     scoped_refptr<NotificationDelegate> click_handler = nullptr,
     const RichNotificationData& rich_data = RichNotificationData()) {
-  std::unique_ptr<Notification> notification = CreateNotification(
-      notification_id, title, message, icon, click_handler, rich_data);
+  std::unique_ptr<Notification> notification =
+      CreateNotification(notification_id, catalog_name, title, message, icon,
+                         click_handler, rich_data);
   MessageCenter::Get()->AddNotification(std::move(notification));
 }
 
@@ -133,15 +140,18 @@ void NotifyAccessibilityFeatureDisabledByAdmin(
       IDS_ASH_ACCESSIBILITY_FEATURE_SHORTCUT_DISABLED_MSG, organization_manager,
       activation_string, l10n_util::GetStringUTF16(feature_name_id));
 
-  CreateAndShowStickyNotification(notification_id, title, message,
-                                  chromeos::kEnterpriseIcon);
+  CreateAndShowStickyNotification(
+      notification_id, NotificationCatalogName::kAccessibilityFeatureDisabled,
+      title, message, chromeos::kEnterpriseIcon);
 }
 
-void ShowAccessibilityNotification(int title_id,
-                                   int message_id,
-                                   const std::string& notification_id) {
+void ShowAccessibilityNotification(
+    int title_id,
+    int message_id,
+    const std::string& notification_id,
+    const NotificationCatalogName& catalog_name) {
   CreateAndShowStickyNotification(
-      notification_id, l10n_util::GetStringUTF16(title_id),
+      notification_id, catalog_name, l10n_util::GetStringUTF16(title_id),
       l10n_util::GetStringUTF16(message_id), kNotificationAccessibilityIcon);
 }
 
@@ -178,8 +188,9 @@ void ShowDeprecatedAcceleratorNotification(const char* notification_id,
           Shell::Get()->shell_delegate()->OpenKeyboardShortcutHelpPage();
       }));
 
-  CreateAndShowNotification(notification_id, title, message,
-                            kNotificationKeyboardIcon, on_click_handler);
+  CreateAndShowNotification(
+      notification_id, NotificationCatalogName::kDeprecatedAccelerator, title,
+      message, kNotificationKeyboardIcon, on_click_handler);
 }
 
 void ShowShortcutsChangedNotification() {
@@ -210,9 +221,10 @@ void ShowShortcutsChangedNotification() {
         }
       }));
 
-  CreateAndShowNotification(kStartupNewShortcutNotificationId, title, message,
-                            kNotificationKeyboardIcon, on_click_handler,
-                            rich_data);
+  CreateAndShowNotification(kStartupNewShortcutNotificationId,
+                            NotificationCatalogName::kShortcutsChanged, title,
+                            message, kNotificationKeyboardIcon,
+                            on_click_handler, rich_data);
 }
 
 Notification* FindShortcutsChangedNotificationForTest() {
@@ -221,9 +233,10 @@ Notification* FindShortcutsChangedNotificationForTest() {
 }
 
 void ShowDockedMagnifierNotification() {
-  ShowAccessibilityNotification(IDS_DOCKED_MAGNIFIER_ACCEL_TITLE,
-                                IDS_DOCKED_MAGNIFIER_ACCEL_MSG,
-                                kDockedMagnifierToggleAccelNotificationId);
+  ShowAccessibilityNotification(
+      IDS_DOCKED_MAGNIFIER_ACCEL_TITLE, IDS_DOCKED_MAGNIFIER_ACCEL_MSG,
+      kDockedMagnifierToggleAccelNotificationId,
+      NotificationCatalogName::kDockedMagnifierEnabled);
 }
 
 void ShowDockedMagnifierDisabledByAdminNotification(bool feature_state) {
@@ -237,9 +250,10 @@ void RemoveDockedMagnifierNotification() {
 }
 
 void ShowFullscreenMagnifierNotification() {
-  ShowAccessibilityNotification(IDS_FULLSCREEN_MAGNIFIER_ACCEL_TITLE,
-                                IDS_FULLSCREEN_MAGNIFIER_ACCEL_MSG,
-                                kFullscreenMagnifierToggleAccelNotificationId);
+  ShowAccessibilityNotification(
+      IDS_FULLSCREEN_MAGNIFIER_ACCEL_TITLE, IDS_FULLSCREEN_MAGNIFIER_ACCEL_MSG,
+      kFullscreenMagnifierToggleAccelNotificationId,
+      NotificationCatalogName::kFullScreenMagnifierEnabled);
 }
 
 void ShowFullscreenMagnifierDisabledByAdminNotification(bool feature_state) {
@@ -255,7 +269,8 @@ void RemoveFullscreenMagnifierNotification() {
 void ShowHighContrastNotification() {
   ShowAccessibilityNotification(IDS_HIGH_CONTRAST_ACCEL_TITLE,
                                 IDS_HIGH_CONTRAST_ACCEL_MSG,
-                                kHighContrastToggleAccelNotificationId);
+                                kHighContrastToggleAccelNotificationId,
+                                NotificationCatalogName::kHighContrastEnabled);
 }
 
 void ShowHighContrastDisabledByAdminNotification(bool feature_state) {

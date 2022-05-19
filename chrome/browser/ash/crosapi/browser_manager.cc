@@ -846,7 +846,8 @@ BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
             /* display_source= */ std::u16string(), GURL(),
             message_center::NotifierId(
                 message_center::NotifierType::SYSTEM_COMPONENT,
-                kLacrosLauncherNotifierID),
+                kLacrosLauncherNotifierID,
+                ash::NotificationCatalogName::kLacrosCannotLaunch),
             message_center::RichNotificationData(),
             base::MakeRefCounted<
                 message_center::HandleNotificationClickDelegate>(

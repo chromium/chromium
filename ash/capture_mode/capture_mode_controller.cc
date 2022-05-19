@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
@@ -236,7 +237,8 @@ void ShowNotification(
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kScreenCaptureNotifierId),
+              kScreenCaptureNotifierId,
+              NotificationCatalogName::kScreenCapture),
           optional_fields, delegate, notification_icon, warning_level);
   if (type == message_center::NOTIFICATION_TYPE_CUSTOM) {
     notification->set_custom_view_type(for_video_thumbnail

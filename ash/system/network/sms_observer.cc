@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/tray/tray_constants.h"
@@ -49,7 +50,7 @@ void ShowNotification(const base::Value* message,
                                false /* trim_sequences_with_line_breaks */),
       std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierSms),
+                                 kNotifierSms, NotificationCatalogName::kSMS),
       message_center::RichNotificationData(), nullptr, kNotificationSmsSyncIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   message_center->AddNotification(std::move(notification));

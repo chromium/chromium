@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
@@ -67,7 +68,8 @@ void AddNotification(const std::string& notification_id,
   const message_center::NotifierId notifier_id =
       notifier_title.empty()
           ? message_center::NotifierId(
-                message_center::NotifierType::SYSTEM_COMPONENT, "system")
+                message_center::NotifierType::SYSTEM_COMPONENT, "system",
+                NotificationCatalogName::kHPSNotify)
           : message_center::NotifierId(/*url=*/GURL(), notifier_title);
 
   message_center::MessageCenter::Get()->AddNotification(

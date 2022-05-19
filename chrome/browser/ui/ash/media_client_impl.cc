@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system/toast_catalog.h"
@@ -594,7 +595,8 @@ void MediaClientImpl::ShowCameraOffNotification() {
           message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kCameraPrivacySwitchNotifierId),
+              kCameraPrivacySwitchNotifierId,
+              ash::NotificationCatalogName::kCameraPrivacySwitch),
           message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
               base::DoNothingAs<void()>()),

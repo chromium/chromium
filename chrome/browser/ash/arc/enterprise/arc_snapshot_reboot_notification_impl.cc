@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/enterprise/arc_snapshot_reboot_notification_impl.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/grit/generated_resources.h"
@@ -41,7 +42,8 @@ void ArcSnapshotRebootNotificationImpl::Show() {
   shown_ = true;
 
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
+      ash::NotificationCatalogName::kArcSnapshotReboot);
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.push_back(

@@ -4,6 +4,7 @@
 
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -116,7 +117,8 @@ void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierFirmwareUpdate),
+              kNotifierFirmwareUpdate,
+              NotificationCatalogName::kFirmwareUpdate),
           optional,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(

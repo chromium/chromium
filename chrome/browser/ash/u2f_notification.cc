@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -110,7 +111,7 @@ void U2FNotification::ShowNotification() {
           std::u16string(), GURL(kU2FNotificationId),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kU2FNotificationId),
+              kU2FNotificationId, NotificationCatalogName::kU2F),
           data,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&U2FNotification::OnNotificationClick,

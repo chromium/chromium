@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_export_import_notification_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/url_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,8 +73,10 @@ CrostiniExportImportNotificationController::
       l10n_util::GetStringUTF16(
           IDS_CROSTINI_EXPORT_IMPORT_NOTIFICATION_DISPLAY_SOURCE),
       GURL(),  // origin_url
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierCrostiniExportImportOperation),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kNotifierCrostiniExportImportOperation,
+          ash::NotificationCatalogName::kCrostiniExportImport),
       rich_notification_data, delegate_);
 }
 

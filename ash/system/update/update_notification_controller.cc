@@ -4,6 +4,7 @@
 
 #include "ash/system/update/update_notification_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/update_types.h"
@@ -91,7 +92,7 @@ void UpdateNotificationController::GenerateUpdateNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, GetTitle(),
       GetMessage(), std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId),
+                                 kNotifierId, NotificationCatalogName::kUpdate),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(

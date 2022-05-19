@@ -347,8 +347,9 @@ void BluetoothNotificationController::NotifyPairing(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       kBluetoothDevicePairingNotificationId, std::u16string() /* title */,
       message, std::u16string() /* display source */, GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierBluetooth),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierBluetooth,
+          NotificationCatalogName::kBluetoothPairingRequest),
       optional,
       base::MakeRefCounted<BluetoothPairingNotificationDelegate>(
           adapter_, device->GetAddress(),
@@ -392,8 +393,9 @@ void BluetoothNotificationController::NotifyPairedDevice(
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED,
                                  device->GetNameForDisplay()),
       std::u16string() /* display source */, GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierBluetooth),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierBluetooth,
+          NotificationCatalogName::kBluetoothPairedDevice),
       message_center::RichNotificationData(),
       base::MakeRefCounted<BluetoothPairedNotificationDelegate>(),
       kNotificationBluetoothIcon,

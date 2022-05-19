@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -265,7 +266,8 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
                                       base::NumberToString(message_id);
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kProfileSigninNotificationId);
+      kProfileSigninNotificationId,
+      NotificationCatalogName::kAuthpolicyCredentialsError);
 
   // Set |profile_id| for multi-user notification blocker.
   notifier_id.profile_id = profile_->GetProfileUserName();

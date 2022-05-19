@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -90,7 +91,8 @@ void GestureEducationNotificationController::
           GetNotificationTitle(), GetNotificationMessage(),
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
+              NotificationCatalogName::kGestureEducation),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&GestureEducationNotificationController::

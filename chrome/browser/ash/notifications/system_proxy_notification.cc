@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,7 +57,8 @@ void SystemProxyNotification::Show() {
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
           body, std::u16string() /*display_source=*/, GURL() /*origin_url=*/,
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+              NotificationCatalogName::kSystemProxy),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&SystemProxyNotification::OnClick,

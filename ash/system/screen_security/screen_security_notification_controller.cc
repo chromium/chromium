@@ -4,6 +4,7 @@
 
 #include "ash/system/screen_security/screen_security_notification_controller.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -88,7 +89,8 @@ void ScreenSecurityNotificationController::CreateNotification(
       message, std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(
           message_center::NotifierType::SYSTEM_COMPONENT,
-          is_capture ? kNotifierScreenCapture : kNotifierScreenShare),
+          is_capture ? kNotifierScreenCapture : kNotifierScreenShare,
+          NotificationCatalogName::kScreenSecurity),
       data, std::move(delegate), kNotificationScreenshareIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_pinned(true);

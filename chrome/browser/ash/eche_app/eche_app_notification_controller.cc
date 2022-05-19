@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -31,7 +32,7 @@ const char kEcheAppInactivityNotifierId[] =
     "eche_app_notification_ids.inactivity";
 
 // The notification type from WebUI without any actions need to do.
-const char kEcheAppFromWebWithoudButtonNotifierId[] =
+const char kEcheAppFromWebWithoutButtonNotifierId[] =
     "eche_app_notification_ids.from_web_without_button";
 
 // TODO(crbug.com/1241352): This should probably have a ?p=<FEATURE_NAME> at
@@ -46,6 +47,7 @@ namespace {
 // Convenience function for creating a Notification.
 std::unique_ptr<message_center::Notification> CreateNotification(
     const std::string& id,
+    const NotificationCatalogName& catalog_name,
     const std::u16string& title,
     const std::u16string& message,
     const ui::ImageModel& icon,
@@ -56,7 +58,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
       message, icon, std::u16string() /* display_source */,
       GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 id),
+                                 id, catalog_name),
       rich_notification_data, delegate);
 }
 
@@ -107,8 +109,9 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
       rich_notification_data.buttons.push_back(message_center::ButtonInfo(
           l10n_util::GetStringUTF16(IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON)));
       ShowNotification(CreateNotification(
-          kEcheAppRetryConnectionNotifierId, title.value(), message.value(),
-          ui::ImageModel(), rich_notification_data,
+          kEcheAppRetryConnectionNotifierId,
+          NotificationCatalogName::kEcheAppRetryConnection, title.value(),
+          message.value(), ui::ImageModel(), rich_notification_data,
           new NotificationDelegate(kEcheAppRetryConnectionNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     } else if (web_type == mojom::WebNotificationType::DEVICE_IDLE) {
@@ -117,17 +120,19 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
               IDS_ECHE_APP_NOTIFICATION_OPEN_AGAIN_BUTTON)));
       ShowNotification(CreateNotification(
-          kEcheAppInactivityNotifierId, title.value(), message.value(),
-          ui::ImageModel(), rich_notification_data,
+          kEcheAppInactivityNotifierId,
+          NotificationCatalogName::kEcheAppInactivity, title.value(),
+          message.value(), ui::ImageModel(), rich_notification_data,
           new NotificationDelegate(kEcheAppInactivityNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     } else {
       // No need to take the action.
       ShowNotification(CreateNotification(
-          kEcheAppFromWebWithoudButtonNotifierId, title.value(),
+          kEcheAppFromWebWithoutButtonNotifierId,
+          NotificationCatalogName::kEcheAppFromWebWithoutButton, title.value(),
           message.value(), ui::ImageModel(),
           message_center::RichNotificationData(),
-          new NotificationDelegate(kEcheAppFromWebWithoudButtonNotifierId,
+          new NotificationDelegate(kEcheAppFromWebWithoutButtonNotifierId,
                                    weak_ptr_factory_.GetWeakPtr())));
     }
   } else {
@@ -144,7 +149,7 @@ void EcheAppNotificationController::ShowScreenLockNotification(
   rich_notification_data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_LEARN_MORE)));
   ShowNotification(CreateNotification(
-      kEcheAppScreenLockNotifierId,
+      kEcheAppScreenLockNotifierId, NotificationCatalogName::kEcheAppScreenLock,
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE,
                                  title),
@@ -175,7 +180,7 @@ void EcheAppNotificationController::
       NotificationHandler::Type::TRANSIENT, kEcheAppInactivityNotifierId);
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT,
-      kEcheAppFromWebWithoudButtonNotifierId);
+      kEcheAppFromWebWithoutButtonNotifierId);
 }
 
 EcheAppNotificationController::NotificationDelegate::NotificationDelegate(

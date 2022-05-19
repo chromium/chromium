@@ -19,6 +19,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -71,8 +72,14 @@ void ShowDlpNotification(const std::string& id,
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
       /*icon=*/ui::ImageModel(), /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kDlpPolicyNotifierId,
+                                 ash::NotificationCatalogName::kDlpPolicy),
+#else
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kDlpPolicyNotifierId),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&OnNotificationClicked, id)));

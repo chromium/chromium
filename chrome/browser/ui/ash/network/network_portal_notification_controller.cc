@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -205,7 +206,8 @@ NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
           network->guid(), weak_factory_.GetWeakPtr());
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kNotifierNetworkPortalDetector);
+      kNotifierNetworkPortalDetector,
+      ash::NotificationCatalogName::kNetworkPortalDetector);
   bool is_wifi = NetworkTypePattern::WiFi().MatchesType(network->type());
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(

@@ -205,7 +205,8 @@ void PowerwashRequirementsChecker::ShowNotification() {
       l10n_util::GetStringUTF16(IDS_POWERWASH_REQUEST_TITLE),
       l10n_util::GetStringFUTF16(message_id, GetEnterpriseManager()),
       std::u16string{}, GURL{},
-      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id),
+      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id,
+                     ash::NotificationCatalogName::kPowerwashRequest),
       std::move(rich_data), std::move(delegate), kNotificationIcon,
       kNotificationLevel);
 
@@ -242,8 +243,9 @@ void PowerwashRequirementsChecker::ShowCryptohomeErrorNotification() {
       l10n_util::GetStringUTF16(
           IDS_POWERWASH_REQUEST_UNDEFINED_STATE_ERROR_TITLE),
       l10n_util::GetStringUTF16(message_id), std::u16string{}, GURL{},
-      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id), {},
-      std::move(delegate), kNotificationIcon, kNotificationLevel);
+      mc::NotifierId(mc::NotifierType::SYSTEM_COMPONENT, notification_id,
+                     ash::NotificationCatalogName::kPowerwashRequestError),
+      {}, std::move(delegate), kNotificationIcon, kNotificationLevel);
 
   NotificationDisplayService::GetForProfile(profile_)->Close(
       kNotificationHandlerType, notification_id);

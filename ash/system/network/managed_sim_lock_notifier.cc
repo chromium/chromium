@@ -122,7 +122,8 @@ void ManagedSimLockNotifier::ShowNotification() {
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierManagedSimLock),
+              kNotifierManagedSimLock,
+              NotificationCatalogName::kManagedSimLock),
           message_center::RichNotificationData(), std::move(delegate),
           /*small_image=*/gfx::VectorIcon(),
           message_center::SystemNotificationWarningLevel::WARNING);

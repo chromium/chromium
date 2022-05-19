@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
@@ -458,7 +459,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
       l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE),
       GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 id),
+                                 id, NotificationCatalogName::kFullRestore),
       notification_data,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr()),

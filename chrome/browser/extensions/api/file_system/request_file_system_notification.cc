@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
@@ -106,8 +107,9 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
       ui::ImageModel(),  // Updated asynchronously later.
       std::u16string(),  // display_source
       GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 notification_id),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
+          ash::NotificationCatalogName::kRequestFileSystem),
       data, base::MakeRefCounted<message_center::NotificationDelegate>()));
 
   // AppNotificationLauncher will delete itself.

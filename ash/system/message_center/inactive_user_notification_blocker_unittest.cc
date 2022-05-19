@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/inactive_user_notification_blocker.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -131,11 +132,12 @@ TEST_P(InactiveUserNotificationBlockerTest, Basic) {
   // System priority notifiers should always show regardless of fullscreen
   // or lock state.
   message_center::NotifierId ash_system_notifier(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+      NotificationCatalogName::kTestCatalogName);
   // Other system notifiers should be treated as same as a normal notifier.
   message_center::NotifierId random_system_notifier(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      "ash.some-other-component");
+      "ash.some-other-component", NotificationCatalogName::kTestCatalogName);
 
   // Notifications are not blocked before login.
   const std::string kEmptyUserId;

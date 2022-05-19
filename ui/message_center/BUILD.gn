@@ -208,6 +208,10 @@ if (enable_message_center) {
       "//ui/resources:ui_test_pak_data",
     ]
 
+    if (is_chromeos_ash) {
+      deps += [ "//ash/constants" ]
+    }
+
     if (toolkit_views) {
       sources += [
         "views/message_popup_collection_unittest.cc",

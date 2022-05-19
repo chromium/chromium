@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -127,7 +128,8 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
           GetNotificationTitle(app_name), GetNotificationMessage(),
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId,
+              NotificationCatalogName::kMicrophoneMute),
           notification_data, delegate, vector_icons::kSettingsIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   return notification;

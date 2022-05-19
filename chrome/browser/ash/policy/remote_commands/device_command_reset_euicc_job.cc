@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -122,7 +123,8 @@ void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierESimPolicy),
+              kNotifierESimPolicy,
+              ash::NotificationCatalogName::kDeviceCommandReset),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::DoNothingAs<void()>()),

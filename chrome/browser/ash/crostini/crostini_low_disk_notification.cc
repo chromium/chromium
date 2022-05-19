@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -122,7 +123,8 @@ CrostiniLowDiskNotification::CreateNotification(Severity severity) {
   optional_fields.buttons.push_back(storage_settings);
 
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierLowDisk);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierLowDisk,
+      ash::NotificationCatalogName::kCrostiniLowDisk);
 
   auto on_click = base::BindRepeating([](absl::optional<int> button_index) {
     if (button_index) {

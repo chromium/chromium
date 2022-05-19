@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "base/bind.h"
@@ -95,6 +96,7 @@ const gfx::VectorIcon& GetErrorNotificationVectorIcon(
 // |identifier| may be a service path or guid.
 void ShowErrorNotification(const std::string& identifier,
                            const std::string& notification_id,
+                           const ash::NotificationCatalogName& catalog_name,
                            const std::string& network_type,
                            const std::u16string& title,
                            const std::u16string& message,
@@ -107,7 +109,7 @@ void ShowErrorNotification(const std::string& identifier,
           message, std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierNetworkError),
+              kNotifierNetworkError, catalog_name),
           message_center::RichNotificationData(),
           new message_center::HandleNotificationClickDelegate(
               std::move(callback)),
@@ -356,6 +358,7 @@ void NetworkStateNotifier::UpdateCellularOutOfCredits() {
                                    base::UTF8ToUTF16(primary_network->name()));
     ShowErrorNotification(
         NetworkId(primary_network), kNetworkOutOfCreditsNotificationId,
+        ash::NotificationCatalogName::kNetworkOutOfCredits,
         primary_network->type(),
         l10n_util::GetStringUTF16(IDS_NETWORK_OUT_OF_CREDITS_TITLE), error_msg,
         base::BindRepeating(&NetworkStateNotifier::ShowCarrierAccountDetail,
@@ -390,7 +393,8 @@ void NetworkStateNotifier::UpdateCellularActivating(
                                      base::UTF8ToUTF16((cellular->name()))),
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork,
+              ash::NotificationCatalogName::kNetworkCellularActivated),
           {},
           new message_center::HandleNotificationClickDelegate(
               base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
@@ -436,7 +440,8 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierNetworkError),
+              kNotifierNetworkError,
+              ash::NotificationCatalogName::kNetworkActivationError),
           {},
           new message_center::HandleNotificationClickDelegate(
               base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
@@ -586,7 +591,8 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
 
   connect_error_notification_network_guid_ = guid;
   ShowErrorNotification(
-      NetworkPathId(service_path), kNetworkConnectNotificationId, network_type,
+      NetworkPathId(service_path), kNetworkConnectNotificationId,
+      ash::NotificationCatalogName::kNetworkConnectionError, network_type,
       l10n_util::GetStringUTF16(IDS_NETWORK_CONNECTION_ERROR_TITLE), error_msg,
       std::move(on_click));
 }
@@ -596,7 +602,8 @@ void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
   std::u16string error_msg = l10n_util::GetStringFUTF16(
       IDS_NETWORK_VPN_CONNECTION_LOST_BODY, base::UTF8ToUTF16(vpn->name));
   ShowErrorNotification(
-      NetworkGuidId(vpn->guid), kNetworkConnectNotificationId, shill::kTypeVPN,
+      NetworkGuidId(vpn->guid), kNetworkConnectNotificationId,
+      ash::NotificationCatalogName::kNetworkVPNConnectionLost, shill::kTypeVPN,
       l10n_util::GetStringUTF16(IDS_NETWORK_VPN_CONNECTION_LOST_TITLE),
       error_msg,
       base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,

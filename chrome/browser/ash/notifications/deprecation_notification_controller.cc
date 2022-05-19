@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -117,8 +118,9 @@ void DeprecationNotificationController::ShowNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id,
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE), message_body,
       std::u16string(), GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+          NotificationCatalogName::kEventRewriterDeprecation),
       message_center::RichNotificationData(), std::move(on_click_handler),
       kNotificationKeyboardIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

@@ -9,6 +9,7 @@
 
 #include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -102,7 +103,8 @@ void DisplayNotification(const std::u16string& title,
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierSecurityTokenSession),
+              kNotifierSecurityTokenSession,
+              NotificationCatalogName::kSecurityToken),
           /*optional_fields=*/{},
           new message_center::HandleNotificationClickDelegate(
               base::DoNothingAs<void()>()),

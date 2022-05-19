@@ -5,6 +5,7 @@
 #include "ash/system/network/cellular_setup_notifier.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -217,7 +218,7 @@ void CellularSetupNotifier::ShowCellularSetupNotification() {
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierCellularSetup),
+              kNotifierCellularSetup, NotificationCatalogName::kCellularSetup),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&OnCellularSetupNotificationClicked)),

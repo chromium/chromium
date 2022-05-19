@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/time/time.h"
@@ -139,7 +140,7 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierMobileData),
+              kNotifierMobileData, ash::NotificationCatalogName::kMobileData),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&MobileDataNotificationClicked,

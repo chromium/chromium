@@ -19,6 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/barrier_closure.h"
@@ -1023,7 +1024,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
           title, message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kAutoLaunchNotifierId),
+              kAutoLaunchNotifierId, NotificationCatalogName::kAutoLaunch),
           data, std::move(delegate), vector_icons::kBusinessIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   notification->SetSystemPriority();

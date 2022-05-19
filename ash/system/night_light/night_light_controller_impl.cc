@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/display/display_color_manager.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -829,7 +830,8 @@ void NightLightControllerImpl::ShowAutoNightLightNotification() {
           l10n_util::GetStringUTF16(IDS_ASH_AUTO_NIGHT_LIGHT_NOTIFY_BODY),
           std::u16string(), GURL(),
           message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId),
+              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+              NotificationCatalogName::kNightLight),
           message_center::RichNotificationData{},
           base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
               weak_ptr_factory_.GetWeakPtr()),
