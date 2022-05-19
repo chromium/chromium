@@ -2339,6 +2339,9 @@ void HistoryBackend::ProcessDBTaskImpl() {
 ////////////////////////////////////////////////////////////////////////////////
 
 void HistoryBackend::DeleteURLs(const std::vector<GURL>& urls) {
+  if (!db_)
+    return;
+
   TRACE_EVENT0("browser", "HistoryBackend::DeleteURLs");
 
   expirer_.DeleteURLs(urls, base::Time::Max());
@@ -2350,6 +2353,9 @@ void HistoryBackend::DeleteURLs(const std::vector<GURL>& urls) {
 }
 
 void HistoryBackend::DeleteURL(const GURL& url) {
+  if (!db_)
+    return;
+
   TRACE_EVENT0("browser", "HistoryBackend::DeleteURL");
 
   expirer_.DeleteURL(url, base::Time::Max());
@@ -2362,6 +2368,9 @@ void HistoryBackend::DeleteURL(const GURL& url) {
 
 void HistoryBackend::DeleteURLsUntil(
     const std::vector<std::pair<GURL, base::Time>>& urls_and_timestamps) {
+  if (!db_)
+    return;
+
   TRACE_EVENT0("browser", "HistoryBackend::DeleteURLsUntil");
 
   for (const auto& pair : urls_and_timestamps) {
