@@ -73,6 +73,7 @@ source_set("follow_management_ui") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    "resources:following_empty",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/net:crurl",

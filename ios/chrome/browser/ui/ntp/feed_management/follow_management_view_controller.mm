@@ -266,7 +266,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [model sectionForSectionIdentifier:DefaultSectionIdentifier];
   NSInteger itemCount = [model numberOfItemsInSection:section];
   if (itemCount == 0) {
-    [self addEmptyTableViewWithImage:nil
+    [self addEmptyTableViewWithImage:[UIImage imageNamed:@"following_empty"]
                                title:l10n_util::GetNSString(
                                          IDS_IOS_FOLLOW_MANAGEMENT_EMPTY_TITLE)
                             subtitle:l10n_util::GetNSString(
