@@ -92,7 +92,7 @@ int NetErrorFromOSStatus(OSStatus status) {
 // additional checks (e.g. as done in 10.15), any failures of these
 // checks are initially mapped to ERR_CERT_INVALID for safety, even
 // if there may be a more applicable CertStatus code.
-CertStatus CertStatusFromOSStatusAtLeastOS10_13(OSStatus status) {
+CertStatus CertStatusFromOSStatus(OSStatus status) {
   switch (status) {
     case noErr:
       return 0;
@@ -199,102 +199,6 @@ CertStatus CertStatusFromOSStatusAtLeastOS10_13(OSStatus status) {
       return CERT_STATUS_INVALID;
     }
   }
-}
-
-CertStatus CertStatusFromOSStatusAtMostOS10_12(OSStatus status) {
-  switch (status) {
-    case noErr:
-      return 0;
-
-    case CSSMERR_TP_INVALID_ANCHOR_CERT:
-    case CSSMERR_TP_NOT_TRUSTED:
-    case CSSMERR_TP_INVALID_CERT_AUTHORITY:
-      return CERT_STATUS_AUTHORITY_INVALID;
-
-    case CSSMERR_TP_CERT_EXPIRED:
-    case CSSMERR_TP_CERT_NOT_VALID_YET:
-      // "Expired" and "not yet valid" collapse into a single status.
-      return CERT_STATUS_DATE_INVALID;
-
-    case CSSMERR_TP_CERT_REVOKED:
-    case CSSMERR_TP_CERT_SUSPENDED:
-      return CERT_STATUS_REVOKED;
-
-    case CSSMERR_APPLETP_HOSTNAME_MISMATCH:
-      return CERT_STATUS_COMMON_NAME_INVALID;
-
-    case CSSMERR_APPLETP_CRL_NOT_FOUND:
-    case CSSMERR_APPLETP_OCSP_UNAVAILABLE:
-      return CERT_STATUS_NO_REVOCATION_MECHANISM;
-
-    case CSSMERR_APPLETP_INCOMPLETE_REVOCATION_CHECK:
-      // Starting with later 10.12 versions,
-      // CSSMERR_APPLETP_INCOMPLETE_REVOCATION_CHECK is a catch-all code for
-      // failures to check revocation status.
-      // However, on pre-10.12 versions, it would also be used on revocation
-      // failures. (CERT_STATUS_NO_REVOCATION_MECHANISM isn't really right
-      // there either, but that's what the old code has, and it just gets
-      // masked off later so has no actual effect.)
-      return base::mac::IsAtLeastOS10_12()
-                 ? CERT_STATUS_UNABLE_TO_CHECK_REVOCATION
-                 : CERT_STATUS_NO_REVOCATION_MECHANISM;
-
-    case CSSMERR_APPLETP_CRL_EXPIRED:
-    case CSSMERR_APPLETP_CRL_NOT_VALID_YET:
-    case CSSMERR_APPLETP_CRL_SERVER_DOWN:
-    case CSSMERR_APPLETP_CRL_NOT_TRUSTED:
-    case CSSMERR_APPLETP_CRL_INVALID_ANCHOR_CERT:
-    case CSSMERR_APPLETP_CRL_POLICY_FAIL:
-    case CSSMERR_APPLETP_OCSP_BAD_RESPONSE:
-    case CSSMERR_APPLETP_OCSP_BAD_REQUEST:
-    case CSSMERR_APPLETP_OCSP_STATUS_UNRECOGNIZED:
-    case CSSMERR_APPLETP_NETWORK_FAILURE:
-    case CSSMERR_APPLETP_OCSP_NOT_TRUSTED:
-    case CSSMERR_APPLETP_OCSP_INVALID_ANCHOR_CERT:
-    case CSSMERR_APPLETP_OCSP_SIG_ERROR:
-    case CSSMERR_APPLETP_OCSP_NO_SIGNER:
-    case CSSMERR_APPLETP_OCSP_RESP_MALFORMED_REQ:
-    case CSSMERR_APPLETP_OCSP_RESP_INTERNAL_ERR:
-    case CSSMERR_APPLETP_OCSP_RESP_TRY_LATER:
-    case CSSMERR_APPLETP_OCSP_RESP_SIG_REQUIRED:
-    case CSSMERR_APPLETP_OCSP_RESP_UNAUTHORIZED:
-    case CSSMERR_APPLETP_OCSP_NONCE_MISMATCH:
-      // We asked for a revocation check, but didn't get it.
-      return CERT_STATUS_UNABLE_TO_CHECK_REVOCATION;
-
-    case CSSMERR_APPLETP_SSL_BAD_EXT_KEY_USE:
-      return CERT_STATUS_INVALID;
-
-    case errSecInternalError:
-    case CSSMERR_APPLETP_CRL_BAD_URI:
-    case CSSMERR_APPLETP_IDP_FAIL:
-      return CERT_STATUS_INVALID;
-
-    case CSSMERR_CSP_UNSUPPORTED_KEY_SIZE:
-      // Mapping UNSUPPORTED_KEY_SIZE to CERT_STATUS_WEAK_KEY is not strictly
-      // accurate, as the error may have been returned due to a key size
-      // that exceeded the maximum supported. However, within
-      // CertVerifyProcMac::VerifyInternal(), this code should only be
-      // encountered as a certificate status code, and only when the key size
-      // is smaller than the minimum required (1024 bits).
-      return CERT_STATUS_WEAK_KEY;
-
-    default: {
-      // Failure was due to something Chromium doesn't define a
-      // specific status for (such as basic constraints violation, or
-      // unknown critical extension)
-      OSSTATUS_LOG(WARNING, status)
-          << "Unknown error mapped to CERT_STATUS_INVALID";
-      return CERT_STATUS_INVALID;
-    }
-  }
-}
-
-CertStatus CertStatusFromOSStatus(OSStatus status) {
-  if (base::mac::IsAtLeastOS10_13()) {
-    return CertStatusFromOSStatusAtLeastOS10_13(status);
-  }
-  return CertStatusFromOSStatusAtMostOS10_12(status);
 }
 
 // Creates a series of SecPolicyRefs to be added to a SecTrustRef used to
@@ -1051,14 +955,6 @@ int VerifyWithGivenFlags(X509Certificate* cert,
     CopyCertChainToVerifyResult(completed_chain, verify_result);
   }
 
-  // As of Security Update 2012-002/OS X 10.7.4, when an RSA key < 1024 bits
-  // is encountered, CSSM returns CSSMERR_TP_VERIFY_ACTION_FAILED and adds
-  // CSSMERR_CSP_UNSUPPORTED_KEY_SIZE as a certificate status. Avoid mapping
-  // the CSSMERR_TP_VERIFY_ACTION_FAILED to CERT_STATUS_INVALID if the only
-  // error was due to an unsupported key size.
-  bool policy_failed = false;
-  bool policy_fail_already_mapped = false;
-
   // As of macOS 10.13, if |trust_result| (from SecTrustGetResult) returns
   // kSecTrustResultInvalid, subsequent invocations of SecTrust APIs may
   // result in revalidating the SecTrust. In releases earlier than 10.13, this
@@ -1096,12 +992,7 @@ int VerifyWithGivenFlags(X509Certificate* cert,
       // result in a TP_VERIFY_ACTION_FAILED error. In 10.13+, this error has
       // different semantics, and weak keys can no longer be distinguished
       // as such.
-      if (base::mac::IsAtMostOS10_12() &&
-          cssm_result == CSSMERR_TP_VERIFY_ACTION_FAILED) {
-        policy_failed = true;
-      } else {
-        verify_result->cert_status |= CertStatusFromOSStatus(cssm_result);
-      }
+      verify_result->cert_status |= CertStatusFromOSStatus(cssm_result);
 
       // Walk the chain of error codes in the CSSM_TP_APPLE_EVIDENCE_INFO
       // structure which can catch multiple errors from each certificate.
@@ -1117,45 +1008,10 @@ int VerifyWithGivenFlags(X509Certificate* cert,
                        << "].status_bits is " << chain_info[index].status_bits;
         }
         for (int32_t status_code : chain_info[index].status_codes) {
-          // As of OS X 10.9, attempting to verify a certificate chain that
-          // contains a weak signature algorithm (MD2, MD5) in an intermediate
-          // or leaf cert will be treated as a (recoverable) policy validation
-          // failure, with the status code CSSMERR_TP_INVALID_CERTIFICATE
-          // added to the Status Codes. Don't treat this code as an invalid
-          // certificate; instead, map it to a weak key. Any truly invalid
-          // certificates will have the major error (cssm_result) set to
-          // CSSMERR_TP_INVALID_CERTIFICATE, rather than
-          // CSSMERR_TP_VERIFY_ACTION_FAILED.
-          CertStatus mapped_status = 0;
-          if (policy_failed && status_code == CSSMERR_TP_INVALID_CERTIFICATE) {
-            mapped_status = CERT_STATUS_WEAK_SIGNATURE_ALGORITHM;
-            policy_fail_already_mapped = true;
-          } else if (base::mac::IsOS10_12() && policy_failed &&
-                     (flags & CertVerifyProc::VERIFY_REV_CHECKING_ENABLED) &&
-                     status_code == CSSMERR_TP_VERIFY_ACTION_FAILED) {
-            // On early versions of 10.12, using
-            // kSecRevocationRequirePositiveResponse flag causes a
-            // CSSMERR_TP_VERIFY_ACTION_FAILED status if revocation couldn't be
-            // checked. (Note: even if the cert had no crlDistributionPoints or
-            // OCSP AIA.) This isn't needed on later 10.12 versions, but it
-            // should be mostly harmless.
-            mapped_status = CERT_STATUS_UNABLE_TO_CHECK_REVOCATION;
-            policy_fail_already_mapped = true;
-          } else {
-            mapped_status = CertStatusFromOSStatus(status_code);
-            if (mapped_status == CERT_STATUS_WEAK_KEY) {
-              policy_fail_already_mapped = true;
-            }
-          }
-          verify_result->cert_status |= mapped_status;
+          verify_result->cert_status |= CertStatusFromOSStatus(status_code);
         }
       }
-      if (policy_failed && !policy_fail_already_mapped) {
-        // If CSSMERR_TP_VERIFY_ACTION_FAILED wasn't returned due to a weak
-        // key or problem checking revocation, map it back to an appropriate
-        // error code.
-        verify_result->cert_status |= CertStatusFromOSStatus(cssm_result);
-      }
+
       if (!IsCertStatusError(verify_result->cert_status)) {
         LOG(ERROR) << "cssm_result=" << cssm_result;
         verify_result->cert_status |= CERT_STATUS_INVALID;

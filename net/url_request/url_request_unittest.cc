@@ -10821,12 +10821,6 @@ static bool SystemSupportsOCSPStapling() {
     return true;
 #if BUILDFLAG(IS_ANDROID)
   return false;
-#elif BUILDFLAG(IS_APPLE)
-  // The SecTrustSetOCSPResponse function exists since macOS 10.9+, but does
-  // not actually do anything until 10.12.
-  if (base::mac::IsAtLeastOS10_12())
-    return true;
-  return false;
 #else
   return true;
 #endif
@@ -11496,17 +11490,7 @@ TEST_F(HTTPSEVCRLSetTest, MissingCRLSetAndRevokedOCSP) {
     EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
   } else {
 #if BUILDFLAG(IS_APPLE)
-    if (!base::mac::IsAtLeastOS10_12()) {
-      // On older macOS versions, revocation failures might also end up with
-      // CERT_STATUS_NO_REVOCATION_MECHANISM status added. (See comment for
-      // CSSMERR_APPLETP_INCOMPLETE_REVOCATION_CHECK in CertStatusFromOSStatus.)
-      EXPECT_THAT(
-          cert_status & CERT_STATUS_ALL_ERRORS,
-          AnyOf(CERT_STATUS_REVOKED,
-                CERT_STATUS_NO_REVOCATION_MECHANISM | CERT_STATUS_REVOKED));
-    } else {
-      EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
-    }
+    EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
 #elif BUILDFLAG(IS_WIN)
     EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
 #else
