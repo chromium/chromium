@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
@@ -41,9 +42,6 @@ const CGFloat kHiddenFeedLabelWidth = 250;
 // Insets for header menu button.
 const CGFloat kHeaderMenuButtonInsetTopAndBottom = 2;
 const CGFloat kHeaderMenuButtonInsetSides = 2;
-// The width of the feed content. Currently hard coded in Mulder.
-// TODO(crbug.com/1085419): Get card width from Mulder.
-const CGFloat kDiscoverFeedContentWith = 430;
 // The height of the header container. The content is unaffected.
 // TODO(crbug.com/1277504): Only keep the WC header after launch.
 const CGFloat kWebChannelsHeaderHeight = 52;
@@ -500,7 +498,7 @@ NSInteger kFeedSymbolPointSize = 17;
     [self.container.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [self.container.widthAnchor
-        constraintEqualToConstant:MIN(kDiscoverFeedContentWith,
+        constraintEqualToConstant:MIN(kDiscoverFeedContentWidth,
                                       self.view.frame.size.width)],
     [self.menuButton.trailingAnchor
         constraintEqualToAnchor:self.container.trailingAnchor
