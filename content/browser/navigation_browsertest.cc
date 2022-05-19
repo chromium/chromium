@@ -5932,10 +5932,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   // document is anonymous.
   EXPECT_FALSE(grandchild->anonymous());
   EXPECT_TRUE(grandchild->current_frame_host()->anonymous());
-  // TODO(https://crbug.com/1251084): Fill
-  // navigation_params->anonymous for the initial empty document.
-  EXPECT_EQ(false, EvalJs(grandchild->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(grandchild->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   // The storage key's nonce is the same for all anonymous documents in the same
   // page.
@@ -5982,10 +5980,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   FrameTreeNode* grandchild2 = child->child_at(1);
   EXPECT_FALSE(grandchild2->anonymous());
   EXPECT_TRUE(grandchild2->current_frame_host()->anonymous());
-  // TODO(https://crbug.com/1251084): Fill navigation_params->anonymous for the
-  // initial empty document.
-  EXPECT_EQ(false, EvalJs(grandchild2->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(grandchild2->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
   EXPECT_TRUE(
       grandchild2->current_frame_host()->storage_key().nonce().has_value());
   EXPECT_EQ(anonymous_nonce,

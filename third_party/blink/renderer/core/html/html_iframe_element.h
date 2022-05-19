@@ -59,6 +59,8 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
     return FrameOwnerElementType::kIframe;
   }
 
+  bool Anonymous() const override { return anonymous_; }
+
  private:
   void SetCollapsed(bool) override;
 

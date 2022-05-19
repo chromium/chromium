@@ -257,6 +257,7 @@ void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
   navigation_params->url = KURL(g_empty_string);
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
+  navigation_params->anonymous = InitialEmptyDocumentAnonymous();
 
   // An interesting edge case to consider: A document has:
   // CSP: sandbox allow-popups allow-popups-to-escape-sandbox
@@ -1144,6 +1145,12 @@ void FrameLoader::CommitNavigation(
     policy_container = PolicyContainer::CreateFromWebPolicyContainer(
         std::move(navigation_params->policy_container));
   }
+  // Synchronous navigation to about:blank is not driven by the browser process
+  // and happens after committing an initial empty document. Here, we make sure
+  // it is computed the same way as it was when creating the initial empty
+  // document.
+  if (navigation_params->is_synchronous_commit_for_bug_778318)
+    navigation_params->anonymous = InitialEmptyDocumentAnonymous();
   // TODO(dgozman): get rid of provisional document loader and most of the code
   // below. We should probably call DocumentLoader::CommitNavigation directly.
   DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
@@ -1695,6 +1702,40 @@ FrameLoader::PendingEffectiveSandboxFlags() const {
   } else {
     return frame_->OpenerSandboxFlags();
   }
+}
+
+bool FrameLoader::InitialEmptyDocumentAnonymous() const {
+  Frame* parent = frame_->Tree().Parent();
+  // Top-level FrameTreeNode is never anonymous.
+  if (!parent)
+    return false;
+  // Provisional frame may be created under a remote parent. The value doesn't
+  // really matter, because the provisional frame is an implementation artifact.
+  // It is not visible. This could be removed after provisional frames being
+  // cleaned up. See https://crbug.com/578349.
+  if (frame_->IsProvisional()) {
+    return true;
+  }
+  // During a navigation inside a crashed frame, the browser process may create
+  // a speculative RenderFrame. This will commit an initial empty document under
+  // a remote frame. The real navigation will commit immediately after it.
+  // See https://crbug.com/756790
+  // There are no good way to determine whether this artifact document should be
+  // considered anonymous or not. The "anonymous" flag is pushed by the browser
+  // process during navigation and there are no local/remote replication.
+  // This is used only to reflect `window.isAnonymouslyFramed`.
+  //
+  // TODO(https://crbug.com/1325733) Adding "anonymous" inside
+  // PolicyContainerPolicies would allow the browser process to push a value
+  // here. Consider doing it, if this is worth it.
+  if (!parent->IsLocalFrame()) {
+    return true;
+  }
+
+  // An document should be anonymous when its parent is anonymous. See:
+  // https://wicg.github.io/anonymous-iframe/#initial-window-anonymous
+  return parent->DomWindow()->ToLocalDOMWindow()->isAnonymouslyFramed() ||
+         frame_->Owner()->Anonymous();
 }
 
 void FrameLoader::ModifyRequestForCSP(

@@ -314,6 +314,10 @@ class CORE_EXPORT FrameLoader final {
 
   String ApplyUserAgentOverrideAndLog(const String& user_agent) const;
 
+  // Return the anonymous attribute to use for the initial empty document.
+  // [spec] https://wicg.github.io/anonymous-iframe/#initial-window-anonymous
+  bool InitialEmptyDocumentAnonymous() const;
+
   Member<LocalFrame> frame_;
 
   Member<ProgressTracker> progress_tracker_;

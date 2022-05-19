@@ -4228,10 +4228,8 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
                      "document.body.appendChild(d);"));
   EXPECT_EQ(2U, root->child_count());
   EXPECT_TRUE(root->child_at(1)->anonymous());
-  // TODO(https://crbug.com/1251084): Fill navigation_params->anonymous for the
-  // initial empty document.
-  EXPECT_EQ(false, EvalJs(root->child_at(1)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(1)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   // Setting the attribute via javascript works.
   EXPECT_TRUE(ExecJs(root,
@@ -4240,20 +4238,18 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
                      "document.body.appendChild(g);"));
   EXPECT_EQ(3U, root->child_count());
   EXPECT_TRUE(root->child_at(2)->anonymous());
-  // TODO(https://crbug.com/1251084): Fill navigation_params->anonymous for the
-  // initial empty document.
-  EXPECT_EQ(false, EvalJs(root->child_at(2)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   EXPECT_TRUE(ExecJs(root, "g.anonymous = false;"));
   EXPECT_FALSE(root->child_at(2)->anonymous());
-  EXPECT_EQ(false, EvalJs(root->child_at(2)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 
   EXPECT_TRUE(ExecJs(root, "g.anonymous = true;"));
   EXPECT_TRUE(root->child_at(2)->anonymous());
-  EXPECT_EQ(false, EvalJs(root->child_at(2)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
 }
 
 // This is fenced frames test class differs on from FencedFrameTreeBrowserTest,

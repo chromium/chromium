@@ -6383,7 +6383,7 @@ class RenderFrameHostImplAnonymousIframeBrowserTest
 };
 
 // This test checks that the initial empty document in an anonymous iframe whose
-// parent document is not anonymous is also not anonymous.
+// parent document is not anonymous is anonymous.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
                        InitialEmptyDocumentInAnonymousIframe) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
@@ -6405,8 +6405,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
   EXPECT_EQ(1U, main_rfh->child_count());
   EXPECT_TRUE(main_rfh->child_at(0)->anonymous());
   EXPECT_FALSE(main_rfh->child_at(0)->current_frame_host()->anonymous());
-  EXPECT_EQ(false, EvalJs(main_rfh->child_at(0)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+  EXPECT_EQ(true, EvalJs(main_rfh->child_at(0)->current_frame_host(),
+                         "window.isAnonymouslyFramed"));
   EXPECT_FALSE(main_rfh->child_at(0)
                    ->current_frame_host()
                    ->storage_key()

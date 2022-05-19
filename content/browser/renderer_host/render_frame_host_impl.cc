@@ -1450,7 +1450,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       lifecycle_state_(lifecycle_state),
       inner_tree_main_frame_tree_node_id_(
           FrameTreeNode::kFrameTreeNodeInvalidId),
-      anonymous_(parent_ ? parent_->anonymous() : false),
+      anonymous_(parent_ ? parent_->anonymous() || frame_tree_node_->anonymous()
+                         : false),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
       fenced_frame_status_(
