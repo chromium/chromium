@@ -4015,7 +4015,7 @@
          {}
         ]
        ],
-       "dialog-show-modal-inert-crash.html": [
+       "dialog-showModal-inert-crash.html": [
         "54c2edab6bf81bd8831497e5a8f9c375771ed22e",
         [
          null,
@@ -300221,6 +300221,48 @@
          ]
         }
        },
+       "multiple-globals": {
+        "entry": {
+         "entry.html": [
+          "82fecfdd38ec1c65acf2873bb7fd3e586d80abd3",
+          []
+         ],
+         "target.html": [
+          "5ceaeaf07e52edd4b138b85c62b443a875fd1481",
+          []
+         ]
+        },
+        "incumbent": {
+         "empty.html": [
+          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          []
+         ],
+         "target.html": [
+          "5ceaeaf07e52edd4b138b85c62b443a875fd1481",
+          []
+         ]
+        },
+        "relevant": {
+         "empty.html": [
+          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          []
+         ],
+         "target.html": [
+          "5ceaeaf07e52edd4b138b85c62b443a875fd1481",
+          []
+         ]
+        },
+        "resources": {
+         "context-helper.js": [
+          "dda338b4ccb11a7cdfad5d31c929757cd2687865",
+          []
+         ],
+         "target.js": [
+          "e3a507b0d89dff620231abbcc8ba33d442c60184",
+          []
+         ]
+        }
+       },
        "navigation-unload-form-submit-1.html": [
         "e06def9b20930b8ec705814cbb60d76f2a0cb513",
         []
@@ -322932,7 +322974,7 @@
       []
      ],
      "sandboxed-iframe-locking.html": [
-      "e6a21feecc2796bd6ca71128d53af3820a4a0e70",
+      "9e305a08c125e38cdcd8317d2857ee08b40f5fa7",
       []
      ]
     }
@@ -388709,7 +388751,7 @@
         ]
        ],
        "arithmetic.tentative.html": [
-        "0aa29916bc3e30f2db1b89acd97bc5dde0372c54",
+        "46068cc708e46fd0afee65e607b8bdbd93f73ede",
         [
          null,
          {}
@@ -396697,6 +396739,13 @@
      ],
      "missing-right-token.html": [
       "8fe33a95795354117177f78eae7f1081ef0b1947",
+      [
+       null,
+       {}
+      ]
+     ],
+     "modal-pseudo-class.html": [
+      "94b7b20e6276ca6912caa5b65e60053b935f5b8e",
       [
        null,
        {}
@@ -432205,6 +432254,36 @@
          {}
         ]
        ],
+       "multiple-globals": {
+        "context-for-location-assign.html": [
+         "cb2984d4093286fd44fd8ff85f039a1002ea4814",
+         [
+          null,
+          {}
+         ]
+        ],
+        "context-for-location-href.html": [
+         "02ff214ed526cfa8b8d6d1ba9c47b0bfac02af77",
+         [
+          null,
+          {}
+         ]
+        ],
+        "context-for-location.html": [
+         "fae17dd2ac16fdf40a8c0726c5bae2dc912f0329",
+         [
+          null,
+          {}
+         ]
+        ],
+        "context-for-window-open.html": [
+         "0a391ef28ec5186258a50a7d98924781598e81e5",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "navigate-cross-origin-iframe-to-same-url-with-fragment.html": [
         "ed228ad59b55fa16c2fd22d3f0fdd4b618950989",
         [
@@ -468903,13 +468982,6 @@
          {}
         ]
        ],
-       "dialog-show-modal.html": [
-        "610e66d20112fd217ec91154245debd9a2693600",
-        [
-         null,
-         {}
-        ]
-       ],
        "dialog-showModal-remove.html": [
         "c2350c304249dcb9478e62725936275ec0fda383",
         [
@@ -468918,7 +468990,7 @@
         ]
        ],
        "dialog-showModal.html": [
-        "32f308235eb973feb78d682fe21bc33e4279da3e",
+        "c511631f9fbb71d8d1ad2c12377833928bae95b6",
         [
          null,
          {}
@@ -512966,7 +513038,7 @@
      ]
     ],
     "lock-basic.html": [
-     "f236dc68e786636a59689ae7e151807f6d4fa134",
+     "f0ed5abaac36f39554adab1ca1e56088640c6c48",
      [
       null,
       {
@@ -544911,7 +544983,7 @@
       ]
      ],
      "cross-partition.https.tentative.html": [
-      "952c09cba9902dd18d2de85a63856d3f1263ee61",
+      "0d0718bac0ed75d3e3cc36441f885f12f77e7c9b",
       [
        null,
        {}

@@ -3,6 +3,10 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script>
 test_driver.set_test_context(parent);
+
+// At first, run simple unlock test without lock.
+screen.orientation.unlock();
+
 test_driver.bless("request full screen", async () => {
   await document.documentElement.requestFullscreen();
 
