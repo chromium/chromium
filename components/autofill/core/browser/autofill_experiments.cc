@@ -305,13 +305,9 @@ bool IsCreditCardFidoAuthenticationEnabled() {
   if (base::FeatureList::IsEnabled(features::kAutofillCreditCardAuthentication))
     return true;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  // Better Auth project is fully launched on Windows and Clank.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+  // Better Auth project is fully launched on Windows, Android, and the Mac.
   return true;
-#elif BUILDFLAG(IS_MAC)
-  // Mac OS X 10.12 and earlier has a OS-level bug that causes crashes,
-  // therefore only enable for 10.13+.
-  return base::mac::IsAtLeastOS10_13();
 #else
   return false;
 #endif
