@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
@@ -52,10 +51,6 @@
 #include "ui/base/l10n/time_format.h"
 
 namespace crostini {
-
-// web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
-//     GURL("chrome-untrusted://terminal/html/terminal.html"))
-const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 
 const char kCrostiniImageAliasPattern[] = "debian/%s";
 const char kCrostiniContainerDefaultVersion[] = "bullseye";
@@ -239,8 +234,7 @@ ContainerId ContainerId::GetDefault() {
 }
 
 bool IsUninstallable(Profile* profile, const std::string& app_id) {
-  if (!CrostiniFeatures::Get()->IsEnabled(profile) ||
-      app_id == kCrostiniTerminalSystemAppId) {
+  if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
     return false;
   }
   auto* registry_service =
@@ -357,27 +351,6 @@ void LaunchCrostiniAppWithIntent(Profile* profile,
   if (!CrostiniFeatures::Get()->IsAllowedNow(profile, &reason)) {
     LOG(ERROR) << "Crostini not allowed: " << reason;
     return std::move(callback).Run(false, "Crostini UI not allowed");
-  }
-
-  if (!base::FeatureList::IsEnabled(ash::features::kTerminalSSH) &&
-      app_id == kCrostiniTerminalSystemAppId) {
-    // Terminal supports a single directory as arg.  If it exists, convert it
-    // to an intent file.
-    // TODO(crbug.com/1028898): This can be deleted when TerminalSSH flag
-    // is removed, and we never register terminal as a crostini app.
-    if (!args.empty() &&
-        absl::holds_alternative<storage::FileSystemURL>(args[0])) {
-      if (!intent) {
-        intent = apps::mojom::Intent::New();
-      }
-      intent->files = std::vector<apps::mojom::IntentFilePtr>{};
-      auto file = apps::mojom::IntentFile::New();
-      file->url = absl::get<storage::FileSystemURL>(args[0]).ToGURL();
-      intent->files->push_back(std::move(file));
-    }
-    LaunchTerminalWithIntent(profile, display_id, std::move(intent),
-                             std::move(callback));
-    return;
   }
 
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);

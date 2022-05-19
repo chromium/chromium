@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +25,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,6 +57,10 @@
 #include "ui/native_theme/native_theme.h"
 
 namespace crostini {
+
+// web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+//     GURL("chrome-untrusted://terminal/html/terminal.html"))
+const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 
 const char kTerminalHomePath[] = "html/terminal_home.html";
 
@@ -104,15 +107,14 @@ void LaunchTerminalImpl(Profile* profile,
       // LaunchSystemWebAppAsync.
 
       // Launch without a pinned home tab (settings page).
-      if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH) ||
-          params.disposition == WindowOpenDisposition::NEW_POPUP) {
+      if (params.disposition == WindowOpenDisposition::NEW_POPUP) {
         web_app::LaunchSystemWebAppImpl(
             profile, ash::SystemWebAppType::TERMINAL, url, params);
         return;
       }
 
       // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
-      // For TerminalSSH, if opening a new tab, first pin home tab.
+      // If opening a new tab, first pin home tab.
       full_restore::FullRestoreSaveHandler::GetInstance();
       GURL home(base::StrCat(
           {chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
@@ -135,6 +137,12 @@ void LaunchTerminalImpl(Profile* profile,
 }
 
 }  // namespace
+
+void RemoveTerminalFromRegistry(PrefService* prefs) {
+  DictionaryPrefUpdate update(prefs, guest_os::prefs::kGuestOsRegistry);
+  base::Value* apps = update.Get();
+  apps->RemoveKey(kCrostiniTerminalSystemAppId);
+}
 
 const std::string& GetTerminalDefaultUrl() {
   static const base::NoDestructor<std::string> url(base::StrCat(
@@ -482,11 +490,6 @@ void AddTerminalMenuShortcuts(
     apps::mojom::MenuItemsPtr menu_items,
     apps::mojom::Publisher::GetMenuModelCallback callback,
     std::vector<gfx::ImageSkia> images) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
-    std::move(callback).Run(std::move(menu_items));
-    return;
-  }
-
   ui::ColorProvider* color_provider =
       ui::ColorProviderManager::Get().GetColorProviderFor(
           ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));

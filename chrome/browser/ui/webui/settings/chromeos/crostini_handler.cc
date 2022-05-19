@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -397,10 +398,9 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
 }
 
 void CrostiniHandler::LaunchTerminal(apps::mojom::IntentPtr intent) {
-  crostini::LaunchCrostiniAppWithIntent(
-      profile_, crostini::kCrostiniTerminalSystemAppId,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      std::move(intent));
+  crostini::LaunchTerminalWithIntent(
+      profile_, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      std::move(intent), base::DoNothing());
 }
 
 void CrostiniHandler::HandleRequestContainerUpgradeView(

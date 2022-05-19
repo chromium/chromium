@@ -693,8 +693,6 @@ ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   info.SetBoolKey("tmux_integration",
                   base::FeatureList::IsEnabled(
                       chromeos::features::kTerminalTmuxIntegration));
-  info.SetBoolKey(
-      "ssh", base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
   return RespondNow(OneArgument(std::move(info)));
 }
 

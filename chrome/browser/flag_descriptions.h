@@ -3083,9 +3083,6 @@ extern const char kQuickSettingsNetworkRevampDescription[];
 extern const char kTerminalDevName[];
 extern const char kTerminalDevDescription[];
 
-extern const char kTerminalSSHName[];
-extern const char kTerminalSSHDescription[];
-
 extern const char kTerminalTmuxIntegrationName[];
 extern const char kTerminalTmuxIntegrationDescription[];
 

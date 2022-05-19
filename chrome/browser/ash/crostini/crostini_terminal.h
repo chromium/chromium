@@ -18,6 +18,10 @@ class Profile;
 
 namespace crostini {
 
+// web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
+//     GURL("chrome-untrusted://terminal/html/terminal.html"))
+extern const char kCrostiniTerminalSystemAppId[];
+
 extern const char kTerminalHomePath[];
 
 extern const char kShortcutKey[];
@@ -104,6 +108,9 @@ enum class TerminalSetting {
   kThemeVariations = 72,
   kMaxValue = kThemeVariations,
 };
+
+// Remove Terminal app id from crostini.registry.<terminal-app-id>.
+void RemoveTerminalFromRegistry(PrefService* prefs);
 
 const std::string& GetTerminalDefaultUrl();
 

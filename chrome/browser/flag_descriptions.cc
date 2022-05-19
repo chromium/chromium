@@ -5394,10 +5394,6 @@ const char kTerminalDevDescription[] =
     "Enables Terminal System App to load from Downloads for developer testing. "
     "Only works in dev and canary channels.";
 
-const char kTerminalSSHName[] = "Terminal SSH tabs";
-const char kTerminalSSHDescription[] =
-    "Enables SSH tabs in the Terminal System App.";
-
 const char kTerminalTmuxIntegrationName[] = "Terminal tmux integration";
 const char kTerminalTmuxIntegrationDescription[] =
     "Enables integration with tmux control mode (tmux -CC) in the Terminal "

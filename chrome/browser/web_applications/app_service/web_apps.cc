@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -29,7 +28,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/bind.h"
@@ -38,7 +36,6 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -115,10 +112,6 @@ void WebApps::Shutdown() {
 const WebApp* WebApps::GetWebApp(const AppId& app_id) const {
   DCHECK(provider_);
   return provider_->registrar().GetAppById(app_id);
-}
-
-bool WebApps::Accepts(const std::string& app_id) const {
-  return WebAppPublisherHelper::Accepts(app_id);
 }
 
 void WebApps::Initialize(
@@ -317,9 +310,7 @@ std::vector<apps::AppPtr> WebApps::CreateWebApps() {
 
   std::vector<apps::AppPtr> apps;
   for (const WebApp& web_app : provider_->registrar().GetApps()) {
-    if (Accepts(web_app.app_id())) {
-      apps.push_back(publisher_helper().CreateWebApp(&web_app));
-    }
+    apps.push_back(publisher_helper().CreateWebApp(&web_app));
   }
   return apps;
 }
@@ -331,9 +322,7 @@ void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
   }
 
   for (const WebApp& web_app : provider_->registrar().GetApps()) {
-    if (Accepts(web_app.app_id())) {
-      apps_out->push_back(publisher_helper().ConvertWebApp(&web_app));
-    }
+    apps_out->push_back(publisher_helper().ConvertWebApp(&web_app));
   }
 }
 
@@ -424,7 +413,6 @@ void WebApps::GetMenuModel(const std::string& app_id,
   }
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
     crostini::AddTerminalMenuItems(profile_, &menu_items);
   }
 
@@ -445,7 +433,6 @@ void WebApps::GetMenuModel(const std::string& app_id,
   }
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
     crostini::AddTerminalMenuShortcuts(profile_, ash::LAUNCH_APP_SHORTCUT_FIRST,
                                        std::move(menu_items),
                                        std::move(callback));
@@ -540,7 +527,6 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
     if (crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
                                                      display_id)) {
       return;

@@ -1407,10 +1407,6 @@ const base::Feature kTelemetryExtension{"TelemetryExtension",
 const base::Feature kTerminalDev{"TerminalDev",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables SSH tabs in the Terminal System App.
-const base::Feature kTerminalSSH{"TerminalSSH",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables tmux integration in the Terminal System App.
 const base::Feature kTerminalTmuxIntegration{"TerminalTmuxIntegration",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

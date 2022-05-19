@@ -25,7 +25,9 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -291,7 +293,13 @@ class AppPlatformMetricsServiceTest : public testing::Test,
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,
            true /* should_notify_initialized */);
 
-    AddApp(cache, /*app_id=*/crostini::kCrostiniTerminalSystemAppId,
+    vm_tools::apps::ApplicationList app_list =
+        crostini::CrostiniTestHelper::BasicAppList("test");
+    guest_os::GuestOsRegistryServiceFactory::GetForProfile(
+        testing_profile_.get())
+        ->UpdateApplicationList(app_list);
+    AddApp(cache, /*app_id=*/
+           crostini::CrostiniTestHelper::GenerateAppId("test"),
            AppType::kCrostini, "", Readiness::kReady, InstallReason::kUser,
            InstallSource::kUnknown, true /* should_notify_initialized */);
 
@@ -2038,9 +2046,9 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeV2Histogram(2, AppTypeNameV2::kBorealis);
 
   proxy->Launch(
-      /*app_id=*/crostini::kCrostiniTerminalSystemAppId, ui::EF_NONE,
-      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
-  VerifyAppsLaunchUkm("app://CrostiniTerminal/Terminal", AppTypeName::kCrostini,
+      /*app_id=*/crostini::CrostiniTestHelper::GenerateAppId("test"),
+      ui::EF_NONE, apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://test/test", AppTypeName::kCrostini,
                       apps::mojom::LaunchSource::kFromChromeInternal);
 
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kCrostini);
@@ -2169,13 +2177,6 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
 TEST_P(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
-
-  proxy->UninstallSilently(
-      /*app_id=*/crostini::kCrostiniTerminalSystemAppId,
-      apps::mojom::UninstallSource::kAppList);
-  VerifyAppsUninstallUkm("app://CrostiniTerminal/Terminal",
-                         AppTypeName::kCrostini,
-                         apps::mojom::UninstallSource::kAppList);
 
   proxy->UninstallSilently(
       /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);

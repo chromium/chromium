@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_path.h"
@@ -18,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -716,10 +714,7 @@ TEST_F(WebAppBuilderDemoModeTest, WebAppListOffline) {
 
 class CrostiniAppTest : public AppServiceAppModelBuilderTest {
  public:
-  CrostiniAppTest() {
-    features_.InitWithFeatures({ash::features::kTerminalSSH}, {});
-  }
-
+  CrostiniAppTest() = default;
   ~CrostiniAppTest() override {}
 
   CrostiniAppTest(const CrostiniAppTest&) = delete;
@@ -778,8 +773,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
       existing_item_ids.emplace_back(pair.first);
     }
     for (const std::string& id : existing_item_ids) {
-      if (id == ash::kCrostiniFolderId ||
-          id == crostini::kCrostiniTerminalSystemAppId) {
+      if (id == ash::kCrostiniFolderId) {
         continue;
       }
       sync_service_->RemoveItem(id, /*is_uninstall=*/false);
@@ -818,7 +812,6 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
 
   std::unique_ptr<app_list::AppListSyncableService> sync_service_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
-  base::test::ScopedFeatureList features_;
 
  private:
   std::unique_ptr<

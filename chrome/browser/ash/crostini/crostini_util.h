@@ -37,10 +37,6 @@ class Profile;
 
 namespace crostini {
 
-// web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
-//     GURL("chrome-untrusted://terminal/html/terminal.html"))
-extern const char kCrostiniTerminalSystemAppId[];
-
 extern const char kCrostiniImageAliasPattern[];
 extern const char kCrostiniContainerDefaultVersion[];
 extern const char kCrostiniContainerFlag[];

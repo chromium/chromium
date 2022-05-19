@@ -5748,11 +5748,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "terminal-ssh",
-    "owners": [ "lxj@google.com", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "terminal-tmux-integration",
     "owners": [ "lxj", "easy", "//chrome/browser/ash/guest_os/OWNERS" ],
     "expiry_milestone": 106

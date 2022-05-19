@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -60,10 +58,6 @@ class Waiter : public BrowserListObserver {
 // which allows us to test app menu with either windows or tabs (shift click).
 class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
  protected:
-  AppShortcutShelfItemControllerBrowserTest() {
-    features_.InitWithFeatures({ash::features::kTerminalSSH}, {});
-  }
-
   void SetUpOnMainThread() override {
     controller_ = ChromeShelfController::instance();
     ASSERT_TRUE(controller_);
@@ -98,7 +92,6 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
 
   web_app::AppId app_id_;
   ash::ShelfID app_shelf_id_;
-  base::test::ScopedFeatureList features_;
 };
 
 // Test interacting with the app menu without shift key down: the app menu has

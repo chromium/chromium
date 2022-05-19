@@ -2247,9 +2247,7 @@ TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
   testing_profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                            true);
   scoped_feature_list_.InitWithFeatures(
-      {features::kCrostiniAdditionalEnterpriseReporting,
-       ash::features::kTerminalSSH},
-      {});
+      {features::kCrostiniAdditionalEnterpriseReporting}, {});
 
   const std::string desktop_file_id = "vim";
   const std::string package_id =

@@ -6,9 +6,7 @@
 
 #include <stddef.h>
 
-#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -34,7 +32,6 @@ namespace guest_os {
 class GuestOsRegistryServiceTest : public testing::Test {
  public:
   GuestOsRegistryServiceTest() : crostini_test_helper_(&profile_) {
-    features_.InitWithFeatures({ash::features::kTerminalSSH}, {});
     RecreateService();
   }
 
@@ -85,7 +82,6 @@ class GuestOsRegistryServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   crostini::CrostiniTestHelper crostini_test_helper_;
-  base::test::ScopedFeatureList features_;
 
   std::unique_ptr<GuestOsRegistryService> service_;
 };
@@ -265,9 +261,6 @@ TEST_F(GuestOsRegistryServiceTest, NAppsInstalledHistogram) {
   App app5 = crostini::CrostiniTestHelper::BasicApp("no display app 5");
   app5.set_no_display(true);
   *app_list.add_apps() = app5;
-
-  // Force the registry to have a prefs entry for the Terminal.
-  service()->AppLaunched(crostini::kCrostiniTerminalSystemAppId);
 
   // Update the list of apps so that they can be counted.
   service()->UpdateApplicationList(app_list);

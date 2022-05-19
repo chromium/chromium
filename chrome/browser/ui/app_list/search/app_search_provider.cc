@@ -29,8 +29,6 @@
 #include "base/time/clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,10 +61,6 @@ constexpr double kEps = 1e-5;
 // The minimum capacity we reserve in the Apps container which will be filled
 // with extensions and ARC apps, to avoid successive reallocation.
 constexpr size_t kMinimumReservedAppsContainerCapacity = 60U;
-
-// Relevance threshold to use when Crostini has not yet been enabled. This value
-// is somewhat arbitrary, but is roughly equivalent to the 'ter' in 'terminal'.
-constexpr double kCrostiniTerminalRelevanceThreshold = 0.8;
 
 // Parameters for FuzzyTokenizedStringMatch.
 constexpr bool kUsePrefixOnly = false;
@@ -373,15 +367,6 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
           !update.Paused().value_or(false) &&
           update.Readiness() != apps::Readiness::kDisabledByPolicy);
       apps_vector->back()->set_searchable(update.Searchable().value_or(false));
-
-      // Until it's been installed, the Crostini Terminal is hidden and
-      // requires a few characters before being shown in search results.
-      if (update.AppId() == crostini::kCrostiniTerminalSystemAppId &&
-          !crostini::CrostiniFeatures::Get()->IsEnabled(profile())) {
-        apps_vector->back()->set_recommendable(false);
-        apps_vector->back()->set_relevance_threshold(
-            kCrostiniTerminalRelevanceThreshold);
-      }
 
       for (const std::string& term : update.AdditionalSearchTerms()) {
         apps_vector->back()->AddSearchableText(base::UTF8ToUTF16(term));

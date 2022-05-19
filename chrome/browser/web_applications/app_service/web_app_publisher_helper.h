@@ -135,9 +135,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   ConvertUninstallSourceToWebAppUninstallSource(
       apps::mojom::UninstallSource uninstall_source);
 
-  // Returns true if the app is published as a web app.
-  static bool Accepts(const std::string& app_id);
-
   // Must be called before profile keyed services are destroyed.
   void Shutdown();
 

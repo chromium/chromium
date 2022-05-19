@@ -319,6 +319,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/cryptauth/client_app_metadata_provider_service.h"
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider_impl.h"
@@ -1885,6 +1886,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 05/2022
   profile_prefs->ClearPref(kAccessCodeCastDiscoveredNetworks);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 05/2022.
+  // TODO(crbug.com/1028898): Remove after M110.
+  crostini::RemoveTerminalFromRegistry(profile_prefs);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

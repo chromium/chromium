@@ -7,7 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"

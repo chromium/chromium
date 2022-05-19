@@ -69,8 +69,6 @@ class WebApps : public apps::PublisherBase,
  protected:
   const WebApp* GetWebApp(const AppId& app_id) const;
 
-  bool Accepts(const std::string& app_id) const;
-
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;
   }

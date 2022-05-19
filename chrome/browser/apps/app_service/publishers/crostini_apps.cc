@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -45,8 +44,7 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
                                       int64_t display_id) {
   // The default terminal app is crosh in a Chrome window and it doesn't run in
   // the Crostini container so it doesn't support display density the same way.
-  if (menu_type != apps::mojom::MenuType::kShelf ||
-      app_id == crostini::kCrostiniTerminalSystemAppId) {
+  if (menu_type != apps::mojom::MenuType::kShelf) {
     return false;
   }
 
@@ -63,10 +61,7 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
 namespace apps {
 
 CrostiniApps::CrostiniApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy),
-      profile_(proxy->profile()),
-      registry_(nullptr),
-      crostini_enabled_(false) {}
+    : AppPublisher(proxy), profile_(proxy->profile()), registry_(nullptr) {}
 
 CrostiniApps::~CrostiniApps() {
   if (registry_) {
@@ -83,16 +78,8 @@ void CrostiniApps::Initialize() {
   if (!registry_) {
     return;
   }
-  crostini_enabled_ = crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
 
   registry_->AddObserver(this);
-
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(profile_->GetPrefs());
-  pref_change_registrar_->Add(
-      crostini::prefs::kCrostiniEnabled,
-      base::BindRepeating(&CrostiniApps::OnCrostiniEnabledChanged,
-                          base::Unretained(this)));
 
   PublisherBase::Initialize(proxy()->AppService(),
                             apps::mojom::AppType::kCrostini);
@@ -137,15 +124,6 @@ void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
   }
   // TODO(crbug.com/1244506): Add launch return value.
   std::move(callback).Run(LaunchResult());
-}
-
-void CrostiniApps::LaunchShortcut(const std::string& app_id,
-                                  const std::string& shortcut_id,
-                                  int64_t display_id) {
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
-                                                 display_id);
-  }
 }
 
 void CrostiniApps::Connect(
@@ -236,10 +214,6 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
   }
 
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    crostini::AddTerminalMenuItems(profile_, &menu_items);
-  }
-
   if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
     AddCommandItem(ash::MENU_OPEN_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                    &menu_items);
@@ -267,23 +241,7 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
     }
   }
 
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    crostini::AddTerminalMenuShortcuts(profile_, ash::LAUNCH_APP_SHORTCUT_FIRST,
-                                       std::move(menu_items),
-                                       std::move(callback));
-  } else {
-    std::move(callback).Run(std::move(menu_items));
-  }
-}
-
-void CrostiniApps::ExecuteContextMenuCommand(const std::string& app_id,
-                                             int command_id,
-                                             const std::string& shortcut_id,
-                                             int64_t display_id) {
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
-                                                 display_id);
-  }
+  std::move(callback).Run(std::move(menu_items));
 }
 
 void CrostiniApps::OnRegistryUpdated(
@@ -330,36 +288,6 @@ void CrostiniApps::OnRegistryUpdated(
   }
 }
 
-void CrostiniApps::OnCrostiniEnabledChanged() {
-  crostini_enabled_ =
-      profile_ && crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
-  auto show = crostini_enabled_ ? apps::mojom::OptionalBool::kTrue
-                                : apps::mojom::OptionalBool::kFalse;
-
-  if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
-    // If they don't have the terminal app for ssh, then we need to update the
-    // terminal's registration when Crostini is installed/uninstalled.
-    // It is the entry point to installing other Crostini apps, and is always in
-    // search, but should only show up elsewhere when installed.
-    apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-    mojom_app->app_type = apps::mojom::AppType::kCrostini;
-    mojom_app->app_id = crostini::kCrostiniTerminalSystemAppId;
-    mojom_app->show_in_launcher = show;
-    mojom_app->show_in_shelf = show;
-    mojom_app->show_in_search = apps::mojom::OptionalBool::kTrue;
-    mojom_app->handles_intents = show;
-    PublisherBase::Publish(std::move(mojom_app), subscribers_);
-
-    auto app = std::make_unique<App>(AppType::kCrostini,
-                                     crostini::kCrostiniTerminalSystemAppId);
-    app->show_in_launcher = crostini_enabled_;
-    app->show_in_shelf = crostini_enabled_;
-    app->show_in_search = true;
-    app->handles_intents = crostini_enabled_;
-    AppPublisher::Publish(std::move(app));
-  }
-}
-
 AppPtr CrostiniApps::CreateApp(
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool generate_new_icon_key) {
@@ -380,36 +308,17 @@ AppPtr CrostiniApps::CreateApp(
   }
 
   if (generate_new_icon_key) {
-    if (registration.app_id() == crostini::kCrostiniTerminalSystemAppId) {
-      // Treat the Crostini Terminal as a special case, loading an icon defined
-      // by a resource instead of asking the Crostini VM (or the cache of
-      // previous responses from the Crostini VM). Presumably this is for
-      // bootstrapping: the Crostini Terminal icon (the UI for enabling and
-      // installing Crostini apps) should be showable even before the user has
-      // installed their first Crostini app and before bringing up an Crostini
-      // VM for the first time.
-      app->icon_key = IconKey(IconKey::kDoesNotChangeOverTime,
-                              IDR_LOGO_CROSTINI_TERMINAL, IconEffects::kNone);
-    } else {
-      app->icon_key = std::move(
-          *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
-    }
+    app->icon_key = std::move(
+        *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
   }
 
   app->last_launch_time = registration.LastLaunchTime();
   app->install_time = registration.InstallTime();
 
   auto show = !registration.NoDisplay();
-  auto show_in_search = show;
-  if (registration.app_id() == crostini::kCrostiniTerminalSystemAppId) {
-    show = crostini_enabled_;
-    // The Crostini Terminal should appear in the app search, even when
-    // Crostini is not installed.
-    show_in_search = true;
-  }
   app->show_in_launcher = show;
-  app->show_in_search = show_in_search;
-  app->show_in_shelf = show_in_search;
+  app->show_in_search = show;
+  app->show_in_shelf = show;
   // TODO(crbug.com/955937): Enable once Crostini apps are managed inside App
   // Management.
   app->show_in_management = false;
@@ -452,17 +361,9 @@ apps::mojom::AppPtr CrostiniApps::Convert(
   if (registration.NoDisplay()) {
     show = apps::mojom::OptionalBool::kFalse;
   }
-  auto show_in_search = show;
-  if (registration.app_id() == crostini::kCrostiniTerminalSystemAppId) {
-    show = crostini_enabled_ ? apps::mojom::OptionalBool::kTrue
-                             : apps::mojom::OptionalBool::kFalse;
-    // The Crostini Terminal should appear in the app search, even when
-    // Crostini is not installed.
-    show_in_search = apps::mojom::OptionalBool::kTrue;
-  }
   app->show_in_launcher = show;
-  app->show_in_search = show_in_search;
-  app->show_in_shelf = show_in_search;
+  app->show_in_search = show;
+  app->show_in_shelf = show;
   // TODO(crbug.com/955937): Enable once Crostini apps are managed inside App
   // Management.
   app->show_in_management = apps::mojom::OptionalBool::kFalse;
@@ -477,19 +378,6 @@ apps::mojom::AppPtr CrostiniApps::Convert(
 
 apps::mojom::IconKeyPtr CrostiniApps::NewIconKey(const std::string& app_id) {
   DCHECK(!app_id.empty());
-
-  // Treat the Crostini Terminal as a special case, loading an icon defined by
-  // a resource instead of asking the Crostini VM (or the cache of previous
-  // responses from the Crostini VM). Presumably this is for bootstrapping: the
-  // Crostini Terminal icon (the UI for enabling and installing Crostini apps)
-  // should be showable even before the user has installed their first Crostini
-  // app and before bringing up an Crostini VM for the first time.
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    return apps::mojom::IconKey::New(
-        apps::mojom::IconKey::kDoesNotChangeOverTime,
-        IDR_LOGO_CROSTINI_TERMINAL, apps::IconEffects::kNone);
-  }
-
   auto icon_effects = IconEffects::kCrOsStandardIcon;
   return icon_key_factory_.MakeIconKey(icon_effects);
 }

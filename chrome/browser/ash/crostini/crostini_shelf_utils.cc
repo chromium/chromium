@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
@@ -72,9 +70,6 @@ FindAppIdResult FindAppId(const base::Value* prefs,
                           bool ignore_space = false) {
   result->clear();
   for (const auto item : prefs->DictItems()) {
-    if (item.first == kCrostiniTerminalSystemAppId)
-      continue;
-
     if (require_startup_notify &&
         !item.second
              .FindKeyOfType(guest_os::prefs::kAppStartupNotifyKey,
@@ -230,10 +225,6 @@ bool IsUnmatchedCrostiniShelfAppId(base::StringPiece shelf_app_id) {
 bool IsCrostiniShelfAppId(const Profile* profile,
                           base::StringPiece shelf_app_id) {
   if (IsUnmatchedCrostiniShelfAppId(shelf_app_id)) {
-    return true;
-  }
-  if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH) &&
-      shelf_app_id == kCrostiniTerminalSystemAppId) {
     return true;
   }
 
