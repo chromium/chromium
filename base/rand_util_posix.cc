@@ -77,10 +77,8 @@ void RandBytes(void* output, size_t output_length) {
 #elif BUILDFLAG(IS_MAC)
   // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives
   // in its SDK.
-  if (__builtin_available(macOS 10.12, *)) {
-    if (getentropy(output, output_length) == 0) {
-      return;
-    }
+  if (getentropy(output, output_length) == 0) {
+    return;
   }
 #endif
 

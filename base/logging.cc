@@ -40,30 +40,11 @@ typedef HANDLE FileHandle;
 #define STDERR_FILENO 2
 
 #elif BUILDFLAG(IS_APPLE)
-// In MacOS 10.12 and iOS 10.0 and later ASL (Apple System Log) was deprecated
-// in favor of OS_LOG (Unified Logging).
-#include <AvailabilityMacros.h>
-#if BUILDFLAG(IS_IOS)
-#if !defined(__IPHONE_10_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
-#define USE_ASL
-#endif
-#else  // BUILDFLAG(IS_IOS)
-#if !defined(MAC_OS_X_VERSION_10_12) || \
-    MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_12
-#define USE_ASL
-#endif
-#endif  // BUILDFLAG(IS_IOS)
-
-#if defined(USE_ASL)
-#include <asl.h>
-#else
-#include <os/log.h>
-#endif
-
 #include <CoreFoundation/CoreFoundation.h>
+#include <mach-o/dyld.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
-#include <mach-o/dyld.h>
+#include <os/log.h>
 
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_NACL)
@@ -647,10 +628,9 @@ LogMessage::~LogMessage() {
     OutputDebugStringA(str_newline.c_str());
 #elif BUILDFLAG(IS_APPLE)
     // In LOG_TO_SYSTEM_DEBUG_LOG mode, log messages are always written to
-    // stderr. If stderr is /dev/null, also log via ASL (Apple System Log) or
-    // its successor OS_LOG. If there's something weird about stderr, assume
-    // that log messages are going nowhere and log via ASL/OS_LOG too.
-    // Messages logged via ASL/OS_LOG show up in Console.app.
+    // stderr. If stderr is /dev/null, also log via os_log. If there's something
+    // weird about stderr, assume that log messages are going nowhere and log
+    // via os_log too. Messages logged via os_log show up in Console.app.
     //
     // Programs started by launchd, as UI applications normally are, have had
     // stderr connected to /dev/null since OS X 10.8. Prior to that, stderr was
@@ -658,15 +638,10 @@ LogMessage::~LogMessage() {
     // 10.7.5 launchd-392.39/launchd/src/launchd_core_logic.c).
     //
     // Another alternative would be to determine whether stderr is a pipe to
-    // launchd and avoid logging via ASL only in that case. See 10.7.5
+    // launchd and avoid logging via os_log only in that case. See 10.7.5
     // CF-635.21/CFUtilities.c also_do_stderr(). This would result in logging to
-    // both stderr and ASL/OS_LOG even in tests, where it's undesirable to log
-    // to the system log at all.
-    //
-    // Note that the ASL client by default discards messages whose levels are
-    // below ASL_LEVEL_NOTICE. It's possible to change that with
-    // asl_set_filter(), but this is pointless because syslogd normally applies
-    // the same filter.
+    // both stderr and os_log even in tests, where it's undesirable to log to
+    // the system log at all.
     const bool log_to_system = []() {
       struct stat stderr_stat;
       if (fstat(fileno(stderr), &stderr_stat) == -1) {
@@ -694,72 +669,7 @@ LogMessage::~LogMessage() {
       std::string main_bundle_id =
           main_bundle_id_cf ? base::SysCFStringRefToUTF8(main_bundle_id_cf)
                             : std::string("");
-#if defined(USE_ASL)
-      // The facility is set to the main bundle ID if available. Otherwise,
-      // "com.apple.console" is used.
-      const class ASLClient {
-       public:
-        explicit ASLClient(const std::string& facility)
-            : client_(asl_open(nullptr, facility.c_str(), ASL_OPT_NO_DELAY)) {}
-        ASLClient(const ASLClient&) = delete;
-        ASLClient& operator=(const ASLClient&) = delete;
-        ~ASLClient() { asl_close(client_); }
 
-        aslclient get() const { return client_; }
-
-       private:
-        aslclient client_;
-      } asl_client(main_bundle_id.empty() ? main_bundle_id
-                                          : "com.apple.console");
-
-      const class ASLMessage {
-       public:
-        ASLMessage() : message_(asl_new(ASL_TYPE_MSG)) {}
-        ASLMessage(const ASLMessage&) = delete;
-        ASLMessage& operator=(const ASLMessage&) = delete;
-        ~ASLMessage() { asl_free(message_); }
-
-        aslmsg get() const { return message_; }
-
-       private:
-        aslmsg message_;
-      } asl_message;
-
-      // By default, messages are only readable by the admin group. Explicitly
-      // make them readable by the user generating the messages.
-      char euid_string[12];
-      snprintf(euid_string, std::size(euid_string), "%d", geteuid());
-      asl_set(asl_message.get(), ASL_KEY_READ_UID, euid_string);
-
-      // Map Chrome log severities to ASL log levels.
-      const char* const asl_level_string = [](LogSeverity severity) {
-        // ASL_LEVEL_* are ints, but ASL needs equivalent strings. This
-        // non-obvious two-step macro trick achieves what's needed.
-        // https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
-#define ASL_LEVEL_STR(level) ASL_LEVEL_STR_X(level)
-#define ASL_LEVEL_STR_X(level) #level
-        switch (severity) {
-          case LOGGING_INFO:
-            return ASL_LEVEL_STR(ASL_LEVEL_INFO);
-          case LOGGING_WARNING:
-            return ASL_LEVEL_STR(ASL_LEVEL_WARNING);
-          case LOGGING_ERROR:
-            return ASL_LEVEL_STR(ASL_LEVEL_ERR);
-          case LOGGING_FATAL:
-            return ASL_LEVEL_STR(ASL_LEVEL_CRIT);
-          default:
-            return severity < 0 ? ASL_LEVEL_STR(ASL_LEVEL_DEBUG)
-                                : ASL_LEVEL_STR(ASL_LEVEL_NOTICE);
-        }
-#undef ASL_LEVEL_STR
-#undef ASL_LEVEL_STR_X
-      }(severity_);
-      asl_set(asl_message.get(), ASL_KEY_LEVEL, asl_level_string);
-
-      asl_set(asl_message.get(), ASL_KEY_MSG, str_newline.c_str());
-
-      asl_send(asl_client.get(), asl_message.get());
-#else   // !defined(USE_ASL)
       const class OSLog {
        public:
         explicit OSLog(const char* subsystem)
@@ -795,7 +705,6 @@ LogMessage::~LogMessage() {
       }(severity_);
       os_log_with_type(log.get(), os_log_type, "%{public}s",
                        str_newline.c_str());
-#endif  // defined(USE_ASL)
     }
 #elif BUILDFLAG(IS_ANDROID)
     android_LogPriority priority =
