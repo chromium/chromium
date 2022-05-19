@@ -976,7 +976,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
 }
 
 template <bool thread_safe>
-void* PartitionRoot<thread_safe>::ReallocWithFlags(int flags,
+void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
                                                    void* ptr,
                                                    size_t new_size,
                                                    const char* type_name) {

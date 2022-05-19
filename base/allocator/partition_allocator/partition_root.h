@@ -419,7 +419,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   //
   // NOTE: This is incompatible with anything that adds extras before the
   // returned pointer, such as ref-count.
-  ALWAYS_INLINE void* AlignedAllocWithFlags(int flags,
+  ALWAYS_INLINE void* AlignedAllocWithFlags(unsigned int flags,
                                             size_t alignment,
                                             size_t requested_size);
 
@@ -431,7 +431,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // "vanilla" callers.
   NOINLINE PA_MALLOC_FN void* Alloc(size_t requested_size,
                                     const char* type_name) PA_MALLOC_ALIGNED;
-  ALWAYS_INLINE PA_MALLOC_FN void* AllocWithFlags(int flags,
+  ALWAYS_INLINE PA_MALLOC_FN void* AllocWithFlags(unsigned int flags,
                                                   size_t requested_size,
                                                   const char* type_name)
       PA_MALLOC_ALIGNED;
@@ -442,7 +442,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // alignment, otherwise a sub-optimial allocation strategy is used to
   // guarantee the higher-order alignment.
   ALWAYS_INLINE PA_MALLOC_FN void* AllocWithFlagsInternal(
-      int flags,
+      unsigned int flags,
       size_t requested_size,
       size_t slot_span_alignment,
       const char* type_name) PA_MALLOC_ALIGNED;
@@ -456,7 +456,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // for the malloc() case, the compiler correctly removes the branch, since
   // this is marked |ALWAYS_INLINE|.
   ALWAYS_INLINE PA_MALLOC_FN void* AllocWithFlagsNoHooks(
-      int flags,
+      unsigned int flags,
       size_t requested_size,
       size_t slot_span_alignment) PA_MALLOC_ALIGNED;
 
@@ -468,7 +468,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   NOINLINE void* TryRealloc(void* ptr,
                             size_t new_size,
                             const char* type_name) PA_MALLOC_ALIGNED;
-  NOINLINE void* ReallocWithFlags(int flags,
+  NOINLINE void* ReallocWithFlags(unsigned int flags,
                                   void* ptr,
                                   size_t new_size,
                                   const char* type_name) PA_MALLOC_ALIGNED;
@@ -789,13 +789,13 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // - |usable_size| and |is_already_zeroed| are output only. |usable_size| is
   //   guaranteed to be larger or equal to AllocWithFlags()'s |requested_size|.
   ALWAYS_INLINE uintptr_t RawAlloc(Bucket* bucket,
-                                   int flags,
+                                   unsigned int flags,
                                    size_t raw_size,
                                    size_t slot_span_alignment,
                                    size_t* usable_size,
                                    bool* is_already_zeroed);
   ALWAYS_INLINE uintptr_t AllocFromBucket(Bucket* bucket,
-                                          int flags,
+                                          unsigned int flags,
                                           size_t raw_size,
                                           size_t slot_span_alignment,
                                           size_t* usable_size,
@@ -1002,7 +1002,7 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
 template <bool thread_safe>
 ALWAYS_INLINE uintptr_t
 PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
-                                            int flags,
+                                            unsigned int flags,
                                             size_t raw_size,
                                             size_t slot_span_alignment,
                                             size_t* usable_size,
@@ -1604,7 +1604,7 @@ ALWAYS_INLINE uint16_t PartitionRoot<thread_safe>::SizeToBucketIndex(
 
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlags(
-    int flags,
+    unsigned int flags,
     size_t requested_size,
     const char* type_name) {
   return AllocWithFlagsInternal(flags, requested_size,
@@ -1613,7 +1613,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlags(
 
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsInternal(
-    int flags,
+    unsigned int flags,
     size_t requested_size,
     size_t slot_span_alignment,
     const char* type_name) {
@@ -1658,7 +1658,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsInternal(
 
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
-    int flags,
+    unsigned int flags,
     size_t requested_size,
     size_t slot_span_alignment) {
   PA_DCHECK(
@@ -1847,7 +1847,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
 template <bool thread_safe>
 ALWAYS_INLINE uintptr_t
 PartitionRoot<thread_safe>::RawAlloc(Bucket* bucket,
-                                     int flags,
+                                     unsigned int flags,
                                      size_t raw_size,
                                      size_t slot_span_alignment,
                                      size_t* usable_size,
@@ -1859,7 +1859,7 @@ PartitionRoot<thread_safe>::RawAlloc(Bucket* bucket,
 
 template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocWithFlags(
-    int flags,
+    unsigned int flags,
     size_t alignment,
     size_t requested_size) {
   // Aligned allocation support relies on the natural alignment guarantees of

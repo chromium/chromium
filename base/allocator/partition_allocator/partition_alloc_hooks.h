@@ -25,7 +25,7 @@ class BASE_EXPORT PartitionAllocHooks {
   // If it returns true, the allocation has been overridden with the pointer in
   // *out.
   typedef bool AllocationOverrideHook(void** out,
-                                      int flags,
+                                      unsigned int flags,
                                       size_t size,
                                       const char* type_name);
   // If it returns true, then the allocation was overridden and has been freed.
@@ -52,7 +52,7 @@ class BASE_EXPORT PartitionAllocHooks {
                                               size_t size,
                                               const char* type_name);
   static bool AllocationOverrideHookIfEnabled(void** out,
-                                              int flags,
+                                              unsigned int flags,
                                               size_t size,
                                               const char* type_name);
 

@@ -166,7 +166,7 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
 template <bool thread_safe>
 SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     PartitionRoot<thread_safe>* root,
-    int flags,
+    unsigned int flags,
     size_t raw_size,
     size_t slot_span_alignment) {
   using ::partition_alloc::internal::ScopedUnlockGuard;
@@ -562,7 +562,7 @@ void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
 template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
-                                               int flags,
+                                               unsigned int flags,
                                                size_t slot_span_alignment) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page) %
               PartitionPageSize()));
@@ -664,7 +664,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
 template <bool thread_safe>
 ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
     PartitionRoot<thread_safe>* root,
-    int flags) {
+    unsigned int flags) {
   // Need a new super page. We want to allocate super pages in a contiguous
   // address region as much as possible. This is important for not causing
   // page table bloat and not fragmenting address spaces in 32 bit
@@ -1106,7 +1106,7 @@ void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
 template <bool thread_safe>
 uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     PartitionRoot<thread_safe>* root,
-    int flags,
+    unsigned int flags,
     size_t raw_size,
     size_t slot_span_alignment,
     bool* is_already_zeroed) {

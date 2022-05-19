@@ -155,7 +155,7 @@ constexpr size_t kTestSizesCount = std::size(kTestSizes);
 void AllocateRandomly(
     partition_alloc::PartitionRoot<partition_alloc::internal::ThreadSafe>* root,
     size_t count,
-    int flags) {
+    unsigned int flags) {
   std::vector<void*> allocations(count, nullptr);
   for (size_t i = 0; i < count; ++i) {
     const size_t size =
@@ -3123,7 +3123,8 @@ TEST_P(PartitionAllocTest, OverrideHooks) {
   memset(overridden_allocation, kOverriddenChar, kOverriddenSize);
 
   PartitionAllocHooks::SetOverrideHooks(
-      [](void** out, int flags, size_t size, const char* type_name) -> bool {
+      [](void** out, unsigned int flags, size_t size,
+         const char* type_name) -> bool {
         if (size == kOverriddenSize && type_name == kOverriddenType) {
           *out = overridden_allocation;
           return true;

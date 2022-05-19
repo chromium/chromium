@@ -66,7 +66,7 @@ struct PartitionBucket {
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
   BASE_EXPORT NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,
-                                               int flags,
+                                               unsigned int flags,
                                                size_t raw_size,
                                                size_t slot_span_alignment,
                                                bool* is_already_zeroed)
@@ -155,14 +155,14 @@ struct PartitionBucket {
   // Returns nullptr on error.
   ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
       PartitionRoot<thread_safe>* root,
-      int flags,
+      unsigned int flags,
       size_t slot_span_alignment) EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Allocates a new super page from the current extent, if possible. All
   // slot-spans will be in the decommitted state. Returns the address of the
   // super page's payload, or 0 on error.
   ALWAYS_INLINE uintptr_t AllocNewSuperPage(PartitionRoot<thread_safe>* root,
-                                            int flags)
+                                            unsigned int flags)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Each bucket allocates a slot span when it runs out of slots.

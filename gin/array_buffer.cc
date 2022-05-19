@@ -33,17 +33,18 @@ static_assert(V8_ARRAY_BUFFER_INTERNAL_FIELD_COUNT == 2,
 base::ThreadSafePartitionRoot* ArrayBufferAllocator::partition_ = nullptr;
 
 void* ArrayBufferAllocator::Allocate(size_t length) {
-  int flags = partition_alloc::AllocFlags::kZeroFill |
-              partition_alloc::AllocFlags::kReturnNull;
+  unsigned int flags = partition_alloc::AllocFlags::kZeroFill |
+                       partition_alloc::AllocFlags::kReturnNull;
   return AllocateInternal(length, flags);
 }
 
 void* ArrayBufferAllocator::AllocateUninitialized(size_t length) {
-  int flags = partition_alloc::AllocFlags::kReturnNull;
+  unsigned int flags = partition_alloc::AllocFlags::kReturnNull;
   return AllocateInternal(length, flags);
 }
 
-void* ArrayBufferAllocator::AllocateInternal(size_t length, int flags) {
+void* ArrayBufferAllocator::AllocateInternal(size_t length,
+                                             unsigned int flags) {
 #ifdef V8_SANDBOX
   // The V8 sandbox requires all ArrayBuffer backing stores to be allocated
   // inside the sandbox address space. This isn't guaranteed if allocation

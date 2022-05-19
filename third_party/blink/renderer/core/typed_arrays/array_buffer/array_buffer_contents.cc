@@ -142,7 +142,7 @@ void ArrayBufferContents::CopyTo(ArrayBufferContents& other) {
 
 void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
                                                    InitializationPolicy policy,
-                                                   int flags) {
+                                                   unsigned int flags) {
   // The array buffer contents are sometimes expected to be 16-byte aligned in
   // order to get the best optimization of SSE, especially in case of audio and
   // video buffers.  Hence, align the given size up to 16-byte boundary.

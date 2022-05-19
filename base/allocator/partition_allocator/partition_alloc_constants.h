@@ -28,7 +28,7 @@ namespace partition_alloc {
 struct AllocFlags {
   // In order to support bit operations like `flag_a | flag_b`, the old-
   // fashioned enum (+ surrounding named struct) is used instead of enum class.
-  enum : int {
+  enum : unsigned int {
     kReturnNull = 1 << 0,
     kZeroFill = 1 << 1,
     // Don't allow allocation override hooks. Override hooks are expected to
