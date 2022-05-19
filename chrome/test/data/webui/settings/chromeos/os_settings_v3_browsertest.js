@@ -136,28 +136,7 @@ TEST_F('OSSettingsPeoplePageOsSyncV3Test', 'AllJsTests', () => {
 });
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
-// Bluetooth revamp is launched.
-var OSSettingsOsSettingsPageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_settings_page_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled:
-          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
-    };
-  }
-};
-
-TEST_F('OSSettingsOsSettingsPageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-// TODO(crbug.com/1234871) Move this test back into the list of tests below once
-// Bluetooth revamp is launched.
+// Fast pair is launched.
 var OSSettingsOsBluetoothDevicesSubpageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -169,7 +148,6 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
   get featureList() {
     return {
       enabled: super.featureList.enabled.concat([
-        'ash::features::kBluetoothRevamp',
         'ash::features::kFastPair',
         'ash::features::kFastPairSoftwareScanning',
       ])
@@ -180,73 +158,6 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
 TEST_F('OSSettingsOsBluetoothDevicesSubpageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
-
-// TODO(crbug.com/1234871) Move this test back into the list of tests below once
-// Bluetooth revamp is launched.
-var OSSettingsOsPairedBluetoothListItemV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_paired_bluetooth_list_item_tests.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled:
-          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
-    };
-  }
-};
-
-TEST_F('OSSettingsOsPairedBluetoothListItemV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-// TODO(crbug.com/1237598) Move this test back into the list of tests below once
-// Bluetooth revamp is launched.
-var OSSettingsOsBluetoothDeviceDetailSubpageV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_device_detail_subpage_tests.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled:
-          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
-    };
-  }
-};
-
-TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
-// TODO(crbug.com/1237598) Move this test back into the list of tests below once
-// Bluetooth revamp is launched.
-var OSSettingsOsBluetoothTrueWirelessImagesV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_true_wireless_images_tests.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled:
-          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
-    };
-  }
-};
-
-TEST_F('OSSettingsOsBluetoothTrueWirelessImagesV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
-
 
 var OSSettingsSearchEngineV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -467,6 +378,15 @@ TEST_F('OSSettingsAmbientModePhotosPageV3Test', 'All', () => mocha.run());
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
+ [
+   'OsBluetoothDeviceDetailSubpage',
+   'os_bluetooth_device_detail_subpage_tests.js'
+ ],
+ [
+   'OsBluetoothTrueWirelessImages', 'os_bluetooth_true_wireless_images_tests.js'
+ ],
+ ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
+ ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui_test.js'],
  ['OsSettingsUi2', 'os_settings_ui_test_2.js'],
  ['OsSettingsMain', 'os_settings_main_test.js'],
