@@ -79368,7 +79368,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Storage.Blob.MaxDiskSpace" units="MB"
     expires_after="2018-12-13">
   <obsolete>
-    Removed as of 12/18. Use Storage.Blob.MaxDiskSpace2 instead.
+    Removed as of 12/18.
   </obsolete>
   <owner>dmurph@chromium.org</owner>
   <summary>

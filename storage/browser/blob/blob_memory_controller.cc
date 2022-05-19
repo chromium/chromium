@@ -50,7 +50,6 @@ const base::Feature
 
 namespace {
 constexpr int64_t kUnknownDiskAvailability = -1ll;
-constexpr uint64_t kMegabyte = 1024ull * 1024;
 const int64_t kMinSecondsForPressureEvictions = 30;
 
 using FileCreationInfo = BlobMemoryController::FileCreationInfo;
@@ -121,10 +120,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
     limits.desired_max_disk_space = static_cast<uint64_t>(disk_size / 10ll);
 #endif
   }
-  if (disk_enabled) {
-    UMA_HISTOGRAM_COUNTS_1M("Storage.Blob.MaxDiskSpace2",
-                            limits.desired_max_disk_space / kMegabyte);
-  }
+
   limits.effective_max_disk_space = limits.desired_max_disk_space;
 
   CHECK(limits.IsValid());
@@ -793,32 +789,10 @@ void BlobMemoryController::OnStorageLimitsCalculated(BlobStorageLimits limits) {
   on_calculate_limits_callbacks_.clear();
 }
 
-namespace {
-// Used in UMA metrics, do not change values.
-enum DiskSpaceAdjustmentType {
-  FREEZE_HIT_MIN_AVAILABLE = 0,
-  LOWERED_NEAR_MIN_AVAILABLE = 1,
-  RAISED_NEAR_MIN_AVAILABLE = 2,
-  RESTORED = 3,
-  MAX_ADJUSTMENT_TYPE
-};
-
-enum DiskSpaceAdjustmentStatus { FROZEN, ADJUSTED, NORMAL };
-}  // namespace
-
 void BlobMemoryController::AdjustDiskUsage(uint64_t avail_disk) {
   DCHECK_LE(disk_used_, limits_.desired_max_disk_space +
                             limits_.min_available_external_disk_space());
 
-  DiskSpaceAdjustmentStatus curr_status;
-  if (limits_.effective_max_disk_space == limits_.desired_max_disk_space) {
-    curr_status = NORMAL;
-  } else if (limits_.effective_max_disk_space == disk_used_) {
-    curr_status = FROZEN;
-  } else {
-    curr_status = ADJUSTED;
-  }
-  uint64_t old_effective_max_disk_space = limits_.effective_max_disk_space;
   uint64_t avail_disk_without_blobs = avail_disk + disk_used_;
 
   // Note: The UMA metrics here intended to record state change between frozen,
@@ -826,11 +800,6 @@ void BlobMemoryController::AdjustDiskUsage(uint64_t avail_disk) {
 
   if (avail_disk <= limits_.min_available_external_disk_space()) {
     limits_.effective_max_disk_space = disk_used_;
-    if (curr_status != FROZEN &&
-        limits_.effective_max_disk_space != old_effective_max_disk_space) {
-      UMA_HISTOGRAM_ENUMERATION("Storage.Blob.MaxDiskSpaceAdjustment",
-                                FREEZE_HIT_MIN_AVAILABLE, MAX_ADJUSTMENT_TYPE);
-    }
   } else if (avail_disk_without_blobs <
              limits_.min_available_external_disk_space() +
                  limits_.desired_max_disk_space) {
@@ -838,21 +807,8 @@ void BlobMemoryController::AdjustDiskUsage(uint64_t avail_disk) {
     // |desired_max_disk_space| by the if statement.
     limits_.effective_max_disk_space =
         avail_disk_without_blobs - limits_.min_available_external_disk_space();
-    if (curr_status != ADJUSTED &&
-        limits_.effective_max_disk_space != old_effective_max_disk_space) {
-      UMA_HISTOGRAM_ENUMERATION("Storage.Blob.MaxDiskSpaceAdjustment",
-                                curr_status == NORMAL
-                                    ? LOWERED_NEAR_MIN_AVAILABLE
-                                    : RAISED_NEAR_MIN_AVAILABLE,
-                                MAX_ADJUSTMENT_TYPE);
-    }
   } else {
     limits_.effective_max_disk_space = limits_.desired_max_disk_space;
-    if (curr_status != NORMAL &&
-        limits_.effective_max_disk_space != old_effective_max_disk_space) {
-      UMA_HISTOGRAM_ENUMERATION("Storage.Blob.MaxDiskSpaceAdjustment", RESTORED,
-                                MAX_ADJUSTMENT_TYPE);
-    }
   }
 }
 

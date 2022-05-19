@@ -348,29 +348,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.MaxDiskSpace2" units="MB" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Records the calculated max disk space the blob storage system can use.
-    Recorded on storage partition initialization, and only if the disk is
-    enabled.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.MaxDiskSpaceAdjustment"
-    enum="BlobStorageDiskSpaceAdjustment" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Recorded when the blob system changes adjustment types on its disk size. The
-    disk can either be Frozen, Adjusted (near min external available disk
-    space), or Normal. We record when we transition between these states, which
-    can happen after any file operations in the blob system (paging data to disk
-    or saving a new blob directly to disk).
-  </summary>
-</histogram>
-
 <histogram name="Storage.Blob.PageFileSize" units="KB" expires_after="M95">
   <owner>mek@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>

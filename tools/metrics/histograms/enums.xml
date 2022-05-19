@@ -10801,25 +10801,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="Failed writing to file"/>
 </enum>
 
-<enum name="BlobStorageDiskSpaceAdjustment">
-  <summary>
-    When the blob storage system adjusts its max disk space, it can be frozen,
-    adjusted (near min external disk availability), or normal. These values
-    record the transitions between those states.
-  </summary>
-  <int value="0"
-      label="Disk usage frozen because minimum disk availability was reached."/>
-  <int value="1"
-      label="Max disk usage reduced from a normal state because disk space is
-             approaching minimum disk availability."/>
-  <int value="2"
-      label="Max disk usage increased from a frozen state to adjusted, as
-             minimum external disk availability is still close."/>
-  <int value="3"
-      label="Max disk usage restored to desired limit after being adjusted or
-             frozen."/>
-</enum>
-
 <enum name="BlockStatusForClient3DAPIs">
   <summary>The reason WebGL / Pepper3D were blocked, or not.</summary>
   <int value="0" label="BLOCK_STATUS_NOT_BLOCKED"/>
