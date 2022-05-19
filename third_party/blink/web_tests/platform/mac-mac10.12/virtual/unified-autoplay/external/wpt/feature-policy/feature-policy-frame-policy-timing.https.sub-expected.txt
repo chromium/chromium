@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: callback is not a function
-FAIL allow attr timing test same origin assert_equals: expected "NotAllowedError" but got "timeout"
-PASS allow attr timing test diff origin
-Harness: the test ran to completion.
-
