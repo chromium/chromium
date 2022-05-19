@@ -56,6 +56,8 @@ std::string TooltipTypeToString(TooltipType type) {
       return "home_to_overview";
     case TooltipType::kInAppToHome:
       return "in_app_to_home";
+    case TooltipType::kKeyboardBacklightColor:
+      return "keyboard_backlight_color";
   }
   return "invalid";
 }
@@ -123,7 +125,9 @@ bool ShouldShowNudge(PrefService* prefs,
       (type == TooltipType::kBackGesture &&
        success_count >= kSuccessLimitBackGesture) ||
       (type == TooltipType::kInAppToHome &&
-       success_count >= kSuccessLimitInAppToHome)) {
+       success_count >= kSuccessLimitInAppToHome) ||
+      (type == TooltipType::kKeyboardBacklightColor &&
+       success_count >= kSuccessLimitKeyboardBacklightColor)) {
     set_recheck_delay(base::TimeDelta());
     return false;
   }

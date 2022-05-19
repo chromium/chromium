@@ -16,6 +16,8 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class KeyboardBacklightColorNudgeController;
+
 // Controller to manage keyboard backlight colors.
 class ASH_EXPORT KeyboardBacklightColorController
     : public SessionObserver,
@@ -45,11 +47,19 @@ class ASH_EXPORT KeyboardBacklightColorController
   // WallpaperControllerObserver:
   void OnWallpaperColorsChanged() override;
 
+  KeyboardBacklightColorNudgeController*
+  keyboard_backlight_color_nudge_controller() {
+    return keyboard_backlight_color_nudge_controller_.get();
+  };
+
  private:
   ScopedSessionObserver scoped_session_observer_{this};
 
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       wallpaper_controller_observation_{this};
+
+  std::unique_ptr<KeyboardBacklightColorNudgeController>
+      keyboard_backlight_color_nudge_controller_;
 };
 
 }  // namespace ash

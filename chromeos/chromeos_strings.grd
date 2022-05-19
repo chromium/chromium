@@ -2076,7 +2076,7 @@ Try tapping the mic to ask me anything.
 
       <!-- Personalization App -->
       <message name="IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
-        Personalization
+        Wallpaper &amp; style
       </message>
       <message name="IDS_PERSONALIZATION_APP_WALLPAPER_LABEL" desc="Label for wallpaper element in personalization hub">
         Wallpaper

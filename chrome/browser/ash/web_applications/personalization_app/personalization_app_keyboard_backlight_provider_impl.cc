@@ -10,6 +10,7 @@
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
 #include "ash/shell.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_nudge_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/check.h"
@@ -68,6 +69,9 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
   }
   DVLOG(4) << __func__ << " backlight_color=" << backlight_color;
   GetKeyboardBacklightColorController()->SetBacklightColor(backlight_color);
+  GetKeyboardBacklightColorController()
+      ->keyboard_backlight_color_nudge_controller()
+      ->SetUserPerformedAction();
 
   NotifyBacklightColorChanged();
 }
