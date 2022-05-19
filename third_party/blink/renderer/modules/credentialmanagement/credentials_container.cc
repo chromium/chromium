@@ -1080,7 +1080,8 @@ ScriptPromise CredentialsContainer::get(
         CredentialManagerProxy::From(script_state)->WebOTPService();
     webotp_service->Receive(WTF::Bind(&OnSmsReceive, WrapPersistent(resolver),
                                       base::TimeTicks::Now()));
-    UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.Features", WebFeature::kWebOTP);
+
+    UseCounter::Count(context, WebFeature::kWebOTP);
     return promise;
   }
 
