@@ -383,6 +383,7 @@ class CaptureModeCameraTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::SystemMonitor system_monitor_;
   std::unique_ptr<aura::Window> window_;
 };
 
