@@ -92,11 +92,13 @@ public class ContextualSearchFieldTrial {
         // TODO(donnd): Convert to test-only after launch and we have confidence it's robust.
         int IS_ONLINE_DETECTION_DISABLED = 1;
 
+        /** @deprecated */
         int IS_SEARCH_TERM_RESOLUTION_DISABLED = 2;
         /** @deprecated */
         int IS_MANDATORY_PROMO_ENABLED = 3;
 
         /**
+         * @deprecated
          * Whether English-target translation should be enabled (default is disabled for 'en').
          * Enables usage of English as the target language even when it's the primary UI language.
          */
@@ -148,13 +150,18 @@ public class ContextualSearchFieldTrial {
          */
         int IS_SMALL_TEXT_SUPPRESSION_ENABLED = 13;
         /**
+         * @deprecated
          * Whether to disable auto-promotion of clicks in the AMP carousel into a
          * separate Tab.
          */
         int IS_AMP_AS_SEPARATE_TAB_DISABLED = 14;
-        /** Whether sending the "home country" to Google is disabled. */
+        /**
+         * @deprecated
+         * Whether sending the "home country" to Google is disabled.
+         */
         int IS_SEND_HOME_COUNTRY_DISABLED = 15;
         /**
+         * @deprecated
          * Whether sending the page content notifications to observers (e.g. icing for
          * conversational search) is disabled.
          */
@@ -164,11 +171,15 @@ public class ContextualSearchFieldTrial {
         /** Whether or not ML-based Tap suppression is enabled. */
         int IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED = 18;
         /**
+         * @deprecated
          * Whether or not to override tap-disable for users that have never opened the
          * panel.
          */
         int IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED = 19;
-        /** Whether sending the URL of the page viewed by the user is disabled. */
+        /**
+         * @deprecated
+         * Whether sending the URL of the page viewed by the user is disabled.
+         */
         int IS_SEND_BASE_PAGE_URL_DISABLED = 20;
 
         int NUM_ENTRIES = 21;

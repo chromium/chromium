@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma.ContextualSearchPreference;
@@ -118,12 +117,7 @@ class ContextualSearchPolicy {
      * @return Whether a Tap gesture is currently supported as a trigger for the feature.
      */
     boolean isTapSupported() {
-        return (isContextualSearchFullyEnabled()
-                       || ContextualSearchFieldTrial.getSwitch(
-                               ContextualSearchSwitch
-                                       .IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED))
-                ? true
-                : (getPromoTapsRemaining() != 0);
+        return isContextualSearchFullyEnabled() ? true : (getPromoTapsRemaining() != 0);
     }
 
     /**
@@ -155,11 +149,6 @@ class ContextualSearchPolicy {
      * @return Whether the previous gesture should resolve.
      */
     boolean shouldPreviousGestureResolve() {
-        if (ContextualSearchFieldTrial.getSwitch(
-                    ContextualSearchSwitch.IS_SEARCH_TERM_RESOLUTION_DISABLED)) {
-            return false;
-        }
-
         // The user must have decided on privacy to resolve page content on HTTPS.
         return isContextualSearchFullyEnabled();
     }
@@ -304,12 +293,6 @@ class ContextualSearchPolicy {
      */
     boolean doSendBasePageUrl() {
         if (!isContextualSearchFullyEnabled() && !isDelayedIntelligenceActive()) return false;
-
-        // Check whether there is a Field Trial setting preventing us from sending the page URL.
-        if (ContextualSearchFieldTrial.getSwitch(
-                    ContextualSearchSwitch.IS_SEND_BASE_PAGE_URL_DISABLED)) {
-            return false;
-        }
 
         // Ensure that the default search provider is Google.
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return false;
@@ -579,11 +562,6 @@ class ContextualSearchPolicy {
      */
     @NonNull
     String getHomeCountry(Context context) {
-        if (ContextualSearchFieldTrial.getSwitch(
-                    ContextualSearchSwitch.IS_SEND_HOME_COUNTRY_DISABLED)) {
-            return "";
-        }
-
         TelephonyManager telephonyManager =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (telephonyManager == null) return "";
