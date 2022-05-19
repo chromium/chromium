@@ -4364,7 +4364,7 @@ crbug.com/769347 [ Mac ] fast/dom/inert/inert-node-is-uneditable.html [ Failure 
 crbug.com/769056 virtual/text-antialias/emoji-web-font.html [ Failure ]
 crbug.com/1159689 [ Mac ] virtual/text-antialias/emoticons.html [ Failure Pass ]
 
-crbug.com/770232 [ Win10.20h2 ] virtual/text-antialias/hyphenate-character.html [ Failure ]
+crbug.com/770232 [ Win ] virtual/text-antialias/hyphenate-character.html [ Failure ]
 
 # Editing commands incorrectly assume no plain text length change after formatting text.
 crbug.com/764489 editing/execCommand/format-block-multiple-paragraphs.html [ Failure ]
@@ -4893,7 +4893,7 @@ crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-snap-001.html [
 crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-snap-002.html [ Failure ]
 
 # Sheriff 2019-09-30
-crbug.com/1003715 [ Win10.20h2 ] http/tests/notifications/serviceworker-notification-properties.html [ Failure Pass Timeout ]
+crbug.com/1003715 [ Win ] http/tests/notifications/serviceworker-notification-properties.html [ Failure Pass Timeout ]
 
 
 # Sheriff 2019-10-01
