@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
@@ -560,8 +559,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kPrewarmSearchResultsPageFonts))
-    FontPrewarmerTabHelper::CreateForWebContents(web_contents);
+  FontPrewarmerTabHelper::CreateForWebContents(web_contents);
 #endif
 
 #if defined(TOOLKIT_VIEWS)

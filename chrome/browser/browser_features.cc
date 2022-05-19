@@ -94,14 +94,6 @@ const base::Feature kMuteNotificationSnoozeAction{
     "MuteNotificationSnoozeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_WIN)
-// Results in remembering fonts used at the time of fcp, and prewarming those
-// fonts on subsequent loading of search results pages for the default search
-// engine.
-const base::Feature kPrewarmSearchResultsPageFonts{
-    "PrewarmSearchResultsPageFonts", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // Gates sandboxed iframe navigation toward external protocol behind any of:
 // - allow-top-navigation
 // - allow-top-navigation-to-custom-protocols

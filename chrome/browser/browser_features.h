@@ -49,10 +49,6 @@ extern const base::Feature kCopyLinkToText;
 extern const base::Feature kMuteNotificationSnoozeAction;
 #endif
 
-#if BUILDFLAG(IS_WIN)
-extern const base::Feature kPrewarmSearchResultsPageFonts;
-#endif
-
 extern const base::Feature kSandboxExternalProtocolBlocked;
 extern const base::Feature kSandboxExternalProtocolBlockedWarning;
 extern const base::Feature kTriggerNetworkDataMigration;
