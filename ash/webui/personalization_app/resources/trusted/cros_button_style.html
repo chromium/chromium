@@ -4,9 +4,13 @@
       background-color: var(--cros-button-background-color-primary);
       --text-color: var(--cros-button-label-color-primary);
       --ink-color: var(--cros-button-ripple-color-primary);
-      --hover-bg-color: var(--cros-button-background-color-primary-hover);
+      --hover-bg-color: var(--cros-button-background-color-primary-hover-preblended);
       --disabled-bg: var(--cros-button-background-color-primary-disabled);
       --disabled-text-color: var(--cros-button-label-color-primary-disabled);
+    }
+
+    cr-button.primary:hover {
+      background-color: var(--cros-button-background-color-primary-hover-preblended);
     }
 
     cr-button.secondary {
@@ -17,6 +21,10 @@
       --hover-bg-color: var(--cros-button-background-color-secondary-hover);
       --disabled-text-color: var(--cros-button-label-color-secondary-disabled);
       --disabled-border-color: var(--cros-button-stroke-color-secondary-disabled);
+    }
+
+    cr-button.secondary:hover {
+      background-color: var(--cros-button-background-color-secondary-hover);
     }
 
     cr-icon-button:focus-visible,
