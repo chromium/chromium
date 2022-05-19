@@ -106,12 +106,7 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
   base::raw_ptr<MockAttributionHost> mock_attribution_host_;
 };
 
-class AttributionSrcBasicSourceRegisteredBrowserTest
-    : public AttributionSrcBrowserTest,
-      public ::testing::WithParamInterface<base::StringPiece> {};
-
-IN_PROC_BROWSER_TEST_P(AttributionSrcBasicSourceRegisteredBrowserTest,
-                       SourceRegistered) {
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
   GURL page_url =
       https_server()->GetURL("b.test", "/page_with_impression_creator.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
@@ -128,9 +123,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicSourceRegisteredBrowserTest,
   GURL register_url =
       https_server()->GetURL("c.test", "/register_source_headers.html");
 
-  base::StringPiece create_source_js = GetParam();
-  EXPECT_TRUE(
-      ExecJs(web_contents(), JsReplace(create_source_js, register_url)));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
   if (!data_host)
     loop.Run();
   data_host->WaitForSourceData(/*num_source_data=*/1);
@@ -146,14 +140,6 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicSourceRegisteredBrowserTest,
   EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
   EXPECT_THAT(source_data.front()->aggregatable_source->keys, IsEmpty());
 }
-
-// Ensure that basic source registration works with both the img attributionsrc
-// attribute and the registerSource JS call.
-INSTANTIATE_TEST_SUITE_P(
-    AttributionSrcSourceRegistrations,
-    AttributionSrcBasicSourceRegisteredBrowserTest,
-    ::testing::Values("createAttributionSrcImg($1);",
-                      "window.attributionReporting.registerSource($1);"));
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcAnchor_SourceRegistered) {
@@ -620,12 +606,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   GURL register_url =
       https_server()->GetURL("c.test", "/register_source_headers.html");
 
-  auto result =
-      EvalJs(web_contents(),
-             JsReplace("window.attributionReporting.registerSource($1);",
-                       register_url));
-  EXPECT_THAT(result.error, HasSubstr("Failed to execute 'registerSource' on "
-                                      "'AttributionReporting': Not allowed."));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -929,42 +911,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(source_data.back()->destination,
             url::Origin::Create(GURL("https://d.test")));
   EXPECT_THAT(source_data.back()->aggregatable_source->keys, SizeIs(2));
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
-                       AttributionSrcRegisterSourceJS_TriggerIgnored) {
-  GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  std::unique_ptr<MockDataHost> data_host;
-  base::RunLoop loop;
-  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
-      .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            loop.Quit();
-          });
-
-  GURL register_url =
-      https_server()->GetURL("c.test", "/register_trigger_source_trigger.html");
-
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace("window.attributionReporting.registerSource($1);",
-                       register_url)));
-  if (!data_host)
-    loop.Run();
-  data_host->WaitForSourceData(/*num_source_data=*/1);
-  const auto& source_data = data_host->source_data();
-
-  EXPECT_EQ(source_data.size(), 1u);
-
-  // Only the source should be processed.
-  EXPECT_EQ(source_data.front()->source_event_id, 5u);
-
-  // The triggers should be ignored.
-  EXPECT_EQ(data_host->trigger_data().size(), 0u);
 }
 
 class AttributionSrcPrerenderBrowserTest : public AttributionSrcBrowserTest {

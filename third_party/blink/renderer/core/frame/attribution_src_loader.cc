@@ -166,17 +166,8 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
 }
 
 void AttributionSrcLoader::Register(const KURL& src_url, HTMLElement* element) {
-  RegisterResult result;
   CreateAndSendRequest(src_url, element, SrcType::kUndetermined,
-                       /*associated_with_navigation=*/false, result);
-}
-
-AttributionSrcLoader::RegisterResult AttributionSrcLoader::RegisterSources(
-    const KURL& src_url) {
-  RegisterResult result;
-  CreateAndSendRequest(src_url, /*element=*/nullptr, SrcType::kSource,
-                       /*associated_with_navigation=*/false, result);
-  return result;
+                       /*associated_with_navigation=*/false);
 }
 
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
@@ -184,10 +175,9 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     HTMLElement* element) {
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
-  RegisterResult result;
   ResourceClient* client =
       CreateAndSendRequest(src_url, element, SrcType::kSource,
-                           /*associated_with_navigation=*/true, result);
+                           /*associated_with_navigation=*/true);
   if (!client)
     return absl::nullopt;
 
@@ -197,33 +187,22 @@ absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
 }
 
 AttributionSrcLoader::ResourceClient*
-AttributionSrcLoader::CreateAndSendRequest(
-    const KURL& src_url,
-    HTMLElement* element,
-    SrcType src_type,
-    bool associated_with_navigation,
-    RegisterResult& out_register_result) {
+AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
+                                           HTMLElement* element,
+                                           SrcType src_type,
+                                           bool associated_with_navigation) {
   // Detached frames cannot/should not register new attributionsrcs.
-  if (!local_frame_->IsAttached()) {
-    out_register_result = RegisterResult::kFailedToRegister;
+  if (!local_frame_->IsAttached())
     return nullptr;
-  }
 
-  if (num_resource_clients_ >= kMaxConcurrentRequests) {
-    out_register_result = RegisterResult::kFailedToRegister;
+  if (num_resource_clients_ >= kMaxConcurrentRequests)
     return nullptr;
-  }
 
-  if (!src_url.ProtocolIsInHTTPFamily()) {
-    out_register_result = RegisterResult::kInvalidProtocol;
+  if (!src_url.ProtocolIsInHTTPFamily())
     return nullptr;
-  }
 
-  if (RegisterResult result =
-          CanRegisterAttribution(RegisterContext::kAttributionSrc, src_url,
-                                 element, /*request_id=*/absl::nullopt);
-      result != RegisterResult::kSuccess) {
-    out_register_result = result;
+  if (!CanRegisterAttribution(RegisterContext::kAttributionSrc, src_url,
+                              element, /*request_id=*/absl::nullopt)) {
     return nullptr;
   }
 
@@ -235,11 +214,9 @@ AttributionSrcLoader::CreateAndSendRequest(
         WTF::Bind(&AttributionSrcLoader::DoPrerenderingRegistration,
                   WrapPersistentIfNeeded(this), src_url, src_type,
                   associated_with_navigation));
-    out_register_result = RegisterResult::kSuccess;
     return nullptr;
   }
 
-  out_register_result = RegisterResult::kSuccess;
   return DoRegistration(src_url, src_type, associated_with_navigation);
 }
 
@@ -279,8 +256,7 @@ void AttributionSrcLoader::DoPrerenderingRegistration(
   DoRegistration(src_url, src_type, associated_with_navigation);
 }
 
-AttributionSrcLoader::RegisterResult
-AttributionSrcLoader::CanRegisterAttribution(
+bool AttributionSrcLoader::CanRegisterAttribution(
     RegisterContext context,
     const KURL& url,
     HTMLElement* element,
@@ -289,7 +265,7 @@ AttributionSrcLoader::CanRegisterAttribution(
   DCHECK(window);
 
   if (!RuntimeEnabledFeatures::AttributionReportingEnabled(window))
-    return RegisterResult::kNotAllowed;
+    return false;
 
   const bool feature_policy_enabled = window->IsFeatureEnabled(
       mojom::blink::PermissionsPolicyFeature::kAttributionReporting);
@@ -297,7 +273,7 @@ AttributionSrcLoader::CanRegisterAttribution(
   if (!feature_policy_enabled) {
     LogAuditIssue(AttributionReportingIssueType::kPermissionPolicyDisabled,
                   /*string=*/absl::nullopt, element, request_id);
-    return RegisterResult::kNotAllowed;
+    return false;
   }
 
   // The API is only allowed in secure contexts.
@@ -309,7 +285,7 @@ AttributionSrcLoader::CanRegisterAttribution(
             : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
         local_frame_->GetSecurityContext()->GetSecurityOrigin()->ToString(),
         element, request_id);
-    return RegisterResult::kInsecureContext;
+    return false;
   }
 
   scoped_refptr<const SecurityOrigin> reporting_origin =
@@ -321,7 +297,7 @@ AttributionSrcLoader::CanRegisterAttribution(
                   kAttributionSourceUntrustworthyOrigin
             : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
         reporting_origin->ToString(), element, request_id);
-    return RegisterResult::kUntrustworthyOrigin;
+    return false;
   }
 
   UseCounter::Count(window, mojom::blink::WebFeature::kConversionAPIAll);
@@ -331,7 +307,7 @@ AttributionSrcLoader::CanRegisterAttribution(
     UseCounter::Count(window, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
   }
 
-  return RegisterResult::kSuccess;
+  return true;
 }
 
 void AttributionSrcLoader::MaybeRegisterTrigger(
@@ -345,10 +321,9 @@ void AttributionSrcLoader::MaybeRegisterTrigger(
   if (!ContainsTriggerHeaders(response.HttpHeaderFields()))
     return;
 
-  if (CanRegisterAttribution(RegisterContext::kResourceTrigger,
-                             response.CurrentRequestUrl(),
-                             /*element=*/nullptr, request.InspectorId()) !=
-      RegisterResult::kSuccess) {
+  if (!CanRegisterAttribution(RegisterContext::kResourceTrigger,
+                              response.CurrentRequestUrl(),
+                              /*element=*/nullptr, request.InspectorId())) {
     return;
   }
 

@@ -190,7 +190,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
         ->GetAttributionManager();
   }
 
-  void RegisterSource(const GURL& attribution_src_url, bool use_js = false) {
+  void RegisterSource(const GURL& attribution_src_url) {
     MockAttributionObserver observer;
     base::ScopedObservation<AttributionManager, AttributionObserver>
         observation(&observer);
@@ -200,11 +200,8 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     EXPECT_CALL(observer, OnSourceHandled(_, StorableSource::Result::kSuccess))
         .WillOnce([&]() { loop.Quit(); });
 
-    base::StringPiece register_js_template =
-        use_js ? "window.attributionReporting.registerSource($1);"
-               : "createAttributionSrcImg($1);";
-    EXPECT_TRUE(ExecJs(web_contents(),
-                       JsReplace(register_js_template, attribution_src_url)));
+    EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                                 attribution_src_url)));
 
     // Wait until the source has been stored before registering the trigger;
     // otherwise the trigger could be processed before the source, in which case
@@ -697,40 +694,6 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       EventSourceImpressionConversionFromJS_ReportSent) {
-  // Expected reports must be registered before the server starts.
-  // 7 in the `registerConversion` call below is sanitized to 1 in
-  // the report's `trigger_data`.
-  ExpectedReportWaiter expected_report(
-      GURL("https://a.test/.well-known/attribution-reporting/"
-           "report-event-attribution"),
-      /*attribution_destination=*/"https://d.test",
-      /*source_event_id=*/"5", /*source_type=*/"event", /*trigger_data=*/"1",
-      https_server());
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL impression_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
-
-  RegisterSource(
-      https_server()->GetURL(
-          "a.test", "/attribution_reporting/register_source_headers.html"),
-      /*use_js=*/true);
-
-  GURL conversion_url = https_server()->GetURL(
-      "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), conversion_url));
-
-  GURL register_trigger_url = https_server()->GetURL(
-      "a.test", "/attribution_reporting/register_trigger_headers.html");
-  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
-                                               register_trigger_url)));
-
-  expected_report.WaitForReport();
-}
-
-IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        AttributionSrcSourceAndTrigger_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
@@ -898,10 +861,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   GURL register_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_source_headers.html");
 
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace("window.attributionReporting.registerSource($1);",
-                       register_url)));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
 
   // Navigate to a starting same origin page with the conversion url.
   const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");
@@ -965,10 +926,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   GURL register_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/register_source_headers.html");
 
-  EXPECT_TRUE(
-      ExecJs(web_contents(),
-             JsReplace("window.attributionReporting.registerSource($1);",
-                       register_url)));
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
 
   // Navigate to a starting same origin page with the conversion url.
   const GURL kEmptyUrl = https_server()->GetURL("d.test", "/empty.html");

@@ -117,25 +117,21 @@ TEST_F(AttributionSrcLoaderTest, TooManyConcurrentRequests_NewRequestDropped) {
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
   for (size_t i = 0; i < AttributionSrcLoader::kMaxConcurrentRequests; ++i) {
-    EXPECT_EQ(attribution_src_loader_->RegisterSources(url),
-              AttributionSrcLoader::RegisterResult::kSuccess);
+    EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(url));
   }
 
-  EXPECT_EQ(attribution_src_loader_->RegisterSources(url),
-            AttributionSrcLoader::RegisterResult::kFailedToRegister);
+  EXPECT_FALSE(attribution_src_loader_->RegisterNavigation(url));
 
   url_test_helpers::ServeAsynchronousRequests();
 
-  EXPECT_EQ(attribution_src_loader_->RegisterSources(url),
-            AttributionSrcLoader::RegisterResult::kSuccess);
+  EXPECT_TRUE(attribution_src_loader_->RegisterNavigation(url));
 }
 
 TEST_F(AttributionSrcLoaderTest, Referrer) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  EXPECT_EQ(attribution_src_loader_->RegisterSources(url),
-            AttributionSrcLoader::RegisterResult::kSuccess);
+  attribution_src_loader_->Register(url, /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
 

@@ -30,15 +30,6 @@ struct Impression;
 class CORE_EXPORT AttributionSrcLoader
     : public GarbageCollected<AttributionSrcLoader> {
  public:
-  enum class RegisterResult {
-    kSuccess,
-    kInvalidProtocol,
-    kNotAllowed,
-    kInsecureContext,
-    kUntrustworthyOrigin,
-    kFailedToRegister,
-  };
-
   explicit AttributionSrcLoader(LocalFrame* frame);
   AttributionSrcLoader(const AttributionSrcLoader&) = delete;
   AttributionSrcLoader& operator=(const AttributionSrcLoader&) = delete;
@@ -50,9 +41,6 @@ class CORE_EXPORT AttributionSrcLoader
   // src and notifying the browser process to begin tracking it. It is a no-op
   // if the frame is not attached.
   void Register(const KURL& attribution_src, HTMLElement* element);
-
-  // Like `Register()`, but only allows sources to be registered.
-  RegisterResult RegisterSources(const KURL& attribution_src);
 
   void MaybeRegisterTrigger(const ResourceRequest& request,
                             const ResourceResponse& response);
@@ -88,10 +76,10 @@ class CORE_EXPORT AttributionSrcLoader
 
   // Returns whether the attribution is allowed to be registered. Devtool issue
   // might be reported if it's not allowed.
-  RegisterResult CanRegisterAttribution(RegisterContext context,
-                                        const KURL& url,
-                                        HTMLElement* element,
-                                        absl::optional<uint64_t> request_id);
+  bool CanRegisterAttribution(RegisterContext context,
+                              const KURL& url,
+                              HTMLElement* element,
+                              absl::optional<uint64_t> request_id);
 
   void RegisterTrigger(
       mojom::blink::AttributionTriggerDataPtr trigger_data) const;
@@ -99,8 +87,7 @@ class CORE_EXPORT AttributionSrcLoader
   ResourceClient* CreateAndSendRequest(const KURL& src_url,
                                        HTMLElement* element,
                                        SrcType src_type,
-                                       bool associated_with_navigation,
-                                       RegisterResult& out_register_result);
+                                       bool associated_with_navigation);
 
   void LogAuditIssue(AttributionReportingIssueType issue_type,
                      const absl::optional<String>& string,

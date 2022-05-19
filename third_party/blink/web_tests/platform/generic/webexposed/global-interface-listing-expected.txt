@@ -244,10 +244,6 @@ interface Attr : Node
     getter value
     method constructor
     setter value
-interface AttributionReporting
-    attribute @@toStringTag
-    method constructor
-    method registerSource
 interface Audio
     attribute @@toStringTag
     method constructor
@@ -11526,7 +11522,6 @@ namespace CSS
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
-    getter attributionReporting
     getter caches
     getter clientInformation
     getter closed
