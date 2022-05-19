@@ -211,9 +211,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     return;
   }
 
-  const std::string& user_id_hash =
-      ash::ProfileHelper::GetUserIdHashFromProfile(profile);
-
   // Instantiate ARC related BrowserContextKeyedService classes which need
   // to be running at the beginning of the container run.
   // Note that, to keep this list as small as possible, services which don't
@@ -233,8 +230,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcCrashCollectorBridge::GetForBrowserContext(profile);
   ArcDarkThemeBridge::GetForBrowserContext(profile);
   ArcDigitalGoodsBridge::GetForBrowserContext(profile);
-  ArcDiskQuotaBridge::GetForBrowserContext(profile)->SetUserInfo(
-      multi_user_util::GetAccountIdFromProfile(profile), user_id_hash);
+  ArcDiskQuotaBridge::GetForBrowserContext(profile)->SetAccountId(
+      multi_user_util::GetAccountIdFromProfile(profile));
   ArcEnterpriseReportingService::GetForBrowserContext(profile);
   ArcFileSystemBridge::GetForBrowserContext(profile);
   ArcFileSystemMounter::GetForBrowserContext(profile);
@@ -275,7 +272,8 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcPaymentAppBridge::GetForBrowserContext(profile);
   ArcPipBridge::GetForBrowserContext(profile);
   ArcPolicyBridge::GetForBrowserContext(profile);
-  ArcPowerBridge::GetForBrowserContext(profile)->SetUserIdHash(user_id_hash);
+  ArcPowerBridge::GetForBrowserContext(profile)->SetUserIdHash(
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile));
   ArcPrintSpoolerBridge::GetForBrowserContext(profile);
   ArcPrivacyItemsBridge::GetForBrowserContext(profile);
   ArcProcessService::GetForBrowserContext(profile);

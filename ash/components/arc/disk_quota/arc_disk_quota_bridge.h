@@ -7,8 +7,6 @@
 
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -47,8 +45,7 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
 
   ~ArcDiskQuotaBridge() override;
 
-  void SetUserInfo(const AccountId& account_id,
-                   const std::string& user_id_hash);
+  void SetAccountId(const AccountId& account_id);
 
   // mojom::DiskQuotaHost overrides:
   void IsQuotaSupported(IsQuotaSupportedCallback callback) override;
@@ -67,29 +64,10 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
                     const std::string& android_path,
                     SetProjectIdCallback callback) override;
 
-  void RequestDataDiskExpansion(
-      int64_t total_space,
-      int64_t free_space,
-      RequestDataDiskExpansionCallback callback) override;
-
  private:
-  void OnHostFreeSpace(int64_t guest_total_space,
-                       int64_t guest_free_space,
-                       RequestDataDiskExpansionCallback callback,
-                       int64_t host_free_space);
-
-  void OnResizeDiskResponse(
-      int64_t new_disk_size,
-      RequestDataDiskExpansionCallback callback,
-      absl::optional<vm_tools::concierge::ResizeDiskImageResponse> response);
-
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   AccountId account_id_;
-  std::string user_id_hash_;
-
-  // WeakPtrFactory to use for callbacks.
-  base::WeakPtrFactory<ArcDiskQuotaBridge> weak_factory_{this};
 };
 
 }  // namespace arc
