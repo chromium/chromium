@@ -82,7 +82,7 @@ class ThemeProvider;
 
   std::unique_ptr<TabMenuBridge> _tabMenuBridge;
 
-  // If we're told to open URLs (in particular, via |-application:openFiles:| by
+  // If we're told to open URLs (in particular, via |-application:openURLs:| by
   // Launch Services) before we've launched the browser, we queue them up in
   // |startupUrls_| so that they can go in the first browser window/tab.
   std::vector<GURL> _startupUrls;
