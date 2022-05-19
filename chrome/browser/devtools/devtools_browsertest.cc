@@ -191,7 +191,7 @@ void LoadLegacyFilesInFrontend(DevToolsWindow* window) {
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       wc, "uiTests.setupLegacyFilesForTest();", &result));
-  EXPECT_EQ("[OK]", result);
+  ASSERT_EQ("[OK]", result);
 }
 
 template <typename... T>
