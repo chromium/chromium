@@ -182,12 +182,16 @@ public class CachedFeatureFlags {
                 return flag;
             }
 
-            SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
-            if (prefs.contains(preferenceName)) {
-                flag = prefs.readBoolean(preferenceName, false);
-            } else {
-                flag = sDefaults.get(featureName);
+            flag = sSafeMode.isEnabled(featureName, preferenceName);
+            if (flag == null) {
+                SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+                if (prefs.contains(preferenceName)) {
+                    flag = prefs.readBoolean(preferenceName, false);
+                } else {
+                    flag = sDefaults.get(featureName);
+                }
             }
+
             sValuesReturned.boolValues.put(preferenceName, flag);
         }
         return flag;
@@ -374,16 +378,22 @@ public class CachedFeatureFlags {
             return sValuesOverridden.getBool(preferenceName, defaultValue);
         }
 
-        Boolean flag;
+        Boolean value;
         synchronized (sValuesReturned.boolValues) {
-            flag = sValuesReturned.boolValues.get(preferenceName);
-            if (flag == null) {
-                flag = SharedPreferencesManager.getInstance().readBoolean(
-                        preferenceName, defaultValue);
-                sValuesReturned.boolValues.put(preferenceName, flag);
+            value = sValuesReturned.boolValues.get(preferenceName);
+            if (value != null) {
+                return value;
             }
+
+            value = sSafeMode.getBooleanFieldTrialParam(preferenceName, defaultValue);
+            if (value == null) {
+                value = SharedPreferencesManager.getInstance().readBoolean(
+                        preferenceName, defaultValue);
+            }
+
+            sValuesReturned.boolValues.put(preferenceName, value);
         }
-        return flag;
+        return value;
     }
 
     @AnyThread
@@ -397,11 +407,17 @@ public class CachedFeatureFlags {
         String value;
         synchronized (sValuesReturned.stringValues) {
             value = sValuesReturned.stringValues.get(preferenceName);
+            if (value != null) {
+                return value;
+            }
+
+            value = sSafeMode.getStringFieldTrialParam(preferenceName, defaultValue);
             if (value == null) {
                 value = SharedPreferencesManager.getInstance().readString(
                         preferenceName, defaultValue);
-                sValuesReturned.stringValues.put(preferenceName, value);
             }
+
+            sValuesReturned.stringValues.put(preferenceName, value);
         }
         return value;
     }
@@ -417,11 +433,17 @@ public class CachedFeatureFlags {
         Integer value;
         synchronized (sValuesReturned.intValues) {
             value = sValuesReturned.intValues.get(preferenceName);
+            if (value != null) {
+                return value;
+            }
+
+            value = sSafeMode.getIntFieldTrialParam(preferenceName, defaultValue);
             if (value == null) {
                 value = SharedPreferencesManager.getInstance().readInt(
                         preferenceName, defaultValue);
-                sValuesReturned.intValues.put(preferenceName, value);
             }
+
+            sValuesReturned.intValues.put(preferenceName, value);
         }
         return value;
     }
@@ -437,11 +459,17 @@ public class CachedFeatureFlags {
         Double value;
         synchronized (sValuesReturned.doubleValues) {
             value = sValuesReturned.doubleValues.get(preferenceName);
+            if (value != null) {
+                return value;
+            }
+
+            value = sSafeMode.getDoubleFieldTrialParam(preferenceName, defaultValue);
             if (value == null) {
                 value = SharedPreferencesManager.getInstance().readDouble(
                         preferenceName, defaultValue);
-                sValuesReturned.doubleValues.put(preferenceName, value);
             }
+
+            sValuesReturned.doubleValues.put(preferenceName, value);
         }
         return value;
     }
