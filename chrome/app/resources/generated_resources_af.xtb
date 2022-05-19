@@ -846,6 +846,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1784707308176068866">Laat loop in die agtergrond wanneer dit versoek word deur 'n toestelspesifieke program wat saamwerk</translation>
 <translation id="1784849162047402014">Toestel het min skyfspasie beskikbaar</translation>
 <translation id="1787350673646245458">Gebruikerprent</translation>
+<translation id="1788329699711791226">Kry toegang tot jou Chrome-blaaiergoed van <ph name="ACCOUNT_EMAIL" /> af</translation>
 <translation id="1790976235243700817">Verwyder toegang</translation>
 <translation id="1791662854739702043">Geïnstalleer</translation>
 <translation id="1792619191750875668">Uitgebreide skerm</translation>
@@ -1722,7 +1723,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="25899519884572181">Verlaat lesermodus</translation>
 <translation id="2593499352046705383">Maak seker dat jy 'n rugsteun van jou data het voordat jy begin. As jy <ph name="DEVICE_OS" /> installeer, sal jou hardeskyf vervang word. Kom meer te wete by g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Deursoek Google of tik URL in</translation>
-<translation id="2597976513418770460">Kry jou Chrome-blaaiergoed van <ph name="ACCOUNT_EMAIL" /> af</translation>
 <translation id="2602501489742255173">Swiep op om te begin</translation>
 <translation id="2603115962224169880">Maak rekenaar skoon</translation>
 <translation id="2603355571917519942">Voice Match is gereed</translation>
@@ -4677,6 +4677,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5539221284352502426">Die wagwoord wat jy ingevoer het, is deur die bediener afgekeur. Die moontlike redes sluit in: Die wagwoord is te kort. Die wagwoord moet syfers of simbole insluit. Die wagwoord moet van vorige wagwoorde verskil.</translation>
 <translation id="5541694225089836610">Jou administrateur het hierdie handeling gedeaktiveer</translation>
 <translation id="5542132724887566711">Profiel</translation>
+<translation id="554229901779827904">Jou rekening word bestuur deur <ph name="MANAGER_NAME" />. Jou administrateur kan hierdie Chrome-blaaierprofiel en sy data sien en wysig. Jou data sluit boekmerke, geskiedenis en wagwoorde in.</translation>
 <translation id="5542750926112347543">Webkoekies van <ph name="DOMAIN" /> af word geblokkeer</translation>
 <translation id="5542949973455282971">Koppel tans aan <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Kontroleer tans status …</translation>
@@ -7460,7 +7461,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8275080796245127762">Bel van jou toestel af</translation>
 <translation id="8275339871947079271">Skuif jou wagwoord na jou Google-rekening toe sodat jy veilig daarby kan ingaan waar jy ook al aangemeld is</translation>
 <translation id="8276560076771292512">Maak kas leeg en dwing herlaai af</translation>
-<translation id="8281721647184388851">Skakel Chrome-blaaiersinkronisering aan?</translation>
 <translation id="8281886186245836920">Slaan oor</translation>
 <translation id="8283475148136688298">Stawingkode verwerp terwyl dit probeer het om aan "<ph name="DEVICE_NAME" />" te koppel.</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-werwe</translation>
@@ -7616,7 +7616,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8448729345478502352">Maak items op jou skerm kleiner of groter</translation>
 <translation id="8449008133205184768">Plak en pas by styl</translation>
 <translation id="8449036207308062757">Bestuur berging</translation>
-<translation id="8451192282033883849">Jou rekening word bestuur deur <ph name="MANAGER_NAME" />. Jou administrateur kan hierdie Chrome-blaaierprofiel en sy data soos boekmerke, geskiedenis en wagwoorde sien en wysig.</translation>
 <translation id="8456512334795994339">Soek programme vir werk en speel</translation>
 <translation id="845702320058262034">Kan nie koppel nie. Maak seker jou foon se Bluetooth is aangeskakel.</translation>
 <translation id="8457451314607652708">Voer boekmerke in</translation>

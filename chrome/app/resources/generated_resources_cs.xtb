@@ -837,6 +837,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1784707308176068866">Spustit na pozadí, když o to požádá spolupracující nativní aplikace</translation>
 <translation id="1784849162047402014">V zařízení dochází místo na disku</translation>
 <translation id="1787350673646245458">Obrázek uživatele</translation>
+<translation id="1788329699711791226">Získejte přístup k obsahu prohlížeče Chrome z účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Odebrat přístup</translation>
 <translation id="1791662854739702043">Nainstalováno</translation>
 <translation id="1792619191750875668">Sekundární obrazovka</translation>
@@ -4660,6 +4661,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5539221284352502426">Zadané heslo bylo serverem odmítnuto. Možné příčiny: Heslo je příliš krátké. Heslo musí obsahovat číslice nebo symboly. Heslo se musí lišit od předchozích hesel.</translation>
 <translation id="5541694225089836610">Administrátor akci zakázal</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Váš účet je spravován doménou <ph name="MANAGER_NAME" />. Tento profil prohlížeče Chrome a jeho data může zobrazit a upravovat váš administrátor. Vaše data zahrnují záložky, historii a hesla.</translation>
 <translation id="5542750926112347543">Soubory cookie z domény <ph name="DOMAIN" /> byly zablokovány</translation>
 <translation id="5542949973455282971">Připojování k síti operátora <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Kontrola stavu...</translation>

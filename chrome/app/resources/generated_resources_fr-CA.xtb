@@ -833,6 +833,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1784707308176068866">Exécuter en arrière-plan à la demande d'une application partenaire native</translation>
 <translation id="1784849162047402014">L'appareil manque d'espace disque</translation>
 <translation id="1787350673646245458">Image de l'utilisateur</translation>
+<translation id="1788329699711791226">Accédez à vos données relatives au navigateur Chrome à partir de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Révoquer l'accès</translation>
 <translation id="1791662854739702043">Module installé</translation>
 <translation id="1792619191750875668">Affichage étendu</translation>
@@ -4650,6 +4651,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5539221284352502426">Le mot de passe que vous avez entré a été refusé par le serveur. Voici des raisons possibles : le mot de passe est trop court. Le mot de passe doit comporter des chiffres ou des symboles. Le mot de passe doit être différent des mots de passe précédents.</translation>
 <translation id="5541694225089836610">Cette action est désactivée par votre administrateur</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut voir et modifier ce profil de navigateur Chrome ainsi que ses données. Vos données comprennent les favoris, l'historique et les mots de passe.</translation>
 <translation id="5542750926112347543">Les témoins de <ph name="DOMAIN" /> sont bloqués</translation>
 <translation id="5542949973455282971">Connexion à <ph name="CARRIER_NAME" /> en cours…</translation>
 <translation id="5543983818738093899">Vérification de l'état en cours...</translation>

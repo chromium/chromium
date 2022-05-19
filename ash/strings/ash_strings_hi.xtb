@@ -176,6 +176,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">नमस्ते, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">टेक्स्ट इनपुट</translation>
+<translation id="1982717156487272186">पिछले हफ़्ते के इवेंट दिखाएं</translation>
 <translation id="1989113344093894667">कॉन्टेंट को कैप्चर नहीं किया जा सकता</translation>
 <translation id="1990046457226896323">स्पीच फ़ाइलें डाउनलोड हो गईं</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> के नए अपडेट के बारे में ज़्यादा जानें</translation>
@@ -263,6 +264,7 @@
 <translation id="2573588302192866788"><ph name="NAME" /> कनेक्ट नहीं किया जा सका</translation>
 <translation id="2575685495496069081">एक से ज़्यादा 'साइन इन' को बंद कर दिया गया है</translation>
 <translation id="2582112259361606227">अपडेट करने के लिए रीस्टार्ट करें</translation>
+<translation id="2586561057878260610"><ph name="DESK_NAME" /> के साथ जोड़ने के लिए, Ctrl + W दबाएं. डेस्क और विंडो बंद करने के लिए, Ctrl + Shift + W दबाएं.</translation>
 <translation id="2595239820337756193">5 हज़ार कितने मील होता है</translation>
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करना ज़रूरी है</translation>
@@ -623,6 +625,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> स्टार रेटिंग</translation>
 <translation id="4633185660152240791">{0,plural, =1{डिवाइस को एक दिन के अंदर पिछले वर्शन पर ले जाएं}one{डिवाइस को # दिन के अंदर पिछले वर्शन पर ले जाएं}other{डिवाइस को # दिनों के अंदर पिछले वर्शन पर ले जाएं}}</translation>
 <translation id="4642092649622328492">आंशिक स्क्रीनशॉट लें</translation>
+<translation id="4644727592819780893">कैमरा प्रीव्यू दिखाने के लिए जगह बहुत कम है</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ऐप्लिकेशन का सुझाव</translation>
 <translation id="4657775630156561295">नीचे दिया गया सुझाव, आपके खाते के सुझाव के इतिहास से हमेशा के लिए हटा दिया जाएगा:
 
@@ -668,6 +671,7 @@
 <translation id="4917385247580444890">मज़बूत</translation>
 <translation id="4918086044614829423">स्वीकार करें</translation>
 <translation id="4925542575807923399">इस खाते के एडमिन के लिए यह ज़रूरी है कि किसी एक से ज़्यादा साइन-इन वाले सत्र में यह खाता पहला साइन इन खाता हो.</translation>
+<translation id="4938176435186993759">सभी सुझाव छिपाएं</translation>
 <translation id="4945196315133970626">सूचनाएं पाने की सुविधा बंद करें</translation>
 <translation id="4946376291507881335">कैप्चर करें</translation>
 <translation id="495046168593986294">ऊपर स्क्रोल करें</translation>
@@ -755,6 +759,7 @@
 <translation id="5520229639206813572">आपके एडमिन ने सभी ई-सिम प्रोफ़ाइलों को हटा दिया है. ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> कनेक्ट हो रहा है.</translation>
 <translation id="5532994612895037630">फ़ुल स्क्रीन को रिकॉर्ड करने के लिए कहीं भी टैप करें</translation>
+<translation id="5536723544185013515">हाल ही में इस्तेमाल किए गए ऐप्लिकेशन, हाल ही में इस्तेमाल किए गए सभी ऐप्लिकेशन ऐक्सेस करने के लिए, लेफ़्ट या राइट ऐरो बटन इस्तेमाल करें</translation>
 <translation id="553675580533261935">सत्र से बाहर निकलें</translation>
 <translation id="5537725057119320332">कास्‍ट करें</translation>
 <translation id="554893713779400387">डिक्टेशन (आप जो बोलते हैं उसे लिखना) टॉगल करें</translation>
@@ -778,10 +783,12 @@
 <translation id="5673434351075758678">अपनी सेटिंग सिंक करने के बाद "<ph name="FROM_LOCALE" />" से "<ph name="TO_LOCALE" />".</translation>
 <translation id="5675363643668471212">शेल्फ़ आइटम</translation>
 <translation id="5677928146339483299">ब्लॉक किया गया है</translation>
+<translation id="5678564054339031017">अगले हफ़्ते के इवेंट दिखाएं</translation>
 <translation id="5679050765726761783">लो-पावर अडैप्टर कनेक्ट किया गया</translation>
 <translation id="5682642926269496722">मौजूदा उपयोगकर्ता खाते के लिए Google Assistant की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="5689633613396158040">'नाइट लाइट' की मदद से कम रोशनी में स्क्रीन को देखना और पढ़ना आसान हो जाता है. 'नाइट लाइट' के चालू होने के समय में बदलाव करने या इसे बंद करने के लिए टैप करें.</translation>
 <translation id="5691772641933328258">फ़िंगरप्रिंट नहीं पहचाना गया</translation>
+<translation id="570390244361237317">सभी ऐप्लिकेशन, एक ऐप्लिकेशन से दूसरे ऐप्लिकेशन पर जाने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="5707775774148071965">आपकी केबल की डेटा दर, डिवाइस की डेटा दर के मुकाबले कम है. डिवाइस की परफ़ॉर्मेंस पर बुरा असर पड़ सकता है.</translation>
 <translation id="5710450975648804523">'परेशान न करें' मोड चालू है</translation>
 <translation id="571295407079589142">मोबाइल डेटा बंद है</translation>

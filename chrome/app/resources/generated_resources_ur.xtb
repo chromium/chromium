@@ -835,6 +835,7 @@
 <translation id="1784707308176068866">تعاون کرنے والی اصل ایپلیکیشن کی درخواست پر پس منظر میں چلائیں</translation>
 <translation id="1784849162047402014">آلہ میں ڈسک کی جگہ کم ہے</translation>
 <translation id="1787350673646245458">صارف تصویر</translation>
+<translation id="1788329699711791226">‏<ph name="ACCOUNT_EMAIL" /> سے اپنے Chrome براؤزر کی سہولیات تک رسائی حاصل کریں</translation>
 <translation id="1790976235243700817">رسائی ہٹائیں</translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792619191750875668">توسیع کردہ ڈسپلے</translation>
@@ -1709,7 +1710,6 @@
 <translation id="25899519884572181">ریڈر وضع سے باہر نکلیں</translation>
 <translation id="2593499352046705383">‏شروع کرنے سے پہلے ، یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا بیک اپ ہے۔ <ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو اوور رائٹ ہو جائے گی۔ g.co/flex/InstallGuide پر مزید جانیں۔</translation>
 <translation id="2594999711683503743">‏Google پر تلاش کریں یا URL ٹائپ کریں</translation>
-<translation id="2597976513418770460">‏<ph name="ACCOUNT_EMAIL" /> سے اپنے Chrome براؤزر کے مواد حاصل کریں</translation>
 <translation id="2602501489742255173">شروع کرنے کیلئے اوپر سوائپ کریں</translation>
 <translation id="2603115962224169880">کمپیوٹر صاف کریں</translation>
 <translation id="2603355571917519942">‏Voice Match تیار ہے</translation>
@@ -4661,6 +4661,7 @@
 <translation id="5539221284352502426">آپ کا درج کردہ پاس ورڈ سرور کی طرف سے مسترد کر دیا گیا۔ ممکنہ وجوہات میں شامل ہیں: پاس ورڈ کافی چھوٹا ہے۔ پاس ورڈ میں نمبرز یا علامتوں کا شامل ہونا ضروری ہے۔ پاس ورڈ کا پرانے پاس ورڈز سے مختلف ہونا ضروری ہے۔</translation>
 <translation id="5541694225089836610">آپ کے منتظم نے کارروائی کو غیر فعال کر دیا ہے</translation>
 <translation id="5542132724887566711">پروفائل</translation>
+<translation id="554229901779827904">‏آپ کا اکاؤنٹ <ph name="MANAGER_NAME" /> کے زیر انتظام ہے۔ آپ کا منتظم اس Chrome براؤزر کی پروفائل اور اس کے ڈیٹا کو دیکھ اور اس میں ترمیم کر سکتا ہے۔ آپ کے ڈیٹا میں بک مارکس، سرگزشت اور پاس ورڈز شامل ہیں۔</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> کی کوکیز مسدود ہو گئیں</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> سے منسلک کیا جا رہا ہے</translation>
 <translation id="5543983818738093899">اسٹیٹس چیک کیا جا رہا ہے…</translation>
@@ -7442,7 +7443,6 @@
 <translation id="8275080796245127762">اپنے آلہ سے کال کریں</translation>
 <translation id="8275339871947079271">‏اپنے پاس ورڈ کو اپنے Google اکاؤنٹ میں منتقل کریں تاکہ آپ جہاں بھی سائن ان ہوں وہاں اس تک محفوظ طریقے سے رسائی حاصل کر سکیں</translation>
 <translation id="8276560076771292512">خالی کیش اور ہارڈ ری لوڈ</translation>
-<translation id="8281721647184388851">‏Chrome براؤزر کی مطابقت پذیری کو آن کریں؟</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" سے منسلک کیے جانے کے وقت توثیقی کوڈ کو مسترد کر دیا گیا۔</translation>
 <translation id="8284279544186306258">سبھی <ph name="WEBSITE_1" /> سائٹس</translation>
@@ -7598,7 +7598,6 @@
 <translation id="8448729345478502352">اپنی اسکرین پر موجود آئٹمز کو اور چھوٹا یا بڑا کریں</translation>
 <translation id="8449008133205184768">طرز پیسٹ کریں اور مماثل بنائیں</translation>
 <translation id="8449036207308062757">اسٹوریج کا نظم کریں</translation>
-<translation id="8451192282033883849">‏<ph name="MANAGER_NAME" /> آپ کے اکاؤنٹ کا نظم کرتا ہے۔ آپ کا منتظم اس Chrome براؤزر کی پروفائل اور اس کے ڈیٹا جیسے بُک مارکس، سرگزشت اور پاس ورڈز کو دیکھ اور اس میں ترمیم کر سکتا ہے۔</translation>
 <translation id="8456512334795994339">کام کرنے اور چلانے کے لئے ایپس تلاش کریں</translation>
 <translation id="845702320058262034">منسلک نہیں ہو سکتا۔ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔</translation>
 <translation id="8457451314607652708">بُک مارکس درآمد کریں</translation>

@@ -173,6 +173,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ciao <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Inserimento testo</translation>
+<translation id="1982717156487272186">Mostra la settimana precedente</translation>
 <translation id="1989113344093894667">Impossibile acquisire i contenuti</translation>
 <translation id="1990046457226896323">File di contenuti vocali scaricati</translation>
 <translation id="1993072747612765854">Leggi ulteriori informazioni sull'ultimo aggiornamento di <ph name="SYSTEM_APP_NAME" /></translation>
@@ -621,6 +622,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valutazione a stelle <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Ripristina la versione precedente del dispositivo entro un giorno}other{Ripristina la versione precedente del dispositivo entro # giorni}}</translation>
 <translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
+<translation id="4644727592819780893">Area troppo piccola per mostrare l'anteprima della fotocamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, consiglio applicazione</translation>
 <translation id="4657775630156561295">Il seguente suggerimento verrà rimosso in modo permanente dalla cronologia dei suggerimenti del tuo account:
 
@@ -778,6 +780,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5673434351075758678">Da "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" dopo la sincronizzazione delle impostazioni.</translation>
 <translation id="5675363643668471212">Elemento barra delle app</translation>
 <translation id="5677928146339483299">Blocca</translation>
+<translation id="5678564054339031017">Mostra la settimana successiva</translation>
 <translation id="5679050765726761783">Alimentatore a basso consumo energetico collegato</translation>
 <translation id="5682642926269496722">L'Assistente Google non è disponibile per l'attuale account utente.</translation>
 <translation id="5689633613396158040">Con la funzione Luminosità notturna, potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata. Tocca per cambiare l'ora di attivazione della funzione Luminosità notturna o disattiva completamente la funzione.</translation>

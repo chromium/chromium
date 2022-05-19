@@ -176,6 +176,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
+<translation id="1982717156487272186">Mostrar semana anterior</translation>
 <translation id="1989113344093894667">Não é possível capturar conteúdo</translation>
 <translation id="1990046457226896323">Ficheiros de voz transferidos.</translation>
 <translation id="1993072747612765854">Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -623,6 +624,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, número de estrelas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Altere o dispositivo para uma versão anterior dentro de um dia}other{Altere o dispositivo para uma versão anterior dentro de # dias}}</translation>
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
+<translation id="4644727592819780893">A região é demasiado pequena para se ajustar à câmara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de aplicação</translation>
 <translation id="4657775630156561295">A sugestão seguinte irá ser removida permanentemente do histórico de sugestões da sua conta:
 
@@ -780,6 +782,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas definições.</translation>
 <translation id="5675363643668471212">Item de prateleira</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5678564054339031017">Mostrar semana seguinte</translation>
 <translation id="5679050765726761783">Transformador de baixo consumo ligado</translation>
 <translation id="5682642926269496722">O Assistente Google não está disponível para a conta do utilizador atual.</translation>
 <translation id="5689633613396158040">A Luz noturna torna mais fácil olhar para o ecrã ou ler com pouca luz. Toque para alterar a hora em que a Luz noturna é ativada ou desativada totalmente.</translation>

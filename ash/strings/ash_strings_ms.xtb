@@ -264,6 +264,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2573588302192866788">Tidak dapat menyambungkan <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Log masuk berbilang telah dilumpuhkan</translation>
 <translation id="2582112259361606227">Mulakan semula untuk mengemas kini</translation>
+<translation id="2586561057878260610">Tekan Ctrl + W untuk digabungkan dengan <ph name="DESK_NAME" />. Tekan Ctrl + Shift + W untuk menutup meja dan tetingkap.</translation>
 <translation id="2595239820337756193">5000 batu</translation>
 <translation id="2596078834055697711">Ambil tangkapan skrin tetingkap</translation>
 <translation id="2607678425161541573">Log masuk dalam talian diperlukan</translation>
@@ -670,6 +671,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4917385247580444890">Kuat</translation>
 <translation id="4918086044614829423">Terima</translation>
 <translation id="4925542575807923399">Pentadbir akaun ini memerlukan akaun ini menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
+<translation id="4938176435186993759">Sembunyikan semua cadangan</translation>
 <translation id="4945196315133970626">Matikan pemberitahuan</translation>
 <translation id="4946376291507881335">Tangkap</translation>
 <translation id="495046168593986294">Tatal ke atas</translation>
@@ -757,6 +759,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5520229639206813572">Pentadbir anda telah mengalih keluar semua profil eSIM. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> sedang menyambung.</translation>
 <translation id="5532994612895037630">Ketik mana-mana bahagian untuk merakam skrin penuh</translation>
+<translation id="5536723544185013515">Apl Terbaharu, navigasi dengan anak panah ke kiri atau ke kanan untuk mengakses semua apl terbaharu</translation>
 <translation id="553675580533261935">Keluar daripada sesi</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Togol pengimlakan</translation>
@@ -784,6 +787,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5682642926269496722">Google Assistant tidak tersedia untuk akaun pengguna semasa.</translation>
 <translation id="5689633613396158040">Cahaya Malam memudahkan anda melihat skrin atau membaca dalam cahaya malap. Ketik untuk menukar masa Malam Cahaya dihidupkan atau mematikan ciri ini sepenuhnya.</translation>
 <translation id="5691772641933328258">Cap jari tidak dikenali</translation>
+<translation id="570390244361237317">Semua Apl, navigasi dengan kekunci anak panah untuk mengakses semua apl</translation>
 <translation id="5707775774148071965">Peranti anda menyokong kadar data yang lebih tinggi daripada kabel anda. Prestasi peranti mungkin terhad.</translation>
 <translation id="5710450975648804523">Jangan Ganggu dihidupkan</translation>
 <translation id="571295407079589142">Data mudah alih dimatikan</translation>

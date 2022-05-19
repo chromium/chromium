@@ -836,6 +836,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1784707308176068866">Rulează în fundal atunci când o aplicație nativă participantă solicită acest lucru</translation>
 <translation id="1784849162047402014">Spațiul de pe hard diskul dispozitivului este redus</translation>
 <translation id="1787350673646245458">Imaginea utilizatorului</translation>
+<translation id="1788329699711791226">Accesează datele din browserul Chrome din <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Elimină accesul</translation>
 <translation id="1791662854739702043">Instalat</translation>
 <translation id="1792619191750875668">Afișare extinsă</translation>
@@ -1708,7 +1709,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="25899519884572181">Ieși din modul Cititor</translation>
 <translation id="2593499352046705383">Înainte de a începe, asigură-te că ai făcut backup pentru date. Instalarea <ph name="DEVICE_OS" /> va înlocui datele de pe hard disk. Află mai multe la g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Caută pe Google sau introdu adresa URL</translation>
-<translation id="2597976513418770460">Obține datele din browserul Chrome din <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Glisează în sus pentru a începe</translation>
 <translation id="2603115962224169880">Curăță computerul</translation>
 <translation id="2603355571917519942">Voice Match este gata</translation>
@@ -4662,6 +4662,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5539221284352502426">Parola pe care ai introdus-o a fost respinsă de server. Motivele posibile includ: parola este prea scurtă; parola trebuie să includă cifre sau simboluri; parola trebuie să fie diferită de parolele anterioare.</translation>
 <translation id="5541694225089836610">Acțiunea este dezactivată de administrator</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chrome. Între date se numără marcajele, istoricul și parolele.</translation>
 <translation id="5542750926112347543">Cookie-urile de la <ph name="DOMAIN" /> au fost blocate</translation>
 <translation id="5542949973455282971">Se conectează la <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Se verifică starea...</translation>
@@ -7446,7 +7447,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8275080796245127762">Apelează de pe dispozitivul tău</translation>
 <translation id="8275339871947079271">Mută parola în Contul Google, astfel încât să o accesezi în siguranță oriunde te conectezi</translation>
 <translation id="8276560076771292512">Goliți memoria cache și reîncărcați forțat</translation>
-<translation id="8281721647184388851">Activezi sincronizarea browserului Chrome?</translation>
 <translation id="8281886186245836920">Omite</translation>
 <translation id="8283475148136688298">Codul de autentificare a fost respins în timpul conectării la „<ph name="DEVICE_NAME" />”.</translation>
 <translation id="8284279544186306258">toate site-urile <ph name="WEBSITE_1" /></translation>
@@ -7602,7 +7602,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8448729345478502352">Micșorează sau mărește elementele de pe ecran</translation>
 <translation id="8449008133205184768">Inserează și potrivește stilul</translation>
 <translation id="8449036207308062757">Gestionează stocarea</translation>
-<translation id="8451192282033883849">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chrome, cum ar fi marcajele, istoricul și parolele.</translation>
 <translation id="8456512334795994339">Găsește aplicații pentru serviciu și divertisment</translation>
 <translation id="845702320058262034">Nu se poate conecta. Asigură-te că funcția Bluetooth a telefonului este pornită.</translation>
 <translation id="8457451314607652708">Importă marcajele</translation>

@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Possible portal captiu</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Activa la protecció contra escriptura</translation>
 <translation id="1308754910631152188">S'està actualitzant (<ph name="PERCENTAGE_VALUE" />% completat)</translation>
 <translation id="1310380015393971138">No hi ha cap xarxa <ph name="NETWORK_NAME" /> disponible</translation>
 <translation id="131421566576084655">La data del darrer restabliment de dades no està disponible</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Configuració de Respostes ràpides</translation>
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
+<translation id="5179530508336824319">Activa la protecció contra l'escriptura per continuar a la pantalla següent. Consulta la pàgina d'assistència del fabricant del dispositiu per obtenir instruccions.</translation>
 <translation id="5190187232518914472">Reviu els teus records preferits. Per afegir o editar àlbums, ves a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>

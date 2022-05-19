@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">U dyshua portal izolues</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Aktivizo mbrojtjen nga shkrimi</translation>
 <translation id="1308754910631152188">Po përditësohet (<ph name="PERCENTAGE_VALUE" />% e përfunduar)</translation>
 <translation id="1310380015393971138">Nuk ofrohet asnjë rrjet <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Data e rivendosjes së fundit të të dhënave nuk ofrohet</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Rrjeti vendor, jo në roaming</translation>
+<translation id="132712914231403017">Instalo imazhin e firmuerit</translation>
 <translation id="1327977588028644528">Porta e kalimit</translation>
 <translation id="1328223165223065150">Ngjyra e imazhit të sfondit</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1643449475550628585">Ndryshoje çdo ditë imazhin e sfondit</translation>
 <translation id="1644574205037202324">Historiku</translation>
+<translation id="1645954272419197032">Konfirmo informacionet e pajisjes</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
 <translation id="1668469839109562275">VPN e integruar</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Lidhshmëria</translation>
 <translation id="2008685064673031089">Kërkimi kryesor</translation>
 <translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
+<translation id="2016848882344942759">--pa etiketë të bardhë--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2085089206770112532">Ulja e ndriçimit të ekranit</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Planifikimi i modalitetit të errët</translation>
 <translation id="2275586345903859204">Riparimi përfundoi</translation>
 <translation id="2287186687001756809">Nuk ka asnjë imazh. Për të shtuar fotografi, shko te <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Fut hapësirën ruajtëse të jashtme, si p.sh. një njësi USB ose një kartë SD, me imazhin e shkarkuar të Chromebook Recovery Utility</translation>
 <translation id="2307344026739914387">Përdor çiftin aktual të çelësave</translation>
 <translation id="2320295602967756579">Aktivizo temën e ndriçuar</translation>
 <translation id="2323506179655536734">KAPËRCYER</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">Çelësi i vërtetimit për TLS</translation>
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2717139507051041123">Aktivizo modalitetin e ngjyrave të errëta</translation>
+<translation id="2727250716596204208">Imazhi i firmuerit nuk mund të gjendej. Fut hapësirën ruajtëse të jashtme, si p.sh. një njësi USB ose një kartë SD, me imazhin e shkarkuar të Chromebook Recovery Utility.</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2751739896257479635">Vërtetimi EAP i fazës 2</translation>
 <translation id="2756652381241102009">Ekzekuto diagnostikimin</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Pajisja është lidhur.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Të hiqet faqja?}=1{Të hiqet faqja {PAGE_NUMBER}?}other{Të hiqet faqja {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Pajisja po përgatitet...</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
 <translation id="3156846309055100599">Po skanon faqen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">U zbulua portal izolues</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
+<translation id="3383751554789092165">Ndrysho informacionet e pajisjes sipas nevojës.</translation>
 <translation id="3404249063913988450">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="3404770484521709967">Komponentët janë instaluar si duhet.</translation>
 <translation id="3413935475507503304">Kliko "Para" për të vazhduar me përditësimin.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
 <translation id="3771294271822695279">Skedarët video</translation>
+<translation id="3774059845329307709">Numri i serisë</translation>
 <translation id="3784455785234192852">Kyçe</translation>
 <translation id="38114475217616659">Fshi të gjithë historikun</translation>
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Karta SIM e shkyçur</translation>
 <translation id="4562494484721939086">Nuk ka shërbim</translation>
+<translation id="4568938274596692027">Instalimi ka përfunduar. Po përgatitet për rinisjen...</translation>
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Zgjidh një të re menjëherë</translation>
 <translation id="4891842000192098784">Tensioni</translation>
 <translation id="4897058166682006107">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e majtë.</translation>
+<translation id="4908030561598728899">Firmueri po instalohet...</translation>
 <translation id="4915052247106771211">Kjo do ta rivendosë pajisjen te cilësimet e fabrikës (Powerwash).</translation>
 <translation id="4917385247580444890">I fortë</translation>
 <translation id="4917889632206600977">Ndaloi - Nuk ka letër</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Cilësimet e "Përgjigjeve të shpejta"</translation>
 <translation id="5168185087976003268">Integriteti i baterisë</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
+<translation id="5179530508336824319">Aktivizo mbrojtjen nga shkrimi për të vazhduar në ekranin tjetër. Shko te faqja e mbështetjes e prodhuesit të pajisjes për udhëzime.</translation>
 <translation id="5190187232518914472">Rijeto kujtimet e tua të preferuara. Për të shtuar ose modifikuar albume, shko te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Nuk mund të gjej diçka në ekranin tënd me të cilën mund të të ndihmoj. Provo të trokasësh te mikrofoni për të më kërkuar diçka.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -614,8 +626,10 @@
 <translation id="6768237774506518020">Normë e lartë e rezolucioneve të dështuara të DNS-së</translation>
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
+<translation id="6822504384524564824">SKU-ja duhet të ndryshohet vetëm nëse komponentët e rinj janë të ndryshëm nga komponentët që kanë zëvendësuar. Për shembull, një ekran me prekje që zëvendëson një ekran pa prekje ose memoria që përmirësohet nga 8 GB në 16 GB.</translation>
 <translation id="6840315122969944400">Riparimi i pajisjes <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
+<translation id="6876833053687020046">Numri i pjesës së memories DRAM</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="6905724422583748843">Prapa te <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kapaku i skanerit është i hapur. Mbylle kapakun dhe provo përsëri.</translation>
@@ -663,6 +677,7 @@
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Ndrysho mbrojtësin e ekranit</translation>
 <translation id="7397270852490618635">Çaktivizo temën e ndriçuar</translation>
 <translation id="741244894080940828">konvertimi</translation>
@@ -762,6 +777,7 @@
 <translation id="8364946094152050673">Serverët DNS janë bosh</translation>
 <translation id="8372477600026034341">Pritësit e tjerë</translation>
 <translation id="8378855320830505539">Rajoni</translation>
+<translation id="8382302752385457774">Etiketa e bardhë</translation>
 <translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
 <translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
 <translation id="8422748173858722634">IMEI</translation>

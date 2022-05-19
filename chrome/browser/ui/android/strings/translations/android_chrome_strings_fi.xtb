@@ -83,6 +83,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1384704387250346179">Käännä kuva Google Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiivinen <ph name="LAST_UPDATED" /> päivää sitten</translation>
+<translation id="13931502444227376">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle. Katso sivuston <ph name="BEGIN_LINK1" />käyttöehdot<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Hae nimellä <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Voit muuttaa tämän milloin tahansa Chromen asetuksista. Kokeilut ovat voimassa mainosten nykyisen näyttötavan ohessa, joten et heti näe muutoksia.</translation>
 <translation id="1406000523432664303">Do Not Track</translation>
@@ -145,6 +146,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="173522743738009831">Tietoja Privacy Sandboxista</translation>
 <translation id="1736419249208073774">Tutustu</translation>
 <translation id="1749561566933687563">Synkronoi kirjanmerkit</translation>
+<translation id="1750259112639922169">Välilehtiryhmä – <ph name="TAB_COUNT" /> välilehteä</translation>
 <translation id="17513872634828108">Avoimet välilehdet</translation>
 <translation id="1754404134430936718">Teksti kopioitu</translation>
 <translation id="1779766957982586368">Sulje ikkuna</translation>
@@ -789,6 +791,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5368227114232678694">Voit selata yksityisesti tällä laitteella incognito-tilassa</translation>
 <translation id="5375577065097716013">Hae kuvaa Google Lensilla <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Reaktiota muutettu</translation>
+<translation id="5401851137404501592">Jos jatkat, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jakaa nimesi, sähköpostiosoitteesi, osoitteesi ja profiilikuvasi tälle sivustolle.</translation>
 <translation id="5403644198645076998">Salli vain tietyt sivustot</translation>
 <translation id="5409881200985013443">Lähetetäänkö <ph name="ONE_TIME_CODE" /> (<ph name="CLIENT_NAME" />)?</translation>
 <translation id="5414836363063783498">Vahvistetaan…</translation>
@@ -1129,6 +1132,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="7177873915659574692">QR-koodin luominen ei onnistu. URL-osoitteessa on yli <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
 <translation id="7177959540995930968">Voit lukea lisää näistä ominaisuuksista Chromen asetuksista.</translation>
 <translation id="718226107353899806">Voit lisätä jopa <ph name="MAX_NUM_REACTIONS" /> reaktiota</translation>
+<translation id="7183693674623539380">Välilehtiryhmä – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="7191430249889272776">Välilehti avattiin taustalla.</translation>
 <translation id="7196215469483532480">Yksityisyysoppaan selitys kokonaan avattuna</translation>

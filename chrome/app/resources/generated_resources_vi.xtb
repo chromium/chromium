@@ -89,6 +89,9 @@
 <translation id="1082214733466244292">Quản trị viên của bạn đã chặn một số chức năng của thiết bị này</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> muốn khôi phục cài đặt Chrome của bạn về mặc định ban đầu. Thao tác này sẽ đặt lại trang chủ, trang thẻ mới và công cụ tìm kiếm, vô hiệu hóa các tiện ích của bạn và bỏ ghim tất cả các thẻ. Hành động này cũng xóa dữ liệu tạm thời và được lưu trong bộ nhớ đệm khác, chẳng hạn như cookie, nội dung và dữ liệu trang web.</translation>
 <translation id="1084096383128641877">Việc xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="DOMAIN" />. Hãy đổi mật khẩu hoặc xóa tài khoản của bạn trên <ph name="DOMAIN_LINK" /> để bảo vệ mật khẩu hoặc tài khoản đó.</translation>
+<translation id="1084288067399862432">Đã đổi thành công mật khẩu bị lộ.
+
+Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">S&amp;ao chép địa chỉ liên kết</translation>
 <translation id="1085064499066015002">Cho phép trên tất cả trang web</translation>
 <translation id="1085697365578766383">Lỗi khi khởi động máy ảo. Vui lòng thử lại.</translation>
@@ -843,6 +846,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1784707308176068866">Chạy trong nền khi một ứng dụng gốc hợp tác yêu cầu</translation>
 <translation id="1784849162047402014">Thiết bị sắp hết dung lượng đĩa</translation>
 <translation id="1787350673646245458">Hình ảnh của người dùng</translation>
+<translation id="1788329699711791226">Truy cập vào dữ liệu của bạn trên trình duyệt Chrome qua <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Xóa quyền truy cập</translation>
 <translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792619191750875668">Màn hình mở rộng</translation>
@@ -1693,6 +1697,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2554553592469060349">Tệp đã chọn quá lớn (kích thước tối đa: 3mb).</translation>
 <translation id="2558569818338050235">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy</translation>
 <translation id="2558896001721082624">Luôn hiển thị tùy chọn trợ năng trong menu hệ thống</translation>
+<translation id="2559889124253841528">Lưu vào thiết bị</translation>
 <translation id="2564520396658920462">Tùy chọn thực thi JavaScript qua AppleScript đã bị tắt. Để bật tùy chọn này, từ thanh menu, hãy chuyển đến Xem&gt; Nhà phát triển &gt; Cho phép JavaScript từ Apple Events. Để biết thêm thông tin, hãy truy cập vào https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Cải thiện khả năng kiểm tra chính trả</translation>
 <translation id="2568774940984945469">Bộ chứa Thanh thông tin</translation>
@@ -1703,6 +1708,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2575247648642144396">Biểu tượng này sẽ hiển thị khi tiện ích có thể hoạt động trên trang hiện tại. Sử dụng tiện ích này bằng cách nhấp vào biểu tượng hoặc bằng cách nhấn <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575407791320728464">URL không hợp lệ. Hãy đảm bảo URL có định dạng phù hợp.</translation>
 <translation id="2575441894380764255">Không được phép hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
+<translation id="2575713839157415345">{YEARS,plural, =1{Thiết bị này sẽ được lưu trong 1 năm và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {YEARS} năm và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="257779572837908839">Thiết lập làm Chromebox cho hội họp</translation>
 <translation id="2580889980133367162">Luôn cho phép <ph name="HOST" /> tải xuống nhiều tệp</translation>
 <translation id="258095186877893873">Lâu</translation>
@@ -3001,6 +3007,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3856800405688283469">Chọn múi giờ</translation>
 <translation id="3857807444929313943">Nhấc ngón tay lên rồi chạm lại</translation>
 <translation id="3858860766373142691">Tên</translation>
+<translation id="385939467708172187">Dùng mật khẩu mạnh</translation>
 <translation id="3861638017150647085">Tên người dùng "<ph name="USERNAME" />" không có sẵn</translation>
 <translation id="3861977424605124250">Hiển thị khi khởi động</translation>
 <translation id="386239283124269513">&amp;Khôi phục Nhóm</translation>
@@ -3244,6 +3251,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4089235344645910861">Đã lưu chế độ cài đặt. Đã bắt đầu đồng bộ hóa.</translation>
 <translation id="4090103403438682346">Bật quyền truy cập đã xác minh</translation>
 <translation id="4090947011087001172">Đặt lại quyền của trang web cho <ph name="SITE" />?</translation>
+<translation id="4092636882861724179">Bạn có thể xem và quản lý mật khẩu đã lưu trong <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4093865285251893588">Ảnh hồ sơ</translation>
 <translation id="4093955363990068916">Tệp cục bộ:</translation>
 <translation id="4094647278880271855">Bạn đang dùng một biến môi trường chưa được hỗ trợ: <ph name="BAD_VAR" />. Do đó, tính ổn định và độ bảo mật sẽ bị ảnh hưởng.</translation>
@@ -3534,6 +3542,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4392896746540753732">Chỉnh sửa tệp cấu hình này</translation>
 <translation id="4394049700291259645">Vô hiệu hóa</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Mở tất cả}=1{&amp;Mở dấu trang}other{&amp;Mở tất cả ({COUNT})}}</translation>
+<translation id="4397372003838952832">Bạn không cần nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> của <ph name="EMAIL" /></translation>
 <translation id="439817266247065935">Thiết bị của bạn không tắt đúng cách. Hãy khởi động lại Linux để dùng các ứng dụng Linux.</translation>
 <translation id="4400367121200150367">Trang web không bao giờ lưu mật khẩu sẽ xuất hiện tại đây</translation>
 <translation id="4400632832271803360">Giữ phím Trình khởi chạy để chuyển đổi chức năng của các phím hàng trên cùng</translation>
@@ -3547,6 +3556,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="440653823335387109">CÁC TRANG BẠN ĐÃ ĐỌC</translation>
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
+<translation id="4407039574263172582">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK" />điều khoản dịch vụ<ph name="END_LINK" /> của trang web này.</translation>
 <translation id="4408599188496843485">T&amp;rợ giúp</translation>
 <translation id="4409271659088619928">Bạn đang dùng công cụ tìm kiếm <ph name="DSE" />. Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm đó.</translation>
 <translation id="4409697491990005945">Lề</translation>
@@ -3731,6 +3741,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4579453506923101210">Xóa điện thoại đã kết nối</translation>
 <translation id="4579581181964204535">Không thể truyền <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Để xem thông báo của trình duyệt, hãy chuyển tới mục <ph name="LINK_BEGIN" />Các chế độ cài đặt của trình duyệt Chrome<ph name="LINK_END" /></translation>
+<translation id="4580596421317071374">Mật khẩu được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" /> trên thiết bị này.</translation>
 <translation id="4581774856936278355">Lỗi khi khôi phục Linux</translation>
 <translation id="4582297591746054421">Các trang web thường đọc bảng nhớ tạm để áp dụng những tính năng như giữ nguyên định dạng của văn bản đã sao chép</translation>
 <translation id="4582563038311694664">Đặt lại tất cả cài đặt</translation>
@@ -3903,6 +3914,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4761104368405085019">Sử dụng micrô của bạn</translation>
 <translation id="4762718786438001384">Dung lượng đĩa của thiết bị quá thấp</translation>
 <translation id="4763408175235639573">Các cookie sau đã được cài đặt khi bạn xem trang này</translation>
+<translation id="4765524037138975789">{MONTHS,plural, =1{Thiết bị này sẽ được lưu trong 1 tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {MONTHS} tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="4765582662863429759">Cho phép Android Messages chuyển tiếp tin nhắn văn bản từ điện thoại sang Chromebook</translation>
 <translation id="4768332406694066911">Bạn có các chứng chỉ từ những tổ chức nhận dạng bạn sau đây</translation>
 <translation id="4770119228883592393">Đã yêu cầu quyền. Hãy nhấn tổ hợp phím ⌘ + Option + Mũi tên xuống để phản hồi</translation>
@@ -4517,6 +4529,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5398497406011404839">Dấu trang đã ẩn</translation>
 <translation id="5398572795982417028">Vượt quá phạm vi trang, giới hạn là <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">Ngừng theo dõi trang web</translation>
+<translation id="5401851137404501592">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này.</translation>
 <translation id="5402815541704507626">Tải xuống bản cập nhật bằng cách dùng dữ liệu di động</translation>
 <translation id="540296380408672091">Luôn chặn cookie trên <ph name="HOST" /></translation>
 <translation id="5404740137318486384">Nhấn một công tắc hoặc phím trên bàn phím để gán cho “<ph name="ACTION" />”.
@@ -4664,6 +4677,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5539221284352502426">Mật khẩu bạn nhập đã bị máy chủ từ chối. Các lý do có thể bao gồm: Mật khẩu quá ngắn. Mật khẩu phải chứa chữ số hoặc biểu tượng. Mật khẩu phải khác với mật khẩu cũ.</translation>
 <translation id="5541694225089836610">Quản trị viên đã vô hiệu hóa thao tác này</translation>
 <translation id="5542132724887566711">Tiểu sử</translation>
+<translation id="554229901779827904">Tài khoản của bạn do <ph name="MANAGER_NAME" /> quản lý. Quản trị viên của bạn có thể xem và chỉnh sửa hồ sơ này trên trình duyệt Chrome cũng như dữ liệu tương ứng. Dữ liệu của bạn bao gồm dấu trang, nhật ký và mật khẩu.</translation>
 <translation id="5542750926112347543">Đã chặn cookie từ <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Đang kết nối với <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Đang kiểm tra trạng thái...</translation>
@@ -5372,6 +5386,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6250186368828697007">Khi bạn chia sẻ màn hình, thông tin chi tiết sẽ bị ẩn</translation>
 <translation id="6251870443722440887">Quản lý GDI</translation>
 <translation id="625369703868467034">Tình trạng mạng</translation>
+<translation id="6253801023880399036">Mật khẩu được lưu vào <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Lộ Khoá</translation>
 <translation id="6254892857036829079">Hoàn hảo</translation>
 <translation id="6257602895346497974">Bật tính năng đồng bộ hóa...</translation>
@@ -6396,6 +6411,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7282547042039404307">Mượt mà</translation>
 <translation id="7282992757463864530">Thanh thông tin</translation>
 <translation id="7283555985781738399">Chế độ khách</translation>
+<translation id="7284307451964417957">{DAYS,plural, =1{Thiết bị này sẽ được lưu trong 1 ngày và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {DAYS} ngày và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="7284411326658527427">Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
 <translation id="7287143125007575591">Truy cập bị từ chối.</translation>
 <translation id="7287411021188441799">Khôi phục nền mặc định</translation>
@@ -6600,6 +6616,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7488682689406685343">Trang web này có thể đang tìm cách lừa bạn để bạn cho phép thông báo xâm nhập.</translation>
 <translation id="7489761397368794366">Gọi bằng thiết bị của bạn</translation>
 <translation id="749028671485790643">Cá nhân <ph name="VALUE" /></translation>
+<translation id="7490683549040131791">Kiểm tra các mật khẩu còn lại</translation>
 <translation id="7491962110804786152">thẻ</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookie}}</translation>
 <translation id="7493386493263658176">Tiện ích <ph name="EXTENSION_NAME" /> có thể thu thập tất cả nội dung bạn nhập, bao gồm dữ liệu cá nhân như mật khẩu và số thẻ tín dụng. Bạn có muốn sử dụng tiện ích này không?</translation>
@@ -7492,6 +7509,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8335587457941836791">Bỏ ghim khỏi kệ</translation>
 <translation id="8336407002559723354">Bản cập nhật sẽ hết hạn vào <ph name="MONTH_AND_YEAR" /></translation>
 <translation id="8336739000755212683">Thay đổi hình ảnh tài khoản trên thiết bị</translation>
+<translation id="8337020675372081178">{HOURS,plural, =1{Thiết bị này sẽ được lưu trong 1 giờ và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {HOURS} giờ và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="8337047789441383384">Bạn đã đăng ký khóa bảo mật này nên không phải đăng ký lại.</translation>
 <translation id="8338952601723052325">Trang web dành cho nhà phát triển</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> đã lưu trữ dữ liệu cục bộ</translation>

@@ -845,6 +845,7 @@
 <translation id="1784707308176068866">合作內置應用程式提出要求時在背景執行</translation>
 <translation id="1784849162047402014">裝置的磁碟儲存空間即將用盡</translation>
 <translation id="1787350673646245458">使用者圖片</translation>
+<translation id="1788329699711791226">透過 <ph name="ACCOUNT_EMAIL" /> 存取 Chrome 瀏覽器資料</translation>
 <translation id="1790976235243700817">移除存取權</translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792619191750875668">延伸顯示屏</translation>
@@ -1722,7 +1723,6 @@
 <translation id="25899519884572181">離開閱讀器模式</translation>
 <translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。請前往 g.co/flex/InstallGuide 以瞭解詳情。</translation>
 <translation id="2594999711683503743">搜尋 Google 或輸入網址</translation>
-<translation id="2597976513418770460">從 <ph name="ACCOUNT_EMAIL" /> 取得 Chrome 瀏覽器內容</translation>
 <translation id="2602501489742255173">向上滑動即可開始</translation>
 <translation id="2603115962224169880">清理電腦</translation>
 <translation id="2603355571917519942">Voice Match 已準備就緒</translation>
@@ -4677,6 +4677,7 @@
 <translation id="5539221284352502426">伺服器已拒絕您輸入的密碼。原因可能包括：密碼太短、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
 <translation id="5541694225089836610">您的管理員已停用此操作</translation>
 <translation id="5542132724887566711">設定檔</translation>
+<translation id="554229901779827904">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chrome 瀏覽器設定檔和其資料，包括書籤、記錄和密碼。</translation>
 <translation id="5542750926112347543">已封鎖來自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在連線至 <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在檢查狀態…</translation>
@@ -7458,7 +7459,6 @@
 <translation id="8275080796245127762">透過您的裝置撥打電話</translation>
 <translation id="8275339871947079271">將密碼移至 Google 帳戶後，無論您從何處登入帳戶，都可安全存取密碼</translation>
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
-<translation id="8281721647184388851">要開啟 Chrome 瀏覽器同步功能嗎？</translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8283475148136688298">驗證代碼在連線至「<ph name="DEVICE_NAME" />」時被拒。</translation>
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
@@ -7614,7 +7614,6 @@
 <translation id="8448729345478502352">縮小或放大畫面上的項目</translation>
 <translation id="8449008133205184768">貼上並配對樣式</translation>
 <translation id="8449036207308062757">管理儲存空間</translation>
-<translation id="8451192282033883849">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chrome 瀏覽器設定檔和其資料，例如書籤、記錄和密碼。</translation>
 <translation id="8456512334795994339">尋找適合工作與娛樂的應用程式</translation>
 <translation id="845702320058262034">無法連線。請確保手機已開啟藍牙。</translation>
 <translation id="8457451314607652708">匯入書籤</translation>

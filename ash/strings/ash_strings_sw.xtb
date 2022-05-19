@@ -176,6 +176,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hujambo, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Uingizaji wa maandishi</translation>
+<translation id="1982717156487272186">Onyesha wiki iliyopita</translation>
 <translation id="1989113344093894667">Huwezi kupiga picha ya maudhui</translation>
 <translation id="1990046457226896323">Faili za matamshi zimepakuliwa</translation>
 <translation id="1993072747612765854">Pata maelezo zaidi kuhusu sasisho la hivi majuzi la <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +264,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2573588302192866788">Imeshindwa kuunganisha <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Umezima uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja</translation>
 <translation id="2582112259361606227">Zima kisha uwashe ili usasishe</translation>
+<translation id="2586561057878260610">Bonyeza Ctrl + W ili uunganishe na <ph name="DESK_NAME" />. Bonyeza Ctrl + Shift + W ili ufunge eneokazi na madirisha.</translation>
 <translation id="2595239820337756193">Kilomita tano kwa maili</translation>
 <translation id="2596078834055697711">Piga picha ya skrini ya dirisha</translation>
 <translation id="2607678425161541573">Unahitaji kuingia katika akaunti mtandaoni</translation>
@@ -622,6 +624,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Ukadiriaji wa nyota <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Badilisha utumie toleo la awali kwenye kifaa ndani ya siku moja}other{Badilisha utumie toleo la awali kwenye kifaa ndani ya siku #}}</translation>
 <translation id="4642092649622328492">Piga picha ya sehemu ya skrini</translation>
+<translation id="4644727592819780893">Eneo ni dogo sana kuweka onyesho la kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Pendekezo la programu</translation>
 <translation id="4657775630156561295">Pendekezo lifuatalo litaondolewa moja kwa moja kwenye historia ya mapendekezo ya akaunti yako:
 
@@ -667,6 +670,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4917385247580444890">Thabiti</translation>
 <translation id="4918086044614829423">Kubali</translation>
 <translation id="4925542575807923399">Msimamizi wa akaunti hii anahitaji uingie kwenye akaunti hii kwanza katika kipindi cha kuingia katika akaunti nyingi kwa wakati mmoja.</translation>
+<translation id="4938176435186993759">Ficha mapendekezo yote</translation>
 <translation id="4945196315133970626">Zima arifa</translation>
 <translation id="4946376291507881335">Nasa</translation>
 <translation id="495046168593986294">Sogeza juu</translation>
@@ -754,6 +758,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5520229639206813572">Msimamizi wako ameondoa wasifu wote wa eSIM. Wasiliana na msimamizi wako ili upate maelezo zaidi.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> inaunganishwa.</translation>
 <translation id="5532994612895037630">Gusa popote ili urekodi skrini nzima</translation>
+<translation id="5536723544185013515">Programu ulizotumia hivi karibuni, sogeza kwa kutumia vishale vya kushoto au kulia ili ufikie programu zote ulizotumia hivi karibuni</translation>
 <translation id="553675580533261935">Unaondoka kwenye kipindi</translation>
 <translation id="5537725057119320332">Tuma</translation>
 <translation id="554893713779400387">Kuwasha au kuzima huduma ya matamshi</translation>
@@ -776,10 +781,12 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5673434351075758678">Imebadalisha lugha kutoka "<ph name="FROM_LOCALE" />" kuwa "<ph name="TO_LOCALE" />" baada ya kusawazisha mipangilio yako.</translation>
 <translation id="5675363643668471212">Kipengee cha kabati</translation>
 <translation id="5677928146339483299">Kumezuiwa</translation>
+<translation id="5678564054339031017">Onyesha wiki ijayo</translation>
 <translation id="5679050765726761783">Umeunganisha adapta inayotumia kiwango cha chini cha nguvu za umeme</translation>
 <translation id="5682642926269496722">Programu ya Mratibu wa Google haipatikani katika akaunti ya mtumiaji wa sasa.</translation>
 <translation id="5689633613396158040">Mwanga wa Usiku hufanya uangalie skrini yako au usome katika mwangaza hafifu kwa urahisi. Gusa ili ubadilishe saa ambapo Mwanga wa Usiku huwashwa au uuzime kabisa.</translation>
 <translation id="5691772641933328258">Haikutambua alama ya kidole</translation>
+<translation id="570390244361237317">Programu zote, sogeza kwa kutumia vitufe vya vishale ili ufikie programu zote</translation>
 <translation id="5707775774148071965">Kifaa chako kinatumia data ya kiwango cha juu kuliko uwezo wa kebo yako. Huenda utendaji kazi wa kifaa usiwe mzuri.</translation>
 <translation id="5710450975648804523">Umewasha kipengele cha Usinisumbue</translation>
 <translation id="571295407079589142">Data ya mtandao wa simu imezimwa</translation>

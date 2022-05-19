@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Mahdollinen captive portal</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Kirjoitussuojauksen laittaminen päälle</translation>
 <translation id="1308754910631152188">Päivitetään (<ph name="PERCENTAGE_VALUE" /> % valmiina)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" />-verkkoja ei ole käytettävissä</translation>
 <translation id="131421566576084655">Edellisen nollauksen päivämäärä ei ole saatavilla</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Kotiverkko, ei roaming-tilassa </translation>
+<translation id="132712914231403017">Asenna laiteohjelmiston kuva</translation>
 <translation id="1327977588028644528">Yhdyskäytävä</translation>
 <translation id="1328223165223065150">Taustakuvan väri</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
 <translation id="1643449475550628585">Vaihda taustakuva päivittäin</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1645954272419197032">Vahvista laitteen tiedot</translation>
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
 <translation id="1703835215927279855">Kirje</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Yhteys</translation>
 <translation id="2008685064673031089">Ensisijainen haku</translation>
 <translation id="2016697457005847575">Kokeile ongelmanratkaisuohjeita</translation>
+<translation id="2016848882344942759">--ei tuotemerkitön--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2085089206770112532">Vähennä näytön kirkkautta</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Tumman tilan aikataulu</translation>
 <translation id="2275586345903859204">Korjaus on valmis</translation>
 <translation id="2287186687001756809">Kuvia ei saatavilla. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Lisää ulkoinen tallennustila, esim. USB-muisti tai SD-kortti, ladatun Chromebookin palautussovellus ‑kuvan avulla</translation>
 <translation id="2307344026739914387">Käytä tämänhetkistä avainparia</translation>
 <translation id="2320295602967756579">Ota vaalea teema käyttöön</translation>
 <translation id="2323506179655536734">OHITETTU</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS-todennusavain</translation>
 <translation id="2713444072780614174">Valkoinen</translation>
 <translation id="2717139507051041123">Ota tumma väritila käyttöön</translation>
+<translation id="2727250716596204208">Laiteohjelmiston kuvaa ei löytynyt. Lisää ulkoinen tallennustila, esim. USB-muisti tai SD-kortti, ladatun Chromebookin palautussovellus ‑kuvan avulla.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">EAPin 2. vaiheen todennus</translation>
 <translation id="2756652381241102009">Suorita diagnostiikka</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="3124039320086536031">Laite on yhdistetty.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Poistetaanko sivu?}=1{Poistetaanko sivu {PAGE_NUMBER}?}other{Poistetaanko sivu {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Otetaan laitetta käyttöön…</translation>
 <translation id="315116470104423982">Mobiilidata</translation>
 <translation id="3156846309055100599">Skannataan sivu <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Captive portal havaittu</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Laitteen oikean kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369013195428705271">Haluatko varmasti poistaa tulostushistorian? Käynnissä olevia tulostustöitä ei poisteta.</translation>
+<translation id="3383751554789092165">Muuta tarvittaessa laitteen tietoja.</translation>
 <translation id="3404249063913988450">Ota näytönsäästäjä käyttöön</translation>
 <translation id="3404770484521709967">Komponentit on asennettu oikein.</translation>
 <translation id="3413935475507503304">Jatka päivitystä valitsemalla Seuraava</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Ei yhteyttä</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
 <translation id="3771294271822695279">Videotiedostot </translation>
+<translation id="3774059845329307709">Sarjanumero</translation>
 <translation id="3784455785234192852">Lukitse</translation>
 <translation id="38114475217616659">Tyhjennä koko historia</translation>
 <translation id="3820172043799983114">Virheellinen PIN-koodi</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">Akku: <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM-lukitus avattu</translation>
 <translation id="4562494484721939086">Ei yhteyttä</translation>
+<translation id="4568938274596692027">Asennus on valmis. Valmistellaan uudelleenkäynnistystä…</translation>
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4609350030397390689">Vähennä näppäimistön kirkkautta</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Valitse uusi välittömästi</translation>
 <translation id="4891842000192098784">Rasitus</translation>
 <translation id="4897058166682006107">Laitteen vasemman kuulokkeen akun varaus on <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4908030561598728899">Asennetaan laiteohjelmistoa…</translation>
 <translation id="4915052247106771211">Tämä palauttaa laitteen tehdasasetukset (Powerwash).</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4917889632206600977">Pysähtynyt – Paperi loppu</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Pikainfon asetukset</translation>
 <translation id="5168185087976003268">Akun toiminta</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
+<translation id="5179530508336824319">Ota kirjoitussuojaus käyttöön, jotta voit jatkaa seuraavaan kohtaan. Ohjeita löydät laitteen valmistajan tukisivulta.</translation>
 <translation id="5190187232518914472">Palaa rakkaisiin muistoihisi. Jos haluat lisätä tai muokata albumeja, siirry <ph name="LINK_BEGIN" />Google Kuviin<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">En löydä näytöltä mitään, minkä kanssa voisin auttaa sinua.
 Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
@@ -615,8 +627,10 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="680983167891198932">Avain</translation>
 <translation id="6816797338148849397">Valintaasi liittyvää tietoa on saatavilla. Paina ylänuolta, niin näet tiedot.</translation>
+<translation id="6822504384524564824">SKU:ta voi muuttaa vain, jos uudet komponentit eroavat aiemmista. Esimerkiksi jos kosketusnäyttö korvataan muulla näytöllä tai muisti päivitetään 8 Gt:stä 16 Gt:hen.</translation>
 <translation id="6840315122969944400">Korjaus: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Tyhjentymisnopeus</translation>
+<translation id="6876833053687020046">DRAM-muistin osanumero</translation>
 <translation id="6889786074662672253">Älä irrota ulkoista laitetta äläkä sammuta tietokonetta sillä aikaa kun laite käynnistyy uudelleen. Voit pienentää ikkunan. Uudelleenkäynnistyksessä voi mennä muutama minuutti, eikä ulkoinen laite välttämättä toimi sen aikana.</translation>
 <translation id="6905724422583748843">Palaa: <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerin kansi on auki. Sulje kansi ja yritä uudelleen.</translation>
@@ -664,6 +678,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7343649194310845056">Verkkolaitteet</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Vaihda näytönsäästäjä</translation>
 <translation id="7397270852490618635">Laita vaalea teema pois päältä</translation>
 <translation id="741244894080940828">muunnos</translation>
@@ -763,6 +778,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8364946094152050673">Nimipalvelimet tyhjiä</translation>
 <translation id="8372477600026034341">Muut isännät</translation>
 <translation id="8378855320830505539">Alue</translation>
+<translation id="8382302752385457774">Tuotemerkitön</translation>
 <translation id="8395584934117017006">Tämä <ph name="DEVICE_TYPE" /> on yrityksen ylläpitämä</translation>
 <translation id="8398927464629426868">Laitteen tämänhetkinen latausnopeus tai latauksen purkunopeus</translation>
 <translation id="8422748173858722634">IMEI-koodi</translation>

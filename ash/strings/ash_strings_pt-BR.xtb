@@ -176,6 +176,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
+<translation id="1982717156487272186">Mostrar semana anterior</translation>
 <translation id="1989113344093894667">Não é possível fazer uma captura do conteúdo</translation>
 <translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
 <translation id="1993072747612765854">Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" /></translation>
@@ -623,6 +624,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, avaliado com <ph name="RATING_SCORE" /> estrelas</translation>
 <translation id="4633185660152240791">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 dia}one{Reverta o dispositivo para a versão anterior em até # dia}other{Reverta o dispositivo para a versão anterior em até # dias}}</translation>
 <translation id="4642092649622328492">Fazer uma captura de tela parcial</translation>
+<translation id="4644727592819780893">A região é muito pequena para caber na câmera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de app</translation>
 <translation id="4657775630156561295">Esta sugestão será removida permanentemente do histórico de sugestões da sua conta:
 
@@ -780,6 +782,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas configurações.</translation>
 <translation id="5675363643668471212">Item da estante</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5678564054339031017">Mostrar próxima semana</translation>
 <translation id="5679050765726761783">Adaptador de baixa potência conectado</translation>
 <translation id="5682642926269496722">O Google Assistente não está disponível para a conta de usuário atual.</translation>
 <translation id="5689633613396158040">O Modo noturno facilita a visualização da sua tela ou a leitura com pouca luz. Toque para mudar o horário de ativação do Modo noturno ou desative-o completamente.</translation>

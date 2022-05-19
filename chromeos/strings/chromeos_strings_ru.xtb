@@ -38,6 +38,7 @@
 <translation id="131421566576084655">Сведения о дате последнего сброса недоступны</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Домашняя сеть, без роуминга</translation>
+<translation id="132712914231403017">Установка образа встроенного ПО</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Цвет обоев</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -81,6 +82,7 @@
 <translation id="1641857168437328880">Автоподатчик документов (односторонний)</translation>
 <translation id="1643449475550628585">Менять обои ежедневно</translation>
 <translation id="1644574205037202324">История</translation>
+<translation id="1645954272419197032">Подтвердите информацию об устройстве</translation>
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -119,6 +121,7 @@
 <translation id="2006864819935886708">Подключение</translation>
 <translation id="2008685064673031089">Поиск простых чисел</translation>
 <translation id="2016697457005847575">Инструкции по устранению неполадок</translation>
+<translation id="2016848882344942759">Без бренда</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2085089206770112532">Уменьшение яркости дисплея</translation>
@@ -149,6 +152,7 @@
 <translation id="2271469253353559191">Расписание тёмной темы</translation>
 <translation id="2275586345903859204">Ремонт завершен</translation>
 <translation id="2287186687001756809">Изображений нет. Добавить фотографии можно на сайте <ph name="LINK" />.</translation>
+<translation id="2294753434210277304">Вставьте внешний накопитель, например USB-устройство или SD-карту, на который скачан образ Утилиты восстановления Chromebook.</translation>
 <translation id="2307344026739914387">Использовать текущую пару ключей</translation>
 <translation id="2320295602967756579">Использовать светлую тему</translation>
 <translation id="2323506179655536734">ПРОПУЩЕНО</translation>
@@ -189,6 +193,7 @@
 <translation id="2712812801627182647">Ключ аутентификации TLS</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2717139507051041123">Включить режим темных цветов</translation>
+<translation id="2727250716596204208">Не удалось найти образ встроенного ПО. Вставьте внешний накопитель, например USB-устройство или SD-карту, на который скачан образ Утилиты восстановления Chromebook.</translation>
 <translation id="2740531572673183784">ОК</translation>
 <translation id="2751739896257479635">2-й этап аутентификации EAP</translation>
 <translation id="2756652381241102009">Запустить диагностику</translation>
@@ -220,6 +225,7 @@
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="3124039320086536031">Устройство подключено.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Удалить страницу?}=1{Удалить страницу {PAGE_NUMBER}?}one{Удалить страницу {PAGE_NUMBER}?}few{Удалить страницу {PAGE_NUMBER}?}many{Удалить страницу {PAGE_NUMBER}?}other{Удалить страницу {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Подготовка устройства…</translation>
 <translation id="315116470104423982">Мобильное подключение</translation>
 <translation id="3156846309055100599">Сканирование страницы <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Обнаружена страница входа</translation>
@@ -241,6 +247,7 @@
 <translation id="3340011300870565703">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
+<translation id="3383751554789092165">При необходимости измените информацию об устройстве.</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
 <translation id="3404770484521709967">Установлены подходящие компоненты.</translation>
 <translation id="3413935475507503304">Чтобы выполнить обновление, нажмите "Далее".</translation>
@@ -279,6 +286,7 @@
 <translation id="3748026146096797577">Нет соединения</translation>
 <translation id="3749289110408117711">Название файла</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
+<translation id="3774059845329307709">Серийный номер</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
 <translation id="38114475217616659">Очистить всю историю</translation>
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
@@ -362,6 +370,7 @@
 <translation id="455835558791489930">Батарея <ph name="CHARGE_VALUE" /> мА·ч</translation>
 <translation id="4561801978359312462">SIM-карта разблокирована</translation>
 <translation id="4562494484721939086">Сеть не найдена</translation>
+<translation id="4568938274596692027">Установка завершена. Подготовка к перезапуску…</translation>
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4609350030397390689">Уменьшение яркости клавиатуры</translation>
@@ -404,6 +413,7 @@
 <translation id="4890353053343094602">Смените пароль как можно скорее.</translation>
 <translation id="4891842000192098784">Стресс-тестирование</translation>
 <translation id="4897058166682006107">Левый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4908030561598728899">Установка встроенного ПО…</translation>
 <translation id="4915052247106771211">Будут восстановлены заводские настройки устройства (Powerwash)</translation>
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4917889632206600977">Печать прервана: нет бумаги</translation>
@@ -607,7 +617,7 @@
 <translation id="6723839937902243910">Питание</translation>
 <translation id="6723847290197874913">Подсветка клавиатуры</translation>
 <translation id="672609503628871915">Узнать, что нового</translation>
-<translation id="6746847322826305075">Вы можете продолжить ремонт устройства или сбросить его настройки с помощью функции Powerwash, чтобы пополнить запас материнских плат.</translation>
+<translation id="6746847322826305075">Вы можете продолжить ремонт устройства или сбросить его настройки с помощью функции Powerwash и поместить материнскую плату на хранение.</translation>
 <translation id="6747215703636344499">Печать прервана: выходной лоток заполнен</translation>
 <translation id="6749473226660745022">Фото</translation>
 <translation id="6753452347192452143">Это компьютер.</translation>
@@ -617,8 +627,10 @@
 <translation id="6768237774506518020">большое число невыполненных преобразований DNS</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна информация на основе выделенного текста. Чтобы перейти к ней, нажмите стрелку вверх.</translation>
+<translation id="6822504384524564824">Корректировать SKU следует только в том случае, если новые компоненты отличаются от замененных. Например, при замене несенсорного экрана сенсорным или при увеличении памяти с 8 ГБ до 16 ГБ.</translation>
 <translation id="6840315122969944400">Ремонт <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Скорость разрядки</translation>
+<translation id="6876833053687020046">Номер детали DRAM</translation>
 <translation id="6889786074662672253">Во время перезапуска не отключайте внешнее устройство и не завершайте работу компьютера. Это окно можно свернуть. Перезапуск займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
 <translation id="6905724422583748843">Вернуться на страницу "<ph name="PAGE_NAME" />"</translation>
 <translation id="6910312834584889076">Открыта крышка сканера. Закройте крышку и повторите попытку.</translation>
@@ -666,6 +678,7 @@
 <translation id="7343649194310845056">Сетевые устройства</translation>
 <translation id="7359657277149375382">Тип файла</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Изменить заставку</translation>
 <translation id="7397270852490618635">Выключить светлую тему</translation>
 <translation id="741244894080940828">перевести в другие ед. измерения</translation>
@@ -765,6 +778,7 @@
 <translation id="8364946094152050673">Не указаны серверы доменных имен.</translation>
 <translation id="8372477600026034341">Дополнительные хосты</translation>
 <translation id="8378855320830505539">Регион</translation>
+<translation id="8382302752385457774">Выбранный бренд</translation>
 <translation id="8395584934117017006">Этим устройством <ph name="DEVICE_TYPE" /> управляет организация.</translation>
 <translation id="8398927464629426868">Скорость, с которой устройство заряжается или разряжается в настоящее время</translation>
 <translation id="8422748173858722634">IMEI</translation>

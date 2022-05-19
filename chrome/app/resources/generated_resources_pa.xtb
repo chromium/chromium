@@ -847,6 +847,7 @@
 <translation id="1784707308176068866">ਮੂਲ ਐਪਲੀਕੇਸ਼ਨ ਵੱਲੋਂ ਸਹਿਯੋਗ ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਜਾਣ 'ਤੇ ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਚਲਾਉਣ ਦਿਓ</translation>
 <translation id="1784849162047402014">ਡੀਵਾਈਸ ਵਿੱਚ ਡਿਸਕ ਜਗ੍ਹਾ ਘੱਟ ਹੈ</translation>
 <translation id="1787350673646245458">ਵਰਤੋਂਕਾਰ ਚਿੱਤਰ</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> ਤੋਂ ਆਪਣੀ Chrome ਬ੍ਰਾਊਜ਼ਰ ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="1790976235243700817">ਪਹੁੰਚ ਹਟਾਓ</translation>
 <translation id="1791662854739702043">ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1792619191750875668">ਵਿਸਤ੍ਰਿਤ ਡਿਸਪਲੇ</translation>
@@ -1723,7 +1724,6 @@
 <translation id="25899519884572181">ਰੀਡਰ ਮੋਡ ਤੋਂ ਬਾਹਰ ਆਓ</translation>
 <translation id="2593499352046705383">ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇਹ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਤੁਹਾਡੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਹੈ। <ph name="DEVICE_OS" /> ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਨਾਲ ਤੁਹਾਡੀ ਹਾਰਡ ਡਰਾਈਵ ਦਾ ਡਾਟਾ ਓਵਰਰਾਈਟ ਹੋ ਜਾਵੇਗਾ। g.co/flex/InstallGuide 'ਤੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="2594999711683503743">Google ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
-<translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> ਤੋਂ ਆਪਣੀ Chrome ਬ੍ਰਾਊਜ਼ਰ ਸਮੱਗਰੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="2602501489742255173">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2603115962224169880">ਕੰਪਿਊਟਰ ਸਾਫ਼ ਕਰੋ</translation>
 <translation id="2603355571917519942">Voice Match ਤਿਆਰ ਹੈ</translation>
@@ -4677,6 +4677,7 @@
 <translation id="5539221284352502426">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਾਖਲ ਕੀਤੇ ਪਾਸਵਰਡ ਨੂੰ ਸਰਵਰ ਨੇ ਅਸਵੀਕਾਰ ਕੀਤਾ। ਸੰਭਾਵਿਤ ਕਾਰਨਾਂ ਵਿੱਚ ਇਹ ਸ਼ਾਮਲ ਹੈ: ਪਾਸਵਰਡ ਬਹੁਤ ਛੋਟਾ ਹੈ। ਪਾਸਵਰਡ ਵਿੱਚ ਨੰਬਰ ਜਾਂ ਚਿੰਨ੍ਹ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ। ਪਾਸਵਰਡ ਲਾਜ਼ਮੀ ਤੌਰ 'ਤੇ ਪਿਛਲੇ ਪਾਸਵਰਡਾਂ ਤੋਂ ਵੱਖਰਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="5541694225089836610">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਕਾਰਵਾਈ ਨੂੰ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5542132724887566711">ਪ੍ਰੋਫਾਈਲ</translation>
+<translation id="554229901779827904">ਤੁਹਾਡਾ ਖਾਤਾ <ph name="MANAGER_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ Chrome ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਇਸ ਦੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ ਅਤੇ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ। ਤੁਹਾਡੇ ਡਾਟਾ ਵਿੱਚ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਅਤੇ ਪਾਸਵਰਡ ਸ਼ਾਮਲ ਹਨ।</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> ਤੋਂ ਕੁਕੀਜ਼ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5543983818738093899">ਸਥਿਤੀ ਦੀ ਜਾਂਚ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -7461,7 +7462,6 @@
 <translation id="8275080796245127762">ਆਪਣੇ ਡੀਵਾਈਸ ਤੋਂ ਕਾਲ ਕਰੋ</translation>
 <translation id="8275339871947079271">ਆਪਣੇ ਪਾਸਵਰਡ ਨੂੰ Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਓ ਤਾਂ ਕਿ ਤੁਸੀਂ ਕਿਤੇ ਵੀ ਸਾਈਨ-ਇਨ ਕਰਕੇ ਉਸਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਵਰਤ ਸਕੋ</translation>
 <translation id="8276560076771292512">ਕੈਸ਼ੇ ਅਤੇ ਹਾਰਡ ਰੀਲੋਡ ਖਾਲੀ ਕਰੋ</translation>
-<translation id="8281721647184388851">ਕੀ Chrome ਬ੍ਰਾਊਜ਼ਰ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8281886186245836920">ਛੱਡੋ</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵੇਲੇ ਪ੍ਰਮਾਣੀਕਰਨ ਕੋਡ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="8284279544186306258">ਸਾਰੀਆਂ <ph name="WEBSITE_1" /> ਸਾਈਟਾਂ</translation>
@@ -7617,7 +7617,6 @@
 <translation id="8448729345478502352">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਆਈਟਮਾਂ ਨੂੰ ਛੋਟਾ ਜਾਂ ਵੱਡਾ ਕਰੋ</translation>
 <translation id="8449008133205184768">ਪੇਸਟ ਅਤੇ ਮਿਲਾਨ ਸਟਾਈਲ</translation>
 <translation id="8449036207308062757">ਸਟੋਰੇਜ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
-<translation id="8451192282033883849">ਤੁਹਾਡਾ ਖਾਤਾ <ph name="MANAGER_NAME" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ Chrome ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਇਸਦੇ ਡਾਟੇ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ ਅਤੇ ਇਸਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡ।</translation>
 <translation id="8456512334795994339">ਕੰਮ ਅਤੇ ਖੇਡਣ ਲਈ ਐਪਾਂ ਲੱਭੋ</translation>
 <translation id="845702320058262034">ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="8457451314607652708">ਬੁੱਕਮਾਰਕ ਆਯਾਤ ਕਰੋ</translation>

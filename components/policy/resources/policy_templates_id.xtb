@@ -432,6 +432,18 @@ Jika Anda mengaktifkan atau tidak mengonfigurasi kebijakan ini, scroll halaman w
 
 Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks tertentu melalui URL akan dinonaktifkan.</translation>
 <translation id="1474273443907024088">Nonaktifkan TLS False Start</translation>
+<translation id="1476128579011024193">
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, setelah login ke akun terkelola yang tunduk pada kebijakan ini, pengguna akan diminta membuat profil baru untuk akun tersebut.
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, setelah login ke akun terkelola yang tunduk pada kebijakan ini, pengguna akan diminta membuat profil baru untuk akun tersebut dengan opsi untuk menyimpan semua data penjelajahan yang ada. Opsi ini didukung di Chrome 102 dan versi yang lebih baru.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, setelah login ke akun terkelola yang tunduk pada kebijakan ini, pengguna akan diminta membuat profil baru untuk akun tersebut. Profil ini tidak akan mengizinkan akun sekunder apa pun.
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, setelah login ke akun terkelola yang tunduk pada kebijakan ini, pengguna akan diminta membuat profil baru untuk akun tersebut dengan opsi untuk menyimpan semua data penjelajahan yang ada. Profil ini tidak akan mengizinkan akun sekunder apa pun. Opsi ini didukung di Chrome 102 dan versi yang lebih baru.
+
+      Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_NONE" /> atau tidak disetel, akun terkelola tidak akan memiliki batasan. Hal ini dapat menyebabkan akun terkelola menjadi akun sekunder, yang akan menonaktifkan kemampuannya untuk menerima kebijakan yang disetel di akun oleh admin.
+
+      Jika kebijakan ini disetel pada tingkat perangkat, semua akun di browser akan tunduk pada kebijakan ini.
+      Jika kebijakan ini disetel pada tingkat akun, hanya akun tersebut yang akan terpengaruh di browser.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Menyetel kebijakan akan menentukan daftar perangkat USB yang dapat dilepas dari driver kernelnya, agar dapat langsung digunakan melalui chrome.usb API dalam aplikasi web. Entri berupa pasangan ID Vendor USB dan Kode Produk untuk mengidentifikasi hardware tertentu.
 

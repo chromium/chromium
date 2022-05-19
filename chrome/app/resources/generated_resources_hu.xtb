@@ -846,6 +846,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1784707308176068866">Futtatás a háttérben, amikor együttműködő natív alkalmazás kéri</translation>
 <translation id="1784849162047402014">Az eszközön kevés a lemezterület</translation>
 <translation id="1787350673646245458">Felhasználó képe</translation>
+<translation id="1788329699711791226">Hozzáférhet a következő profilban tárolt, Chrome böngészővel kapcsolatos dolgaihoz: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Hozzáférés megvonása</translation>
 <translation id="1791662854739702043">Telepítve</translation>
 <translation id="1792619191750875668">Kiterjesztett kijelző</translation>
@@ -1721,7 +1722,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="25899519884572181">Kilépés az olvasási módból</translation>
 <translation id="2593499352046705383">A telepítés megkezdése előtt gondoskodjon adatai biztonsági mentéséről. A <ph name="DEVICE_OS" /> telepítése felülírja a merevlemezen tárolt adatokat. További információk: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Keressen a Google-lal, vagy írja be az URL-t</translation>
-<translation id="2597976513418770460">Szinkronizálhatja a Chrome böngészőhöz tartozó tartalmait a következő fiókból: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Az indításhoz csúsztasson felfelé</translation>
 <translation id="2603115962224169880">A számítógép megtisztítása</translation>
 <translation id="2603355571917519942">A Voice Match készen áll</translation>
@@ -4675,6 +4675,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5539221284352502426">A szerver elutasította a megadott jelszót. Lehetséges okok: Túl rövid a jelszó. A jelszónak tartalmaznia kell számokat és szimbólumokat. A jelszó nem egyezhet meg korábbi jelszavakkal.</translation>
 <translation id="5541694225089836610">A rendszergazda letiltotta a műveletet.</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Az Ön fiókkezelője: <ph name="MANAGER_NAME" />. Rendszergazdája láthatja és szerkesztheti ezt a Chrome-böngészőprofilt és az adatait. Ezek közé az adatok közé tartoznak a könyvjelzők, az előzmények és a jelszavak is.</translation>
 <translation id="5542750926112347543">A(z) <ph name="DOMAIN" /> oldalról származó cookie-k le vannak tiltva</translation>
 <translation id="5542949973455282971">Csatlakozás a(z) <ph name="CARRIER_NAME" /> szolgáltatóhoz</translation>
 <translation id="5543983818738093899">Állapot ellenőrzése…</translation>
@@ -7458,7 +7459,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8275080796245127762">Hívás az eszközéről</translation>
 <translation id="8275339871947079271">Áthelyezheti jelszavát a Google-fiókjába, ahol biztonságosan hozzáférhet, amikor be van jelentkezve.</translation>
 <translation id="8276560076771292512">Gyorsítótár ürítése és teljes újratöltés</translation>
-<translation id="8281721647184388851">Bekapcsolja a Chrome böngésző szinkronizálását?</translation>
 <translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8283475148136688298">A(z) „<ph name="DEVICE_NAME" />” eszközhöz való csatlakozás közben a rendszer visszautasította a hitelesítési kódot.</translation>
 <translation id="8284279544186306258">minden <ph name="WEBSITE_1" /> webhelyen</translation>
@@ -7614,7 +7614,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8448729345478502352">Nagyíthatja és kicsinyítheti a képernyőn megjelenő elemeket</translation>
 <translation id="8449008133205184768">Beillesztés és stílus egyeztetése</translation>
 <translation id="8449036207308062757">Tárhely kezelése</translation>
-<translation id="8451192282033883849">Az Ön fiókkezelője: <ph name="MANAGER_NAME" />. Rendszergazdája láthatja és szerkesztheti ezt a Chrome-böngészőprofilt és az adatait (például a könyvjelzőket, az előzményeket és a jelszavakat).</translation>
 <translation id="8456512334795994339">Keressen játékokat és munkahelyi alkalmazásokat</translation>
 <translation id="845702320058262034">Nem sikerült kapcsolódni. Ne felejtse el bekapcsolni a telefon Bluetooth funkcióját.</translation>
 <translation id="8457451314607652708">Könyvjelzők importálása</translation>

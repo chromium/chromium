@@ -834,6 +834,7 @@
 <translation id="1784707308176068866">Покрени у позадини када то затражи матична апликација за сарадњу</translation>
 <translation id="1784849162047402014">Уређају понестаје простора на диску</translation>
 <translation id="1787350673646245458">Слика корисника</translation>
+<translation id="1788329699711791226">Приступите садржају из Chrome прегледача преко <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Уклони приступ</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Проширени приказ</translation>
@@ -1706,7 +1707,6 @@
 <translation id="25899519884572181">Изађи из режима читача</translation>
 <translation id="2593499352046705383">Пре него што почнете, уверите се да сте направили резервну копију података. Инсталирањем система <ph name="DEVICE_OS" /> замениће се подаци на хард-диску. Сазнајте више на g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Претражите Google или унесите URL</translation>
-<translation id="2597976513418770460">Преузмите садржај из Chrome прегледача са: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Превуците нагоре да бисте започели</translation>
 <translation id="2603115962224169880">Очистите рачунар</translation>
 <translation id="2603355571917519942">Voice Match је спреман</translation>
@@ -4659,6 +4659,7 @@
 <translation id="5539221284352502426">Сервер је одбио лозинку коју сте унели. Могући разлози обухватају: Лозинка је прекратка. Лозинка мора да садржи бројеве или симболе. Лозинка мора да се разликује од претходних лозинки.</translation>
 <translation id="5541694225089836610">Администратор је онемогућио радњу</translation>
 <translation id="5542132724887566711">Профил</translation>
+<translation id="554229901779827904">Вашим налогом управља <ph name="MANAGER_NAME" />. Администратор може да види и мења овај профил у Chrome прегледачу и његове податке Подаци обухватају обележиваче, историју и лозинке.</translation>
 <translation id="5542750926112347543">Колачићи са <ph name="DOMAIN" /> су блокирани</translation>
 <translation id="5542949973455282971">Повезује се са мрежом <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Провера статуса...</translation>
@@ -7446,7 +7447,6 @@
 <translation id="8275080796245127762">Позовите са свог уређаја</translation>
 <translation id="8275339871947079271">Преместите лозинку на Google налог да бисте јој безбедно приступали сваки пут када сте пријављени</translation>
 <translation id="8276560076771292512">Испразни кеш и поново учитај са сервера</translation>
-<translation id="8281721647184388851">Желите да укључите синхронизацију са Chrome прегледачем?</translation>
 <translation id="8281886186245836920">Прескочи</translation>
 <translation id="8283475148136688298">Кôд потврде аутентичности је одбијен током повезивања са „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="8284279544186306258">сви <ph name="WEBSITE_1" /> сајтови</translation>
@@ -7602,7 +7602,6 @@
 <translation id="8448729345478502352">Увећајте или умањите ставке на екрану</translation>
 <translation id="8449008133205184768">Налепи са подударањем стила</translation>
 <translation id="8449036207308062757">Управљај меморијским простором</translation>
-<translation id="8451192282033883849">Вашим налогом управља <ph name="MANAGER_NAME" />. Администратор може да види и мења овај профил у Chrome прегледачу и његове податке, попут обележивача, историје и лозинки.</translation>
 <translation id="8456512334795994339">Пронађите апликације за рад и забаву</translation>
 <translation id="845702320058262034">Повезивање није успело. Проверите да ли је Bluetooth на телефону укључен.</translation>
 <translation id="8457451314607652708">Увези обележиваче</translation>

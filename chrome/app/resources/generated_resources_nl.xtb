@@ -835,6 +835,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1784707308176068866">Uitvoeren op de achtergrond wanneer dit wordt gevraagd door een samenwerkende systeemeigen app</translation>
 <translation id="1784849162047402014">Weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="1787350673646245458">Gebruikersafbeelding</translation>
+<translation id="1788329699711791226">Krijg toegang tot je Chrome-browsergegevens via <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Toegang intrekken</translation>
 <translation id="1791662854739702043">Geïnstalleerd</translation>
 <translation id="1792619191750875668">Uitgebreid scherm</translation>
@@ -1707,7 +1708,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="25899519884572181">Lezermodus afsluiten</translation>
 <translation id="2593499352046705383">Check voordat je begint of je een back-up van je gegevens hebt. Als je <ph name="DEVICE_OS" /> installeert, wordt je harde schijf overschreven. Bekijk meer informatie op g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Zoek op Google of typ een URL</translation>
-<translation id="2597976513418770460">Haal je Chrome-browsergegevens op via <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Swipe omhoog om te beginnen</translation>
 <translation id="2603115962224169880">Computer opruimen</translation>
 <translation id="2603355571917519942">Voice Match is klaar</translation>
@@ -4658,6 +4658,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5539221284352502426">Het wachtwoord dat je hebt opgegeven, is afgewezen door de server. Mogelijke redenen zijn: Het wachtwoord is te kort. Het wachtwoord moet cijfers of symbolen bevatten. Het wachtwoord moet verschillen van eerdere wachtwoorden.</translation>
 <translation id="5541694225089836610">Actie is door de beheerder uitgezet</translation>
 <translation id="5542132724887566711">Profiel</translation>
+<translation id="554229901779827904">Je account wordt beheerd door <ph name="MANAGER_NAME" />. Je beheerder kan dit Chrome-browserprofiel en de bijbehorende gegevens bekijken en bewerken. Je gegevens omvatten bookmarks, geschiedenis en wachtwoorden.</translation>
 <translation id="5542750926112347543">Cookies van <ph name="DOMAIN" /> geblokkeerd</translation>
 <translation id="5542949973455282971">Verbinding maken met <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Status controleren…</translation>
@@ -7434,7 +7435,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8275080796245127762">Bellen vanaf je apparaat</translation>
 <translation id="8275339871947079271">Verplaats je wachtwoord naar je Google-account voor beveiligde toegang als je bent ingelogd</translation>
 <translation id="8276560076771292512">Cache wissen en geforceerd opnieuw laden</translation>
-<translation id="8281721647184388851">Chrome-browsersynchronisatie aanzetten?</translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8283475148136688298">Verificatiecode geweigerd tijdens verbinden met '<ph name="DEVICE_NAME" />'.</translation>
 <translation id="8284279544186306258">alle sites op <ph name="WEBSITE_1" /></translation>
@@ -7590,7 +7590,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8448729345478502352">Items op het scherm kleiner of groter maken</translation>
 <translation id="8449008133205184768">Plakken en stijl aanpassen</translation>
 <translation id="8449036207308062757">Opslag beheren</translation>
-<translation id="8451192282033883849">Je account wordt beheerd door <ph name="MANAGER_NAME" />. Je beheerder kan dit Chrome-browserprofiel en de bijbehorende gegevens (zoals bookmarks, geschiedenis en wachtwoorden) bekijken en bewerken.</translation>
 <translation id="8456512334795994339">Apps voor werk en games vinden</translation>
 <translation id="845702320058262034">Kan geen verbinding maken. Controleer of Bluetooth aanstaat op je telefoon.</translation>
 <translation id="8457451314607652708">Bookmarks importeren</translation>

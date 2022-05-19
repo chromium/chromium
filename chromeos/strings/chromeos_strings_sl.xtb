@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Sum na prestrezni portal</translation>
 <translation id="1290331692326790741">Šibek signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Omogočite zaščito pred pisanjem</translation>
 <translation id="1308754910631152188">Posodabljanje (<ph name="PERCENTAGE_VALUE" /> % končano)</translation>
 <translation id="1310380015393971138">Na voljo ni nobenega omrežja <ph name="NETWORK_NAME" />.</translation>
 <translation id="131421566576084655">Datum zadnje ponastavitve prenesene količine podatkov ni na voljo.</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Domače omrežje, brez gostovanja</translation>
+<translation id="132712914231403017">Namestite sliko vdelane programske opreme</translation>
 <translation id="1327977588028644528">Prehod</translation>
 <translation id="1328223165223065150">Barva zaslonskega ozadja</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Podajalnik dokumentov (enostransko)</translation>
 <translation id="1643449475550628585">Dnevna sprememba slike zaslonskega ozadja</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
+<translation id="1645954272419197032">Potrdite podatke o napravi</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Povezljivost</translation>
 <translation id="2008685064673031089">Začetno iskanje</translation>
 <translation id="2016697457005847575">Poskusite postopke za odpravljanje težav.</translation>
+<translation id="2016848882344942759">--brez bele nalepke--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
 <translation id="2085089206770112532">Zmanjšanje svetlosti zaslona</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Urnik za temni način</translation>
 <translation id="2275586345903859204">Popravilo je končano</translation>
 <translation id="2287186687001756809">Na voljo ni nobene slike. Fotografije lahko dodate na <ph name="LINK" />.</translation>
+<translation id="2294753434210277304">Vstavite zunanjo napravo za shranjevanje, kot je pogon USB ali kartica SD, na kateri je prenesena slika z Orodjem za obnovitev Chromebooka.</translation>
 <translation id="2307344026739914387">Uporaba trenutnega para ključev</translation>
 <translation id="2320295602967756579">Omogočanje svetle teme</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">Ključ za preverjanje pristnost TLS</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2717139507051041123">Omogoči način temne barve</translation>
+<translation id="2727250716596204208">Slike z vdelano programsko opremo ni bilo mogoče najti. Vstavite zunanjo napravo za shranjevanje, kot je pogon USB ali kartica SD, na kateri je prenesena slika z Orodjem za obnovitev Chromebooka.</translation>
 <translation id="2740531572673183784">V redu</translation>
 <translation id="2751739896257479635">2. faza preverjanja pristnosti EAP</translation>
 <translation id="2756652381241102009">Zaženi diagnostiko</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPE</translation>
 <translation id="3124039320086536031">Naprava je povezana.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Želite odstrani stran?}=1{Želite odstraniti {PAGE_NUMBER}. stran?}one{Želite odstraniti {PAGE_NUMBER}. stran?}two{Želite odstraniti {PAGE_NUMBER}. stran?}few{Želite odstraniti {PAGE_NUMBER}. stran?}other{Želite odstraniti {PAGE_NUMBER}. stran?}}</translation>
+<translation id="3137983112374760826">Pripravljanje naprave na uporabo …</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
 <translation id="3156846309055100599">Optično branje <ph name="PAGE_NUMBER" />. strani ...</translation>
 <translation id="315738237743207937">Zaznan je bil prestrezni portal</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
+<translation id="3383751554789092165">Po potrebi spremenite podatke o napravi.</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3404770484521709967">Komponente so pravilno nameščene.</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Povezava ni vzpostavljena</translation>
 <translation id="3749289110408117711">Ime datoteke</translation>
 <translation id="3771294271822695279">Videodatoteke</translation>
+<translation id="3774059845329307709">Serijska številka</translation>
 <translation id="3784455785234192852">Zakleni</translation>
 <translation id="38114475217616659">Izbriši celotno zgodovino</translation>
 <translation id="3820172043799983114">Neveljavna koda PIN.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">Baterija zmogljivosti <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Kartica SIM je odklenjena</translation>
 <translation id="4562494484721939086">Ni storitve</translation>
+<translation id="4568938274596692027">Namestitev je končana. Pripravljanje na vnovični zagon …</translation>
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
 <translation id="4593212453765072419">Zahtevano je preverjanje pristnosti prek strežnika proxy</translation>
 <translation id="4609350030397390689">Zmanjšanje svetlosti osvetlitve tipkovnice</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Takoj izberite novo</translation>
 <translation id="4891842000192098784">Obremenitev</translation>
 <translation id="4897058166682006107">Raven napolnjenosti baterije leve slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4908030561598728899">Nameščanje vdelane programske opreme …</translation>
 <translation id="4915052247106771211">S tem bo naprava ponastavljena na tovarniške nastavitve (Powerwash).</translation>
 <translation id="4917385247580444890">Močan</translation>
 <translation id="4917889632206600977">Ustavljeno – zmanjkalo je papirja</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Nastavitve hitrih odgovorov</translation>
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
+<translation id="5179530508336824319">Omogočite zaščito pred pisanjem, če želite nadaljevati na naslednji zaslon. Poiščite navodila na strani za podporo proizvajalca naprave.</translation>
 <translation id="5190187232518914472">Podoživite svoje najlepše spomine. Če želite dodati ali urediti albume, odprite <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na zaslonu ni ničesar uporabnega.
 Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
@@ -615,8 +627,10 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6768237774506518020">Visoko število napak pri razreševanju DNS</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Podatki, ki so na voljo v zvezi z vašim izborom. Za dostop uporabite tipko s puščico gor.</translation>
+<translation id="6822504384524564824">SKU spremenite samo, če so nove komponente drugačne od zamenjanih. Na primer, če z zaslonom na dotik zamenjate zaslon, ki ne omogoča dotika, ali če nadgradite pomnilnik z 8 GB na 16 GB.</translation>
 <translation id="6840315122969944400">Popravljanje naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Hitrost praznjenja</translation>
+<translation id="6876833053687020046">Številka dela DRAM</translation>
 <translation id="6889786074662672253">Med posodabljanjem ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
 <translation id="6905724422583748843">Nazaj na stran <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Pokrov optičnega bralnika je odprt. Zaprite ga in poskusite znova.</translation>
@@ -664,6 +678,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Spremeni ohranjevalnik zaslona</translation>
 <translation id="7397270852490618635">Izklop svetle teme</translation>
 <translation id="741244894080940828">pretvorba</translation>
@@ -763,6 +778,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8364946094152050673">Prazni imenski strežniki</translation>
 <translation id="8372477600026034341">Dodatni gostitelji</translation>
 <translation id="8378855320830505539">Območje</translation>
+<translation id="8382302752385457774">Bela oznaka</translation>
 <translation id="8395584934117017006">To napravo <ph name="DEVICE_TYPE" /> upravlja podjetje.</translation>
 <translation id="8398927464629426868">Trenutna hitrost polnjenja ali praznjenja baterije naprave.</translation>
 <translation id="8422748173858722634">IMEI</translation>

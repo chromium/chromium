@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್ ಸಂಶಯಾಸ್ಪದವಾಗಿದೆ</translation>
 <translation id="1290331692326790741">ದುರ್ಬಲ ಸಿಗ್ನಲ್</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="1308754910631152188">ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PERCENTAGE_VALUE" />% ಪೂರ್ಣಗೊಂಡಿದೆ)</translation>
 <translation id="1310380015393971138">ಯಾವುದೇ <ph name="NETWORK_NAME" /> ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="131421566576084655">ಕೊನೆಯದಾಗಿ ಡೇಟಾ ರೀಸೆಟ್ ಮಾಡಿದ ದಿನಾಂಕ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ಹೋಮ್ ನೆಟ್‌ವರ್ಕ್, ರೋಮಿಂಗ್ ಇಲ್ಲ</translation>
+<translation id="132712914231403017">ಫರ್ಮ್‌ವೇರ್ ಚಿತ್ರವನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="1327977588028644528">ಗೇಟ್‌ವೇ</translation>
 <translation id="1328223165223065150">ವಾಲ್‌ಪೇಪರ್ ಬಣ್ಣ</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಒಂದು-ಬದಿಯದ್ದು)</translation>
 <translation id="1643449475550628585">ವಾಲ್‌ಪೇಪರ್ ಚಿತ್ರವನ್ನು ಪ್ರತಿದಿನ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
+<translation id="1645954272419197032">ಸಾಧನದ ಮಾಹಿತಿಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="1662989795263954667">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">ಸಂಪರ್ಕತೆ</translation>
 <translation id="2008685064673031089">ಪ್ರೈಮ್ ಹುಡುಕಾಟ</translation>
 <translation id="2016697457005847575">ಸಮಸ್ಯೆ ನಿವಾರಣೆ ಮಾಡುವ ಹಂತಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="2016848882344942759">--ವೈಟ್ ಲೇಬಲ್ ಬೇಡ--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2085089206770112532">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">ಕತ್ತಲೆ ಮೋಡ್ ವೇಳಾಪಟ್ಟಿ</translation>
 <translation id="2275586345903859204">ದುರಸ್ತಿ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="2287186687001756809">ಯಾವುದೇ ಚಿತ್ರ ಲಭ್ಯವಿಲ್ಲ. ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಲು, <ph name="LINK" /> ಗೆ ಹೋಗಿ</translation>
+<translation id="2294753434210277304">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ Chromebook ಮರುಪ್ರಾಪ್ತಿ ಉಪಯುಕ್ತತೆ ಚಿತ್ರದ ಜೊತೆಗೆ USB ಡ್ರೈವ್ ಅಥವಾ SD ಕಾರ್ಡ್‌ನಂತಹ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2307344026739914387">ಪ್ರಸ್ತುತ ಕೀ ಜೋಡಿಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2320295602967756579">ಲೈಟ್ ಥೀಮ್‌ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2323506179655536734">ಸ್ಕಿಪ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS ಪ್ರಮಾಣೀಕರಣ ಕೀ</translation>
 <translation id="2713444072780614174">ಬಿಳಿ</translation>
 <translation id="2717139507051041123">ಗಾಢ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="2727250716596204208">ಫರ್ಮ್‌ವೇರ್ ಚಿತ್ರವನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ Chromebook ಮರುಪ್ರಾಪ್ತಿ ಉಪಯುಕ್ತತೆ ಚಿತ್ರದ ಜೊತೆಗೆ USB ಡ್ರೈವ್ ಅಥವಾ SD ಕಾರ್ಡ್‌ನಂತಹ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯನ್ನು ಸೇರಿಸಿ.</translation>
 <translation id="2740531572673183784">ಸರಿ</translation>
 <translation id="2751739896257479635">EAP 2 ನೇ ಹಂತದ ಪ್ರಮಾಣೀಕರಣ</translation>
 <translation id="2756652381241102009">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಅನ್ನು ರನ್ ಮಾಡಿ</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}=1{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}one{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}other{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?}}</translation>
+<translation id="3137983112374760826">ಸಾಧನವನ್ನು ಒದಗಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
 <translation id="3156846309055100599">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="315738237743207937">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್ ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">ಸಾಧನದ ಬಲ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369013195428705271">ಎಲ್ಲಾ ಪ್ರಿಂಟ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? ಪ್ರಸ್ತುತ ಚಾಲನೆಯಲ್ಲಿರುವ ನಿಮ್ಮ ಪ್ರಿಂಟ್ ಕಾರ್ಯವನ್ನು ತೆರವುಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
+<translation id="3383751554789092165">ಅಗತ್ಯವಿರುವಂತೆ ಸಾಧನದ ಮಾಹಿತಿಯನ್ನು ಬದಲಾಯಿಸಿ.</translation>
 <translation id="3404249063913988450">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3404770484521709967">ಕಾಂಪೋನೆಂಟ್‌ಗಳನ್ನು ಸರಿಯಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3413935475507503304">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು, ಮುಂದಿನದು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">ಸಂಪರ್ಕಗೊಳಿಸಿಲ್ಲ</translation>
 <translation id="3749289110408117711">ಫೈಲ್ ಹೆಸರು</translation>
 <translation id="3771294271822695279">ವೀಡಿಯೊ ಫೈಲ್‌ಗಳು</translation>
+<translation id="3774059845329307709">ಕ್ರಮ ಸಂಖ್ಯೆ</translation>
 <translation id="3784455785234192852">ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="38114475217616659">ಎಲ್ಲಾ ಇತಿಹಾಸ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ಬ್ಯಾಟರಿ</translation>
 <translation id="4561801978359312462">ಸಿಮ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="4562494484721939086">ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="4568938274596692027">ಇನ್‌ಸ್ಟಾಲ್ ಪೂರ್ಣಗೊಂಡಿದೆ. ಮರುಪ್ರಾರಂಭಿಸಲು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4609350030397390689">ಕೀಬೋರ್ಡ್ ಹೊಳಪನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">ಹೊಸದೊಂದನ್ನು ತತ್‌ಕ್ಷಣ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4891842000192098784">ಒತ್ತಡ</translation>
 <translation id="4897058166682006107">ಸಾಧನದ ಎಡ ಇಯರ್‌ಬಡ್ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
+<translation id="4908030561598728899">ಫರ್ಮ್‌‌ವೇರ್‌‌ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4915052247106771211">ಇದು ಸಾಧನವನ್ನು ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ (ಪವರ್‌ವಾಶ್) ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="4917385247580444890">ಪ್ರಬಲ</translation>
 <translation id="4917889632206600977">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">ತ್ವರಿತ ಉತ್ತರಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5168185087976003268">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ:</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
+<translation id="5179530508336824319">ಮುಂದಿನ ಸ್ಕ್ರೀನ್‌ಗೆ ಮುಂದುವರಿಯಲು ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ. ಸೂಚನೆಗಳಿಗಾಗಿ ಸಾಧನ ತಯಾರಕರ ಬೆಂಬಲ ಪುಟಕ್ಕೆ ಹೋಗಿ.</translation>
 <translation id="5190187232518914472">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಮಧುರ ಕ್ಷಣಗಳನ್ನು ಮೆಲುಕು ಹಾಕಿ. ಆಲ್ಬಮ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಅಥವಾ ಎಡಿಟ್ ಮಾಡಲು, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ಗೆ ಹೋಗಿ.</translation>
 <translation id="5212543919916444558">ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದಾದ ಯಾವುದೇ ವಿಷಯ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ನನಗೆ ಕಾಣಿಸಿಲ್ಲ. ನನ್ನ ಬಳಿ ಏನಾದರೂ ಕೇಳಬೇಕಿದ್ದರೆ, ಮೈಕ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -614,8 +626,10 @@
 <translation id="6768237774506518020">ಅಧಿಕ DNS ರೆಸಲ್ಯೂಷನ್ ವೈಫಲ್ಯ ದರ</translation>
 <translation id="680983167891198932">ಕೀ</translation>
 <translation id="6816797338148849397">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಲಭ್ಯವಿದೆ. ಇದಕ್ಕೆ ಪ್ರವೇಶ ಪಡೆಯಲು, ಅಪ್ ಆ್ಯರೋ ಬಳಸಿ.</translation>
+<translation id="6822504384524564824">ಹೊಸ ಕಾಂಪೊನೆಂಟ್‌(ಗಳು) ಬದಲಿಸಿದ ಕಾಂಪೊನೆಂಟ್‌ಗಳಿಗಿಂತ ಭಿನ್ನವಾಗಿದ್ದರೆ ಮಾತ್ರ SKU ಅನ್ನು ಬದಲಾಯಿಸಬೇಕು. ಉದಾಹರಣೆಗೆ, ಟಚ್‌ಸ್ಕ್ರೀನ್ ಅಲ್ಲದ್ದನ್ನು ಟಚ್‌ಸ್ಕ್ರೀನ್‌ಗೆ ಬದಲಿಸುವುದು ಅಥವಾ ಮೆಮೊರಿಯನ್ನು 8GB ಇಂದ 16GB ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವುದು.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> ಅನ್ನು ರಿಪೇರಿ ಮಾಡಿ</translation>
 <translation id="6853312040151791195">ಡಿಸ್‌ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
+<translation id="6876833053687020046">DRAM ಭಾಗದ ಸಂಖ್ಯೆ</translation>
 <translation id="6889786074662672253">ಮರುಪ್ರಾರಂಭಿಸುವಾಗ, ಈ ಬಾಹ್ಯ ಸಾಧನವನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಬೇಡಿ ಅಥವಾ ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಶಟ್ ಡೌನ್ ಮಾಡಬೇಡಿ. ನೀವು ಈ ವಿಂಡೋವನ್ನು ಕುಗ್ಗಿಸಬಹುದು. ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು ಮತ್ತು ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನವು ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು.</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> ಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="6910312834584889076">ಸ್ಕ್ಯಾನರ್‌ನ ಕವರ್ ತೆರೆದಿದೆ. ಕವರ್ ಅನ್ನು ಮುಚ್ಚಿನ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -663,6 +677,7 @@
 <translation id="7343649194310845056">ನೆಟ್‌ವರ್ಕ್ ಸಾಧನಗಳು</translation>
 <translation id="7359657277149375382">ಫೈಲ್ ಪ್ರಕಾರ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="7397270852490618635">ಲೈಟ್ ಥೀಮ್‌ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="741244894080940828">ಪರಿವರ್ತನೆ</translation>
@@ -762,6 +777,7 @@
 <translation id="8364946094152050673">ಖಾಲಿಯಿರುವ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="8372477600026034341">ಹೆಚ್ಚುವರಿ ಹೋಸ್ಟ್‌ಗಳು</translation>
 <translation id="8378855320830505539">ಪ್ರದೇಶ</translation>
+<translation id="8382302752385457774">ವೈಟ್ ಲೇಬಲ್</translation>
 <translation id="8395584934117017006">ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಎಂಟರ್‌ಪ್ರೈಸ್ ನಿರ್ವಹಣೆ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="8398927464629426868">ಸಾಧನವು ಪ್ರಸ್ತುತವಾಗಿ ಚಾರ್ಜ್ ಅಥವಾ ಡಿಸ್‌ಚಾರ್ಜ್ ಆಗುತ್ತಿರುವ ದರ</translation>
 <translation id="8422748173858722634">IMEI</translation>

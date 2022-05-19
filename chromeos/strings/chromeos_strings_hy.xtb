@@ -38,6 +38,7 @@
 <translation id="131421566576084655">Վերջին զրոյացման ամսաթվի մասին տեղեկությունները հասանելի չեն</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Տնային ցանց, առանց ռոումինգի</translation>
+<translation id="132712914231403017">Ներկառուցված ծրագրի պատկերի տեղադրում</translation>
 <translation id="1327977588028644528">Անցուղի</translation>
 <translation id="1328223165223065150">Պաստառի գույն</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -81,6 +82,7 @@
 <translation id="1641857168437328880">Փաստաթղթերի մատակարար (միակողմանի)</translation>
 <translation id="1643449475550628585">Փոխել պաստառն ամեն օր</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
+<translation id="1645954272419197032">Հաստատեք սարքի մասին տեղեկությունները</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
 <translation id="1668469839109562275">Ներկառուցված VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -119,6 +121,7 @@
 <translation id="2006864819935886708">Կապ</translation>
 <translation id="2008685064673031089">Prime որոնում</translation>
 <translation id="2016697457005847575">Փորձել վերացնել անսարքությունները</translation>
+<translation id="2016848882344942759">--առանց վաճառողի ապրանքանիշի--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2085089206770112532">Էկրանի պայծառության նվազեցում</translation>
@@ -149,6 +152,7 @@
 <translation id="2271469253353559191">Մուգ ռեժիմի ժամանակացույց</translation>
 <translation id="2275586345903859204">Վերանորոգումն ավարտված է</translation>
 <translation id="2287186687001756809">Ոչ մի պատկեր չկա։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
+<translation id="2294753434210277304">Տեղադրեք արտաքին հիշողության սարք, օրինակ՝ USB կրիչ կամ SD քարտ, որում ներբեռնված է Chromebook Recovery Utility հավելվածի պատկերը</translation>
 <translation id="2307344026739914387">Օգտագործել ընթացիկ բանալիների զույգը</translation>
 <translation id="2320295602967756579">Միացնել բաց թեման</translation>
 <translation id="2323506179655536734">ԲԱՑ ԹՈՂՆՎԵՑ</translation>
@@ -189,6 +193,7 @@
 <translation id="2712812801627182647">TLS իսկորոշման բանալի</translation>
 <translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2717139507051041123">Միացնել մուգ գույների ռեժիմը</translation>
+<translation id="2727250716596204208">Չհաջողվեց գտնել ներկառուցված ծրագրի պատկերը։ Տեղադրեք արտաքին հիշողության սարք, օրինակ՝ USB կրիչ կամ SD քարտ, որում ներբեռնված է Chromebook Recovery Utility հավելվածի պատկերը։</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
 <translation id="2756652381241102009">Գործարկել դիագնոստիկան</translation>
@@ -220,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Սարքը միացված է։</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Հեռացնե՞լ էջը}=1{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}one{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}other{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
+<translation id="3137983112374760826">Սարքի նախապատրաստում…</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
 <translation id="3156846309055100599">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը...</translation>
 <translation id="315738237743207937">Հայտնաբերվել է մուտքի էջ</translation>
@@ -241,6 +247,7 @@
 <translation id="3340011300870565703">Աջ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
+<translation id="3383751554789092165">Անհրաժեշտության դեպքում փոխեք սարքի մասին տեղեկությունները։</translation>
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
 <translation id="3404770484521709967">Տեղադրված են համատեղելի բաղադրիչներ։</translation>
 <translation id="3413935475507503304">Թարմացումը շարունակելու համար սեղմեք «Առաջ»։</translation>
@@ -279,6 +286,7 @@
 <translation id="3748026146096797577">Միացված չէ</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
 <translation id="3771294271822695279">Տեսաֆայլեր</translation>
+<translation id="3774059845329307709">Սերիական համարը</translation>
 <translation id="3784455785234192852">Կողպել</translation>
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
@@ -362,6 +370,7 @@
 <translation id="455835558791489930">Մարտկոց՝ <ph name="CHARGE_VALUE" />mAh</translation>
 <translation id="4561801978359312462">SIM քարտն ապակողպված է</translation>
 <translation id="4562494484721939086">Ցանցը չի գտնվել</translation>
+<translation id="4568938274596692027">Տեղադրումն ավարտված է։ Սարքը նախապատրաստվում է վերագործարկման…</translation>
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4593212453765072419">Պահանջվում է պրոքսի սերվերի նույնականացում</translation>
 <translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
@@ -404,6 +413,7 @@
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4891842000192098784">Ծանրաբեռնվածություն</translation>
 <translation id="4897058166682006107">Ձախ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
+<translation id="4908030561598728899">Ներկառուցված ծրագիրը տեղադրվում է…</translation>
 <translation id="4915052247106771211">Կվերականգնվեն սարքի գործարանային կարգավորումները (Powerwash)։</translation>
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
@@ -617,8 +627,10 @@
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
 <translation id="680983167891198932">Բանալի</translation>
 <translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
+<translation id="6822504384524564824">SKU-ն անհրաժեշտ է փոխել, միայն եթե նոր բաղադրիչները տարբերվում են փոխարինվածներից։ Օրինակ՝ սովորական էկրանը հպէկրանով փոխարինելիս կամ հիշողությունը 8 ԳԲ-ից մինչև 16 ԳԲ ընդլայնելիս։</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" />-ի վերանորոգում</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>
+<translation id="6876833053687020046">DRAM մասի համարը</translation>
 <translation id="6889786074662672253">Վերագործարկման ժամանակ մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Վերագործարկումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
 <translation id="6905724422583748843">Վերադառնալ <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Սկաների կափարիչը բաց է։ Փակեք այն և նորից փորձեք։</translation>
@@ -666,6 +678,7 @@
 <translation id="7343649194310845056">Ցանցային սարքեր</translation>
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Փոխել էկրանապահը</translation>
 <translation id="7397270852490618635">Անջատել բաց թեման</translation>
 <translation id="741244894080940828">փոխարկում</translation>
@@ -765,6 +778,7 @@
 <translation id="8364946094152050673">DNS սերվերները դատարկ են</translation>
 <translation id="8372477600026034341">Լրացուցիչ հանգույցներ</translation>
 <translation id="8378855320830505539">Մարզ</translation>
+<translation id="8382302752385457774">Վաճառողի ապրանքանիշը</translation>
 <translation id="8395584934117017006">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է կազմակերպության կողմից</translation>
 <translation id="8398927464629426868">Սարքի ընթացիկ լիցքավորման կամ լիցքաթափման արագությունը</translation>
 <translation id="8422748173858722634">IMEI</translation>

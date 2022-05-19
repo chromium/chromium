@@ -264,6 +264,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2573588302192866788">Kunne ikke koble til <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multipålogging er slått av</translation>
 <translation id="2582112259361606227">Start på nytt for å oppdatere</translation>
+<translation id="2586561057878260610">Trykk på Ctrl + W for å kombinere med <ph name="DESK_NAME" />. Trykk på Ctrl + Shift + W for å lukke skrivebordet og vinduene.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
 <translation id="2607678425161541573">Nettbasert pålogging kreves</translation>
@@ -669,6 +670,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4925542575807923399">Administratoren for denne kontoen krever at denne kontoen er den første påloggingskontoen i en multipåloggingsøkt.</translation>
+<translation id="4938176435186993759">Skjul alle forslag</translation>
 <translation id="4945196315133970626">Slå av varsler</translation>
 <translation id="4946376291507881335">Ta bilde</translation>
 <translation id="495046168593986294">Rull opp</translation>
@@ -756,6 +758,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5520229639206813572">Administratoren din har fjernet alle e-SIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> kobler til.</translation>
 <translation id="5532994612895037630">Trykk hvor som helst for å ta opp i fullskjerm</translation>
+<translation id="5536723544185013515">Nylige apper – naviger med venstrepilen eller høyrepilen for å få tilgang til alle nylige apper</translation>
 <translation id="553675580533261935">Avslutning av økten</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="554893713779400387">Slå av/på diktering</translation>
@@ -784,6 +787,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5682642926269496722">Google-assistenten er ikke tilgjengelig for denne brukerkontoen.</translation>
 <translation id="5689633613396158040">Nattlys gjør det lettere å se på skjermen og lese i svakt lys. Trykk for å endre når Nattlys slås på, eller slå det helt av.</translation>
 <translation id="5691772641933328258">Gjenkjenner ikke fingeravtrykket</translation>
+<translation id="570390244361237317">Alle apper – naviger med piltastene for å få tilgang til alle appene</translation>
 <translation id="5707775774148071965">Enheten støtter en høyere datafrekvens enn kabelen. Enhetens ytelse kan være begrenset.</translation>
 <translation id="5710450975648804523">Ikke forstyrr er på</translation>
 <translation id="571295407079589142">Mobildata er slått av</translation>

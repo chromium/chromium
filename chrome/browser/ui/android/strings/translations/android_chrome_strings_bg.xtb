@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384704387250346179">Превод с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активно преди <ph name="LAST_UPDATED" /> дни</translation>
+<translation id="13931502444227376">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />общите условия<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="1397811292916898096">Търсене чрез <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">По всяко време можете да промените решението си в настройките на Chrome. Изпробването се извършва заедно с досегашния начин на показване на реклами, така че няма да забележите промени веднага.</translation>
 <translation id="1406000523432664303">Заявка „Do Not Track“</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">Всичко за Privacy Sandbox</translation>
 <translation id="1736419249208073774">Разглеждане</translation>
 <translation id="1749561566933687563">Синхронизирайте отметките си</translation>
+<translation id="1750259112639922169">Група раздели – <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="17513872634828108">Отворени раздели</translation>
 <translation id="1754404134430936718">Текстът е копиран</translation>
 <translation id="1779766957982586368">Затваряне на прозореца</translation>
@@ -788,6 +790,7 @@
 <translation id="5368227114232678694">За да сърфирате частно на това устройство, изпробвайте режим „инкогнито“</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Реакцията е променена</translation>
+<translation id="5401851137404501592">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил.</translation>
 <translation id="5403644198645076998">Разрешаване само на конкретни сайтове</translation>
 <translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
@@ -1128,6 +1131,7 @@
 <translation id="7177873915659574692">Не може да се създаде QR код. URL адресът е по-дълъг от <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="7177959540995930968">Можете да научите повече за тези функции в настройките на Chrome.</translation>
 <translation id="718226107353899806">Можете да добавите до <ph name="MAX_NUM_REACTIONS" /> реакции</translation>
+<translation id="7183693674623539380">Група раздели – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
 <translation id="7196215469483532480">Обяснението на ръководството за поверителност е отворено на пълната височина</translation>

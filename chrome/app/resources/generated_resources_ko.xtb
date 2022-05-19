@@ -846,6 +846,7 @@
 <translation id="1784707308176068866">함께 작동하는 네이티브 애플리케이션이 요청하는 경우 백그라운드에서 실행</translation>
 <translation id="1784849162047402014">기기에 디스크 저장 공간 부족</translation>
 <translation id="1787350673646245458">사용자 이미지</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능 액세스</translation>
 <translation id="1790976235243700817">액세스 권한 삭제</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792619191750875668">확장 디스플레이</translation>
@@ -1723,7 +1724,6 @@
 <translation id="25899519884572181">읽기 모드 종료</translation>
 <translation id="2593499352046705383">시작하기 전에 데이터를 백업해 두어야 합니다. <ph name="DEVICE_OS" /> 운영체제를 설치하면 하드 드라이브가 덮어쓰기됩니다. 다음 페이지에서 자세히 알아보세요. g.co/flex/InstallGuide</translation>
 <translation id="2594999711683503743">Google에서 검색하거나 URL을 입력하세요.</translation>
-<translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능을 이용해 보세요</translation>
 <translation id="2602501489742255173">위로 스와이프하여 시작하기</translation>
 <translation id="2603115962224169880">컴퓨터 정리</translation>
 <translation id="2603355571917519942">Voice Match가 준비됨</translation>
@@ -4676,6 +4676,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5539221284352502426">입력한 비밀번호가 서버에 의해 거부되었습니다. 가능한 이유는 다음과 같습니다. 비밀번호가 너무 짧습니다. 비밀번호에 숫자 또는 기호가 포함되어야 합니다. 이전 비밀번호와 달라야 합니다.</translation>
 <translation id="5541694225089836610">관리자가 사용 중지한 작업입니다.</translation>
 <translation id="5542132724887566711">프로필</translation>
+<translation id="554229901779827904">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chrome 브라우저 프로필과 데이터를 보고 수정할 수 있습니다. 데이터에는 북마크, 방문 기록, 비밀번호가 포함됩니다.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" />의 쿠키를 차단함</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" />에 연결 중</translation>
 <translation id="5543983818738093899">상태 확인 중...</translation>
@@ -7460,7 +7461,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8275080796245127762">기기에서 전화 걸기</translation>
 <translation id="8275339871947079271">비밀번호를 Google 계정으로 옮겨 로그인 상태라면 어디서나 안전하게 액세스하세요.</translation>
 <translation id="8276560076771292512">캐시 비우기 및 강력 새로고침</translation>
-<translation id="8281721647184388851">Chrome 브라우저 동기화를 사용 설정하시겠습니까?</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8283475148136688298">'<ph name="DEVICE_NAME" />'에 연결하는 동안 인증 코드가 거부되었습니다.</translation>
 <translation id="8284279544186306258">모든 <ph name="WEBSITE_1" /> 사이트</translation>
@@ -7616,7 +7616,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8448729345478502352">화면에 표시되는 항목을 축소 또는 확대합니다.</translation>
 <translation id="8449008133205184768">붙여넣고 스타일 일치시킴</translation>
 <translation id="8449036207308062757">저장용량 관리</translation>
-<translation id="8451192282033883849">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chrome 브라우저 프로필과 북마크, 방문 기록, 비밀번호 등의 데이터를 보고 수정할 수 있습니다.</translation>
 <translation id="8456512334795994339">업무와 재미를 위한 앱 찾기</translation>
 <translation id="845702320058262034">연결할 수 없습니다. 휴대전화의 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="8457451314607652708">북마크 가져오기</translation>

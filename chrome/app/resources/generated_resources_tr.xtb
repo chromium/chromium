@@ -835,6 +835,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1784707308176068866">Birlikte çalışan yerel bir uygulama tarafından istendiğinde arka planda çalış</translation>
 <translation id="1784849162047402014">Cihazda disk alanı az</translation>
 <translation id="1787350673646245458">Kullanıcı resmi</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> hesabından Chrome tarayıcı öğelerinize erişin</translation>
 <translation id="1790976235243700817">Erişimi kaldır</translation>
 <translation id="1791662854739702043">Yüklendi</translation>
 <translation id="1792619191750875668">Genişletilmiş ekran</translation>
@@ -4657,6 +4658,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5539221284352502426">Girdiğiniz şifre, sunucu tarafından reddedildi. Bu durumun olası nedenleri şunlardır: Şifre çok kısadır. Şifre, sayılar veya semboller içermelidir. Şifre, önceki şifrelerden farklı olmalıdır.</translation>
 <translation id="5541694225089836610">İşlem, yöneticiniz tarafından devre dışı bırakıldı</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Hesabınız <ph name="MANAGER_NAME" /> tarafından yönetiliyor. Yöneticiniz bu Chrome tarayıcı profilini ve verilerini görüntüleyip düzenleyebilir. Verileriniz arasında yer işaretleri, geçmiş ve şifreler yer alır.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> tarafından gönderilen çerezler engellendi</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> operatörüne bağlanılıyor</translation>
 <translation id="5543983818738093899">Durum kontrol ediliyor...</translation>

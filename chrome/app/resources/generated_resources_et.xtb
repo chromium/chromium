@@ -838,6 +838,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1784707308176068866">Käitatakse taustal, kui seda taotleb koostööd tegev omarakendus</translation>
 <translation id="1784849162047402014">Seadmes on vähe kettaruumi</translation>
 <translation id="1787350673646245458">Kasutaja pilt</translation>
+<translation id="1788329699711791226">Juurdepääs teie Chrome'i brauseri sisule kontolt <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Eemalda juurdepääs</translation>
 <translation id="1791662854739702043">Installitud</translation>
 <translation id="1792619191750875668">Lisaekraan</translation>
@@ -4666,6 +4667,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5539221284352502426">Server lükkas sisestatud parooli tagasi. Võimalikud põhjused on järgmised. Parool on liiga lühike. Parool peab sisaldama numbreid või sümboleid. Parool peab erinema eelmistest paroolidest.</translation>
 <translation id="5541694225089836610">Administraator on selle toimingu keelanud</translation>
 <translation id="5542132724887566711">Profiil</translation>
+<translation id="554229901779827904">Teie kontot haldab <ph name="MANAGER_NAME" />. Administraator saab seda Chrome'i brauseri profiili ja selle andmeid vaadata ning muuta. Teie andmed hõlmavad järjehoidjaid, ajalugu ja paroole.</translation>
 <translation id="5542750926112347543">Domeeni <ph name="DOMAIN" /> küpsisefailid on blokeeritud.</translation>
 <translation id="5542949973455282971">Luuakse ühendus operaatoriga <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Oleku kontrollimine ...</translation>

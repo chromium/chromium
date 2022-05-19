@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Yazma korumayı etkinleştirme</translation>
 <translation id="1308754910631152188">Güncelleniyor (%<ph name="PERCENTAGE_VALUE" /> tamamlandı)</translation>
 <translation id="1310380015393971138">Kullanılabilir <ph name="NETWORK_NAME" /> ağı yok</translation>
 <translation id="131421566576084655">Son veri sıfırlama tarihi kullanılamıyor</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Bil bakalım ayarları</translation>
 <translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
+<translation id="5179530508336824319">Sonraki ekrana devam etmek için yazma korumayı etkinleştirin. Talimatları görmek için cihaz üreticisinin destek sayfasına gidin.</translation>
 <translation id="5190187232518914472">En sevdiğiniz anılarınızı yeniden yaşayın. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'a giderek istediğiniz albümleri ekleyin veya düzenleyin.</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>

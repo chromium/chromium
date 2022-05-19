@@ -834,6 +834,7 @@
 <translation id="1784707308176068866">連携するネイティブ アプリケーションからのリクエストに応じてバックグラウンドで実行する</translation>
 <translation id="1784849162047402014">デバイスのディスク空き領域が少なくなっています</translation>
 <translation id="1787350673646245458">ユーザー画像</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> から Chrome ブラウザのアイテムにアクセス</translation>
 <translation id="1790976235243700817">アクセスを削除</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792619191750875668">拡張ディスプレイ</translation>
@@ -1701,7 +1702,6 @@
 <translation id="25899519884572181">リーダーモードを終了</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
 <translation id="2594999711683503743">Google で検索、または URL を入力</translation>
-<translation id="2597976513418770460">Chrome ブラウザのアイテムを <ph name="ACCOUNT_EMAIL" /> から取得</translation>
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
 <translation id="2603355571917519942">Voice Match は設定済みです</translation>
@@ -4647,6 +4647,7 @@
 <translation id="5539221284352502426">入力したパスワードはサーバーによって拒否されました。考えられる原因は次のとおりです。パスワードが短すぎる。パスワードに数字または記号が含まれていない。以前と同じパスワードを指定した。</translation>
 <translation id="5541694225089836610">操作が管理者によって無効にされています</translation>
 <translation id="5542132724887566711">プロフィール</translation>
+<translation id="554229901779827904">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータを表示、編集できます。こうしたデータには、ブックマーク、履歴、パスワードが含まれます。</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> からの Cookie がブロックされました</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> に接続しています</translation>
 <translation id="5543983818738093899">ステータスを確認しています...</translation>
@@ -7422,7 +7423,6 @@
 <translation id="8275080796245127762">デバイスから発信</translation>
 <translation id="8275339871947079271">パスワードを Google アカウントに移動すると、ログイン中いつでも安全にアクセスできるようになります</translation>
 <translation id="8276560076771292512">キャッシュの消去とハード再読み込み</translation>
-<translation id="8281721647184388851">Chrome ブラウザの同期をオンにしますか？</translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8283475148136688298">「<ph name="DEVICE_NAME" />」への接続中に、認証コードが拒否されました。</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
@@ -7578,7 +7578,6 @@
 <translation id="8448729345478502352">アイテムの表示サイズを変更します</translation>
 <translation id="8449008133205184768">ペーストしてスタイルを合わせる</translation>
 <translation id="8449036207308062757">ストレージを管理</translation>
-<translation id="8451192282033883849">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータ（ブックマーク、履歴、パスワードなど）を表示、編集できます。</translation>
 <translation id="8456512334795994339">仕事や遊びに使えるおすすめのアプリ</translation>
 <translation id="845702320058262034">接続できません。スマートフォンの Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="8457451314607652708">ブックマークをインポート</translation>

@@ -834,6 +834,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1784707308176068866">Pokreni u pozadini kada to zatraži matična aplikacija za saradnju</translation>
 <translation id="1784849162047402014">Uređaju ponestaje prostora na disku</translation>
 <translation id="1787350673646245458">Slika korisnika</translation>
+<translation id="1788329699711791226">Pristupite sadržaju iz Chrome pregledača preko <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni prikaz</translation>
@@ -1706,7 +1707,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="25899519884572181">Izađi iz režima čitača</translation>
 <translation id="2593499352046705383">Pre nego što počnete, uverite se da ste napravili rezervnu kopiju podataka. Instaliranjem sistema <ph name="DEVICE_OS" /> zameniće se podaci na hard-disku. Saznajte više na g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Pretražite Google ili unesite URL</translation>
-<translation id="2597976513418770460">Preuzmite sadržaj iz Chrome pregledača sa: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Prevucite nagore da biste započeli</translation>
 <translation id="2603115962224169880">Očistite računar</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
@@ -4659,6 +4659,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5539221284352502426">Server je odbio lozinku koju ste uneli. Mogući razlozi obuhvataju: Lozinka je prekratka. Lozinka mora da sadrži brojeve ili simbole. Lozinka mora da se razlikuje od prethodnih lozinki.</translation>
 <translation id="5541694225089836610">Administrator je onemogućio radnju</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Vašim nalogom upravlja <ph name="MANAGER_NAME" />. Administrator može da vidi i menja ovaj profil u Chrome pregledaču i njegove podatke Podaci obuhvataju obeleživače, istoriju i lozinke.</translation>
 <translation id="5542750926112347543">Kolačići sa <ph name="DOMAIN" /> su blokirani</translation>
 <translation id="5542949973455282971">Povezuje se sa mrežom <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Provera statusa...</translation>
@@ -7446,7 +7447,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8275080796245127762">Pozovite sa svog uređaja</translation>
 <translation id="8275339871947079271">Premestite lozinku na Google nalog da biste joj bezbedno pristupali svaki put kada ste prijavljeni</translation>
 <translation id="8276560076771292512">Isprazni keš i ponovo učitaj sa servera</translation>
-<translation id="8281721647184388851">Želite da uključite sinhronizaciju sa Chrome pregledačem?</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8283475148136688298">Kôd potvrde autentičnosti je odbijen tokom povezivanja sa „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="8284279544186306258">svi <ph name="WEBSITE_1" /> sajtovi</translation>
@@ -7602,7 +7602,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8448729345478502352">Uvećajte ili umanjite stavke na ekranu</translation>
 <translation id="8449008133205184768">Nalepi sa podudaranjem stila</translation>
 <translation id="8449036207308062757">Upravljaj memorijskim prostorom</translation>
-<translation id="8451192282033883849">Vašim nalogom upravlja <ph name="MANAGER_NAME" />. Administrator može da vidi i menja ovaj profil u Chrome pregledaču i njegove podatke, poput obeleživača, istorije i lozinki.</translation>
 <translation id="8456512334795994339">Pronađite aplikacije za rad i zabavu</translation>
 <translation id="845702320058262034">Povezivanje nije uspelo. Proverite da li je Bluetooth na telefonu uključen.</translation>
 <translation id="8457451314607652708">Uvezi obeleživače</translation>

@@ -849,6 +849,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1784707308176068866">Rhedeg yn y cefndir pan ofynnir amdano gan ap brodorol sy'n cydweithredu</translation>
 <translation id="1784849162047402014">Nid oes gan y ddyfais lawer o le disg ar ôl</translation>
 <translation id="1787350673646245458">Llun defnyddiwr</translation>
+<translation id="1788329699711791226">Cael mynediad at eich stwff porwr Chrome o <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Tynnu mynediad</translation>
 <translation id="1791662854739702043">Wedi gosod</translation>
 <translation id="1792619191750875668">Sgrîn estynedig</translation>
@@ -1725,7 +1726,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="25899519884572181">Gadael y modd darllenydd</translation>
 <translation id="2593499352046705383">Cyn cychwyn, gwnewch yn siŵr bod gennych gopi wrth gefn o'ch data. Bydd gosod <ph name="DEVICE_OS" /> yn trosysgrifo'ch gyriant caled. Dysgu rhagor yn g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Chwiliwch Google neu teipiwch URL</translation>
-<translation id="2597976513418770460">Cael eich stwff porwr Chrome o <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Sweipiwch i fyny i gychwyn arni</translation>
 <translation id="2603115962224169880">Glanhau'r cyfrifiadur</translation>
 <translation id="2603355571917519942">Mae Voice Match yn barod</translation>
@@ -4680,6 +4680,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5539221284352502426">Gwrthodwyd y cyfrinair a nodoch gan y gweinydd. Mae rhesymau posib yn cynnwys: Mae'r cyfrinair yn rhy fyr. Rhaid i'r cyfrinair gynnwys rhifau neu symbolau. Rhaid i'r cyfrinair fod yn wahanol i gyfrineiriau blaenorol.</translation>
 <translation id="5541694225089836610">Mae'r weithred hon wedi'i hanalluogi gan eich gweinyddwr</translation>
 <translation id="5542132724887566711">Proffil</translation>
+<translation id="554229901779827904">Rheolir eich cyfrif gan <ph name="MANAGER_NAME" />. Gall eich gweinyddwr weld a golygu'r proffil porwr Chrome hwn a'i ddata. Mae eich data yn cynnwys nodau tudalen, hanes a chyfrineiriau.</translation>
 <translation id="5542750926112347543">Mae'r cwcis o <ph name="DOMAIN" /> wedi'u rhwystro</translation>
 <translation id="5542949973455282971">Wrthi'n cysylltu â <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Wrthi'n gwirio am statws...</translation>
@@ -7470,7 +7471,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8275080796245127762">Ffonio o'ch Dyfais</translation>
 <translation id="8275339871947079271">Symud eich cyfrinair i'ch Cyfrif Google i'w gyrchu'n ddiogel ble bynnag rydych wedi'ch mewngofnodi</translation>
 <translation id="8276560076771292512">Gwagio'r Storfa ac Ail-lwytho'n Galed</translation>
-<translation id="8281721647184388851">Troi cysoni porwr Chrome ymlaen?</translation>
 <translation id="8281886186245836920">Neidio</translation>
 <translation id="8283475148136688298">Cafodd y Cod dilysu ei wrthod wrth gysylltu â "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">pob un o'r <ph name="WEBSITE_1" /> o wefannau</translation>
@@ -7626,7 +7626,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8448729345478502352">Gwneud eitemau ar eich sgrîn yn llai neu'n fwy</translation>
 <translation id="8449008133205184768">Gludo a Chopïo Arddull</translation>
 <translation id="8449036207308062757">Rheoli'r storfa</translation>
-<translation id="8451192282033883849">Rheolir eich cyfrif gan <ph name="MANAGER_NAME" />. Gall eich gweinyddwr weld a golygu'r proffil porwr Chrome hwn a'i ddata megis nodau tudalen, hanes a chyfrineiriau.</translation>
 <translation id="8456512334795994339">Dewch o hyd i apiau ar gyfer gweithio a chwarae</translation>
 <translation id="845702320058262034">Methu â chysylltu. Gwnewch yn siŵr bod Bluetooth eich ffôn wedi'i droi ymlaen.</translation>
 <translation id="8457451314607652708">Mewnforio nodau tudalen</translation>

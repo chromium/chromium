@@ -176,6 +176,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Sveiki, <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Teksta ievade</translation>
+<translation id="1982717156487272186">Rādīt iepriekšējo nedēļu</translation>
 <translation id="1989113344093894667">Nevar izveidot satura ekrānuzņēmumu</translation>
 <translation id="1990046457226896323">Automātisko subtitru faili ir lejupielādēti.</translation>
 <translation id="1993072747612765854">Uzzināt vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu</translation>
@@ -263,6 +264,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2573588302192866788">Nevarēja izveidot savienojumu ar ierīci <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Vairākkārtēja pierakstīšanās ir atspējota</translation>
 <translation id="2582112259361606227">Restartēt, lai atjauninātu</translation>
+<translation id="2586561057878260610">Nospiediet taustiņu kombināciju Ctrl+W, lai apvienotu ar darbvietu <ph name="DESK_NAME" />. Nospiediet taustiņu kombināciju Ctrl+Shift+W, lai aizvērtu darbvietu un logus.</translation>
 <translation id="2595239820337756193">5 kilometri jūdzēs</translation>
 <translation id="2596078834055697711">Uzņemt loga ekrānuzņēmumu</translation>
 <translation id="2607678425161541573">Nepieciešama pierakstīšanās tiešsaistē</translation>
@@ -622,6 +624,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, vērtējums zvaigznītēs: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju pēc vienas dienas}zero{Atjaunojiet ierīcē iepriekšējo versiju pēc # dienām}one{Atjaunojiet ierīcē iepriekšējo versiju pēc # dienas}other{Atjaunojiet ierīcē iepriekšējo versiju pēc # dienām}}</translation>
 <translation id="4642092649622328492">Iegūt daļēju ekrānuzņēmumu</translation>
+<translation id="4644727592819780893">Reģions ir par mazu kamerai</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, lietotņu ieteikumi</translation>
 <translation id="4657775630156561295">Tālāk norādītais ieteikums tiks neatgriezeniski noņemts no jūsu konta ieteikumu vēstures.
 
@@ -667,6 +670,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4917385247580444890">Spēcīgs</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
 <translation id="4925542575807923399">Šī konta administrators ir noteicis, ka vairākkārtējas pierakstīšanās sesijā šis ir pirmais konts, kurā jāpierakstās.</translation>
+<translation id="4938176435186993759">Paslēpt visus ieteikumus</translation>
 <translation id="4945196315133970626">Izslēgt paziņojumus</translation>
 <translation id="4946376291507881335">Tvert</translation>
 <translation id="495046168593986294">Ritināt uz augšu</translation>
@@ -754,6 +758,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5520229639206813572">Jūsu administrators ir noņēmis visus eSIM profilus. Lai uzzinātu vairāk, sazinieties ar administratoru.</translation>
 <translation id="5523434445161341166">Funkcijā “<ph name="FEATURE_NAME" />” notiek savienojuma izveide.</translation>
 <translation id="5532994612895037630">Pieskarieties jebkurā vietā, lai ierakstītu visu ekrānu</translation>
+<translation id="5536723544185013515">Nesen izmantotās lietotnes: pārvietojieties, nospiežot kreiso vai labo bulttaustiņu, lai piekļūtu visām nesen izmantotajām lietotnēm.</translation>
 <translation id="553675580533261935">Iziešana no sesijas</translation>
 <translation id="5537725057119320332">Apraidīt</translation>
 <translation id="554893713779400387">Pārslēgt diktēšanas režīmu</translation>
@@ -776,10 +781,12 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5673434351075758678">Pēc iestatījumu sinhronizēšanas valoda tika mainīta no “<ph name="FROM_LOCALE" />” uz “<ph name="TO_LOCALE" />”.</translation>
 <translation id="5675363643668471212">Plaukta vienums</translation>
 <translation id="5677928146339483299">Bloķēts</translation>
+<translation id="5678564054339031017">Rādīt nākamo nedēļu</translation>
 <translation id="5679050765726761783">Pievienots strāvas adapteris ar mazu strāvas padevi</translation>
 <translation id="5682642926269496722">Google asistents nav pieejams pašlaik izmantotajam lietotāja kontam.</translation>
 <translation id="5689633613396158040">Izmantojot nakts režīmu, tiek atvieglota skatīšanās ekrānā un lasīšana blāvā apgaismojumā. Pieskarieties, lai mainītu nakts režīma ieslēgšanās laiku, vai izslēdziet to pavisam.</translation>
 <translation id="5691772641933328258">Pirksta nospiedums netika atpazīts</translation>
+<translation id="570390244361237317">Visas lietotnes: pārvietojieties, nospiežot bulttaustiņus, lai piekļūtu visām lietotnēm.</translation>
 <translation id="5707775774148071965">Jūsu ierīce atbalsta augstāku datu pārraides ātrumu nekā vads. Ierīces veiktspēja var būt ierobežota.</translation>
 <translation id="5710450975648804523">Režīms “Netraucēt” ir ieslēgts</translation>
 <translation id="571295407079589142">Mobilie dati ir izslēgti</translation>

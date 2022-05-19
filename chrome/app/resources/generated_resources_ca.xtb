@@ -835,6 +835,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1784707308176068866">Executa en segon pla quan una aplicació nativa col·laboradora ho sol·liciti</translation>
 <translation id="1784849162047402014">Queda poc espai de disc del dispositiu</translation>
 <translation id="1787350673646245458">Imatge de l'usuari</translation>
+<translation id="1788329699711791226">Accedeix al contingut del navegador Chrome des del compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Suprimeix l'accés</translation>
 <translation id="1791662854739702043">Instal·lat</translation>
 <translation id="1792619191750875668">Pantalla ampliada</translation>
@@ -4660,6 +4661,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5539221284352502426">El servidor ha rebutjat la contrasenya que has introduït. Els motius poden ser els següents: la contrasenya és massa curta, la contrasenya ha d'incloure números o símbols, o la contrasenya no es pot haver utilitzat anteriorment.</translation>
 <translation id="5541694225089836610">L'administrador ha desactivat l'acció</translation>
 <translation id="5542132724887566711">Perfil</translation>
+<translation id="554229901779827904"><ph name="MANAGER_NAME" /> gestiona el teu compte. L'administrador pot veure i editar aquest perfil del navegador Chrome i les seves dades. Les teves dades inclouen les adreces d'interès, l'historial i les contrasenyes.</translation>
 <translation id="5542750926112347543">S'han bloquejat les galetes del domini <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">S'està connectant amb <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">S'està comprovant l'estat...</translation>

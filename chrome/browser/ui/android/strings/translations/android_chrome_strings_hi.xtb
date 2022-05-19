@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />नए<ph name="END_NEW" /> Google Lens से इमेज का अनुवाद करें</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />दिन पहले सिंक किया गया</translation>
+<translation id="13931502444227376">आगे बढ़ने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा. इस साइट की <ph name="BEGIN_LINK1" />सेवा की शर्तें<ph name="END_LINK1" /> देखें.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> के ज़रिए खोजें</translation>
 <translation id="139993653570221430">Chrome की सेटिंग में जाकर, इसमें कभी भी बदलाव किया जा सकता है. आपको ये बदलाव तुरंत नहीं दिखेंगे. ऐसा इसलिए होता है, क्योंकि आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के ट्रायल के दौरान भी, विज्ञापन दिखाने के पुराने तरीके को पूरी तरह से नहीं बदला जाता है.</translation>
 <translation id="1406000523432664303">“नज़र न रखें”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">निजता सैंडबॉक्स की जानकारी</translation>
 <translation id="1736419249208073774">बेहतर जानें</translation>
 <translation id="1749561566933687563">अपने बुकमार्क समन्‍वयित करें</translation>
+<translation id="1750259112639922169">टैब ग्रुप - <ph name="TAB_COUNT" /> टैब</translation>
 <translation id="17513872634828108">टैब खोलें</translation>
 <translation id="1754404134430936718">टेक्स्ट कॉपी किया गया</translation>
 <translation id="1779766957982586368">विंडो बंद करें</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">इस डिवाइस पर निजी रूप से ब्राउज़ करने के लिए, गुप्त टैब का इस्तेमाल करें</translation>
 <translation id="5375577065097716013">Google Lens से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">प्रतिक्रिया बदली गई</translation>
+<translation id="5401851137404501592">आगे बढ़ने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा.</translation>
 <translation id="5403644198645076998">सिर्फ़ कुछ निश्चित साइटों को ही अनुमति दें</translation>
 <translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">क्यूआर कोड नहीं बनाया जा सकता. यूआरएल <ph name="CHARACTER_LIMIT" /> वर्णों से ज़्यादा का है.</translation>
 <translation id="7177959540995930968">Chrome की सेटिंग में जाकर, इन सुविधाओं के बारे ज़्यादा जानकारी हासिल की जा सकती है.</translation>
 <translation id="718226107353899806">ज़्यादा से ज़्यादा <ph name="MAX_NUM_REACTIONS" /> प्रतिक्रियाएं जोड़ी जा सकती हैं</translation>
+<translation id="7183693674623539380">टैब ग्रुप - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है.</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
 <translation id="7196215469483532480">निजता गाइड के बारे में जानकारी देने वाली शीट, पूरी स्क्रीन पर खुली है</translation>

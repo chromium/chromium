@@ -89,6 +89,9 @@
 <translation id="1082214733466244292">Administratören har blockerat vissa funktioner för den här enheten</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> önskar återställa inställningarna för Chrome till de ursprungliga standardinställningarna. Detta innebär att din startsida tillsammans med sidan ny flik och sökmotorn återställs liksom att tillägg inaktiveras och alla flikar lossas. Dessutom rensas alla tillfälliga och cachelagrade data, såsom cookies, innehåll och webbplatsdata</translation>
 <translation id="1084096383128641877">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="DOMAIN" /> raderas. Skydda kontot genom att ändra lösenordet eller ta bort ditt konto på <ph name="DOMAIN_LINK" />.</translation>
+<translation id="1084288067399862432">Det utsatta lösenordet har ändrats.
+
+Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopiera länk&amp;adress</translation>
 <translation id="1085064499066015002">Alltid på alla webbplatser</translation>
 <translation id="1085697365578766383">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
@@ -843,6 +846,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1784707308176068866">Kör i bakgrunden när en samverkande inbyggd app begär det</translation>
 <translation id="1784849162047402014">Enheten har ont om diskutrymme</translation>
 <translation id="1787350673646245458">Användarbild</translation>
+<translation id="1788329699711791226">Få åtkomst till det du har i webbläsaren Chrome från <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Ta bort åtkomst</translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792619191750875668">Utökad skärm</translation>
@@ -1693,6 +1697,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2554553592469060349">Den valda filen är för stor (största storlek: 3 MB).</translation>
 <translation id="2558569818338050235">Webbhistoriken påverkar vilka annonser som visas</translation>
 <translation id="2558896001721082624">Visa alltid tillgänglighetsalternativ i systemmenyn</translation>
+<translation id="2559889124253841528">Spara på enhet</translation>
 <translation id="2564520396658920462">Funktionen att köra JavaScript via AppleScript är inaktiverad. Om du vill aktivera funktionen väljer du Visa &gt; Utvecklare &gt; Tillåt JavaScript från Apple Events. Läs mer på: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Förbättrad stavningskontroll</translation>
 <translation id="2568774940984945469">Infobar-behållare</translation>
@@ -1703,6 +1708,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2575247648642144396">Den här ikonen visas när tillägget kan aktiveras för den aktuella sidan. Använd tillägget genom att klicka på ikonen eller genom att trycka på <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575407791320728464">Ogiltig webbadress. Kontrollera att det har rätt format.</translation>
 <translation id="2575441894380764255">Får inte visa påträngande eller vilseledande annonser</translation>
+<translation id="2575713839157415345">{YEARS,plural, =1{Den här enheten sparas i ett år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {YEARS} år. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="257779572837908839">Konfigurera som Chromebox för möten</translation>
 <translation id="2580889980133367162">Tillåt alltid att <ph name="HOST" /> laddar flera filer</translation>
 <translation id="258095186877893873">Lång</translation>
@@ -3001,6 +3007,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3856800405688283469">Välj tidszon</translation>
 <translation id="3857807444929313943">Lyft och tryck sedan igen</translation>
 <translation id="3858860766373142691">Namn</translation>
+<translation id="385939467708172187">Använd ett starkt lösenord</translation>
 <translation id="3861638017150647085">Användarnamnet <ph name="USERNAME" /> är inte tillgängligt</translation>
 <translation id="3861977424605124250">Visa vid start</translation>
 <translation id="386239283124269513">&amp;Återställ grupp</translation>
@@ -3244,6 +3251,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4089235344645910861">Inställningarna har sparats och synkroniseringen startats.</translation>
 <translation id="4090103403438682346">Aktivera verifierad åtkomst</translation>
 <translation id="4090947011087001172">Vill du återställa behörigheterna för webbplatsen <ph name="SITE" />?</translation>
+<translation id="4092636882861724179">Du kan se och hantera sparade lösenord i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
 <translation id="4094647278880271855">Du använder en miljövariabel som inte stöds: <ph name="BAD_VAR" />. Detta påverkar stabilitet och säkerhet negativt.</translation>
@@ -3534,6 +3542,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4392896746540753732">Redigera konfigurationsfilen</translation>
 <translation id="4394049700291259645">Inaktivera</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Öppna alla}=1{&amp;Öppna bokmärke}other{&amp;Öppna alla ({COUNT})}}</translation>
+<translation id="4397372003838952832">Du behöver inte komma ihåg det här lösenordet. Det sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> för <ph name="EMAIL" />.</translation>
 <translation id="439817266247065935">Enheten stängdes inte av på rätt sätt. Starta om Linux om du vill använda Linux-appar.</translation>
 <translation id="4400367121200150367">Webbplatser som aldrig sparar lösenord visas här</translation>
 <translation id="4400632832271803360">Håll ned starttangenten om du vill ändra hur tangenterna på översta raden fungerar</translation>
@@ -3547,6 +3556,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="440653823335387109">SIDOR DU HAR LÄST</translation>
 <translation id="4406883609789734330">Live Caption</translation>
+<translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK" />användarvillkor<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">H&amp;jälp</translation>
 <translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="4409697491990005945">Marginaler</translation>
@@ -3731,6 +3741,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4579453506923101210">Glöm ansluten telefon</translation>
 <translation id="4579581181964204535">Det gick inte att casta <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Du hittar webbläsaraviseringar i <ph name="LINK_BEGIN" />inställningarna i webbläsaren Chrome<ph name="LINK_END" /></translation>
+<translation id="4580596421317071374">Lösenorden sparas i <ph name="GOOGLE_PASSWORD_MANAGER" /> på den här enheten.</translation>
 <translation id="4581774856936278355">Ett fel uppstod när Linux skulle återställas</translation>
 <translation id="4582297591746054421">Att läsa från Urklipp brukar kunna behövas till exempel för att bevara formateringen när du kopierar text på webbplatsen</translation>
 <translation id="4582563038311694664">Återställ alla inställningar</translation>
@@ -3903,6 +3914,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4761104368405085019">Använd mikrofonen</translation>
 <translation id="4762718786438001384">Mycket ont om diskutrymme på enheten</translation>
 <translation id="4763408175235639573">Följande cookies sparades när du visade denna sida</translation>
+<translation id="4765524037138975789">{MONTHS,plural, =1{Den här enheten sparas i en månad. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {MONTHS} månader. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="4765582662863429759">Tillåter Android Messages att dirigera sms från mobilen till Chromebook</translation>
 <translation id="4768332406694066911">Du har certifikat från dessa organisationer som identifierar dig</translation>
 <translation id="4770119228883592393">Behörighet har begärts, tryck på ⌘ + Alt + nedåtpil för att svara</translation>
@@ -4517,6 +4529,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5398497406011404839">Dolda bokmärken</translation>
 <translation id="5398572795982417028">Sidreferensen faller utanför intervallet. Gränsen är <ph name="MAXIMUM_PAGE" />.</translation>
 <translation id="5401426944298678474">Sluta följa webbplats</translation>
+<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter.</translation>
 <translation id="5402815541704507626">Ladda ned uppdateringen via mobildata</translation>
 <translation id="540296380408672091">Blockera alltid cookies på <ph name="HOST" /></translation>
 <translation id="5404740137318486384">Tryck på en brytare eller en tangent för att tilldela den åtgärden <ph name="ACTION" />.
@@ -4664,6 +4677,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5539221284352502426">Det angivna lösenordet avvisades av servern. Möjliga orsaker: Lösenordet är för kort. Lösenordet måste innehålla siffror eller symboler. Det får inte vara ett återanvänt lösenord.</translation>
 <translation id="5541694225089836610">Åtgärden har inaktiverats av administratören</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Kontot hanteras av <ph name="MANAGER_NAME" />. Administratören kan se och redigera den här Chrome-profilen och data i den. Dit hör bland annat bokmärken, historik och lösenord.</translation>
 <translation id="5542750926112347543">Cookies från <ph name="DOMAIN" /> blockeras</translation>
 <translation id="5542949973455282971">Ansluter till <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Kontrollerar status …</translation>
@@ -5372,6 +5386,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6250186368828697007">Informationen är dold medan du delar skärmen</translation>
 <translation id="6251870443722440887">GDI-handtag</translation>
 <translation id="625369703868467034">Nätverksstatus</translation>
+<translation id="6253801023880399036">Lösenord sparas i <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6254503684448816922">Nyckelkompromiss</translation>
 <translation id="6254892857036829079">Perfekt</translation>
 <translation id="6257602895346497974">Aktivera synkronisering …</translation>
@@ -6396,6 +6411,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7282547042039404307">Jämn</translation>
 <translation id="7282992757463864530">Informationsfält</translation>
 <translation id="7283555985781738399">Gästläge</translation>
+<translation id="7284307451964417957">{DAYS,plural, =1{Den här enheten sparas i en dag. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {DAYS} dagar. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="7284411326658527427">Var och en kan anpassa sitt konto och hålla sin data privat.</translation>
 <translation id="7287143125007575591">Åtkomst nekad.</translation>
 <translation id="7287411021188441799">Återställ standardbakgrund</translation>
@@ -6600,6 +6616,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7488682689406685343">Den här webbplatsen kan försöka lura dig att tillåta påträngande aviseringar.</translation>
 <translation id="7489761397368794366">Ring från din enhet</translation>
 <translation id="749028671485790643">Person <ph name="VALUE" /></translation>
+<translation id="7490683549040131791">Kontrollera återstående lösenord</translation>
 <translation id="7491962110804786152">tabb</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176">Tillägget <ph name="EXTENSION_NAME" /> kan samla in all text du skriver, inklusive personlig information som lösenord och kreditkortsnummer. Vill du fortsätta att använda tillägget?</translation>
@@ -7492,6 +7509,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8335587457941836791">Ta bort från hyllan</translation>
 <translation id="8336407002559723354">Inga uppdateringar efter <ph name="MONTH_AND_YEAR" /></translation>
 <translation id="8336739000755212683">Ändra kontobilden på enheten</translation>
+<translation id="8337020675372081178">{HOURS,plural, =1{Den här enheten sparas i en timme. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {HOURS} timmar. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="8337047789441383384">Du har redan registrerat den här säkerhetsnyckeln. Du behöver inte registrera den igen.</translation>
 <translation id="8338952601723052325">Webbplats för utvecklare</translation>
 <translation id="8339059274628563283">Lokalt lagrad data för <ph name="SITE" /></translation>

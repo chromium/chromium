@@ -264,6 +264,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2573588302192866788"><ph name="NAME" />: nelze se připojit</translation>
 <translation id="2575685495496069081">Vícenásobné přihlášení je zakázáno.</translation>
 <translation id="2582112259361606227">Restartovat a aktualizovat</translation>
+<translation id="2586561057878260610">Stisknutím Ctrl + W sloučíte s plochou <ph name="DESK_NAME" />. Stisknutím Ctrl + Shift + W plochu a okna zavřete.</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
 <translation id="2607678425161541573">Je vyžadováno online přihlášení</translation>
@@ -669,6 +670,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4917385247580444890">Silný</translation>
 <translation id="4918086044614829423">Přijmout</translation>
 <translation id="4925542575807923399">Správce tohoto účtu vyžaduje, aby se tento účet v relaci multiprofilu přihlásil jako první.</translation>
+<translation id="4938176435186993759">Skrýt všechny návrhy</translation>
 <translation id="4945196315133970626">Vypnout oznámení</translation>
 <translation id="4946376291507881335">Zachytit</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
@@ -756,6 +758,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5520229639206813572">Váš administrátor odstranil všechny profily eSIM. O další informace požádejte administrátora.</translation>
 <translation id="5523434445161341166">Probíhá připojování funkce <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Klepnutím kamkoliv pořídíte záznam celé obrazovky</translation>
+<translation id="5536723544185013515">Nedávné aplikace, můžete je procházet pomocí kláves se šipkami vlevo a vpravo</translation>
 <translation id="553675580533261935">Ukončení návštěvy</translation>
 <translation id="5537725057119320332">Odeslat</translation>
 <translation id="554893713779400387">Přepnout diktování</translation>
@@ -784,6 +787,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5682642926269496722">Asistent Google pro aktuální uživatelský účet není k dispozici.</translation>
 <translation id="5689633613396158040">Noční režim usnadňuje sledování obrazovky nebo čtení při tlumeném osvětlení. Klepnutím můžete změnit čas zapínání nočního režimu, případně ho úplně vypnout.</translation>
 <translation id="5691772641933328258">Otisk prstu nebyl rozpoznán</translation>
+<translation id="570390244361237317">Všechny aplikace, můžete je procházet pomocí kláves se šipkami</translation>
 <translation id="5707775774148071965">Vaše zařízení podporuje vyšší přenosovou rychlost než kabel. Výkon zařízení může být omezen.</translation>
 <translation id="5710450975648804523">Režim Nerušit je zapnutý</translation>
 <translation id="571295407079589142">Mobilní data jsou vypnuta</translation>

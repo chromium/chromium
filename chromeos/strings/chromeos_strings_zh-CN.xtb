@@ -38,6 +38,7 @@
 <translation id="131421566576084655">无法获取上次重置流量使用情况的日期</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家庭网络，非漫游</translation>
+<translation id="132712914231403017">安装固件映像</translation>
 <translation id="1327977588028644528">网关</translation>
 <translation id="1328223165223065150">壁纸颜色</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -81,6 +82,7 @@
 <translation id="1641857168437328880">文件馈送器（单面）</translation>
 <translation id="1643449475550628585">每天更改一次壁纸图片</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="1645954272419197032">请确认设备信息</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -119,6 +121,7 @@
 <translation id="2006864819935886708">连接</translation>
 <translation id="2008685064673031089">高峰搜索</translation>
 <translation id="2016697457005847575">尝试问题排查步骤</translation>
+<translation id="2016848882344942759">--无白标签--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2085089206770112532">调低显示屏亮度</translation>
@@ -149,6 +152,7 @@
 <translation id="2271469253353559191">深色模式时间表</translation>
 <translation id="2275586345903859204">已修复完毕</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
+<translation id="2294753434210277304">请插接包含已下载的 Chromebook 恢复工具映像的外部存储设备（例如 U 盘或 SD 卡）</translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2320295602967756579">启用浅色主题</translation>
 <translation id="2323506179655536734">已跳过</translation>
@@ -189,6 +193,7 @@
 <translation id="2712812801627182647">TLS 身份验证密钥</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2717139507051041123">启用深色模式</translation>
+<translation id="2727250716596204208">找不到固件映像。请插接包含已下载的 Chromebook 恢复工具映像的外部存储设备（例如 U 盘或 SD 卡）。</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2751739896257479635">EAP 阶段 2 身份验证</translation>
 <translation id="2756652381241102009">运行诊断</translation>
@@ -220,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">设备已连接。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{移除页面？}=1{移除第 {PAGE_NUMBER} 页？}other{移除第 {PAGE_NUMBER} 页？}}</translation>
+<translation id="3137983112374760826">正在配置设备…</translation>
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3156846309055100599">正在扫描第 <ph name="PAGE_NUMBER" /> 页…</translation>
 <translation id="315738237743207937">检测到强制门户</translation>
@@ -241,6 +247,7 @@
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
+<translation id="3383751554789092165">酌情更改设备信息。</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3404770484521709967">这些组件已正确安装。</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
@@ -279,6 +286,7 @@
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
 <translation id="3771294271822695279">视频文件</translation>
+<translation id="3774059845329307709">序列号</translation>
 <translation id="3784455785234192852">锁定</translation>
 <translation id="38114475217616659">清除所有打印记录</translation>
 <translation id="3820172043799983114">PIN 码无效。</translation>
@@ -362,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 电池</translation>
 <translation id="4561801978359312462">SIM 卡已解锁</translation>
 <translation id="4562494484721939086">无服务</translation>
+<translation id="4568938274596692027">安装完毕。正在准备重启…</translation>
 <translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4593212453765072419">需要验证代理身份</translation>
 <translation id="4609350030397390689">调低键盘亮度</translation>
@@ -404,6 +413,7 @@
 <translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="4891842000192098784">压力</translation>
 <translation id="4897058166682006107">设备左侧耳机的剩余电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
+<translation id="4908030561598728899">正在安装固件…</translation>
 <translation id="4915052247106771211">选择此选项会将设备恢复出厂设置 (Powerwash)。</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4917889632206600977">已停止 - 纸张已用完</translation>
@@ -617,8 +627,10 @@
 <translation id="6768237774506518020">DNS 解析失败比率较高</translation>
 <translation id="680983167891198932">密钥</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
+<translation id="6822504384524564824">仅当新组件不同于它们替换的组件时，才能更改 SKU。例如，用触摸屏替换非触摸屏，或者将内存从 8GB 升级到 16GB。</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> 维修</translation>
 <translation id="6853312040151791195">放电速率</translation>
+<translation id="6876833053687020046">DRAM 部件号</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="6905724422583748843">返回“<ph name="PAGE_NAME" />”</translation>
 <translation id="6910312834584889076">扫描仪的盖子没合上。请合上盖子，然后重试。</translation>
@@ -666,6 +678,7 @@
 <translation id="7343649194310845056">网络设备</translation>
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">更换屏保</translation>
 <translation id="7397270852490618635">关闭浅色主题</translation>
 <translation id="741244894080940828">换算</translation>
@@ -765,6 +778,7 @@
 <translation id="8364946094152050673">未指定域名服务器</translation>
 <translation id="8372477600026034341">多余的主机</translation>
 <translation id="8378855320830505539">区域</translation>
+<translation id="8382302752385457774">白标签</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企业管理</translation>
 <translation id="8398927464629426868">设备当前的充电或放电速度</translation>
 <translation id="8422748173858722634">IMEI</translation>

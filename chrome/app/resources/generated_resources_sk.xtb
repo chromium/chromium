@@ -837,6 +837,7 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1784707308176068866">Spúšťať na pozadí, keď o to požiada spolupracujúca natívna aplikácia</translation>
 <translation id="1784849162047402014">V zariadení je málo miesta na disku</translation>
 <translation id="1787350673646245458">Obrázok používateľa</translation>
+<translation id="1788329699711791226">Prístup k údajom prehliadača Chrome z účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Odobrať prístup</translation>
 <translation id="1791662854739702043">Nainštalovaný</translation>
 <translation id="1792619191750875668">Rozšírená obrazovka</translation>
@@ -1709,7 +1710,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="25899519884572181">Ukončiť režim čítačky</translation>
 <translation id="2593499352046705383">Pred začatím skontrolujte, či máte zálohu údajov. Inštaláciou operačného systému <ph name="DEVICE_OS" /> prepíšete pevný disk. Viac sa dozviete na g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Vyhľadávajte na Googli alebo zadajte webovú adresu</translation>
-<translation id="2597976513418770460">Získajte údaje prehliadača Chrome z účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Začnite potiahnutím nahor</translation>
 <translation id="2603115962224169880">Vyčistiť počítač</translation>
 <translation id="2603355571917519942">Funkcia Voice Match je pripravená</translation>
@@ -4663,6 +4663,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5539221284352502426">Zadané heslo bolo zamietnuté serverom. Možné dôvody: Heslo je príliš krátke. Heslo musí obsahovať čísla alebo symboly. Heslo sa musí odlišovať od predchádzajúcich hesiel.</translation>
 <translation id="5541694225089836610">Správca akciu zakázal</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Váš účet spravuje <ph name="MANAGER_NAME" />. Váš správca si môže zobraziť a upraviť tento profil prehliadača Chrome a jeho údaje. Medzi vaše údaje patria záložky, história a heslá.</translation>
 <translation id="5542750926112347543">Boli zablokované súbory cookie z domény <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Pripája sa k operátorovi <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Kontroluje sa stav...</translation>
@@ -7449,7 +7450,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8275080796245127762">Zavolať z vášho zariadenia</translation>
 <translation id="8275339871947079271">Presuňte si heslo do účtu Google, aby ste k nemu mali po prihlásení zabezpečený prístup</translation>
 <translation id="8276560076771292512">Vymazať vyrovnávaciu pamäť a vynútiť opätovné načítanie</translation>
-<translation id="8281721647184388851">Chcete zapnúť synchronizáciu prehliadača Chrome?</translation>
 <translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8283475148136688298">Kód overenia totožnosti sa počas pripájania k zariadeniu <ph name="DEVICE_NAME" /> odmietol.</translation>
 <translation id="8284279544186306258">všetky weby <ph name="WEBSITE_1" /></translation>
@@ -7605,7 +7605,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8448729345478502352">Zväčšte alebo zmenšite položky na obrazovke</translation>
 <translation id="8449008133205184768">Prilepiť a prispôsobiť štýlu</translation>
 <translation id="8449036207308062757">Spravovať úložisko</translation>
-<translation id="8451192282033883849">Váš účet spravuje <ph name="MANAGER_NAME" />. Váš správca si môže zobraziť a upraviť tento profil prehliadača Chrome vrátane jeho údajov, ako sú záložky, história a heslá.</translation>
 <translation id="8456512334795994339">Vyhľadávanie aplikácií na prácu a zábavu</translation>
 <translation id="845702320058262034">Nedá sa pripojiť. Skontrolujte, či je v telefóne zapnuté rozhranie Bluetooth.</translation>
 <translation id="8457451314607652708">Import záložiek</translation>

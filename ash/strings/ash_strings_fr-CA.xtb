@@ -263,6 +263,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2573588302192866788">Impossible de connecter <ph name="NAME" /></translation>
 <translation id="2575685495496069081">La connexion multicompte a été désactivée</translation>
 <translation id="2582112259361606227">Redémarrer pour faire la mise à jour</translation>
+<translation id="2586561057878260610">Appuyer sur Ctrl+W pour combiner avec <ph name="DESK_NAME" />. Appuyer sur Ctrl+W pour fermer le bureau et les fenêtres.</translation>
 <translation id="2595239820337756193">Combien y a-t-il de milles dans 5 km?</translation>
 <translation id="2596078834055697711">Faire une capture d'écran de la fenêtre</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
@@ -667,6 +668,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4925542575807923399">L'administrateur pour ce compte l'a configuré de sorte qu'il doit être le premier compte à connecter lors de sessions de connexion multicompte.</translation>
+<translation id="4938176435186993759">Masquer toutes les suggestions</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
@@ -754,6 +756,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5520229639206813572">Votre administrateur a retiré tous les profils eSIM. Pour en savoir plus, communiquez avec votre administrateur.</translation>
 <translation id="5523434445161341166">La fonctionnalité <ph name="FEATURE_NAME" /> en train de se connecter.</translation>
 <translation id="5532994612895037630">Touchez n'importe où pour enregistrer la totalité de l'écran</translation>
+<translation id="5536723544185013515">Applications récentes, naviguer avec les touches fléchées gauche ou droite pour accéder à toutes les applications récentes</translation>
 <translation id="553675580533261935">Fermeture de la session</translation>
 <translation id="5537725057119320332">Diffuser</translation>
 <translation id="554893713779400387">Activer/désactiver la dictée</translation>
@@ -780,6 +783,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5682642926269496722">L'Assistant Google n'est pas accessible pour le compte d'utilisateur actuel.</translation>
 <translation id="5689633613396158040">Le mode Éclairage nocturne permet de regarder l'écran plus facilement lorsque l'éclairage est faible. Touchez l'écran pour modifier l'heure à laquelle le mode Éclairage nocturne s'active ou se désactive complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
+<translation id="570390244361237317">Toutes les applications, naviguer avec les touches fléchées pour accéder à toutes les applications</translation>
 <translation id="5707775774148071965">Votre appareil prend en charge un débit de données supérieur à celui de votre câble. La performance de l'appareil peut être limitée.</translation>
 <translation id="5710450975648804523">Mode Ne pas déranger activé</translation>
 <translation id="571295407079589142">Les données cellulaires sont désactivées</translation>

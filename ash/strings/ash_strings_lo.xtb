@@ -264,6 +264,7 @@
 <translation id="2573588302192866788">ບໍ່ສາມາດເຊື່ອມຕໍ່ຫາ <ph name="NAME" /> ໄດ້</translation>
 <translation id="2575685495496069081">ປິດນຳໃຊ້ການເຂົ້າສູ່ລະບົບແບບຫຼາຍບັນຊີ</translation>
 <translation id="2582112259361606227">ປິດເປີດຄືນໃໝ່ເພື່ອອັບເດດ</translation>
+<translation id="2586561057878260610">ກົດ Ctrl + W ເພື່ອຮວມກັບ <ph name="DESK_NAME" />. ກົດ Ctrl + Shift + W ເພື່ອປິດໂຕະ ແລະ ໜ້າຈໍ.</translation>
 <translation id="2595239820337756193">5 ພັນໄມລ໌</translation>
 <translation id="2596078834055697711">ຖ່າຍພາບໜ້າຈໍ</translation>
 <translation id="2607678425161541573">ຕ້ອງເຂົ້າສູ່ລະບົບອອນລາຍ</translation>
@@ -669,6 +670,7 @@
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
 <translation id="4925542575807923399">ຜູ້ຄຸ້ມຄອງບັນຊີນີ້ຕ້ອງການບັນຊີນີ້ໃຫ້ເປັນບັນຊີລົງຊື່ເຂົ້າ​ໃຊ້ທໍາອິດຢູ່ໃນຊ່ວງ​ເວລາ​ເຂົ້າລະບົບຫຼາຍອັນ.</translation>
+<translation id="4938176435186993759">ເຊື່ອງການແນະນຳທັງໝົດ</translation>
 <translation id="4945196315133970626">ປິດການແຈ້ງເຕືອນ</translation>
 <translation id="4946376291507881335">ຖ່າຍຮູບ</translation>
 <translation id="495046168593986294">ເລື່ອນຂຶ້ນ</translation>
@@ -756,6 +758,7 @@
 <translation id="5520229639206813572">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ລຶບໂປຣໄຟລ໌ eSIM ທັງໝົດອອກແລ້ວ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ກຳລັງເຊື່ອມຕໍ່.</translation>
 <translation id="5532994612895037630">ແຕະບ່ອນໃດກໍໄດ້ເພື່ອບັນທຶກເຕັມຈໍ</translation>
+<translation id="5536723544185013515">ແອັບຫຼ້າສຸດ, ນຳທາງດ້ວຍປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອເຂົ້າເຖິງແອັບຫຼ້າສຸດທັງໝົດ</translation>
 <translation id="553675580533261935">ກໍາລັງອອກຈາກເຊດຊັນ</translation>
 <translation id="5537725057119320332">ຄາສທ໌</translation>
 <translation id="554893713779400387">ເປີດປິດການຂຽນຕາມຄຳບອກ</translation>
@@ -764,6 +767,7 @@
 <translation id="5571066253365925590">Bluetooth ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="557563299383177668">ຫຍໍ້ໜ້າຕໍ່ໄປ</translation>
 <translation id="5577281275355252094">ກວດເບິ່ງວ່າໄດ້ເປີດການນຳໃຊ້ Bluetooth ໃນໂທລະສັບຂອງທ່ານແລ້ວຈຶ່ງສາມາດໃຊ້ Phone Hub ໄດ້.</translation>
+<translation id="5580000943347215299">ຫ້ອງສະໝຸດ</translation>
 <translation id="558849140439112033">ລາກເພື່ອເລືອກພື້ນທີ່ເພື່ອຖ່າຍຮູບ</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">ກົດ Ctrl + Alt + Z ເພື່ອປິດນຳໃຊ້ການຕອບສະໜອງແບບສຽງເວົ້າ.</translation>
@@ -783,6 +787,7 @@
 <translation id="5682642926269496722">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ສຳລັບບັນຊີຜູ້ໃຊ້ປັດຈຸບັນ.</translation>
 <translation id="5689633613396158040">ແສງກາງຄືນເຮັດໃຫ້ມັນງ່າຍກວ່າໃນການເບິ່ງໜ້າຈໍຂອງທ່ານ ຫຼື ອ່ານໃນແສງທີ່ມືດ. ແຕະເພື່ອປ່ຽນວ່າຈະເປີດແສງກາງຄືນເວລາໃດ ຫຼື ປິດມັນໄປເລີຍກໍໄດ້.</translation>
 <translation id="5691772641933328258">ບໍ່ຮູ້ຈັກລາຍນິ້ວມື</translation>
+<translation id="570390244361237317">ແອັບທັງໝົດ, ນຳທາງດ້ວຍປຸ່ມລູກສອນເພື່ອເຂົ້າເຖິງແອັບທັງໝົດ</translation>
 <translation id="5707775774148071965">ອຸປະກອນຂອງທ່ານຮອງຮັບອັດຕາຂໍ້ມູນທີ່ສູງກວ່າສາຍຂອງທ່ານ. ປະສິດທິພາບອຸປະກອນອາດຖືກຈຳກັດໄວ້.</translation>
 <translation id="5710450975648804523">ໂໝດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="571295407079589142">ອິນເຕີເນັດມືຖືປິດຢູ່</translation>

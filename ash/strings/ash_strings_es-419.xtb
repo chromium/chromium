@@ -176,6 +176,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Ingreso de texto</translation>
+<translation id="1982717156487272186">Mostrar la semana pasada</translation>
 <translation id="1989113344093894667">No se puede capturar contenido</translation>
 <translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1993072747612765854">Más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +264,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2573588302192866788">No se pudo establecer la conexión con <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Se inhabilitó el acceso múltiple</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
+<translation id="2586561057878260610">Presiona Ctrl + W para combinar con <ph name="DESK_NAME" />. Presiona Ctrl + Mayúsculas + W para cerrar el escritorio y las pestañas.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2607678425161541573">Se requiere acceso en línea</translation>
@@ -623,6 +625,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, calificación por estrellas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de un día}other{Cambia el dispositivo a la versión anterior en el transcurso de # días}}</translation>
 <translation id="4642092649622328492">Realizar una captura de pantalla parcial</translation>
+<translation id="4644727592819780893">La región es demasiado pequeña para entrar en la cámara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendación de app</translation>
 <translation id="4657775630156561295">La siguiente sugerencia se quitará permanentemente del historial de sugerencias de la cuenta:
 
@@ -668,6 +671,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4917385247580444890">Fuerte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
+<translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
@@ -755,6 +759,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5520229639206813572">Tu administrador quitó todos los perfiles de eSIM. Para obtener más información, comunícate con el administrador.</translation>
 <translation id="5523434445161341166">Se está conectando <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Presiona en cualquier lugar para grabar la pantalla completa</translation>
+<translation id="5536723544185013515">Apps recientes, navega con las flechas hacia la izquierda o la derecha para acceder a todas las apps recientes</translation>
 <translation id="553675580533261935">Salir de la sesión</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="554893713779400387">Activar o desactivar el dictado</translation>
@@ -763,6 +768,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="557563299383177668">Párrafo siguiente</translation>
 <translation id="5577281275355252094">Verifica que la conexión Bluetooth esté habilitada en tu teléfono para poder usar Phone Hub.</translation>
+<translation id="5580000943347215299">Biblioteca</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
@@ -777,10 +783,12 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración</translation>
 <translation id="5675363643668471212">Elemento de la biblioteca</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5678564054339031017">Mostrar la próxima semana</translation>
 <translation id="5679050765726761783">Se conectó un adaptador de baja potencia</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la Cuenta de usuario actual.</translation>
 <translation id="5689633613396158040">La Luz nocturna te permite ver la pantalla o leer mejor con luz tenue. Presiona para cambiar el horario en el que se activa la Luz nocturna o desactívala por completo.</translation>
 <translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
+<translation id="570390244361237317">Todas las apps, navega con las teclas de flechas para acceder a todas las apps</translation>
 <translation id="5707775774148071965">El dispositivo admite una mayor velocidad de datos que el cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
 <translation id="571295407079589142">Los datos móviles están desactivados.</translation>

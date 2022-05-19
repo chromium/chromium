@@ -89,6 +89,9 @@
 <translation id="1082214733466244292">您的管理员已禁用此设备的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />要将您的 Chrome 设置恢复为原始默认设置。这不仅会重置您的主页、“打开新的标签页”页面和搜索引擎，而且还会禁用您的扩展程序并取消固定所有标签页。此外，其他临时数据和缓存的数据（例如 Cookie、内容和网站数据）也将被清除。</translation>
 <translation id="1084096383128641877">移除此密码不会删除您在 <ph name="DOMAIN" /> 上的帐号。如需保护您在 <ph name="DOMAIN_LINK" /> 上的帐号免遭他人盗用，请更改您的密码或删除该帐号。</translation>
+<translation id="1084288067399862432">已成功更改这个已泄露的密码。
+
+您随时可在 <ph name="GOOGLE_PASSWORD_MANAGER" />中检查您的密码。</translation>
 <translation id="1084824384139382525">复制链接地址(&amp;E)</translation>
 <translation id="1085064499066015002">在所有网站上始终允许</translation>
 <translation id="1085697365578766383">启动虚拟机时出错。请重试。</translation>
@@ -827,6 +830,7 @@
 <translation id="1784707308176068866">在合作的原生应用请求时在后台运行</translation>
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
 <translation id="1787350673646245458">用户图片</translation>
+<translation id="1788329699711791226">从 <ph name="ACCOUNT_EMAIL" /> 访问您的 Chrome 浏览器信息</translation>
 <translation id="1790976235243700817">移除访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792619191750875668">扩展显示屏</translation>
@@ -1670,6 +1674,7 @@
 <translation id="2554553592469060349">所选文件太大（大小上限为3mb）。</translation>
 <translation id="2558569818338050235">您的浏览记录会影响您看到的广告</translation>
 <translation id="2558896001721082624">始终在系统菜单中显示无障碍选项</translation>
+<translation id="2559889124253841528">保存到设备</translation>
 <translation id="2564520396658920462">通过 AppleScript 执行 JavaScript 的功能已关闭。要开启此功能，请在菜单栏中依次转到“查看”&gt;“开发者”&gt;“允许 Apple 事件中的 JavaScript”。如需更多信息，请访问 https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">增强的“拼写检查”功能</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
@@ -1680,6 +1685,7 @@
 <translation id="2575247648642144396">仅当此扩展程序能够对当前网页采取操作时，该图标才会显示。要使用此扩展程序，请点击该图标或按 <ph name="EXTENSION_SHORTCUT" />。</translation>
 <translation id="2575407791320728464">网址无效。请确保它的格式无误。</translation>
 <translation id="2575441894380764255">不允许展示侵扰性或误导性广告</translation>
+<translation id="2575713839157415345">{YEARS,plural, =1{此设备将被保存 1 年，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {YEARS} 年，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="257779572837908839">设为 Chromebox 会易设备</translation>
 <translation id="2580889980133367162">始终允许 <ph name="HOST" /> 下载多个文件</translation>
 <translation id="258095186877893873">长</translation>
@@ -1694,7 +1700,6 @@
 <translation id="25899519884572181">退出阅读器模式</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
 <translation id="2594999711683503743">使用 Google 执行搜索，或者输入网址</translation>
-<translation id="2597976513418770460">从 <ph name="ACCOUNT_EMAIL" /> 获取您的 Chrome 浏览器信息</translation>
 <translation id="2602501489742255173">向上滑动即可开始使用</translation>
 <translation id="2603115962224169880">清理计算机</translation>
 <translation id="2603355571917519942">Voice Match 已设置完毕</translation>
@@ -2978,6 +2983,7 @@
 <translation id="3856800405688283469">选择时区</translation>
 <translation id="3857807444929313943">移开手指，然后再次触摸传感器</translation>
 <translation id="3858860766373142691">名称</translation>
+<translation id="385939467708172187">使用安全系数高的密码</translation>
 <translation id="3861638017150647085">用户名“<ph name="USERNAME" />”不可用</translation>
 <translation id="3861977424605124250">在 Chrome 启动时显示</translation>
 <translation id="386239283124269513">恢复组(&amp;R)</translation>
@@ -3220,6 +3226,7 @@
 <translation id="4089235344645910861">设置已保存。已开始同步。</translation>
 <translation id="4090103403438682346">允许已通过验证的访问凭证</translation>
 <translation id="4090947011087001172">要重置 <ph name="SITE" /> 的网站权限吗？</translation>
+<translation id="4092636882861724179">您可在 <ph name="GOOGLE_PASSWORD_MANAGER" />中查看和管理您已保存的密码。</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="4093955363990068916">本地文件：</translation>
 <translation id="4094647278880271855">您使用了不受支持的环境变量：<ph name="BAD_VAR" />。稳定性和安全性会有所下降。</translation>
@@ -3508,6 +3515,7 @@
 <translation id="4392896746540753732">修改配置文件</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{打开全部书签(&amp;O)}=1{打开书签(&amp;O)}other{打开全部（{COUNT} 个）书签(&amp;O)}}</translation>
+<translation id="4397372003838952832">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="439817266247065935">您的设备未正常关闭。要使用 Linux 应用，请重启 Linux。</translation>
 <translation id="4400367121200150367">一律不保存密码的网站将显示在这里</translation>
 <translation id="4400632832271803360">按住启动器键可切换顶行键的行为</translation>
@@ -3521,6 +3529,7 @@
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="440653823335387109">您已读过的页面</translation>
 <translation id="4406883609789734330">实时字幕</translation>
+<translation id="4407039574263172582">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。不妨查看此网站的<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="4408599188496843485">帮助(&amp;E)</translation>
 <translation id="4409271659088619928">您所用的搜索引擎是<ph name="DSE" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="4409697491990005945">边距</translation>
@@ -3704,6 +3713,7 @@
 <translation id="4579453506923101210">移除已连接的手机</translation>
 <translation id="4579581181964204535">无法投射 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">若要设置浏览器通知，请转到 <ph name="LINK_BEGIN" />Chrome 浏览器设置<ph name="LINK_END" /></translation>
+<translation id="4580596421317071374">系统会将密码保存到此设备上的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="4581774856936278355">恢复 Linux 容器时出错</translation>
 <translation id="4582297591746054421">网站通常会读取您的剪贴板内容以实现某些功能（例如保留您所复制文字的格式）</translation>
 <translation id="4582563038311694664">重置所有设置</translation>
@@ -3876,6 +3886,7 @@
 <translation id="4761104368405085019">使用您的麦克风</translation>
 <translation id="4762718786438001384">设备磁盘空间严重不足</translation>
 <translation id="4763408175235639573">以下 Cookie 是系统在您查看此网页时设置的</translation>
+<translation id="4765524037138975789">{MONTHS,plural, =1{此设备将被保存 1 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {MONTHS} 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
@@ -4490,6 +4501,7 @@
 <translation id="5398497406011404839">隐藏的书签</translation>
 <translation id="5398572795982417028">页面引用超出范围，上限为 <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5401426944298678474">取消关注网站</translation>
+<translation id="5401851137404501592">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。</translation>
 <translation id="5402815541704507626">使用移动数据网络下载更新</translation>
 <translation id="540296380408672091">始终禁止在 <ph name="HOST" /> 上设置 Cookie</translation>
 <translation id="5404740137318486384">按某个开关键或键盘按键即可将其分配给“<ph name="ACTION" />”操作。
@@ -4637,6 +4649,7 @@
 <translation id="5539221284352502426">您输入的密码被服务器拒绝了。可能的原因包括：此密码太短。此密码必须包含数字或符号，且必须不同于旧密码。</translation>
 <translation id="5541694225089836610">操作已被您的管理员禁止执行</translation>
 <translation id="5542132724887566711">个人资料</translation>
+<translation id="554229901779827904">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据。您的数据包括书签、历史记录和密码。</translation>
 <translation id="5542750926112347543">已拦截来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在检查状态…</translation>
@@ -5342,6 +5355,7 @@
 <translation id="6250186368828697007">当您共享屏幕时，系统会隐藏详细信息</translation>
 <translation id="6251870443722440887">GDI处理函数</translation>
 <translation id="625369703868467034">网络状况</translation>
+<translation id="6253801023880399036">系统会将密码保存到 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="6254503684448816922">密钥泄漏</translation>
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">开启同步功能…</translation>
@@ -6366,6 +6380,7 @@
 <translation id="7282547042039404307">流畅</translation>
 <translation id="7282992757463864530">信息栏</translation>
 <translation id="7283555985781738399">访客模式</translation>
+<translation id="7284307451964417957">{DAYS,plural, =1{此设备将被保存 1 天，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {DAYS} 天，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="7284411326658527427">每个人都可对自己的帐号进行个性化设置并确保数据的私密性。</translation>
 <translation id="7287143125007575591">访问遭拒。</translation>
 <translation id="7287411021188441799">恢复默认背景</translation>
@@ -6570,6 +6585,7 @@
 <translation id="7488682689406685343">此网站可能正试图诱骗您允许显示侵扰性通知。</translation>
 <translation id="7489761397368794366">通过您的设备拨打电话</translation>
 <translation id="749028671485790643">用户<ph name="VALUE" /></translation>
+<translation id="7490683549040131791">检查其余的密码</translation>
 <translation id="7491962110804786152">标签</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 个 Cookie}other{{NUM_COOKIES} 个 Cookie}}</translation>
 <translation id="7493386493263658176">扩展程序“<ph name="EXTENSION_NAME" />”可能会收集您输入的所有内容（包括密码和信用卡号等个人数据）。要使用此扩展程序吗？</translation>
@@ -7413,7 +7429,6 @@
 <translation id="8275080796245127762">通过您的设备拨打电话</translation>
 <translation id="8275339871947079271">将您的密码移至 Google 帐号后，无论您从哪部设备登录，都能安全地访问这个密码</translation>
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
-<translation id="8281721647184388851">开启 Chrome 浏览器同步？</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8283475148136688298">连接到“<ph name="DEVICE_NAME" />”时身份验证码遭拒。</translation>
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
@@ -7462,6 +7477,7 @@
 <translation id="8335587457941836791">取消固定到任务栏</translation>
 <translation id="8336407002559723354">将于 <ph name="MONTH_AND_YEAR" />停止更新</translation>
 <translation id="8336739000755212683">更改设备帐号图片</translation>
+<translation id="8337020675372081178">{HOURS,plural, =1{此设备将被保存 1 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {HOURS} 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="8337047789441383384">您已注册过此安全密钥。无需再次注册。</translation>
 <translation id="8338952601723052325">开发者网站</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> 本地存储的数据</translation>
@@ -7568,7 +7584,6 @@
 <translation id="8448729345478502352">缩小或放大屏幕上的内容</translation>
 <translation id="8449008133205184768">粘贴并匹配样式</translation>
 <translation id="8449036207308062757">管理存储空间</translation>
-<translation id="8451192282033883849">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据（例如书签、历史记录和密码）。</translation>
 <translation id="8456512334795994339">寻觅适合工作与娱乐的应用</translation>
 <translation id="845702320058262034">无法连接。请确保您手机的蓝牙已开启。</translation>
 <translation id="8457451314607652708">导入书签</translation>

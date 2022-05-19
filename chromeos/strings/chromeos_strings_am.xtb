@@ -38,6 +38,7 @@
 <translation id="131421566576084655">የመጨረሻው የውሂብ ዳግም ማስጀመር ቀን የለም</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">የቤት አውታረ መረብ፣ የሌላን እየተጠቀመ አይደለም</translation>
+<translation id="132712914231403017">ፊርምዌር ምስል ይጫኑ</translation>
 <translation id="1327977588028644528">አግባቢ ፍኖት</translation>
 <translation id="1328223165223065150">የልጣፍ ቀለም</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -81,6 +82,7 @@
 <translation id="1641857168437328880">ሰነድ መጋቢ (ባለአንድ ጎን)</translation>
 <translation id="1643449475550628585">የልጣፍ ምስልን በየቀኑ ቀይር</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
+<translation id="1645954272419197032">እባክዎ የመሣሪያ መረጃን ያረጋግጡ</translation>
 <translation id="1662989795263954667">ቆሟል - ቀለም አልቋል</translation>
 <translation id="1668469839109562275">አብሮገነብ VPN</translation>
 <translation id="1703835215927279855">ደብዳቤ</translation>
@@ -119,6 +121,7 @@
 <translation id="2006864819935886708">ግንኙነት</translation>
 <translation id="2008685064673031089">ዋና ፍለጋ</translation>
 <translation id="2016697457005847575">የመላ ፍለጋ እርምጃዎችን ይሞክሩ</translation>
+<translation id="2016848882344942759">--ነጭ-መሰየሚያ የለም--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2085089206770112532">የማሳያ ብሩህነት መቀነሻ</translation>
@@ -149,6 +152,7 @@
 <translation id="2271469253353559191">የጨለማ ሁነታ መርሐግብር</translation>
 <translation id="2275586345903859204">ጥገና ተጠናቋል</translation>
 <translation id="2287186687001756809">ምንም ምስል አልተገኘም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>
+<translation id="2294753434210277304">በወረደው የChromebook መልሶ ማግኛ መገልገያ ምስል አማካኝነት እንደ የዩኤስቢ አንጻፊ ወይም ኤስዲ ካርድ ያለ ውጫዊ ማከማቻ ያስገቡ</translation>
 <translation id="2307344026739914387">የአሁኑን የቁልፍ ጥምር ይጠቀሙ</translation>
 <translation id="2320295602967756579">ነጣ ያለ ገጽታን አንቃ</translation>
 <translation id="2323506179655536734">ተዘሏል</translation>
@@ -189,6 +193,7 @@
 <translation id="2712812801627182647">የTLS ማረጋገጫ ቁልፍ</translation>
 <translation id="2713444072780614174">ነጭ</translation>
 <translation id="2717139507051041123">የጨለማ ቀለም ሁነታን አንቃ</translation>
+<translation id="2727250716596204208">የፊርምዌር ምስልን ማግኘት አልተቻለም። በወረደው የChromebook መልሶ ማግኛ መገልገያ ምስል አማካኝነት እንደ የዩኤስቢ አንጻፊ ወይም ኤስዲ ካርድ ያለ ውጫዊ ማከማቻ ያስገቡ።</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2751739896257479635">EAP የክፍል 2 ማረጋገጥ</translation>
 <translation id="2756652381241102009">ምርመራዎችን አሂድ</translation>
@@ -220,6 +225,7 @@
 <translation id="3122464029669770682">ሲፒዩ</translation>
 <translation id="3124039320086536031">መሣሪያ ተገናኝቷል።</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ገፅ ይወገድ?}=1{ገፅ {PAGE_NUMBER} ይወገድ?}one{ገፅ {PAGE_NUMBER} ይወገድ?}other{ገፅ {PAGE_NUMBER} ይወገድ?}}</translation>
+<translation id="3137983112374760826">መሣሪያውን በማቅረብ ላይ...</translation>
 <translation id="315116470104423982">የተንቀሳቃሽ ስልክ ውሂብ</translation>
 <translation id="3156846309055100599">ገጽ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ...</translation>
 <translation id="315738237743207937">ተያዥ መግቢያ ተገኝቷል</translation>
@@ -241,6 +247,7 @@
 <translation id="3340011300870565703">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የቀኝ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
 <translation id="3368922792935385530">ተያይዟል</translation>
 <translation id="3369013195428705271">እርግጠኛ ነዎት ሁሉንም የህትመት ታሪክ ማጥፋት ይፈልጋሉ? በመካሄድ ላይ ያሉ የህትመት ስራዎችዎ አይጠፉም።</translation>
+<translation id="3383751554789092165">የመሣሪያ መረጃን እንደ አስፈላጊነቱ ይቀይሩ።</translation>
 <translation id="3404249063913988450">የማያ ገጽ ማቆያን አንቃ</translation>
 <translation id="3404770484521709967">ክፍለ-አካላት በትክክል ተጭነዋል።</translation>
 <translation id="3413935475507503304">በዝማኔው ለመቀጠል ቀጣይ የሚለውን ጠቅ ያድርጉ።</translation>
@@ -279,6 +286,7 @@
 <translation id="3748026146096797577">አልተገናኘም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
 <translation id="3771294271822695279">የቪዲዮ ፋይሎች</translation>
+<translation id="3774059845329307709">የመለያ ቁጥር</translation>
 <translation id="3784455785234192852">ቆልፍ</translation>
 <translation id="38114475217616659">ሁሉንም የዕይታ ታሪክ አፅዳ</translation>
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
@@ -362,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />ሚአሰ ባትሪ</translation>
 <translation id="4561801978359312462">ሲም ተከፍቷል</translation>
 <translation id="4562494484721939086">ምንም አገልግሎት የለም</translation>
+<translation id="4568938274596692027">መጫን ተጠናቅቋል። ዳግም ለማስነሳት በመዘጋጀት ላይ...</translation>
 <translation id="458794348635939462">ለሁሉም አስተናጋጆች መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
@@ -404,6 +413,7 @@
 <translation id="4890353053343094602">ወዲያውኑ አዲስ ይምረጡ</translation>
 <translation id="4891842000192098784">ጭንቀት</translation>
 <translation id="4897058166682006107">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% የግራ ጆሮ ማዳመጫ ባትሪ አለው።</translation>
+<translation id="4908030561598728899">ፊርምዌር በመጫን ላይ...</translation>
 <translation id="4915052247106771211">ይህ መሣሪያውን ወደ የፋብሪካ ቅንብሮች (Powerwash) ዳግም ያስጀምረዋል።</translation>
 <translation id="4917385247580444890">ጠንካራ</translation>
 <translation id="4917889632206600977">ቆሟል - ወረቀት አልቋል</translation>
@@ -617,8 +627,10 @@
 <translation id="6768237774506518020">ከፍተኛ የዲኤንኤስ ጥራት አለመሳካት ብዛት</translation>
 <translation id="680983167891198932">ቁልፍ</translation>
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
+<translation id="6822504384524564824">አዲሶቹ ክፍለ-አካል/ላት ከተኳቸው የተለዩ ከሆኑ ብቻ ነው ኤስኬዩው መቀየር ያለበት። ለምሳሌ፣ አንድ ተነኪ ማያ ሌላ ተነኪ ማያ ያልሆነን ሲተካ፣ ወይም ማህደረ ትውስታ ከ8 ጊባ ወደ 16 ጊባ ሲሻሻል።</translation>
 <translation id="6840315122969944400">የ<ph name="DEVICE_TYPE" /> ጥገና</translation>
 <translation id="6853312040151791195">የኃይል ማለቂያ ፍጥነት</translation>
+<translation id="6876833053687020046">የዲራም ክፍል ቁጥር</translation>
 <translation id="6889786074662672253">ዳግም በሚነሳበት ጊዜ ይህን ውጫዊ መሣሪያ ይንቀሉ ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ጥቂት ደቂቃዎች ሊወስድ ይችላል እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
 <translation id="6905724422583748843">ወደ <ph name="PAGE_NAME" /> ተመለስ</translation>
 <translation id="6910312834584889076">የቃኚው ሽፋን ክፍት ነው። ሽፋኑን ይዝጉ እና እንደገና ይሞክሩ።</translation>
@@ -666,6 +678,7 @@
 <translation id="7343649194310845056">የአውታረ መረብ መሣሪያዎች</translation>
 <translation id="7359657277149375382">የፋይል አይነት</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">ኤስኬዩ</translation>
 <translation id="7378886533986123738">የገጸ ማያ አሳራፊን ቀይር</translation>
 <translation id="7397270852490618635">ነጣ ያለ ገጽታን አጥፋ</translation>
 <translation id="741244894080940828">ልወጣ</translation>
@@ -765,6 +778,7 @@
 <translation id="8364946094152050673">ባዶ የስም አገልጋዮች</translation>
 <translation id="8372477600026034341">ተጨማሪ አስተናጋጆች</translation>
 <translation id="8378855320830505539">ክልል</translation>
+<translation id="8382302752385457774">ነጭ-መሰየሚያ</translation>
 <translation id="8395584934117017006">ይህ <ph name="DEVICE_TYPE" /> በድርጅት የሚተዳደር ነው</translation>
 <translation id="8398927464629426868">መሣሪያው በአሁኑ ጊዜ ኃይል እየሞላ ወይም እያስወገደ ያለበት ፍጥነት</translation>
 <translation id="8422748173858722634">IMEI</translation>

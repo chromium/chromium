@@ -835,6 +835,7 @@
 <translation id="1784707308176068866">සහයෝගය දක්වන ස්වකීය යෙදුමකින් ඉල්ලනු ලැබූ විට පසුබිමේ ධාවන වන්න</translation>
 <translation id="1784849162047402014">උපාංගයේ තැටි ඉඩ අඩුය</translation>
 <translation id="1787350673646245458">පරිශීලක රූපය</translation>
+<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> වෙතින් ඔබගේ Chrome බ්‍රවුසරයේ දේවල් වෙත ප්‍රවේශ වන්න</translation>
 <translation id="1790976235243700817">ප්‍රවේශය ඉවත් කරන්න</translation>
 <translation id="1791662854739702043">ස්ථාපිත</translation>
 <translation id="1792619191750875668">දීර්ඝ කළ සංදර්ශකය</translation>
@@ -1711,7 +1712,6 @@
 <translation id="25899519884572181">කියවන ප්‍රකාරයෙන් ඉවත් වන්න</translation>
 <translation id="2593499352046705383">ආරම්භ කිරීමට පෙර, ඔබට ඔබගේ දත්තවල උපස්ථයක් ඇති බව සහතික කර ගන්න. <ph name="DEVICE_OS" /> ස්ථාපනය කිරීම ඔබගේ දෘඪ තැටිය උඩින් ලියනු ඇත. g.co/flex/InstallGuide හිදී තව දැන ගන්න.</translation>
 <translation id="2594999711683503743">Google සොයන්න නැතහොත් URL ටයිප් කරන්න</translation>
-<translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> වෙතින් ඔබගේ Chrome බ්‍රවුසරයේ දේවල් ලබා ගන්න</translation>
 <translation id="2602501489742255173">පටන් ගැනීමට උඩට ස්වයිප් කරන්න</translation>
 <translation id="2603115962224169880">පරිගණකය පිරිසිදු කරන්න</translation>
 <translation id="2603355571917519942">Voice Match සූදානම්</translation>
@@ -4665,6 +4665,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5539221284352502426">ඔබ ඇතුළු කළ මුරපදය සේවාදායකය විසින් ප්‍රතික්ෂේප කරන ලදී. විය හැකි හේතුවල ඇතුළත් වන්නේ: මුරපදය ඉතා කෙටි වේ. මුරපදයේ අංක හෝ සංකේත ඇතුළත් විය යුතුය. මුරපදය මීට පෙර මුරපදවලින් වෙනස් විය යුතුය.</translation>
 <translation id="5541694225089836610">ක්‍රියාව ඔබේ පරිපාලකයා විසින් අබල කරනු ලැබ ඇත</translation>
 <translation id="5542132724887566711">පැතිකඩ</translation>
+<translation id="554229901779827904">ඔබගේ ගිණුම <ph name="MANAGER_NAME" /> විසින් කළමනාකරණය කෙරේ. ඔබගේ පරිපාලකට මෙම Chrome බ්‍රවුසර පැතිකඩ සහ එහි දත්ත බැලීමට සහ සංස්කරණය කිරීමට හැකිය. ඔබගේ දත්තවලට පිටුසන්, ඉතිහාසය සහ මුරපද ඇතුළත් වේ.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> වෙතින් කුකී අවහිරයි</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> වෙත සම්බන්ධ කිරීම</translation>
 <translation id="5543983818738093899">තත්වය සඳහා පරීක්ෂා කරමින්...</translation>
@@ -7446,7 +7447,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8275080796245127762">ඔබේ උපාංගයෙන් අමතන්න</translation>
 <translation id="8275339871947079271">ඔබ පුරනය වී ඇති සැම තැනම එයට සුරක්‍ෂිතව ප්‍රවේශ වීමට ඔබේ මුරපදය ඔබේ Google ගිණුමට ගෙන යන්න</translation>
 <translation id="8276560076771292512">කෑශ් හිස්කර  දැඩි නැවුම්කරණය  කරන්න</translation>
-<translation id="8281721647184388851">Chrome බ්‍රවුසර සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්නද?</translation>
 <translation id="8281886186245836920">මඟහරින්න</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" හා සම්බන්ධ වන අතරතුර සත්‍යාපන කේතය ප්‍රතික්ෂේප කෙරිණ.</translation>
 <translation id="8284279544186306258">සියලු <ph name="WEBSITE_1" /> අඩවි</translation>
@@ -7602,7 +7602,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8448729345478502352">ඔබගේ තිරය මත ඇති අයිතම කුඩා හෝ විශාල කරන්න</translation>
 <translation id="8449008133205184768">රටාව අලවා ගලපන්න</translation>
 <translation id="8449036207308062757">ගබඩාව කළමනාකරණය</translation>
-<translation id="8451192282033883849">ඔබගේ ගිණුම <ph name="MANAGER_NAME" /> විසින් කළමනාකරණය කෙරේ. ඔබගේ පරිපාලකට මෙම Chrome බ්‍රවුසර පැතිකඩ සහ පිටුසන්, ඉතිහාසය සහ මුරපද වැනි එහි දත්ත බැලීමට සහ සංස්කරණය කිරීමට හැකිය.</translation>
 <translation id="8456512334795994339">වැඩ සහ ක්‍රීඩා සඳහා යෙදුම් සොයා ගන්න</translation>
 <translation id="845702320058262034">සම්බන්ධ කළ නොහැක. ඔබේ දුරකථනයේ බ්ලූටූත් සක්‍රීයව තිබෙන බව තහවුරු කර ගන්න.</translation>
 <translation id="8457451314607652708">පිටුසන් ආයාත කරන්න</translation>

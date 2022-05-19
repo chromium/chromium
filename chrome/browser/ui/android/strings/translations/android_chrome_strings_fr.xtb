@@ -83,6 +83,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384704387250346179">Traduire avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
+<translation id="13931502444227376">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Conditions d'utilisation<ph name="END_LINK1" /> du site.</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Vous pouvez modifier vos options à tout moment dans les paramètres Chrome. Les tests sont menés parallèlement à la façon dont les annonces sont actuellement diffusées. Vous ne constaterez donc pas de changements dans l'immédiat.</translation>
 <translation id="1406000523432664303">Interdire le suivi</translation>
@@ -145,6 +146,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="173522743738009831">À propos de Privacy Sandbox</translation>
 <translation id="1736419249208073774">Découvrir</translation>
 <translation id="1749561566933687563">Synchroniser vos favoris</translation>
+<translation id="1750259112639922169">Groupe d'onglets – <ph name="TAB_COUNT" /> onglets</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1754404134430936718">Texte copié</translation>
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
@@ -789,6 +791,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5368227114232678694">Pour naviguer en privé sur cet appareil, essayez la navigation privée</translation>
 <translation id="5375577065097716013">Rechercher image avec Google Lens <ph name="BEGIN_NEW" />Nouvelle<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Réaction modifiée</translation>
+<translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil.</translation>
 <translation id="5403644198645076998">N'autoriser que certains sites</translation>
 <translation id="5409881200985013443">Envoyer <ph name="ONE_TIME_CODE" /> sur <ph name="CLIENT_NAME" /> ?</translation>
 <translation id="5414836363063783498">Validation en cours…</translation>
@@ -1129,6 +1132,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7177873915659574692">Impossible de créer le code QR, car l'URL comporte plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="7177959540995930968">Vous pouvez en savoir plus sur ces fonctionnalités dans les paramètres Chrome.</translation>
 <translation id="718226107353899806">Vous pouvez ajouter jusqu'à <ph name="MAX_NUM_REACTIONS" /> réactions</translation>
+<translation id="7183693674623539380">Groupe d'onglets – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Ce mode vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté.</translation>
 <translation id="7191430249889272776">L'onglet a été ouvert en arrière-plan.</translation>
 <translation id="7196215469483532480">Explications du Guide sur la confidentialité ouvertes à pleine hauteur</translation>

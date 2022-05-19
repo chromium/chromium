@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384704387250346179">使用 Google 智能镜头翻译图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> 天前曾有活动</translation>
+<translation id="13931502444227376">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。不妨查看此网站的<ph name="BEGIN_LINK1" />服务条款<ph name="END_LINK1" />。</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 进行搜索</translation>
 <translation id="139993653570221430">如果您改变了想法，可随时在 Chrome 设置中做出相应更改。这些试用型功能与目前的广告投放方式一起运行，因此您不会马上看到变化。</translation>
 <translation id="1406000523432664303">“不跟踪”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">隐私沙盒简介</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步您的书签</translation>
+<translation id="1750259112639922169">标签页分组 - <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
 <translation id="1754404134430936718">文字已复制</translation>
 <translation id="1779766957982586368">关闭窗口</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">若要在此设备上私密地浏览网页，请试试无痕模式</translation>
 <translation id="5375577065097716013">使用 Google 智能镜头搜索图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">已更改回应</translation>
+<translation id="5401851137404501592">如果您继续注册，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的用户名、电子邮件地址和个人资料照片提供给此网站。</translation>
 <translation id="5403644198645076998">只允许访问某些网站</translation>
 <translation id="5409881200985013443">将“<ph name="ONE_TIME_CODE" />”提交至“<ph name="CLIENT_NAME" />”？</translation>
 <translation id="5414836363063783498">正在验证…</translation>
@@ -1129,6 +1132,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="7177873915659574692">无法创建二维码。网址长度超出了 <ph name="CHARACTER_LIMIT" /> 个字符（上限）。</translation>
 <translation id="7177959540995930968">您可在 Chrome 设置中详细了解这些功能。</translation>
 <translation id="718226107353899806">您最多只能添加 <ph name="MAX_NUM_REACTIONS" /> 个表情符号</translation>
+<translation id="7183693674623539380">标签页分组 - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>
 <translation id="7196215469483532480">隐私保护指南说明已全屏打开</translation>

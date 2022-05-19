@@ -846,6 +846,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1784707308176068866">Run in the background when requested by a cooperating native application</translation>
 <translation id="1784849162047402014">Device is low on disk space</translation>
 <translation id="1787350673646245458">User image</translation>
+<translation id="1788329699711791226">Access your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Remove access</translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792619191750875668">Extended display</translation>
@@ -1722,7 +1723,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="25899519884572181">Exit reader mode</translation>
 <translation id="2593499352046705383">Before starting, make sure that you have a backup of your data. Installing <ph name="DEVICE_OS" /> will overwrite your hard drive. Learn more at g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Search Google or type URL</translation>
-<translation id="2597976513418770460">Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Swipe up to get started</translation>
 <translation id="2603115962224169880">Clean up computer</translation>
 <translation id="2603355571917519942">Voice Match is ready</translation>
@@ -4677,6 +4677,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5539221284352502426">The password that you entered was rejected by the server. Possible reasons include: The password is too short. The password must include numbers or symbols. The password must be different from previous passwords.</translation>
 <translation id="5541694225089836610">Action is disabled by your administrator</translation>
 <translation id="5542132724887566711">Profile</translation>
+<translation id="554229901779827904">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data. Your data includes bookmarks, history and passwords.</translation>
 <translation id="5542750926112347543">Cookies from <ph name="DOMAIN" /> blocked</translation>
 <translation id="5542949973455282971">Connecting to <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Checking for status...</translation>
@@ -7460,7 +7461,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8275080796245127762">Call from Your Device</translation>
 <translation id="8275339871947079271">Move your password to your Google Account to access it securely wherever you're signed in</translation>
 <translation id="8276560076771292512">Empty cache and hard reload</translation>
-<translation id="8281721647184388851">Turn on Chrome browser sync?</translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8283475148136688298">Authentication code rejected while connecting to "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">all <ph name="WEBSITE_1" /> sites</translation>
@@ -7616,7 +7616,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8448729345478502352">Make items on your screen smaller or larger</translation>
 <translation id="8449008133205184768">Paste and Match Style</translation>
 <translation id="8449036207308062757">Manage storage</translation>
-<translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="8456512334795994339">Find apps for work and play</translation>
 <translation id="845702320058262034">Can’t connect. Make sure that your phone’s Bluetooth is turned on.</translation>
 <translation id="8457451314607652708">Import bookmarks</translation>

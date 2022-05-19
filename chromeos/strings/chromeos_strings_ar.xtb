@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
+<translation id="1308067967278144752">تفعيل ميزة "وضع القراءة فقط"</translation>
 <translation id="1308754910631152188">جارٍ التحديث (اكتمل تثبيت %<ph name="PERCENTAGE_VALUE" /> من التحديثات)</translation>
 <translation id="1310380015393971138">ما مِن شبكة <ph name="NETWORK_NAME" /> متوفّرة.</translation>
 <translation id="131421566576084655">تاريخ أحدث عملية إعادة ضبط للبيانات غير متوفّر.</translation>
 <translation id="1314565355471455267">‏الشبكة الظاهرية الخاصة (VPN) في Android</translation>
 <translation id="131461803491198646">الشبكة الرئيسية، بلا تجوال</translation>
+<translation id="132712914231403017">تثبيت صورة استرداد الإعدادات الأصلية للبرامج الثابتة</translation>
 <translation id="1327977588028644528">المدخل</translation>
 <translation id="1328223165223065150">لون الخلفية</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
 <translation id="1643449475550628585">تغيير صورة الخلفية يوميًا</translation>
 <translation id="1644574205037202324">السجل</translation>
+<translation id="1645954272419197032">مطلوب تأكيد معلومات الجهاز</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
 <translation id="1703835215927279855">خطاب</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">إمكانية التوصيل</translation>
 <translation id="2008685064673031089">البحث الأوّلي</translation>
 <translation id="2016697457005847575">تجربة خطوات تحديد المشاكل وحلّها</translation>
+<translation id="2016848882344942759">--لم يتم تغيير العلامة التجارية للجهاز--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2085089206770112532">تقليل سطوع الشاشة</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">الجدول الزمني للوضع المُعتِم</translation>
 <translation id="2275586345903859204">اكتملت عملية الإصلاح</translation>
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
+<translation id="2294753434210277304">‏يُرجى إدخال وحدة تخزين خارجية، مثل محرّك أقراص USB أو بطاقة SD، تتضمّن صورة استرداد الإعدادات الأصلية والتي تم تنزيلها من خلال "أداة استرداد Chromebook".</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">‏مفتاح مصادقة بروتوكول أمان طبقة النقل (TLS)</translation>
 <translation id="2713444072780614174">أبيض</translation>
 <translation id="2717139507051041123">تفعيل وضع الألوان الداكنة</translation>
+<translation id="2727250716596204208">‏تعذّر العثور على صورة لاسترداد الإعدادات الأصلية للبرامج الثابتة. يُرجى إدخال وحدة تخزين خارجية، مثل محرّك أقراص USB أو بطاقة SD، تتضمّن صورة استرداد الإعدادات الأصلية والتي تم تنزيلها من خلال "أداة استرداد Chromebook".</translation>
 <translation id="2740531572673183784">حسنًا</translation>
 <translation id="2751739896257479635">‏مصادقة المرحلة الثانية عبر EAP</translation>
 <translation id="2756652381241102009">تشغيل عمليات التشخيص</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
 <translation id="3124039320086536031">الجهاز متصل.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{هل تريد إزالة الصفحة؟}=1{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}two{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}few{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}many{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}other{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}}</translation>
+<translation id="3137983112374760826">جارٍ ضبط الجهاز…</translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
 <translation id="3156846309055100599">جارٍ مسح الصفحة <ph name="PAGE_NUMBER" /> ضوئيًا...</translation>
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
+<translation id="3383751554789092165">يُرجى تغيير معلومات الجهاز حسب الحاجة.</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3404770484521709967">تم تثبيت المكوّنات بشكل صحيح.</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">غير متصل</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
 <translation id="3771294271822695279">ملفات فيديو</translation>
+<translation id="3774059845329307709">رقم تسلسلي</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">بطارية بسعة <ph name="CHARGE_VALUE" /> ملّي أمبير في الساعة</translation>
 <translation id="4561801978359312462">‏تم فتح قفل شريحة SIM.</translation>
 <translation id="4562494484721939086">لا تتوفر أي خدمة.</translation>
+<translation id="4568938274596692027">اكتملت عملية التثبيت. جارٍ إعادة تشغيل الجهاز...</translation>
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">اختيار كلمة مرور جديدة فورًا</translation>
 <translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4897058166682006107">مستوى شحن بطارية السماعة اليسرى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="4908030561598728899">جارٍ تثبيت البرامج الثابتة…</translation>
 <translation id="4915052247106771211">‏يؤدي هذا الخيار إلى إعادة ضبط الجهاز على الإعدادات الأصلية (Powerwash).</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">إعدادات ميزة "معلومات سريعة"</translation>
 <translation id="5168185087976003268">حالة البطارية</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
+<translation id="5179530508336824319">عليك تفعيل ميزة "وضع القراءة فقط" للانتقال إلى الشاشة التالية. يمكنك الانتقال إلى صفحة الدعم الخاصة بالشركة المصنِّعة للجهاز للحصول على التعليمات.</translation>
 <translation id="5190187232518914472">‏استرجِع ذكرياتك المفضّلة. ولإضافة أي ألبومات أو تعديلها، انتقِل إلى <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
 يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
@@ -615,8 +627,10 @@
 <translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
 <translation id="680983167891198932">المفتاح</translation>
 <translation id="6816797338148849397">تتوفّر معلومات ذات صلة باختيارك. يمكنك استخدام مفتاح السهم المتجه للأعلى للوصول إلى هذه المعلومات.</translation>
+<translation id="6822504384524564824">‏يجب ألا يتم تغيير رمز التخزين التعريفي (SKU) إلا إذا كانت المكونات الجديدة مختلفة عن تلك التي استبدلتها. على سبيل المثال، عند استخدام شاشة تعمل باللمس بدلاً من شاشة لا تعمل باللمس، أو ترقية ذاكرة التخزين من 8 غيغابايت إلى 16 غيغابايت.</translation>
 <translation id="6840315122969944400">إصلاح <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">معدّل تفريغ الشحن</translation>
+<translation id="6876833053687020046">‏رقم القطعة المحدّد لذاكرة الوصول العشوائي الديناميكية (DRAM)</translation>
 <translation id="6889786074662672253">عند إعادة تشغيل الجهاز، لا تفصل هذا الجهاز الخارجي أو توقِف تشغيل الكمبيوتر، لكن يمكنك تصغير هذه النافذة. قد تستغرق هذه العملية بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل حتى اكتمالها.</translation>
 <translation id="6905724422583748843">الرجوع إلى <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">غطاء الماسح الضوئي مفتوح. يُرجى إغلاق الغطاء وإعادة المحاولة.</translation>
@@ -664,6 +678,7 @@
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">‏رمز التخزين التعريفي (SKU)</translation>
 <translation id="7378886533986123738">تغيير "شاشة الاستراحة"</translation>
 <translation id="7397270852490618635">إيقاف تشغيل المظهر الفاتح</translation>
 <translation id="741244894080940828">التحويل</translation>
@@ -763,6 +778,7 @@
 <translation id="8364946094152050673">خادم الأسماء فارغ.</translation>
 <translation id="8372477600026034341">المضيفون الإضافيون</translation>
 <translation id="8378855320830505539">منطقة</translation>
+<translation id="8382302752385457774">العلامة التجارية الجديدة</translation>
 <translation id="8395584934117017006">تُدير المؤسسة جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="8398927464629426868">معدّل شحن الجهاز أو تفريغ شحنه حاليًا</translation>
 <translation id="8422748173858722634">IMEI</translation>

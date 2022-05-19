@@ -176,6 +176,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Chào <ph name="USERNAME" />!</translation>
 <translation id="1978498689038657292">Nhập văn bản</translation>
+<translation id="1982717156487272186">Hiện dữ liệu tuần trước</translation>
 <translation id="1989113344093894667">Không thể chụp nội dung</translation>
 <translation id="1990046457226896323">Đã tải tệp mã chuyển lời nói thành văn bản xuống</translation>
 <translation id="1993072747612765854">Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất</translation>
@@ -263,6 +264,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2573588302192866788">Không thể kết nối với <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Đã tắt tính năng đăng nhập nhiều tài khoản</translation>
 <translation id="2582112259361606227">Khởi động lại để cập nhật</translation>
+<translation id="2586561057878260610">Nhấn Ctrl + W để kết hợp với <ph name="DESK_NAME" />. Nhấn Ctrl + Shift + W để đóng không gian làm việc và cửa sổ.</translation>
 <translation id="2595239820337756193">5.000 dặm</translation>
 <translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
 <translation id="2607678425161541573">Yêu cầu đăng nhập trực tuyến</translation>
@@ -622,6 +624,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Xếp hạng theo sao <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng một ngày}other{Hạ cấp hệ điều hành trên thiết bị về phiên bản trước trong vòng # ngày}}</translation>
 <translation id="4642092649622328492">Chụp ảnh một phần màn hình</translation>
+<translation id="4644727592819780893">Kích thước khu vực quá nhỏ, không đủ để chụp</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Ứng dụng đề xuất</translation>
 <translation id="4657775630156561295">Đề xuất sau đây sẽ bị xoá vĩnh viễn khỏi nhật ký tìm kiếm của tài khoản của bạn:
 
@@ -667,6 +670,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4925542575807923399">Quản trị viên của tài khoản này yêu cầu tài khoản này là tài khoản đăng nhập đầu tiên trong phiên đăng nhập nhiều tài khoản.</translation>
+<translation id="4938176435186993759">Ẩn tất cả đề xuất</translation>
 <translation id="4945196315133970626">Tắt thông báo</translation>
 <translation id="4946376291507881335">Chụp</translation>
 <translation id="495046168593986294">Cuộn lên</translation>
@@ -754,6 +758,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5520229639206813572">Quản trị viên của bạn đã xóa tất cả hồ sơ eSIM. Hãy liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> đang kết nối.</translation>
 <translation id="5532994612895037630">Nhấn vào vị trí bất kỳ để ghi toàn màn hình</translation>
+<translation id="5536723544185013515">Ứng dụng gần đây, di chuyển bằng phím mũi tên trái hoặc phải để truy cập tất cả ứng dụng gần đây</translation>
 <translation id="553675580533261935">Thoát phiên</translation>
 <translation id="5537725057119320332">Truyền</translation>
 <translation id="554893713779400387">Bật/tắt tính năng nhập bằng giọng nói</translation>
@@ -776,10 +781,12 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5673434351075758678">Từ "<ph name="FROM_LOCALE" />" sang "<ph name="TO_LOCALE" />" sau khi đồng bộ hóa cài đặt của bạn.</translation>
 <translation id="5675363643668471212">Mục trong giá</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
+<translation id="5678564054339031017">Hiện dữ liệu tuần tiếp theo</translation>
 <translation id="5679050765726761783">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="5682642926269496722">Tài khoản người dùng hiện tại chưa hỗ trợ Trợ lý Google.</translation>
 <translation id="5689633613396158040">Chế độ Ánh sáng đêm giúp bạn cảm thấy dễ chịu khi nhìn màn hình hoặc đọc trong điều kiện ánh sáng yếu. Hãy nhấn để thay đổi thời gian bật hoặc tắt hoàn toàn chế Ánh sáng đêm.</translation>
 <translation id="5691772641933328258">Không nhận dạng được vân tay</translation>
+<translation id="570390244361237317">Tất cả ứng dụng, di chuyển bằng phím mũi tên để truy cập tất cả ứng dụng</translation>
 <translation id="5707775774148071965">Thiết bị của bạn hỗ trợ tốc độ dữ liệu cao hơn cáp của bạn. Hiệu suất của thiết bị có thể bị hạn chế.</translation>
 <translation id="5710450975648804523">Chế độ Không làm phiền đang bật</translation>
 <translation id="571295407079589142">Dữ liệu di động đang tắt</translation>

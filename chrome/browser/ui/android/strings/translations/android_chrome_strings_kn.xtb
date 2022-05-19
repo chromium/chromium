@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಅನುವಾದಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
+<translation id="13931502444227376">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK1" />ಸೇವಾ ನಿಯಮಗಳನ್ನು<ph name="END_LINK1" /> ನೋಡಿ.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="139993653570221430">ನೀವು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ನಿಮ್ಮ ಮನಸ್ಸನ್ನು ಬದಲಾಯಿಸಬಹುದು. ಪ್ರಸ್ತುತ ಜಾಹೀರಾತು ಪ್ರದರ್ಶನದ ವಿಧಾನದ ಜೊತೆಯಲ್ಲೇ ಪ್ರಯೋಗಗಳೂ ರನ್ ಆಗುತ್ತವೆ, ಹಾಗಾಗಿ ನಿಮಗೆ ತಕ್ಷಣವೇ ಬದಲಾವಣೆಗಳು ಕಾಣಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="1406000523432664303">“ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ”</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">ಪ್ರೈವೆಸಿ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ಕುರಿತು</translation>
 <translation id="1736419249208073774">ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
 <translation id="1749561566933687563">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
+<translation id="1750259112639922169">ಟ್ಯಾಬ್ ಗುಂಪು - <ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="17513872634828108">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1754404134430936718">ಪಠ್ಯವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="1779766957982586368">ವಿಂಡೋ ಮುಚ್ಚು</translation>
@@ -788,6 +790,7 @@
 <translation id="5368227114232678694">ಈ ಸಾಧನದಲ್ಲಿ ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು, ಅಜ್ಞಾತ ಮೋಡ್ ಪ್ರಯತ್ನಿಸಿ ನೋಡಿ</translation>
 <translation id="5375577065097716013">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">ಪ್ರತಿಕ್ರಿಯೆ ಬದಲಾಗಿದೆ</translation>
+<translation id="5401851137404501592">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="5403644198645076998">ಕೆಲವು ಸೈಟ್‌ಗಳಿಗೆ ಮಾತ್ರ ಅನುಮತಿಸಿ</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> ನಲ್ಲಿ <ph name="ONE_TIME_CODE" /> ಕೋಡ್ ಅನ್ನು ಸಲ್ಲಿಸಬೇಕೆ?</translation>
 <translation id="5414836363063783498">ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -1128,6 +1131,7 @@
 <translation id="7177873915659574692">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. URL, <ph name="CHARACTER_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚು ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="7177959540995930968">ನೀವು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಈ ವೈಶಿಷ್ಟ್ಯಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="718226107353899806">ನೀವು ಗರಿಷ್ಠ <ph name="MAX_NUM_REACTIONS" /> ಪ್ರತಿಕ್ರಿಯೆಗಳನ್ನು ಸೇರಿಸಬಹುದು</translation>
+<translation id="7183693674623539380">ಟ್ಯಾಬ್ ಗುಂಪು - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Chrome ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ ಮತ್ತು ಇತರ Google ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಬಹುದು.</translation>
 <translation id="7191430249889272776">ಟ್ಯಾಬ್ ಅನ್ನು ಹಿನ್ನೆಲೆಯಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="7196215469483532480">ಗೌಪ್ಯತೆ ಮಾರ್ಗಸೂಚಿಗಳು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>

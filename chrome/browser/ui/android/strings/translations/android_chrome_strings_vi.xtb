@@ -83,6 +83,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384704387250346179">Dịch hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Hoạt động <ph name="LAST_UPDATED" /> ngày trước</translation>
+<translation id="13931502444227376">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này. Xem <ph name="BEGIN_LINK1" />điều khoản dịch vụ<ph name="END_LINK1" /> của trang web này.</translation>
 <translation id="1397811292916898096">Tìm kiếm bằng <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Bạn có thể thay đổi quyết định bất cứ lúc nào trong phần cài đặt trên Chrome. Chương trình dùng thử diễn ra đồng thời với cách phân phát quảng cáo hiện hành, nên bạn sẽ không thấy thay đổi ngay lập tức.</translation>
 <translation id="1406000523432664303">“Không theo dõi”</translation>
@@ -145,6 +146,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="173522743738009831">Giới thiệu về Hộp cát về quyền riêng tư</translation>
 <translation id="1736419249208073774">Khám phá</translation>
 <translation id="1749561566933687563">Đồng bộ hóa dấu trang của bạn</translation>
+<translation id="1750259112639922169">Nhóm thẻ – <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="1754404134430936718">Đã sao chép văn bản</translation>
 <translation id="1779766957982586368">Đóng cửa sổ</translation>
@@ -789,6 +791,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5368227114232678694">Để duyệt web riêng tư trên thiết bị này, hãy thử chế độ Ẩn danh</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Đã thay đổi phản ứng</translation>
+<translation id="5401851137404501592">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này.</translation>
 <translation id="5403644198645076998">Chỉ cho phép một số trang web</translation>
 <translation id="5409881200985013443">Gửi <ph name="ONE_TIME_CODE" /> trên <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Đang xác minh...</translation>
@@ -1129,6 +1132,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="7177873915659574692">Không thể tạo mã QR. URL chứa nhiều hơn <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="7177959540995930968">Bạn có thể tìm hiểu thêm về những tính năng này trong phần cài đặt trên Chrome.</translation>
 <translation id="718226107353899806">Bạn có thể thêm tối đa <ph name="MAX_NUM_REACTIONS" /> phản ứng</translation>
+<translation id="7183693674623539380">Nhóm thẻ – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>

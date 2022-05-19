@@ -831,6 +831,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1784707308176068866">Birgə işləyən yerli tətbiq tərəfindən tələb edildikdə arxa fonda işlədin</translation>
 <translation id="1784849162047402014">Cihazda disk yaddaşı azdır</translation>
 <translation id="1787350673646245458">İstifadəçinin şəkli</translation>
+<translation id="1788329699711791226">Chrome brauzerinin elementlərinə <ph name="ACCOUNT_EMAIL" /> hesabından giriş edin</translation>
 <translation id="1790976235243700817">Girişi silin</translation>
 <translation id="1791662854739702043">Quraşdırıldı</translation>
 <translation id="1792619191750875668">Genişləndirilmiş ekran</translation>
@@ -1706,7 +1707,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="25899519884572181">Oxucu rejimindən çıxın</translation>
 <translation id="2593499352046705383">Başlamadan əvvəl, datanızın yedəkləndiyinə əmin olun. <ph name="DEVICE_OS" /> quraşdırıldıqda sərt diskinizdəki bütün data əvəzlənəcəkdir. Ətraflı məlumat: g.co/flex/InstallGuide.</translation>
 <translation id="2594999711683503743">Google'da axtarın və ya link yazın</translation>
-<translation id="2597976513418770460">Chrome brauzerinin elementlərini <ph name="ACCOUNT_EMAIL" /> hesabından əldə edin</translation>
 <translation id="2602501489742255173">Başlamaq üçün yuxarı sürüşdürün</translation>
 <translation id="2603115962224169880">Kompüteri təmizləyin</translation>
 <translation id="2603355571917519942">Voice Match hazırdır</translation>
@@ -4657,6 +4657,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5539221284352502426">Daxil etdiyiniz parol server tərəfindən rədd edildi. Səbəblər bunlar ola bilər: Parol çox qısadır. Parol rəqəm və ya simvollardan ibarət olmalıdır. Parol əvvəlki paroldan fərqli olmalıdır.</translation>
 <translation id="5541694225089836610">Administrator əməliyyatı deaktiv edib</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Hesabınız <ph name="MANAGER_NAME" /> tərəfindən idarə olunur. Administratorunuz bu Chrome brauzer profilini və onun datasını görə və redaktə edə bilər. Datanıza əlfəcinlər, tarixçə və parollar daxildir.</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> kukiləri blok edildi</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> şəbəkəsinə qoşulur</translation>
 <translation id="5543983818738093899">Status yoxlanılır...</translation>
@@ -7436,7 +7437,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8275080796245127762">Cihazınızdan Zəng</translation>
 <translation id="8275339871947079271">Daxil olduqda təhlükəsiz giriş üçün parolunuzu Google Hesabınıza köçürün.</translation>
 <translation id="8276560076771292512">Keşi boşaldın və yenidən yükləyin</translation>
-<translation id="8281721647184388851">Chrome brauzerinin sinxronizasiyası aktiv edilsin?</translation>
 <translation id="8281886186245836920">Keçin</translation>
 <translation id="8283475148136688298">"<ph name="DEVICE_NAME" />" cihazına qoşularkən doğrulama rədd edildi.</translation>
 <translation id="8284279544186306258">bütün <ph name="WEBSITE_1" /> saytları</translation>
@@ -7592,7 +7592,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8448729345478502352">Elementləri ekranda balacalaşdırın və ya böyüdün</translation>
 <translation id="8449008133205184768">Üslubu Yerləşdirin və Uyğunlaşdırın</translation>
 <translation id="8449036207308062757">Yaddaş idarəetməsi</translation>
-<translation id="8451192282033883849">Hesabınızı <ph name="MANAGER_NAME" /> idarə edir. Administratorunuz bu Chrome brauzer profilini və onun əlfəcinlər, tarixçə və parollar kimi datasını görə və redaktə edə bilər.</translation>
 <translation id="8456512334795994339">İş və oxutmaq üçün tətbiqlər tapın</translation>
 <translation id="845702320058262034">Qoşulmaq mümkün deyil. Telefonda Bluetooth'u aktiv edin.</translation>
 <translation id="8457451314607652708">Əlfəcinləri import edin</translation>

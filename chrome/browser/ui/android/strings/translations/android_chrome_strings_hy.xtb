@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384704387250346179">Թարգմանել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ակտիվ է եղել <ph name="LAST_UPDATED" /> օր առաջ</translation>
+<translation id="13931502444227376">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />օգտագործման պայմաններին<ph name="END_LINK1" />։</translation>
 <translation id="1397811292916898096">Որոնում <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="139993653570221430">Դուք ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք փոխել ձեր ընտրությունը։ Փորձարկումներն ընթանում են գովազդի ցուցադրման ընթացիկ ռեժիմին զուգահեռ, ինչի արդյունքում փոփոխություններն անմիջապես տեսանելի չեն լինի ձեզ։</translation>
 <translation id="1406000523432664303">«Չհետևել»</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">Privacy Sandbox-ի մասին</translation>
 <translation id="1736419249208073774">Ուսումնասիրել</translation>
 <translation id="1749561566933687563">Համաժամացրեք ձեր էջանիշները</translation>
+<translation id="1750259112639922169">Ներդիրների խումբ – <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="17513872634828108">Բաց ներդիրներ</translation>
 <translation id="1754404134430936718">Տեքստը պատճենվեց</translation>
 <translation id="1779766957982586368">Փակել պատուհանը</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">Օգտագործեք ինկոգնիտո ռեժիմը, որպեսզի ձեր այցելությունների պատմությունը չպահվի</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Արձագանքը փոփոխվել է</translation>
+<translation id="5401851137404501592">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։</translation>
 <translation id="5403644198645076998">Թույլատրել միայն որոշ կայքեր</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
@@ -1129,6 +1132,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7177873915659574692">Չհաջողվեց ստեղծել QR կոդ։ URL-ը կարող է պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="7177959540995930968">Ավելին այս գործառույթների մասին կարող եք իմանալ Chrome-ի կարգավորումներում։</translation>
 <translation id="718226107353899806">Դուք կարող եք ավելացնել առավելագույնը <ph name="MAX_NUM_REACTIONS" /> արձագանք</translation>
+<translation id="7183693674623539380">Ներդիրների խումբ – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
 <translation id="7196215469483532480">Տվյալների պաշտպանության ուղեցույցի մասին տեղեկությունները բացված են ամբողջությամբ</translation>

@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1384704387250346179">‏ترجمة الصور مع "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">نشط قبل <ph name="LAST_UPDATED" /> من الأيام</translation>
+<translation id="13931502444227376">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />بنود الخدمة<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">‏يمكنك تغيير رأيك متى شئت من خلال إعدادات Chrome. تتم هذه التجارب جنبًا إلى جنب مع الطريقة الحالية لعرض الإعلانات، لذا لن تظهر التغيرات على الفور.</translation>
 <translation id="1406000523432664303">"عدم التعقب"</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">لمحة عن "مبادرة حماية الخصوصية"</translation>
 <translation id="1736419249208073774">استكشاف</translation>
 <translation id="1749561566933687563">مزامنة الإشارات المرجعية</translation>
+<translation id="1750259112639922169">مجموعة علامات التبويب: <ph name="TAB_COUNT" /> علامة تبويب</translation>
 <translation id="17513872634828108">علامات التبويب المفتوحة</translation>
 <translation id="1754404134430936718">تم نسخ النص</translation>
 <translation id="1779766957982586368">إغلاق النافذة</translation>
@@ -789,6 +791,7 @@
 <translation id="5368227114232678694">للتصفّح بخصوصية تامّة على هذا الجهاز، يمكنك استخدام وضع التصفّح المتخفي.</translation>
 <translation id="5375577065097716013">‏ابحث في الصور عبر "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">تم تغيير الرمز التعبيري للتفاعل.</translation>
+<translation id="5401851137404501592">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني.</translation>
 <translation id="5403644198645076998">السماح بمواقع ويب معيّنة فقط</translation>
 <translation id="5409881200985013443">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
 <translation id="5414836363063783498">جارٍ التحقق...</translation>
@@ -1129,6 +1132,7 @@
 <translation id="7177873915659574692">‏يتعذّر إنشاء رمز الاستجابة السريعة. يجب ألّا يزيد عدد أحرف عنوان URL عن <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7177959540995930968">‏يمكنك الاطّلاع على المزيد من المعلومات عن هذه الميزات في إعدادات Chrome.</translation>
 <translation id="718226107353899806">الحدّ الأقصى لعدد التفاعلات التي يمكنك إضافتها: <ph name="MAX_NUM_REACTIONS" /></translation>
+<translation id="7183693674623539380">مجموعة علامات التبويب: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">‏توفير الحماية على Chrome مع احتمالية استخدام هذا الخيار لتحسين مستوى أمانك على تطبيقات Google الأخرى عندما تكون مسجّلاً الدخول</translation>
 <translation id="7191430249889272776">تم فتح علامة التبويب في الخلفية.</translation>
 <translation id="7196215469483532480">تم فتح شرح دليل الخصوصية بطول الشاشة.</translation>

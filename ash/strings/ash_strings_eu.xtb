@@ -176,6 +176,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Kaixo, <ph name="USERNAME" />:</translation>
 <translation id="1978498689038657292">Testu-idazketa</translation>
+<translation id="1982717156487272186">Erakutsi aurreko astekoak</translation>
 <translation id="1989113344093894667">Ezin da kapturatu edukia</translation>
 <translation id="1990046457226896323">Deskargatu dira hizketa-fitxategiak</translation>
 <translation id="1993072747612765854">Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz</translation>
@@ -624,6 +625,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> aplikazioa. <ph name="RATING_SCORE" /> izarreko balorazioa dauka.</translation>
 <translation id="4633185660152240791">{0,plural, =1{Itzuli gailuaren aurreko bertsiora egun bat barru}other{Itzuli gailuaren aurreko bertsiora # egun barru}}</translation>
 <translation id="4642092649622328492">Atera eremu baten pantaila-argazkia</translation>
+<translation id="4644727592819780893">Eremua txikiegia da kameraren aurrebistan erakusteko</translation>
 <translation id="4648249871170053485">Gomendatutako aplikazioa (<ph name="APP_NAME" />)</translation>
 <translation id="4657775630156561295">Iradokizun hau betiko kenduko da kontuaren iradokizun-historiatik:
 
@@ -780,6 +782,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5673434351075758678">Ezarpenak sinkronizatu ondoren, "<ph name="FROM_LOCALE" />" ordez, "<ph name="TO_LOCALE" />" ezarri da hizkuntza gisa.</translation>
 <translation id="5675363643668471212">Apaleko elementua</translation>
 <translation id="5677928146339483299">Blokeatuta</translation>
+<translation id="5678564054339031017">Erakutsi datorren astekoak</translation>
 <translation id="5679050765726761783">Potentzia txikiko egokigailua konektatuta dago</translation>
 <translation id="5682642926269496722">Google-ren Laguntzailea ez dago erabilgarri oraingo erabiltzaile-kontuan.</translation>
 <translation id="5689633613396158040">Gaueko argia eginbideari esker, ez zaizu egingo horren nekagarria argi gutxiko inguruetan pantailari begira egotea. Sakatu hau Gaueko argia aktibatzeko ordua aldatzeko, edo aukera hori erabat desaktibatzeko.</translation>

@@ -837,6 +837,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1784707308176068866">Uruchamiaj w tle na prośbę współpracującej aplikacji natywnej</translation>
 <translation id="1784849162047402014">Na urządzeniu jest mało miejsca.</translation>
 <translation id="1787350673646245458">Zdjęcie użytkownika</translation>
+<translation id="1788329699711791226">Uzyskaj dostęp do danych z przeglądarki Chrome z konta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Anuluj dostęp</translation>
 <translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792619191750875668">Ekran rozszerzony</translation>
@@ -1694,7 +1695,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="25899519884572181">Zamknij tryb czytnika</translation>
 <translation id="2593499352046705383">Przed rozpoczęciem instalacji sprawdź, czy masz kopię zapasową danych. Instalacja systemu operacyjnego <ph name="DEVICE_OS" /> spowoduje zastąpienie danych na dysku twardym. Więcej informacji znajdziesz na g.co/flex/InstallGuide</translation>
 <translation id="2594999711683503743">Wyszukaj w Google lub wpisz URL</translation>
-<translation id="2597976513418770460">Uzyskaj dostęp do danych z przeglądarki Chrome z konta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2602501489742255173">Przesuń palcem w górę, by rozpocząć</translation>
 <translation id="2603115962224169880">Oczyść komputer</translation>
 <translation id="2603355571917519942">Funkcja Voice Match jest gotowa</translation>
@@ -4646,6 +4646,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5539221284352502426">Podane hasło zostało odrzucone przez serwer. Możliwe, że jest ono za krótkie, musi zawierać cyfry lub symbole albo musi się różnić od poprzednich haseł.</translation>
 <translation id="5541694225089836610">Administrator wyłączył to działanie</translation>
 <translation id="5542132724887566711">Profil</translation>
+<translation id="554229901779827904">Tym kontem zarządza <ph name="MANAGER_NAME" />. Administrator może przeglądać i edytować ten profil przeglądarki Chrome i dane, które się na nim znajdują. Te dane obejmują zakładki, historię i hasła.</translation>
 <translation id="5542750926112347543">Pliki cookie z witryny <ph name="DOMAIN" /> zostały zablokowane</translation>
 <translation id="5542949973455282971">Łączę z siecią <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Sprawdzam stan...</translation>
@@ -7433,7 +7434,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8275080796245127762">Zadzwoń ze swojego urządzenia</translation>
 <translation id="8275339871947079271">Przenieś swoje hasło na konto Google, by mieć do niego bezpieczny dostęp, gdziekolwiek się zalogujesz</translation>
 <translation id="8276560076771292512">Opróżnij pamięć podręczną i wymuś ponowne załadowanie</translation>
-<translation id="8281721647184388851">Włączyć synchronizację przeglądarki Chrome?</translation>
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8283475148136688298">Podczas łączenia się z urządzeniem „<ph name="DEVICE_NAME" />” został odrzucony kod uwierzytelniania.</translation>
 <translation id="8284279544186306258">wszystkie strony <ph name="WEBSITE_1" /></translation>
@@ -7589,7 +7589,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8448729345478502352">Powiększ lub pomniejsz elementy na ekranie</translation>
 <translation id="8449008133205184768">Wklej i dopasuj do stylu</translation>
 <translation id="8449036207308062757">Zarządzaj miejscem na dane</translation>
-<translation id="8451192282033883849">Tym kontem zarządza <ph name="MANAGER_NAME" />. Administrator może przeglądać i edytować ten profil przeglądarki Chrome i dane, które się na nim znajdują, w tym zakładki, historię i hasła.</translation>
 <translation id="8456512334795994339">Znajdź aplikacje do pracy i zabawy</translation>
 <translation id="845702320058262034">Nie można nawiązać połączenia. Sprawdź, czy Bluetooth w telefonie jest włączony.</translation>
 <translation id="8457451314607652708">Importuj zakładki</translation>

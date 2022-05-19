@@ -173,6 +173,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ሠላም <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">ጽሑፍ ግቤት</translation>
+<translation id="1982717156487272186">ቀዳሚ ሳምንትን አሳይ</translation>
 <translation id="1989113344093894667">ይዘትን መቅረጽ አልተቻለም</translation>
 <translation id="1990046457226896323">የንግግር ፋይሎች ወርደዋል</translation>
 <translation id="1993072747612765854">ስለቅርብ ጊዜው የ<ph name="SYSTEM_APP_NAME" /> ዝማኔ የበለጠ ይረዱ</translation>
@@ -620,6 +621,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />፣ ኮከብ ደረጃ አሰጣጥ <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{በአንድ ቀን ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ይለውጡ}one{መሣሪያውን በ# ቀናት ውስጥ ወደ ቀዳሚው ስሪት ይለውጡ}other{መሣሪያውን በ# ቀናት ውስጥ ወደ ቀዳሚው ስሪት ይለውጡ}}</translation>
 <translation id="4642092649622328492">ከፊል ቅጽበታዊ ገጽ ዕይታን ያንሱ</translation>
+<translation id="4644727592819780893">ካሜራን ለማስገባት ቦታው በጣም ትንሽ ነው</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />፣ የመተግበሪያ ምክር</translation>
 <translation id="4657775630156561295">የሚከተለው የአስተያየት ጥቆማ ከመለያዎ የአስተያየት ጥቆማ ታሪክ እስከመጨረሻው ይወገዳል፦
 
@@ -776,6 +778,7 @@
 <translation id="5673434351075758678">ከ«<ph name="FROM_LOCALE" />» ወደ «<ph name="TO_LOCALE" />» የእርስዎን ቅንብሮች ከማመሳሰል በኋላ።</translation>
 <translation id="5675363643668471212">የመደርደሪያ ንጥል</translation>
 <translation id="5677928146339483299">ታግዷል</translation>
+<translation id="5678564054339031017">ቀጣይ ሳምንትን አሳይ</translation>
 <translation id="5679050765726761783">ዝቅተኛ የኃይል አስማሚ ተገናኝቷል</translation>
 <translation id="5682642926269496722">የ Google ረዳቱ አሁን ላለው ተጠቃሚ መለያ አይገኝም።</translation>
 <translation id="5689633613396158040">የሌሊት ብርሃን በእርስዎ ማያ ገጽ ላይ መመልከትን ወይም በደብዛዛ ብርሃን ማንበብን ይበልጥ ቀላል ያደርገዋል። የምሽት ብርሃን ስንት ሰዓት ላይ እንደሚበራ ለመቀየር መታ ያድርጉ ወይም ሙሉ ለሙሉ ያጥፉት።</translation>

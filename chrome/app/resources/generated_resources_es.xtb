@@ -835,6 +835,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1784707308176068866">Ejecutar en segundo plano cuando lo solicite una aplicación nativa cooperativa</translation>
 <translation id="1784849162047402014">Queda poco espacio en el disco del dispositivo</translation>
 <translation id="1787350673646245458">Imagen del usuario</translation>
+<translation id="1788329699711791226">Accede a tus cosas del navegador Chrome desde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Ubicación</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
@@ -4659,6 +4660,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5539221284352502426">El servidor ha rechazado la contraseña que has introducido. Puede deberse a alguna de estas causas: la contraseña es demasiado corta. La contraseña debe contener números o símbolos. La contraseña debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador ha inhabilitado esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
+<translation id="554229901779827904">Tu cuenta la gestiona <ph name="MANAGER_NAME" />. Tu administrador puede ver y editar este perfil del navegador Chrome y sus datos. Tus datos incluyen marcadores, historial y contraseñas.</translation>
 <translation id="5542750926112347543">Se han bloqueado las cookies de <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Conectando con <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Comprobando el estado...</translation>

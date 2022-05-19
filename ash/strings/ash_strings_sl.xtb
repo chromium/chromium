@@ -176,6 +176,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Pozdravljeni, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Vnos besedila</translation>
+<translation id="1982717156487272186">Prikaz prejšnjega tedna</translation>
 <translation id="1989113344093894667">Vsebine ni mogoče zajeti</translation>
 <translation id="1990046457226896323">Datoteke za govor so bile prenesene.</translation>
 <translation id="1993072747612765854">Več informacij o najnovejši posodobitvi za <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +264,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2573588302192866788">Ni bilo mogoče povezati naprave <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Prijava z več računi je onemogočena</translation>
 <translation id="2582112259361606227">Znova zaženite za posodobitev</translation>
+<translation id="2586561057878260610">Pritisnite Ctrl + W, če želite kombinirati z namizjem <ph name="DESK_NAME" />. Pritisnite Ctrl + Shift + W, če želite zapreti namizje in okna.</translation>
 <translation id="2595239820337756193">5 km v miljah</translation>
 <translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
 <translation id="2607678425161541573">Obvezna je spletna prijava</translation>
@@ -622,6 +624,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ocena z zvezdicami (<ph name="RATING_SCORE" />)</translation>
 <translation id="4633185660152240791">{0,plural, =1{Spremenite napravo na prejšnjo različico v enem dnevu}one{Spremenite napravo na prejšnjo različico v # dnevu}two{Spremenite napravo na prejšnjo različico v # dnevih}few{Spremenite napravo na prejšnjo različico v # dnevih}other{Spremenite napravo na prejšnjo različico v # dnevih}}</translation>
 <translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
+<translation id="4644727592819780893">Območje je premajhno za prikaz kamere</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, priporočilo aplikacije</translation>
 <translation id="4657775630156561295">Ta predlog bo trajno odstranjen iz zgodovine predlogov v računu:
 
@@ -667,6 +670,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4917385247580444890">Močan</translation>
 <translation id="4918086044614829423">Sprejmi</translation>
 <translation id="4925542575807923399">Skrbnik tega računa zahteva, da je ta račun v seji prijave z več računi prvi prijavljeni račun.</translation>
+<translation id="4938176435186993759">Skrij vse predloge</translation>
 <translation id="4945196315133970626">Izklop obvestil</translation>
 <translation id="4946376291507881335">Zajemi</translation>
 <translation id="495046168593986294">Pomik navzgor</translation>
@@ -754,6 +758,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5520229639206813572">Skrbnik je odstranil vse profile za eSIM. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="5523434445161341166">Vzpostavljanje povezave s funkcijo <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">Dotaknite se kjer koli za snemanje celotnega zaslona.</translation>
+<translation id="5536723544185013515">Nedavne aplikacije; s puščico levo ali desno dostopate do vseh nedavnih aplikacij</translation>
 <translation id="553675580533261935">Odjava iz seje</translation>
 <translation id="5537725057119320332">Predvajanje</translation>
 <translation id="554893713779400387">Preklop narekovanja</translation>
@@ -776,10 +781,12 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5673434351075758678">Iz jezika »<ph name="FROM_LOCALE" />« v jezik »<ph name="TO_LOCALE" />« po sinhronizaciji nastavitev.</translation>
 <translation id="5675363643668471212">Element na polici</translation>
 <translation id="5677928146339483299">Blokirano</translation>
+<translation id="5678564054339031017">Prikaz naslednjega tedna</translation>
 <translation id="5679050765726761783">Priključen je nizkoenergijski napajalnik</translation>
 <translation id="5682642926269496722">Pomočnik Google ni na voljo za trenutni uporabniški račun.</translation>
 <translation id="5689633613396158040">Nočna svetloba olajša gledanje na zaslon ali branje pri šibki svetlobi. Dotaknite se, če želite spremeniti uro, ob kateri se vklopi nočna svetloba, oziroma če želite popolnoma izklopiti to funkcijo.</translation>
 <translation id="5691772641933328258">Prstni odtis ni prepoznan</translation>
+<translation id="570390244361237317">Vse aplikacije, s puščičnimi tipkami se premikate in dostopate do vseh aplikacij</translation>
 <translation id="5707775774148071965">Naprava podpira višjo podatkovno hitrost od kabla. Delovanje naprave bo morda omejeno.</translation>
 <translation id="5710450975648804523">Način »ne moti« je vklopljen</translation>
 <translation id="571295407079589142">Prenos podatkov v mobilnem omrežju je izklopljen</translation>
