@@ -27,6 +27,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -91,6 +92,16 @@ BrowserView* GetSourceBrowserViewInTabDragging() {
       return BrowserView::GetBrowserViewForNativeWindow(source_window);
   }
   return nullptr;
+}
+
+bool HasTabGroups(Profile* profile) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (profile->IsSameOrParent(browser->profile()) &&
+        browser->tab_strip_model()->group_model()->num_tab_groups() > 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -771,7 +782,9 @@ void BrowserTabStripController::AddTab(WebContents* contents,
 
   tabstrip_->AddTabAt(index, TabRendererData::FromTabInModel(model_, index));
   // Try to show tab groups IPH if needed.
-  if (tabstrip_->GetTabCount() >= 6) {
+  constexpr int kTabGroupsIPHTriggerThreshold = 6;
+  if (tabstrip_->GetTabCount() >= kTabGroupsIPHTriggerThreshold &&
+      !HasTabGroups(browser()->profile())) {
     browser_view_->NotifyFeatureEngagementEvent(
         feature_engagement::events::kSixthTabOpened);
 
