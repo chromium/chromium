@@ -132,6 +132,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // View containing the continue button.
   views::View* continue_button_{nullptr};
 
+  // Used to differentiate UI dismissal scenarios.
+  bool verify_sheet_shown_{false};
+
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.
   base::WeakPtrFactory<AccountSelectionBubbleView> weak_ptr_factory_{this};
