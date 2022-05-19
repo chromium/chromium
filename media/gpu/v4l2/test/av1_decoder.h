@@ -14,6 +14,7 @@
 // For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
 // TODO(stevecho): Remove ANALYZER_ALLOW_UNUSED() later if this is added later

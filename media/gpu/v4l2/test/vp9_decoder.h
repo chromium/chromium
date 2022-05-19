@@ -7,6 +7,8 @@
 
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
+#include <linux/media/vp9-ctrls-upstream.h>
+
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
