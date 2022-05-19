@@ -600,7 +600,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 // Tests that tapping the fake omnibox moves the collection.
-- (void)testTapFakeOmniboxScroll {
+// TODO(crbug.com/1326523): enable once fixed on ios15-sdk-sim
+- (void)DISABLED_testTapFakeOmniboxScroll {
   // Disable the test on iOS 15.3 due to build failure.
   // TODO(crbug.com/1306515): enable the test with fix.
   if (@available(iOS 15.3, *)) {
@@ -639,7 +640,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that tapping the fake omnibox then unfocusing it moves the collection
 // back to where it was.
-- (void)testTapFakeOmniboxScrollScrolled {
+// TODO(crbug.com/1326523): enable once fixed on ios15-sdk-sim
+- (void)DISABLED_testTapFakeOmniboxScrollScrolled {
   // Disable the test on iOS 15.3 due to build failure.
   // TODO(crbug.com/1306515): enable the test with fix.
   if (@available(iOS 15.3, *)) {

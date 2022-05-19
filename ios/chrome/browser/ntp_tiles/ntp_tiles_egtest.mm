@@ -88,7 +88,8 @@ using web::test::HttpServer;
 
 // Tests that only one NTP tile is displayed for a TopSite that involves a
 // redirect.
-- (void)testTopSitesTileAfterRedirect {
+// TODO(crbug.com/1326515): Re-enable after fixing flaking on builders
+- (void)DISABLED_testTopSitesTileAfterRedirect {
   std::map<GURL, HtmlResponseProviderImpl::Response> responses;
   const GURL firstRedirectURL = HttpServer::MakeUrl("http://firstRedirect/");
   const GURL destinationURL = HttpServer::MakeUrl("http://destination/");
