@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 
@@ -89,12 +90,20 @@ class StubWebThemeEngine : public WebThemeEngine {
 constexpr int StubWebThemeEngine::kMinimumHorizontalLength;
 constexpr int StubWebThemeEngine::kMinimumVerticalLength;
 
-class ScrollbarTestingPlatformSupport : public TestingPlatformSupport {
+class ScopedStubThemeEngine {
  public:
-  WebThemeEngine* ThemeEngine() override { return &mock_theme_engine_; }
+  ScopedStubThemeEngine() {
+    old_theme_ = WebThemeEngineHelper::SwapNativeThemeEngineForTesting(
+        std::make_unique<StubWebThemeEngine>());
+  }
+
+  ~ScopedStubThemeEngine() {
+    WebThemeEngineHelper::SwapNativeThemeEngineForTesting(
+        std::move(old_theme_));
+  }
 
  private:
-  StubWebThemeEngine mock_theme_engine_;
+  std::unique_ptr<WebThemeEngine> old_theme_;
 };
 
 }  // namespace
@@ -252,7 +261,7 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
   }
 
  private:
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme_;
   std::unique_ptr<ScopedMockOverlayScrollbars> mock_overlay_scrollbars_;
   bool original_overlay_scrollbars_enabled_;
 };
@@ -1706,7 +1715,7 @@ TEST_P(ScrollbarAppearanceTest, NativeScrollbarChangeToMobileByEmulator) {
 // WebThemeEngine. Note, Mac scrollbars differ from all other platforms so this
 // test doesn't apply there. https://crbug.com/682209.
 TEST_P(ScrollbarAppearanceTest, ThemeEngineDefinesMinimumThumbLength) {
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme;
   ENABLE_OVERLAY_SCROLLBARS(UsesOverlayScrollbars());
 
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
@@ -1732,7 +1741,7 @@ TEST_P(ScrollbarAppearanceTest, ThemeEngineDefinesMinimumThumbLength) {
 // Ensure thumb position is correctly calculated even at ridiculously large
 // scales.
 TEST_P(ScrollbarAppearanceTest, HugeScrollingThumbPosition) {
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme;
   ENABLE_OVERLAY_SCROLLBARS(UsesOverlayScrollbars());
 
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
@@ -2980,7 +2989,7 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
 #endif
 
 TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
-  ScopedTestingPlatformSupport<ScrollbarTestingPlatformSupport> platform;
+  ScopedStubThemeEngine scoped_theme;
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
