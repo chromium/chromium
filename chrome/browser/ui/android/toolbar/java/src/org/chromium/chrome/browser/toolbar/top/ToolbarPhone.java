@@ -39,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.graphics.drawable.DrawableWrapper;
@@ -134,7 +135,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     private ViewGroup mToolbarButtonsContainer;
     protected @Nullable ToggleTabStackButton mToggleTabStackButton;
-    protected @Nullable HomeButton mHomeButton;
+    // Non-null after inflation occurs.
+    protected @NonNull HomeButton mHomeButton;
     private TextView mUrlBar;
     protected View mUrlActionContainer;
     protected ImageView mToolbarShadow;
@@ -469,10 +471,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         super.onNativeLibraryReady();
 
         enableTabSwitchingResources();
-
-        if (mHomeButton != null) {
-            mHomeButton.setOnClickListener(this);
-        }
+        mHomeButton.setOnClickListener(this);
 
         getMenuButtonCoordinator().setOnKeyListener(new KeyboardNavigationListener() {
             @Override
@@ -535,7 +534,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (mLocationBar != null && mLocationBar.getPhoneCoordinator().hasFocus()) {
             return;
         }
-        if (mHomeButton != null && mHomeButton == v) {
+        if (mHomeButton == v) {
             openHomepage();
             if (isNativeLibraryReady() && mPartnerHomepageEnabledSupplier.getAsBoolean()) {
                 Profile profile = getToolbarDataProvider().getProfile();
@@ -689,8 +688,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // If home button is visible, or it's now in overview and toolbar is not shown (url bar
         // shouldn't be focused), mHomeButton.getMeasuredWidth() should be returned as the left
         // bound.
-        if (mHomeButton != null
-                && (mHomeButton.getVisibility() != GONE || isInOverviewAndToolbarInvisible())) {
+        if (mHomeButton.getVisibility() != GONE || isInOverviewAndToolbarInvisible()) {
             padding = mHomeButton.getMeasuredWidth();
         }
         return padding;
@@ -966,7 +964,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         int toolbarButtonVisibility = getToolbarButtonVisibility();
         mToolbarButtonsContainer.setVisibility(toolbarButtonVisibility);
-        if (mHomeButton != null && mHomeButton.getVisibility() != GONE) {
+        if (mHomeButton.getVisibility() != GONE) {
             mHomeButton.setVisibility(toolbarButtonVisibility);
         }
 
@@ -1136,7 +1134,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mLocationBar.getPhoneCoordinator().setTranslationY(0);
         if (!mUrlFocusChangeInProgress) {
             mToolbarButtonsContainer.setTranslationY(0);
-            if (mHomeButton != null) mHomeButton.setTranslationY(0);
+            mHomeButton.setTranslationY(0);
         }
 
         if (!mUrlFocusChangeInProgress && mToolbarShadow != null) {
@@ -1227,7 +1225,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         int transY = mTabSwitcherState == STATIC_TAB ? Math.min(mNtpSearchBoxTranslation.y, 0) : 0;
 
         mToolbarButtonsContainer.setTranslationY(transY);
-        if (mHomeButton != null) mHomeButton.setTranslationY(transY);
+        mHomeButton.setTranslationY(transY);
     }
 
     private void setAncestorsShouldClipChildren(boolean clip) {
@@ -1262,7 +1260,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         canvas.clipRect(mBackgroundOverlayBounds);
 
         float previousAlpha = 0.f;
-        if (mHomeButton != null && mHomeButton.getVisibility() != View.GONE) {
+        if (mHomeButton.getVisibility() != View.GONE) {
             // Draw the New Tab button used in the URL view.
             previousAlpha = mHomeButton.getAlpha();
             mHomeButton.setAlpha(previousAlpha * floatAlpha);
@@ -1394,7 +1392,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private boolean isChildLeft(View child) {
-        return (mHomeButton != null && child == mHomeButton) ^ LocalizationUtils.isLayoutRtl();
+        return child == mHomeButton ^ LocalizationUtils.isLayoutRtl();
     }
 
     /**
@@ -1644,14 +1642,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void updateButtonVisibility() {
-        if (mHomeButton != null) {
-            boolean hideHomeButton = !mIsHomeButtonEnabled
-                    || getToolbarDataProvider().isInOverviewAndShowingOmnibox();
-            if (hideHomeButton) {
-                removeHomeButton();
-            } else {
-                addHomeButton();
-            }
+        boolean hideHomeButton =
+                !mIsHomeButtonEnabled || getToolbarDataProvider().isInOverviewAndShowingOmnibox();
+        if (hideHomeButton) {
+            removeHomeButton();
+        } else {
+            addHomeButton();
         }
         if (mOptionalButton != null) {
             if (isMenuButtonPresent()) {
@@ -1666,9 +1662,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        if (mHomeButton != null) {
-            ApiCompatibilityUtils.setImageTintList(mHomeButton, tint);
-        }
+        ApiCompatibilityUtils.setImageTintList(mHomeButton, tint);
 
         if (mToggleTabStackButton != null) {
             mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
@@ -2197,7 +2191,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void onTabCountChanged(int numberOfTabs, boolean isIncognito) {
-        if (mHomeButton != null) mHomeButton.setEnabled(true);
+        mHomeButton.setEnabled(true);
         if (mToggleTabStackButton == null) return;
 
         @BrandedColorScheme
