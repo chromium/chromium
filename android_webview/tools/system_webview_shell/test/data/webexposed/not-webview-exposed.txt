@@ -254,6 +254,10 @@ interface USBEndpoint
 interface LaunchParams
 interface LaunchQueue
 
+# Local Font Access API is not implemented in WebView (or Android).
+# crbug.com/1326898
+interface FontData
+
 [GLOBAL OBJECT]
     method openDatabase
     attribute eventSender                    # test only
@@ -273,6 +277,7 @@ interface LaunchQueue
     method showOpenFilePicker                # File System Access API, crbug.com/1011535
     method showSaveFilePicker                # File System Access API, crbug.com/1011535
     method showDirectoryPicker               # File System Access API, crbug.com/1011535
+    method queryLocalFonts                   # Local Font Access API, crbug.com/1326898
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers

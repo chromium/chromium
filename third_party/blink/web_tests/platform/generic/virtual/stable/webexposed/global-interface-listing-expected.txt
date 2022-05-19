@@ -2237,6 +2237,14 @@ interface FocusEvent : UIEvent
     attribute @@toStringTag
     getter relatedTarget
     method constructor
+interface FontData
+    attribute @@toStringTag
+    getter family
+    getter fullName
+    getter postscriptName
+    getter style
+    method blob
+    method constructor
 interface FontFace
     attribute @@toStringTag
     getter ascentOverride
@@ -10446,6 +10454,7 @@ namespace CSS
     method postMessage
     method print
     method prompt
+    method queryLocalFonts
     method queueMicrotask
     method releaseEvents
     method reportError
