@@ -1184,8 +1184,6 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     } else {
       frame = nullptr;
     }
-
-    UMA_HISTOGRAM_CAPTURE_SUCCEEDED("RGBA", success);
   } else {
     DCHECK_EQ(pixel_format_, media::PIXEL_FORMAT_NV12);
     // NV12 is only supported for GMBs for now, in which case there is nothing

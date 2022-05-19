@@ -1505,16 +1505,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.SharedImageManager.TimeToAcquireLock" units="microseconds"
-    expires_after="2020-08-12">
-  <owner>samans@chromium.org</owner>
-  <owner>viz-team-wat@google.com</owner>
-  <summary>
-    Time it took to acquire the lock in SharedImageManager. Recorded only when
-    the manager is thread-safe. Ignores clients with no high-resolution clock.
-  </summary>
-</histogram>
-
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
     expires_after="2022-10-30">
   <owner>sadrul@chromium.org</owner>
@@ -1997,23 +1987,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureDuration" units="ms"
     expires_after="2022-11-13">
-  <owner>samans@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <owner>viz-team-wat@google.com</owner>
   <summary>
     The time it took from when FrameSinkVideoCapturerImpl sent a request for an
     RGBA readback until the result comes back and ReadRGBAPlane successfully
     finishes.
-  </summary>
-</histogram>
-
-<histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureSucceeded"
-    enum="BooleanSuccess" expires_after="2020-12-31">
-  <owner>samans@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <owner>viz-team-wat@google.com</owner>
-  <summary>
-    Whether an RGBA readback initiated by FrameSinkVideoCapturerImpl succeeded.
   </summary>
 </histogram>
 
