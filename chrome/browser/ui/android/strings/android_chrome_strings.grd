@@ -3116,7 +3116,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_NTP_FOLLOWING_UNREAD_CONTENT" desc="Content description for the feed header blue dot for user-customized following feed, which indicates that unread content is available.">
       Unread stories ready
       </message>
-      <message name="IDS_FEED_OPTIONS_DROPDOWN_DESCRIPTION" desc="Content description for an arrow indicating that the item can be clicked again to open an options drawer">Click to open sort options</message>
+      <message name="IDS_FEED_OPTIONS_DROPDOWN_DESCRIPTION" desc="Content description for an arrow indicating that the item can be clicked again to open an options drawer">Open sort options</message>
+      <message name="IDS_FEED_OPTIONS_DROPDOWN_DESCRIPTION_CLOSE" desc="Content description for an arrow indicating that the item can be clicked again to close an options drawer">Close sort options</message>
+      <message name="IDS_FEED_OPTIONS_SORT_BY_GROUPED" desc="Content description for a button to allow sorting of feed articles by sites or origin">Sort by Site</message>
+      <message name="IDS_FEED_OPTIONS_SORT_BY_LATEST" desc="Content description for a button to allow sorting of feed articles by latest">Sort by Latest</message>
       <message name="IDS_FEED_SORT_PUBLISHER" desc="Chip text on feed header that, when clicked, sorts and groups feed content by source - websites. Use the same word for sites as used in TC ID 5814749351757353073">Site</message>
       <message name="IDS_DISCOVER_NO_CARDS" desc="Message title for the article feed on the New Tab Page. Shown when the user is connected to the internet but no new feed content could be fetched. Please translate 'stories' to match its use in TC ID 792300740424433300. Also see TC ID 7331961212006720987 for the corresponding message in Discover.">No stories available</message>
       <message name="IDS_DISCOVER_NO_CARDS_INSTRUCTIONS" desc="Message body for the article feed on the New Tab Page. Instructs the user to come back later when new feed content is available. Please translate 'stories' to match its use in TC ID 792300740424433300. Also see TC ID 7331961212006720987 for the corresponding message in Discover.">Check back later for new stories</message>

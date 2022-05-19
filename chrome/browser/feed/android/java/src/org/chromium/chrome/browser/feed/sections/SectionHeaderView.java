@@ -144,16 +144,21 @@ public class SectionHeaderView extends LinearLayout {
     public void updateDrawable(int index, boolean isVisible) {
         if (mTabLayout == null || mTabLayout.getTabCount() <= index) return;
 
-        ImageView optionsIndicatorView =
-                mTabLayout.getTabAt(index).view.findViewById(R.id.options_indicator);
+        TabLayout.Tab tab = mTabLayout.getTabAt(index);
+
+        ImageView optionsIndicatorView = tab.view.findViewById(R.id.options_indicator);
         if (optionsIndicatorView == null) return;
 
         if (isVisible) {
             optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
                     getResources(), R.drawable.mtrl_ic_arrow_drop_up, getContext().getTheme()));
+            tab.setContentDescription(getTabState(tab).text
+                    + getResources().getString(R.string.feed_options_dropdown_description_close));
         } else {
             optionsIndicatorView.setImageDrawable(ResourcesCompat.getDrawable(
                     getResources(), R.drawable.mtrl_ic_arrow_drop_down, getContext().getTheme()));
+            tab.setContentDescription(getTabState(tab).text
+                    + getResources().getString(R.string.feed_options_dropdown_description));
         }
     }
 
