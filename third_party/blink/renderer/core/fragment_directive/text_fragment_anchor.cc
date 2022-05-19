@@ -387,17 +387,19 @@ void TextFragmentAnchor::DidFindMatch(const RangeInFlatTree& range,
       cache->HandleScrolledToAnchor(&first_node);
 
     metrics_->DidInvokeScrollIntoView();
+
+    // Set the sequential focus navigation to the start of selection.
+    // Even if this element isn't focusable, "Tab" press will
+    // start the search to find the next focusable element from this element.
+    frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
+        range.StartPosition().NodeAsRangeFirstNode());
   }
+
   EphemeralRange dom_range =
       EphemeralRange(ToPositionInDOMTree(range.StartPosition()),
                      ToPositionInDOMTree(range.EndPosition()));
-  frame_->GetDocument()->Markers().AddTextFragmentMarker(dom_range);
 
-  // Set the sequential focus navigation to the start of selection.
-  // Even if this element isn't focusable, "Tab" press will
-  // start the search to find the next focusable element from this element.
-  frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
-      range.StartPosition().NodeAsRangeFirstNode());
+  frame_->GetDocument()->Markers().AddTextFragmentMarker(dom_range);
 }
 
 void TextFragmentAnchor::DidFinishSearch() {
