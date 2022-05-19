@@ -37,8 +37,7 @@ class UnittestingSystemAppDelegate : public ash::SystemWebAppDelegate {
 
   std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
 
-  std::vector<ash::SystemWebAppId> GetAppIdsToUninstallAndReplace()
-      const override;
+  std::vector<AppId> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;

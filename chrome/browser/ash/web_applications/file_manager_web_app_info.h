@@ -24,8 +24,7 @@ class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool IsAppEnabled() const override;
-  std::vector<ash::SystemWebAppId> GetAppIdsToUninstallAndReplace()
-      const override;
+  std::vector<web_app::AppId> GetAppIdsToUninstallAndReplace() const override;
 };
 
 // Return a WebAppInstallInfo used to install the app.

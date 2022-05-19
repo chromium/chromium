@@ -22,7 +22,6 @@ source_set("web_applications") {
     "../ash/system_web_apps/types/system_web_app_delegate.h",
     "../ash/system_web_apps/types/system_web_app_delegate_map.cc",
     "../ash/system_web_apps/types/system_web_app_delegate_map.h",
-    "../ash/system_web_apps/types/system_web_app_id.h",
     "../ash/system_web_apps/types/system_web_app_type.h",
     "app_registrar_observer.h",
     "commands/callback_command.cc",

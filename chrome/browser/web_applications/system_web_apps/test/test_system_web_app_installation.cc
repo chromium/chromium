@@ -103,7 +103,7 @@ std::unique_ptr<WebAppInstallInfo> UnittestingSystemAppDelegate::GetWebAppInfo()
   return info_factory_.Run();
 }
 
-std::vector<ash::SystemWebAppId>
+std::vector<AppId>
 UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return uninstall_and_replace_;
 }

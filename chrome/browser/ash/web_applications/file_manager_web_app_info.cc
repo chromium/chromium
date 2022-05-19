@@ -151,7 +151,7 @@ bool FileManagerSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-std::vector<ash::SystemWebAppId>
+std::vector<web_app::AppId>
 FileManagerSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   if (ash::features::IsFileManagerSwaEnabled()) {
     return {extension_misc::kFilesManagerAppId};
