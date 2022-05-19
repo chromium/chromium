@@ -311,6 +311,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::unique_ptr<PDFiumEngine> CreateEngine(
       PDFEngine::Client* client,
       PDFiumFormFiller::ScriptOption script_option) override;
+  void LoadUrl(base::StringPiece url, LoadUrlCallback callback) override;
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
   void OnDocumentLoadComplete() override;

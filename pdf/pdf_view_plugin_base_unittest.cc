@@ -56,37 +56,16 @@ using ::testing::SaveArg;
 // net::GetSuggestedFilename().
 constexpr char kDefaultDownloadFileName[] = "download";
 
-class MockUrlLoader : public UrlLoader {
- public:
-  MOCK_METHOD(void, GrantUniversalAccess, (), (override));
-  MOCK_METHOD(void,
-              Open,
-              (const UrlRequest&, base::OnceCallback<void(int)>),
-              (override));
-  MOCK_METHOD(void,
-              ReadResponseBody,
-              (base::span<char>, base::OnceCallback<void(int)>),
-              (override));
-  MOCK_METHOD(void, Close, (), (override));
-};
-
 // TODO(crbug.com/1302059): Overhaul this when PdfViewPluginBase merges with
 // PdfViewWebPlugin.
 class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
-  FakePdfViewPluginBase() {
-    ON_CALL(*this, CreateUrlLoaderInternal).WillByDefault([]() {
-      return std::make_unique<NiceMock<MockUrlLoader>>();
-    });
-  }
-
   // Public for testing.
   using PdfViewPluginBase::accessibility_state;
   using PdfViewPluginBase::engine;
   using PdfViewPluginBase::full_frame;
   using PdfViewPluginBase::HandleInputEvent;
   using PdfViewPluginBase::HandleMessage;
-  using PdfViewPluginBase::LoadUrl;
   using PdfViewPluginBase::PrintBegin;
   using PdfViewPluginBase::PrintEnd;
   using PdfViewPluginBase::PrintPages;
@@ -127,6 +106,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               CreateEngine,
               (PDFEngine::Client*, PDFiumFormFiller::ScriptOption),
               (override));
+
+  MOCK_METHOD(void, LoadUrl, (base::StringPiece, LoadUrlCallback), (override));
 
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -275,29 +256,6 @@ class PdfViewPluginBaseWithScopedLocaleTest
 using PdfViewPluginBaseWithoutDocInfoTest =
     PdfViewPluginBaseWithScopedLocaleTest;
 
-TEST_F(PdfViewPluginBaseTest, LoadUrl) {
-  UrlRequest saved_request;
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal)
-      .WillOnce([&saved_request]() {
-        auto mock_loader = std::make_unique<NiceMock<MockUrlLoader>>();
-        EXPECT_CALL(*mock_loader, Open)
-            .WillOnce(testing::SaveArg<0>(&saved_request));
-        return mock_loader;
-      });
-
-  // Note that `is_print_preview` only controls the load callback. */
-  fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/false);
-
-  EXPECT_EQ("fake-url", saved_request.url);
-  EXPECT_EQ("GET", saved_request.method);
-  EXPECT_TRUE(saved_request.ignore_redirects);
-  EXPECT_EQ("", saved_request.custom_referrer_url);
-  EXPECT_EQ("", saved_request.headers);
-  EXPECT_EQ("", saved_request.body);
-  EXPECT_LE(saved_request.buffer_lower_threshold,
-            saved_request.buffer_upper_threshold);
-}
-
 TEST_F(PdfViewPluginBaseTest, DocumentLoadProgress) {
   fake_plugin_.DocumentLoadProgress(10, 200);
 
@@ -327,30 +285,6 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressMultipleSmall) {
     "type": "loadProgress",
     "progress": 4.0,
   })")));
-}
-
-TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressResetByLoadUrl) {
-  fake_plugin_.DocumentLoadProgress(2, 100);
-  fake_plugin_.clear_sent_messages();
-
-  fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/false);
-  fake_plugin_.DocumentLoadProgress(3, 100);
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), ElementsAre(base::test::IsJson(R"({
-    "type": "loadProgress",
-    "progress": 3.0,
-  })")));
-}
-
-TEST_F(PdfViewPluginBaseTest,
-       DocumentLoadProgressNotResetByLoadUrlWithPrintPreview) {
-  fake_plugin_.DocumentLoadProgress(2, 100);
-  fake_plugin_.clear_sent_messages();
-
-  fake_plugin_.LoadUrl("fake-url", /*is_print_preview=*/true);
-  fake_plugin_.DocumentLoadProgress(3, 100);
-
-  EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
 }
 
 TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {

@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
+#include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -155,6 +156,14 @@ blink::WebMouseEvent CreateDefaultMouseDownEvent() {
   web_event.SetFrameScale(1);
   return web_event;
 }
+
+class MockHeaderVisitor : public blink::WebHTTPHeaderVisitor {
+ public:
+  MOCK_METHOD(void,
+              VisitHeader,
+              (const blink::WebString&, const blink::WebString&),
+              (override));
+};
 
 class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
  public:
@@ -456,6 +465,11 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
               EXPECT_EQ("http://localhost/example.pdf",
                         request.Url().GetString().Utf8());
               EXPECT_EQ("GET", request.HttpMethod().Utf8());
+              EXPECT_TRUE(request.HttpBody().IsNull());
+
+              NiceMock<MockHeaderVisitor> header_visitor;
+              EXPECT_CALL(header_visitor, VisitHeader).Times(0);
+              request.VisitHttpHeaderFields(&header_visitor);
 
               EXPECT_FALSE(client->WillFollowRedirect(blink::WebURL(),
                                                       blink::WebURLResponse()));
@@ -464,6 +478,7 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
             });
         return associated_loader;
       });
+  EXPECT_CALL(*client_ptr_, SetReferrerForRequest).Times(0);
 
   EXPECT_TRUE(plugin_->InitializeForTesting());
 }
@@ -1266,6 +1281,48 @@ TEST_F(PdfViewWebPluginPrintPreviewTest,
     "pageCount": 1,
   })");
   plugin_->OnMessage(message.GetDict());
+}
+
+TEST_F(PdfViewWebPluginPrintPreviewTest,
+       DocumentLoadProgressResetByResetPrintPreviewModeMessage) {
+  plugin_->DocumentLoadProgress(2, 100);
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/123/0/print.pdf",
+    "grayscale": false,
+    "pageCount": 2,
+  })");
+  plugin_->OnMessage(message.GetDict());
+
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "loadProgress",
+    "progress": 3.0,
+  })")));
+  plugin_->DocumentLoadProgress(3, 100);
+}
+
+TEST_F(PdfViewWebPluginPrintPreviewTest,
+       DocumentLoadProgressNotResetByLoadPreviewPageMessage) {
+  base::Value reset_message = base::test::ParseJson(R"({
+    "type": "resetPrintPreviewMode",
+    "url": "chrome-untrusted://print/123/0/print.pdf",
+    "grayscale": false,
+    "pageCount": 2,
+  })");
+  plugin_->OnMessage(reset_message.GetDict());
+
+  plugin_->DocumentLoadProgress(2, 100);
+
+  base::Value load_page_message = base::test::ParseJson(R"({
+    "type": "loadPreviewPage",
+    "url": "chrome-untrusted://print/123/1/print.pdf",
+    "index": 1,
+  })");
+  plugin_->OnMessage(load_page_message.GetDict());
+
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(0);
+  plugin_->DocumentLoadProgress(3, 100);
 }
 
 TEST_F(PdfViewWebPluginPrintPreviewTest,

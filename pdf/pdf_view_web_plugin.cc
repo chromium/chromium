@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/i18n/char_iterator.h"
@@ -643,6 +644,19 @@ std::string PdfViewWebPlugin::Prompt(const std::string& question,
       ->Prompt(blink::WebString::FromUTF8(question),
                blink::WebString::FromUTF8(default_answer))
       .Utf8();
+}
+
+void PdfViewWebPlugin::LoadUrl(base::StringPiece url,
+                               LoadUrlCallback callback) {
+  UrlRequest request;
+  request.url = std::string(url);
+  request.method = "GET";
+  request.ignore_redirects = true;
+
+  std::unique_ptr<UrlLoader> loader = CreateUrlLoaderInternal();
+  UrlLoader* raw_loader = loader.get();
+  raw_loader->Open(request,
+                   base::BindOnce(std::move(callback), std::move(loader)));
 }
 
 void PdfViewWebPlugin::SubmitForm(const std::string& url,

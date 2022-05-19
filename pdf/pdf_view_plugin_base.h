@@ -174,6 +174,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   bool edit_mode_for_testing() const { return edit_mode_; }
 
  protected:
+  // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
+  // load the URL, and `result` is the result code for the load.
+  using LoadUrlCallback =
+      base::OnceCallback<void(std::unique_ptr<UrlLoader> loader,
+                              int32_t result)>;
+
   struct BackgroundPart {
     gfx::Rect location;
     uint32_t color;
@@ -210,9 +216,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   const PDFiumEngine* engine() const { return engine_.get(); }
   PDFiumEngine* engine() { return engine_.get(); }
 
-  // Starts loading `url`. If `is_print_preview` is `true`, load for print
-  // preview instead of normal PDF viewing.
-  void LoadUrl(base::StringPiece url, bool is_print_preview);
+  // Loads `url`, invoking `callback` on receiving the initial response.
+  virtual void LoadUrl(base::StringPiece url, LoadUrlCallback callback) = 0;
 
   // Gets a weak pointer with a lifetime matching the derived class.
   virtual base::WeakPtr<PdfViewPluginBase> GetWeakPtr() = 0;

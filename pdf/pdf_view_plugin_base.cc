@@ -183,7 +183,8 @@ void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
   if (IsPrintPreview())
     return;
 
-  LoadUrl(src_url, /*is_print_preview=*/false);
+  last_progress_sent_ = 0;
+  LoadUrl(src_url, base::BindOnce(&PdfViewPluginBase::DidOpen, GetWeakPtr()));
   url_ = std::string(original_url);
 
   // Not all edits go through the PDF plugin's form filler. The plugin instance
@@ -719,25 +720,6 @@ void PdfViewPluginBase::DestroyPreviewEngine() {
   preview_engine_.reset();
 }
 
-void PdfViewPluginBase::LoadUrl(base::StringPiece url, bool is_print_preview) {
-  // `last_progress_sent_` should only be reset for the primary load.
-  if (!is_print_preview)
-    last_progress_sent_ = 0;
-
-  UrlRequest request;
-  request.url = static_cast<std::string>(url);
-  request.method = "GET";
-  request.ignore_redirects = true;
-
-  std::unique_ptr<UrlLoader> loader = CreateUrlLoaderInternal();
-  UrlLoader* raw_loader = loader.get();
-  raw_loader->Open(
-      request,
-      base::BindOnce(is_print_preview ? &PdfViewPluginBase::DidOpenPreview
-                                      : &PdfViewPluginBase::DidOpen,
-                     GetWeakPtr(), std::move(loader)));
-}
-
 void PdfViewPluginBase::InvalidateAfterPaintDone() {
   if (deferred_invalidates_.empty())
     return;
@@ -1121,7 +1103,8 @@ void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
   preview_pages_info_ = base::queue<PreviewPageInfo>();
   preview_document_load_state_ = DocumentLoadState::kComplete;
   document_load_state_ = DocumentLoadState::kLoading;
-  LoadUrl(GetURL(), /*is_print_preview=*/false);
+  last_progress_sent_ = 0;
+  LoadUrl(GetURL(), base::BindOnce(&PdfViewPluginBase::DidOpen, GetWeakPtr()));
   preview_engine_.reset();
 
   // TODO(crbug.com/1237952): Figure out a more consistent way to preserve
@@ -1567,7 +1550,10 @@ void PdfViewPluginBase::LoadAvailablePreviewPage() {
 
   preview_document_load_state_ = DocumentLoadState::kLoading;
   const std::string& url = preview_pages_info_.front().first;
-  LoadUrl(url, /*is_print_preview=*/true);
+
+  // Note that `last_progress_sent_` is not reset for preview page loads.
+  LoadUrl(url,
+          base::BindOnce(&PdfViewPluginBase::DidOpenPreview, GetWeakPtr()));
 }
 
 void PdfViewPluginBase::LoadNextPreviewPage() {
