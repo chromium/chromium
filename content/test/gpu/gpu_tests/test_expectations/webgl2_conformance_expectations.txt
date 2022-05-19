@@ -211,11 +211,15 @@ crbug.com/891953 [ linux display-server-wayland ] WebglExtension_OVR_multiview2 
 # Conformance expectations
 # ========================
 
-# Failures of new tests on Win and Linux NVIDIA
+# Failures of new tests on NVIDIA GPUs - need to increase tolerance upstream.
 crbug.com/1326332 [ linux nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
 crbug.com/1326332 [ win nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
+crbug.com/1326332 [ mac nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
+crbug.com/1326332 [ android nvidia ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
 crbug.com/1326332 [ linux nvidia ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
 crbug.com/1326332 [ win nvidia ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
+crbug.com/1326332 [ mac nvidia ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
+crbug.com/1326332 [ android nvidia ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
 
 # Failing new updated tests
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
@@ -269,6 +273,8 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] conformance2/textures/misc/t
 crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
 
 # Win / AMD
+
+crbug.com/1326332 [ angle-d3d11 win amd ] conformance2/rendering/multisampling-depth-resolve.html [ Failure ]
 
 # Recently many tests have become flaky on this configuration, returning
 # (72, 72, 72) when reading back pixels, rather than the expected values.
@@ -793,6 +799,9 @@ crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/mul
 #####################
 
 crbug.com/1215700 [ chromeos no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
+
+crbug.com/1327073 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-resolve-to-back-buffer.html [ Failure ]
+crbug.com/1327073 [ chromeos chromeos-board-amd64-generic ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 
 crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
