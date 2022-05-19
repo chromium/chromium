@@ -234,8 +234,7 @@ class PLATFORM_EXPORT KURL {
   // Returns a GURL with the same properties. This can be used in platform/ and
   // web/. However, in core/ and modules/, this should only be used to pass
   // a GURL to a layer that is expecting one instead of a KURL or a WebURL.
-  // TODO(crbug.com/862940): Make this conversion explicit.
-  operator GURL() const;
+  explicit operator GURL() const;
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
