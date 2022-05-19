@@ -6,13 +6,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Control styles -->
     <style name="Widget.BrowserUI.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="buttonTint">@color/selection_control_button_tint_list</item>
+        <item name="buttonTint">@color/selection_control_button_tint</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
     <style name="Widget.BrowserUI.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
-        <item name="buttonTint">@color/selection_control_button_tint_list</item>
+        <item name="buttonTint">@color/selection_control_button_tint</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
