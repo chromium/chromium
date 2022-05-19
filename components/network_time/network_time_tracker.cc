@@ -148,6 +148,24 @@ const uint8_t kKeyPubBytes[] = {
     0xEB, 0x6D, 0xC0, 0xDC, 0x86, 0xE7, 0xBE, 0xF7, 0x09, 0x56, 0x77, 0x2A,
     0xF3, 0xE8, 0x4E, 0x96, 0xAB, 0xAB, 0x12};
 
+// Number of samples to be used for the computation of clock drift.
+constexpr base::FeatureParam<NetworkTimeTracker::ClockDriftSamples>::Option
+    kClockDriftSamplesOptions[] = {
+        {NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES, "0"},
+        {NetworkTimeTracker::ClockDriftSamples::TWO_SAMPLES, "2"},
+        {NetworkTimeTracker::ClockDriftSamples::FOUR_SAMPLES, "4"},
+        {NetworkTimeTracker::ClockDriftSamples::SIX_SAMPLES, "6"},
+};
+constexpr base::FeatureParam<NetworkTimeTracker::ClockDriftSamples>
+    kClockDriftSamples{&kNetworkTimeServiceQuerying, "ClockDriftSamples",
+                       NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES,
+                       &kClockDriftSamplesOptions};
+
+// Distance between the clock drift samples.
+constexpr base::FeatureParam<base::TimeDelta> kClockDriftSamplesDistance{
+    &kNetworkTimeServiceQuerying, "ClockDriftSamplesDistance",
+    base::Seconds(2)};
+
 std::string GetServerProof(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   std::string proof;
@@ -430,7 +448,7 @@ void NetworkTimeTracker::CheckTime(CheckTimeType check_type) {
   // timer to its default faster frequency.
   QueueCheckTime(interval);
 
-  if (!ShouldIssueTimeQuery()) {
+  if (!ShouldIssueTimeQuery(check_type)) {
     return;
   }
 
@@ -553,22 +571,47 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   }
   last_fetched_time_ = current_time;
 
-  if (check_type == CheckTimeType::BACKGROUND)
-    RecordClockSkewHistograms(current_time, latency);
+  if (check_type == CheckTimeType::BACKGROUND) {
+    ProcessClockHistograms(current_time, latency);
+  }
 
   UpdateNetworkTime(current_time, resolution, latency, tick_clock_->NowTicks());
   return true;
 }
 
-void NetworkTimeTracker::RecordClockSkewHistograms(
-    base::Time current_time,
-    base::TimeDelta fetch_latency) {
-  // Compute the skew by comparing the reference clock to the system clock. Note
-  // that the server processed our query roughly `fetch_latency/2` units of time
-  // in the past. Adjust the `current_time` accordingly.
+void NetworkTimeTracker::ProcessClockHistograms(base::Time current_time,
+                                                base::TimeDelta latency) {
+  // Compute the skew by comparing the reference clock to the system clock.
+  // Note that the server processed our query roughly `fetch_latency/2` units
+  // of time in the past. Adjust the `current_time` accordingly.
   base::TimeDelta system_clock_skew =
-      clock_->Now() - (current_time + fetch_latency / 2);
+      clock_->Now() - (current_time + latency / 2);
+  if (clock_drift_measurement_triggered_) {
+    clock_drift_skews_.push_back(system_clock_skew);
+    clock_drift_latencies_.push_back(latency);
 
+    // We need one more sample than the number used for the computation
+    // because the middle sample is not used by the central finite difference
+    // formulas.
+    if (clock_drift_skews_.size() ==
+        static_cast<uint8_t>(kClockDriftSamples.Get()) + 1) {
+      RecordClockDriftHistograms();
+      clock_drift_measurement_triggered_ = false;
+
+      // Go to sleep for a long time after we recorded the histogram.
+      QueueCheckTime(kBackoffInterval.Get());
+    }
+  } else {
+    // We always trigger the clock drift measurements right after clock skew
+    // is measured.
+    RecordClockSkewHistograms(system_clock_skew, latency);
+    MaybeTriggerClockDriftMeasurements();
+  }
+}
+
+void NetworkTimeTracker::RecordClockSkewHistograms(
+    base::TimeDelta system_clock_skew,
+    base::TimeDelta fetch_latency) {
   // Explicitly record clock skew of zero in the "positive" histograms.
   if (system_clock_skew >= base::TimeDelta()) {
     UmaHistogramCustomTimesClockSkew(
@@ -590,6 +633,96 @@ void NetworkTimeTracker::RecordClockSkewHistograms(
   }
 }
 
+void NetworkTimeTracker::MaybeTriggerClockDriftMeasurements() {
+  if (clock_drift_measurement_triggered_ ||
+      static_cast<uint8_t>(kClockDriftSamples.Get()) == 0) {
+    return;
+  }
+  clock_drift_latencies_.clear();
+  clock_drift_skews_.clear();
+  clock_drift_measurement_triggered_ = true;
+  QueueCheckTime(kClockDriftSamplesDistance.Get());
+}
+
+// The clock drift is the time derivative of clock skew. We use the central
+// finite difference method to compute the derivative using the equally
+// distanced samples we have collected. The coefficients for computing the
+// derivative depending on the number of samples we use can be found at
+// https://en.wikipedia.org/wiki/Finite_difference_coefficient . Because we use
+// *central* finite differences, the middle sample does not take part in the
+// computation.
+double NetworkTimeTracker::ComputeClockDrift() {
+  if (kClockDriftSamplesDistance.Get() <= base::TimeDelta(base::Seconds(0)))
+    return std::numeric_limits<double>::infinity();
+
+  switch (kClockDriftSamples.Get()) {
+    case NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES:
+      NOTREACHED();
+      return std::numeric_limits<double>::infinity();
+    case NetworkTimeTracker::ClockDriftSamples::TWO_SAMPLES:
+      return (clock_drift_skews_[2] - clock_drift_skews_[0]) /
+             kClockDriftSamplesDistance.Get();
+    case NetworkTimeTracker::ClockDriftSamples::FOUR_SAMPLES:
+      return (-clock_drift_skews_[0] + 8 * clock_drift_skews_[1] -
+              8 * clock_drift_skews_[3] + clock_drift_skews_[4]) /
+             (12 * kClockDriftSamplesDistance.Get());
+    case NetworkTimeTracker::ClockDriftSamples::SIX_SAMPLES:
+      return (-clock_drift_skews_[0] + 9 * clock_drift_skews_[1] -
+              45 * clock_drift_skews_[2] + 45 * clock_drift_skews_[4] -
+              9 * clock_drift_skews_[5] + clock_drift_skews_[6]) /
+             (60 * kClockDriftSamplesDistance.Get());
+  }
+}
+
+void NetworkTimeTracker::RecordClockDriftHistograms() {
+  DCHECK_EQ(clock_drift_skews_.size(), clock_drift_latencies_.size());
+  if (clock_drift_latencies_.size() !=
+          static_cast<uint8_t>(kClockDriftSamples.Get()) + 1 ||
+      clock_drift_skews_.size() !=
+          static_cast<uint8_t>(kClockDriftSamples.Get()) + 1) {
+    return;
+  }
+
+  double clock_drift_microseconds = ComputeClockDrift() * 1e+6;
+  if (std::isfinite(clock_drift_microseconds)) {
+    if (clock_drift_microseconds >= 0) {
+      base::UmaHistogramCounts100000(
+          "PrivacyBudget.ClockDrift.Magnitude.Positive",
+          base::ClampRound(clock_drift_microseconds));
+    } else {
+      base::UmaHistogramCounts100000(
+          "PrivacyBudget.ClockDrift.Magnitude.Negative",
+          base::ClampRound(-clock_drift_microseconds));
+    }
+  }
+
+  base::UmaHistogramCounts100000(
+      "PrivacyBudget.ClockDrift.FetchLatencyVariance",
+      base::ClampRound(ComputeClockDriftLatencyVariance()));
+}
+
+double NetworkTimeTracker::ComputeClockDriftLatencyVariance() {
+  base::TimeDelta mean = base::Seconds(0);
+  for (size_t i = 0; i < clock_drift_latencies_.size(); i++) {
+    // Exclude middle sample since we do not use it
+    if (i != clock_drift_latencies_.size() / 2)
+      mean += clock_drift_latencies_[i];
+  }
+  mean /= static_cast<uint8_t>(kClockDriftSamples.Get());
+
+  double variance = 0;
+  for (size_t i = 0; i < clock_drift_latencies_.size(); i++) {
+    base::TimeDelta diff_from_mean = mean - clock_drift_latencies_[i];
+    // Exclude middle sample since we do not use it
+    if (i != clock_drift_latencies_.size() / 2) {
+      variance +=
+          diff_from_mean.InMilliseconds() * diff_from_mean.InMilliseconds();
+    }
+  }
+
+  return variance;
+}
+
 void NetworkTimeTracker::OnURLLoaderComplete(
     CheckTimeType check_type,
     std::unique_ptr<std::string> response_body) {
@@ -598,16 +731,22 @@ void NetworkTimeTracker::OnURLLoaderComplete(
 
   time_query_completed_ = true;
 
-  // After completion of a query, whether succeeded or failed, go to sleep for a
-  // long time.
+  // After completion of a query, whether succeeded or failed, go to sleep
+  // for a long time.
   if (!UpdateTimeFromResponse(
           check_type,
           std::move(response_body))) {  // On error, back off.
+    clock_drift_measurement_triggered_ = false;
     if (backoff_ < base::Days(2)) {
       backoff_ *= 2;
     }
   } else {
     backoff_ = kBackoffInterval.Get();
+
+    // If the clock skew measurements were triggered restrict the backoff to
+    // their distance.
+    if (clock_drift_measurement_triggered_)
+      backoff_ = kClockDriftSamplesDistance.Get();
   }
   QueueCheckTime(backoff_);
   time_fetcher_.reset();
@@ -636,7 +775,7 @@ void NetworkTimeTracker::QueueCheckTime(base::TimeDelta delay) {
   }
 }
 
-bool NetworkTimeTracker::ShouldIssueTimeQuery() {
+bool NetworkTimeTracker::ShouldIssueTimeQuery(CheckTimeType check_type) {
   // Do not query the time service if the feature is not enabled.
   if (!AreTimeFetchesEnabled()) {
     return false;
@@ -651,6 +790,12 @@ bool NetworkTimeTracker::ShouldIssueTimeQuery() {
   // synchronization has been lost and a query is needed.
   base::Time network_time;
   if (GetNetworkTime(&network_time, nullptr) != NETWORK_TIME_AVAILABLE) {
+    return true;
+  }
+
+  // If we are in the process of measuring drift, we should query.
+  if (clock_drift_measurement_triggered_ &&
+      check_type == CheckTimeType::BACKGROUND) {
     return true;
   }
 

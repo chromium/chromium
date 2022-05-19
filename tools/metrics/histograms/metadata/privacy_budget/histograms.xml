@@ -16,6 +16,42 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histograms>
 
+<histogram name="PrivacyBudget.ClockDrift.FetchLatencyVariance" units="ms^2"
+    expires_after="2023-05-10">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>areimers@chromium.org</owner>
+  <summary>
+    Records the variance of the latencies of clock skew samples used for the
+    computation of the clock drift. Only recorded for background fetches, which
+    are enabled only via a feature parameter (and disabled by default), and only
+    recorded if clock drift is enabled via its feature parameter.
+  </summary>
+</histogram>
+
+<histogram name="PrivacyBudget.ClockDrift.Magnitude.Negative"
+    units="microseconds/s" expires_after="2023-05-10">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>areimers@chromium.org</owner>
+  <summary>
+    Records the absolute value of the computed clock drift (time derivative of
+    clock skew), when negative. Only recorded for background fetches, which are
+    enabled only via a feature parameter (and disabled by default), and only
+    recorded if clock drift is enabled via its feature parameter.
+  </summary>
+</histogram>
+
+<histogram name="PrivacyBudget.ClockDrift.Magnitude.Positive"
+    units="microseconds/s" expires_after="2023-05-10">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>areimers@chromium.org</owner>
+  <summary>
+    Records the absolute value of the computed clock drift (time derivative of
+    clock skew), when positive. Only recorded for background fetches, which are
+    enabled only via a feature parameter (and disabled by default), and only
+    recorded if clock drift is enabled via its feature parameter.
+  </summary>
+</histogram>
+
 <histogram name="PrivacyBudget.ClockSkew.FetchLatency" units="ms"
     expires_after="2023-01-14">
   <owner>antoniosartori@chromium.org</owner>

@@ -6164,8 +6164,21 @@
             ],
             "experiments": [
                 {
+                    "name": "DriftEnabled",
+                    "params": {
+                        "ClockDriftSampleDistance": "2s",
+                        "ClockDriftSamples": "2",
+                        "FetchBehavior": "background-and-on-demand",
+                        "RandomQueryProbability": "0.0394"
+                    },
+                    "enable_features": [
+                        "NetworkTimeServiceQuerying"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "params": {
+                        "ClockDriftSamples": "0",
                         "FetchBehavior": "background-and-on-demand",
                         "RandomQueryProbability": "0.0394"
                     },

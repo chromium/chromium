@@ -59,7 +59,8 @@ class NetworkTimeTrackerTest : public ::testing::Test {
 
     field_trial_test_->SetFeatureParams(
         true, 0.0 /* query probability */,
-        NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
+        NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+        NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
@@ -560,7 +561,8 @@ TEST_F(NetworkTimeTrackerTest, StartTimeFetchWhileSynced) {
 // is not configured to allow on-demand time fetches.
 TEST_F(NetworkTimeTrackerTest, StartTimeFetchWithoutVariationsParam) {
   field_trial_test_->SetFeatureParams(
-      true, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY);
+      true, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY,
+      NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   test_server_->RegisterRequestHandler(
       base::BindRepeating(&GoodTimeResponseHandler));
   EXPECT_TRUE(test_server_->Start());
@@ -581,7 +583,8 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileSynced) {
   tracker_->SetTimeServerURLForTesting(test_server_->GetURL("/"));
 
   field_trial_test_->SetFeatureParams(
-      true, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
+      true, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   base::Time in_network_time = clock_->Now();
   UpdateNetworkTime(in_network_time, resolution_, latency_,
                     tick_clock_->NowTicks());
@@ -592,7 +595,8 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileSynced) {
   EXPECT_EQ(base::Minutes(6), tracker_->GetTimerDelayForTesting());
 
   field_trial_test_->SetFeatureParams(
-      true, 1.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
+      true, 1.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
   EXPECT_EQ(base::Minutes(60), tracker_->GetTimerDelayForTesting());
@@ -601,14 +605,16 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileSynced) {
 TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileFeatureDisabled) {
   // Disable network time queries and check that a query is not sent.
   field_trial_test_->SetFeatureParams(
-      false, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
+      false, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   EXPECT_FALSE(tracker_->QueryTimeServiceForTesting());
   // The timer is not started when the feature is disabled.
   EXPECT_EQ(base::Minutes(0), tracker_->GetTimerDelayForTesting());
 
   // Enable time queries and check that a query is sent.
   field_trial_test_->SetFeatureParams(
-      true, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
+      true, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   EXPECT_TRUE(tracker_->QueryTimeServiceForTesting());
   tracker_->WaitForFetchForTesting(123123123);
 }
@@ -912,6 +918,11 @@ TEST_F(NetworkTimeTrackerTest, TimeBetweenFetchesHistogram) {
 }
 
 TEST_F(NetworkTimeTrackerTest, ClockSkewHistograms) {
+  field_trial_test_->SetFeatureParams(
+      true, 1.0 /* query probability */,
+      NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+
   MultipleGoodTimeResponseHandler response_handler;
   base::HistogramTester histograms;
 
@@ -968,6 +979,10 @@ TEST_F(NetworkTimeTrackerTest, ClockSkewHistograms) {
 }
 
 TEST_F(NetworkTimeTrackerTest, ClockSkewHistogramsEmptyForOnDemandChecks) {
+  field_trial_test_->SetFeatureParams(
+      true, 1.0 /* query probability */,
+      NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
   MultipleGoodTimeResponseHandler response_handler;
   base::HistogramTester histograms;
 
@@ -984,6 +999,144 @@ TEST_F(NetworkTimeTrackerTest, ClockSkewHistogramsEmptyForOnDemandChecks) {
   histograms.ExpectTotalCount("PrivacyBudget.ClockSkew.Magnitude.Negative", 0);
   histograms.ExpectTotalCount("PrivacyBudget.ClockSkew.FetchLatency", 0);
   histograms.ExpectTotalCount("PrivacyBudget.ClockSkew.FetchLatencyJitter", 0);
+}
+
+TEST_F(NetworkTimeTrackerTest, ClockDriftHistogramsEmptyForOnDemandChecks) {
+  MultipleGoodTimeResponseHandler response_handler;
+  base::HistogramTester histograms;
+
+  field_trial_test_->SetFeatureParams(
+      true, 1.0 /* query probability */,
+      NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::TWO_SAMPLES);
+
+  test_server_->RegisterRequestHandler(
+      base::BindRepeating(&MultipleGoodTimeResponseHandler::ResponseHandler,
+                          base::Unretained(&response_handler)));
+  EXPECT_TRUE(test_server_->Start());
+  tracker_->SetTimeServerURLForTesting(test_server_->GetURL("/"));
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[0]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/true));
+  tracker_->WaitForFetchForTesting(123123123);
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[1]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/true));
+  tracker_->WaitForFetchForTesting(123123123);
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[2]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/true));
+  tracker_->WaitForFetchForTesting(123123123);
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[3]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/true));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Positive", 0);
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Negative", 0);
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.FetchLatencyVariance",
+                              0);
+}
+
+TEST_F(NetworkTimeTrackerTest, ClockDriftHistogramsPositive) {
+  MultipleGoodTimeResponseHandler response_handler;
+  base::HistogramTester histograms;
+
+  field_trial_test_->SetFeatureParams(
+      true, 1.0 /* query probability */,
+      NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::TWO_SAMPLES);
+
+  test_server_->RegisterRequestHandler(
+      base::BindRepeating(&MultipleGoodTimeResponseHandler::ResponseHandler,
+                          base::Unretained(&response_handler)));
+  EXPECT_TRUE(test_server_->Start());
+  tracker_->SetTimeServerURLForTesting(test_server_->GetURL("/"));
+
+  // This part will trigger a skew measurement fetch first, followed by a drift
+  // measurement using two samples.
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[0]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  // The next measurements are used for computing drift.
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[1]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  // Simulate 70ms latency.
+  tick_clock_->Advance(base::Milliseconds(70));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  // We add an on demand time query in the middle to check it does not interfere
+  // with our samples.
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[2]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/true));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[3]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  clock_->SetNow(
+      base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[4] + 150));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  // Simulate 50ms latency.
+  tick_clock_->Advance(base::Milliseconds(50));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Positive", 1);
+  histograms.ExpectUniqueSample(
+      "PrivacyBudget.ClockDrift.Magnitude.Positive",
+      base::Milliseconds(150 - 50 / 2 + 70 / 2).InMicroseconds() / 2.0, 1);
+
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Negative", 0);
+
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.FetchLatencyVariance",
+                              1);
+  histograms.ExpectUniqueSample("PrivacyBudget.ClockDrift.FetchLatencyVariance",
+                                200, 1);
+}
+
+TEST_F(NetworkTimeTrackerTest, ClockDriftHistogramsNegative) {
+  MultipleGoodTimeResponseHandler response_handler;
+  base::HistogramTester histograms;
+
+  field_trial_test_->SetFeatureParams(
+      true, 1.0 /* query probability */,
+      NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND,
+      NetworkTimeTracker::ClockDriftSamples::TWO_SAMPLES);
+
+  test_server_->RegisterRequestHandler(
+      base::BindRepeating(&MultipleGoodTimeResponseHandler::ResponseHandler,
+                          base::Unretained(&response_handler)));
+  EXPECT_TRUE(test_server_->Start());
+  tracker_->SetTimeServerURLForTesting(test_server_->GetURL("/"));
+
+  // This part will trigger a skew measurement fetch first, followed by a drift
+  // measurement using two samples.
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[0]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  // These are the two measurements used for computing drift.
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[1]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[2]));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  clock_->SetNow(base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[3] - 1));
+  EXPECT_TRUE(tracker_->QueryTimeServiceForTesting(/*on_demand=*/false));
+  tracker_->WaitForFetchForTesting(123123123);
+
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Positive", 0);
+
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Negative", 1);
+  histograms.ExpectUniqueSample("PrivacyBudget.ClockDrift.Magnitude.Negative",
+                                base::Milliseconds(1).InMicroseconds() / 2.0,
+                                1);
+
+  histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.FetchLatencyVariance",
+                              1);
+  histograms.ExpectUniqueSample("PrivacyBudget.ClockDrift.FetchLatencyVariance",
+                                0, 1);
 }
 
 }  // namespace network_time
