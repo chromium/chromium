@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 456 tests; 442 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 456 tests; 454 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Script should run with type=""
 PASS Script shouldn't run with type=" "
 PASS Script should run with type="application/ecmascript"
@@ -444,17 +444,17 @@ PASS Script shouldn't run with language="jscript\0foo"
 PASS Script shouldn't run with language="livescript\0foo"
 PASS Script shouldn't run with language="x-ecmascript\0foo"
 PASS Script shouldn't run with language="x-javascript\0foo"
-FAIL Script shouldn't run with type=javascript (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.0 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.1 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.2 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.3 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.4 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.5 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.6 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=javascript1.7 (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=livescript (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=ecmascript (parser-inserted) assert_false: expected false got true
-FAIL Script shouldn't run with type=jscript (parser-inserted) assert_false: expected false got true
+PASS Script shouldn't run with type=javascript (parser-inserted)
+PASS Script shouldn't run with type=javascript1.0 (parser-inserted)
+PASS Script shouldn't run with type=javascript1.1 (parser-inserted)
+PASS Script shouldn't run with type=javascript1.2 (parser-inserted)
+PASS Script shouldn't run with type=javascript1.3 (parser-inserted)
+PASS Script shouldn't run with type=javascript1.4 (parser-inserted)
+PASS Script shouldn't run with type=javascript1.5 (parser-inserted)
+PASS Script shouldn't run with type=javascript1.6 (parser-inserted)
+PASS Script shouldn't run with type=javascript1.7 (parser-inserted)
+PASS Script shouldn't run with type=livescript (parser-inserted)
+PASS Script shouldn't run with type=ecmascript (parser-inserted)
+PASS Script shouldn't run with type=jscript (parser-inserted)
 Harness: the test ran to completion.
 
