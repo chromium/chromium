@@ -10,7 +10,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 import {executeThenTransitionState} from './shimless_rma_util.js';
 
 /** @type {!Object<!FinalizationStatus, string>} */
@@ -90,9 +90,18 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
   /**
    * @param {!FinalizationStatus} status
    * @param {number} progress
+   * @param {!FinalizationError} error
    */
-  onFinalizationUpdated(status, progress) {
-    this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);
+  onFinalizationUpdated(status, progress, error) {
+    const isErrorStatus = status === FinalizationStatus.kFailedBlocking ||
+        status === FinalizationStatus.kFailedNonBlocking;
+    const isWpError = isErrorStatus &&
+        (error === FinalizationError.kCannotEnableHardwareWp ||
+         error === FinalizationError.kCannotEnableSoftwareWp);
+
+    this.finalizationMessage_ = this.i18n(
+        isWpError ? 'finalizePageProgressText' :
+                    finalizationStatusTextKeys[status]);
 
     if (status === FinalizationStatus.kComplete) {
       executeThenTransitionState(
@@ -100,18 +109,38 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
       return;
     }
 
-    this.shouldShowSpinner_ = status === FinalizationStatus.kInProgress;
-    this.shouldShowRetryButton_ =
-        status === FinalizationStatus.kFailedBlocking ||
-        status === FinalizationStatus.kFailedNonBlocking;
+    this.shouldShowSpinner_ =
+        isWpError || status === FinalizationStatus.kInProgress;
+
+    if (isWpError) {
+      const dialog = /** @type {!CrDialogElement} */ (
+          this.shadowRoot.querySelector('#wpDisabledDialog'));
+      dialog.showModal();
+    } else {
+      // For other errors, continue using retry button to handle for now.
+      this.shouldShowRetryButton_ = isErrorStatus;
+    }
   }
 
-  /** @private */
+  /** @protected */
   onRetryFinalizationButtonClicked_() {
     if (!this.shouldShowRetryButton_) {
       console.error('Finalization has not failed.');
       return;
     }
+
+    executeThenTransitionState(
+        this, () => this.shimlessRmaService_.retryFinalization());
+  }
+
+  /**
+   * Handles the try again button on wpDisabledDialog is clicked.
+   * @protected
+   */
+  onTryAgainButtonClick_() {
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#wpDisabledDialog'));
+    dialog.close();
 
     executeThenTransitionState(
         this, () => this.shimlessRmaService_.retryFinalization());

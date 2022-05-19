@@ -6,7 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {FinalizationStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {FinalizationError, FinalizationStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {WrapupFinalizePage} from 'chrome://shimless-rma/wrapup_finalize_page.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -78,7 +78,8 @@ export function wrapupFinalizePageTest() {
       callCount++;
       return resolver.promise;
     };
-    service.triggerFinalizationObserver(FinalizationStatus.kComplete, 1.0, 0);
+    service.triggerFinalizationObserver(
+        FinalizationStatus.kComplete, 1.0, FinalizationError.kUnknown, 0);
     await flushTasks();
 
     assertEquals(1, callCount);
@@ -98,8 +99,14 @@ export function wrapupFinalizePageTest() {
       return resolver.promise;
     };
     service.triggerFinalizationObserver(
-        FinalizationStatus.kFailedBlocking, 1.0, 0);
+        FinalizationStatus.kFailedBlocking, 1.0, FinalizationError.kInternal,
+        0);
     await flushTasks();
+
+    const wpDisabledDialog =
+        component.shadowRoot.querySelector('#wpDisabledDialog');
+    assertTrue(!!wpDisabledDialog);
+    assertFalse(wpDisabledDialog.open);
 
     assertFalse(retryButton.hidden);
     retryButton.click();
@@ -122,8 +129,14 @@ export function wrapupFinalizePageTest() {
       return resolver.promise;
     };
     service.triggerFinalizationObserver(
-        FinalizationStatus.kFailedNonBlocking, 1.0, 0);
+        FinalizationStatus.kFailedNonBlocking, 1.0, FinalizationError.kInternal,
+        0);
     await flushTasks();
+
+    const wpDisabledDialog =
+        component.shadowRoot.querySelector('#wpDisabledDialog');
+    assertTrue(!!wpDisabledDialog);
+    assertFalse(wpDisabledDialog.open);
 
     assertFalse(retryButton.hidden);
     retryButton.click();
@@ -140,5 +153,65 @@ export function wrapupFinalizePageTest() {
     assertFalse(retryButton.disabled);
     component.allButtonsDisabled = true;
     assertTrue(retryButton.disabled);
+  });
+
+  test('FinalizationFailedHardwareWpError', async () => {
+    const resolver = new PromiseResolver();
+    await initializeFinalizePage();
+
+    const wpDisabledDialog =
+        component.shadowRoot.querySelector('#wpDisabledDialog');
+    assertTrue(!!wpDisabledDialog);
+    assertFalse(wpDisabledDialog.open);
+
+    let callCount = 0;
+    service.retryFinalization = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    service.triggerFinalizationObserver(
+        FinalizationStatus.kFailedBlocking, 1.0,
+        FinalizationError.kCannotEnableHardwareWp, 0);
+    await flushTasks();
+
+    assertTrue(wpDisabledDialog.open);
+
+    const tryAgainButton =
+        component.shadowRoot.querySelector('#tryAgainButton');
+    tryAgainButton.click();
+
+    assertFalse(wpDisabledDialog.open);
+    assertEquals(1, callCount);
+  });
+
+  test('FinalizationFailedSoftwareWpError', async () => {
+    const resolver = new PromiseResolver();
+    await initializeFinalizePage();
+
+    const wpDisabledDialog =
+        component.shadowRoot.querySelector('#wpDisabledDialog');
+    assertTrue(!!wpDisabledDialog);
+    assertFalse(wpDisabledDialog.open);
+
+    let callCount = 0;
+    service.retryFinalization = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    service.triggerFinalizationObserver(
+        FinalizationStatus.kFailedNonBlocking, 1.0,
+        FinalizationError.kCannotEnableSoftwareWp, 0);
+    await flushTasks();
+
+    assertTrue(wpDisabledDialog.open);
+
+    const tryAgainButton =
+        component.shadowRoot.querySelector('#tryAgainButton');
+    tryAgainButton.click();
+
+    assertFalse(wpDisabledDialog.open);
+    assertEquals(1, callCount);
   });
 }

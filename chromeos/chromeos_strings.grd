@@ -2732,6 +2732,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RETRY_BUTTON" desc="Default text for Retry button used to retry an action.">
         Retry
       </message>
+      <message name="IDS_SHIMLESS_RMA_TRY_AGAIN_BUTTON" desc="Default text for Try Again button used to retry an action.">
+        Try again
+      </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" desc="Title for the landing page at the start of RMA.">
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
@@ -2891,6 +2894,12 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_FINALIZE_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry finalization.">
         Retry finalization
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_WP_DISABLED_DIALOG_TITLE" desc="The title of the dialog that shows up when finalization failed because Write Protect is off.">
+        Make sure Write Protect is on
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_WP_DISABLED_DIALOG_BODY" desc="The body of the dialog that shows up when finalization failed because Write Protect is off.">
+        Write Protect is still turned off. To proceed, turn on Write Protect.
       </message>
       <!-- Device provisioning page -->
       <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">

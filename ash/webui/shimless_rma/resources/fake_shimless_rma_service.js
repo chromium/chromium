@@ -1038,10 +1038,13 @@ export class FakeShimlessRmaService {
         });
     if (this.automaticallyTriggerFinalizationObservation_) {
       this.triggerFinalizationObserver(
-          FinalizationStatus.kInProgress, 0.25, 1000);
+          FinalizationStatus.kInProgress, 0.25, FinalizationError.kUnknown,
+          1000);
       this.triggerFinalizationObserver(
-          FinalizationStatus.kInProgress, 0.75, 2000);
-      this.triggerFinalizationObserver(FinalizationStatus.kComplete, 1.0, 3000);
+          FinalizationStatus.kInProgress, 0.75, FinalizationError.kUnknown,
+          2000);
+      this.triggerFinalizationObserver(
+          FinalizationStatus.kComplete, 1.0, FinalizationError.kUnknown, 3000);
     }
   }
 
@@ -1154,11 +1157,12 @@ export class FakeShimlessRmaService {
    * Causes the finalization observer to fire after a delay.
    * @param {!FinalizationStatus} status
    * @param {number} progress
+   * @param {!FinalizationError} error
    * @param {number} delayMs
    */
-  triggerFinalizationObserver(status, progress, delayMs) {
+  triggerFinalizationObserver(status, progress, error, delayMs) {
     return this.triggerObserverAfterMs(
-        'FinalizationObserver_onFinalizationUpdated', [status, progress],
+        'FinalizationObserver_onFinalizationUpdated', [status, progress, error],
         delayMs);
   }
 
