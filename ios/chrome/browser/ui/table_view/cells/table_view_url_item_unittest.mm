@@ -23,7 +23,7 @@ namespace {
 using TableViewURLItemTest = PlatformTest;
 }
 
-// Tests that the UILabels are set properly after a call to |configureCell:|.
+// Tests that the UILabels are set properly after a call to `configureCell:`.
 TEST_F(TableViewURLItemTest, TextLabels) {
   NSString* titleText = @"Title text";
   NSString* host = @"www.google.com";

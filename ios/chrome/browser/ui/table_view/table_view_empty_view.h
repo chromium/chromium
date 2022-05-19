@@ -12,13 +12,13 @@
 // Displays an UIImage on top of a message over a clearBackground.
 @interface TableViewEmptyView : UIView <ChromeEmptyTableViewBackground>
 
-// Designated initializer for a view that displays |message| with default
-// styling and |image| above the message.
+// Designated initializer for a view that displays `message` with default
+// styling and `image` above the message.
 - (instancetype)initWithFrame:(CGRect)frame
                       message:(NSString*)message
                         image:(UIImage*)image NS_DESIGNATED_INITIALIZER;
-// Designated initializer for a view that displays an attributed |message| and
-// |image| above the message.
+// Designated initializer for a view that displays an attributed `message` and
+// `image` above the message.
 - (instancetype)initWithFrame:(CGRect)frame
             attributedMessage:(NSAttributedString*)message
                         image:(UIImage*)image NS_DESIGNATED_INITIALIZER;

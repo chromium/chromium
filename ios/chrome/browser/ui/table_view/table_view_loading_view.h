@@ -23,7 +23,7 @@
 - (void)startLoadingIndicator;
 
 // Call this method when this view is removed from the visible view hierarchy.
-// |completion| will be called when this view is done animating out, and can be
+// `completion` will be called when this view is done animating out, and can be
 // nil.
 - (void)stopLoadingIndicatorWithCompletion:(ProceduralBlock)completion;
 

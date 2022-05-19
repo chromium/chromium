@@ -20,7 +20,7 @@ namespace {
 using TableViewTextButtonItemTest = PlatformTest;
 }
 
-// Tests that the UILabels are set properly after a call to |configureCell:|.
+// Tests that the UILabels are set properly after a call to `configureCell:`.
 TEST_F(TableViewTextButtonItemTest, SetProperties) {
   NSString* text = @"You need to do something.";
   NSString* buttonText = @"Tap to do something.";

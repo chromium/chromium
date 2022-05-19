@@ -42,7 +42,7 @@
 
 @interface TableViewAttributedStringHeaderFooterView () <UITextViewDelegate>
 
-// UITextView corresponding to |text| from the item.
+// UITextView corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UITextView* textView;
 
 @end
@@ -95,8 +95,8 @@
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable.
   textView.selectedTextRange = nil;
 }

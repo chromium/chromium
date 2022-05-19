@@ -14,8 +14,8 @@
 
 @protocol TableViewLinkHeaderFooterItemDelegate<NSObject>
 
-// Notifies the delegate that the link corresponding to |URL| was tapped in
-// |view|.
+// Notifies the delegate that the link corresponding to `URL` was tapped in
+// `view`.
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL;
 
 @end
@@ -46,7 +46,7 @@
 // The URLs to open when text with a link attribute is tapped.
 @property(nonatomic, strong) NSArray<CrURL*>* urls;
 
-// Sets the |text| displayed by this cell. If the |text| contains a link, the
+// Sets the `text` displayed by this cell. If the `text` contains a link, the
 // link is appropriately colored.
 - (void)setText:(NSString*)text;
 

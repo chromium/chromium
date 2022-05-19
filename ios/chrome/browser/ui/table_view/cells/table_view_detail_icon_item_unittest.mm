@@ -38,7 +38,7 @@ UIImage* GetImage(TableViewDetailIconCell* cell) {
 }
 
 // Tests that the UILabels and icons are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   NSString* text = @"Cell text";
   NSString* detail_text = @"Cell detail text";

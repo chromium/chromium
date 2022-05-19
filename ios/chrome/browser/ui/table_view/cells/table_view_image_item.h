@@ -17,8 +17,8 @@
 @property(nonatomic, readwrite, strong) UIImage* image;
 // The text label in the cell.
 @property(nonatomic, readwrite, copy) NSString* title;
-// UIColor for the cell's textLabel. ChromeTableViewStyler's |cellTitleColor|
-// takes precedence over black color, but not over |textColor|.
+// UIColor for the cell's textLabel. ChromeTableViewStyler's `cellTitleColor`
+// takes precedence over black color, but not over `textColor`.
 @property(nonatomic, strong) UIColor* textColor;
 
 // UIColor for the cell's detailTextLabel. If not set,

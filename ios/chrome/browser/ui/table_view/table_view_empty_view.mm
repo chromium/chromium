@@ -16,7 +16,7 @@ namespace {
 const float kStackViewVerticalSpacing = 23.0;
 // The StackView width.
 const float kStackViewWidth = 227.0;
-// Returns |message| as an attributed string with default styling.
+// Returns `message` as an attributed string with default styling.
 NSAttributedString* GetAttributedMessage(NSString* message) {
   NSMutableParagraphStyle* paragraph_style =
       [[NSMutableParagraphStyle alloc] init];

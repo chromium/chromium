@@ -16,7 +16,7 @@
 
 // Informs the delegate that the user took an action that will result in the
 // dismissal of the presented view.  It is the delegate's responsibility to call
-// |dismissViewController:animated:|.
+// `dismissViewController:animated:`.
 - (void)presentationControllerWillDismiss:
     (TableViewPresentationController*)controller;
 

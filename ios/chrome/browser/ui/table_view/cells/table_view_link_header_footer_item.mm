@@ -67,7 +67,7 @@ const CGFloat kVerticalPadding = 8;
 
 @interface TableViewLinkHeaderFooterView ()<UITextViewDelegate>
 
-// UITextView corresponding to |text| from the item.
+// UITextView corresponding to `text` from the item.
 @property(nonatomic, readonly, strong) UITextView* textView;
 
 @end
@@ -174,8 +174,8 @@ const CGFloat kVerticalPadding = 8;
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable.
   textView.selectedTextRange = nil;
 }

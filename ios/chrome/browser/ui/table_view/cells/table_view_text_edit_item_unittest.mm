@@ -16,7 +16,7 @@
 using TableViewTextEditItemTest = PlatformTest;
 
 // Tests that the label and text field are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(TableViewTextEditItemTest, ConfigureCell) {
   TableViewTextEditItem* item = [[TableViewTextEditItem alloc] initWithType:0];
   NSString* name = @"Name";

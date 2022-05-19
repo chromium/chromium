@@ -19,7 +19,7 @@ using TableViewTextHeaderFooterItemTest = PlatformTest;
 }
 
 // Tests that the UILabels are set properly after a call to
-// |configureHeaderFooterView:|.
+// `configureHeaderFooterView:`.
 TEST_F(TableViewTextHeaderFooterItemTest, HeaderFooterTextLabels) {
   NSString* text = @"HeaderFooter text";
 

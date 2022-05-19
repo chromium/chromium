@@ -17,7 +17,7 @@
 // TableViewURLItem contains the model data for a TableViewURLCell.
 @interface TableViewURLItem : TableViewItem
 
-// The title of the page at |URL|.
+// The title of the page at `URL`.
 @property(nonatomic, readwrite, copy) NSString* title;
 // CrURL from which the cell will retrieve a favicon and display the host name.
 @property(nonatomic, readwrite, strong) CrURL* URL;
@@ -29,7 +29,7 @@
 // is empty.
 @property(nonatomic, readwrite, copy) NSString* thirdRowText;
 // Third row text color, if it is shown. If nil, ChromeTableViewStyler's
-// |detailTextColor| is used, otherwise a default color is used.
+// `detailTextColor` is used, otherwise a default color is used.
 @property(nonatomic, strong) UIColor* thirdRowTextColor;
 // Detail text to be displayed instead of the URL.
 @property(nonatomic, strong) NSString* detailText;

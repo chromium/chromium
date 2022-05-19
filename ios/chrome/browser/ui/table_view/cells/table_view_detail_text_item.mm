@@ -158,7 +158,7 @@
           constraintLessThanOrEqualToAnchor:containerView.bottomAnchor],
     ]];
 
-    // Make sure there are top and bottom margins of at least |margin|.
+    // Make sure there are top and bottom margins of at least `margin`.
     AddOptionalVerticalPadding(self.contentView, containerView,
                                kTableViewTwoLabelsCellVerticalSpacing);
   }

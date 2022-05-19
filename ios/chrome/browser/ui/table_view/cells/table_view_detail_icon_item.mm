@@ -60,7 +60,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 
 @interface TableViewDetailIconCell ()
 
-// View containing UILabels |text| and |detailText|.
+// View containing UILabels `text` and `detailText`.
 @property(nonatomic, strong) UIStackView* textStackView;
 // Padding layout constraints.
 @property(nonatomic, strong)
@@ -145,7 +145,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
           constraintEqualToAnchor:contentView.centerYAnchor],
       _iconHiddenConstraint,
 
-      // Leading constraint for |customSeparator|.
+      // Leading constraint for `customSeparator`.
       [self.customSeparator.leadingAnchor
           constraintEqualToAnchor:_textStackView.leadingAnchor],
     ]];
@@ -260,13 +260,13 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   self.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   self.detailTextLabel.backgroundColor = UIColor.clearColor;
   [self.textStackView addArrangedSubview:self.detailTextLabel];
-  // In case the two labels don't fit in width, have the |textLabel| be 3
-  // times the width of the |detailTextLabel| (so 75% / 25%).
+  // In case the two labels don't fit in width, have the `textLabel` be 3
+  // times the width of the `detailTextLabel` (so 75% / 25%).
   self.textWidthConstraint = [self.textLabel.widthAnchor
       constraintEqualToAnchor:self.detailTextLabel.widthAnchor
                    multiplier:kCellLabelsWidthProportion];
-  // Set low priority to the proportion constraint between |self.textLabel| and
-  // |self.detailTextLabel|, so that it won't break other layouts.
+  // Set low priority to the proportion constraint between `self.textLabel` and
+  // `self.detailTextLabel`, so that it won't break other layouts.
   self.textWidthConstraint.priority = UILayoutPriorityDefaultLow;
   [self updateCellForAccessibilityContentSizeCategory:
             UIContentSizeCategoryIsAccessibilityCategory(
@@ -285,7 +285,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 
 // Updates the cell such as it is layouted correctly with regard to the
 // preferred content size category, if it is an
-// |accessibilityContentSizeCategory| or not.
+// `accessibilityContentSizeCategory` or not.
 - (void)updateCellForAccessibilityContentSizeCategory:
     (BOOL)accessibilityContentSizeCategory {
   if (accessibilityContentSizeCategory) {

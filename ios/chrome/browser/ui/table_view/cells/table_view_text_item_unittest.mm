@@ -21,7 +21,7 @@ namespace {
 using TableViewTextItemTest = PlatformTest;
 }
 
-// Tests that the UILabels are set properly after a call to |configureCell:|.
+// Tests that the UILabels are set properly after a call to `configureCell:`.
 TEST_F(TableViewTextItemTest, TextLabels) {
   NSString* text = @"Cell text";
 
@@ -41,7 +41,7 @@ TEST_F(TableViewTextItemTest, TextLabels) {
 }
 
 // Tests that item's text is shown as masked string in UILabel after a call to
-// |configureCell:| with item.masked set to YES.
+// `configureCell:` with item.masked set to YES.
 TEST_F(TableViewTextItemTest, MaskedTextLabels) {
   NSString* text = @"Cell text";
 

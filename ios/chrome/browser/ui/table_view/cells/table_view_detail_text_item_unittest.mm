@@ -22,7 +22,7 @@ using TableViewDetailTextItemTest = PlatformTest;
 }
 
 // Tests that the UILabels are set properly after a call to
-// |configureCell:|.
+// `configureCell:`.
 TEST_F(TableViewDetailTextItemTest, ItemProperties) {
   NSString* text = @"Cell text";
   NSString* detailText = @"Cell detail text";

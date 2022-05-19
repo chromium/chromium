@@ -33,7 +33,7 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 // changes made afterwards are not guaranteed to take effect.
 @property(nonatomic, readwrite, strong) ChromeTableViewStyler* styler;
 
-// Initializes the view controller, configured with |style|. The default
+// Initializes the view controller, configured with `style`. The default
 // ChromeTableViewStyler will be used.
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
 // Unavailable initializers.
@@ -55,12 +55,12 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 - (void)stopLoadingIndicatorWithCompletion:(ProceduralBlock)completion;
 
 // Adds an empty table view in the center of the ChromeTableViewController which
-// displays |message| with |image| on top.  |message| will be rendered using
+// displays `message` with `image` on top.  `message` will be rendered using
 // default styling.  This will remove any existing table view background views.
 - (void)addEmptyTableViewWithMessage:(NSString*)message image:(UIImage*)image;
 
 // Adds an empty table view in the center of the ChromeTableViewController which
-// displays |attributedMessage| with |image| on top.  This will remove any
+// displays `attributedMessage` with `image` on top.  This will remove any
 // existing table view background views.
 - (void)addEmptyTableViewWithAttributedMessage:
             (NSAttributedString*)attributedMessage
@@ -73,18 +73,18 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
                              title:(NSString*)title
                           subtitle:(NSString*)subtitle;
 
-// Updates the accessibility label of the empty view to |newLabel|.
+// Updates the accessibility label of the empty view to `newLabel`.
 - (void)updateEmptyTableViewAccessibilityLabel:(NSString*)newLabel;
 
 // Removes the empty table view, if one is present.
 - (void)removeEmptyTableView;
 
-// Performs batch table view updates described by |updates|, using |completion|
+// Performs batch table view updates described by `updates`, using `completion`
 // as the completion block.
 - (void)performBatchTableViewUpdates:(void (^)(void))updates
                           completion:(void (^)(BOOL finished))completion;
 
-// Removes the items at |indexPaths| from the model only. The changes need to be
+// Removes the items at `indexPaths` from the model only. The changes need to be
 // also done on the table view to avoid being in an inconsistent state.
 - (void)removeFromModelItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths;
 
@@ -101,10 +101,10 @@ extern const CGFloat kTableViewSeparatorInsetWithIcon;
 
 #pragma mark - UITableViewDelegate
 
-// Prevents non-editable (i.e. returns NO in |tableView:canEditRowAtIndexPath:|)
+// Prevents non-editable (i.e. returns NO in `tableView:canEditRowAtIndexPath:`)
 // items from being selected in editing mode, otherwise they will not have radio
 // buttons ahead but still be selectable, which may cause a crash when trying to
-// delete items based on |self.tableView.indexPathsForSelectedRows|.
+// delete items based on `self.tableView.indexPathsForSelectedRows`.
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath NS_REQUIRES_SUPER;
 

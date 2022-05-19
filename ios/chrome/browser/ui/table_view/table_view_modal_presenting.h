@@ -13,7 +13,7 @@
 // presented UI.  If set to YES, presentations will be dismissed when the user
 // touches outside of the table view's bounds.  Callers should set this to NO if
 // user-edited data is currently visible on screen, which could potentially
-// otherwise be lost during an inadvertent touch.  If a |transitionCoordinator|
+// otherwise be lost during an inadvertent touch.  If a `transitionCoordinator`
 // is provided, any changes in UI will be animated alongside that transition.
 // Otherwise, UI changes will be made immediately without animation.
 - (void)setShouldDismissOnTouchOutside:(BOOL)shouldDismiss

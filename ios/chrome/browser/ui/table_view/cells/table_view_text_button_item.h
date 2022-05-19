@@ -57,7 +57,7 @@
 // disable the spacing or an extra top padding will be added.
 - (void)enableItemSpacing:(BOOL)enable;
 
-// If |disabled| is YES the button's width will expand to match the cell's
+// If `disabled` is YES the button's width will expand to match the cell's
 // container. If NO, the button will maintain its intrinsic size based on its
 // title.
 - (void)disableButtonIntrinsicWidth:(BOOL)disable;

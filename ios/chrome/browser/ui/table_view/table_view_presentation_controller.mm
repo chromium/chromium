@@ -19,17 +19,17 @@ namespace {
 // The rounded corner radius for the bubble container, in Regular widths.
 const CGFloat kContainerCornerRadius = 13.0;
 
-// The size of the margin around |tableViewContainer| in which the shadow is
+// The size of the margin around `tableViewContainer` in which the shadow is
 // drawn.
 const CGFloat kShadowMargin = 196.0;
 
-// The minimum margin between |tableViewContainer| and any screen edge.
+// The minimum margin between `tableViewContainer` and any screen edge.
 const CGFloat kTableViewEdgeMargin = 15.0;
 
-// The top margin for |tableViewContainer|.
+// The top margin for `tableViewContainer`.
 const CGFloat kTableViewTopMargin = 35.0;
 
-// The maximum allowed width for |tableViewContainer|.
+// The maximum allowed width for `tableViewContainer`.
 const CGFloat kTableViewMaxWidth = 414.0;
 
 }  // namespace
@@ -37,15 +37,15 @@ const CGFloat kTableViewMaxWidth = 414.0;
 @interface TableViewPresentationController ()
 
 // A view which prevents touches from reaching views below this controller's
-// |containerView|.  This view is normally clear and dismisses the presented
+// `containerView`.  This view is normally clear and dismisses the presented
 // view controller when tapped, but can optionally act as a dimming view and
 // ignore touches.
 @property(nonatomic, readwrite, strong) UIView* dimmingShield;
 
-// A container view for |tableViewContainer| and |shadowImage|.
+// A container view for `tableViewContainer` and `shadowImage`.
 @property(nonatomic, readwrite, strong) UIView* shadowContainer;
 
-// Draws a shadow to visually separate the contents of |tableViewContainer| from
+// Draws a shadow to visually separate the contents of `tableViewContainer` from
 // the views below.
 @property(nonatomic, readwrite, strong) UIImageView* shadowImage;
 
@@ -76,8 +76,8 @@ const CGFloat kTableViewMaxWidth = 414.0;
 
   // The space between the bubble and the edge of the screen is equal to the
   // width of the safe area, on the position edge, plus the table view edge
-  // margin. When |self.position| is TablePresentationPositionLeading, the
-  // leading edge of the bubble is equal to that spacing. And if |self.position|
+  // margin. When `self.position` is TablePresentationPositionLeading, the
+  // leading edge of the bubble is equal to that spacing. And if `self.position`
   // is TablePresentationPositionTrailing, the leading edge of the margin is
   // equal to the containerView's bounds minus that spacing minus the width of
   // the table view itself.
@@ -96,7 +96,7 @@ const CGFloat kTableViewMaxWidth = 414.0;
       safeAreaHeight - kTableViewTopMargin - kTableViewEdgeMargin;
 
   // The tableview container should be pinned to the top, bottom, and either
-  // trailing or leading edges of the safe area, depending on |self.position|.
+  // trailing or leading edges of the safe area, depending on `self.position`.
   // It will also have a fixed margin on those sides.
   LayoutRect tableLayoutRect = LayoutRectMake(
       tableLeadingX, containerWidth, tableOriginY, tableWidth, tableHeight);
@@ -239,8 +239,8 @@ const CGFloat kTableViewMaxWidth = 414.0;
   self.dimmingShield = nil;
 }
 
-// Updates |self.shadowImage.alpha| and |self.dimmingShield.backgroundColor| as
-// appropriate for the given |modal| mode.  This method will animate the changes
+// Updates `self.shadowImage.alpha` and `self.dimmingShield.backgroundColor` as
+// appropriate for the given `modal` mode.  This method will animate the changes
 // if it is called from within an animation block.
 - (void)updateDimmingShieldForModal:(BOOL)modal {
   if (modal) {

@@ -19,7 +19,7 @@ using TableViewImageItemTest = PlatformTest;
 }
 
 // Tests that the UILabel is set properly after a call to
-// |configureCell:| and the image are visible.
+// `configureCell:` and the image are visible.
 TEST_F(TableViewImageItemTest, ItemProperties) {
   NSString* text = @"Cell text";
   NSString* detailText = @"Detail text";

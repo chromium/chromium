@@ -25,8 +25,8 @@ const float kStackViewVerticalSpacing = 30.0;
 
 @interface TableViewLoadingView ()<MDCActivityIndicatorDelegate>
 // MDCActivityIndicator that will be displayed.
-@property(nonatomic, retain) MDCActivityIndicator* activityIndicator;
-// Completion block ran after |self.activityIndicator| stops.
+@property(nonatomic, strong) MDCActivityIndicator* activityIndicator;
+// Completion block ran after `self.activityIndicator` stops.
 @property(nonatomic, copy) ProceduralBlock animateOutCompletionBlock;
 // Message being displayed along the activity indicator.
 @property(nonatomic, copy) NSString* loadingMessage;

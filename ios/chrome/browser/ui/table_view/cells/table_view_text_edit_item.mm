@@ -177,10 +177,10 @@ const CGFloat kErrorIconLength = 20;
 @property(nonatomic, strong) NSLayoutConstraint* iconTrailingConstraint;
 
 // When they are activated, the label and the text field are on one line.
-// They conflict with the |accessibilityConstraints|.
+// They conflict with the `accessibilityConstraints`.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* standardConstraints;
 // When they are activated, the label is on one line, the text field is on
-// another line. They conflict with the |standardConstraints|.
+// another line. They conflict with the `standardConstraints`.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* accessibilityConstraints;
 
@@ -398,7 +398,7 @@ const CGFloat kErrorIconLength = 20;
 #pragma mark Accessibility
 
 - (NSString*)accessibilityLabel {
-  // If |textFieldSecureTextEntry| is
+  // If `textFieldSecureTextEntry` is
   // YES, the voice over should not read the text value.
   NSString* textFieldText =
       self.textField.secureTextEntry ? @"" : self.textField.text;
@@ -410,7 +410,7 @@ const CGFloat kErrorIconLength = 20;
 
 // Updates the cell such as it is layouted correctly with regard to the
 // preferred content size category, if it is an
-// |accessibilityContentSizeCategory| or not.
+// `accessibilityContentSizeCategory` or not.
 - (void)updateForAccessibilityContentSizeCategory:
     (BOOL)accessibilityContentSizeCategory {
   if (accessibilityContentSizeCategory) {

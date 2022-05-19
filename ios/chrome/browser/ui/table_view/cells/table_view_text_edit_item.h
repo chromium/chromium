@@ -85,21 +85,21 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 @property(nonatomic, strong) UILabel* textLabel;
 
 // Text field at the trailing edge of the cell. It displays the item's
-// |textFieldValue|.
+// `textFieldValue`.
 @property(nonatomic, readonly, strong) UITextField* textField;
 
 // Identifying button. UIButton containing the icon
-// identifying |textField| or its current value. It is located at the most
+// identifying `textField` or its current value. It is located at the most
 // trailing position of the Cell.
 @property(nonatomic, readonly, strong) UIButton* identifyingIconButton;
 
-// UIImageView containing the icon indicating that |textField| is editable.
+// UIImageView containing the icon indicating that `textField` is editable.
 @property(nonatomic, strong) UIImageView* iconView;
 
-// Sets |self.identifyingIconButton| icon.
+// Sets `self.identifyingIconButton` icon.
 - (void)setIdentifyingIcon:(UIImage*)icon;
 
-// Sets the icon view image to the type specified by |iconType|.
+// Sets the icon view image to the type specified by `iconType`.
 - (void)setIcon:(TableViewTextEditItemIconType)iconType;
 
 @end

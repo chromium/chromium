@@ -21,7 +21,7 @@
 // The detail text string.
 @property(nonatomic, copy) NSString* detailText;
 
-// The layout constraint axis at which |text| and |detailText| should be
+// The layout constraint axis at which `text` and `detailText` should be
 // aligned. In the case of a vertical layout, the text will adapt its font
 // size to a title/subtitle style.
 // Defaults to UILayoutConstraintAxisHorizontal.
@@ -31,13 +31,13 @@
 
 // TableViewDetailIconCell implements an TableViewCell subclass containing an
 // optional leading icon and two text labels: a "main" label and a "detail"
-// label. The layout of the two labels is based on |textLayoutConstraintAxis|
+// label. The layout of the two labels is based on `textLayoutConstraintAxis`
 // defined as either (1) horizontally laid out side-by-side and filling the full
 // width of the cell or (2) vertically laid out and filling the full height of
 // the cell. Labels are truncated as needed to fit in the cell.
 @interface TableViewDetailIconCell : TableViewCell
 
-// UILabels corresponding to |text| and |detailText| from the item.
+// UILabels corresponding to `text` and `detailText` from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 
 // The layout constraint axis of the text labels within the cell. Defaults
@@ -50,7 +50,7 @@
 // the full width of the cell.
 - (void)setIconImage:(UIImage*)image;
 
-// Sets the detail text. |detailText| can be nil (or empty) to hide the detail
+// Sets the detail text. `detailText` can be nil (or empty) to hide the detail
 // text.
 - (void)setDetailText:(NSString*)detailText;
 

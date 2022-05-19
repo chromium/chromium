@@ -23,7 +23,7 @@
 @interface TableViewAttributedStringHeaderFooterView
     : UITableViewHeaderFooterView
 
-// Sets the |attributedString| displayed by this cell.
+// Sets the `attributedString` displayed by this cell.
 - (void)setAttributedString:(NSAttributedString*)attributedString;
 
 @end

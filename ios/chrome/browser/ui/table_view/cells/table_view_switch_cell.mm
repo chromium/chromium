@@ -17,7 +17,7 @@
 
 namespace {
 
-// Padding used between the |switchView| and the end of the |contentView|.
+// Padding used between the `switchView` and the end of the `contentView`.
 const CGFloat kSwitchTrailingPadding = 22;
 
 }  // namespace
@@ -150,7 +150,7 @@ const CGFloat kSwitchTrailingPadding = 22;
       [_textLabel.bottomAnchor
           constraintEqualToAnchor:_detailTextLabel.topAnchor],
 
-      // Leading constraint for |customSepartor|.
+      // Leading constraint for `customSepartor`.
       [self.customSeparator.leadingAnchor
           constraintEqualToAnchor:_textLabel.leadingAnchor],
     ]];

@@ -211,7 +211,7 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
       NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
       UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
 
-      // |cell| may be nil if the row is not currently on screen.
+      // `cell` may be nil if the row is not currently on screen.
       if (cell) {
         TableViewCell* tableViewCell =
             base::mac::ObjCCastStrict<TableViewCell>(cell);

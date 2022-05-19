@@ -29,8 +29,8 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
 
 // UIColor for the cell's textLabel. Default is
 // [UIColor colorNamed:kTextPrimaryColor]. ChromeTableViewStyler's
-// |cellTitleColor| takes precedence over the default color, but not over
-// |textColor|.
+// `cellTitleColor` takes precedence over the default color, but not over
+// `textColor`.
 @property(nonatomic, strong) UIColor* textColor;
 // Main text to be displayed.
 @property(nonatomic, strong) NSString* text;
@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, TableViewDetailTextCellAccessorySymbol) {
 @property(nonatomic, strong) NSString* detailText;
 
 // The accessory symbol associated with this item.
-// The default color is |kTextQuaternaryColor| and is not currently
+// The default color is `kTextQuaternaryColor` and is not currently
 // configurable.
 @property(nonatomic, assign)
     TableViewDetailTextCellAccessorySymbol accessorySymbol;
