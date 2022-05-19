@@ -1191,9 +1191,9 @@ public class AutofillAssistantCollectUserDataUiTest {
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
 
-        TextView dataOriginLinkText =
-                viewHolder.mDataOriginNotice.findViewById(R.id.link_to_data_origin_dialog);
-        onView(is(dataOriginLinkText)).check(matches(not(isDisplayed())));
+        // Not visible initially.
+        onView(is(viewHolder.mDataOriginNotice))
+                .check(matches(withEffectiveVisibility(Visibility.GONE)));
 
         // Setting a text from "backend".
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -1206,9 +1206,8 @@ public class AutofillAssistantCollectUserDataUiTest {
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
         });
 
-        onView(is(dataOriginLinkText))
+        onView(is(withId(R.id.link_to_data_origin_dialog)))
                 .check(matches(allOf(withText("About this data"), isDisplayed())));
-
         onView(withText("About this data")).perform(click());
         onView(withText("This is some text describing the user's data info."))
                 .check(matches(isDisplayed()));

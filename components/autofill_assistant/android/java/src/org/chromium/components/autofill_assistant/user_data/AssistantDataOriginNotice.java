@@ -42,6 +42,9 @@ public class AssistantDataOriginNotice {
         parent.addView(mView);
         mLinkToDataOriginDialog = mView.findViewById(R.id.link_to_data_origin_dialog);
         mWindowAndroid = windowAndroid;
+
+        // Hide the section initially until required to be shown.
+        mView.setVisibility(View.GONE);
     }
 
     void setLinkText(String text) {
