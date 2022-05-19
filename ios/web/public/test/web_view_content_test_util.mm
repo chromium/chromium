@@ -45,9 +45,21 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @end
 
 namespace {
-// Script that returns document.body as a string.
+// Script that returns the document contents as a string.
 char kGetDocumentBodyJavaScript[] =
-    "document.body ? document.body.textContent : null";
+    "function allTextContent(element) { "
+    "  if (!element) { return ''; }"
+    "  let textString = element.textContent;"
+    "  if (element == document.body || element instanceof HTMLElement) {"
+    "    for (let e of element.getElementsByTagName('*')) {"
+    "      if (e && e.shadowRoot) {"
+    "        textString += '|' + allTextContent(e.shadowRoot);"
+    "      }"
+    "    }"
+    "  }"
+    "  return textString;"
+    "}"
+    "allTextContent(document.body);";
 
 // Fetches the image from |image_url|.
 UIImage* LoadImage(const GURL& image_url) {
