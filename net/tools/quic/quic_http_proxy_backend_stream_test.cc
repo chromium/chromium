@@ -153,7 +153,7 @@ class TestQuicServerStreamDelegate
   base::RunLoop run_loop_;
 };
 
-class QuicHttpProxyBackendStreamTest : public QuicTest {
+class QuicHttpProxyBackendStreamTest : public ::testing::Test {
  public:
   QuicHttpProxyBackendStreamTest() {}
 

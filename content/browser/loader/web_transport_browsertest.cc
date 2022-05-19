@@ -56,7 +56,7 @@ class WebTransportBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   WebTransportSimpleTestServer server_;
 };
 

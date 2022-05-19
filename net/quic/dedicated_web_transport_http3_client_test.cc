@@ -175,7 +175,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   }
 
  protected:
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<DedicatedWebTransportHttp3Client> client_;
   raw_ptr<TestConnectionHelper> helper_;  // Owned by |context_|.

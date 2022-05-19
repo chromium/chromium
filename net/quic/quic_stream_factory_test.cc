@@ -943,7 +943,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
       std::vector<HostResolverEndpointResult> endpoints,
       bool expect_success);
 
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<MockHostResolverBase> host_resolver_;
   std::unique_ptr<SSLConfigService> ssl_config_service_;
   std::unique_ptr<MockClientSocketFactory> socket_factory_;

@@ -830,7 +830,7 @@ class BidirectionalStreamQuicImplTest
   }
 
  protected:
-  QuicFlagSaver saver_;
+  quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   const bool client_headers_include_h2_stream_dependency_;
   RecordingNetLogObserver net_log_observer_;

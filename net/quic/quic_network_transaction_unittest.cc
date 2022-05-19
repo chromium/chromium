@@ -1056,7 +1056,7 @@ class QuicNetworkTransactionTest
       GenerateQuicAltSvcHeader({version_}) + "\r\n";
   const bool client_headers_include_h2_stream_dependency_;
   quic::ParsedQuicVersionVector supported_versions_;
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   MockQuicContext context_;
   std::unique_ptr<QuicTestPacketMaker> client_maker_;
   QuicTestPacketMaker server_maker_;
@@ -7222,7 +7222,7 @@ class QuicNetworkTransactionWithDestinationTest
         version_.transport_version, n);
   }
 
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   const quic::ParsedQuicVersion version_;
   const bool client_headers_include_h2_stream_dependency_;
   quic::ParsedQuicVersionVector supported_versions_;

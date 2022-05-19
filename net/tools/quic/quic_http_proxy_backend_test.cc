@@ -52,7 +52,7 @@ class TestQuicServerStream
   base::RunLoop run_loop_;
 };
 
-class QuicHttpProxyBackendTest : public QuicTest {
+class QuicHttpProxyBackendTest : public ::testing::Test {
  public:
   QuicHttpProxyBackendTest() {
     proxy_stream_map_ = http_proxy_.proxy_backend_streams_map();

@@ -273,7 +273,7 @@ class URLRequestQuicTest
   std::unique_ptr<QuicSimpleServer> server_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
   std::unique_ptr<URLRequestContextBuilder> context_builder_;
-  QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
+  quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
 };
 
 // A URLRequest::Delegate that checks LoadTimingInfo when response headers are

@@ -611,7 +611,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   }
 
   RecordingNetLogObserver net_log_observer_;
-  QuicFlagSaver saver_;
+  quic::test::QuicFlagSaver saver_;
   const quic::ParsedQuicVersion version_;
   const quic::QuicStreamId client_data_stream_id1_;
   const bool client_headers_include_h2_stream_dependency_;

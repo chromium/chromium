@@ -24,7 +24,7 @@ namespace net {
 namespace test {
 
 // TODO(dmz) Remove "Chrome" part of name once net/tools/quic is deleted.
-class QuicChromeServerDispatchPacketTest : public QuicTest {
+class QuicChromeServerDispatchPacketTest : public ::testing::Test {
  public:
   QuicChromeServerDispatchPacketTest()
       : crypto_config_("blah",
