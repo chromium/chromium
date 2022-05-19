@@ -217,8 +217,6 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
     if (context.selector->IsLastInTagHistory())
       return false;
   }
-  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &context.element->GetDocument());
   if (MatchSelector(context, result) != kSelectorMatches)
     return false;
   if (RuntimeEnabledFeatures::CSSScopeEnabled() &&
@@ -924,6 +922,9 @@ bool SkipCheckingHasArgument(
 
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
+      &context.element->GetDocument());
+
   Element* has_scope_element = context.element;
   Document& document = has_scope_element->GetDocument();
   DCHECK(document.GetCheckPseudoHasCacheScope());
