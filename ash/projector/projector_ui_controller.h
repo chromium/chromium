@@ -37,10 +37,10 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   ProjectorUiController& operator=(const ProjectorUiController&) = delete;
   ~ProjectorUiController() override;
 
-  // Show Projector toolbar for `current_root`. Virtual for testing.
-  virtual void ShowToolbar(aura::Window* current_root);
-  // Close Projector toolbar. Virtual for testing.
-  virtual void CloseToolbar();
+  // Show Projector annotation tray for `current_root`. Virtual for testing.
+  virtual void ShowAnnotationTray(aura::Window* current_root);
+  // Hide Projector annotation tray. Virtual for testing.
+  virtual void HideAnnotationTray();
   // Invoked when marker button is pressed. Virtual for testing.
   virtual void EnableAnnotatorTool();
   // Sets the annotator tool.

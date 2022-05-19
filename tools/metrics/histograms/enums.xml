@@ -78374,8 +78374,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ProjectorMarkerColor">
-  <int value="0" label="Black"/>
-  <int value="1" label="White"/>
+  <int value="0" label="Black (Obsolete)"/>
+  <int value="1" label="White (Obsolete)"/>
   <int value="2" label="Blue"/>
   <int value="3" label="Red"/>
   <int value="4" label="Yellow"/>

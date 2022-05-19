@@ -146,14 +146,14 @@ ProjectorUiController::ProjectorUiController(
 
 ProjectorUiController::~ProjectorUiController() = default;
 
-void ProjectorUiController::ShowToolbar(aura::Window* current_root) {
+void ProjectorUiController::ShowAnnotationTray(aura::Window* current_root) {
   current_root_ = current_root;
 
   // Show the tray icon.
   SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/true);
 }
 
-void ProjectorUiController::CloseToolbar() {
+void ProjectorUiController::HideAnnotationTray() {
   ResetTools();
   // Hide the tray icon.
   if (auto* projector_annotation_tray =

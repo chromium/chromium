@@ -52,8 +52,8 @@ enum class ProjectorToolbar {
 // reused. Please keep in sync with "ProjectorMarkerColor" in
 // src/tools/metrics/histograms/enums.xml.
 enum class ProjectorMarkerColor {
-  kBlack = 0,
-  kWhite = 1,
+  // kBlack = 0,
+  // kWhite = 1,
   kBlue = 2,
   kRed = 3,
   kYellow = 4,

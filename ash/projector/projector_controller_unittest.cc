@@ -245,9 +245,9 @@ TEST_F(ProjectorControllerTest, SetAnnotatorTool) {
 TEST_F(ProjectorControllerTest, RecordingStarted) {
   EXPECT_CALL(mock_client_, StartSpeechRecognition());
   EXPECT_CALL(*mock_metadata_controller_, OnRecordingStarted());
-  // Verify that |CloseToolbar| in |ProjectorUiController| is called.
+  // Verify that |ShowAnnotationTray| in |ProjectorUiController| is called.
   auto* root = Shell::GetPrimaryRootWindow();
-  EXPECT_CALL(*mock_ui_controller_, ShowToolbar(root)).Times(1);
+  EXPECT_CALL(*mock_ui_controller_, ShowAnnotationTray(root)).Times(1);
 
   controller_->OnRecordingStarted(root, /*is_in_projector_mode=*/true);
   histogram_tester_.ExpectUniqueSample(
@@ -262,8 +262,9 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
   ON_CALL(mock_client_, IsDriveFsMounted())
       .WillByDefault(testing::Return(true));
 
-  // Verify that |CloseToolbar| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, CloseToolbar()).Times(1);
+  // Verify that |HideAnnotationTray| in |ProjectorUiController| is
+  // called.
+  EXPECT_CALL(*mock_ui_controller_, HideAnnotationTray()).Times(1);
   EXPECT_CALL(mock_client_, OpenProjectorApp()).Times(0);
   EXPECT_CALL(mock_client_,
               OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
