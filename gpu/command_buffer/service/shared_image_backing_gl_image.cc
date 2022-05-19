@@ -77,8 +77,9 @@ gles2::Texture* SharedImageRepresentationGLTextureImpl::GetTexture() {
 bool SharedImageRepresentationGLTextureImpl::BeginAccess(GLenum mode) {
   DCHECK(mode_ == 0);
   mode_ = mode;
+  bool readonly = mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   if (client_ && mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM)
-    return client_->SharedImageRepresentationGLTextureBeginAccess();
+    return client_->SharedImageRepresentationGLTextureBeginAccess(readonly);
   return true;
 }
 
@@ -124,8 +125,9 @@ bool SharedImageRepresentationGLTexturePassthroughImpl::BeginAccess(
     GLenum mode) {
   DCHECK(mode_ == 0);
   mode_ = mode;
+  bool readonly = mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   if (client_ && mode != GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM)
-    return client_->SharedImageRepresentationGLTextureBeginAccess();
+    return client_->SharedImageRepresentationGLTextureBeginAccess(readonly);
   return true;
 }
 
@@ -179,8 +181,10 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaImpl::BeginWriteAccess(
   CheckContext();
   if (client_) {
     DCHECK(context_state_->GrContextIsGL());
-    if (!client_->SharedImageRepresentationGLTextureBeginAccess())
+    if (!client_->SharedImageRepresentationGLTextureBeginAccess(
+            /*readonly=*/false)) {
       return nullptr;
+    }
   }
 
   if (write_surface_)
@@ -211,8 +215,10 @@ SharedImageRepresentationSkiaImpl::BeginWriteAccess(
   CheckContext();
   if (client_) {
     DCHECK(context_state_->GrContextIsGL());
-    if (!client_->SharedImageRepresentationGLTextureBeginAccess())
+    if (!client_->SharedImageRepresentationGLTextureBeginAccess(
+            /*readonly=*/false)) {
       return nullptr;
+    }
   }
   return promise_texture_;
 }
@@ -237,8 +243,10 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkiaImpl::BeginReadAccess(
   CheckContext();
   if (client_) {
     DCHECK(context_state_->GrContextIsGL());
-    if (!client_->SharedImageRepresentationGLTextureBeginAccess())
+    if (!client_->SharedImageRepresentationGLTextureBeginAccess(
+            /*readonly=*/true)) {
       return nullptr;
+    }
   }
   return promise_texture_;
 }
@@ -690,8 +698,8 @@ void SharedImageBackingGLImage::Update(
   image_bind_or_copy_needed_ = true;
 }
 
-bool SharedImageBackingGLImage::
-    SharedImageRepresentationGLTextureBeginAccess() {
+bool SharedImageBackingGLImage::SharedImageRepresentationGLTextureBeginAccess(
+    bool readonly) {
   if (!release_fence_.is_null()) {
     auto fence = gfx::GpuFence(std::move(release_fence_));
     if (gl::GLFence::IsGpuFenceSupported()) {

@@ -70,7 +70,11 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
         context_state_(context_state) {}
 
   ~AngleVulkanBacking() override {
-    DCHECK_EQ(access_mode_, kNone);
+    DCHECK(!is_gl_write_in_process_);
+    DCHECK(!is_skia_write_in_process_);
+    DCHECK_EQ(gl_reads_in_process_, 0);
+    DCHECK_EQ(skia_reads_in_process_, 0);
+
     if (passthrough_texture_) {
       if (!gl::GLContext::GetCurrent())
         context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
@@ -202,40 +206,93 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
       scoped_refptr<SharedContextState> context_state) override;
 
   // SharedImageRepresentationGLTextureClient implementation.
-  bool SharedImageRepresentationGLTextureBeginAccess() override {
-    if (access_mode_ != kNone) {
-      LOG(DFATAL) << "The backing is being accessed with mode:" << access_mode_;
+  bool SharedImageRepresentationGLTextureBeginAccess(bool readonly) override {
+    if (!readonly) {
+      // For GL write access.
+      if (is_gl_write_in_process_) {
+        LOG(DFATAL) << "The backing is being written by GL";
+        return false;
+      }
+      if (is_skia_write_in_process_) {
+        LOG(DFATAL) << "The backing is being written by Skia";
+        return false;
+      }
+      if (gl_reads_in_process_ > 0) {
+        LOG(DFATAL) << "The backing is being read by GL";
+        return false;
+      }
+      if (skia_reads_in_process_ > 0) {
+        LOG(DFATAL) << "The backing is being read by Skia";
+        return false;
+      }
+
+      // Sync pixels data from SHM to VkImage
+      CopyPixelsFromSHMIfNecessary();
+      // Need to submit recorded work in skia's command buffer to the GPU.
+      // TODO(penghuang): only call submit() if it is necessary.
+      gr_context()->submit();
+
+      AcquireTextureANGLE();
+      is_gl_write_in_process_ = true;
+
+      return true;
+    }
+
+    // For GL read access.
+    if (is_gl_write_in_process_) {
+      LOG(DFATAL) << "The backing is being written by GL";
+      return false;
+    }
+    if (is_skia_write_in_process_) {
+      LOG(DFATAL) << "The backing is being written by Skia";
+      return false;
+    }
+    if (skia_reads_in_process_ > 0) {
+      // Support cocurrent read?
+      LOG(DFATAL) << "The backing is being read by Skia";
       return false;
     }
 
-    // Sync pixels data from SHM to VkImage
-    CopyPixelsFromSHMIfNecessary();
+    ++gl_reads_in_process_;
+    if (gl_reads_in_process_ == 1) {
+      // For the first GL access.
+      // Sync pixels data from SHM to VkImage
+      CopyPixelsFromSHMIfNecessary();
+      // Need to submit recorded work in skia's command buffer to the GPU.
+      // TODO(penghuang): only call submit() if it is necessary.
+      gr_context()->submit();
 
-    access_mode_ = kGLReadWrite;
+      AcquireTextureANGLE();
+    }
 
-    // Need to submit recorded work in skia's command buffer to the GPU.
-    // TODO(penghuang): only call submit() if it is necessary.
-    gr_context()->submit();
-
-    gl::GLApi* api = gl::g_current_gl_context;
-    GLuint texture = passthrough_texture_->service_id();
-    // Acquire the texture, so ANGLE can access it.
-    api->glAcquireTexturesANGLEFn(1, &texture, &layout_);
     return true;
   }
 
   void SharedImageRepresentationGLTextureEndAccess(bool readonly) override {
-    if (access_mode_ != kGLReadWrite) {
-      LOG(DFATAL) << "The backing is not being accessed by GL. mode:"
-                  << access_mode_;
+    if (readonly) {
+      // For GL read access.
+      if (gl_reads_in_process_ == 0) {
+        LOG(DFATAL) << "The backing is not being read by GL";
+        return;
+      }
+
+      --gl_reads_in_process_;
+
+      // For the last GL read access, release texture from ANGLE.
+      if (gl_reads_in_process_ == 0)
+        ReleaseTextureANGLE();
+
       return;
     }
-    access_mode_ = kNone;
 
-    gl::GLApi* api = gl::g_current_gl_context;
-    GLuint texture = passthrough_texture_->service_id();
-    // Release the texture from ANGLE, so it can be used elsewhere.
-    api->glReleaseTexturesANGLEFn(1, &texture, &layout_);
+    // For GL write access.
+    if (!is_gl_write_in_process_) {
+      LOG(DFATAL) << "The backing is not being written by GL";
+      return;
+    }
+
+    is_gl_write_in_process_ = false;
+    ReleaseTextureANGLE();
   }
 
   void SharedImageRepresentationGLTextureRelease(bool have_context) override {}
@@ -243,17 +300,21 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
  private:
   class SkiaRepresentation;
 
-  bool BeginAccessSkia(bool readonly) {
-    if (access_mode_ != kNone) {
-      LOG(DFATAL) << "The backing is being accessed with mode:" << access_mode_;
-      return false;
-    }
+  void AcquireTextureANGLE() {
+    gl::GLApi* api = gl::g_current_gl_context;
+    GLuint texture = passthrough_texture_->service_id();
+    // Acquire the texture, so ANGLE can access it.
+    api->glAcquireTexturesANGLEFn(1, &texture, &layout_);
+  }
 
-    // Sync pixels data from SHM to VkImage
-    CopyPixelsFromSHMIfNecessary();
+  void ReleaseTextureANGLE() {
+    gl::GLApi* api = gl::g_current_gl_context;
+    GLuint texture = passthrough_texture_->service_id();
+    // Release the texture from ANGLE, so it can be used elsewhere.
+    api->glReleaseTexturesANGLEFn(1, &texture, &layout_);
+  }
 
-    access_mode_ = readonly ? kSkiaReadOnly : kSkiaReadWrite;
-
+  void PrepareBackendTexture() {
     if (!backend_texture_.isValid()) {
       GrVkImageInfo info = CreateGrVkImageInfo(vulkan_image_.get());
       backend_texture_ =
@@ -261,21 +322,92 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     }
     auto vk_layout = GLImageLayoutToVkImageLayout(layout_);
     backend_texture_.setVkImageLayout(vk_layout);
-    return true;
   }
 
-  void EndAccessSkia() {
-    if (access_mode_ != kSkiaReadOnly && access_mode_ != kSkiaReadWrite) {
-      LOG(DFATAL) << "The backing is not being accessed by Skia. mode:"
-                  << access_mode_;
-      return;
-    }
-    access_mode_ = kNone;
-
+  void SyncImageLayoutFromBackendTexture() {
     GrVkImageInfo info;
     bool result = backend_texture_.getVkImageInfo(&info);
     DCHECK(result);
     layout_ = VkImageLayoutToGLImageLayout(info.fImageLayout);
+  }
+
+  bool BeginAccessSkia(bool readonly) {
+    if (!readonly) {
+      // Skia write access
+      if (is_gl_write_in_process_) {
+        LOG(DFATAL) << "The backing is being written by GL";
+        return false;
+      }
+      if (is_skia_write_in_process_) {
+        LOG(DFATAL) << "The backing is being written by Skia";
+        return false;
+      }
+      if (gl_reads_in_process_) {
+        LOG(DFATAL) << "The backing is being written by GL";
+        return false;
+      }
+      if (skia_reads_in_process_) {
+        LOG(DFATAL) << "The backing is being written by Skia";
+        return false;
+      }
+      // Sync pixels data from SHM to VkImage
+      CopyPixelsFromSHMIfNecessary();
+      PrepareBackendTexture();
+      is_skia_write_in_process_ = true;
+      return true;
+    }
+
+    // Skia read access
+    if (is_gl_write_in_process_) {
+      LOG(DFATAL) << "The backing is being written by GL";
+      return false;
+    }
+    if (is_skia_write_in_process_) {
+      LOG(DFATAL) << "The backing is being written by Skia";
+      return false;
+    }
+
+    if (skia_reads_in_process_ == 0) {
+      // The first skia access.
+      if (gl_reads_in_process_ == 0) {
+        // Sync pixels data from SHM to VkImage
+        CopyPixelsFromSHMIfNecessary();
+      } else {
+        if (!gl::GLContext::GetCurrent())
+          context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
+        // Release texture from ANGLE temporarily, so skia can access it.
+        // After skia accessing, we will recover GL access.
+        ReleaseTextureANGLE();
+      }
+      PrepareBackendTexture();
+    }
+
+    ++skia_reads_in_process_;
+    return true;
+  }
+
+  void EndAccessSkia() {
+    if (skia_reads_in_process_ == 0 && !is_skia_write_in_process_) {
+      LOG(DFATAL) << "The backing is not being accessed by Skia.";
+      return;
+    }
+
+    if (is_skia_write_in_process_) {
+      is_skia_write_in_process_ = false;
+    } else {
+      --skia_reads_in_process_;
+      if (skia_reads_in_process_ > 0)
+        return;
+    }
+
+    SyncImageLayoutFromBackendTexture();
+
+    if (gl_reads_in_process_ > 0) {
+      if (!gl::GLContext::GetCurrent())
+        context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true);
+      // Recover GL access.
+      AcquireTextureANGLE();
+    }
   }
 
   bool InitializePassthroughTexture() {
@@ -318,8 +450,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   }
 
   void WritePixels(const base::span<const uint8_t>& pixel_data, size_t stride) {
-    bool result = BeginAccessSkia(/*readonly=*/false);
-    DCHECK(result);
+    PrepareBackendTexture();
     DCHECK(backend_texture_.isValid());
 
     auto info = SkImageInfo::Make(size().width(), size().height(),
@@ -327,10 +458,9 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
                                       /*gpu_compositing=*/true, format()),
                                   kOpaque_SkAlphaType);
     SkPixmap pixmap(info, pixel_data.data(), stride);
-    result = gr_context()->updateBackendTexture(backend_texture_, pixmap);
+    auto result = gr_context()->updateBackendTexture(backend_texture_, pixmap);
     DCHECK(result);
-
-    EndAccessSkia();
+    SyncImageLayoutFromBackendTexture();
   }
 
   void CopyPixelsFromSHMIfNecessary() {
@@ -352,13 +482,10 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   GrBackendTexture backend_texture_{};
   GLenum layout_ = GL_NONE;
-  enum AccessMode {
-    kNone,
-    kSkiaReadOnly,
-    kSkiaReadWrite,
-    kGLReadWrite,
-  };
-  AccessMode access_mode_ = kNone;
+  bool is_skia_write_in_process_ = false;
+  bool is_gl_write_in_process_ = false;
+  int skia_reads_in_process_ = 0;
+  int gl_reads_in_process_ = 0;
   SharedMemoryRegionWrapper shared_memory_wrapper_;
   bool need_copy_pixels_from_shm_ = false;
 };
