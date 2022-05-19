@@ -60,7 +60,7 @@ void OnDllProcessDetach() {
   // mitigated inside the thread cache (since getting to it requires querying
   // TLS), but the PartitionRoot associated wih the thread cache can be made to
   // not use the thread cache anymore.
-  g_thread_cache_root.load(std::memory_order_relaxed)->with_thread_cache =
+  g_thread_cache_root.load(std::memory_order_relaxed)->flags.with_thread_cache =
       false;
 }
 #endif
@@ -445,9 +445,9 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   size_t usable_size;
   bool already_zeroed;
 
-  auto* bucket =
-      root->buckets + PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
-                          raw_size, root->with_denser_bucket_distribution);
+  auto* bucket = root->buckets +
+                 PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
+                     raw_size, root->flags.with_denser_bucket_distribution);
   uintptr_t buffer = root->RawAlloc(bucket, AllocFlags::kZeroFill, raw_size,
                                     internal::PartitionPageSize(), &usable_size,
                                     &already_zeroed);

@@ -620,7 +620,7 @@ SlotSpanMetadata<thread_safe>::FromObject(void* object) {
   PA_DCHECK((::partition_alloc::internal::UnmaskPtr(object_addr) -
              ::partition_alloc::internal::UnmaskPtr(slot_span_start)) %
                 slot_span->bucket->slot_size ==
-            root->extras_offset);
+            root->flags.extras_offset);
 #endif  // DCHECK_IS_ON()
   return slot_span;
 }
@@ -640,10 +640,10 @@ SlotSpanMetadata<thread_safe>::FromObjectInnerAddr(uintptr_t address) {
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   uintptr_t shift_from_slot_start =
       (address - slot_span_start) % slot_span->bucket->slot_size;
-  PA_DCHECK(shift_from_slot_start >= root->extras_offset);
+  PA_DCHECK(shift_from_slot_start >= root->flags.extras_offset);
   // Use <= to allow an address immediately past the object.
   PA_DCHECK(shift_from_slot_start <=
-            root->extras_offset + slot_span->GetUsableSize(root));
+            root->flags.extras_offset + slot_span->GetUsableSize(root));
 #endif  // DCHECK_IS_ON()
   return slot_span;
 }
