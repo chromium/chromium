@@ -188,6 +188,10 @@ void TrayNetworkStateModel::SetNetworkTypeEnabledState(NetworkType type,
   impl_->SetNetworkTypeEnabledState(type, enabled);
 }
 
+void TrayNetworkStateModel::FlushGlobalPolicyForTesting() {
+  impl_->GetGlobalPolicy();
+}
+
 bool TrayNetworkStateModel::IsBuiltinVpnProhibited() const {
   return TrayNetworkStateModel::GetDeviceState(
              chromeos::network_config::mojom::NetworkType::kVPN) ==

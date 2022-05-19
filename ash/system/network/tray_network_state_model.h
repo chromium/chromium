@@ -53,6 +53,9 @@ class ASH_EXPORT TrayNetworkStateModel {
   // Note: Currently only built-in VPNs can be prohibited by policy.
   bool IsBuiltinVpnProhibited() const;
 
+  // Used in tests, updates currently cached global policies.
+  void FlushGlobalPolicyForTesting();
+
   // This used to be inlined but now requires details from the Impl class.
   chromeos::network_config::mojom::CrosNetworkConfig* cros_network_config();
 
