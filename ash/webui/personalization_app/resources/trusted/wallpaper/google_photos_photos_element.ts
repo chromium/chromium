@@ -451,6 +451,15 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         undefined;
   }
 
+  /** Returns the number of photos or placeholders currently being displayed. */
+  private getPhotosAriaSetSize_(): number {
+    if (this.photos_) {
+      return this.photos_.length;
+    }
+
+    return getPlaceholders().length * getNumberOfGridItemsPerRow();
+  }
+
   /** Returns the aria label for the specified |photo|. */
   private getPhotoAriaLabel_(photo: GooglePhotosPhoto|null): string|undefined {
     if (photo) {
@@ -458,6 +467,23 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
                                            photo.name;
     }
     return undefined;
+  }
+
+  /** Returns the aria posinset index for the photo at index |i|. */
+  private getPhotoAriaIndex_(i: number): number {
+    return i + 1;
+  }
+
+  /**
+   * Returns 'true' or 'false' depending on whether the specified |photo| is
+   * currently selected.
+   */
+  private getPhotoAriaSelected_(
+      photo: GooglePhotosPhoto|null,
+      currentSelected: GooglePhotosPhotos['currentSelected_'],
+      pendingSelected: GooglePhotosPhotos['pendingSelected_']): string {
+    return this.isPhotoSelected_(photo, currentSelected, pendingSelected)
+        .toString();
   }
 
   /** Returns whether the title for the specified grid |row| is visible. */
