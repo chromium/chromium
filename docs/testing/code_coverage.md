@@ -335,7 +335,7 @@ Yes!
 [assert]: http://man7.org/linux/man-pages/man3/assert.3.html
 [code-coverage group]: https://groups.google.com/a/chromium.org/forum/#!forum/code-coverage
 [code-coverage repository]: https://chrome-internal.googlesource.com/chrome/tools/code-coverage
-[coverage dashboard]: https://analysis.chromium.org/p/chromium/coverage
+[coverage dashboard]: https://analysis.chromium.org/coverage/p/chromium
 [coverage script]: https://cs.chromium.org/chromium/src/tools/code_coverage/coverage.py
 [coverage infra diagram]: images/code_coverage_infra_diagram.png
 [coverage dashboard file view]: images/code_coverage_dashboard_file_view.png
