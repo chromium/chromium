@@ -25,6 +25,7 @@
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google Hesabınızdakı<ph name="END_LINK" /> parolların göstərilməsi</translation>
 <translation id="1026655690966755180">Port əlavə edin</translation>
 <translation id="1026822031284433028">Şəkli Yükləyin</translation>
+<translation id="1028700151766901954">Səbəb: LBS defolt olaraq <ph name="DEFAULT_OPEN_BROWSER" /> brauzerində saxlanılır.</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1031362278801463162">Önizləmə yüklənir</translation>
 <translation id="1032605640136438169">Yeni şərtləri nəzərdən keçirin</translation>
@@ -3264,6 +3265,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
         Ayarları kart menyusundan idarə edə və ya Chrome'u Fərdiləşdirin bölməsində digər seçimləri görə bilərsiniz.</translation>
 <translation id="4115002065223188701">Şəbəkə aralıqda deyil</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Həmişə bu saytda icazə verin</translation>
 <translation id="4116704186509653070">Yenidən açın</translation>
 <translation id="4117637339509843559">Qaranlıq rejim</translation>
 <translation id="4117714603282104018">Taçped vibrocavabı</translation>
@@ -3345,6 +3347,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4209092469652827314">Böyük</translation>
 <translation id="4209251085232852247">Deaktivdir</translation>
 <translation id="4210048056321123003">Virtual cihaz endirilir</translation>
+<translation id="4210380525132844778">Səbəb: <ph name="RULE" /> "<ph name="LIST_NAME" />" siyahısında tapıldı.</translation>
 <translation id="421182450098841253">Əlfəcin panelini göstərin</translation>
 <translation id="4211851069413100178">İstifadə və diaqnostika datasını göndərin. Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərməklə Android təcrübəsini təkmilləşdirin. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" /> sahibi tərəfindən tətbiq edilir. Sahibi bu cihaz üçün diaqnostika və istifadə datasını Google'a göndərməyi seçə bilər. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Android tətbiqləri ilə istifadəni dayandırın</translation>
@@ -3972,6 +3975,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4842976633412754305">Bu səhifə doğrulanmamış mənbələrdən skript yükləməyə çalışır.</translation>
 <translation id="4844333629810439236">Digər klaviaturalar</translation>
 <translation id="4844633725025837809">Təhlükəsizliyi artırmaq üçün Google Parol Menecerində saxlanmazdan əvvəl cihazınızda parolları şifrələyin</translation>
+<translation id="4846628405149428620">Bu saytın dəyişiklikləri harada saxlaya biləcəyini seçin</translation>
 <translation id="4846680374085650406">Bu ayar üçün administratorun tövsiyələrinə əməl edirsiniz.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seçilib, <ph name="TOPIC_SOURCE" /> albomlarını seçmək üçün Enter düyməsinə basın</translation>
 <translation id="4848191975108266266">Google Assistent üçün "Ok Google" ifadəsi</translation>
@@ -4046,7 +4050,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4907306957610201395">İcazə Kateqoriyası</translation>
 <translation id="4908811072292128752">Eyni anda iki saytı axtarmaq üçün yeni tab açın</translation>
 <translation id="4909038193460299775">Bu hesab <ph name="DOMAIN" /> tərəfindən idarə olunduğu üçün, əlfəcin, tarixçə, parol və digər ayarlarınız bu cihazdan silinəcək. Buna baxmayaraq, datanız Google hesabınızın yaddaşında qalacaq və <ph name="BEGIN_LINK" />Google İdarə Panelində<ph name="END_LINK" /> idarə oluna bilər.</translation>
-<translation id="4912265719039610598">Tətbiqlərin yayımı telefonunuzun administratoru tərəfindən deaktiv edilib.</translation>
 <translation id="4912643508233590958">İnaktiv oyanışlar</translation>
 <translation id="4915961947098019832">Şəkilləri göstərmək icazəsi verilib</translation>
 <translation id="4916542008280060967">Sayta <ph name="FILE_NAME" /> faylını redaktə etmək üçün icazə verilsin?</translation>
@@ -5170,6 +5173,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6063284707309177505">QR Kodu yaradın</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər. Batareyaya qənaət etmək üçün <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin Assistentinin ayarlarında "Ok Google" seçiminin yalnız bu cihaz enerji mənbəyinə qoşulu olduqda yanılı olmasını seçə bilərsiniz.</translation>
 <translation id="6064217302520318294">Ekran kilidi</translation>
+<translation id="6065145031947216733">Baxış ayrılsın?</translation>
 <translation id="6065289257230303064">Sertifikat Subyekt Direktoriyası Atributları</translation>
 <translation id="6066794465984119824">Şəkil heşi ayarlanmayıb</translation>
 <translation id="6069464830445383022">Chromebook girişi üçün Google Hesabınız istifadə edilir</translation>
@@ -5248,6 +5252,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6129953537138746214">Boşluq</translation>
 <translation id="6130692320435119637">Wi-Fi əlavə edin</translation>
 <translation id="6130887916931372608">Klaviatura düyməsi</translation>
+<translation id="6135823405800500595">Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun</translation>
 <translation id="6136114942382973861">Endirilənlər panelini bağlayın</translation>
 <translation id="6136287496450963112">Təhlükəsizlik açarınız PIN ilə qorunmur. Barmaq izlərini idarə etmək üçün əvvəlcə PIN yaradın.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA SHA-384 ilə imza</translation>
@@ -6881,7 +6886,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7758450972308449809">Ekran hüdudlarını tənzimləyin</translation>
 <translation id="7760004034676677601">Bu gözlədiyiniz başlanğıc səhifədir?</translation>
 <translation id="7762024824096060040">Bu hesabı istifadə etmək mümkün deyil</translation>
-<translation id="7762463735017901568">Bildirişlərin sinxronizasiyası telefonunuzun administratoru tərəfindən deaktiv edilib</translation>
 <translation id="7764225426217299476">Ünvan əlavə edin</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> domenindən <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764857504908700767">Sınaqlar aktiv olduqda, spam və dələduzluğun azaldılması saytlara dələduzluqla mübarizə aparmağa və botları insanlardan ayırmağa kömək etmək üçün güvən nişanlarına əsaslanır.</translation>
@@ -7081,6 +7085,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7947962633355574091">Video ünvanını kopyalayın</translation>
 <translation id="7947964080535614577">Saytlar adətən ödənişsiz məzmun və xidmətlər təklif etmək üçün reklamlar göstərir. Lakin bəzi saytlar müdaxilə edən və aldadıcı reklamlar göstərmələri ilə tanınır.</translation>
 <translation id="7948407723851303488">Bütün <ph name="DOMAIN_NAME" /> səhifələri</translation>
+<translation id="7950629216186736592">Səbəb: LBS yalnız http://, https:// və file:// URL-lərini dəstəkləyir.</translation>
 <translation id="7951265006188088697">Google Pay ödəniş metodlarını əlavə etmək və idarə etmək üçün <ph name="BEGIN_LINK" />Google Hesabına<ph name="END_LINK" /> daxil olun</translation>
 <translation id="795130320946928025">Virtual kartı deaktiv edin</translation>
 <translation id="7952708427581814389">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
@@ -7624,6 +7629,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> vendorundan naməlum cihaz</translation>
 <translation id="8481187309597259238">USB İcazəsini təsdiq edin</translation>
 <translation id="8481980314595922412">Sınaq funksiyaları aktivdir</translation>
+<translation id="8486666913807228950">Səbəb: <ph name="REVERT_RULE" /> əks qaydası "Burada məcburi açın" siyahısında tapıldı.</translation>
 <translation id="848666842773560761">Tətbiq kameraya giriş etməyə çalışır. Girişə icazə vermək üçün kamera məxfilik dəyişdiricisini deaktiv edin.</translation>
 <translation id="8487678622945914333">Böyüdün</translation>
 <translation id="8489156414266187072">Şəxsi təkliflər yalnız hesabınızda göstərilir</translation>

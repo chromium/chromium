@@ -3283,6 +3283,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="4115002065223188701">Network out of range</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Always allow on this site</translation>
 <translation id="4116704186509653070">Open again</translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4117714603282104018">Touchpad haptic feedback</translation>
@@ -4067,7 +4068,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4907306957610201395">Permission Category</translation>
 <translation id="4908811072292128752">Open a new tab to browse two sites at once</translation>
 <translation id="4909038193460299775">Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device. However, your data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">App streaming is disabled by your phone's administrator.</translation>
 <translation id="4912643508233590958">Idle Wake Ups</translation>
 <translation id="4915961947098019832">Allowed to show images</translation>
 <translation id="4916542008280060967">Let site edit <ph name="FILE_NAME" />?</translation>
@@ -6904,7 +6904,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7758450972308449809">Adjust the boundaries of your display</translation>
 <translation id="7760004034676677601">Is this the start-up page that you were expecting?</translation>
 <translation id="7762024824096060040">Can't use this account</translation>
-<translation id="7762463735017901568">Notification syncing is disabled by your phone's administrator</translation>
 <translation id="7764225426217299476">Add address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> from <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">When trials are on, spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.</translation>

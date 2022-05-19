@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөніңізді, электрондық мекенжайыңызды және профиль суретіңізді осы сайтпен бөліседі. Бұл сайттың <ph name="BEGIN_LINK1" />Құпиялылық саясатын<ph name="END_LINK1" /> көріңіз.</translation>
 <translation id="2000419248597011803">Мекенжай жолағына және іздеу өрісіне енгізілген сұрауларды, сонымен қатар кейбір cookie файлдарын әдепкі іздеу жүйесіне жібереді</translation>
 <translation id="200114059308480249">Google іздеу сұрауларында көбірек мәтін қамтылсын ба?</translation>
-<translation id="2011996512573319870">Google-дан ең өзекті мазмұнды алу үшін синхрондаңыз.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файл}}</translation>
 <translation id="2020309681647789787">Синхрондалған құрылғыларыңыздың барлығында жеке тарихыңыз болады, сондықтан істеген ісіңізді жалғастыра аласыз.</translation>
 <translation id="2021896219286479412">Толық экран режимін басқару</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">Қазіргі</translation>
 <translation id="2472163211318554013">Chrome-ды толық қолдану үшін аккаунтқа кіріңіз.</translation>
 <translation id="247737702124049222">Кескін сипаттамалары қосулы.</translation>
-<translation id="2481251096908459228">Сізге арналған жаңалықтарды көріңіз</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2485422356828889247">Жою</translation>
 <translation id="2494974097748878569">Chrome браузеріндегі Google Assistant</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайл}}</translation>
 <translation id="265156376773362237">Стандартты алдын ала жүктеу</translation>
 <translation id="2656405586795711023">Веб-қолданбалар</translation>
-<translation id="2700802943130197326">Құпия сөздерді, бетбелгілерді және т.б. деректерді барлық басқа құрылғыда алу үшін синхрондаңыз.</translation>
 <translation id="2702516483241149200">Жаңа: осы мәтінге бағыттайтын сілтемені бөлісу</translation>
 <translation id="2704606927547763573">Көшірілген</translation>
 <translation id="2707726405694321444">Бетті жаңарту</translation>

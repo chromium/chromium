@@ -3266,6 +3266,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
         Du kannst Einstellungen über das Kartenmenü verwalten oder weitere Optionen unter „Chrome anpassen“ aufrufen.</translation>
 <translation id="4115002065223188701">Netzwerk außer Reichweite</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Auf dieser Website immer zulassen</translation>
 <translation id="4116704186509653070">Wieder öffnen</translation>
 <translation id="4117637339509843559">Dunkler Modus</translation>
 <translation id="4117714603282104018">Touchpad haptisches Feedback</translation>
@@ -3446,6 +3447,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4307992518367153382">Grundeinstellungen</translation>
 <translation id="4309165024397827958">Android-Apps und -Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Google kann in regelmäßigen Abständen anonymisierte Standortdaten erfassen und diese zur Verbesserung der Standortgenauigkeit und standortbasierter Dienste verwenden.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> KB (<ph name="NUM_KILOBYTES_LIVE" /> KB live)</translation>
+<translation id="4310132194679586591">Wähle eine App auf deinem Gerät aus, um diesen Link zu öffnen</translation>
 <translation id="4310139701823742692">Die Datei hat das falsche Format. Prüfe die PPD-Datei und versuche es noch einmal.</translation>
 <translation id="431076611119798497">&amp;Details</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-Konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-Konten}}</translation>
@@ -4048,7 +4050,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4907306957610201395">Berechtigungskategorie</translation>
 <translation id="4908811072292128752">Wenn du zwei Websites gleichzeitig ansehen möchtest, öffne einen neuen Tab</translation>
 <translation id="4909038193460299775">Da dieses Konto von <ph name="DOMAIN" /> verwaltet wird, werden der Verlauf sowie deine Lesezeichen, Passwörter und sonstigen Einstellungen von diesem Gerät gelöscht. Die Daten bleiben jedoch in deinem Google-Konto gespeichert und du kannst sie über das <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> verwalten.</translation>
-<translation id="4912265719039610598">Das App-Streaming wurde vom Administrator deines Smartphones deaktiviert.</translation>
 <translation id="4912643508233590958">Inaktive Weckbefehle</translation>
 <translation id="4915961947098019832">Dürfen Bilder anzeigen</translation>
 <translation id="4916542008280060967">Website erlauben, <ph name="FILE_NAME" /> zu bearbeiten?</translation>
@@ -4676,6 +4677,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5554403733534868102">Sie müssen in Zukunft auf keine Updates mehr warten</translation>
 <translation id="5554489410841842733">Dieses Symbol wird eingeblendet, wenn die Erweiterung auf die aktuelle Seite angewendet werden kann.</translation>
 <translation id="5554720593229208774">E-Mail-Zertifizierungsstelle</translation>
+<translation id="5554866693883022680">Wähle eine App auf dem <ph name="DEVICE_TYPE" /> aus, um diesen Link zu öffnen</translation>
 <translation id="5555363196923735206">Kamera umschalten</translation>
 <translation id="5555525474779371165">Safe Browsing-Schutz auswählen</translation>
 <translation id="5556459405103347317">Neu laden</translation>
@@ -6883,7 +6885,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7758450972308449809">Bildschirmränder anpassen</translation>
 <translation id="7760004034676677601">Ist das deine erwartete "Beim Start"-Seite?</translation>
 <translation id="7762024824096060040">Dieses Konto kann nicht verwendet werden</translation>
-<translation id="7762463735017901568">Die Synchronisierung von Benachrichtigungen wurde vom Administrator deines Smartphones deaktiviert</translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> von <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Wenn Tests aktiviert sind, verwendet die Spam- und Betrugsreduzierung Trust Tokens, um Websites bei der Betrugsbekämpfung und der Unterscheidung zwischen Bots und Personen zu unterstützen.</translation>

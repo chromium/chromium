@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">表「<ph name="TABLENAME" />」（<ph name="TABLEROWS" />x<ph name="TABLECOLS" />）</translation>
 <translation id="4615592953348396470">次に押すキーを無視します</translation>
 <translation id="4623097797855662355">奥付</translation>
+<translation id="4624970070706497034">Chromebook では TalkBack のカスタマイズがサポートされなくなりました。TalkBack は引き続きご利用いただけますが、デフォルトのキーボード ショートカットをご使用ください。使用できるショートカットは、検索+A キーに続けて K キーを押して確認できます。確認した後に TalkBack に戻るには、もう一度コマンドを押します。</translation>
 <translation id="463135993322337640">ChromeVox+o+n キーを押すと新機能を確認できます</translation>
 <translation id="4649220074413114917">2 本の指で画面をタップすると、現在の読み上げを停止できます。ChromeVox に読み上げてほしくないことがある場合に便利です。次に進むには、2 本の指で画面をタップしてください。</translation>
 <translation id="4660783501463101648">クラシックの削除。ChromeVox クラシックに戻るキーボード切り替えは削除されました。</translation>

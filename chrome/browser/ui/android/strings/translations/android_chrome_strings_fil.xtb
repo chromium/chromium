@@ -188,7 +188,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="1995884366040846621">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />patakaran sa privacy<ph name="END_LINK1" /> ng site na ito.</translation>
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
 <translation id="200114059308480249">Isama ang katabing text sa mga paghahanap sa Google?</translation>
-<translation id="2011996512573319870">Mag-sync para makuha ang pinakanauugnay na content mula sa Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}one{# File}other{# na File}}</translation>
 <translation id="2020309681647789787">Makikita mo ang iyong history sa lahat ng naka-sync mong device, para maipagpatuloy mo ang iyong ginagawa</translation>
 <translation id="2021896219286479412">Control ng full screen sa site</translation>
@@ -272,7 +271,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2472163211318554013">Mag-sign in para masulit ang Chrome</translation>
 <translation id="247737702124049222">Naka-on ang mga paglalarawan ng larawan</translation>
-<translation id="2481251096908459228">Tingnan ang mga kuwento para sa iyo</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
 <translation id="2494974097748878569">Google Assistant sa Chrome</translation>
@@ -314,7 +312,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}one{# Audio file}other{# na Audio file}}</translation>
 <translation id="265156376773362237">Karaniwang pag-preload</translation>
 <translation id="2656405586795711023">Mga web app</translation>
-<translation id="2700802943130197326">Mag-sync para makuha ang iyong mga password, bookmark at higit pa sa lahat ng iba pang device mo.</translation>
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
 <translation id="2704606927547763573">Kinopya</translation>
 <translation id="2707726405694321444">I-refresh ang page</translation>

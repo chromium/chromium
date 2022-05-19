@@ -3283,6 +3283,7 @@
         您可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4115002065223188701">網絡超出範圍</translation>
 <translation id="4115378294792113321">洋紅色</translation>
+<translation id="4116663294526079822">永遠允許在這個網站執行</translation>
 <translation id="4116704186509653070">重新開啟</translation>
 <translation id="4117637339509843559">暗光模式</translation>
 <translation id="4117714603282104018">觸控板觸感反應</translation>
@@ -3992,6 +3993,7 @@
 <translation id="4842976633412754305">這個網頁正嘗試從未授權的來源載入指令碼。</translation>
 <translation id="4844333629810439236">其他鍵盤</translation>
 <translation id="4844633725025837809">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具</translation>
+<translation id="4846628405149428620">選取此網站可以儲存變更的位置</translation>
 <translation id="4846680374085650406">您目前所採用的是管理員的建議設定。</translation>
 <translation id="4847902821209177679">揀咗「<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />」，㩒一下 [Enter] 鍵就可以揀「<ph name="TOPIC_SOURCE" />」相簿</translation>
 <translation id="4848191975108266266">Google 助理及「Ok Google」</translation>
@@ -4066,7 +4068,6 @@
 <translation id="4907306957610201395">權限類別</translation>
 <translation id="4908811072292128752">開啟新分頁，即可同時瀏覽兩個網站</translation>
 <translation id="4909038193460299775">由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。不過，Google 帳戶內仍會儲存您的資料，而您亦可透過「<ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />」管理這些資料。</translation>
-<translation id="4912265719039610598">手機管理員已停用應用程式串流功能。</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
 <translation id="4915961947098019832">已允許顯示圖片</translation>
 <translation id="4916542008280060967">要允許網站編輯「<ph name="FILE_NAME" />」嗎？</translation>
@@ -6901,7 +6902,6 @@
 <translation id="7758450972308449809">調整顯示屏的邊界</translation>
 <translation id="7760004034676677601">這是您想要的起始網頁嗎？</translation>
 <translation id="7762024824096060040">無法使用此帳戶</translation>
-<translation id="7762463735017901568">手機管理員已停用通知同步功能</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (來源網域：<ph name="DOWNLOAD_DOMAIN" />)</translation>
 <translation id="7764857504908700767">在試用期間，為減少垃圾內容和欺詐行為，系統需依賴信任憑證，以協助網站對抗欺詐行為，並分辨機器人和真人。</translation>

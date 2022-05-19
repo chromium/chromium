@@ -3270,6 +3270,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
         Sozlamalarni kartochka menyusidan boshqarishingiz yoki boshqa sozlamalarnini “Chromeni moslash” orqali koʻrishingiz mumkin.</translation>
 <translation id="4115002065223188701">Tarmoq diapazondan tashqarida</translation>
 <translation id="4115378294792113321">Siyohrang</translation>
+<translation id="4116663294526079822">Bu saytda har doim ruxsat berilsin</translation>
 <translation id="4116704186509653070">Qayta ochish</translation>
 <translation id="4117637339509843559">Tungi rejim</translation>
 <translation id="4117714603282104018">Sensorli panel sezgir aloqasi</translation>
@@ -3979,6 +3980,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4842976633412754305">Sahifa tekshirilmagan manbalardan skriptlar yuklashga urinmoqda.</translation>
 <translation id="4844333629810439236">Boshqa klaviaturalar</translation>
 <translation id="4844633725025837809">Xavfsizlikni yanada oshirish uchun parolingizni Google Parollar menejeriga saqlashdan oldin qurilmangizda shifrlang</translation>
+<translation id="4846628405149428620">Sayt oʻzgarishlarni qayerga saqlashini tanlang</translation>
 <translation id="4846680374085650406">Parametr administrator tavsiyasi asosida sozlangan.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> tanlangan, <ph name="TOPIC_SOURCE" /> albomini tanlash uchun Enter tugmasini bosing</translation>
 <translation id="4848191975108266266">Google Assistent uchun “Ok Google" iborasi</translation>
@@ -4053,7 +4055,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4907306957610201395">Ruxsatnomalar turkumi</translation>
 <translation id="4908811072292128752">Yangi varaq ochib, bir vaqtda ikkita saytni kezish mumkin</translation>
 <translation id="4909038193460299775">Chunki bu hisob <ph name="DOMAIN" /> domeni tomonidan boshqariladi. Xatcho‘plar, tarix, parol va boshqa sozlamalar bu qurilmadan o‘chiriladi, lekin mavjud ma’lumotlaringiz Google hisobingizda saqlanib qoladi va ular bilan <ph name="BEGIN_LINK" />Google Shaxsiy kabinet<ph name="END_LINK" /> orqali ishlash mumkin.</translation>
-<translation id="4912265719039610598">Ilovalar strimingini telefon administratori taqiqlagan.</translation>
 <translation id="4912643508233590958">Uyqu rejimidan chiqishlar</translation>
 <translation id="4915961947098019832">Rasmlarni koʻrsatishga ruxsat berilgan</translation>
 <translation id="4916542008280060967">Saytga <ph name="FILE_NAME" /> faylini tahrirlashga ruxsat berilsinmi?</translation>
@@ -6890,7 +6891,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7758450972308449809">Ekraningiz chetini chegaralar bilan moslang</translation>
 <translation id="7760004034676677601">Bu boshqa bosh sahifami?</translation>
 <translation id="7762024824096060040">Bu hisobdan foydalanish imkonsiz</translation>
-<translation id="7762463735017901568">Bildirishnomalar sinxronizatsiyasi telefon administratori tomonidan faolsizlantirilgan</translation>
 <translation id="7764225426217299476">Manzil kiritish</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> saytidan <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764857504908700767">Sinov muddatlari yoqilganida Spam va firibgarlikka qarshi kurashda saytlar botlarni odamlardan ajratish maqsadida ishonch tokenlaridan foydalanadi.</translation>

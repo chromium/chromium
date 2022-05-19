@@ -4374,6 +4374,30 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 
       Politika yanlış değerine ayarlanırsa veya ayarlanmadan bırakılırsa <ph name="PLUGIN_VM_NAME" /> eklentisinin veri toplamasına izin verilmez.
       Politika doğru değerine ayarlanırsa <ph name="PLUGIN_VM_NAME" /> eklentisi <ph name="PLUGIN_VM_NAME" /> kullanım verilerini toplayabilir. Ardından <ph name="PLUGIN_VM_NAME" /> deneyimini iyileştirmek için veriler birleştirilir ve kapsamlı bir şekilde analiz edilir.</translation>
+<translation id="5874896145772824604">Bu politika, First-Party Sets özellikleri için tarayıcı tarafından kullanılan grupların listesini geçersiz kılma imkanı sağlar.
+
+      Tarayıcının First-Party Set'ler listesindeki her bir grup, First-Party Set'ler için gereken koşulları karşılamalıdır.
+      First-Party Set, bir sahibin yanı sıra bir veya daha fazla üye siteden oluşur. First-Party Set'teki tüm siteler, sahip
+      veya üye site olduğuna bakılmaksızın HTTPS üzerinden sunulan kaydedilebilir bir alan olmalıdır.
+      First-Party Set içindeki her site aynı zamanda benzersiz olmalıdır. Bu demektir ki bir site hem sahip hem de
+      üye olamaz veya bir First-Party Set'in üyesi olarak birden fazla kez listelenemez.
+      First-Party Sets özelliği hakkında daha fazla bilgi için https://github.com/privacycg/first-party-sets adresine göz atın.
+
+      Bu politikaya boş bir sözlük verilirse tarayıcı, herkese açık First-Party Set'ler listesini kullanır.
+
+      <ph name="REPLACEMENTS" /> listesindeki First-Party Set'lerdeki bir site aynı zamanda tarayıcının listesindeki bir First-Party Set'te de yer alıyorsa, bu site tarayıcının First-Party Set'inden kaldırılır.
+      Bunun ardından politikanın First-Party Set'i, tarayıcının First-Party Set'ler listesine eklenir.
+
+      <ph name="ADDITIONS" /> listesindeki First-Party Set'lerdeki bir site aynı zamanda tarayıcının listesindeki bir First-Party Set'te de yer alıyorsa, tarayıcının First-Party Set'i yeni First-Party Set'in eklenebileceği şekilde güncellenir. Tarayıcının listesi güncellendikten sonra, politikanın First-Party Set'i tarayıcının First-Party Set'ler listesine eklenir.
+
+      Tarayıcının First-Party Set'ler listesindeki sitelerin hiçbiri, birden fazla grupta yer alamaz. Bu zorunluluk ayrıca, <ph name="REPLACEMENTS" /> ve <ph name="ADDITIONS" /> listelerinin her ikisi için de geçerlidir. Benzer şekilde, bir site hem <ph name="REPLACEMENTS" /> listesinde hem de <ph name="ADDITIONS" /> listesinde yer alamaz.
+
+      Joker karakterler (*) bir politika değeri olarak veya bu listelerdeki herhangi bir First-Party Set içinde desteklenmez.
+
+      Politika tarafından sağlanan tüm gruplar geçerli bir First-Party Set olmalıdır. Geçerli
+      değilse uygun bir hata verilir.
+
+      Bu politika yalnızca bir <ph name="MS_AD_NAME" /> alan adına katılmış Windows örneklerinde veya cihaz yönetimine kaydolmuş Windows 10 Pro ya da Enterprise örneklerinde ve MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış macOS örneklerinde kullanılabilir.</translation>
 <translation id="5875873062228321803">İzin verilen minimum <ph name="PRODUCT_OS_NAME" /> sürümü gereksinimini yapılandırır.
 
       Bu politika boş olmayan bir listeye ayarlandığında:

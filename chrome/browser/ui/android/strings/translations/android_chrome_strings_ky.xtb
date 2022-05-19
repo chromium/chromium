@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөнүңүздү, электрондук почтаңызды жана профилиңиздин сүрөтүн ушул сайт менен бөлүшөт. Бул сайттын <ph name="BEGIN_LINK1" />купуялык саясатын<ph name="END_LINK1" /> көрүңүз.</translation>
 <translation id="2000419248597011803">Дарек тилкесиндеги жана издөө кутучасындагы издөөлөрдү жана айрым cookie файлдарын демейки издөө тутумуна жөнөтөт</translation>
 <translation id="200114059308480249">Google'да издегенде көбүрөөк текст камтылсынбы?</translation>
-<translation id="2011996512573319870">Google'дан эң ылайыктуу контентти көрүү үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файл}}</translation>
 <translation id="2020309681647789787">Бардык шайкештирилген түзмөктөрүңүздө таржымал күйгүзүлөт, андыктан ишиңизди токтогон жериңизден уланта аласыз</translation>
 <translation id="2021896219286479412">Сайтты толук экран режиминде көзөмөлдөө</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">Учурда</translation>
 <translation id="2472163211318554013">Chrome'дун бардык мүмкүнчүлүктөрүн пайдалуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="247737702124049222">Сүрөттөмөлөр күйүк</translation>
-<translation id="2481251096908459228">Окуяларды көрүңүз</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2485422356828889247">Орнотуудан чыгаруу</translation>
 <translation id="2494974097748878569">Chrome'догу Google Жардамчы</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудио файл}other{# аудио файл}}</translation>
 <translation id="265156376773362237">Стандарттуу алдын ала жүктөө</translation>
 <translation id="2656405586795711023">Веб колдонмолор</translation>
-<translation id="2700802943130197326">Башка түзмөктөрдөгү сырсөздөрдү, кыстармаларды жана башкаларды колдонуу үчүн шайкештирүүнү иштетиңиз.</translation>
 <translation id="2702516483241149200">Жаңы: Бул текстке сыдырылган шилтемени бөлүшө аласыз</translation>
 <translation id="2704606927547763573">Көчүрүлдү</translation>
 <translation id="2707726405694321444">Бетти жаңылоо</translation>

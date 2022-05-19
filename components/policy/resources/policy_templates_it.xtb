@@ -433,6 +433,18 @@ Se attivi o non configuri questo criterio, viene attivato lo scorrimento della p
 
 Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di testo specifici tramite URL viene disattivato.</translation>
 <translation id="1474273443907024088">Disattiva TLS False Start</translation>
+<translation id="1476128579011024193">
+      Se il criterio viene impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, dopo l'accesso a un account gestito soggetto a questo criterio, all'utente viene chiesto di creare un nuovo profilo per l'account.
+      Se viene impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, dopo l'accesso a un account gestito soggetto a questo criterio, all'utente viene chiesto di creare un nuovo profilo per l'account con la possibilità di mantenere gli eventuali dati di navigazione esistenti. Questa opzione è supportata su Chrome 102 e versioni successive.
+
+      Se il criterio viene impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, dopo l'accesso a un account gestito soggetto a questo criterio, all'utente viene chiesto di creare un nuovo profilo per l'account. Questo profilo non consente account secondari.
+      Se viene impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, dopo l'accesso a un account gestito soggetto a questo criterio, all'utente viene chiesto di creare un nuovo profilo per l'account con la possibilità di mantenere gli eventuali dati di navigazione esistenti. Questo profilo non consente account secondari. Questa opzione è supportata su Chrome 102 e versioni successive.
+
+      Se il criterio viene impostato su <ph name="POLICY_VALUE_NONE" /> o se non viene configurato, gli account gestiti non hanno limitazioni. Di conseguenza, un account gestito potrebbe essere un account secondario, il che ne disabilita la capacità di ricevere criteri impostati sull'account da parte dell'amministratore.
+
+      Se il criterio viene configurato a livello di dispositivo, tutti gli account nel browser sono soggetti al criterio.
+      Se viene configurato a livello di account, solo quell'account viene interessato nel browser.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare un hardware specifico.
 

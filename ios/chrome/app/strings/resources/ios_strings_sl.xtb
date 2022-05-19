@@ -526,7 +526,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5551897871312988470">Ponudi prevajanje</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5580834567471114021">Želite dodati na bralni seznam za pozneje?</translation>
-<translation id="5592679540098330836">Vklopite sinhronizacijo za uporabnika <ph name="NAME" /></translation>
 <translation id="560322036295180549">Izklopila organizacija.</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
 <translation id="5626245204502895507">Datoteke trenutno ni mogoče prenesti.</translation>
@@ -903,6 +902,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8592752150819985187">Samodejno izpolnjevanje gesel</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Uredi</translation>
+<translation id="8620785403235741379">Izberite možnost</translation>
 <translation id="8626393685701737946">V razdelku »Nastavitve &gt; Nastavitve vsebine« lahko spremenite privzeti pogled spletnega mesta na pogled za namizni računalnik.</translation>
 <translation id="863090005774946393">Vaš brskalnik upravlja organizacija. Nekatere funkcije so morda onemogočene.</translation>
 <translation id="8636825310635137004">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo.</translation>

@@ -433,6 +433,18 @@ Nếu bạn bật hoặc không định cấu hình chính sách này, thì vi�
 
 Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các phần văn bản cụ thể qua URL sẽ bị tắt.</translation>
 <translation id="1474273443907024088">Tắt Khởi động giả TLS</translation>
+<translation id="1476128579011024193">
+      Nếu bạn thiết lập chính sách này thành <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, thì sau khi đăng nhập vào tài khoản được quản lý tuân theo chính sách này, người dùng sẽ được yêu cầu tạo hồ sơ mới cho tài khoản.
+      Nếu bạn thiết lập chính sách này thành <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, thì sau khi đăng nhập vào tài khoản được quản lý tuân theo chính sách này, người dùng sẽ được yêu cầu tạo hồ sơ mới cho tài khoản với tuỳ chọn giữ mọi dữ liệu duyệt web hiện có. Tuỳ chọn này chỉ được hỗ trợ trên phiên bản Chrome 102 trở lên.
+
+      Nếu thiết lập chính sách này thành <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, thì sau khi đăng nhập vào tài khoản được quản lý tuân theo chính sách này, người dùng sẽ được yêu cầu tạo hồ sơ mới cho tài khoản. Hồ sơ này sẽ không chấp nhận bất kỳ tài khoản phụ nào.
+      Nếu bạn thiết lập chính sách này thành <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" /> thì sau khi đăng nhập vào tài khoản được quản lý tuân theo chính sách này, người dùng sẽ được yêu cầu tạo hồ sơ mới cho tài khoản với tuỳ chọn giữ mọi dữ liệu duyệt web hiện có. Hồ sơ này sẽ không chấp nhận bất kỳ tài khoản phụ nào. Tuỳ chọn này chỉ được hỗ trợ trên phiên bản Chrome 102 trở lên.
+
+      Nếu bạn không thiết lập chính sách này hoặc thiết lập thành <ph name="POLICY_VALUE_NONE" /> thì sẽ không có quy định hạn chế nào cho các tài khoản được quản lý. Việc này có thể khiến một tài khoản được quản lý trở thành tài khoản phụ, từ đó không còn nhận được các chính sách do quản trị viên đặt cho tài khoản đó nữa.
+
+      Nếu thiết lập chính sách này ở cấp thiết bị, thì tất cả tài khoản trong trình duyệt đều phải tuân theo chính sách này.
+      Nếu thiết lập chính sách này ở cấp tài khoản, thì chỉ tài khoản đó phải tuân theo chính sách này.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Nếu đặt chính sách này, bạn có thể xác định danh sách các thiết bị USB mà người dùng có thể tách khỏi trình điều khiển nhân hệ điều hành để sử dụng thông qua API chrome.usb ngay trong ứng dụng web. Các mục trong danh sách là những cặp Mã nhận dạng nhà cung cấp và Mã nhận dạng sản phẩm USB để xác định một phần cứng cụ thể.
 
@@ -4398,6 +4410,27 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 
       Nếu bạn đặt chính sách này thành false hoặc không đặt chính sách, thì <ph name="PLUGIN_VM_NAME" /> không được phép thu thập dữ liệu.
       Nếu bạn đặt chính sách thành true, thì <ph name="PLUGIN_VM_NAME" /> có thể thu thập dữ liệu sử dụng của <ph name="PLUGIN_VM_NAME" />. Sau đó, dữ liệu này được kết hợp và phân tích kỹ lưỡng để cải thiện trải nghiệm của <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5874896145772824604">Chính sách này đưa ra một cách để ghi đè danh sách tập hợp mà trình duyệt sử dụng cho các tính năng của First-Party Set.
+
+      Mọi tập hợp trong danh sách First-Party Set đều phải đáp ứng yêu cầu của một First-Party Set.
+      Mỗi First-Party Set bao gồm một chủ sở hữu và ít nhất một trang web thành viên. Tất cả trang web trong một First-Party Set đều phải là một miền đăng ký được và phân phát qua HTTPS, dù đó là trang web thành viên hay chủ sở hữu.
+      Từng trang web trong một First-Party Set cũng phải độc nhất, nghĩa là mỗi trang web không được vừa là chủ sở hữu và vừa là thành viên, và mỗi trang chỉ được ghi nhận duy nhất một lần làm thành viên của một First-Party Set.
+      Xem https://github.com/privacycg/first-party-sets để tìm hiểu thêm về First-Party Set.
+
+      Khi bạn đặt chính sách này thành một từ điển trống, trình duyệt sẽ sử dụng danh sách First-Party Set công khai.
+
+      Đối với mọi trang web ở một First-Party Set trong danh sách <ph name="REPLACEMENTS" />, nếu một trang web cũng xuất hiện trong danh sách First-Party Set của trình duyệt thì trang web đó sẽ bị xoá khỏi First-Party Set của trình duyệt.
+      Sau đó, First-Party Set của chính sách sẽ được thêm vào danh sách First-Party Set của trình duyệt.
+
+      Đối với mọi trang web ở một First-Party Set trong danh sách <ph name="ADDITIONS" />, nếu một trang web cũng xuất hiện trong danh sách First-Party Set của trình duyệt thì First-Party Set của trình duyệt sẽ được cập nhật sao cho có thể thêm First-Party Set mới vào danh sách của trình duyệt. Sau khi danh sách của trình duyệt đã được cập nhật, First-Party Set của chính sách sẽ được thêm vào danh sách First-Party Set của trình duyệt.
+
+      Đối với mọi trang web trong danh sách của trình duyệt, danh sách First-Party Set của trình duyệt đòi hỏi không có trang web nào ở trong quá một tập hợp. Đây cũng là yêu cầu đối với danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />. Tương tự như vậy, mỗi trang web không thể ở cả danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />.
+
+      Hệ thống không hỗ trợ việc dùng ký tự đại diện (*) làm giá trị chính sách, cũng như trong mọi First-Party Set trong những danh sách này.
+
+      Mọi tập hợp mà chính sách cung cấp đều phải là First-Party Set hợp lệ, nếu không sẽ xảy ra lỗi.
+
+      Chính sách này chỉ có trên các phiên bản Windows liên kết với miền <ph name="MS_AD_NAME" /> hoặc phiên bản Windows 10 Pro hay Enterprise đã đăng ký dịch vụ quản lý thiết bị, cũng như phiên bản macOS được quản lý thông qua phần mềm MDM (Quản lý thiết bị di động) hoặc đã liên kết với một miền qua MCX.</translation>
 <translation id="5875873062228321803">Định cấu hình yêu cầu phiên bản tối thiểu được phép của <ph name="PRODUCT_OS_NAME" />.
 
       Khi bạn đặt chính sách này thành danh sách không phải là danh sách trống:

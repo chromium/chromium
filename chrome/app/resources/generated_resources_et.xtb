@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Kuvatud on teie <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /> olevad paroolid</translation>
 <translation id="1026655690966755180">Lisa port</translation>
 <translation id="1026822031284433028">Kujutise laadimine</translation>
+<translation id="1028700151766901954">Põhjus: LBS jääb vaikimisi brauserisse <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Suumi</translation>
 <translation id="1031362278801463162">Eelvaate laadimine</translation>
 <translation id="1032605640136438169">Vaadake uued tingimused üle</translation>
@@ -3274,6 +3275,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
         Saate seadeid kohandada kaardimenüüs või näha rohkem valikuid jaotises Chrome'i kohandamine.</translation>
 <translation id="4115002065223188701">Võrk ei ole läheduses</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Luba sellel saidil alati</translation>
 <translation id="4116704186509653070">Ava uuesti</translation>
 <translation id="4117637339509843559">Tume režiim</translation>
 <translation id="4117714603282104018">Puuteplaadi värintagasiside</translation>
@@ -3355,6 +3357,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4209092469652827314">Suur</translation>
 <translation id="4209251085232852247">Välja lülitatud</translation>
 <translation id="4210048056321123003">Virtuaalseadme allalaadimine</translation>
+<translation id="4210380525132844778">Põhjus: reegel <ph name="RULE" /> leiti loendist „<ph name="LIST_NAME" />“.</translation>
 <translation id="421182450098841253">Kuva &amp;järjehoidjariba</translation>
 <translation id="4211851069413100178">Saada kasutus- ja diagnostikaandmeid. Aidake täiustada Androidi kasutuskogemust, saates Google'ile automaatselt seadme teavet ning rakenduse kasutus- ja  diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle <ph name="BEGIN_LINK1" />seade<ph name="END_LINK1" /> on jõustanud omanik. Omanik võib otsustada saata Google'ile selle seadme diagnostika- ja kasutusandmeid. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole. <ph name="BEGIN_LINK2" />Lisateave<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Lõpeta Androidi rakendustega kasutamine</translation>
@@ -3453,6 +3456,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4307992518367153382">Põhiteave</translation>
 <translation id="4309165024397827958">Lubage asukohale juurdepääsu loaga Androidi rakendustel ja teenustel kasutada teie seadme asukohta. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukohatäpsuse ning asukohapõhiste teenuste parendamiseks.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />kB (<ph name="NUM_KILOBYTES_LIVE" />kB reaalajas)</translation>
+<translation id="4310132194679586591">Valige selle lingi avamiseks oma seadmes rakendus</translation>
 <translation id="4310139701823742692">Failivorming on vale. Kontrollige PPD-faili ja proovige uuesti.</translation>
 <translation id="431076611119798497">&amp;Üksikasjad</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google'i konto}other{<ph name="EXTRA_ACCOUNTS" /> Google'i kontot}}</translation>
@@ -4055,7 +4059,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4907306957610201395">Loa kategooria</translation>
 <translation id="4908811072292128752">Avage uus vaheleht, et kahte saiti korraga sirvida</translation>
 <translation id="4909038193460299775">Kuna seda kontot haldab domeen <ph name="DOMAIN" />, kustutatakse sellest seadmest teie järjehoidjad, ajalugu, paroolid ja muud seaded. Teie andmed jäävad teie Google'i kontole siiski alles ja neid saab hallata <ph name="BEGIN_LINK" />Google'i juhtpaneelil<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Teie telefoni administraator on rakenduste voogesituse keelanud.</translation>
 <translation id="4912643508233590958">Jõuderežiimist äratamine</translation>
 <translation id="4915961947098019832">Lubatud kuvada pilte</translation>
 <translation id="4916542008280060967">Kas lubada saidil faili <ph name="FILE_NAME" /> muuta?</translation>
@@ -4683,6 +4686,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5554403733534868102">Edaspidi värskendamisel enam aega ei kulu</translation>
 <translation id="5554489410841842733">See ikoon on nähtav, kui laiendit saab vaadataval lehel kasutada.</translation>
 <translation id="5554720593229208774">Saatke meil sertifitseerimisorganile</translation>
+<translation id="5554866693883022680">Valige selle lingi avamiseks oma seadmes <ph name="DEVICE_TYPE" /> rakendus</translation>
 <translation id="5555363196923735206">Kaamera vahetamine</translation>
 <translation id="5555525474779371165">Valige oma Google'i ohutu sirvimise kaitse</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
@@ -5180,6 +5184,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6063284707309177505">Loo QR-kood</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Märkus.<ph name="END_BOLD" /> Lapse <ph name="SUPERVISED_USER_NAME" /> personaalsetele tulemustele võib juurde pääseda ka sarnase hääle või tema hääle salvestise abil. Aku säästmiseks võite kasutaja <ph name="SUPERVISED_USER_NAME" /> assistendi seadetes valida, et funktsioon „Ok Google” on ainult siis sisse lülitatud, kui seade on toiteallikaga ühendatud.</translation>
 <translation id="6064217302520318294">Ekraanilukk</translation>
+<translation id="6065145031947216733">Kas soovite sirvimist eraldi hoida?</translation>
 <translation id="6065289257230303064">Sertifikaadi subjekti kataloogi atribuudid</translation>
 <translation id="6066794465984119824">Kujutise räsiväärtust pole määratud</translation>
 <translation id="6069464830445383022">Chromebooki saate sisse logida oma Google'i kontoga</translation>
@@ -5258,6 +5263,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6129953537138746214">Tühik</translation>
 <translation id="6130692320435119637">Lisa WiFi</translation>
 <translation id="6130887916931372608">Klaviatuuri klahv</translation>
+<translation id="6135823405800500595">Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud</translation>
 <translation id="6136114942382973861">Sule allalaadimiste riba</translation>
 <translation id="6136287496450963112">Teie turvavõti pole PIN-koodiga kaitstud. Sõrmejälgede haldamiseks looge esmalt PIN-kood.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA allkiri SHA-384-ga</translation>
@@ -6891,7 +6897,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7758450972308449809">Kohandage oma ekraanikuva piire</translation>
 <translation id="7760004034676677601">Kas see on käivitamisel avatav leht, mida ootasite?</translation>
 <translation id="7762024824096060040">Ei saa seda kontot kasutada</translation>
-<translation id="7762463735017901568">Teie telefoni administraator on märguannete sünkroonimise keelanud</translation>
 <translation id="7764225426217299476">Lisage aadress</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> asukohast <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Kui katsed on sisse lülitatud, toetutakse rämpssisu ja pettuste vähendamisel usaldusmärkidele, et aidata saitidel võidelda pettuste vastu ja eristada roboteid inimestest.</translation>
@@ -7092,6 +7097,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7947962633355574091">K&amp;opeeri video aadress</translation>
 <translation id="7947964080535614577">Saidid kuvavad reklaame tavaliselt selleks, et pakkuda maksekohustuseta sisu või teenuseid. Mõned saidid aga kuvavad sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="7948407723851303488">Kõik domeeni <ph name="DOMAIN_NAME" /> lehed</translation>
+<translation id="7950629216186736592">Põhjus: LBS toetab ainult URL-e kujul http://, https:// ja file://.</translation>
 <translation id="7951265006188088697">Google Pay makseviiside lisamiseks või haldamiseks minge oma <ph name="BEGIN_LINK" />Google'i kontole<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Lülita virtuaalne kaart välja</translation>
 <translation id="7952708427581814389">Saidid saavad küsida luba lõikelaual oleva teksti ja piltide nägemiseks</translation>
@@ -7636,6 +7642,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8480869669560681089">Tundmatu seade teenusepakkujalt <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB loa kinnitamine</translation>
 <translation id="8481980314595922412">Prooviversiooni funktsioonid on sisse lülitatud</translation>
+<translation id="8486666913807228950">Põhjus: vastupidine reegel <ph name="REVERT_RULE" /> leiti loendist „Sundavamine brauseris“.</translation>
 <translation id="848666842773560761">Rakendus üritab kaamerale juurde pääseda. Juurdepääsu lubamiseks lülitage kaamera privaatsuse lüliti välja.</translation>
 <translation id="8487678622945914333">Suurenda</translation>
 <translation id="8489156414266187072">Personaalsed soovitused kuvatakse ainult teie kontol</translation>

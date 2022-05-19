@@ -135,6 +135,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1715293566947629045">Slekkur á prófíl. Hinkraðu í nokkrar mínútur.</translation>
 <translation id="1719094688023114093">Kveikt er á skjátextum í rauntíma.</translation>
 <translation id="1720011244392820496">Kveikja á Wi-Fi-samstillingu</translation>
+<translation id="1733996486177697563">Skiptu á milli dökka og ljósa þemans. Haltu inni á skjáborðinu og veldu „Veggfóður og stíll“.</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ er sýnilegt Bluetooth-tækjum.</translation>
 <translation id="174102739345480129">Slökkt er á merkipennanum.</translation>
 <translation id="1743570585616704562">Þekktist ekki</translation>
@@ -176,6 +177,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hæ, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Textainnsláttur</translation>
+<translation id="1982717156487272186">Sýna fyrri viku</translation>
 <translation id="1989113344093894667">Ekki er hægt að taka skjámynd af efni</translation>
 <translation id="1990046457226896323">Talskrár sóttar</translation>
 <translation id="1993072747612765854">Frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +265,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2573588302192866788">Ekki tókst að tengjast <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Lokað er á margar innskráningar</translation>
 <translation id="2582112259361606227">Endurræstu til að uppfæra</translation>
+<translation id="2586561057878260610">Ýttu á Ctrl + W til að sameina við <ph name="DESK_NAME" />. Ýttu á Ctrl + Shift + W til að loka skrifborði og gluggum.</translation>
 <translation id="2595239820337756193">5 km í mílum</translation>
 <translation id="2596078834055697711">Taka skjámynd af glugga</translation>
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
@@ -622,6 +625,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, stjörnur: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Færa verður tækið í fyrri útgáfu innan eins dags}one{Færa verður tækið í fyrri útgáfu innan # dags}other{Færa verður tækið í fyrri útgáfu innan # daga}}</translation>
 <translation id="4642092649622328492">Taka mynd af hluta skjás</translation>
+<translation id="4644727592819780893">Svæðið er of smátt til að hægt sé að mynda það</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, tillaga að forriti</translation>
 <translation id="4657775630156561295">Eftirfarandi tillögu verður eytt endanlega úr tillöguferli reikningsins þíns:
 
@@ -667,6 +671,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4925542575807923399">Stjórnandi þessa reiknings krefst þess að reikningurinn sé fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
+<translation id="4938176435186993759">Fela allar tillögur</translation>
 <translation id="4945196315133970626">Slökkva á tilkynningum</translation>
 <translation id="4946376291507881335">Taka mynd</translation>
 <translation id="495046168593986294">Fletta upp</translation>
@@ -733,6 +738,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5331975486040154427">USB-C tæki (tengi vinstra megin að aftan)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (hægri)</translation>
 <translation id="5352250171825660495">Kveikt er á dökku þema</translation>
+<translation id="5356963482258194581">Skiptu á milli dökka og ljósa þemans. Hægrismelltu á skjáborðið og veldu „Veggfóður og stíll“.</translation>
 <translation id="5379115545237091094">Of margar tilraunir</translation>
 <translation id="5393156353051693207">Haltu inni hvar sem er til að endurraða forritunum þínum</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ofan á <ph name="IN_PLACE_APP" />, slepptu til að búa til möppu.</translation>
@@ -754,6 +760,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5520229639206813572">Kerfisstjórinn hefur fjarlægt alla eSIM-prófíla. Hafðu samband við kerfisstjórann til að fá frekari upplýsingar.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> tengist.</translation>
 <translation id="5532994612895037630">Ýttu hvar sem er til að taka upp á öllum skjánum</translation>
+<translation id="5536723544185013515">Nýleg forrit, flettu með vinstri eða hægri örvalyklunum til að fara á milli allra nýlegra forrita</translation>
 <translation id="553675580533261935">Lokar lotu</translation>
 <translation id="5537725057119320332">Senda út</translation>
 <translation id="554893713779400387">Kveikja og slökkva á upplestri</translation>
@@ -776,10 +783,12 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5673434351075758678">Úr „<ph name="FROM_LOCALE" />“ í „<ph name="TO_LOCALE" />“ eftir að stillingarnar þínar voru samstilltar.</translation>
 <translation id="5675363643668471212">Hilluatriði</translation>
 <translation id="5677928146339483299">Lokað fyrir aðgang</translation>
+<translation id="5678564054339031017">Sýna næstu viku</translation>
 <translation id="5679050765726761783">Afllítill straumbreytir tengdur</translation>
 <translation id="5682642926269496722">Google hjálparinn er ekki í boði fyrir núverandi notandareikning.</translation>
 <translation id="5689633613396158040">Næturljós auðveldar þér að horfa á skjáinn og lesa af honum í lítilli birtu. Ýttu til að breyta klukkan hvað næturljósið kviknar eða til að slökkva alveg á því.</translation>
 <translation id="5691772641933328258">Fingrafar þekkist ekki</translation>
+<translation id="570390244361237317">Öll forrit, flettu með örvalyklunum til að fara á milli allra forrita</translation>
 <translation id="5707775774148071965">Tækið þitt styður meiri gagnahraða en snúran. Afköst tækisins kunna að vera takmörkuð.</translation>
 <translation id="5710450975648804523">Kveikt er á „Ónáðið ekki“</translation>
 <translation id="571295407079589142">Slökkt er á farsímagögnum</translation>

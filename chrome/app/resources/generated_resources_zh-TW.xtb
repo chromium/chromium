@@ -3265,6 +3265,7 @@
         你可以透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="4115002065223188701">偵測不到網路</translation>
 <translation id="4115378294792113321">洋紅色</translation>
+<translation id="4116663294526079822">永遠允許在這個網站執行</translation>
 <translation id="4116704186509653070">重新開啟</translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4117714603282104018">觸控板觸動回饋</translation>
@@ -4047,7 +4048,6 @@
 <translation id="4907306957610201395">權限類別</translation>
 <translation id="4908811072292128752">開啟新分頁即可一次瀏覽兩個網站</translation>
 <translation id="4909038193460299775">這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將你的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。不過，你的資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
-<translation id="4912265719039610598">手機管理員已停用應用程式串流功能。</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
 <translation id="4915961947098019832">可以顯示圖片</translation>
 <translation id="4916542008280060967">要允許網站編輯「<ph name="FILE_NAME" />」嗎？</translation>
@@ -6880,7 +6880,6 @@
 <translation id="7758450972308449809">調整顯示畫面邊界</translation>
 <translation id="7760004034676677601">這是你想要的起始網頁嗎？</translation>
 <translation id="7762024824096060040">無法使用這個帳戶</translation>
-<translation id="7762463735017901568">手機管理員已停用通知同步功能</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (來源網域：<ph name="DOWNLOAD_DOMAIN" />)</translation>
 <translation id="7764857504908700767">在試用期間，網站會使用信任權杖來減少垃圾內容和詐欺情形，藉此防範詐欺及辨別機器人和真人。</translation>

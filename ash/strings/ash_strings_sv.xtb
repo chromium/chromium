@@ -135,6 +135,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1715293566947629045">Profilen inaktiveras. Vänta några minuter.</translation>
 <translation id="1719094688023114093">Live Caption är aktiverat.</translation>
 <translation id="1720011244392820496">Aktivera wifi-synkronisering</translation>
+<translation id="1733996486177697563">Byt mellan ljust och mörkt tema. Tryck länge på skrivbordet och välj sedan Bakgrund och stil.</translation>
 <translation id="1736898441010944794"><ph name="NAME" /> är synlig för Bluetooth-enheter.</translation>
 <translation id="174102739345480129">Märkpennan är inaktiverad.</translation>
 <translation id="1743570585616704562">Identifierades inte</translation>
@@ -176,6 +177,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hej <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Textinmatning</translation>
+<translation id="1982717156487272186">Visa föregående vecka</translation>
 <translation id="1989113344093894667">Det gick inte att ta en skärmbild/skärminspelning på innehållet</translation>
 <translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +265,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2573588302192866788">Det gick inte att ansluta <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiinloggning har inaktiverats</translation>
 <translation id="2582112259361606227">Starta om för att uppdatera</translation>
+<translation id="2586561057878260610">Tryck på Ctrl + W för att kombinera med <ph name="DESK_NAME" />. Tryck på Ctrl + Skift + W för att stänga skrivbord och fönster.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
@@ -622,6 +625,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, betyg <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Byt till en tidigare version av enheten inom en dag}other{Byt till en tidigare version av enheten inom # dagar}}</translation>
 <translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
+<translation id="4644727592819780893">Området är för litet för att visas i kameran</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, apprekommendation</translation>
 <translation id="4657775630156561295">Följande förslag tas bort permanent från förslagshistoriken i kontot:
 
@@ -667,6 +671,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918086044614829423">Acceptera</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
+<translation id="4938176435186993759">Dölj alla förslag</translation>
 <translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
 <translation id="495046168593986294">Scrolla upp</translation>
@@ -733,6 +738,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
+<translation id="5356963482258194581">Byt mellan ljust och mörkt tema. Högerklicka på skrivbordet och välj Bakgrund och stil.</translation>
 <translation id="5379115545237091094">För många försök</translation>
 <translation id="5393156353051693207">Tryck länge var som helst och ändra ordning på apparna</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ovanpå <ph name="IN_PLACE_APP" />, om du släpper skapas en mapp.</translation>
@@ -754,6 +760,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5520229639206813572">Administratören har tagit bort alla eSIM-profiler. Kontakta administratören för mer information.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> ansluter.</translation>
 <translation id="5532994612895037630">Tryck var som helst för att spela in hela skärmen</translation>
+<translation id="5536723544185013515">Senaste apparna, navigera med vänster- eller högerpil för att se alla appar du använt nyligen</translation>
 <translation id="553675580533261935">Sessionen avslutas</translation>
 <translation id="5537725057119320332">Casta</translation>
 <translation id="554893713779400387">Aktivera och inaktivera diktamen</translation>
@@ -776,10 +783,12 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5673434351075758678">Från <ph name="FROM_LOCALE" /> till <ph name="TO_LOCALE" /> efter synkronisering av inställningarna.</translation>
 <translation id="5675363643668471212">Hyllobjekt</translation>
 <translation id="5677928146339483299">Blockerat</translation>
+<translation id="5678564054339031017">Visa nästa vecka</translation>
 <translation id="5679050765726761783">En nätadapter med låg effekt upptäcktes</translation>
 <translation id="5682642926269496722">Google-assistenten är inte tillgänglig för det här användarkontot.</translation>
 <translation id="5689633613396158040">Med Nattljus blir det behagligare för ögonen att titta på skärmen eller läsa i svag belysning Tryck om du vill ändra vilken tid Nattljus aktiveras eller inaktivera det helt.</translation>
 <translation id="5691772641933328258">Fingeravtrycket känns inte igen</translation>
+<translation id="570390244361237317">Alla appar, navigera med piltangenterna för att komma åt alla appar</translation>
 <translation id="5707775774148071965">Enheten har stöd för högre datahastighet än vad kabeln har. Enhetens prestanda kan försämras.</translation>
 <translation id="5710450975648804523">Stör ej har aktiverats</translation>
 <translation id="571295407079589142">Mobildata har inaktiverats</translation>

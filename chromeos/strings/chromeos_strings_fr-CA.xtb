@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Activer la protection en écriture</translation>
 <translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> accessible</translation>
 <translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
@@ -432,6 +433,7 @@
 <translation id="5166918508782100047">Paramètres des réponses rapides</translation>
 <translation id="5168185087976003268">État de la pile</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
+<translation id="5179530508336824319">Activez la protection en écriture pour passer à l'écran suivant. Consultez la page d'assistance du fabricant de l'appareil pour obtenir des instructions.</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter des albums ou modifier vos albums existants, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Je ne trouve aucun élément sur votre écran pour lequel je peux vous aider.
 Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation>

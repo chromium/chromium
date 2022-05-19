@@ -188,7 +188,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1995884366040846621">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse, og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine</translation>
 <translation id="200114059308480249">Vil du medtage omgivende tekst i Google-søgninger?</translation>
-<translation id="2011996512573319870">Synkroniser for at få det mest relevante indhold fra Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}one{# fil}other{# filer}}</translation>
 <translation id="2020309681647789787">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
@@ -272,7 +271,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="2472163211318554013">Log ind for at få mest muligt ud af Chrome</translation>
 <translation id="247737702124049222">Billedbeskrivelser er slået til</translation>
-<translation id="2481251096908459228">Se historier til dig</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2494974097748878569">Google Assistent i Chrome</translation>
@@ -314,7 +312,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}one{# lydfil}other{# lydfiler}}</translation>
 <translation id="265156376773362237">Standardforudindlæsning</translation>
 <translation id="2656405586795711023">Webapps</translation>
-<translation id="2700802943130197326">Synkroniser for at få dine adgangskoder, bogmærker og meget mere på alle dine andre enheder.</translation>
 <translation id="2702516483241149200">Nyhed: Del et link, der ruller til denne tekst</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2707726405694321444">Opdater siden</translation>

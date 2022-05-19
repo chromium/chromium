@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Wachtwoorden van je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /> bekijken</translation>
 <translation id="1026655690966755180">Poort toevoegen</translation>
 <translation id="1026822031284433028">Afbeelding laden</translation>
+<translation id="1028700151766901954">Reden: LBS blijft standaard in <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1031362278801463162">Voorbeeld wordt geladen</translation>
 <translation id="1032605640136438169">Lees de nieuwe voorwaarden door</translation>
@@ -3266,6 +3267,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="4115002065223188701">Netwerk buiten bereik</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Altijd toestaan op deze site</translation>
 <translation id="4116704186509653070">Opnieuw openen</translation>
 <translation id="4117637339509843559">Donkere modus</translation>
 <translation id="4117714603282104018">Haptische feedback voor touchpad</translation>
@@ -3347,6 +3349,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4209251085232852247">Uitgezet</translation>
 <translation id="4210048056321123003">De virtuele machine wordt gedownload</translation>
+<translation id="4210380525132844778">Reden: <ph name="RULE" /> is gevonden in de lijst <ph name="LIST_NAME" />.</translation>
 <translation id="421182450098841253">&amp;Bookmarkbalk bekijken</translation>
 <translation id="4211851069413100178">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt verplicht door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Niet meer gebruiken met Android-apps</translation>
@@ -4047,7 +4050,6 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4907306957610201395">Rechtencategorie</translation>
 <translation id="4908811072292128752">Een nieuw tabblad openen om op twee sites tegelijk te browsen</translation>
 <translation id="4909038193460299775">Omdat dit account wordt beheerd door <ph name="DOMAIN" />, worden je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist van dit apparaat. Je gegevens blijven opgeslagen in je Google-account en kunnen worden beheerd via <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Het streamen van apps is uitgezet door de beheerder van je telefoon.</translation>
 <translation id="4912643508233590958">Activeringen vanuit inactief</translation>
 <translation id="4915961947098019832">Toestemming om afbeeldingen te bekijken</translation>
 <translation id="4916542008280060967">Toestaan dat site <ph name="FILE_NAME" /> bewerkt?</translation>
@@ -5170,6 +5172,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6063284707309177505">QR-code maken</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Opmerking:<ph name="END_BOLD" /> Iemand met een vergelijkbare stem of opname kan misschien ook toegang krijgen tot de persoonlijke resultaten van <ph name="SUPERVISED_USER_NAME" />. Je kunt de batterij sparen door in de Assistent-instellingen van <ph name="SUPERVISED_USER_NAME" /> te selecteren dat 'Hey Google' alleen aanstaat als dit apparaat is aangesloten op een voedingsbron.</translation>
 <translation id="6064217302520318294">Schermvergrendeling</translation>
+<translation id="6065145031947216733">Je browsegegevens scheiden?</translation>
 <translation id="6065289257230303064">Directorykenmerken van certificaatonderwerp</translation>
 <translation id="6066794465984119824">Image-hash is niet ingesteld</translation>
 <translation id="6069464830445383022">Je Google-account is je Chromebook-login</translation>
@@ -5247,6 +5250,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6129953537138746214">Spatie</translation>
 <translation id="6130692320435119637">Wifi toevoegen</translation>
 <translation id="6130887916931372608">Toetsenbordtoets</translation>
+<translation id="6135823405800500595">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan</translation>
 <translation id="6136114942382973861">Downloadbalk sluiten</translation>
 <translation id="6136287496450963112">Je beveiligingssleutel is niet beveiligd met een pincode. Maak eerst een pincode als je vingerafdrukken wilt beheren.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-handtekening met SHA-384</translation>
@@ -6879,7 +6883,6 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7758450972308449809">De grenzen van je display aanpassen</translation>
 <translation id="7760004034676677601">Is dit de homepage die je had verwacht?</translation>
 <translation id="7762024824096060040">Kan dit account niet gebruiken</translation>
-<translation id="7762463735017901568">Synchronisatie van meldingen is uitgezet door de beheerder van je telefoon</translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> van <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Tijdens actieve proeven is spam- en fraudebeperking afhankelijk van Trust Tokens om sites te helpen fraude te bestrijden en bots te onderscheiden van mensen.</translation>
@@ -7078,6 +7081,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7947962633355574091">Adres van video k&amp;opiëren</translation>
 <translation id="7947964080535614577">Sites kiezen er vaak voor advertenties te laten zien zodat ze hun content en services kosteloos kunnen aanbieden. Het is wel bekend dat bepaalde sites opdringerige of misleidende advertenties tonen.</translation>
 <translation id="7948407723851303488">Alle pagina's van <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Reden: LBS ondersteunt alleen URL's met http://, https:// en file://.</translation>
 <translation id="7951265006188088697">Ga voor het toevoegen of beheren van Google Pay-betaalmethoden naar je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Virtuele kaart uitzetten</translation>
 <translation id="7952708427581814389">Sites kunnen vragen of ze tekst en afbeeldingen op je klembord mogen bekijken</translation>
@@ -7622,6 +7626,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8480869669560681089">Onbekend apparaat van <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-rechten bevestigen</translation>
 <translation id="8481980314595922412">Proeffuncties staan aan</translation>
+<translation id="8486666913807228950">Reden: De omgekeerde regel <ph name="REVERT_RULE" /> is gevonden in de lijst Gedwongen openen in.</translation>
 <translation id="848666842773560761">Een app vraagt toegang tot de camera. Zet de privacyschakelaar voor de camera uit om de toegang toe te staan.</translation>
 <translation id="8487678622945914333">Groter</translation>
 <translation id="8489156414266187072">Persoonlijke suggesties zie je alleen in je account</translation>

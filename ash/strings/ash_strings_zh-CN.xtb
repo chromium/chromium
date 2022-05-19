@@ -174,6 +174,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好！</translation>
 <translation id="1978498689038657292">文字输入</translation>
+<translation id="1982717156487272186">显示上一周的活动</translation>
 <translation id="1989113344093894667">无法截取/录制内容</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1993072747612765854">详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新</translation>
@@ -621,6 +622,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，星级评分为 <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{请在 1 天内将设备回滚到上一个版本}other{请在 # 天内将设备回滚到上一个版本}}</translation>
 <translation id="4642092649622328492">截取局部屏幕截图</translation>
+<translation id="4644727592819780893">区域太小，无法显示相机预览画面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推荐的应用</translation>
 <translation id="4657775630156561295">以下建议将会从您帐号的建议历史记录中永久移除：
 
@@ -778,6 +780,7 @@
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
 <translation id="5675363643668471212">任务栏中的项目</translation>
 <translation id="5677928146339483299">已禁止</translation>
+<translation id="5678564054339031017">显示下一周的活动</translation>
 <translation id="5679050765726761783">已连接低功耗适配器</translation>
 <translation id="5682642926269496722">当前用户帐号无法使用 Google 助理。</translation>
 <translation id="5689633613396158040">护眼模式可让您更舒适地在黯淡的光线下查看屏幕或阅读文字。点按即可更改护眼模式的开启时间或彻底关闭护眼模式。</translation>

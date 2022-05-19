@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Rodomi <ph name="BEGIN_LINK" />„Google“ paskyros<ph name="END_LINK" /> slaptažodžiai</translation>
 <translation id="1026655690966755180">Pridėti prievadą</translation>
 <translation id="1026822031284433028">Įkelti vaizdą</translation>
+<translation id="1028700151766901954">Priežastis: LBS lieka naršyklėje „<ph name="DEFAULT_OPEN_BROWSER" />“ pagal numatytuosius nustatymus.</translation>
 <translation id="1029317248976101138">Keisti mastelį</translation>
 <translation id="1031362278801463162">Įkeliama peržiūra</translation>
 <translation id="1032605640136438169">Peržiūrėkite naujas sąlygas</translation>
@@ -3286,6 +3287,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
         Galite tvarkyti nustatymus kortelės meniu arba peržiūrėti daugiau parinkčių skiltyje „Chrome“ tinkinimas“.</translation>
 <translation id="4115002065223188701">Tinklas nepasiekiamas</translation>
 <translation id="4115378294792113321">Purpurinė</translation>
+<translation id="4116663294526079822">Visada leisti šioje svetainėje</translation>
 <translation id="4116704186509653070">Atidaryti dar kartą</translation>
 <translation id="4117637339509843559">Tamsus režimas</translation>
 <translation id="4117714603282104018">Jutiklinės dalies juntamas grįžtamasis ryšys</translation>
@@ -3367,6 +3369,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4209092469652827314">Didelis</translation>
 <translation id="4209251085232852247">Išjungta</translation>
 <translation id="4210048056321123003">Atsisiunčiamas virtualus įrenginys</translation>
+<translation id="4210380525132844778">Priežastis: taisyklė „<ph name="RULE" />“ rasta sąraše „<ph name="LIST_NAME" />“.</translation>
 <translation id="421182450098841253">&amp;Rodyti žymių juostą</translation>
 <translation id="4211851069413100178">Siųskite naudojimo ir diagnostikos duomenis. Padėkite tobulinti „Android“ funkcijas automatiškai siųsdami „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Šį <ph name="BEGIN_LINK1" />nustatymą<ph name="END_LINK1" /> taiko savininkas. Savininkas gali pasirinkti siųsti šio įrenginio diagnostikos ir naudojimo duomenis „Google“. Jei papildomas „Žiniatinklio ir programų veiklos“ nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje. <ph name="BEGIN_LINK2" />Sužinokite daugiau<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Nebenaudoti „Android“ programose</translation>
@@ -4069,7 +4072,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4907306957610201395">Leidimų kategorija</translation>
 <translation id="4908811072292128752">Jei norite naršyti iš karto dvi svetaines, atidarykite naują skirtuką</translation>
 <translation id="4909038193460299775">Kadangi ši paskyra tvarkoma <ph name="DOMAIN" />, jūsų žymės, istorija, slaptažodžiai ir kiti nustatymai bus išvalyti iš šio įrenginio. Tačiau duomenys bus toliau saugomi „Google“ paskyroje ir juos bus galima tvarkyti <ph name="BEGIN_LINK" />„Google“ informacijos suvestinėje<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Programų srautinį perdavimą išjungė telefono administratorius.</translation>
 <translation id="4912643508233590958">Neaktyvumo režimo nutraukimo veiksmai</translation>
 <translation id="4915961947098019832">Leidžiama rodyti vaizdus</translation>
 <translation id="4916542008280060967">Leisti svetainei redaguoti failą „<ph name="FILE_NAME" />“?</translation>
@@ -5196,6 +5198,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6063284707309177505">Sukurti QR kodą</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> <ph name="SUPERVISED_USER_NAME" /> asmeninius rezultatus galima pasiekti panašiu balsu ar naudojant panašų įrašą. Norėdami taupyti akumuliatoriaus energiją, <ph name="SUPERVISED_USER_NAME" /> Padėjėjo nustatymuose galite pasirinkti, kad aktyvinamasis žodis „Ok Google“ veiktų tik tada, kai šis įrenginys prijungtas prie maitinimo šaltinio.</translation>
 <translation id="6064217302520318294">Ekrano užraktas</translation>
+<translation id="6065145031947216733">Naršyti atskirai?</translation>
 <translation id="6065289257230303064">Sertifikato subjekto katalogo atributai</translation>
 <translation id="6066794465984119824">Vaizdo maiša nenustatyta</translation>
 <translation id="6069464830445383022">Prisijunkite prie „Chromebook“ naudodami „Google“ paskyrą</translation>
@@ -5274,6 +5277,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6129953537138746214">Tarpas</translation>
 <translation id="6130692320435119637">Pridėti „Wi-Fi“</translation>
 <translation id="6130887916931372608">Klaviatūros klavišas</translation>
+<translation id="6135823405800500595">Įsitikinkite, kad telefonas yra netoliese, atrakintas ir įjungtas „Bluetooth“ bei „Wi-Fi“</translation>
 <translation id="6136114942382973861">Uždaryti atsisiuntimų juostą</translation>
 <translation id="6136287496450963112">Saugos raktas neapsaugotas PIN kodu. Kad galėtumėte tvarkyti kontrolinius kodus, pirmiausia sukurkite PIN kodą.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA parašas naudojant SHA-384</translation>
@@ -6913,7 +6917,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7758450972308449809">Sureguliuokite ekrano ribas</translation>
 <translation id="7760004034676677601">Ar tai paleidimo puslapis, kurį tikėjotės išvysti?</translation>
 <translation id="7762024824096060040">Negalima naudoti šios paskyros</translation>
-<translation id="7762463735017901568">Telefono administratorius išjungė pranešimų sinchronizavimą</translation>
 <translation id="7764225426217299476">Pridėti adresą</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> iš <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Naudojant šias bandomąsias versijas, siekiama sumažinti šlamšto ir apgaulių pasikliaujant patikimais prieigos raktais, kurie padeda svetainėms išvengti apgaulių bei atskirti robotus nuo žmonių.</translation>
@@ -7114,6 +7117,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7947962633355574091">K&amp;opijuoti vaizdo įrašo adresą</translation>
 <translation id="7947964080535614577">Paprastai svetainėse rodomi skelbimai, kad būtų galima be mokesčio teikti turinį ar paslaugas. Tačiau žinoma, kad kai kuriose svetainėse rodomi nepageidaujami arba klaidinantys skelbimai.</translation>
 <translation id="7948407723851303488">Visi <ph name="DOMAIN_NAME" /> puslapiai</translation>
+<translation id="7950629216186736592">Priežastis: LBS palaiko tik „http://“, „https://“ ir „file://“ URL.</translation>
 <translation id="7951265006188088697">Jei norite pridėti „Google Pay“ metodų arba juos tvarkyti, eikite į savo <ph name="BEGIN_LINK" />„Google“ paskyrą<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Išjungti virtualią kortelę</translation>
 <translation id="7952708427581814389">Svetainėse gali būti prašoma peržiūrėti tekstą ir vaizdus jūsų iškarpinėje</translation>
@@ -7658,6 +7662,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8480869669560681089">Nežinomas įrenginys iš „<ph name="VENDOR_NAME" />“</translation>
 <translation id="8481187309597259238">USB leidimo patvirtinimas</translation>
 <translation id="8481980314595922412">Bandomosios funkcijos įjungtos</translation>
+<translation id="8486666913807228950">Priežastis: atvirkštinio atvaizdavimo taisyklė „<ph name="REVERT_RULE" />“ rasta sąraše „Priverstinai atidaryti naršyklėje“.</translation>
 <translation id="848666842773560761">Programa bando pasiekti kamerą. Išjunkite kameros privatumo jungiklį, kad leistumėte pasiekti.</translation>
 <translation id="8487678622945914333">Artinti</translation>
 <translation id="8489156414266187072">Asmeniniai pasiūlymai rodomi tik jūsų paskyroje</translation>

@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Prikazuju se lozinke sa <ph name="BEGIN_LINK" />Google naloga<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Dodajte port</translation>
 <translation id="1026822031284433028">Učitaj sliku</translation>
+<translation id="1028700151766901954">Razlog: LBS podrazumevano ostaje u pregledaču <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Zumiraj</translation>
 <translation id="1031362278801463162">Učitavanje pregleda</translation>
 <translation id="1032605640136438169">Pregledajte nove uslove</translation>
@@ -3267,6 +3268,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
         Možete da upravljate podešavanjima iz  menija kartice ili da vidite još opcija u meniju Prilagodite Chrome.</translation>
 <translation id="4115002065223188701">Mreža je van dometa</translation>
 <translation id="4115378294792113321">Ciklama</translation>
+<translation id="4116663294526079822">Uvek dozvoli na ovom sajtu</translation>
 <translation id="4116704186509653070">Otvori ponovo</translation>
 <translation id="4117637339509843559">Tamni režim</translation>
 <translation id="4117714603282104018">Taktilni odziv tačpeda</translation>
@@ -3348,6 +3350,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4209092469652827314">Velika</translation>
 <translation id="4209251085232852247">Isključeno</translation>
 <translation id="4210048056321123003">Preuzima se virtuelna mašina</translation>
+<translation id="4210380525132844778">Razlog: Pravilo <ph name="RULE" /> je pronađeno na listi <ph name="LIST_NAME" />.</translation>
 <translation id="421182450098841253">&amp;Prikaži traku sa obeleživačima</translation>
 <translation id="4211851069413100178">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da vam pružimo bolji doživljaj Android-a tako što ćete automatski slati podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To će pomoći u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. To <ph name="BEGIN_LINK1" />podešavanje<ph name="END_LINK1" /> primenjuje vlasnik. Vlasnik može da izabere da se podaci o dijagnostici i korišćenju za ovaj uređaj šalju Google-u. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Prestani da koristiš sa Android aplikacijama</translation>
@@ -3975,6 +3978,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4842976633412754305">Ova stranica pokušava da učitava skripte iz izvora čija autentičnost nije potvrđena.</translation>
 <translation id="4844333629810439236">Ostale tastature</translation>
 <translation id="4844633725025837809">Radi dodatne zaštite šifrujte lozinke na uređaju pre nego što se sačuvaju u Google menadžeru lozinki</translation>
+<translation id="4846628405149428620">Izaberite gde ovaj sajt može da čuva izmene</translation>
 <translation id="4846680374085650406">Poštujete preporuku administratora za ovo podešavanje.</translation>
 <translation id="4847902821209177679">Izabrali ste uslugu <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pritisnite Enter da biste izabrali albume usluge <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">Komanda „Ok Google“ za Google pomoćnik</translation>
@@ -4049,7 +4053,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4907306957610201395">Kategorija dozvole</translation>
 <translation id="4908811072292128752">Otvorite novu karticu da biste pregledali dva sajta istovremeno</translation>
 <translation id="4909038193460299775">Pošto ovim nalogom upravlja <ph name="DOMAIN" />, vaši obeleživači, istorija, lozinke i druga podešavanja će biti izbrisani sa ovog uređaja. Međutim, vaši podaci će se i dalje čuvati na Google nalogu i njima možete da upravljate na <ph name="BEGIN_LINK" />Google kontrolnoj tabli<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Administrator telefona je onemogućio strimovanje aplikacija.</translation>
 <translation id="4912643508233590958">Buđenja iz stanja mirovanja</translation>
 <translation id="4915961947098019832">Dozvoljeno im je da prikazuju slike</translation>
 <translation id="4916542008280060967">Želite li da dozvolite sajtu da menja datoteku <ph name="FILE_NAME" />?</translation>
@@ -5175,6 +5178,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6063284707309177505">Napravi QR kôd</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Napomena<ph name="END_BOLD" />: Neko sa sličnim glasom ili snimkom možda može da pristupa ličnim rezultatima deteta <ph name="SUPERVISED_USER_NAME" />. Radi uštede baterije u podešavanjima Pomoćnika deteta <ph name="SUPERVISED_USER_NAME" /> možete da izaberete da funkcija „Hej Google“ bude aktivna samo kad je uređaj povezan sa izvorom napajanja.</translation>
 <translation id="6064217302520318294">Zaključavanje ekrana</translation>
+<translation id="6065145031947216733">Želite da razdvojite pregledanje?</translation>
 <translation id="6065289257230303064">Atributi kataloga subjekata sertifikata</translation>
 <translation id="6066794465984119824">Heš za slike nije podešen</translation>
 <translation id="6069464830445383022">Na Chromebook se prijavljujete pomoću Google naloga</translation>
@@ -5253,6 +5257,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6130692320435119637">Dodaj WiFi</translation>
 <translation id="6130887916931372608">Taster tastature</translation>
+<translation id="6135823405800500595">Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni</translation>
 <translation id="6136114942382973861">Zatvori traku sa preuzimanjima</translation>
 <translation id="6136287496450963112">Bezbednosni ključ nije zaštićen PIN-om. Da biste upravljali otiscima prstiju, prvo napravite PIN.</translation>
 <translation id="6138680304137685902">Potpis X9.62 ECDSA putem SHA-384</translation>
@@ -6890,7 +6895,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7758450972308449809">Prilagodite granice prikaza</translation>
 <translation id="7760004034676677601">Je li ovo početna stranica koju ste očekivali?</translation>
 <translation id="7762024824096060040">Ne možete da koristite ovaj nalog</translation>
-<translation id="7762463735017901568">Sinhronizovanje obaveštenja je onemogućio administrator telefona</translation>
 <translation id="7764225426217299476">Dodajte adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> sa <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Dok probni periodi traju, umanjenje nepoželjnog sadržaja i prevara oslanja se na pouzdane tokene da bi pomoglo sajtovima u borbi protiv prevara, kao i u razlikovanju robota od ljudi.</translation>
@@ -7090,6 +7094,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7947962633355574091">K&amp;opiraj adresu videa</translation>
 <translation id="7947964080535614577">Sajtovi obično prikazuju oglase da bi mogli besplatno da pružaju sadržaj ili usluge. Ali, ima i sajtova koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase.</translation>
 <translation id="7948407723851303488">Sve stranice sa <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Razlog: LBS podržava samo http://, https:// i file:// URL-ove.</translation>
 <translation id="7951265006188088697">Da biste dodali Google Pay načine plaćanja ili upravljali njima, posetite <ph name="BEGIN_LINK" />Google nalog<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Isključi virtuelnu karticu</translation>
 <translation id="7952708427581814389">Sajtovi mogu da traže da vide tekst i slike u privremenoj memoriji</translation>
@@ -7634,6 +7639,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8480869669560681089">Nepoznat uređaj proizvođača <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrdite dozvolu za USB</translation>
 <translation id="8481980314595922412">Probne funkcije su uključene</translation>
+<translation id="8486666913807228950">Razlog: Inverzno pravilo <ph name="REVERT_RULE" /> je pronađeno na listi Prinudno otvori na.</translation>
 <translation id="848666842773560761">Aplikacija pokušava da pristupi kameri. Isključite prekidač za privatnost kamere da biste omogućili pristup.</translation>
 <translation id="8487678622945914333">Uvećaj</translation>
 <translation id="8489156414266187072">Lični predlozi se prikazuju samo na vašem nalogu</translation>

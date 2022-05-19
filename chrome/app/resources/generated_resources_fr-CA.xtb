@@ -3263,6 +3263,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
         Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'options dans Personnaliser Chrome.</translation>
 <translation id="4115002065223188701">Réseau hors de portée</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Toujours autoriser pour ce site</translation>
 <translation id="4116704186509653070">Ouvrir à nouveau</translation>
 <translation id="4117637339509843559">Mode sombre</translation>
 <translation id="4117714603282104018">Vibration haptique du pavé tactile</translation>
@@ -3442,6 +3443,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4309165024397827958">Autoriser les applications et les services Android disposant de l'autorisation de localisation à utiliser la position de votre appareil. Google peut collecter des données de localisation sur une base périodique et les utiliser de manière anonyme pour aider à améliorer la précision de la localisation et les services qui y font appel.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> ko (<ph name="NUM_KILOBYTES_LIVE" /> ko actuellement)</translation>
+<translation id="4310132194679586591">Sélectionnez une application sur votre appareil pour ouvrir ce lien</translation>
 <translation id="4310139701823742692">Le format du fichier est incorrect. Vérifiez le fichier PPD et réessayez.</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 compte Google}one{<ph name="EXTRA_ACCOUNTS" /> compte Google}other{<ph name="EXTRA_ACCOUNTS" /> comptes Google}}</translation>
@@ -4040,7 +4042,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4907306957610201395">Catégorie d'autorisation</translation>
 <translation id="4908811072292128752">Ouvrez un nouvel onglet pour naviguer sur deux sites en même temps</translation>
 <translation id="4909038193460299775">Comme ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et autres paramètres seront supprimés de cet appareil. Cependant, vos données resteront stockées dans votre compte Google et peuvent être gérées sur <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">La diffusion d'application est désactivée par l'administrateur de votre téléphone.</translation>
 <translation id="4912643508233590958">Sorties de veille</translation>
 <translation id="4915961947098019832">Autorisés à afficher des images</translation>
 <translation id="4916542008280060967">Autoriser le site à modifier <ph name="FILE_NAME" />?</translation>
@@ -4667,6 +4668,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5554403733534868102">Après cette fois-ci, vous n'aurez plus à attendre que les mises à jour s'installent</translation>
 <translation id="5554489410841842733">Cette icône sera visible lorsque l'extension pourra agir sur la page en cours.</translation>
 <translation id="5554720593229208774">Autorité de certification de courrier électronique</translation>
+<translation id="5554866693883022680">Sélectionnez une application sur votre <ph name="DEVICE_TYPE" /> pour ouvrir ce lien</translation>
 <translation id="5555363196923735206">Changer d'appareil photo</translation>
 <translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -6874,7 +6876,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7758450972308449809">Ajustez les limites de votre affichage</translation>
 <translation id="7760004034676677601">Est-ce bien la page de démarrage à laquelle vous vous attendiez?</translation>
 <translation id="7762024824096060040">Impossible d'utiliser ce compte</translation>
-<translation id="7762463735017901568">La synchronisation des notifications est désactivée par l'administrateur de votre téléphone</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Pendant les essais, la réduction des pourriels et de la fraude utilise des jetons de confiance pour aider les sites à lutter contre la fraude ainsi qu'à distinguer les robots des personnes.</translation>

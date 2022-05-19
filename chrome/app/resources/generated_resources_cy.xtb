@@ -3286,6 +3286,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
         Gallwch reoli gosodiadau o'r ddewislen cardiau neu weld rhagor o ddewisiadau yn Personoleiddio Chrome.</translation>
 <translation id="4115002065223188701">Mae'r rhwydwaith yn rhy bell</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Caniatáu ar y wefan hon bob amser</translation>
 <translation id="4116704186509653070">Agor eto</translation>
 <translation id="4117637339509843559">Modd tywyll</translation>
 <translation id="4117714603282104018">Adborth haptig pad cyffwrdd</translation>
@@ -4069,7 +4070,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4907306957610201395">Categori Caniatâd</translation>
 <translation id="4908811072292128752">Agorwch dab newydd i bori dwy wefan ar yr un pryd</translation>
 <translation id="4909038193460299775">Oherwydd bod y cyfrif hwn yn cael ei reoli gan <ph name="DOMAIN" />, bydd eich nodau tudalen, eich hanes, eich cyfrineiriau, a'ch gosodiadau eraill yn cael eu clirio o'r ddyfais hon. Fodd bynnag, bydd eich data yn parhau i gael eu storio yn eich Cyfrif Google a gellir ei reoli yn <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Mae gweinyddwr eich ffôn wedi analluogi ffrydio apiau.</translation>
 <translation id="4912643508233590958">Deffro o Segur</translation>
 <translation id="4915961947098019832">Caniateir i ddangos lluniau</translation>
 <translation id="4916542008280060967">Caniatáu i'r wefan olygu <ph name="FILE_NAME" />?</translation>
@@ -6914,7 +6914,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7758450972308449809">Addasu ffiniau eich sgrîn</translation>
 <translation id="7760004034676677601">Ai hon yw'r dudalen gychwyn yr oeddech yn ei disgwyl?</translation>
 <translation id="7762024824096060040">Methu â defnyddio'r cyfrif hwn</translation>
-<translation id="7762463735017901568">Mae gweinyddwr eich ffôn wedi analluogi cysoni hysbysiadau</translation>
 <translation id="7764225426217299476">Ychwanegu cyfeiriad</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> gan <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Pan fydd treialon ymlaen, mae lleihau sothach a thwyll yn dibynnu ar docynnau ymddiriedaeth i helpu gwefannau i ymladd twyll a gwahaniaethu rhwng botiau a phobl.</translation>

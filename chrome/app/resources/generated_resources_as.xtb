@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">আপোনাৰ <ph name="BEGIN_LINK" /> Google একাউণ্ট<ph name="END_LINK" />ৰ পৰা পাছৱৰ্ডসমূহ দেখুওৱা হৈছে</translation>
 <translation id="1026655690966755180">প’ৰ্ট যোগ কৰক</translation>
 <translation id="1026822031284433028">প্ৰতিচ্ছবি ল’ড কৰক</translation>
+<translation id="1028700151766901954">কাৰণ: ডিফ’ল্ট হিচাপে <ph name="DEFAULT_OPEN_BROWSER" />ত LBS থাকে।</translation>
 <translation id="1029317248976101138">জুম কৰক</translation>
 <translation id="1031362278801463162">পূৰ্বদৰ্শন ল’ড কৰি থকা হৈছে</translation>
 <translation id="1032605640136438169">অনুগ্ৰহ কৰি নতুন চৰ্তাৱলী পৰ্যালোচনা কৰক</translation>
@@ -3279,6 +3280,7 @@
         আপুনি কাৰ্ড মেনুৰ পৰা ছেটিং পৰিচালনা কৰিব পাৰে অথবা Chrome কাষ্টমাইজ কৰকত অধিক বিকল্প চাব পাৰে।</translation>
 <translation id="4115002065223188701">নেটৱৰ্ক পৰিসৰৰ ভিতৰত নাই</translation>
 <translation id="4115378294792113321">মেজেণ্টা</translation>
+<translation id="4116663294526079822">এই ছাইটটোত সদায়েই অনুমতি দিয়ক</translation>
 <translation id="4116704186509653070">পুনৰ খোলক</translation>
 <translation id="4117637339509843559">গাঢ় ম’ড</translation>
 <translation id="4117714603282104018">টাচ্চপেড হেপটিক ফীডবেক</translation>
@@ -3360,6 +3362,7 @@
 <translation id="4209092469652827314">ডাঙৰ</translation>
 <translation id="4209251085232852247">অফ কৰা হ’ল</translation>
 <translation id="4210048056321123003">ভাৰ্ছুৱেল মেচিনটো ডাউনল’ড কৰি থকা হৈছে</translation>
+<translation id="4210380525132844778">কাৰণ: <ph name="RULE" />ক "<ph name="LIST_NAME" />" সূচীত পোৱা গৈছে।</translation>
 <translation id="421182450098841253">&amp;বুকমার্ক বাৰ দেখুৱাওক</translation>
 <translation id="4211851069413100178">ব্যৱহাৰ আৰু ডায়গন’ষ্টিক কৰা ডেটা পঠিয়াওক। Googleলৈ স্বয়ংক্ৰিয়ভাৱে ডায়গন’ষ্টিকৰ লগতে ডিভাইচ আৰু এপ্ ব্যৱহাৰৰ ডেটা পঠিয়াই আপোনাৰ Androidৰ অভিজ্ঞতা উন্নত কৰক। এই কার্যটোৱে ছিষ্টেম আৰু এপৰ স্থিৰতা আৰু অন্য উন্নয়নত সহায় কৰিব। কিছুমান ডেটাৰ সমষ্টিয়ে লগতে Google এপ্ আৰু অংশীদাৰ, যেনে Androidৰ বিকাশকর্তাকো সহায় কৰিব। এই <ph name="BEGIN_LINK1" />ছেটিংটো<ph name="END_LINK1" /> গৰাকীয়ে বলপূৰ্বকভাৱে বলৱৎ কৰিছে। গৰাকীজনে Googleলৈ ডাইগন‘ষ্টিক আৰু ব্যৱহাৰৰ ডেটা পঠিয়াবলৈ সিন্ধান্ত ল’ব পাৰে। যদি আপোনাৰ অতিৰিক্ত ৱেব আৰু এপ্‌ কাৰ্যকলাপ ছেটিংটো সক্ষম কৰা থাকে, তেন্তে এই ডেটা আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। <ph name="BEGIN_LINK2" />অধিক জানক<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Android এপৰ সৈতে ব্যৱহাৰ কৰাটো বন্ধ কৰক</translation>
@@ -4063,7 +4066,6 @@
 <translation id="4907306957610201395">অনুমতিৰ শ্ৰেণী</translation>
 <translation id="4908811072292128752">দুটা ছাইট একেলগে ব্ৰাউজ কৰিবলৈ এটা নতুন টেব খোলক</translation>
 <translation id="4909038193460299775">এই একাউণ্টটো <ph name="DOMAIN" />এ পৰিচালনা কৰে বাবে আপোনাৰ বুকমাৰ্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ এই ডিভাইচটোৰ পৰা মচা হ’ব। তথাপিও, আপোনাৰ ডেটাখিনি আপোনাৰ Google একাউণ্টত ষ্ট’ৰ হৈ থাকিব আৰু সেইখিনি <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />ত পৰিচালনা কৰিব পাৰি।</translation>
-<translation id="4912265719039610598">আপোনাৰ ফ’নৰ প্ৰশাসকে এপ্ ষ্ট্ৰীম কৰাটো অক্ষম কৰিছে।</translation>
 <translation id="4912643508233590958">নিষ্ক্রিয়ৰ পৰা সক্রিয় কৰা সংখ্যা</translation>
 <translation id="4915961947098019832">প্ৰতিচ্ছবি দেখুওৱাৰ অনুমতি আছে</translation>
 <translation id="4916542008280060967">ছাইটক <ph name="FILE_NAME" /> সম্পাদনা কৰিবলৈ দিবনে?</translation>
@@ -5189,6 +5191,7 @@
 <translation id="6063284707309177505">কিউআৰ ক’ড সৃষ্টি কৰক</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />টোকা:<ph name="END_BOLD" /> একেধৰণৰ কোনো কণ্ঠধ্বনি অথবা ৰেকৰ্ডিঙে <ph name="SUPERVISED_USER_NAME" />ৰ ব্যক্তিগত ফলাফল এক্সেছ কৰিবলৈ সক্ষম হ’ব পাৰে। আপুনি বেটাৰী ৰাহি কৰিবলৈ “Hey Google” সুবিধাটো এই ডিভাইচটো কোনো পাৱাৰ উৎসৰ সৈতে সংযুক্ত হ’লেহে অন হ’বলৈ <ph name="SUPERVISED_USER_NAME" />ৰ Assistantৰ ছেটিঙত বাছনি কৰিব পাৰে।</translation>
 <translation id="6064217302520318294">স্ক্ৰীণ লক</translation>
+<translation id="6065145031947216733">আপোনাৰ ব্ৰাউজিং পৃথক কৰিবনে?</translation>
 <translation id="6065289257230303064">প্ৰমাণপত্ৰৰ বিষয় নির্দেশক বৈশিষ্ট্য</translation>
 <translation id="6066794465984119824">প্ৰতিচ্ছবিৰ হেশ্ব ছেট কৰা হোৱা নাই</translation>
 <translation id="6069464830445383022">আপোনাৰ Chromebookত আপোনাৰ Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিব লাগিব</translation>
@@ -5267,6 +5270,7 @@
 <translation id="6129953537138746214">স্পেচ</translation>
 <translation id="6130692320435119637">ৱাই-ফাই যোগ দিয়ক</translation>
 <translation id="6130887916931372608">কীব’ৰ্ডৰ কী</translation>
+<translation id="6135823405800500595">আপোনাৰ ফ’নটো ওচৰত থকাটো, আনলক কৰি ৰখাটো আৰু ব্লুটুথ তথা ৱাই-ফাই অন কৰি ৰখাটো নিশ্চিত কৰক</translation>
 <translation id="6136114942382973861">ডাউনল’ডৰ বাৰডাল বন্ধ কৰক</translation>
 <translation id="6136287496450963112">আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবি এটা পিনৰ দ্বাৰা সুৰক্ষিত নহয়। ফিংগাৰপ্ৰিণ্ট পৰিচালনা কৰিবলৈ, প্ৰথমে এটা পিন সৃষ্টি কৰক।</translation>
 <translation id="6138680304137685902">SHA-384ৰ সৈতে X9.62 ECDSA স্বাক্ষৰ</translation>
@@ -6902,7 +6906,6 @@
 <translation id="7758450972308449809">আপোনাৰ ডিছপ্লে’ৰ সীমা মিলাওক</translation>
 <translation id="7760004034676677601">আপুনি এই পৃষ্ঠাটো আৰম্ভণিতে খোল খুৱাটো বিচাৰিছিলনে?</translation>
 <translation id="7762024824096060040">এই একাউণ্টটো ব্যৱহাৰ কৰিব নোৱাৰি</translation>
-<translation id="7762463735017901568">জাননী ছিংক কৰাটো আপোনাৰ ফ’নৰ প্ৰশাসকে অক্ষম কৰিছে</translation>
 <translation id="7764225426217299476">ঠিকনা যোগ কৰক</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />ৰপৰা <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764857504908700767">ট্ৰায়েল অন কৰা থাকিলে, ছাইটসমূহক প্ৰৱঞ্চনাৰ বিৰুদ্ধে যুঁজাত আৰু ব’টসমূহক ব্যক্তিৰ পৰা পৃথক কৰাত সহায় কৰিবলৈ স্পাম আৰু প্ৰৱঞ্চনা হ্ৰাসকৰণ সুবিধাটোৱে বিশ্বস্ত ট’কেনৰ ওপৰত নিৰ্ভৰ কৰে।</translation>
@@ -7102,6 +7105,7 @@
 <translation id="7947962633355574091">ভিডিঅ’ৰ ঠিকনা ক&amp;পি কৰক</translation>
 <translation id="7947964080535614577">ছাইটসমূহে সচৰাচৰ বিজ্ঞাপন দেখুৱায় গতিকে সেইসমূহে মাচুল অবিহনে সমল আৰু সেৱা প্ৰদান কৰিব পাৰে। কিন্তু, কিছুমান ছাইট অননুমোদিত অথবা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুওৱাৰ বাবে জনাজাত।</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />ৰ আটাইবোৰ পৃষ্ঠা</translation>
+<translation id="7950629216186736592">কাৰণ: LBSএ কেৱল http://, https:// আৰু file:// URL সমৰ্থন কৰে।</translation>
 <translation id="7951265006188088697">Google Pay পৰিশোধ পদ্ধতি যোগ কৰিবলৈ বা পৰিচালনা কৰিবলৈ আপোনাৰ <ph name="BEGIN_LINK" />Google একাউণ্ট<ph name="END_LINK" />-লৈ যাওক</translation>
 <translation id="795130320946928025">ভাৰ্চুৱেল কাৰ্ড অফ কৰক</translation>
 <translation id="7952708427581814389">ছাইটসমূহে আপোনাৰ ক্লিপব'ৰ্ড থকা পাঠ আৰু প্ৰতিচ্ছবিসমূহ চাবলৈ বিচাৰিব পাৰে</translation>
@@ -7645,6 +7649,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />এ ব্যৱহাৰ কৰা অজ্ঞাত ডিভাইচ</translation>
 <translation id="8481187309597259238">USBক অনুমতি প্ৰদান কৰাটো নিশ্চিত কৰক</translation>
 <translation id="8481980314595922412">ট্ৰায়েলৰ সুবিধা অন আছে</translation>
+<translation id="8486666913807228950">কাৰণ: ওলোটা নিয়মটো <ph name="REVERT_RULE" /> "জোৰ কৰি খোলক" সূচীখনত পোৱা গৈছে।</translation>
 <translation id="848666842773560761">এটা এপে কেমেৰাটো এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ কেমেৰাৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
 <translation id="8487678622945914333">জুম ইন কৰক</translation>
 <translation id="8489156414266187072">ব্যক্তিগত পৰামৰ্শসমূহ কেৱল আপোনাৰ একাউণ্টত দেখুওৱা হয়</translation>

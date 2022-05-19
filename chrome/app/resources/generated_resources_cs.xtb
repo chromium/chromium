@@ -3269,6 +3269,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
         Nastavení můžete spravovat v nabídce karty. Další možnosti zobrazíte v sekci Přizpůsobit Chrome.</translation>
 <translation id="4115002065223188701">Síť je mimo dosah</translation>
 <translation id="4115378294792113321">Purpurová</translation>
+<translation id="4116663294526079822">Povolit vždy na tomto webu</translation>
 <translation id="4116704186509653070">Otevřít znovu</translation>
 <translation id="4117637339509843559">Tmavý režim</translation>
 <translation id="4117714603282104018">Hmatová odezva touchpadu</translation>
@@ -3449,6 +3450,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4307992518367153382">Základy</translation>
 <translation id="4309165024397827958">Povolte aplikacím a službám pro Android s oprávněním pro přístup k poloze využívat polohu vašeho zařízení. Google může pravidelně shromažďovat údaje o poloze a anonymně je používat ke zlepšování přesnosti polohy a služeb založených na poloze.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB aktivních)</translation>
+<translation id="4310132194679586591">Vyberte aplikaci v zařízení k otevření tohoto odkazu</translation>
 <translation id="4310139701823742692">Soubor má nesprávný formát. Zkontrolujte soubor PPD a zkuste to znovu.</translation>
 <translation id="431076611119798497">&amp;Podrobnosti</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 účet Google}few{<ph name="EXTRA_ACCOUNTS" /> účty Google}many{<ph name="EXTRA_ACCOUNTS" /> účtu Google}other{<ph name="EXTRA_ACCOUNTS" /> účtů Google}}</translation>
@@ -3977,6 +3979,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4842976633412754305">Tato stránka se pokouší načíst skripty z neověřených zdrojů.</translation>
 <translation id="4844333629810439236">Jiné klávesnice</translation>
 <translation id="4844633725025837809">Za účelem zvýšení zabezpečení zašifrovat hesla v zařízení před uložením do Správce hesel Google</translation>
+<translation id="4846628405149428620">Vyberte, kam tento web může ukládat změny</translation>
 <translation id="4846680374085650406">Řídíte se doporučením administrátora pro toto nastavení.</translation>
 <translation id="4847902821209177679">Je vybrána možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, stisknutím klávesy Enter vyberete alba z: <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">Příkaz „Ok Google“ Asistenta Google</translation>
@@ -4051,7 +4054,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4907306957610201395">Kategorie oprávnění</translation>
 <translation id="4908811072292128752">Otevřete novou kartu a prohlížejte dvě webové stránky naráz</translation>
 <translation id="4909038193460299775">Protože je tento účet spravován doménou <ph name="DOMAIN" />, budou z tohoto zařízení vymazány vaše záložky, historie, hesla a další nastavení. Data však zůstanou uložená ve vašem účtu Google a lze je spravovat v <ph name="BEGIN_LINK" />Hlavním panelu Google<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Administrátor telefonu streamování aplikací zakázal.</translation>
 <translation id="4912643508233590958">Probuzení z nečinnosti</translation>
 <translation id="4915961947098019832">Povolení zobrazovat obrázky</translation>
 <translation id="4916542008280060967">Povolit webu upravovat soubor <ph name="FILE_NAME" />?</translation>
@@ -4679,6 +4681,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5554403733534868102">Žádná další upozornění na aktualizace</translation>
 <translation id="5554489410841842733">Tato ikona se zobrazí, když bude rozšíření moci provádět akce na aktuální stránce.</translation>
 <translation id="5554720593229208774">Certifikační autorita pro ověřování e-mailu</translation>
+<translation id="5554866693883022680">Vyberte aplikaci v zařízení <ph name="DEVICE_TYPE" /> k otevření tohoto odkazu</translation>
 <translation id="5555363196923735206">Přepnout fotoaparát</translation>
 <translation id="5555525474779371165">Zvolte si stupeň Bezpečného prohlížení</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
@@ -6890,7 +6893,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7758450972308449809">Úprava ohraničení zobrazení</translation>
 <translation id="7760004034676677601">Je toto počáteční stránka, kterou jste očekávali?</translation>
 <translation id="7762024824096060040">Tento účet nelze použít</translation>
-<translation id="7762463735017901568">Administrátor telefonu synchronizaci oznámení zakázal</translation>
 <translation id="7764225426217299476">Přidat adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> z <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Když jsou zapnuté zkušební verze, omezení spamu a podvodů závisí na tokenech důvěry, které webům pomáhají bojovat proti podvodům a odlišit lidi od robotů.</translation>

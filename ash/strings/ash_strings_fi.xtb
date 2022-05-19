@@ -134,6 +134,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1715293566947629045">Profiilia poistetaan käytöstä. Odota muutama minuutti.</translation>
 <translation id="1719094688023114093">Livetekstitys on päällä.</translation>
 <translation id="1720011244392820496">Laita Wi-Fin synkronointi päälle</translation>
+<translation id="1733996486177697563">Vaihda tumman ja vaalean teeman välillä. Kosketa työpöytää pitkään ja valitse Taustakuva ja tyyli.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" näkyy Bluetooth-laitteille.</translation>
 <translation id="174102739345480129">Piirtotyökalu ei ole päällä.</translation>
 <translation id="1743570585616704562">Ei tunnistettu</translation>
@@ -175,6 +176,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hei <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Tekstinsyöttö</translation>
+<translation id="1982717156487272186">Näytä edellinen viikko</translation>
 <translation id="1989113344093894667">Sisältöä ei voi tallentaa</translation>
 <translation id="1990046457226896323">Puhetiedostot ladattu</translation>
 <translation id="1993072747612765854">Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
@@ -262,6 +264,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ei ole yhdistettävissä</translation>
 <translation id="2575685495496069081">Useille tileille kirjautuminen on poistettu käytöstä</translation>
 <translation id="2582112259361606227">Päivitä käynnistämällä uudelleen</translation>
+<translation id="2586561057878260610"><ph name="DESK_NAME" /> yhdistetään, kun painat Ctrl + W. Sulje työpöytä ja ikkunat painamalla Ctrl + Shift + W.</translation>
 <translation id="2595239820337756193">5 km maileina</translation>
 <translation id="2596078834055697711">Ota kuvakaappaus</translation>
 <translation id="2607678425161541573">Edellyttää kirjautumista verkossa</translation>
@@ -621,6 +624,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, tähtiarvio <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Päivitä laite aiempaan versioon vuorokauden kuluessa}other{Päivitä laite aiempaan versioon # päivän kuluessa}}</translation>
 <translation id="4642092649622328492">Ota osittainen kuvakaappaus</translation>
+<translation id="4644727592819780893">Alue on liian pieni kameralle</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, sovellussuositus</translation>
 <translation id="4657775630156561295">Seuraava ehdotus poistetaan pysyvästi tilisi ehdotushistoriasta:
 
@@ -666,6 +670,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4917385247580444890">Vahva</translation>
 <translation id="4918086044614829423">Hyväksy</translation>
 <translation id="4925542575807923399">Tämän tilin järjestelmänvalvoja edellyttää, että tämä tili on ensimmäinen sisään kirjautuva tili useiden tilien istunnossa.</translation>
+<translation id="4938176435186993759">Piilota kaikki ehdotukset</translation>
 <translation id="4945196315133970626">Laita ilmoitukset pois päältä</translation>
 <translation id="4946376291507881335">Kuvakaappaus</translation>
 <translation id="495046168593986294">Vieritä ylös</translation>
@@ -732,6 +737,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5331975486040154427">C-tyypin USB-laite (vasemman sivun taaimmainen portti)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (oikea)</translation>
 <translation id="5352250171825660495">Tumma teema on päällä</translation>
+<translation id="5356963482258194581">Vaihda tumman ja vaalean teeman välillä. Klikkaa työpöytää kakkospainikkeella ja valitse Taustakuva ja tyyli.</translation>
 <translation id="5379115545237091094">Liian monta yritystä</translation>
 <translation id="5393156353051693207">Järjestele sovellukset uudelleen koskettamalla mitä tahansa kohtaa pitkään</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on sovelluksen <ph name="IN_PLACE_APP" /> päällä, päästä irti luodaksesi kansion.</translation>
@@ -753,6 +759,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5520229639206813572">Järjestelmänvalvojasi on poistanut kaikki eSim-profiilit. Pyydä lisätietoja järjestelmänvalvojalta.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> muodostaa yhteyttä.</translation>
 <translation id="5532994612895037630">Tallenna koko näytön sisältö napauttamalla mitä tahansa kohtaa</translation>
+<translation id="5536723544185013515">Viimeaikaiset sovellukset, siirry viimeaikaisiin sovelluksiin vasemmalla tai oikealla nuolinäppäimellä</translation>
 <translation id="553675580533261935">Käyttökerran lopettaminen</translation>
 <translation id="5537725057119320332">Suoratoista</translation>
 <translation id="554893713779400387">Laita sanelu päälle tai pois päältä</translation>
@@ -775,10 +782,12 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5673434351075758678">Muutos asetusten synkronoinnin yhteydessä: <ph name="FROM_LOCALE" /> – <ph name="TO_LOCALE" /></translation>
 <translation id="5675363643668471212">Hyllyn kohde</translation>
 <translation id="5677928146339483299">Estetty</translation>
+<translation id="5678564054339031017">Näytä seuraava viikko</translation>
 <translation id="5679050765726761783">Pienitehoinen sovitin liitetty</translation>
 <translation id="5682642926269496722">Google Assistantia ei voi käyttää nykyisellä käyttäjätilillä.</translation>
 <translation id="5689633613396158040">Yövalo helpottaa näytön katsomista ja lukemista hämärässä. Kosketa muuttaaksesi Yövalon syttymisaikaa tai poista se kokonaan käytöstä.</translation>
 <translation id="5691772641933328258">Sormenjälkeä ei tunnistettu</translation>
+<translation id="570390244361237317">Kaikki sovellukset, siirry sovellusten välillä nuolinäppämillä</translation>
 <translation id="5707775774148071965">Laitteesi tukee nopeampaa tiedosiirtoa kuin johto. Laitteen toiminta voi olla rajoitettua.</translation>
 <translation id="5710450975648804523">Älä häiritse -tila on päällä</translation>
 <translation id="571295407079589142">Mobiilidata on poissa päältä</translation>

@@ -3284,6 +3284,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
         Puwede mong pamahalaan ang mga setting mula sa menu ng card o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
 <translation id="4115002065223188701">Hindi nasasagap ang network</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Palaging payagan sa site na ito</translation>
 <translation id="4116704186509653070">Buksan ulit</translation>
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4117714603282104018">Haptic na feedback sa touchpad</translation>
@@ -4067,7 +4068,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4907306957610201395">Kategorya ng Pahintulot</translation>
 <translation id="4908811072292128752">Magbukas ng bagong tab upang mag-browse ng dalawang site nang sabay</translation>
 <translation id="4909038193460299775">Dahil pinamamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear sa device na ito ang iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store ang data mo sa iyong Google Account at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Na-disable ang streaming ng mga app ng iyong administrator ng telepono.</translation>
 <translation id="4912643508233590958">Mga Idle na Pag-wake Up</translation>
 <translation id="4915961947098019832">Pinapayagang magpakita ng mga larawan</translation>
 <translation id="4916542008280060967">Payagan ang site na i-edit ang <ph name="FILE_NAME" />?</translation>
@@ -6906,7 +6906,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7758450972308449809">Isaayos ang mga hangganan ng iyong display</translation>
 <translation id="7760004034676677601">Ito ba ang inaasahan mong pahina sa pagsisimula?</translation>
 <translation id="7762024824096060040">Hindi magagamit ang account na ito</translation>
-<translation id="7762463735017901568">Na-disable ng administrator ng iyong telepono ang pag-sync ng notification</translation>
 <translation id="7764225426217299476">Magdagdag ng address</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> mula sa <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Kapag naka-on ang mga trial, umaasa ang pagbawas ng spam at panloloko sa mga trust token para matulungan ang mga site na labanan ang panloloko at matukoy ang mga bot kumpara sa mga tao.</translation>

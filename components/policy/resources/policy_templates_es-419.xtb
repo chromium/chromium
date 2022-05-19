@@ -433,6 +433,18 @@ Si habilitas o no configuras esta política, se habilitará el desplazamiento de
 
 Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragmentos de texto específicos mediante la URL.</translation>
 <translation id="1474273443907024088">Inhabilitar TLS False Start</translation>
+<translation id="1476128579011024193">
+      Si estableces esta política como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, luego de acceder a una cuenta administrada sujeta a esta política, se le solicitará al usuario crear un perfil nuevo para la cuenta.
+      Si estableces esta política como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, luego de acceder a una cuenta administrada sujeta a esta política, se le solicitará al usuario crear un perfil nuevo para la cuenta con la opción de guardar todos los datos de navegación existentes. Esta opción es compatible con Chrome 102 y versiones posteriores.
+
+      Si estableces esta política como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, luego de acceder a una cuenta administrada sujeta a esta política, se le solicitará al usuario crear un perfil nuevo para la cuenta. Este perfil no permitirá cuentas secundarias.
+      Si estableces esta política como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, luego de acceder a una cuenta administrada sujeta a esta política, se le solicitará al usuario crear un perfil nuevo para la cuenta con la opción de guardar todos los datos de navegación existentes. Este perfil no permitirá cuentas secundarias. Esta opción es compatible con Chrome 102 y versiones posteriores.
+
+      Si estableces esta política como <ph name="POLICY_VALUE_NONE" /> o no la estableces, las cuentas administradas no tendrán restricciones. Así, una cuenta administrada podrá ser secundaria, en cuyo caso no recibirá las políticas que establezca el administrador en la cuenta.
+
+      Si estableces esta política al nivel del dispositivo, todas las cuentas del navegador están sujetas a la política.
+      Si estableces esta política al nivel de una cuenta, solo esa cuenta estará afectada en el navegador.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Si estableces la política, se definirá la lista de dispositivos USB que el usuario puede desconectar del controlador de kernel para usarlos a través de la API chrome.usb directamente en una aplicación web. Las entradas son pares formados por el identificador del producto y del proveedor USB que permiten reconocer un hardware específico.
 
@@ -4401,6 +4413,37 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si estableces la política como falsa o no la estableces, no se permitirá que <ph name="PLUGIN_VM_NAME" /> recopile datos.
       Si la estableces como verdadera, <ph name="PLUGIN_VM_NAME" /> podrá recopilar datos de uso de <ph name="PLUGIN_VM_NAME" />, que luego se combinarán y analizarán de forma exhaustiva para mejorar la experiencia en la utilización de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5874896145772824604">Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de los conjuntos propios.
+
+      Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
+      Un conjunto propio consiste en un propietario y uno o más sitios miembro. Todos los sitios de un conjunto propio deben
+      ser un dominio registrable de HTTPS, sin importar si es un sitio miembro o propietario.
+      Además, cada sitio en un conjunto propio debe ser único, lo que quiere decir que un sitio no puede ser propietario y miembro, ni
+      estar enumerado más de una vez como miembro de un conjunto propio.
+      Para obtener más información sobre los conjuntos propios, ve a https://github.com/privacycg/first-party-sets.
+
+      Cuando se proporciona un diccionario vacío a la política, el navegador utiliza la lista pública de conjuntos propios.
+
+      Para todos los sitios de un conjunto propio de la lista <ph name="REPLACEMENTS" />, si el sitio también está
+      en un conjunto propio de la lista del navegador, ese sitio se quitará del conjunto propio del navegador.
+      Luego de esto, el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
+
+      Para todos los sitios pertenecientes a un conjunto propio de la lista <ph name="ADDITIONS" />, si el sitio también está
+      en un conjunto propio de la lista del navegador, el conjunto propio del navegador se actualizará para que
+      el nuevo conjunto propio pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
+      el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
+
+      La lista de conjuntos propios del navegador requiere que ningún sitio de la lista esté en
+      más de un conjunto. También se requiere para las listas <ph name="REPLACEMENTS" />
+      y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
+      las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />.
+
+      Los comodines (*) no se admiten como valor de la política, ni en ningún conjunto propio en estas listas.
+
+      Todos los conjuntos que brinda esta política deben ser conjuntos propios válidos. De lo contrario, se
+      producirá un error.
+
+      Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" />, en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, o en instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="5875873062228321803">Configura el requisito de la versión mínima permitida de <ph name="PRODUCT_OS_NAME" />.
 
       Cuando se configura esta política con una lista no vacía:

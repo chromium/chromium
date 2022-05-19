@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Misstänkt infångstportal</translation>
 <translation id="1290331692326790741">svag signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Aktivera skrivskydd</translation>
 <translation id="1308754910631152188">Uppdaterar (<ph name="PERCENTAGE_VALUE" /> % klart)</translation>
 <translation id="1310380015393971138">Det finns inget tillgängligt <ph name="NETWORK_NAME" />-nätverk</translation>
 <translation id="131421566576084655">Inget datum för senaste dataåterställning är tillgängligt</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Hemnätverk, ingen roaming</translation>
+<translation id="132712914231403017">Installera firmwareavbild</translation>
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1328223165223065150">Bakgrundsfärg</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Dokumentmatare (ensidig)</translation>
 <translation id="1643449475550628585">Byt bakgrundsbild varje dag</translation>
 <translation id="1644574205037202324">Historik</translation>
+<translation id="1645954272419197032">Bekräfta enhetsinformation</translation>
 <translation id="1662989795263954667">Har stoppats – slut på bläck</translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Anslutning</translation>
 <translation id="2008685064673031089">Primtalssökning</translation>
 <translation id="2016697457005847575">Testa felsökningsstegen</translation>
+<translation id="2016848882344942759">–ingen vit etikett–</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2085089206770112532">Tangenten som minskar skärmens ljusstyrka</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Schema för mörkt läge</translation>
 <translation id="2275586345903859204">Reparationen är klar</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Sätt i en extern lagringsenhet, till exempel en USB-enhet eller ett SD-kort med den nedladdade avbildningen för återställningsverktyget för Chromebook</translation>
 <translation id="2307344026739914387">Använd nuvarande nyckelpar</translation>
 <translation id="2320295602967756579">Aktivera ljust tema</translation>
 <translation id="2323506179655536734">HOPPADES ÖVER</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS-autentiseringsnyckel</translation>
 <translation id="2713444072780614174">Vit</translation>
 <translation id="2717139507051041123">Aktivera mörkt färgläge</translation>
+<translation id="2727250716596204208">Det gick inte att hitta firmwareavbilden. Sätt i en extern lagringsenhet, till exempel en USB-enhet eller ett SD-kort med den nedladdade avbilden för Återställningsverktyget för Chromebook.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
 <translation id="2756652381241102009">Kör diagnostik</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Enheten är ansluten.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vill du ta bort sidan?}=1{Vill du ta bort sidan {PAGE_NUMBER}?}other{Vill du ta bort sidan {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Administrerar enheten …</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3156846309055100599">Skannar sidan <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
+<translation id="3383751554789092165">Ändra enhetsinformation efter behov.</translation>
 <translation id="3404249063913988450">Aktivera skärmsläckare</translation>
 <translation id="3404770484521709967">Komponenterna har installerats korrekt.</translation>
 <translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Ej ansluten</translation>
 <translation id="3749289110408117711">Filnamn</translation>
 <translation id="3771294271822695279">Videofiler</translation>
+<translation id="3774059845329307709">Serienummer</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="4561801978359312462">SIM-kortet är upplåst</translation>
 <translation id="4562494484721939086">Ingen täckning</translation>
+<translation id="4568938274596692027">Installationen är slutförd. Förbereder omstart …</translation>
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Batterinivån för vänster hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4908030561598728899">Installerar firmware …</translation>
 <translation id="4915052247106771211">Det här återställer enheten till standardinställningarna (Powerwash).</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4917889632206600977">Har stoppats – slut på papper</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Inställningar för snabbinfo</translation>
 <translation id="5168185087976003268">Batterinivå</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
+<translation id="5179530508336824319">Aktivera skrivskydd för att fortsätta till nästa skärm. Du hittar anvisningar på enhetstillverkarens supportsida.</translation>
 <translation id="5190187232518914472">Återupplev dina favoritminnen. Öppna <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" /> om du vill lägga till eller redigera album.</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
 Tryck på mikrofonen och fråga om något.</translation>
@@ -615,8 +627,10 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
 <translation id="680983167891198932">Nyckel</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
+<translation id="6822504384524564824">SKU:er bör endast ändras om de nya komponenterna skiljer sig från de som dem ersätter. Exempelvis en pekskärm som ersätter en skärm utan pekfunktion eller ett minne som uppgraderas från 8 GB till 16 GB.</translation>
 <translation id="6840315122969944400">Reparation av <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Urladdningshastighet</translation>
+<translation id="6876833053687020046">DRAM-artikelnummer</translation>
 <translation id="6889786074662672253">Koppla inte från den externa enheten och stäng inte av datorn medan enheten startas om. Du kan minimera fönstret. Detta kan ta en stund och den externa enheten kanske inte fungerar under tiden.</translation>
 <translation id="6905724422583748843">Tillbaka till <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skannerns lucka är öppen. Stäng luckan och försök igen.</translation>
@@ -664,6 +678,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
 <translation id="7359657277149375382">Filtyp</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Ändra skärmsläckare</translation>
 <translation id="7397270852490618635">Inaktivera ljust tema</translation>
 <translation id="741244894080940828">Räkna om</translation>
@@ -763,6 +778,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8364946094152050673">Inga namnservrar har angetts</translation>
 <translation id="8372477600026034341">Ytterligare värdar</translation>
 <translation id="8378855320830505539">Område</translation>
+<translation id="8382302752385457774">Vitskyltning</translation>
 <translation id="8395584934117017006">Denna <ph name="DEVICE_TYPE" /> är företagshanterad</translation>
 <translation id="8398927464629426868">Hur fort enheten laddas eller laddas ur för närvarande</translation>
 <translation id="8422748173858722634">IMEI</translation>

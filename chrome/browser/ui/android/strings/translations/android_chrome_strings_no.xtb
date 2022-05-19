@@ -188,7 +188,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="1995884366040846621">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet. Se nettstedets <ph name="BEGIN_LINK1" />personvernregler<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
 <translation id="200114059308480249">Vil du inkludere omliggende tekst i Google-søk?</translation>
-<translation id="2011996512573319870">Synkroniser for å få det mest relevante innholdet fra Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
 <translation id="2020309681647789787">Du får loggen din på alle synkroniserte enheter, slik at du kan fortsette med det du holdt på med</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
@@ -272,7 +271,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2461822463642141190">Nåværende</translation>
 <translation id="2472163211318554013">Logg på for å få mest mulig ut av Chrome</translation>
 <translation id="247737702124049222">Bildebeskrivelser er på</translation>
-<translation id="2481251096908459228">Se nyhetssaker for deg</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
 <translation id="2494974097748878569">Google-assistenten i Chrome</translation>
@@ -314,7 +312,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}other{# lydfiler}}</translation>
 <translation id="265156376773362237">Standard forhåndslasting</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
-<translation id="2700802943130197326">Synkroniser for å få passordene dine, bokmerkene dine med mer på alle andre enheter du bruker.</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2707726405694321444">Last inn siden på nytt</translation>

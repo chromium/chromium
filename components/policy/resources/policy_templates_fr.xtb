@@ -428,6 +428,18 @@ Si vous activez cette règle ou ne la configurez pas, le défilement des pages W
 
 Si vous la désactivez, le défilement des pages Web vers des fragments de texte spécifiques via URL sera désactivé.</translation>
 <translation id="1474273443907024088">Désactiver TLS False Start</translation>
+<translation id="1476128579011024193">
+      Si cette règle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, après une connexion à un compte géré soumis à cette règle, l'utilisateur sera invité à créer un nouveau profil pour ce compte.
+      Si cette règle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, après une connexion à un compte géré soumis à cette règle, l'utilisateur sera invité à créer un nouveau profil pour ce compte et aura la possibilité de conserver ses données de navigation existantes. Cette option est disponible à partir de la version 102 de Chrome.
+
+      Si cette règle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, après une connexion à un compte géré soumis à cette règle, l'utilisateur sera invité à créer un nouveau profil pour ce compte. Ce profil n'autorisera aucun compte secondaire.
+      Si cette règle est définie sur <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, après une connexion à un compte géré soumis à cette règle, l'utilisateur sera invité à créer un nouveau profil pour ce compte et aura la possibilité de conserver ses données de navigation existantes. Ce profil n'autorisera aucun compte secondaire. Cette option est disponible à partir de la version 102 de Chrome.
+
+      Si elle est définie sur <ph name="POLICY_VALUE_NONE" /> ou si elle n'est pas configurée, il n'y aura aucune restriction pour les comptes gérés. Il sera donc possible qu'un compte géré soit un compte secondaire, ce qui l'empêchera de recevoir des règles définies sur le compte par l'administrateur.
+
+      Si cette règle est définie au niveau de l'appareil, tous les comptes du navigateur y seront soumis.
+      Si cette règle est définie au niveau d'un compte, seul ce compte sera affecté dans le navigateur.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Permet d'établir la liste des appareils USB que les utilisateurs peuvent dissocier de leur pilote de noyau pour les employer via l'API chrome.usb directement au sein d'une application Web. Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un identifiant produit associé à un appareil spécifique.
 
@@ -4379,6 +4391,29 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si la règle est définie sur "false" ou n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas autorisé à collecter les données.
       Si elle est définie sur "true", <ph name="PLUGIN_VM_NAME" /> peut collecter les données d'utilisation de <ph name="PLUGIN_VM_NAME" />. Elles sont ensuite combinées et analysées en détail afin d'améliorer l'expérience des utilisateurs de <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5874896145772824604">Cette règle permet de remplacer la liste des ensembles que le navigateur utilise pour les fonctionnalités liées aux ensembles internes.
+
+      Chaque ensemble figurant dans la liste des ensembles internes du navigateur doit respecter les exigences liées aux ensembles internes.
+      Un ensemble interne se compose d'un propriétaire et d'un ou plusieurs sites membres. Tous les sites d'un tel ensemble doivent être
+      des domaines enregistrables diffusés sur HTTPS, qu'il s'agisse de propriétaires ou de sites membres.
+      Chaque site d'un ensemble interne doit également être unique. Cela signifie qu'un site ne peut pas être à la fois un propriétaire et un membre,
+      ni être listé plusieurs fois en tant que membre d'un ensemble interne.
+      Pour en savoir plus sur les ensembles internes, consultez la page https://github.com/privacycg/first-party-sets.
+
+      Lorsqu'un dictionnaire vide est attribué à cette règle, le navigateur utilise la liste publique des ensembles internes.
+
+      Pour tous les sites appartenant à un ensemble interne de la liste <ph name="REPLACEMENTS" /> : si un site apparaît également dans un ensemble interne de la liste du navigateur, il sera supprimé de l'ensemble interne du navigateur.
+      L'ensemble interne de la règle sera alors ajouté à la liste des ensembles internes du navigateur.
+
+      Pour tous les sites appartenant à un ensemble interne de la liste <ph name="ADDITIONS" /> : si un site apparaît également dans un ensemble interne de la liste du navigateur, l'ensemble interne du navigateur est alors mis à jour afin de pouvoir ajouter le nouvel ensemble interne à la liste du navigateur. Lorsque la liste du navigateur a été actualisée, l'ensemble interne de la règle est alors ajouté à la liste des ensembles internes du navigateur.
+
+      La liste des ensembles internes du navigateur impose qu'aucun site qui y figure ne se trouve dans plusieurs ensembles. Cette condition est également requise pour la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />. De la même manière, un site ne peut pas figurer à la fois sur la liste <ph name="REPLACEMENTS" /> et la liste <ph name="ADDITIONS" />.
+
+      Le caractère générique (*) ne peut pas être utilisé comme valeur de la règle, ni dans aucun ensemble interne de ces listes.
+
+      Tous les ensembles fournis par cette règle doivent être des ensembles internes valides. Si ce n'est pas le cas, une erreur est renvoyée.
+
+      Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise pour lesquelles la gestion des appareils est activée, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="5875873062228321803">Permet de configurer la version minimale autorisée requise de <ph name="PRODUCT_OS_NAME" />.
 
       Lorsque cette règle est définie sur des entrées de la liste :

@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Kahtlustatakse hõiveportaali</translation>
 <translation id="1290331692326790741">Nõrk signaal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Kirjutuskaitse sisselülitamine</translation>
 <translation id="1308754910631152188">Värskendamine (<ph name="PERCENTAGE_VALUE" />% lõpetatud)</translation>
 <translation id="1310380015393971138">Ühtegi <ph name="NETWORK_NAME" />-võrku pole saadaval</translation>
 <translation id="131421566576084655">Viimase andmekasutuse lähtestamise kuupäev ei ole saadaval</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Kiirvastuste seaded</translation>
 <translation id="5168185087976003268">Aku seisukord</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
+<translation id="5179530508336824319">Järgmisele ekraanikuvale minemiseks lubage kirjutuskaitse. Vaadake juhiseid seadme tootja toelehelt.</translation>
 <translation id="5190187232518914472">Taaselustage oma lemmikmälestused. Albumite lisamiseks või muutmiseks avage rakendus <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ma ei leia teie ekraanilt midagi, mille puhul saaksin aidata.
 Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>

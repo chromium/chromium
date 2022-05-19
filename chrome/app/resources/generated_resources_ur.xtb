@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">‏آپ کے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> سے پاس ورڈز کو دکھایا جا رہا ہے</translation>
 <translation id="1026655690966755180">پورٹ شامل کریں</translation>
 <translation id="1026822031284433028">تصویر لوڈ کریں</translation>
+<translation id="1028700151766901954">‏وجہ: LBS بطور ڈیفالٹ <ph name="DEFAULT_OPEN_BROWSER" /> میں رہتا ہے۔</translation>
 <translation id="1029317248976101138">زوم کریں</translation>
 <translation id="1031362278801463162">پیش منظر لوڈ کیا جا رہا ہے</translation>
 <translation id="1032605640136438169">براہ کرم نئی شرائط کا جائزہ لیں</translation>
@@ -3269,6 +3270,7 @@
         آپ کارڈ مینو سے ترتیبات کا نظم کر سکتے یا Chrome کو حسب ضرورت بنائیں میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="4115002065223188701">نیٹ ورک رینج سے باہر ہے</translation>
 <translation id="4115378294792113321">میجنٹا</translation>
+<translation id="4116663294526079822">ہمیشہ اس سائٹ پر اجازت دیں</translation>
 <translation id="4116704186509653070">دوبارہ کھولیں</translation>
 <translation id="4117637339509843559">تاریک وضع</translation>
 <translation id="4117714603282104018">تاثرات بذریعہ تھپتھپاہٹ کا ٹچ پیڈ</translation>
@@ -3350,6 +3352,7 @@
 <translation id="4209092469652827314">بڑا</translation>
 <translation id="4209251085232852247">آف ہے</translation>
 <translation id="4210048056321123003">ورچوئل مشین ڈاؤن لوڈ ہو رہی ہے</translation>
+<translation id="4210380525132844778">وجہ: "<ph name="LIST_NAME" />" کی فہرست میں <ph name="RULE" /> پایا گیا۔</translation>
 <translation id="421182450098841253">بُک مارکس بار &amp;دکھائیں</translation>
 <translation id="4211851069413100178">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنا Android تجربہ بہتر بنانے میں مدد کریں۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ مالک Google کو اس آلہ کیلئے ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجنے کا انتخاب کر سکتا ہے۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">‏Android ایپس کے ساتھ استعمال کرنا بند کریں</translation>
@@ -4051,7 +4054,6 @@
 <translation id="4907306957610201395">اجازت کا زمرہ</translation>
 <translation id="4908811072292128752">ایک بار میں دو سائٹس کو براؤز کرنے کے لئے ایک نیا ٹیب کھولیں</translation>
 <translation id="4909038193460299775">‏چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے،  لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔ البتہ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا اور اس کا <ph name="BEGIN_LINK" />Google ڈیش بورڈ<ph name="END_LINK" /> پر نظم کیا جا سکتا ہے۔</translation>
-<translation id="4912265719039610598">آپ کے فون کے منتظم نے ایپ کی سلسلہ بندی کو غیر فعال کر دیا ہے۔</translation>
 <translation id="4912643508233590958">معطل ویک اپس</translation>
 <translation id="4915961947098019832">تصاویر دکھانے کی اجازت ہے</translation>
 <translation id="4916542008280060967">سائٹ کو <ph name="FILE_NAME" /> کی ترمیم کرنے دیں؟</translation>
@@ -5176,6 +5178,7 @@
 <translation id="6063284707309177505">‏QR کوڈ تخلیق کریں</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />نوٹ:<ph name="END_BOLD" /> ایک ملتی جلتی آواز یا ریکارڈنگ سے <ph name="SUPERVISED_USER_NAME" /> کے ذاتی نتائج تک رسائی حاصل کی جا سکتی ہے۔ بیٹری بچانے کے لیے، آپ <ph name="SUPERVISED_USER_NAME" /> کی اسسٹنٹ کی ترتیبات میں صرف اس آلے کے پاور کے ماخذ سے منسلک ہونے پر ہی "Ok Google" کے آن ہونے کا انتخاب کر سکتے ہیں۔</translation>
 <translation id="6064217302520318294">اسکرین لاک</translation>
+<translation id="6065145031947216733">اپنی براؤزنگ کو الگ کریں؟</translation>
 <translation id="6065289257230303064">سرٹیفیکیٹ موضوع ڈائریکٹری انتسابات</translation>
 <translation id="6066794465984119824">تصویری ہیش سیٹ نہیں ہے</translation>
 <translation id="6069464830445383022">‏آپ کا Google اکاؤنٹ آپ کا Chromebook سائن ان ہے</translation>
@@ -5254,6 +5257,7 @@
 <translation id="6129953537138746214">اسپیس</translation>
 <translation id="6130692320435119637">‏Wi-Fi شامل کریں</translation>
 <translation id="6130887916931372608">کی بورڈ کی کلید</translation>
+<translation id="6135823405800500595">‏یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے، اور بلوٹوتھ اور Wi-Fi آن ہیں</translation>
 <translation id="6136114942382973861">ڈاؤن لوڈز بار بند کریں</translation>
 <translation id="6136287496450963112">‏آپ کی سیکیورٹی کلید PIN کے ذریعے محفوظ نہیں ہے۔ فنگر پرنٹس کا نظم کرنے کیلئے، پہلے ایک PIN تخلیق کریں۔</translation>
 <translation id="6138680304137685902">‏SHA-384 کے ساتھ X9.62 ECDSA دستخط</translation>
@@ -6887,7 +6891,6 @@
 <translation id="7758450972308449809">اپنے ڈسپلے کی حدود کو ایڈجسٹ کریں</translation>
 <translation id="7760004034676677601">کیا یہی وہ ابتدائی صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="7762024824096060040">یہ اکاؤنٹ استعمال نہیں کیا جا سکتا</translation>
-<translation id="7762463735017901568">اطلاع کی مطابقت پذیری کو آپ کے فون کے منتظم نے بند کر دیا ہے</translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> سے <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764857504908700767">ٹرائلز کے آن ہونے پر، اسپام اور دھوکہ دہی میں تخفیف سائٹس کو دھوکہ دہی سے لڑنے اور بوٹس کو لوگوں سے ممتاز کرنے میں مدد کرنے کے لیے ٹرسٹ ٹوکنز پر انحصار کرتی ہے۔</translation>
@@ -7087,6 +7090,7 @@
 <translation id="7947962633355574091">ویڈیو پتہ کا&amp;پی کریں</translation>
 <translation id="7947964080535614577">سائٹس عام طور پر اشتہارات دکھاتی ہیں تاکہ وہ بغیر کسی چارج کے مواد یا سروسز فراہم کر سکیں۔ لیکن کچھ سائٹس دخل انداز یا گمراہ کن اشتہارات دکھانے کے لیے جانی جاتی ہیں۔</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> کے سبھی صفحات</translation>
+<translation id="7950629216186736592">‏وجہ: LBS صرف http://‎‏ِ، https://‎، اور file://‎ والے URLs کو سپورٹ کرتا ہے۔</translation>
 <translation id="7951265006188088697">‏Google Pay کے ادائیگی کے طریقے شامل کرنے یا ان کا نظم کرنے کے لئے اپنا <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> ملاحظہ کریں</translation>
 <translation id="795130320946928025">ورچوئل کارڈ آف کریں</translation>
 <translation id="7952708427581814389">سائٹس آپ کے کلپ بورڈ پر ٹیکسٹ اور تصاویر دیکھنے کے لیے پوچھ سکتی ہیں</translation>
@@ -7630,6 +7634,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> کا نامعلوم آلہ</translation>
 <translation id="8481187309597259238">‏USB کی اجازت کی تصدیق کریں</translation>
 <translation id="8481980314595922412">ٹرائل خصوصیات آن ہیں</translation>
+<translation id="8486666913807228950">وجہ: "اسے زبردستی کھولیں" کی فہرست میں معکوس اصول <ph name="REVERT_RULE" /> پایا گیا۔</translation>
 <translation id="848666842773560761">ایک ایپ کیمرے تک رسائی حاصل کرنے کی کوشش کر رہی ہے۔ رسائی کی اجازت دینے کیلئے کیمرا کی رازداری کا سوئچ آف کریں۔</translation>
 <translation id="8487678622945914333">زوم ان</translation>
 <translation id="8489156414266187072">ذاتی تجاویز صرف آپ کے اکاؤنٹ پر دکھائی جاتی ہیں</translation>

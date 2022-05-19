@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">ກຳລັງສະແດງລະຫັດຜ່ານຈາກ <ph name="BEGIN_LINK" />ບັນຊີ Google<ph name="END_LINK" /> ຂອງທ່ານ</translation>
 <translation id="1026655690966755180">ເພີ່ມຜອດ</translation>
 <translation id="1026822031284433028">ໂຫຼດ​ຮູບ</translation>
+<translation id="1028700151766901954">ເຫດຜົນ: LBS ຢູ່ໃນ <ph name="DEFAULT_OPEN_BROWSER" /> ຕາມຄ່າເລີ່ມຕົ້ນ.</translation>
 <translation id="1029317248976101138">ຊູມ</translation>
 <translation id="1031362278801463162">ກໍາລັງໂຫຼດການເບິ່ງຕົວຢ່າງກ່ອນ</translation>
 <translation id="1032605640136438169">ກະລຸນາກວດເບິ່ງຂໍ້ກຳນົດໃໝ່</translation>
@@ -3282,6 +3283,7 @@
         ທ່ານສາມາດຈັດການການຕັ້ງຄ່າໄດ້ຈາກເມນູບັດ ຫຼື ເບິ່ງຕົວເລືອກເພີ່ມເຕີມໄດ້ໃນປັບແຕ່ງ Chrome.</translation>
 <translation id="4115002065223188701">ຢູ່ນອກເຂດສັນຍານເຄືອຂ່າຍ</translation>
 <translation id="4115378294792113321">ສີແດງມ່ວງ</translation>
+<translation id="4116663294526079822">ອະນຸຍາດໃຫ້ຢູ່ໃນເວັບໄຊທ໌ນີ້ທຸກຄັ້ງ</translation>
 <translation id="4116704186509653070">ເປີດອີກເທື່ອໜຶ່ງ</translation>
 <translation id="4117637339509843559">ໂໝດມືດ</translation>
 <translation id="4117714603282104018">ການຕອບສະໜອງສຳຜັດຂອງແຜ່ນສໍາຜັດ</translation>
@@ -3363,6 +3365,7 @@
 <translation id="4209092469652827314">​ໃຫຍ່</translation>
 <translation id="4209251085232852247">ປິດແລ້ວ</translation>
 <translation id="4210048056321123003">ກຳລັງດາວໂຫຼດເຄື່ອງຈຳລອງສະເໝືອນຈິງ</translation>
+<translation id="4210380525132844778">ເຫດຜົນ: ພົບ <ph name="RULE" /> ໃນລາຍຊື່ "<ph name="LIST_NAME" />".</translation>
 <translation id="421182450098841253">ສະແດງແຖບບຸກມາກສ໌</translation>
 <translation id="4211851069413100178">ສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິເຄາະ. ຊ່ວຍປັບປຸງປະສົບການ Android ຂອງທ່ານໂດຍການສົ່ງຂໍ້ມູນການວິເຄາະ, ຂໍ້ມູນອຸປະກອນ ແລະ ການໃຊ້ແອັບໃຫ້ Google ໂດຍອັດຕະໂນມັດ. ນີ້ຈະຊ່ວຍປັບປຸງຄວາມສະຖຽນຂອງລະບົບ ແລະ ແອັບ ແລະ ການປັບປຸງອື່ນໆ. ບາງຂໍ້ມູນແບບຮວມກັນຍັງຈະຊ່ວຍແອັບ ແລະ ຮຸ້ນສ່ວນຂອງ Google ນຳອີກ ເຊັ່ນ: ຜູ້ພັດທະນາ Android. ເຈົ້າຂອງບັງຄັບໃຊ້ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ<ph name="END_LINK1" /> ນີ້. ເຈົ້າຂອງອາດຈະເລືອກສົ່ງຂໍ້ມູນການວິເຄາະ ແລະ ການໃຊ້ສຳລັບອຸປະກອນນີ້ໃຫ້ Google ກໍໄດ້. ຖ້າເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມຂອງທ່ານ, ລະບົບອາດຈະບັນທຶກຂໍ້ມູນນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ. <ph name="BEGIN_LINK2" />ສຶກສາ​ເພີ່ມ​ເຕີມ<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">ຢຸດການໃຊ້ກັບແອັບ Android</translation>
@@ -3461,6 +3464,7 @@
 <translation id="4307992518367153382">ພື້ນ​ຖານ</translation>
 <translation id="4309165024397827958">ອະນຸຍາດໃຫ້ແອັບ ແລະ ບໍລິການ Android ຕ່າງໆທີ່ມີການອະນຸຍາດສະຖານທີ່ສາມາດໃຊ້ສະຖານທີ່ຂອງອຸປະກອນທ່ານໄດ້. Google ອາດເກັບກຳຂໍ້ມູນສະຖານທີ່ເປັນໄລຍະໆ ແລະ ໃຊ້ຂໍ້ມູນນີ້ໃນແບບບໍ່ລະບຸຕົວຕົນເພື່ອປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ບໍລິການທີ່ອ້າງອີງສະຖານທີ່.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K ສົດ)</translation>
+<translation id="4310132194679586591">ເລືອກແອັບໃດໜຶ່ງຢູ່ອຸປະກອນຂອງທ່ານເພື່ອເປີດລິ້ງນີ້</translation>
 <translation id="4310139701823742692">ໄຟລ໌ມີຮູບແບບບໍ່ຖືກຕ້ອງ. ກະລຸນາກວດເບິ່ງໄຟລ໌ PPD ແລະ ລອງອີກຄັ້ງ.</translation>
 <translation id="431076611119798497">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{ບັນຊີ Google 1 ບັນຊີ}other{ບັນຊີ Google <ph name="EXTRA_ACCOUNTS" /> ບັນຊີ}}</translation>
@@ -3990,6 +3994,7 @@
 <translation id="4842976633412754305">ໜ້າ​ນີ້​ພະ​ຍາ​ຍາມ​ໂຫຼດ​ໜັງ​ສື​ຂຽນ​ຈາກ​ແຫຼ່ງ​ທີ່​ບໍ່​ໄດ້​ຮັບ​ຮອງ.</translation>
 <translation id="4844333629810439236">ຄີບອດອື່ນ</translation>
 <translation id="4844633725025837809">ເພື່ອຄວາມປອດໄພເພີ່ມເຕີມ, ໃຫ້ເຂົ້າລະຫັດລະຫັດຜ່ານຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
+<translation id="4846628405149428620">ເລືອກບ່ອນທີ່ເວັບໄຊນີ້ສາມາດບັນທຶກການປ່ຽນແປງໄດ້</translation>
 <translation id="4846680374085650406">ທ່ານກໍາລັງປະຕິບັດຕາມຄໍາແນະນໍາຂອງຜູ້ຄວບຄຸມສໍາລັບການຕັ້ງຄ່າ.</translation>
 <translation id="4847902821209177679">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ແລ້ວ, ກະລຸນາກົດ Enter ເພື່ອເລືອກອະລະບໍ້າ <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">ຜູ້ຊ່ວຍ Google "Ok Google"</translation>
@@ -4064,7 +4069,6 @@
 <translation id="4907306957610201395">ປະເພດການອະນຸຍາດ</translation>
 <translation id="4908811072292128752">ເປີດແຖບໃໝ່ເພື່ອເລື່ອນເບິ່ງສອງເວັບໄຊພ້ອມກັນ</translation>
 <translation id="4909038193460299775">ເພາະວ່າບັນຊີນີ້ຖືກຈັດການໂດຍ <ph name="DOMAIN" />, ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະຖືກລຶບລ້າງອອກຈາກອຸປະກອນນີ້. ແນວໃດກໍຕາມ, ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຮັກສາໄວ້ຢູ່ໃນບັນຊີ Google ຂອງທ່ານ ແລະ ສາມາດຖືກຈັດການໄດ້ໃນ <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">ການສະຕຣີມແອັບຖືກປິດການນຳໃຊ້ໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງໂທລະສັບທ່ານ.</translation>
 <translation id="4912643508233590958">ການປຸກຢູ່ຊື່ໆ</translation>
 <translation id="4915961947098019832">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງຮູບ</translation>
 <translation id="4916542008280060967">ອະນຸຍາດໃຫ້ເວັບໄຊແກ້ໄຂ <ph name="FILE_NAME" /> ບໍ?</translation>
@@ -4691,6 +4695,7 @@
 <translation id="5554403733534868102">ຫຼັງຈາກນີ້, ຈະບໍ່ມີການລໍຖ້າການອັບເດດ</translation>
 <translation id="5554489410841842733">ຈະເຫັນໄອຄອນນີ້ໄດ້ ເມື່ອສ່ວນຂະຫຍາຍສາມາດດໍາເນີນການຢູ່ໃນໜ້າປະຈຸບັນໄດ້.</translation>
 <translation id="5554720593229208774">ໜ່ວຍງານຢັ້ງຢືນອີເມວ</translation>
+<translation id="5554866693883022680">ເລືອກແອັບໃດໜຶ່ງຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານເພື່ອເປີດລິ້ງນີ້</translation>
 <translation id="5555363196923735206">ສະຫຼັບກ້ອງ</translation>
 <translation id="5555525474779371165">ເລືອກການປົກປ້ອງ Safe Browsing ຂອງທ່ານ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
@@ -5188,6 +5193,7 @@
 <translation id="6063284707309177505">ສ້າງລະຫັດ QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ໝາຍເຫດ:<ph name="END_BOLD" /> ສຽງເວົ້າ ຫຼື ການບັນທຶກທີ່ຄ້າຍກັນອາດສາມາດເຂົ້າເຖິງຜົນການຊອກຫາສ່ວນຕົວຂອງ <ph name="SUPERVISED_USER_NAME" /> ໄດ້. ເພື່ອປະຢັດແບັດເຕີຣີ, ທ່ານສາມາດເລືອກໃນການຕັ້ງຄ່າຜູ້ຊ່ວຍຂອງ <ph name="SUPERVISED_USER_NAME" /> ໃຫ້ເປີດ “Ok Google” ສະເພາະເມື່ອອຸປະກອນນີ້ເຊື່ອມຕໍ່ຫາແຫຼ່ງໄຟເທົ່ານັ້ນໄດ້.</translation>
 <translation id="6064217302520318294">ການລັອກໜ້າຈໍ</translation>
+<translation id="6065145031947216733">ແຍກການທ່ອງເວັບຂອງທ່ານບໍ?</translation>
 <translation id="6065289257230303064">ຄຸນລັກສະນະໄດເຣັກຕໍຣີຫົວຂໍ້ໃບຢັ້ງຢືນ</translation>
 <translation id="6066794465984119824">ບໍ່ໄດ້ຕັ້ງແຮຊຮູບ</translation>
 <translation id="6069464830445383022">ໃຊ້ບັນຊີ Google ຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບ Chromebook ຂອງທ່ານ</translation>
@@ -5266,6 +5272,7 @@
 <translation id="6129953537138746214">ຍະຫວ່າງ</translation>
 <translation id="6130692320435119637">ເພີ່ມ Wi-Fi</translation>
 <translation id="6130887916931372608">ປຸ່ມແປ້ນພິມ</translation>
+<translation id="6135823405800500595">ກະລຸນາກວດສອບວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ໆ, ປົດລັອກແລ້ວ ແລະ ເປີດ Bluetooth ກັບ Wi-Fi ໄວ້ຢູ່</translation>
 <translation id="6136114942382973861">ປິດແຖບການດາວໂຫຼດ</translation>
 <translation id="6136287496450963112">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ໄດ້ຮັບການປົກປ້ອງດ້ວຍ PIN. ເພື່ອຈັດການລາຍນິ້ວມື, ໃຫ້ສ້າງ PIN ກ່ອນ.</translation>
 <translation id="6138680304137685902">ລາຍເຊັນ X9.62 ECDSA ທີ່ມີ SHA-384</translation>
@@ -6899,7 +6906,6 @@
 <translation id="7758450972308449809">ປັບຂອບເຂດຂອງຈໍສະແດງຜົນຂອງທ່ານ</translation>
 <translation id="7760004034676677601">ນີ້ແມ່ນໜ້າເລີ່ມຕົ້ນທີ່ທ່ານຄາດໄວ້ບໍ?</translation>
 <translation id="7762024824096060040">ບໍ່ສາມາດໃຊ້ບັນຊີນີ້ໄດ້</translation>
-<translation id="7762463735017901568">ການຊິ້ງຂໍ້ມູນການແຈ້ງເຕືອນຖືກປິດການນຳໃຊ້ໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງໂທລະສັບທ່ານ</translation>
 <translation id="7764225426217299476">ເພີ່ມ​ທີ່​ຢູ່</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> ຈາກ <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">ເມື່ອເປີດໃຊ້ການທົດລອງໃຊ້, ການຫຼຸດສະແປມ ແລະ ການສໍ້ໂກງອີງອາໄສໂທເຄນຄວາມເຊື່ອຖືເພື່ອຊ່ວຍສູ້ກັບການສໍ້ໂກງ ແລະ ຈຳແນກບັອດອອກຈາກຄົນ.</translation>
@@ -7099,6 +7105,7 @@
 <translation id="7947962633355574091">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ວິ​ດີ​ໂອ</translation>
 <translation id="7947964080535614577">ປົກກະຕິເວັບໄຊຈະສະແດງໂຄສະນາເພື່ອໃຫ້ເຂົາເຈົ້າສາມາດສະໜອງເນື້ອຫາ ຫຼື ບໍລິການໄດ້ໂດຍບໍ່ມີຄ່າໃຊ້ຈ່າຍ. ແຕ່ກໍມີບາງເວັບໄຊສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ເຮັດໃຫ້ເຂົ້າໃຈຜິດ.</translation>
 <translation id="7948407723851303488">ໜ້າທັງໝົດຂອງ <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">ເຫດຜົນ: LBS ຮອງຮັບ URL ແບບ http://, https:// ແລະ file:// ເທົ່ານັ້ນ.</translation>
 <translation id="7951265006188088697">ເພື່ອເພີ່ມ ຫຼື ຈັດການວິທີການຈ່າຍເງິນ Google Pay, ກະລຸນາເຂົ້າຫາ <ph name="BEGIN_LINK" />ບັນຊີ Google<ph name="END_LINK" /> ຂອງທ່ານ</translation>
 <translation id="795130320946928025">ປິດບັດສະເໝືອນ</translation>
 <translation id="7952708427581814389">ເວັບໄຊສາມາດຂໍເບິ່ງຂໍ້ຄວາມ ແລະ ຮູບພາບໃນຄລິບບອດຂອງທ່ານໄດ້</translation>
@@ -7642,6 +7649,7 @@
 <translation id="8480869669560681089">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">ຢືນຢັນການອະນຸຍາດ USB</translation>
 <translation id="8481980314595922412">ຄຸນສົມບັດທົດລອງໃຊ້ເປີດຢູ່</translation>
+<translation id="8486666913807228950">ເຫດຜົນ: ພົບກົດລະບຽບປີ້ນກັບ <ph name="REVERT_RULE" /> ໃນລາຍຊື່ "ບັງຄັບເປີດໃນ".</translation>
 <translation id="848666842773560761">ມີແອັບກຳລັງພະຍາຍາມເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຢູ່. ປິດປຸ່ມຄວາມເປັນສ່ວນຕົວຂອງກ້ອງຖ່າຍຮູບເພື່ອອະນຸຍາດການເຂົ້າເຖິງ.</translation>
 <translation id="8487678622945914333">ຊຸມເຂົ້າ</translation>
 <translation id="8489156414266187072">ການແນະນຳສ່ວນຕົວພຽງແຕ່ສະແດງໃນບັນຊີຂອງທ່ານເທົ່ານັ້ນ</translation>

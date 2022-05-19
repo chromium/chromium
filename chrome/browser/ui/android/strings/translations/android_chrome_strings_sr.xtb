@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити ваше име, имејл адресу и слику профила са овим сајтом. Погледајте <ph name="BEGIN_LINK1" />политику приватности<ph name="END_LINK1" /> овог сајта.</translation>
 <translation id="2000419248597011803">Подразумеваном претраживачу шаље неке колачиће и претраге из траке за адресу и оквира за претрагу</translation>
 <translation id="200114059308480249">Желите да уврстите околни текст у Google претраге?</translation>
-<translation id="2011996512573319870">Синхронизујте податке да бисте добили најрелевантнији садржај од Google-а</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# датотека}one{# датотека}few{# датотеке}other{# датотека}}</translation>
 <translation id="2020309681647789787">Имаћете историју на свим синхронизованим уређајима, па можете да наставите оно што сте радили</translation>
 <translation id="2021896219286479412">Контроле сајта на целом екрану</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">Актуелно</translation>
 <translation id="2472163211318554013">Пријавите се да бисте искористили Chrome на најбољи начин</translation>
 <translation id="247737702124049222">Описи слика су укључени</translation>
-<translation id="2481251096908459228">Погледајте приче за вас</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2494974097748878569">Google помоћник у Chrome-у</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудио датотека}one{# аудио датотека}few{# аудио датотеке}other{# аудио датотека}}</translation>
 <translation id="265156376773362237">Стандардно предучитавање</translation>
 <translation id="2656405586795711023">Веб-апликације</translation>
-<translation id="2700802943130197326">Синхронизујте податке да бисте преузели лозинке, обележиваче и друго на свим уређајима.</translation>
 <translation id="2702516483241149200">Ново: Делите линк који скролује до овог текста</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Освежи страницу</translation>

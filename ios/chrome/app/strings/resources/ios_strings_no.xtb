@@ -526,7 +526,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5551897871312988470">Tilby å oversette</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5580834567471114021">Vil du legge til siden på leselisten for å lese den senere?</translation>
-<translation id="5592679540098330836">Slå på synkronisering for <ph name="NAME" /></translation>
 <translation id="560322036295180549">Organisasjonen din har slått av denne funksjonen</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
 <translation id="5626245204502895507">Filen kan ikke lastes ned for øyeblikket.</translation>
@@ -903,6 +902,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8592752150819985187">Autofyll-passord</translation>
 <translation id="8605219856220328675">Lukk fanen.</translation>
 <translation id="8620640915598389714">Endre</translation>
+<translation id="8620785403235741379">Velg et alternativ</translation>
 <translation id="8626393685701737946">Du kan endre standard nettstedsvisning til datamaskin i Innstillinger &gt; Innholdsinnstillinger</translation>
 <translation id="863090005774946393">Nettleseren administreres av organisasjonen din. Noen funksjoner kan være deaktivert.</translation>
 <translation id="8636825310635137004">For å få fanene dine fra de andre enhetene du bruker, slå på synkronisering.</translation>

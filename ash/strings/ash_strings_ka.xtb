@@ -65,6 +65,7 @@
 <translation id="1275285675049378717">ელკვება მიეწოდება: <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ტელეფონის მდებარეობის დადგენა</translation>
+<translation id="1287002645302686982">შენახული სამუშაო მაგიდა, სახელად <ph name="DESK_TEMPLATE_NAME" />, უკვე არსებობს</translation>
 <translation id="1289185460362160437">დაბრუნდით <ph name="COME_BACK_DAY_OF_WEEK" /> დღის <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="1290331692326790741">სიგნალი სუსტია</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />-ის გადატანა საქაღალდეში „<ph name="FOLDER_NAME" />“.</translation>
@@ -268,6 +269,7 @@
 <translation id="2586561057878260610">„<ph name="DESK_NAME" />“-თან კომბინაციისთვის გამოიყენეთ კლავიშთა კომბინაცია Ctrl + W. სამუშაო მაგიდისა და ფანჯრების დასახურად გამოიყენეთ კლავიშთა კომბინაცია Ctrl + Shift + W.</translation>
 <translation id="2595239820337756193">5K მილებში</translation>
 <translation id="2596078834055697711">ფანჯრის ანაბეჭდის გადაღება</translation>
+<translation id="2598725286293895280">სამუშაო მაგიდაზე მხარდაუჭერელი აპებია</translation>
 <translation id="2607678425161541573">საჭიროა სიტემაში ონლაინ შესვლა</translation>
 <translation id="2620016719323068571">მოიძიეთ თქვენი <ph name="CATEGORY" />, ფაილები, აპები და სხვა კონტენტი...</translation>
 <translation id="2620436844016719705">სისტემა</translation>
@@ -643,6 +645,7 @@
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
 <translation id="4735498845456076464">კლავიატურის მალსახმობი „<ph name="LAUNCHER_KEY_NAME" /> + ციფრი“ შეიცვალა. ფუნქციების კლავიშებით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + კლავიშს ზედა მწკრივში.</translation>
 <translation id="473775607612524610">განახლება</translation>
+<translation id="4740516757091333363">გსურთ, წაშალოთ შენახული სამუშაო მაგიდა?</translation>
 <translation id="4752784485658729358">დაშვებულია მხოლოდ 6 შენახული სამუშაო მაგიდა. ახლის შესანახად წაშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
 <translation id="4774338217796918551">დაბრუნდით ხვალ, <ph name="COME_BACK_TIME" />-ზე.</translation>
@@ -740,6 +743,7 @@
 <translation id="5352250171825660495">მუქი თემა ჩართულია</translation>
 <translation id="5356963482258194581">გადაერთეთ მუქ და ღია თემებს შორის. მარჯვენა ღილაკით დააწკაპუნეთ დესკტოპზე, შემდეგ კი აირჩიეთ „ფონი და სტილი“.</translation>
 <translation id="5379115545237091094">დაფიქსირდა მეტისმეტად ბევრი მცდელობა</translation>
+<translation id="5391307769715781764">გსურთ, ჩაანაცვლოთ შენახული სამუშაო მაგიდა?</translation>
 <translation id="5393156353051693207">აპების გადასალაგებლად დააწკაპუნეთ ხანგრძლივად შეეხეთ ნებისმიერ ადგილს</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> არის <ph name="IN_PLACE_APP" />-ის ზემოდან, აუშვით საქაღალდის შესაქმნელად.</translation>
 <translation id="5397578532367286026">ამ მომხმარებლის გამოყენების და ისტორიის დათვალიერება შესაძლებელია მენეჯერის მიერ (<ph name="MANAGER_EMAIL" />) chrome.com-ზე.</translation>
@@ -973,6 +977,7 @@
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6801878137098616817">ახლახან რედაქტირებული</translation>
 <translation id="6803622936009808957">ეკრანების არეკვლა ვერ მოხერხდა, რადგან მხარდაჭერილი გარჩევადობები ვერ მოიძებნა. შეყვანილია გაშლილი სამუშაო დაფა.</translation>
+<translation id="6812232930908427253">სამუშაო მაგიდის შენახვა ვერ მოხერხდა. გახსნილია ზედმეტად ბევრი ფანჯარა ან ჩანართი.</translation>
 <translation id="6818242057446442178">ერთი სიტყვით უკან</translation>
 <translation id="6819327813400217281">კამერა მიზიდულია ქვედა მარცხენა კუთხეში</translation>
 <translation id="6820676911989879663">შეისვენეთ!</translation>

@@ -526,7 +526,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5551897871312988470">Proposer de traduire</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5580834567471114021">Ajouter à la liste de lecture pour le lire plus tard?</translation>
-<translation id="5592679540098330836">Activez la synchronisation pour <ph name="NAME" /></translation>
 <translation id="560322036295180549">Option désactivée par votre organisation</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
@@ -903,6 +902,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8592752150819985187">Remplir automatiquement les mots de passe</translation>
 <translation id="8605219856220328675">Fermer l'onglet.</translation>
 <translation id="8620640915598389714">Modifier</translation>
+<translation id="8620785403235741379">Sélectionner une option</translation>
 <translation id="8626393685701737946">Vous pouvez modifier l'affichage du site par défaut pour le mode Bureau dans Paramètres &gt; Paramètres de contenu</translation>
 <translation id="863090005774946393">Votre navigateur est géré par votre organisation. Certaines fonctionnalités peuvent être désactivées.</translation>
 <translation id="8636825310635137004">Pour synchroniser vos onglets sur vos autres appareils, activez la synchronisation.</translation>

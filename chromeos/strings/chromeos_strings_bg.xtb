@@ -38,6 +38,7 @@
 <translation id="131421566576084655">Няма данни за датата на последното нулиране на преноса</translation>
 <translation id="1314565355471455267">VPN за Android</translation>
 <translation id="131461803491198646">Собствената мрежа, не роуминг</translation>
+<translation id="132712914231403017">Инсталиране на образа на фърмуера</translation>
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1328223165223065150">Цвят на тапета</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -81,6 +82,7 @@
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
 <translation id="1644574205037202324">История</translation>
+<translation id="1645954272419197032">Моля, потвърдете информацията за устройството</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -119,6 +121,7 @@
 <translation id="2006864819935886708">Свързване към мрежата</translation>
 <translation id="2008685064673031089">Търсене на прости числа</translation>
 <translation id="2016697457005847575">Изпробвайте стъпките за отстраняване на неизправности</translation>
+<translation id="2016848882344942759">– без бял етикет –</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Още настройки</translation>
 <translation id="2085089206770112532">Намаляване на яркостта на дисплея</translation>
@@ -149,6 +152,7 @@
 <translation id="2271469253353559191">График за тъмния режим</translation>
 <translation id="2275586345903859204">Ремонтът приключи</translation>
 <translation id="2287186687001756809">Няма налично изображение. За да добавите снимки, отворете <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Поставете външно хранилище, като например USB памет или SD карта, с изтегления образ от Помощната програма за възстановяване на Chromebook</translation>
 <translation id="2307344026739914387">Използване на текущата двойка ключове</translation>
 <translation id="2320295602967756579">Активиране на светлата тема</translation>
 <translation id="2323506179655536734">ПРОПУСНАТО</translation>
@@ -189,6 +193,7 @@
 <translation id="2712812801627182647">Ключ за удостоверяване за TLS</translation>
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2717139507051041123">Активиране на режима за тъмни цветове</translation>
+<translation id="2727250716596204208">Образът на фърмуера не бе намерен. Поставете външно хранилище, като например USB памет или SD карта, с изтегления образ от Помощната програма за възстановяване на Chromebook.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Удостоверяване във фаза 2 през EAP</translation>
 <translation id="2756652381241102009">Стартиране на диагностиката</translation>
@@ -220,6 +225,7 @@
 <translation id="3122464029669770682">Процесор</translation>
 <translation id="3124039320086536031">Устройството е свързано.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Да се премахне ли страницата?}=1{Да се премахне ли страница {PAGE_NUMBER}?}other{Да се премахне ли страница {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Устройството се обезпечава...</translation>
 <translation id="315116470104423982">Мобилни данни</translation>
 <translation id="3156846309055100599">Страница <ph name="PAGE_NUMBER" /> се сканира...</translation>
 <translation id="315738237743207937">Открит е портал за удостоверяване</translation>
@@ -241,6 +247,7 @@
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
+<translation id="3383751554789092165">При необходимост променете информацията за устройството.</translation>
 <translation id="3404249063913988450">Активиране на скрийнсейвъра</translation>
 <translation id="3404770484521709967">Компонентите са инсталирани правилно.</translation>
 <translation id="3413935475507503304">За да продължите с актуализацията, кликнете върху „Напред“.</translation>
@@ -279,6 +286,7 @@
 <translation id="3748026146096797577">Няма връзка</translation>
 <translation id="3749289110408117711">Име на файла</translation>
 <translation id="3771294271822695279">Видеофайлове</translation>
+<translation id="3774059845329307709">Сериен номер</translation>
 <translation id="3784455785234192852">Заключване</translation>
 <translation id="38114475217616659">Изчистване на цялата история</translation>
 <translation id="3820172043799983114">Невалиден ПИН код.</translation>
@@ -362,6 +370,7 @@
 <translation id="455835558791489930">Батерия с капацитет от <ph name="CHARGE_VALUE" /> мАч</translation>
 <translation id="4561801978359312462">SIM картата е отключена</translation>
 <translation id="4562494484721939086">Няма покритие</translation>
+<translation id="4568938274596692027">Инсталирането завърши. Устройството се подготвя за рестартиране...</translation>
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
@@ -404,6 +413,7 @@
 <translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерията на лявата слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4908030561598728899">Фърмуерът се инсталира...</translation>
 <translation id="4915052247106771211">Това действие ще възстанови фабричните настройки на устройството (Powerwash).</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
@@ -617,8 +627,10 @@
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
+<translation id="6822504384524564824">SKU номерът трябва да се промени само ако новите компоненти са различни от заменените. Например замяна на обикновен със сензорен екран или надстройка на памет от 8 на 16 ГБ.</translation>
 <translation id="6840315122969944400">Ремонт на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Скорост на разреждане</translation>
+<translation id="6876833053687020046">Номер на DRAM компонента</translation>
 <translation id="6889786074662672253">По време на рестартирането не изключвайте това външно устройство, нито компютъра си. Можете да намалите прозореца. Възможно е процесът да отнеме няколко минути и през това време външното ви устройство може да не работи.</translation>
 <translation id="6905724422583748843">Назад към <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
@@ -666,6 +678,7 @@
 <translation id="7343649194310845056">Мрежови устройства</translation>
 <translation id="7359657277149375382">Файлов тип</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKU</translation>
 <translation id="7378886533986123738">Промяна на скрийнсейвъра</translation>
 <translation id="7397270852490618635">Изключване на светлата тема</translation>
 <translation id="741244894080940828">преобразуване</translation>
@@ -765,6 +778,7 @@
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
 <translation id="8372477600026034341">Допълнителни хостове</translation>
 <translation id="8378855320830505539">Област</translation>
+<translation id="8382302752385457774">Бял етикет</translation>
 <translation id="8395584934117017006">Това устройство <ph name="DEVICE_TYPE" /> се управлява корпоративно</translation>
 <translation id="8398927464629426868">Скоростта, с която устройството се зарежда или разрежда в момента</translation>
 <translation id="8422748173858722634">IMEI</translation>

@@ -3265,6 +3265,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
         Ayarları kart menüsünden yönetebilir veya Chrome'u Özelleştir bölümünden daha fazla seçeneğe erişebilirsiniz.</translation>
 <translation id="4115002065223188701">Ağ, kapsama alanı dışında</translation>
 <translation id="4115378294792113321">Macenta</translation>
+<translation id="4116663294526079822">Bu sitede her zaman izin ver</translation>
 <translation id="4116704186509653070">Tekrar aç</translation>
 <translation id="4117637339509843559">Koyu mod</translation>
 <translation id="4117714603282104018">Dokunmatik alan dokunsal geribildirim</translation>
@@ -3444,6 +3445,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4307992518367153382">Temel Bilgiler</translation>
 <translation id="4309165024397827958">Konum izinleri olan Android uygulama ve hizmetlerinin cihazınızın konumunu kullanmasına izin verin. Google, konum verilerini düzenli olarak toplayabilir ve konum doğruluğu ile konuma dayalı hizmetleri iyileştirmek için bu verileri anonim bir şekilde kullanabilir.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K aktif)</translation>
+<translation id="4310132194679586591">Bu bağlantıyı açmak için cihazınızdan bir uygulama seçin</translation>
 <translation id="4310139701823742692">Dosya yanlış biçimde. PPD dosyasını kontrol edip tekrar deneyin.</translation>
 <translation id="431076611119798497">&amp;Ayrıntılar</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Hesabı}other{<ph name="EXTRA_ACCOUNTS" /> Google Hesabı}}</translation>
@@ -4046,7 +4048,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4907306957610201395">İzin Kategorisi</translation>
 <translation id="4908811072292128752">İki siteye aynı anda göz atmak için yeni bir sekme açın</translation>
 <translation id="4909038193460299775">Bu hesap <ph name="DOMAIN" /> tarafından yönetildiğinden, yer işaretleri, geçmişi, şifreler ve diğer ayarlarınız bu cihazdan silinir. Ancak verileriniz Google Hesabınızda kalmaya devam eder ve <ph name="BEGIN_LINK" />Google Hesap Özeti<ph name="END_LINK" />'nde yönetilebilir.</translation>
-<translation id="4912265719039610598">Uygulama aktarma telefonunuzun yöneticisi tarafından devre dışı bırakıldı.</translation>
 <translation id="4912643508233590958">Boşta Kalma Uyanmaları</translation>
 <translation id="4915961947098019832">Resim göstermesine izin verilen siteler</translation>
 <translation id="4916542008280060967">Siteye <ph name="FILE_NAME" /> dosyasını düzenleme izni verilsin mi?</translation>
@@ -4674,6 +4675,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5554403733534868102">Bundan sonra güncelleme için beklemek yok</translation>
 <translation id="5554489410841842733">Bu simge, uzantı mevcut sayfayı etkileyebildiğinde görünür.</translation>
 <translation id="5554720593229208774">E-posta Sertifika Yetkilisi</translation>
+<translation id="5554866693883022680">Bu bağlantıyı açmak için <ph name="DEVICE_TYPE" /> cihazınızdan bir uygulama seçin</translation>
 <translation id="5555363196923735206">Kamerayı çevir</translation>
 <translation id="5555525474779371165">Güvenli Tarama korumanızı seçin</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
@@ -6883,7 +6885,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7758450972308449809">Ekranınızın sınırlarını ayarlayın</translation>
 <translation id="7760004034676677601">Bu beklediğiniz başlangıç sayfası mı?</translation>
 <translation id="7762024824096060040">Bu hesap kullanılamıyor</translation>
-<translation id="7762463735017901568">Bildirim senkronizasyonu telefonunuzun yöneticisi tarafından devre dışı bırakıldı</translation>
 <translation id="7764225426217299476">Adres ekle</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> alan adından <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764857504908700767">Spam ve sahtekarlık azaltma, denemeler açıkken sitelerin sahtekarlıkla mücadele etmesine ve botları insanlardan ayırt etmesine yardımcı olmak için güven jetonlarını kullanır.</translation>

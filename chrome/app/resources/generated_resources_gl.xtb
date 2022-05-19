@@ -3266,6 +3266,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións en Personalizar Chrome.</translation>
 <translation id="4115002065223188701">A rede está fóra de alcance</translation>
 <translation id="4115378294792113321">Maxenta</translation>
+<translation id="4116663294526079822">Permitir sempre neste sitio</translation>
 <translation id="4116704186509653070">Abrir de novo</translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4117714603282104018">Resposta háptica a través do panel táctil</translation>
@@ -3445,6 +3446,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4307992518367153382">Opcións básicas</translation>
 <translation id="4309165024397827958">Permite que as aplicacións e os servizos de Android con permiso de localización utilicen a do teu dispositivo. Google pode recompilar datos de localización periodicamente e utilizalos de forma anónima para mellorar a precisión da localización e os servizos baseados nela.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K activos)</translation>
+<translation id="4310132194679586591">Selecciona unha aplicación no teu dispositivo para abrir esta ligazón</translation>
 <translation id="4310139701823742692">O ficheiro ten un formato que non é válido. Comproba o ficheiro PPD e téntao de novo.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Conta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas de Google}}</translation>
@@ -4047,7 +4049,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4907306957610201395">Categoría de permisos</translation>
 <translation id="4908811072292128752">Abre unha nova pestana para explorar dous sitios á vez</translation>
 <translation id="4909038193460299775">Debido a que esta conta está xestionada por <ph name="DOMAIN" />, borraranse os favoritos, o historial, os contrasinais e outras configuracións deste dispositivo. Non obstante, os teus datos permanecerán almacenados na túa conta de Google e poden xestionarse a través do <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">O administrador do teléfono desactivou a emisión de aplicacións.</translation>
 <translation id="4912643508233590958">Activacións desde o modo inactivo</translation>
 <translation id="4915961947098019832">Sitios que poden mostrar imaxes</translation>
 <translation id="4916542008280060967">Queres permitir que o sitio edite <ph name="FILE_NAME" />?</translation>
@@ -4675,6 +4676,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5554403733534868102">Despois desta actualización, non terás que agardar por outras</translation>
 <translation id="5554489410841842733">Esta icona verase cando a extensión poida actuar na páxina actual.</translation>
 <translation id="5554720593229208774">Autoridade de certificación de correo electrónico</translation>
+<translation id="5554866693883022680">Selecciona unha aplicación no teu dispositivo (<ph name="DEVICE_TYPE" />) para abrir esta ligazón</translation>
 <translation id="5555363196923735206">Voltear a cámara</translation>
 <translation id="5555525474779371165">Escolle a protección da función Navegación segura</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
@@ -6880,7 +6882,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7758450972308449809">Axusta os límites da pantalla</translation>
 <translation id="7760004034676677601">Esta é a páxina de inicio que esperabas?</translation>
 <translation id="7762024824096060040">Non se pode usar esta conta</translation>
-<translation id="7762463735017901568">O administrador do teu teléfono desactivou a sincronización das notificacións</translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Cando as probas están activas, a redución do spam e da fraude baséase en tokens de confianza, que lles axudan aos sitios a loitar contra a fraude, así como a distinguir entre os bots e as persoas.</translation>

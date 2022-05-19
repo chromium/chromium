@@ -132,6 +132,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1715293566947629045">Das Profil wird deaktiviert. Warte ein paar Minuten.</translation>
 <translation id="1719094688023114093">Automatische Untertitel sind an.</translation>
 <translation id="1720011244392820496">WLAN-Synchronisation aktivieren</translation>
+<translation id="1733996486177697563">Du kannst zwischen dem dunklen und hellen Design wechseln. Halte einen Punkt auf dem Desktop gedrückt und wähle dann „Hintergrund &amp; Stil“ aus.</translation>
 <translation id="1736898441010944794">„<ph name="NAME" />“ ist für Bluetooth-Geräte sichtbar.</translation>
 <translation id="174102739345480129">Filzstift deaktiviert.</translation>
 <translation id="1743570585616704562">Nicht erkannt</translation>
@@ -261,6 +262,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2573588302192866788">Verbindung mit <ph name="NAME" /> nicht möglich</translation>
 <translation id="2575685495496069081">Mehrfachanmeldung wurde deaktiviert</translation>
 <translation id="2582112259361606227">Zum Aktualisieren neu starten</translation>
+<translation id="2586561057878260610">Drücke Strg + W für eine Kombination mit <ph name="DESK_NAME" />. Drücke Strg + Umschalttaste + W, um den Desktop und das Fenster zu schließen.</translation>
 <translation id="2595239820337756193">5 km in Meilen</translation>
 <translation id="2596078834055697711">Screenshot von Fenster erstellen</translation>
 <translation id="2607678425161541573">Online-Anmeldung erforderlich</translation>
@@ -666,6 +668,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4917385247580444890">Stark</translation>
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4925542575807923399">Der Administrator dieses Kontos hat festgelegt, dass dieses Konto in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein muss.</translation>
+<translation id="4938176435186993759">Alle Vorschläge ausblenden</translation>
 <translation id="4945196315133970626">Benachrichtigungen deaktivieren</translation>
 <translation id="4946376291507881335">Aufnahme</translation>
 <translation id="495046168593986294">Nach oben scrollen</translation>
@@ -732,6 +735,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5331975486040154427">USB-C-Gerät (Port hinten links)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (rechts)</translation>
 <translation id="5352250171825660495">Dunkles Design ist aktiviert</translation>
+<translation id="5356963482258194581">Du kannst zwischen dem dunklen und hellen Design wechseln. Klicke mit der rechten Maustaste auf den Desktop und wähle „Hintergrund &amp; Stil“ aus.</translation>
 <translation id="5379115545237091094">Zu viele Versuche</translation>
 <translation id="5393156353051693207">Beliebige Stelle berühren und halten, um Apps neu zu sortieren</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> über <ph name="IN_PLACE_APP" />; loslassen, um Ordner zu erstellen.</translation>
@@ -753,6 +757,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5520229639206813572">Dein Administrator hat alle eSIM-Profile entfernt. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="5523434445161341166">"<ph name="FEATURE_NAME" />" wird verbunden.</translation>
 <translation id="5532994612895037630">Tippe auf eine beliebige Stelle, um den ganzen Bildschirm aufzunehmen</translation>
+<translation id="5536723544185013515">Zuletzt verwendete Apps – du kannst über den Links- oder Rechtspfeil alle kürzlich verwendeten Apps aufrufen</translation>
 <translation id="553675580533261935">Sitzung wird beendet</translation>
 <translation id="5537725057119320332">Streamen</translation>
 <translation id="554893713779400387">Diktierfunktion ein-/ausschalten</translation>
@@ -781,6 +786,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5682642926269496722">Google Assistant ist für das aktuelle Nutzerkonto nicht verfügbar.</translation>
 <translation id="5689633613396158040">Mit der Funktion "Nachtlicht" ist der Bildschirm bei schwachem Licht nicht störend hell und das Lesen fällt leichter. Wenn du hier tippst, kannst du einstellen, wann die Funktion eingeschaltet werden soll, oder sie ganz deaktivieren.</translation>
 <translation id="5691772641933328258">Fingerabdruck nicht erkannt</translation>
+<translation id="570390244361237317">Alle Apps – du kannst über die Pfeiltasten auf alle Apps zugreifen</translation>
 <translation id="5707775774148071965">Dein Gerät unterstützt eine höhere Datenübertragungsrate als das Kabel. Dies kann die Geräteleistung beeinträchtigen.</translation>
 <translation id="5710450975648804523">„Bitte nicht stören“ ist aktiviert</translation>
 <translation id="571295407079589142">Mobile Daten sind deaktiviert</translation>

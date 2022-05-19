@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Вірогідно, є адаптивний портал</translation>
 <translation id="1290331692326790741">слабкий сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Увімкнути захист від запису</translation>
 <translation id="1308754910631152188">Оновлення (завершено на <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Немає доступних мереж <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Дата останнього скидання даних недоступна</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Налаштування швидких відповідей</translation>
 <translation id="5168185087976003268">Стан акумулятора</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
+<translation id="5179530508336824319">Увімкніть захист від запису, щоб перейти на наступний екран. Вказівки можна дізнатися на сторінці підтримки виробника пристрою.</translation>
 <translation id="5190187232518914472">Пориньте в улюблені спогади. Щоб додати або змінити альбом, перейдіть у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
 Торкніться значка мікрофона, щоб поставити запитання.</translation>

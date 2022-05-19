@@ -188,7 +188,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="1995884366040846621"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> van deze site.</translation>
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
 <translation id="200114059308480249">Omringende tekst opnemen in Google-zoekopdrachten?</translation>
-<translation id="2011996512573319870">Voer een synchronisatie uit om de meest relevante content van Google op te halen</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# bestand}other{# bestanden}}</translation>
 <translation id="2020309681647789787">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was.</translation>
 <translation id="2021896219286479412">Siteopties op volledig scherm</translation>
@@ -272,7 +271,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2472163211318554013">Log in om het maximale uit Chrome te halen</translation>
 <translation id="247737702124049222">Afbeeldingsbeschrijvingen staan aan</translation>
-<translation id="2481251096908459228">Bekijk artikelen voor jou</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
 <translation id="2494974097748878569">De Google Assistent in Chrome</translation>
@@ -314,7 +312,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audiobestand}other{# audiobestanden}}</translation>
 <translation id="265156376773362237">Standaard vooraf laden</translation>
 <translation id="2656405586795711023">Web-apps</translation>
-<translation id="2700802943130197326">Voer een synchronisatie uit om onder meer de wachtwoorden en bookmarks van al je andere apparaten op te halen.</translation>
 <translation id="2702516483241149200">Nieuw: deel een link die rechtstreeks naar deze tekst scrollt</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="2707726405694321444">Pagina vernieuwen</translation>

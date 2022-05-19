@@ -424,6 +424,18 @@
 
 如果停用這項政策，系統會停用透過網址將網頁捲動至特定文字片段的功能。</translation>
 <translation id="1474273443907024088">停用 TLS False Start</translation>
+<translation id="1476128579011024193">
+      如果將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，在登入必須遵守此政策的受管理帳戶後，系統會要求使用者為該帳戶建立新的設定檔。
+      如果將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />，在登入必須遵守此政策的受管理帳戶後，系統會要求使用者為該帳戶建立新的設定檔，並可選擇是否要保留現有瀏覽資料。這個選項支援 Chrome 102 以上版本。
+
+      如果將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，在登入必須遵守此政策的受管理帳戶後，系統會要求使用者為該帳戶建立新的設定檔。這個設定檔不得包含任何次要帳戶。
+      如果將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />，在登入必須遵守此政策的受管理帳戶後，系統會要求使用者為該帳戶建立新的設定檔，並可選擇是否要保留現有瀏覽資料。這個設定檔不得包含任何次要帳戶。這個選項支援 Chrome 102 以上版本。
+
+      如果將這項政策設為 <ph name="POLICY_VALUE_NONE" /> 或不設定，系統不會對受管理帳戶設定限制。這麼做可能導致受管理帳戶變更為次要帳戶，進而讓該帳戶無法接收由管理員對其設定的政策。
+
+      如果是在裝置層級設定這項政策，瀏覽器中的所有帳戶都必須遵守此政策。
+      如果是在帳戶層級設定這項政策，則只有該帳戶在瀏覽器中會受到影響。
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">你可以透過這項政策來定義 USB 裝置清單，使用者可以從核心驅動程式中卸除這份清單中的 USB 裝置，並且直接透過 chrome.usb API 在網頁應用程式中使用。輸入項目為可識別特定硬體的 USB 供應商 ID 和產品 ID 組合。
 

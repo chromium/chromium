@@ -425,6 +425,18 @@
 如果您启用了此政策或不配置此政策，系统将会根据网址将网页滚动至特定文本片段所在的位置。
 如果您停用了此政策，系统便不会根据网址将网页滚动至特定文本片段所在的位置。</translation>
 <translation id="1474273443907024088">停用 TLS False Start</translation>
+<translation id="1476128579011024193">
+      如果此政策设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，当用户登录受此政策影响的受管理帐号后，系统会要求其为该帐号创建一份新的个人资料。
+      如果此政策设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />，当用户登录受此政策影响的受管理帐号后，系统会要求其为该帐号创建一份新的个人资料，并会提供一个选项供其用来保留其名下的全部现有浏览数据。Chrome 102 及更高版本均支持此选项。
+
+      如果此政策设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，当用户登录受此政策影响的受管理帐号后，系统会要求其为该帐号创建一份新的个人资料。这份个人资料将不允许配置任何辅助帐号。
+      如果此政策设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />，当用户登录受此政策影响的受管理帐号后，系统会要求其为该帐号创建一份新的个人资料，并会提供一个选项供其用来保留其名下的全部现有浏览数据。这份个人资料将不允许配置任何辅助帐号。Chrome 102 及更高版本均支持此选项。
+
+      如果此政策设为<ph name="POLICY_VALUE_NONE" />或未设置，受管理的帐号将不受任何限制。这可能会导致受管理的帐号成为辅助帐号，从而使它无法接收管理员针对该帐号设定的政策。
+
+      如果在设备级别设置了此政策，浏览器中的所有帐号都会受此政策影响。
+      如果在帐号级别设置了此政策，浏览器中只有该帐号会受到影响。
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
 
@@ -4322,6 +4334,27 @@
 
       如果此政策设为 false 或未设置，系统将不允许 <ph name="PLUGIN_VM_NAME" /> 收集数据。
       如果此政策设为 true，<ph name="PLUGIN_VM_NAME" /> 可能会收集 <ph name="PLUGIN_VM_NAME" /> 使用情况数据，然后整合并全面分析该数据以提升 <ph name="PLUGIN_VM_NAME" /> 使用体验。</translation>
+<translation id="5874896145772824604">此政策提供了一种方式，以覆盖浏览器用来实现 First-Party Set 功能的集合列表。
+
+      浏览器的 First-Party Set 列表中的每个集合都必须符合 First-Party Set 要求。
+      每个 First-Party Set 都应包含一个所有者网站以及一个或多个成员网站。无论是所有者网站还是成员网站，每个 First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网域。
+      此外，First-Party Set 中的每个网站都必须互不相同，也就是说：同一个网站不能既是所有者又是成员，也不能重复列为 First-Party Set 的成员。
+      如需详细了解 First-Party Set，请参阅 https://github.com/privacycg/first-party-sets。
+
+      如果此政策设为一个空字典，浏览器会使用 First-Party Set 的公开列表。
+
+      对于 <ph name="REPLACEMENTS" /> 列表所含的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，该网站便会被从浏览器的 First-Party Set 中移除。
+      之后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
+
+      对于 <ph name="ADDITIONS" /> 列表所含的 First-Party Set 中的所有网站，如果某个网站也存在于浏览器列表所含的 First-Party Set 中，浏览器的 First-Party Set 便会被更新，以将新的 First-Party Set 添加到浏览器的列表中。待浏览器的列表更新完毕后，此政策的 First-Party Set 将被添加到浏览器的 First-Party Set 列表中。
+
+      浏览器的 First-Party Set 列表要求其中的所有网站都不得出现在多个集合中。<ph name="REPLACEMENTS" /> 列表和 <ph name="ADDITIONS" /> 列表也都有这样的要求。同理，同一个网站不能既出现在 <ph name="REPLACEMENTS" /> 列表中又出现在 <ph name="ADDITIONS" /> 列表中。
+
+      通配符 (*) 无法用作政策值，也无法用于这些列表所含的任何 First-Party Set 中。
+
+      此政策提供的所有集合都必须是有效的 First-Party Set；如果无效，则会触发相应的错误。
+
+      此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的 Windows 实例，或者已注册设备管理服务的 Windows 10 专业版或企业版实例，以及通过 MDM 进行管理或通过 MCX 加入网域的 macOS 实例。</translation>
 <translation id="5875873062228321803">此政策旨在配置允许使用的最低 <ph name="PRODUCT_OS_NAME" />版本的要求。
 
       当此政策设为非空列表时：

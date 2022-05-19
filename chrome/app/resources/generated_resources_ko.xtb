@@ -3282,6 +3282,7 @@
         카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="4115002065223188701">네트워크 범위를 벗어남</translation>
 <translation id="4115378294792113321">자홍색</translation>
+<translation id="4116663294526079822">이 사이트에서 항상 허용</translation>
 <translation id="4116704186509653070">다시 열기</translation>
 <translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4117714603282104018">터치패드 햅틱 반응</translation>
@@ -4065,7 +4066,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4907306957610201395">권한 카테고리</translation>
 <translation id="4908811072292128752">새 탭을 열어 한 번에 두 개의 사이트를 탐색할 수 있습니다</translation>
 <translation id="4909038193460299775">이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 이 기기에서 삭제됩니다. 하지만 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
-<translation id="4912265719039610598">휴대전화 관리자가 앱 스트리밍을 사용 중지했습니다.</translation>
 <translation id="4912643508233590958">유휴 상태 해제</translation>
 <translation id="4915961947098019832">이미지 표시가 허용됨</translation>
 <translation id="4916542008280060967">사이트에서 <ph name="FILE_NAME" /> 파일을 수정하도록 허용하시겠습니까?</translation>
@@ -6902,7 +6902,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7758450972308449809">디스플레이 경계를 조정합니다.</translation>
 <translation id="7760004034676677601">설정한 시작 페이지가 맞습니까?</translation>
 <translation id="7762024824096060040">이 계정을 사용할 수 없음</translation>
-<translation id="7762463735017901568">휴대전화 관리자가 알림 동기화를 사용 중지했습니다.</translation>
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />에서 <ph name="DOWNLOAD_RECEIVED" />을(를) 다운로드함</translation>
 <translation id="7764857504908700767">무료 체험을 사용 설정한 경우 스팸 및 사기 감소 기능은 신뢰 토큰을 사용해 사이트에서 사기에 대응하고 사람과 봇을 구별하도록 돕습니다.</translation>

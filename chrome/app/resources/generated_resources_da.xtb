@@ -3284,6 +3284,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
         Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="4115002065223188701">Netværket er uden for rækkevidde</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Tillad altid på dette website</translation>
 <translation id="4116704186509653070">Åbn igen</translation>
 <translation id="4117637339509843559">Mørk tilstand</translation>
 <translation id="4117714603282104018">Feedback ved berøring på touchplade</translation>
@@ -4067,7 +4068,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4907306957610201395">Tilladelseskategori</translation>
 <translation id="4908811072292128752">Åbn en ny fane for at se to websites på én gang</translation>
 <translation id="4909038193460299775">Eftersom denne konto administreres af <ph name="DOMAIN" />, slettes dine bogmærker, din historik, dine adgangskoder og andre indstillinger på denne enhed. Dine data vil dog fortsat være gemt på din Google-konto og kan administreres i <ph name="BEGIN_LINK" />Google Kontrolpanel<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Appstreaming er deaktiveret af din telefons administrator.</translation>
 <translation id="4912643508233590958">Aktivering efter dvale</translation>
 <translation id="4915961947098019832">Har tilladelse til at vise billeder</translation>
 <translation id="4916542008280060967">Skal websitet kunne redigere <ph name="FILE_NAME" />?</translation>
@@ -6906,7 +6906,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7758450972308449809">Tilpas grænserne for din skærm</translation>
 <translation id="7760004034676677601">Var det den opstartsside, du havde forventet?</translation>
 <translation id="7762024824096060040">Denne konto kan ikke bruges</translation>
-<translation id="7762463735017901568">Synkronisering af notifikationer er deaktiveret af administratoren af din telefon</translation>
 <translation id="7764225426217299476">Tilføj adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Når prøver er aktiveret, kræver Reducering af spam og svindel brugen af trust tokens, som hjælper websites med at bekæmpe svindel og skelne mellem bots og mennesker.</translation>

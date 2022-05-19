@@ -65,6 +65,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1275285675049378717">Napája sa zariadenie <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Lokalizácia telefónu</translation>
+<translation id="1287002645302686982">Uložená plocha s názvom <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="1289185460362160437">Vráťte sa o <ph name="COME_BACK_TIME" /> v tento deň: <ph name="COME_BACK_DAY_OF_WEEK" /></translation>
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1290982764014248209">Presuňte <ph name="DRAGGED_APP" /> do priečinka <ph name="FOLDER_NAME" />.</translation>
@@ -268,6 +269,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2586561057878260610">Stlačením klávesov Ctrl + W môžete vytvárať kombinácie s plochou <ph name="DESK_NAME" />. Stlačením klávesov Ctrl + Shift + W môžete plochu a okná zavrieť.</translation>
 <translation id="2595239820337756193">5 km v míľach</translation>
 <translation id="2596078834055697711">Vytvorenie snímky obrazovky okna</translation>
+<translation id="2598725286293895280">Nepodporované aplikácie na ploche</translation>
 <translation id="2607678425161541573">Vyžaduje sa prihlásenie online</translation>
 <translation id="2620016719323068571">Hľadajte <ph name="CATEGORY" />, súbory, aplikácie a ďalší obsah…</translation>
 <translation id="2620436844016719705">Systém</translation>
@@ -643,6 +645,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4734965478015604180">Na šírku</translation>
 <translation id="4735498845456076464">Klávesová skratka <ph name="LAUNCHER_KEY_NAME" /> + číslo bola zmenená. Ak chcete použiť klávesy s funkciami, stlačte kláves <ph name="LAUNCHER_KEY_NAME" /> + kláves v hornom rade.</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
+<translation id="4740516757091333363">Chcete odstrániť uloženú plochu?</translation>
 <translation id="4752784485658729358">Povolených je iba šesť uložených plôch. Ak chcete uložiť novú, niektorú odstráňte.</translation>
 <translation id="4759238208242260848">Stiahnuté</translation>
 <translation id="4774338217796918551">Vráť sa zajtra o <ph name="COME_BACK_TIME" />.</translation>
@@ -740,6 +743,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5352250171825660495">Tmavý motív je zapnutý</translation>
 <translation id="5356963482258194581">Prepínajte medzi tmavým a svetlým motívom. Pravým tlačidlom kliknite na pracovnú plochu a vyberte Tapety a štýl.</translation>
 <translation id="5379115545237091094">Príliš veľa pokusov</translation>
+<translation id="5391307769715781764">Chcete nahradiť uloženú plochu?</translation>
 <translation id="5393156353051693207">Pridržte ľubovoľné miesto a zmeňte poradie aplikácií</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na aplikáciu <ph name="IN_PLACE_APP" />, uvoľnením vytvoríte priečinok.</translation>
 <translation id="5397578532367286026">Aktivitu a históriu tohto používateľa môže skontrolovať správca (<ph name="MANAGER_EMAIL" />) na adrese chrome.com.</translation>
@@ -769,6 +773,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5571066253365925590">Rozhranie Bluetooth je povolené</translation>
 <translation id="557563299383177668">Ďalší odsek</translation>
 <translation id="5577281275355252094">Ak chcete použiť Telefónne centrum, skontrolujte, či je v telefóne zapnuté rozhranie Bluetooth</translation>
+<translation id="5580000943347215299">Knižnica</translation>
 <translation id="558849140439112033">Presunutím vyberte oblasť, ktorú chcete nasnímať</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Hovorenú spätnú väzbu zakážete kombináciou klávesov Ctrl+Alt+Z.</translation>
@@ -972,6 +977,7 @@ Nová inštalácia</translation>
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6801878137098616817">Nedávno upravené</translation>
 <translation id="6803622936009808957">Obraz na monitoroch sa nedá zrkadliť, pretože sa nenašli podporované rozlíšenia. Namiesto toho sa spustil režim rozšírenej pracovnej plochy.</translation>
+<translation id="6812232930908427253">Plochu sa nepodarilo uložiť. Príliš veľa okien alebo kariet.</translation>
 <translation id="6818242057446442178">Dozadu o slovo</translation>
 <translation id="6819327813400217281">Kamera bola prichytená do ľavého dolného rohu</translation>
 <translation id="6820676911989879663">Urobte si prestávku.</translation>

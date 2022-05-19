@@ -188,7 +188,6 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="1995884366040846621">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> podijelit će vaše ime, e-adresu i profilnu sliku s ovom web-lokacijom. Pogledajte <ph name="BEGIN_LINK1" />pravila o privatnosti<ph name="END_LINK1" /> ove web-lokacije.</translation>
 <translation id="2000419248597011803">Zadanoj tražilici šalje neke kolačiće i pretraživanja iz adresne trake i okvira za pretraživanje</translation>
 <translation id="200114059308480249">Želite li uključiti okolni tekst u Google pretraživanja?</translation>
-<translation id="2011996512573319870">Uključite sinkronizaciju za prikaz najrelevantnijeg sadržaja s Googlea</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}few{# datoteke}other{# datoteka}}</translation>
 <translation id="2020309681647789787">Vaša će povijest biti na svim vašim sinkroniziranim uređajima kako biste mogli nastaviti ono što radite</translation>
 <translation id="2021896219286479412">Kontrole web-lokacije na cijelom zaslonu</translation>
@@ -272,7 +271,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2461822463642141190">Trenutačno</translation>
 <translation id="2472163211318554013">Prijavite se da biste iskoristili sve prednosti Chromea</translation>
 <translation id="247737702124049222">Uključeni su opisi slika</translation>
-<translation id="2481251096908459228">Pogledajte vijesti prilagođene vama</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2494974097748878569">Google asistent u Chromeu</translation>
@@ -314,7 +312,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audiodatoteka}one{# audiodatoteka}few{# audiodatoteke}other{# audiodatoteka}}</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
 <translation id="2656405586795711023">Web-aplikacije</translation>
-<translation id="2700802943130197326">Uključite sinkronizaciju za prikaz zaporki, oznaka i drugog na svim ostalim uređajima.</translation>
 <translation id="2702516483241149200">Novo: dijelite vezu koja se pomiče na ovaj tekst</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2707726405694321444">Osvježavanje stranice</translation>

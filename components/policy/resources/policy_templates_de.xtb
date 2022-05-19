@@ -426,6 +426,18 @@ Wenn du diese Richtlinie aktivierst oder nicht konfigurierst, wird das Scrollen 
 
 Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragmenten auf Webseiten via URL deaktiviert.</translation>
 <translation id="1474273443907024088">TLS-Funktion "False Start" deaktivieren</translation>
+<translation id="1476128579011024193">
+      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen.
+      Ist sie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />“ gesetzt, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen, und hat die Option, alle bestehenden Browserdaten beizubehalten. Diese Option wird in Chrome 102 und höher unterstützt.
+
+      Wenn die Richtlinie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen. In diesem Profil sind keine sekundären Konten zugelassen.
+      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />“ gesetzt ist, wird der Nutzer nach der Anmeldung in einem verwalteten Konto, das dieser Richtlinie unterliegt, aufgefordert, ein neues Profil für das Konto zu erstellen, und hat die Option, alle bestehenden Browserdaten beizubehalten. In diesem Profil sind keine sekundären Konten zugelassen. Diese Option wird in Chrome 102 und höher unterstützt.
+
+      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_NONE" />“ gesetzt oder nicht konfiguriert ist, gelten für verwaltete Konten keine Einschränkungen. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Hierdurch gelten für das Konto keine Richtlinien, die durch den Administrator für das Konto festgelegt werden.
+
+      Wenn diese Richtlinie auf Geräteebene konfiguriert ist, unterliegen ihr alle Konten im Browser.
+      Ist sie auf Kontoebene konfiguriert, unterliegt ihr nur dieses Konto.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste der USB-Geräte definieren, die vom jeweiligen Kerneltreiber getrennt werden können, um über die chrome.usb API direkt in einer Webanwendung eingesetzt zu werden. Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt-ID, über die die Hardware identifiziert werden kann.
 
@@ -4350,6 +4362,27 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, darf <ph name="PLUGIN_VM_NAME" /> keine Daten erheben.
       Ist die Richtlinie auf "true" gesetzt, erhebt <ph name="PLUGIN_VM_NAME" /> möglicherweise Nutzerdaten von <ph name="PLUGIN_VM_NAME" />, die dann kombiniert und gründlich analysiert werden, um die Nutzung von <ph name="PLUGIN_VM_NAME" /> weiter zu verbessern.</translation>
+<translation id="5874896145772824604">Mit dieser Richtlinie wird die Liste der Sets überschrieben, die der Browser für die Funktion „First-Party-Sets“ verwendet.
+
+      Jedes Set auf der Liste der First-Party-Sets muss die Anforderungen eines First-Party-Sets erfüllen.
+      Ein First-Party-Set besteht aus einer Inhaber- und mindestens einer Mitgliedswebsite. Bei allen Websites in einem First-Party-Set muss es sich um registrierfähige Domains handeln, die über HTTPS bereitgestellt werden, unabhängig davon, ob es sich um eine Inhaber- oder eine Mitgliedswebsite handelt.
+      Außerdem müssen Websites in einem First-Party-Set eindeutig sein, d. h., dass sie nicht gleichzeitig als Inhaber und Mitglied oder mehrmals als Mitglied eines First-Party-Sets aufgeführt sein dürfen.
+      Weitere Informationen zu First-Party-Sets findest du unter https://github.com/privacycg/first-party-sets.
+
+      Wenn für diese Richtlinie ein leeres Wörterbuch angegeben wird, verwendet der Browser die öffentlichen First-Party-Sets.
+
+      Wenn eine Website eines First-Party-Sets auf der <ph name="REPLACEMENTS" />-Liste auch Teil eines First-Party-Sets in der Liste des Browsers ist, wird sie aus dem First-Party-Set des Browsers entfernt.
+      Anschließend wird das First-Party-Set der Richtlinie zur Liste der First-Party-Sets des Browsers hinzugefügt.
+
+      Wenn eine Website eines First-Party-Sets auf der <ph name="ADDITIONS" />-Liste auch Teil eines First-Party-Sets in der Liste des Browsers ist, wird das First-Party-Set des Browsers aktualisiert, damit das neue First-Party-Set zur Liste des Browsers hinzugefügt werden kann. Nachdem die Liste des Browsers aktualisiert wurde, wird das First-Party-Set der Richtlinie zur Liste der First-Party-Sets des Browsers hinzugefügt.
+
+      Alle Websites auf der Liste der First-Party-Sets des Browsers dürfen nur jeweils Teil eines Sets sein. Dies gilt auch für die <ph name="REPLACEMENTS" />-Liste und die <ph name="ADDITIONS" />-Liste. Eine Website darf außerdem nicht gleichzeitig auf der <ph name="REPLACEMENTS" />-Liste und der <ph name="ADDITIONS" />-Liste stehen.
+
+      Platzhalter (*) sind kein gültiger Richtlinienwert und können nicht in First-Party-Sets in diesen Listen verwendet werden.
+
+      Alle in dieser Richtlinie angegebenen Sets müssen gültige First-Party-Sets sein. Andernfalls wird ein entsprechender Fehler ausgegeben.
+
+      Diese Richtlinie steht nur bei Windows-Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, oder bei Windows 10 Pro- oder Enterprise-Instanzen, die für die Geräteverwaltung angemeldet sind, außerdem bei macOS-Instanzen, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="5875873062228321803">Mit dieser Richtlinie wird die Anforderung an die zulässige Mindestversion von <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
       Wenn diese Richtlinie auf eine nicht leere Liste festgelegt wird, passiert Folgendes:

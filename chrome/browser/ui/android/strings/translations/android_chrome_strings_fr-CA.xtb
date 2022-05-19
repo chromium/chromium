@@ -186,7 +186,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1995884366040846621">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez la <ph name="BEGIN_LINK1" />politique de confidentialité<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="2000419248597011803">Envoie des témoins et des recherches à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
-<translation id="2011996512573319870">Synchronisez vos données pour accéder au contenu le plus pertinent de Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="2020309681647789787">Votre historique s'affichera sur tous vos appareils synchronisés, vous pourrez donc reprendre le cours de vos activités</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
@@ -270,7 +269,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2461822463642141190">Actuelle</translation>
 <translation id="2472163211318554013">Connectez-vous pour profiter pleinement de Chrome</translation>
 <translation id="247737702124049222">Les descriptions d'images sont activées</translation>
-<translation id="2481251096908459228">Affichez des histoires personnalisées</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
 <translation id="2494974097748878569">Assistant Google dans Chrome</translation>
@@ -312,7 +310,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fichier audio}one{# fichier audio}other{# fichiers audio}}</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
 <translation id="2656405586795711023">Applications Web</translation>
-<translation id="2700802943130197326">Synchronisez vos données pour ajouter vos mots de passe, vos favoris et plus sur tous vos autres appareils.</translation>
 <translation id="2702516483241149200">Nouveauté : communiquez un lien qui fait défiler l'écran jusqu'à ce texte</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>

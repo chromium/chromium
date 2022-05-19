@@ -135,6 +135,7 @@
 <translation id="1715293566947629045">מתבצעת השבתה של הפרופיל. עליך להמתין מספר דקות.</translation>
 <translation id="1719094688023114093">התכונה 'כתוביות מיידיות' מופעלת.</translation>
 <translation id="1720011244392820496">‏הפעלה של סנכרון Wi-Fi</translation>
+<translation id="1733996486177697563">אפשר להחליף בין עיצוב כהה לעיצוב בהיר. לוחצים לחיצה ארוכה על שולחן העבודה ובוחרים באפשרות 'טפט וסגנון'.</translation>
 <translation id="1736898441010944794">‏"<ph name="NAME" />" זמין למכשירי Bluetooth.</translation>
 <translation id="174102739345480129">כלי הסימון מושבת.</translation>
 <translation id="1743570585616704562">לא מזוהה</translation>
@@ -176,6 +177,7 @@
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" />‏ (USB)</translation>
 <translation id="1972950159383891558">שלום, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">קלט טקסט</translation>
+<translation id="1982717156487272186">הצגת השבוע הקודם</translation>
 <translation id="1989113344093894667">לא ניתן לצלם תוכן</translation>
 <translation id="1990046457226896323">הסתיימה ההורדה של קובצי הדיבור</translation>
 <translation id="1993072747612765854">מידע נוסף על העדכון האחרון של <ph name="SYSTEM_APP_NAME" /></translation>
@@ -263,6 +265,7 @@
 <translation id="2573588302192866788">לא ניתן היה לחבר את <ph name="NAME" /></translation>
 <translation id="2575685495496069081">הכניסה עם מספר חשבונות הושבתה</translation>
 <translation id="2582112259361606227">צריך להפעיל מחדש כדי לעדכן</translation>
+<translation id="2586561057878260610">‏יש להקיש על Ctrl +‏ W כדי לשלב עם <ph name="DESK_NAME" />. יש להקיש על Ctrl +‏ Shift +‏ W כדי לסגור את שולחן העבודה הווירטואלי והחלונות.</translation>
 <translation id="2595239820337756193">כמה מיילים יש ב-5 קילומטרים</translation>
 <translation id="2596078834055697711">צילום מסך של חלון</translation>
 <translation id="2607678425161541573">נדרשת כניסה אונליין</translation>
@@ -622,6 +625,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, דירוג כוכבים: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך יום אחד}two{שינוי המכשיר לגרסה קודמת בתוך יומיים}many{שינוי המכשיר לגרסה קודמת בתוך # ימים}other{שינוי המכשיר לגרסה קודמת בתוך # ימים}}</translation>
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
+<translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, המלצה על אפליקציה</translation>
 <translation id="4657775630156561295">ההצעה הבאה תוסר באופן סופי מהיסטוריית ההצעות בחשבון שלך:
 
@@ -667,6 +671,7 @@
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4918086044614829423">אישור</translation>
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
+<translation id="4938176435186993759">הסתרה של כל ההצעות</translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
 <translation id="4946376291507881335">צילום</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>
@@ -733,6 +738,7 @@
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (ימין)</translation>
 <translation id="5352250171825660495">עיצוב כהה פועל</translation>
+<translation id="5356963482258194581">אפשר להחליף בין עיצוב כהה לעיצוב בהיר. לוחצים לחיצה ימנית על שולחן העבודה ובוחרים באפשרות 'טפט וסגנון'.</translation>
 <translation id="5379115545237091094">יותר מדי ניסיונות</translation>
 <translation id="5393156353051693207">לוחצים לחיצה ארוכה במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> מעל <ph name="IN_PLACE_APP" />. יש לשחרר כדי ליצור תיקייה.</translation>
@@ -754,6 +760,7 @@
 <translation id="5520229639206813572">‏מנהל המערכת שלך הסיר את כל פרופילי ה-eSIM. עליך לפנות למנהל המערכת לקבלת מידע נוסף.</translation>
 <translation id="5523434445161341166">התכונה <ph name="FEATURE_NAME" /> מתחברת.</translation>
 <translation id="5532994612895037630">יש להקיש במקום כלשהו כדי להקליט את המסך המלא</translation>
+<translation id="5536723544185013515">האפליקציות האחרונות, מנווטים לכל האפליקציות האחרונות באמצעות החץ שמאלה או החץ ימינה</translation>
 <translation id="553675580533261935">יציאה מההפעלה</translation>
 <translation id="5537725057119320332">העברה</translation>
 <translation id="554893713779400387">הפעלת הכתבה או הפסקתה</translation>
@@ -776,10 +783,12 @@
 <translation id="5673434351075758678">מ"<ph name="FROM_LOCALE" />" ל"<ph name="TO_LOCALE" />" אחרי סנכרון ההגדרות.</translation>
 <translation id="5675363643668471212">פריט מדף</translation>
 <translation id="5677928146339483299">חסום</translation>
+<translation id="5678564054339031017">הצגת השבוע הבא</translation>
 <translation id="5679050765726761783">המתאם שחיברת הוא בעל הספק נמוך</translation>
 <translation id="5682642926269496722">‏Google Assistant לא זמינה לחשבון המשתמש הנוכחי.</translation>
 <translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש להקיש כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
+<translation id="570390244361237317">כל האפליקציות, מנווטים בעזרת מקשי החיצים כדי לגשת לכל האפליקציות</translation>
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="5710450975648804523">מצב 'נא לא להפריע' מופעל</translation>
 <translation id="571295407079589142">חבילת הגלישה כבויה</translation>

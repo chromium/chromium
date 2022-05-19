@@ -38,6 +38,7 @@
 <translation id="131421566576084655">Ez dago erabilgarri azken datu-berrezartzearen data</translation>
 <translation id="1314565355471455267">Android VPN sarea</translation>
 <translation id="131461803491198646">Tokiko sarea, ez ibiltaritza</translation>
+<translation id="132712914231403017">Instalatu firmwarearen irudia</translation>
 <translation id="1327977588028644528">Atebidea</translation>
 <translation id="1328223165223065150">Horma-paperaren kolorea</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -81,6 +82,7 @@
 <translation id="1641857168437328880">Dokumentu-elikatzailea (alde bakarrekoa)</translation>
 <translation id="1643449475550628585">Aldatu egunero horma-paperaren irudia</translation>
 <translation id="1644574205037202324">Historia</translation>
+<translation id="1645954272419197032">Berretsi gailuari buruzko informazioa</translation>
 <translation id="1662989795263954667">Geldituta: ez dago tintarik</translation>
 <translation id="1668469839109562275">VPN integratua</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -119,6 +121,7 @@
 <translation id="2006864819935886708">Konexioa</translation>
 <translation id="2008685064673031089">Prime bilaketa</translation>
 <translation id="2016697457005847575">Egin arazoa konpontzeko urratsak</translation>
+<translation id="2016848882344942759">Ezabatu marka zuria</translation>
 <translation id="202500043506723828">EIDa</translation>
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2085089206770112532">Pantailaren distira jaisteko tekla</translation>
@@ -149,6 +152,7 @@
 <translation id="2271469253353559191">Modu ilunaren programazioa</translation>
 <translation id="2275586345903859204">Konpondu dira arazoak</translation>
 <translation id="2287186687001756809">Ez dago irudirik. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
+<translation id="2294753434210277304">Sartu Chromebook-eko edukia berreskuratzeko tresnaren irudia deskargatuta daukan kanpoko memoria bat (adibidez, USB bidezko unitate bat edo SD txartel bat)</translation>
 <translation id="2307344026739914387">Erabili une honetako gako parea</translation>
 <translation id="2320295602967756579">Gaitu gai iluna</translation>
 <translation id="2323506179655536734">SALTATUTA</translation>
@@ -189,6 +193,7 @@
 <translation id="2712812801627182647">TLS autentifikazio-gakoa</translation>
 <translation id="2713444072780614174">Zuria</translation>
 <translation id="2717139507051041123">Gaitu kolore ilunaren modua</translation>
+<translation id="2727250716596204208">Ezin da aurkitu firmwarearen irudia. Sartu Chromebook-eko edukia berreskuratzeko tresnaren irudia deskargatuta daukan kanpoko memoria bat (adibidez, USB bidezko unitate bat edo SD txartel bat)</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2751739896257479635">EAP 2. fasearen autentifikazioa</translation>
 <translation id="2756652381241102009">Exekutatu diagnostiko-txostena</translation>
@@ -220,6 +225,7 @@
 <translation id="3122464029669770682">PUZ</translation>
 <translation id="3124039320086536031">Gailua konektatuta dago.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Orria kendu nahi duzu?}=1{{PAGE_NUMBER}. orria kendu nahi duzu?}other{{PAGE_NUMBER}. orria kendu nahi duzu?}}</translation>
+<translation id="3137983112374760826">Gailuko eduki guztia ezabatzen…</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. orria eskaneatzen…</translation>
 <translation id="315738237743207937">Sare-zerbitzuaren atari bat hauteman da</translation>
@@ -241,6 +247,7 @@
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3369013195428705271">Ziur inprimatze-historia guztia garbitu nahi duzula? Ez dira garbituko abian dauden inprimatze-lanak.</translation>
+<translation id="3383751554789092165">Behar denean, aldatu gailuari buruzko informazioa.</translation>
 <translation id="3404249063913988450">Gaitu pantaila-babeslea</translation>
 <translation id="3404770484521709967">Osagaiak behar bezala instalatuta daude.</translation>
 <translation id="3413935475507503304">Eguneratzeko, sakatu Hurrengoa.</translation>
@@ -279,6 +286,7 @@
 <translation id="3748026146096797577">Konektatu gabe</translation>
 <translation id="3749289110408117711">Fitxategiaren izena</translation>
 <translation id="3771294271822695279">Bideo-fitxategiak</translation>
+<translation id="3774059845329307709">Serie-zenbakia</translation>
 <translation id="3784455785234192852">Blokeatu</translation>
 <translation id="38114475217616659">Garbitu historia guztia</translation>
 <translation id="3820172043799983114">PIN kodeak ez du balio.</translation>
@@ -362,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-ko bateria</translation>
 <translation id="4561801978359312462">SIM desblokeatuta dago</translation>
 <translation id="4562494484721939086">Zerbitzurik ez</translation>
+<translation id="4568938274596692027">Amaitu da instalazio-prozesua. Berrabiarazteko prestatzen…</translation>
 <translation id="458794348635939462">Ezin izan da ebatzi ostalari bat ere</translation>
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4609350030397390689">Teklatuaren distira jaisteko tekla</translation>
@@ -404,6 +413,7 @@
 <translation id="4890353053343094602">Aukeratu beste bat berehala</translation>
 <translation id="4891842000192098784">Estresa</translation>
 <translation id="4897058166682006107">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren ezkerreko aurikularrari.</translation>
+<translation id="4908030561598728899">Firmwarea instalatzen…</translation>
 <translation id="4915052247106771211">Powerwash bidez gailuaren jatorrizko ezarpenak berrezarriko dira.</translation>
 <translation id="4917385247580444890">Sendoa</translation>
 <translation id="4917889632206600977">Geldituta: ez dago paperik</translation>
@@ -617,8 +627,10 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
 <translation id="680983167891198932">Gakoa</translation>
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
+<translation id="6822504384524564824">Osagaiak haiek ordezten dituztenen berdinak ez badira soilik aldatu behar da SKUa; esaterako, ukipen-pantaila batek ukipen bidez funtzionatzen ez duen pantaila bat ordeztean edo memoria 8 GB-tik 16 GB-ra handitzen denean.</translation>
 <translation id="6840315122969944400"><ph name="DEVICE_TYPE" /> konpontzea</translation>
 <translation id="6853312040151791195">Bateriaren deskargatze-abiadura</translation>
+<translation id="6876833053687020046">DRAMaren erreferentzia-zenbakia</translation>
 <translation id="6889786074662672253">Gailua eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="6905724422583748843">Itzuli <ph name="PAGE_NAME" /> orrira</translation>
 <translation id="6910312834584889076">Eskanerraren estalkia irekita dago. Itxi ezazu eta saiatu berriro.</translation>
@@ -666,6 +678,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7343649194310845056">Sareko gailuak</translation>
 <translation id="7359657277149375382">Fitxategi mota</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">SKUa</translation>
 <translation id="7378886533986123738">Aldatu pantaila-babeslea</translation>
 <translation id="7397270852490618635">Desaktibatu gai argia</translation>
 <translation id="741244894080940828">bihurketa</translation>
@@ -765,6 +778,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8364946094152050673">Izenen zerbitzariak hutsik daude</translation>
 <translation id="8372477600026034341">Ostalari gehigarriak</translation>
 <translation id="8378855320830505539">Lurraldea</translation>
+<translation id="8382302752385457774">Marka zuria</translation>
 <translation id="8395584934117017006">Enpresa batek kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="8398927464629426868">Gailua zer abiaduratan kargatzen edo deskargatzen ari den</translation>
 <translation id="8422748173858722634">IMEIa</translation>

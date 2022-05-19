@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> पहा.</translation>
 <translation id="2000419248597011803">ॲड्रेस बार आणि सर्च बॉक्समधून तुमच्या डीफॉल्ट शोध इंजिनला काही कुकीज आणि शोध पाठवते</translation>
 <translation id="200114059308480249">Google वर शोधताना आसपासच्या मजकुराचा समावेश करायचा आहे का?</translation>
-<translation id="2011996512573319870">Google वरून सर्वात उपयुक्त आशय मिळवण्यासाठी सिंक करा</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फाइल}other{# फाइल}}</translation>
 <translation id="2020309681647789787">तुमच्याकडे तुमच्या सर्व डिव्हाइसवर सिंक केलेला इतिहास असेल, जेणेकरून तुम्ही जे करत होता ते पुढे सुरू ठेवू शकता</translation>
 <translation id="2021896219286479412">फुल स्क्रीन साइट नियंत्रणे</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2472163211318554013">Chrome चा पुरेपूर वापर करण्यासाठी साइन इन करा</translation>
 <translation id="247737702124049222">इमेजची वर्णने सुरू आहेत</translation>
-<translation id="2481251096908459228">तुमच्यासाठी असलेल्या स्टोरी पहा</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
 <translation id="2494974097748878569">Chrome मधील Google असिस्टंट</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडिओ फाइल}other{# ऑडिओ फाइल}}</translation>
 <translation id="265156376773362237">साधारण प्रीलोडिंग</translation>
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
-<translation id="2700802943130197326">तुमच्या इतर सर्व डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी सिंक करा.</translation>
 <translation id="2702516483241149200">नवीन: या मजकुरापर्यंत स्क्रोल करणारी लिंक शेअर करा</translation>
 <translation id="2704606927547763573">कॉपी केले</translation>
 <translation id="2707726405694321444">पृष्ठ रिफ्रेश करा</translation>

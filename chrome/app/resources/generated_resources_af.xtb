@@ -3284,6 +3284,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
         Jy kan instellings deur die kaartkieslys bestuur, of meer opsies sien in Pasmaak Chrome.</translation>
 <translation id="4115002065223188701">Netwerk buite reikwydte</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Laat altyd op hierdie werf toe</translation>
 <translation id="4116704186509653070">Maak weer oop</translation>
 <translation id="4117637339509843559">Donkermodus</translation>
 <translation id="4117714603282104018">Raakpaneel se fisiese terugvoer</translation>
@@ -4069,7 +4070,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4907306957610201395">Toestemmingkategorie</translation>
 <translation id="4908811072292128752">Maak 'n nuwe oortjie oop om gelyk op twee werwe te blaai</translation>
 <translation id="4909038193460299775">Omdat hierdie rekening deur <ph name="DOMAIN" /> bestuur word, sal jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel uitgevee word. Jou data sal egter steeds in jou Google-rekening geberg word en kan op <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> bestuur word.</translation>
-<translation id="4912265719039610598">Programstroming is deur jou foon se administrateur gedeaktiveer.</translation>
 <translation id="4912643508233590958">Word wakker uit rus</translation>
 <translation id="4915961947098019832">Mag prente wys</translation>
 <translation id="4916542008280060967">Laat werf <ph name="FILE_NAME" /> wysig?</translation>
@@ -6909,7 +6909,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7758450972308449809">Verstel jou skerm se grense</translation>
 <translation id="7760004034676677601">Is dit die afskopbladsy wat jy verwag het?</translation>
 <translation id="7762024824096060040">Kan nie hierdie rekening gebruik nie</translation>
-<translation id="7762463735017901568">Kennisgewingsinkronisering is deur jou foon se administrateur gedeaktiveer</translation>
 <translation id="7764225426217299476">Voeg adres by</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> vanaf <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Wanneer proeflopies aan is, maak vermindering van strooipos en bedrog staat op vertrouenstokens om werwe te help om bedrog te bekamp en bots van mense te onderskei.</translation>

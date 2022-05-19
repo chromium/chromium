@@ -188,7 +188,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="1995884366040846621">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan. Gweld <ph name="BEGIN_LINK1" />polisi preifatrwydd<ph name="END_LINK1" /> y wefan hon.</translation>
 <translation id="2000419248597011803">Yn anfon rhai cwcis a chwiliadau o'r bar cyfeiriadau a'r blwch chwilio i'ch peiriant chwilio diofyn</translation>
 <translation id="200114059308480249">Cynnwys testun o'i amgylch mewn chwiliadau Google?</translation>
-<translation id="2011996512573319870">Cysonwch i gael y cynnwys mwyaf perthnasol o Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Ffeil}zero{# Ffeil}two{# Ffeil}few{# Ffeil}many{# Ffeil}other{# Ffeil}}</translation>
 <translation id="2020309681647789787">Bydd gennych eich hanes ar eich holl ddyfeisiau sydd wedi'u cysoni, felly gallwch barhau â'r hyn yr oeddech yn ei wneud</translation>
 <translation id="2021896219286479412">Rheolyddion gwefan sgrîn lawn</translation>
@@ -272,7 +271,6 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="2461822463642141190">Presennol</translation>
 <translation id="2472163211318554013">Mewngofnodwch i gael y gorau o Chrome</translation>
 <translation id="247737702124049222">Mae disgrifiadau lluniau wedi'u troi ymlaen</translation>
-<translation id="2481251096908459228">Gweld straeon i chi</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2485422356828889247">Dadosod</translation>
 <translation id="2494974097748878569">Google Assistant yn Chrome</translation>
@@ -314,7 +312,6 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Ffeil sain}zero{# Ffeil sain}two{# Ffeil sain}few{# Ffeil sain}many{# Ffeil sain}other{# Ffeil sain}}</translation>
 <translation id="265156376773362237">Rhaglwytho safonol</translation>
 <translation id="2656405586795711023">Apiau gwe</translation>
-<translation id="2700802943130197326">Cysonwch i gael eich cyfrineiriau, nodau tudalen a rhagor ar eich holl ddyfeisiau eraill.</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
 <translation id="2704606927547763573">Copïwyd</translation>
 <translation id="2707726405694321444">Ail-lwytho'r dudalen</translation>

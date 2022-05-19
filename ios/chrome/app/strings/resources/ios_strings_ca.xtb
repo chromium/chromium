@@ -526,7 +526,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5551897871312988470">Proposa traduir aquest idioma</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5580834567471114021">Vols afegir-la a la llista de lectura per a més tard?</translation>
-<translation id="5592679540098330836">Activa la sincronització per a <ph name="NAME" /></translation>
 <translation id="560322036295180549">Desactivat per l'organització</translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
 <translation id="5626245204502895507">No s'ha pogut baixar el fitxer en aquest moment.</translation>
@@ -903,6 +902,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8592752150819985187">Emplena automàticament les contrasenyes</translation>
 <translation id="8605219856220328675">Tanca la pestanya.</translation>
 <translation id="8620640915598389714">Edita</translation>
+<translation id="8620785403235741379">Selecciona una opció</translation>
 <translation id="8626393685701737946">Pots canviar la visualització predeterminada dels llocs web a la visualització per a ordinadors a Configuració &gt; Configuració del contingut</translation>
 <translation id="863090005774946393">La teva organització gestiona el navegador. Pot ser que algunes funcions estiguin desactivades.</translation>
 <translation id="8636825310635137004">Activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis.</translation>

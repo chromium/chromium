@@ -526,7 +526,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5551897871312988470">Tarjoudu kääntämään</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5580834567471114021">Lisätäänkö lukulistalle myöhempää käyttöä varten?</translation>
-<translation id="5592679540098330836">Ota synkronointi käyttöön: <ph name="NAME" /></translation>
 <translation id="560322036295180549">Organisaatiosi on laittanut tämän pois päältä</translation>
 <translation id="5614553682702429503">Tallennetaanko salasana?</translation>
 <translation id="5626245204502895507">Tiedostoa ei voi ladata tällä hetkellä.</translation>
@@ -903,6 +902,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8592752150819985187">Salasanojen automaattinen täyttö</translation>
 <translation id="8605219856220328675">Sulje välilehti.</translation>
 <translation id="8620640915598389714">Muokkaa</translation>
+<translation id="8620785403235741379">Valitse vaihtoehto</translation>
 <translation id="8626393685701737946">Voit vaihtaa sivuston oletusnäkymän tietokonenäkymään kohdasta Asetukset &gt; Sisältöasetukset</translation>
 <translation id="863090005774946393">Organisaatiosi ylläpitää selainta. Kaikki ominaisuudet eivät välttämättä ole käytettävissä.</translation>
 <translation id="8636825310635137004">Ota synkronointi käyttöön, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>

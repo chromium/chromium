@@ -526,7 +526,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5551897871312988470">Nabízet překlad</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5580834567471114021">Přidat do seznamu četby na později?</translation>
-<translation id="5592679540098330836">Zapnout synchronizaci pro: <ph name="NAME" /></translation>
 <translation id="560322036295180549">Vypnuto vaší organizací</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
 <translation id="5626245204502895507">Soubor v tuto chvíli nelze stáhnout.</translation>
@@ -903,6 +902,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8592752150819985187">Automatické vyplňování hesel</translation>
 <translation id="8605219856220328675">Zavřít kartu</translation>
 <translation id="8620640915598389714">Upravit</translation>
+<translation id="8620785403235741379">Vyberte možnost</translation>
 <translation id="8626393685701737946">Výchozí zobrazení webu můžete změnit na počítač v Nastavení &gt; Nastavení obsahu</translation>
 <translation id="863090005774946393">Váš prohlížeč je spravován vaší organizací. Některé funkce mohou být zakázány.</translation>
 <translation id="8636825310635137004">Chcete-li získat přístup ke kartám ze svých ostatních zařízení, zapněte synchronizaci.</translation>

@@ -3276,6 +3276,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
         Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="4115002065223188701">Nettverket er utenfor rekkevidde</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Tillat alltid på dette nettstedet</translation>
 <translation id="4116704186509653070">Åpne igjen</translation>
 <translation id="4117637339509843559">Mørk modus</translation>
 <translation id="4117714603282104018">Fysisk tilbakemelding for styreflate</translation>
@@ -3456,6 +3457,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4307992518367153382">Generelt</translation>
 <translation id="4309165024397827958">Tillat at Android-apper og -tjenester med posisjonstillatelse bruker enhetens posisjon. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene til å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester på en anonym måte.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> kB (<ph name="NUM_KILOBYTES_LIVE" /> kB ubrukt)</translation>
+<translation id="4310132194679586591">Velg en app på enheten for å åpne denne linken</translation>
 <translation id="4310139701823742692">Filen har feil format. Sjekk PPD-filen og prøv på nytt.</translation>
 <translation id="431076611119798497">&amp;Detaljer</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-kontoer}}</translation>
@@ -3984,6 +3986,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4842976633412754305">Denne siden prøver å laste inn skript (kodesnutter) fra uautentiserte kilder.</translation>
 <translation id="4844333629810439236">Andre tastaturer</translation>
 <translation id="4844633725025837809">For ekstra trygghet kan du kryptere passord på enheten før de lagres i Google Passordlagring</translation>
+<translation id="4846628405149428620">Velg hvor dette nettstedet kan lagre endringer</translation>
 <translation id="4846680374085650406">Du følger administratorens anbefaling for denne innstillingen.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> er valgt – trykk på Enter for å velge <ph name="TOPIC_SOURCE" />-album</translation>
 <translation id="4848191975108266266">Google-assistenten og «Ok Google»</translation>
@@ -4058,7 +4061,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4907306957610201395">Tillatelseskategori</translation>
 <translation id="4908811072292128752">Åpne en ny fane for å surfe på to nettsteder samtidig</translation>
 <translation id="4909038193460299775">Siden denne kontoen administreres av <ph name="DOMAIN" />, slettes bokmerkene, loggen, passordene og andre innstillinger du har, fra denne enheten. Data du har lagret i Google-kontoen din, blir imidlertid værende og kan administreres ved hjelp av <ph name="BEGIN_LINK" />Google Oversikt<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Telefonens administrator har deaktivert appstrømming.</translation>
 <translation id="4912643508233590958">Inaktive oppvåkninger</translation>
 <translation id="4915961947098019832">Nettsteder som har lov til å vise bilder</translation>
 <translation id="4916542008280060967">Vil du la nettstedet redigere <ph name="FILE_NAME" />?</translation>
@@ -4685,6 +4687,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5554403733534868102">Etter dette er det slutt på å vente på oppdateringer</translation>
 <translation id="5554489410841842733">Dette ikonet vises når utvidelsen kan brukes på gjeldende side.</translation>
 <translation id="5554720593229208774">Sertifiseringsinstans for e-post</translation>
+<translation id="5554866693883022680">Velg en app på <ph name="DEVICE_TYPE" /> for å åpne denne linken</translation>
 <translation id="5555363196923735206">Vend kameraet</translation>
 <translation id="5555525474779371165">Velg Safe Browsing-beskyttelse</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
@@ -6895,7 +6898,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7758450972308449809">Juster grensene for skjermen</translation>
 <translation id="7760004034676677601">Er dette oppstartssiden du forventet?</translation>
 <translation id="7762024824096060040">Kan ikke bruke denne kontoen</translation>
-<translation id="7762463735017901568">Telefonens administrator har deaktivert synkronisering av varsler</translation>
 <translation id="7764225426217299476">Legg til adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> fra <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Når prøveprosjekter er påslått, blir mengden nettsøppel og svindel redusert ved bruk av tillitstokener, som hjelper nettsteder med å bekjempe svindel og skille mellom roboter og mennesker.</translation>

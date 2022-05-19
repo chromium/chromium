@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Podezření na captive portál</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Zapněte ochranu proti zápisu</translation>
 <translation id="1308754910631152188">Aktualizace (dokončeno <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Není dostupná žádná síť <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Datum posledního resetování dat není k dispozici</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Nastavení rychlých odpovědí</translation>
 <translation id="5168185087976003268">Opotřebení baterie</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
+<translation id="5179530508336824319">Než budete pokračovat na další obrazovku, zapněte ochranu proti zápisu. Pokyny najdete na stránce podpory výrobce zařízení.</translation>
 <translation id="5190187232518914472">Oživte své oblíbené vzpomínky. Alba můžete přidat a upravit ve <ph name="LINK_BEGIN" />Fotkách Google<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Na obrazovce nevidím nic, s čím vám můžu pomoct.
 Zkuste klepnout na mikrofon a zeptat se.</translation>

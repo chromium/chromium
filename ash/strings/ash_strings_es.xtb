@@ -135,6 +135,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1715293566947629045">Inhabilitando perfil. Espera unos minutos.</translation>
 <translation id="1719094688023114093">Subtítulos automáticos activados.</translation>
 <translation id="1720011244392820496">Activar Sincronización Wi‑Fi</translation>
+<translation id="1733996486177697563">Cambia entre el tema oscuro y el claro. Mantén pulsado el escritorio y, después, selecciona Fondo de pantalla y estilo.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" es visible para los dispositivos Bluetooth.</translation>
 <translation id="174102739345480129">El marcador está desactivado.</translation>
 <translation id="1743570585616704562">No se ha reconocido</translation>
@@ -195,6 +196,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2079504693865562705">Ocultar aplicaciones de la estantería</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2083190527011054446">Buenas noches, <ph name="GIVEN_NAME" /></translation>
+<translation id="2088116547584365419">juegos</translation>
 <translation id="209965399369889474">Sin conexión a la red</translation>
 <translation id="2107914222138020205">Tu cable USB‑C no es compatible con Thunderbolt. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="2108303511227308752">La combinación de teclas Alt + Retroceso ha cambiado Para usar la tecla Eliminar, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + Retroceso.</translation>
@@ -264,6 +266,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2573588302192866788">No se ha podido conectar (<ph name="NAME" />)</translation>
 <translation id="2575685495496069081">Se ha inhabilitado el inicio de sesión múltiple</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
+<translation id="2586561057878260610">Pulsa Ctrl + W para combinarlo con <ph name="DESK_NAME" />. Pulsa Ctrl + Shift + W para cerrar el escritorio y las ventanas.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Hacer una captura de pantalla de la ventana</translation>
 <translation id="2607678425161541573">Se requiere inicio de sesión online</translation>
@@ -670,6 +673,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4917385247580444890">Buena</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que esta cuenta sea la primera en la que se inicie sesión cuando se cree una sesión de inicio de sesión múltiple.</translation>
+<translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Hacer captura</translation>
 <translation id="495046168593986294">Desplazarse hacia arriba</translation>
@@ -736,6 +740,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5331975486040154427">Dispositivo USB tipo C (puerto trasero izquierdo)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (derecho)</translation>
 <translation id="5352250171825660495">Tema oscuro está activado</translation>
+<translation id="5356963482258194581">Cambia entre el tema oscuro y el claro. Haz clic con el botón derecho en el escritorio y selecciona Fondo de pantalla y estilo.</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
 <translation id="5393156353051693207">Toca y mantén pulsado en cualquier lugar de la pantalla para reorganizar tus aplicaciones</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está encima de <ph name="IN_PLACE_APP" />. Suelta para crear una carpeta.</translation>
@@ -757,6 +762,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5520229639206813572">Tu administrador ha eliminado todos los perfiles de eSIM. Ponte en contacto con tu administrador para obtener más información.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> se está conectando.</translation>
 <translation id="5532994612895037630">Toca en cualquier sitio para grabar la pantalla completa</translation>
+<translation id="5536723544185013515">Aplicaciones recientes, desplázate con las teclas de flecha hacia la izquierda o hacia la derecha para acceder a todas las aplicaciones recientes</translation>
 <translation id="553675580533261935">Saliendo de la sesión</translation>
 <translation id="5537725057119320332">Enviar</translation>
 <translation id="554893713779400387">Activar o desactivar dictado</translation>
@@ -784,6 +790,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la cuenta de usuario actual.</translation>
 <translation id="5689633613396158040">Con la luz nocturna, resulta más fácil mirar la pantalla o leer con poca luz. Toca para elegir a qué hora debe activarse la luz nocturna o para desactivarla por completo.</translation>
 <translation id="5691772641933328258">Huella digital no reconocida</translation>
+<translation id="570390244361237317">Todas las aplicaciones, desplázate con las teclas de flecha para acceder a todas las aplicaciones</translation>
 <translation id="5707775774148071965">Tu dispositivo admite una tasa de datos mayor que tu cable. El rendimiento del dispositivo puede verse limitado.</translation>
 <translation id="5710450975648804523">Modo No molestar activado</translation>
 <translation id="571295407079589142">Los datos móviles están desactivados</translation>

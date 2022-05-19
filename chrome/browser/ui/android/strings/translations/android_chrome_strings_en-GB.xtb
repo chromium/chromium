@@ -188,7 +188,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1995884366040846621">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
-<translation id="2011996512573319870">Sync to get the most relevant content from Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
 <translation id="2020309681647789787">You’ll have your history on all your synced devices, so you can continue what you were doing</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
@@ -272,7 +271,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2461822463642141190">Current</translation>
 <translation id="2472163211318554013">Sign in to get the most out of Chrome</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
-<translation id="2481251096908459228">See stories for you</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2494974097748878569">Google Assistant in Chrome</translation>
@@ -314,7 +312,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}other{# Audio files}}</translation>
 <translation id="265156376773362237">Standard preloading</translation>
 <translation id="2656405586795711023">Web apps</translation>
-<translation id="2700802943130197326">Sync to get your passwords, bookmarks and more on all your other devices.</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2707726405694321444">Refresh page</translation>
@@ -584,6 +581,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4209895695669353772">To get personalised content suggested by Google, turn on sync</translation>
 <translation id="4214315110991671325">If you allow cookies, Chrome may use them for preloading.</translation>
 <translation id="4225895483398857530">Toolbar shortcut</translation>
+<translation id="4227318652298512614">Follow any sites you want</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
 <translation id="4250229828105606438">Screenshot</translation>

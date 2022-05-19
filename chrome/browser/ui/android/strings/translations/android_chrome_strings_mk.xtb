@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов. Погледнете ја <ph name="BEGIN_LINK1" />Политиката за приватност<ph name="END_LINK1" /> на сајтов.</translation>
 <translation id="2000419248597011803">Испраќа колачиња и пребарувања од лентата за адреси и полето за пребарување во вашиот стандарден пребарувач</translation>
 <translation id="200114059308480249">Да се вклучи околниот текст во пребарувањата на Google?</translation>
-<translation id="2011996512573319870">Синхронизирајте за да ги добиете најрелевантните содржини од Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="2020309681647789787">Ќе ја задржите историјата на сите ваши синхронизирани уреди за да може да продолжите со активностите</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">Моментално</translation>
 <translation id="2472163211318554013">Најавете се за да извадите максимум од Chrome</translation>
 <translation id="247737702124049222">Описите за слики се вклучени.</translation>
-<translation id="2481251096908459228">Погледнете стории за вас</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2494974097748878569">„Помошникот на Google“ во Chrome</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиодатотека}one{# аудиодатотека}other{# аудиодатотеки}}</translation>
 <translation id="265156376773362237">Стандардно вчитување однапред</translation>
 <translation id="2656405586795711023">Веб-апликации</translation>
-<translation id="2700802943130197326">Синхронизирајте ги лозинките, обележувачите и друго на сите ваши други уреди.</translation>
 <translation id="2702516483241149200">Ново: споделете линк што ќе ве одведе до текстов со лизгање</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Освежи ја страницата</translation>

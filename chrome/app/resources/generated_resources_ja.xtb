@@ -25,6 +25,7 @@
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />に保存したパスワードを表示しています</translation>
 <translation id="1026655690966755180">ポートを追加</translation>
 <translation id="1026822031284433028">画像を読み込む</translation>
+<translation id="1028700151766901954">理由: LBS は引き続きデフォルトのブラウザとして <ph name="DEFAULT_OPEN_BROWSER" /> を使用します。</translation>
 <translation id="1029317248976101138">ズーム</translation>
 <translation id="1031362278801463162">プレビューを読み込んでいます</translation>
 <translation id="1032605640136438169">新しい利用規約をご確認ください</translation>
@@ -3259,6 +3260,7 @@
         カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
 <translation id="4115002065223188701">ネットワークが圏外です</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
+<translation id="4116663294526079822">このサイトでは常に許可</translation>
 <translation id="4116704186509653070">もう一度開く</translation>
 <translation id="4117637339509843559">ダークモード</translation>
 <translation id="4117714603282104018">タッチパッドの触覚フィードバック</translation>
@@ -3340,6 +3342,7 @@
 <translation id="4209092469652827314">大</translation>
 <translation id="4209251085232852247">オフになっています</translation>
 <translation id="4210048056321123003">仮想マシンをダウンロードしています</translation>
+<translation id="4210380525132844778">理由: <ph name="RULE" /> が「<ph name="LIST_NAME" />」のリストに含まれています。</translation>
 <translation id="421182450098841253">ブックマーク バーを表示(&amp;S)</translation>
 <translation id="4211851069413100178">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Android アプリでの使用を停止する</translation>
@@ -3964,6 +3967,7 @@
 <translation id="4842976633412754305">このページは承認されていないソースからのスクリプトを読み込もうとしています。</translation>
 <translation id="4844333629810439236">他のキーボード</translation>
 <translation id="4844633725025837809">セキュリティ強化のため、Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
+<translation id="4846628405149428620">このサイトに変更の保存を許可する場所を選択してください</translation>
 <translation id="4846680374085650406">管理者が推奨する設定を使用しています。</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> が選択されています。<ph name="TOPIC_SOURCE" /> アルバムを選択するには Enter キーを押してください</translation>
 <translation id="4848191975108266266">Google アシスタントの「OK Google」</translation>
@@ -4038,7 +4042,6 @@
 <translation id="4907306957610201395">権限のカテゴリ</translation>
 <translation id="4908811072292128752">新しいタブを開いて 2 つのサイトを同時に閲覧できます</translation>
 <translation id="4909038193460299775">このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから消去されます。ただし、データは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
-<translation id="4912265719039610598">アプリ ストリーミングはスマートフォンの管理者によって無効にされています。</translation>
 <translation id="4912643508233590958">アイドル状態からの復帰</translation>
 <translation id="4915961947098019832">画像の表示を許可するサイト</translation>
 <translation id="4916542008280060967">サイトに <ph name="FILE_NAME" /> の編集を許可しますか？</translation>
@@ -5159,6 +5162,7 @@
 <translation id="6063284707309177505">QR コードを作成</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> よく似た音声や録音した音声でも、<ph name="SUPERVISED_USER_NAME" /> さんのアカウントに基づく情報にアクセスできることがあります。バッテリー消費を抑えるには、<ph name="SUPERVISED_USER_NAME" /> さんの [アシスタントの設定] で、このデバイスが電源に接続されている場合のみ「OK Google」をオンにするよう選択できます。</translation>
 <translation id="6064217302520318294">画面ロック</translation>
+<translation id="6065145031947216733">ブラウジング環境を分けますか？</translation>
 <translation id="6065289257230303064">証明書のサブジェクトのディレクトリ属性</translation>
 <translation id="6066794465984119824">画像ハッシュが設定されていません</translation>
 <translation id="6069464830445383022">Google アカウントを使用して Chromebook にログイン</translation>
@@ -5237,6 +5241,7 @@
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Wi-Fi を追加</translation>
 <translation id="6130887916931372608">キーボード キー</translation>
+<translation id="6135823405800500595">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="6136114942382973861">ダウンロード バーを閉じる</translation>
 <translation id="6136287496450963112">セキュリティ キーは PIN で保護されていません。指紋を管理するには、まず PIN を作成してください。</translation>
 <translation id="6138680304137685902">X9.62 ECDSA 署名（SHA-384）</translation>
@@ -6866,7 +6871,6 @@
 <translation id="7758450972308449809">ディスプレイの外枠を調整します</translation>
 <translation id="7760004034676677601">この起動ページでよろしいですか？</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
-<translation id="7762463735017901568">通知の同期はスマートフォンの管理者によって無効にされています</translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />（<ph name="DOWNLOAD_DOMAIN" /> から）</translation>
 <translation id="7764857504908700767">試用版の使用中、スパムと不正行為の削減は、サイトが不正行為に対処し bot と人間を区別する際に役立つトラスト トークンに依存しています。</translation>
@@ -7066,6 +7070,7 @@
 <translation id="7947962633355574091">動画アドレスをコピー(&amp;C)</translation>
 <translation id="7947964080535614577">多くのサイトは、コンテンツやサービスを料金なしで提供する目的で広告を表示します。ただし、一部のサイトについては、煩わしい広告や誤解を招く広告が表示されることがわかっています。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> のすべてのページ</translation>
+<translation id="7950629216186736592">理由: LBS では http://、https://、file:// の URL のみサポートされています。</translation>
 <translation id="7951265006188088697">Google Pay のお支払い方法を追加、管理するには、<ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />にアクセスしてください</translation>
 <translation id="795130320946928025">仮想カードをオフにする</translation>
 <translation id="7952708427581814389">サイトがクリップボード内のテキストや画像へのアクセスを要求できるようにする</translation>
@@ -7610,6 +7615,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> 製の不明なデバイス</translation>
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>
 <translation id="8481980314595922412">試用版機能はオンになっています</translation>
+<translation id="8486666913807228950">理由: 反転ルール <ph name="REVERT_RULE" /> が「次で強制的に開く」のリストに含まれています。</translation>
 <translation id="848666842773560761">アプリがカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="8487678622945914333">拡大</translation>
 <translation id="8489156414266187072">候補はお客様のアカウントにのみ表示されます</translation>

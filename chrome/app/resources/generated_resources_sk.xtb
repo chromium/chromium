@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Zobrazujú sa heslá z vášho <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Pridať port</translation>
 <translation id="1026822031284433028">Načítať obrázok</translation>
+<translation id="1028700151766901954">Dôvod: PSP zostane predvolene v prehliadači <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Lupa</translation>
 <translation id="1031362278801463162">Načítava sa ukážka</translation>
 <translation id="1032605640136438169">Prečítajte si nové zmluvné podmienky</translation>
@@ -3270,6 +3271,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
         Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Pripôsobenie Chromu.</translation>
 <translation id="4115002065223188701">Sieť je mimo dosahu</translation>
 <translation id="4115378294792113321">Purpurová</translation>
+<translation id="4116663294526079822">Vždy povoliť na tomto webe</translation>
 <translation id="4116704186509653070">Znova otvoriť</translation>
 <translation id="4117637339509843559">Tmavý režim</translation>
 <translation id="4117714603282104018">Hmatová odozva touchpadu</translation>
@@ -3351,6 +3353,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4209092469652827314">Veľké</translation>
 <translation id="4209251085232852247">Vypnuté</translation>
 <translation id="4210048056321123003">Sťahuje sa virtuálny počítač</translation>
+<translation id="4210380525132844778">Dôvod: V zozname „<ph name="LIST_NAME" />“ bolo nájdené pravidlo <ph name="RULE" />.</translation>
 <translation id="421182450098841253">&amp;Zobraziť panel so záložkami</translation>
 <translation id="4211851069413100178">Odosielať údaje o využití a diagnostiky. Pomôžte zlepšiť prostredie Androidu automatickým odosielaním diagnostík a údajov o používaní zariadenia a aplikácií do Googlu. Pomôžu zvýšiť stabilitu systému a aplikácií a poskytovať ďalšie vylepšenia. Niektoré súhrnné údaje tiež pomôžu aplikáciám Google a partnerom, ako napríklad vývojárom Androidu. Používanie tohto <ph name="BEGIN_LINK1" />nastavenia<ph name="END_LINK1" /> je presadzované vlastníkom. Vlastník môže odosielať Googlu diagnostiky a údaje o používaní pre toto zariadenie. Ak aktivujete dodatočnú aktivitu na internete a v aplikáciách, tieto údaje sa môžu uložiť vo vašom účte Google. <ph name="BEGIN_LINK2" />Ďalšie informácie<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Prestať používať s aplikáciami pre Android</translation>
@@ -4052,7 +4055,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4907306957610201395">Kategória povolení</translation>
 <translation id="4908811072292128752">Otvorte novú kartu a prehliadajte dva weby súčasne</translation>
 <translation id="4909038193460299775">Keďže tento účet spravuje doména <ph name="DOMAIN" />, budú z tohto zariadenia vymazané vaše záložky, história, heslá a ďalšie nastavenia. Vaše údaje však zostanú uložené v účte Google a môžete ich spravovať pomocou panela <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Streamovanie aplikácií je zakázané správcom vášho telefónu.</translation>
 <translation id="4912643508233590958">Prebudenia z nečinnosti</translation>
 <translation id="4915961947098019832">Môže zobrazovať obrázky</translation>
 <translation id="4916542008280060967">Chcete povoliť webu upravovať súbor <ph name="FILE_NAME" />?</translation>
@@ -5178,6 +5180,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6063284707309177505">Vytvoriť QR kód</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> K osobným výsledkom dieťaťa <ph name="SUPERVISED_USER_NAME" /> je možné získať prístup podobným hlasom alebo jeho nahrávkou. Ak chcete šetriť batériu, môžete v nastaveniach Asistenta dieťaťa <ph name="SUPERVISED_USER_NAME" /> vybrať, aby bolo rozpoznávanie výrazu „Hey Google“ zapnuté iba vtedy, keď je toto zariadenie pripojené k napájaciemu zdroju.</translation>
 <translation id="6064217302520318294">Zámka obrazovky</translation>
+<translation id="6065145031947216733">Chcete oddeliť svoje prehliadanie?</translation>
 <translation id="6065289257230303064">Atribúty adresára subjektu certifikátu</translation>
 <translation id="6066794465984119824">Hodnota hash obrázka nie je nastavená</translation>
 <translation id="6069464830445383022">Do Chromebooku sa prihlasujete svojím účtom Google</translation>
@@ -5256,6 +5259,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6129953537138746214">Medzera</translation>
 <translation id="6130692320435119637">Pridať Wi‑Fi</translation>
 <translation id="6130887916931372608">Kláves klávesnice</translation>
+<translation id="6135823405800500595">Uistite sa, že telefón máte nablízku, odomknutý a so zapnutým rozhraním Bluetooth a pripojením Wi‑Fi</translation>
 <translation id="6136114942382973861">Zatvoriť panel so stiahnutými súbormi</translation>
 <translation id="6136287496450963112">Váš bezpečnostný kľúč nie je chránený kódom PIN. Ak chcete spravovať odtlačky prsta, najprv vytvorte PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA s SHA-384</translation>
@@ -6893,7 +6897,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7758450972308449809">Úprava ohraničenia zobrazenia</translation>
 <translation id="7760004034676677601">Je toto úvodná stránka, ktorú ste čakali?</translation>
 <translation id="7762024824096060040">Tento účet sa nedá použiť</translation>
-<translation id="7762463735017901568">Správca vášho telefónu deaktivoval synchronizáciu upozornení.</translation>
 <translation id="7764225426217299476">Pridať adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> z domény <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Keď sú zapnuté skúšobné obdobia, redukcia spamu a podvodov závisí od tokenov dôveryhodnosti, ktoré pomáhajú webom bojovať proti podvodom a rozlišovať robotov od ľudí.</translation>
@@ -7093,6 +7096,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7947962633355574091">K&amp;opírovať adresu videa</translation>
 <translation id="7947964080535614577">Weby zvyčajne zobrazujú reklamy, aby mohli poskytovať obsah či služby bez peňažného poplatku. Niektoré weby sú však známe tým, že zobrazujú obťažujúce alebo zavádzajúce reklamy.</translation>
 <translation id="7948407723851303488">Všetky stránky domény <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Dôvod: PSP podporuje iba webové adresy http://, https:// a file://.</translation>
 <translation id="7951265006188088697">Ak chcete pridať alebo spravovať spôsoby platby Google Pay, prejdite do svojho <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" />.</translation>
 <translation id="795130320946928025">Vypnúť virtuálnu kartu</translation>
 <translation id="7952708427581814389">Weby môžu žiadať o zobrazenie textu a obrázkov vo vašej schránke</translation>
@@ -7637,6 +7641,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8480869669560681089">Neznáme zariadenie od spoločnosti <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrdenie povolenia pre USB</translation>
 <translation id="8481980314595922412">Skúšobné funkcie sú zapnuté</translation>
+<translation id="8486666913807228950">Dôvod: V zozname „Vynútiť otvorenie v prehliadači“ bolo nájdené invertované pravidlo <ph name="REVERT_RULE" />.</translation>
 <translation id="848666842773560761">K fotoaparátu sa snaží získať prístup určitá aplikácia. Ak chcete prístup povoliť, vypnite prepínač ochrany súkromia fotoaparátu.</translation>
 <translation id="8487678622945914333">Priblížiť</translation>
 <translation id="8489156414266187072">Osobné návrhy sa zobrazujú iba vo vašom účte</translation>

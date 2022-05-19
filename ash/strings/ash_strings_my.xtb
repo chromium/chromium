@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ကို အားသွင်းနေသည်</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ဖုန်းရှာခြင်း</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> အမည်ရသည့် သိမ်းထားသောမျက်နှာပြင်သည် ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" /> တွင် ပြန်လာပါ။</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> ကို <ph name="FOLDER_NAME" /> ဖိုင်တွဲသို့ ရွှေ့သည်။</translation>
@@ -196,6 +197,7 @@
 <translation id="2079504693865562705">အက်ပ်များကို စင်တွင်ဖျောက်ထားရန်</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2083190527011054446">မင်္ဂလာ ညချမ်းပါ <ph name="GIVEN_NAME" /></translation>
+<translation id="2088116547584365419">ဂိမ်းများ</translation>
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2107914222138020205">သင့် USB-C ကေဘယ်သည် Thunderbolt ကို မပံ့ပိုးပါ။ စက်၏စွမ်းဆောင်ရည်သည် အကန့်အသတ်ရှိနိုင်သည်။</translation>
 <translation id="2108303511227308752">‘Alt + နောက်ပြန်ခလုတ်’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ဖျက်ရန်’ ကီး သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + နောက်ပြန်ခလုတ် နှိပ်ပါ။</translation>
@@ -268,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> နှင့် ပေါင်းရန် Ctrl + W နှိပ်ပါ။ မျက်နှာပြင်နှင့် ဝင်းဒိုးများ ပိတ်ရန် Ctrl + Shift + W နှိပ်ပါ။</translation>
 <translation id="2595239820337756193">၅ ကီလိုမီတာကို မိုင်ပြောင်းပါ</translation>
 <translation id="2596078834055697711">ဝင်းဒိုး မျက်နှာပြင်ပုံ ရိုက်ရန်</translation>
+<translation id="2598725286293895280">မျက်နှာပြင်ရှိ ပံ့ပိုးမထားသော အက်ပ်များ</translation>
 <translation id="2607678425161541573">အွန်လိုင်း လက်မှတ်ထိုးဝင်ခြင်း လိုအပ်သည်</translation>
 <translation id="2620016719323068571">သင်၏ <ph name="CATEGORY" />၊ ဖိုင်၊ အက်ပ်များနှင့် အခြားအရာများကို ရှာပါ...</translation>
 <translation id="2620436844016719705">စနစ်</translation>
@@ -643,6 +646,7 @@
 <translation id="4734965478015604180">အလျားလိုက်</translation>
 <translation id="4735498845456076464">‘<ph name="LAUNCHER_KEY_NAME" /> + နံပါတ်’ လက်ကွက်ဖြတ်လမ်းများကို ပြောင်းထားသည်။ လုပ်ဆောင်ချက်ကီးများ သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ထိပ်ဆုံးအတန်းရှိ ကီးကို နှိပ်ပါ။</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
+<translation id="4740516757091333363">သိမ်းထားသောမျက်နှာပြင်ကို ဖျက်မလား။</translation>
 <translation id="4752784485658729358">သိမ်းထားသည့် မျက်နှာပြင် ၆ ခုသာ ခွင့်ပြုထားသည်။ မျက်နှာပြင်အသစ် ဖွင့်ရန် တစ်ခုကို ဖယ်ရှားပါ။</translation>
 <translation id="4759238208242260848">ဒေါင်းလုဒ်များ</translation>
 <translation id="4774338217796918551">မနက်ဖြန် <ph name="COME_BACK_TIME" /> တွင် ပြန်လာပါ။</translation>
@@ -740,6 +744,7 @@
 <translation id="5352250171825660495">မှောင်သည့်အပြင်အဆင် ဖွင့်ထားသည်</translation>
 <translation id="5356963482258194581">အမှောင်နောက်ခံနှင့် အလင်းနောက်ခံကို ပြောင်းသုံးနိုင်သည်။ ဒက်စ်တော့ပေါ်တွင် ညာဘက်ခလုတ်ကို နှိပ်၍ ‘နောက်ခံနှင့် စတိုင်’ ကို ရွေးပါ။</translation>
 <translation id="5379115545237091094">စမ်းသပ်သည့်အကြိမ်ရေ အလွန်များနေပါပြီ</translation>
+<translation id="5391307769715781764">သိမ်းထားသောမျက်နှာပြင်ကို အစားထိုးမလား။</translation>
 <translation id="5393156353051693207">နှစ်သက်ရာနေရာတွင် တို့ထိ၍ ဖိထားပြီး သင့်အက်ပ်များကို ပြန်စီနိုင်သည်</translation>
 <translation id="5395308026110844773">ဖိုင်တွဲပြုလုပ်ရန် <ph name="IN_PLACE_APP" /> ပေါ်တွင် <ph name="DRAGGED_APP_NAME" /> ကို တင်သည်။</translation>
 <translation id="5397578532367286026">ဒီ အသုံးပြုသူ၏ သုံးစွဲမှု နှင့် မှတ်တမ်းကို chrome.com ရှိ (<ph name="MANAGER_EMAIL" />)၏ မန်နေဂျာက ဆန်းစစ် ကြည့်ရှု နိုင်သည်။</translation>
@@ -973,6 +978,7 @@
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6801878137098616817">မကြာသေးမီက ပြင်ဆင်ထားသည်</translation>
 <translation id="6803622936009808957">ပံ့ပိုးထားသည့် ပြတ်သားမှုများကို မတွေ့နိုင်ခဲ့၍ ပြကွက်များကို ထင်ဟပ် မပေးနိုင်ခဲ့ပါ။ ၎င်းအစား တိုးချဲ့ ဒက်စ်တော့ကို ထည့်ပေးခဲ့သည်။</translation>
+<translation id="6812232930908427253">မျက်နှာပြင်ကို မသိမ်းနိုင်ပါ။ ဝင်ဒိုး (သို့) တဘ် များလွန်းနေသည်။</translation>
 <translation id="6818242057446442178">စာလုံးအလိုက် နောက်ပြန်သွားရန်</translation>
 <translation id="6819327813400217281">ကင်မရာကို အောက်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
 <translation id="6820676911989879663">ခဏနားပါ။</translation>

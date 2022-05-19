@@ -188,7 +188,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="1995884366040846621">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Olvassa el a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Bizonyos cookie-kat és kereséseket küld a címsávból és a keresőmezőből az alapértelmezett keresőmotornak</translation>
 <translation id="200114059308480249">Használni szeretné a környező szöveget is a Google Kereső használatakor?</translation>
-<translation id="2011996512573319870">Szinkronizáljon, hogy megkapja a legrelevánsabb tartalmakat a Google-tól</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fájl}other{# fájl}}</translation>
 <translation id="2020309681647789787">Előzményeihez az összes szinkronizált eszközén hozzáférhet, így ott folytathatja a böngészést, ahol abbahagyta.</translation>
 <translation id="2021896219286479412">Teljes képernyős oldal vezérlői</translation>
@@ -272,7 +271,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="2472163211318554013">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chrome-ból</translation>
 <translation id="247737702124049222">A képleírások be vannak kapcsolva</translation>
-<translation id="2481251096908459228">Az Önnek ajánlott történetek megtekintése</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
 <translation id="2494974097748878569">Google Segéd a Chrome-ban</translation>
@@ -314,7 +312,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# hangfájl}other{# hangfájl}}</translation>
 <translation id="265156376773362237">Normál előtöltés</translation>
 <translation id="2656405586795711023">Webalkalmazások</translation>
-<translation id="2700802943130197326">Szinkronizáljon, hogy az összes többi eszközén hozzáférjen jelszavaihoz, könyvjelzőihez stb.</translation>
 <translation id="2702516483241149200">Új: az ehhez a szöveghez gördülő linket oszthat meg</translation>
 <translation id="2704606927547763573">Másolt</translation>
 <translation id="2707726405694321444">Oldal frissítése</translation>

@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Menampilkan sandi dari <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /> Anda</translation>
 <translation id="1026655690966755180">Tambahkan Port</translation>
 <translation id="1026822031284433028">Muat Gambar</translation>
+<translation id="1028700151766901954">Alasan: LBS tetap dalam <ph name="DEFAULT_OPEN_BROWSER" /> secara default.</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1031362278801463162">Memuat pratinjau</translation>
 <translation id="1032605640136438169">Harap tinjau persyaratan baru</translation>
@@ -3283,6 +3284,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
         Anda dapat mengelola setelan dari menu kartu atau melihat opsi lainnya di Sesuaikan Chrome.</translation>
 <translation id="4115002065223188701">Jaringan di luar jangkauan</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Selalu izinkan di situs ini</translation>
 <translation id="4116704186509653070">Buka lagi</translation>
 <translation id="4117637339509843559">Mode gelap</translation>
 <translation id="4117714603282104018">Info via sentuhan touchpad</translation>
@@ -3364,6 +3366,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4209251085232852247">Dinonaktifkan</translation>
 <translation id="4210048056321123003">Mendownload mesin virtual</translation>
+<translation id="4210380525132844778">Alasan: <ph name="RULE" /> ditemukan dalam daftar "<ph name="LIST_NAME" />".</translation>
 <translation id="421182450098841253">&amp;Tampilkan Bilah Bookmark</translation>
 <translation id="4211851069413100178">Kirim data penggunaan dan diagnostik. Bantuan sempurnakan pengalaman Android Anda dengan otomatis mengirim data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta peningkatan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. <ph name="BEGIN_LINK1" />Setelan<ph name="END_LINK1" /> ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirim data diagnostik dan penggunaan untuk perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda. <ph name="BEGIN_LINK2" />Pelajari Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Hentikan penggunaan dengan aplikasi Android</translation>
@@ -4066,7 +4069,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4907306957610201395">Kategori Izin</translation>
 <translation id="4908811072292128752">Buka tab baru untuk mengakses 2 situs sekaligus</translation>
 <translation id="4909038193460299775">Karena akun ini dikelola oleh <ph name="DOMAIN" />, bookmark, histori, sandi, dan setelan yang lain akan dihapus dari perangkat ini. Namun, data Anda akan tetap disimpan di Akun Google dan dapat dikelola di <ph name="BEGIN_LINK" />Google Dasbor<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Streaming aplikasi dinonaktifkan oleh administrator ponsel Anda.</translation>
 <translation id="4912643508233590958">Bangun saat Nganggur</translation>
 <translation id="4915961947098019832">Diizinkan menampilkan gambar</translation>
 <translation id="4916542008280060967">Izinkan situs mengedit <ph name="FILE_NAME" />?</translation>
@@ -5192,6 +5194,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6063284707309177505">Buat Kode QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" /> Suara atau rekaman yang mirip mungkin juga dapat mengakses hasil personal <ph name="SUPERVISED_USER_NAME" />. Untuk menghemat baterai, Anda dapat memilih di setelan Asisten <ph name="SUPERVISED_USER_NAME" /> agar hanya mengaktifkan "Ok Google" saat perangkat ini dicolokkan ke sumber listrik.</translation>
 <translation id="6064217302520318294">Kunci layar</translation>
+<translation id="6065145031947216733">Pisahkan penjelajahan Anda?</translation>
 <translation id="6065289257230303064">Atribut Direktori Subjek Sertifikat</translation>
 <translation id="6066794465984119824">Hash gambar tidak disetel</translation>
 <translation id="6069464830445383022">Akun Google Anda adalah kunci akses Chromebook Anda</translation>
@@ -5270,6 +5273,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6129953537138746214">Spasi</translation>
 <translation id="6130692320435119637">Tambahkan Wi-Fi</translation>
 <translation id="6130887916931372608">Tombol keyboard</translation>
+<translation id="6135823405800500595">Pastikan ponsel berada di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif</translation>
 <translation id="6136114942382973861">Tutup kotak download</translation>
 <translation id="6136287496450963112">Kunci keamanan Anda tidak dilindungi PIN. Untuk mengelola sidik jari, buat PIN terlebih dahulu.</translation>
 <translation id="6138680304137685902">Tanda tangan X9.62 ECDSA dengan SHA-384</translation>
@@ -6903,7 +6907,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7758450972308449809">Sesuaikan batas tampilan Anda</translation>
 <translation id="7760004034676677601">Apakah ini halaman mulai yang Anda harapkan?</translation>
 <translation id="7762024824096060040">Tidak dapat menggunakan akun ini</translation>
-<translation id="7762463735017901568">Sinkronisasi notifikasi dinonaktifkan oleh administrator ponsel Anda</translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> dari <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Jika uji coba diaktifkan, Pengurangan spam &amp; penipuan akan mengandalkan trust token untuk membantu situs melawan penipuan dan membedakan bot dari manusia.</translation>
@@ -7104,6 +7107,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7947962633355574091">S&amp;alin Alamat Video</translation>
 <translation id="7947964080535614577">Situs biasanya menampilkan iklan agar dapat menyediakan konten atau layanan tanpa biaya. Namun, beberapa situs dikenal menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="7948407723851303488">Semua halaman dari <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Alasan: LBS hanya mendukung URL http://, https://, dan file://.</translation>
 <translation id="7951265006188088697">Untuk menambahkan atau mengelola metode pembayaran Google Pay, buka <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /> Anda</translation>
 <translation id="795130320946928025">Nonaktifkan kartu virtual</translation>
 <translation id="7952708427581814389">Situs dapat meminta untuk melihat teks dan gambar di papan klip Anda</translation>
@@ -7648,6 +7652,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8480869669560681089">Perangkat tidak dikenal dari <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Konfirmasi Izin USB</translation>
 <translation id="8481980314595922412">Fitur uji coba aktif</translation>
+<translation id="8486666913807228950">Alasan: Aturan terbalik <ph name="REVERT_RULE" /> ditemukan dalam daftar "Buka paksa di".</translation>
 <translation id="848666842773560761">Sebuah aplikasi sedang mencoba mengakses kamera. Nonaktifkan tombol mode privasi kamera untuk mengizinkan akses.</translation>
 <translation id="8487678622945914333">Perbesar</translation>
 <translation id="8489156414266187072">Saran pribadi hanya ditampilkan di akun Anda</translation>

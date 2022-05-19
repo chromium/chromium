@@ -187,7 +187,6 @@
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
 <translation id="2000419248597011803">將網址列和搜尋框中的部分 Cookie 和搜尋字詞傳送給你的預設搜尋引擎</translation>
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
-<translation id="2011996512573319870">進行同步處理，取得 Google 提供的最相關內容</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
 <translation id="2020309681647789787">你可以在所有已同步的裝置上查看歷史記錄，繼續執行先前的任何工作</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
@@ -271,7 +270,6 @@
 <translation id="2461822463642141190">電流</translation>
 <translation id="2472163211318554013">登入以充分運用 Chrome 的各項功能</translation>
 <translation id="247737702124049222">圖片說明功能已開啟</translation>
-<translation id="2481251096908459228">查看為你推薦的報導</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2494974097748878569">Chrome 版 Google 助理</translation>
@@ -313,7 +311,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 個音訊檔案}other{# 個音訊檔案}}</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2656405586795711023">網頁應用程式</translation>
-<translation id="2700802943130197326">進行同步處理，取得你在其他裝置上的密碼、書籤和其他資料。</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>

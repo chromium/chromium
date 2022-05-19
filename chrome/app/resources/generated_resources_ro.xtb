@@ -3269,6 +3269,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
         Poți să gestionezi setările din meniul cardului sau să afișezi mai multe opțiuni în Personalizează Chrome.</translation>
 <translation id="4115002065223188701">Rețea în afara ariei de acoperire</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Permiteți întotdeauna pe acest site</translation>
 <translation id="4116704186509653070">Deschide din nou</translation>
 <translation id="4117637339509843559">Modul întunecat</translation>
 <translation id="4117714603282104018">Feedbackul haptic al touchpadului</translation>
@@ -4051,7 +4052,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4907306957610201395">Categoria de permisiuni</translation>
 <translation id="4908811072292128752">Deschide o filă nouă pentru a naviga pe două site-uri simultan</translation>
 <translation id="4909038193460299775">Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv. Totuși, datele vor rămâne stocate în Contul Google și pot fi gestionate din <ph name="BEGIN_LINK" />Tabloul de bord Google<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Streamingul de aplicație a fost dezactivat de administratorul telefonului.</translation>
 <translation id="4912643508233590958">Ieșiri din modul inactiv</translation>
 <translation id="4915961947098019832">Au permisiunea de a afișa imagini</translation>
 <translation id="4916542008280060967">Permiți ca site-ul să editeze <ph name="FILE_NAME" />?</translation>
@@ -6890,7 +6890,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7758450972308449809">Ajustează delimitările afișajului</translation>
 <translation id="7760004034676677601">Aceasta este pagina de pornire la care vă așteptați?</translation>
 <translation id="7762024824096060040">Contul nu poate fi folosit</translation>
-<translation id="7762463735017901568">Sincronizarea notificărilor a fost dezactivată de administratorul telefonului</translation>
 <translation id="7764225426217299476">Adaugă o adresă</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de la <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">În versiunile de încercare, Reducerea spamului și fraudei se bazează pe Trust Tokens pentru a ajuta site-urile să prevină frauda și să deosebească aplicațiile bot de persoane.</translation>

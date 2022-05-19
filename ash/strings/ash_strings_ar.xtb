@@ -136,6 +136,7 @@
 <translation id="1715293566947629045">جارٍ إيقاف الملف الشخصي. يُرجى الانتظار بضع دقائق.</translation>
 <translation id="1719094688023114093">ميزة "النسخ النصي التلقائي" مفعَّلة.</translation>
 <translation id="1720011244392820496">‏تفعيل ميزة "مزامنة Wi-Fi"</translation>
+<translation id="1733996486177697563">يمكنك التبديل بين المظهرَين الداكن والفاتح. انقر مع الاستمرار على سطح المكتب، ثم اختَر "صورة الشاشة والأسلوب".</translation>
 <translation id="1736898441010944794">سيظهر "<ph name="NAME" />" للأجهزة التي تتضمّن بلوتوث.</translation>
 <translation id="174102739345480129">أداة التحديد غير مفعَّلة.</translation>
 <translation id="1743570585616704562">لم يتم التعرف عليها</translation>
@@ -177,6 +178,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">مرحبًا، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">إدخال نصي</translation>
+<translation id="1982717156487272186">عرض الأسبوع الماضي</translation>
 <translation id="1989113344093894667">لا يمكن تصوير المحتوى</translation>
 <translation id="1990046457226896323">تم تنزيل ملفات ميزة "النسخ النصي التلقائي".</translation>
 <translation id="1993072747612765854">مزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" /></translation>
@@ -264,6 +266,7 @@
 <translation id="2573588302192866788">تعذّر ربط <ph name="NAME" />.</translation>
 <translation id="2575685495496069081">تمّ إيقاف الدخول المتعدّد</translation>
 <translation id="2582112259361606227">إعادة التشغيل للتحديث</translation>
+<translation id="2586561057878260610">‏اضغط على Ctrl + W للدمج مع <ph name="DESK_NAME" />. اضغط على Ctrl + Shift + W لإغلاق سطح المكتب والنوافذ.</translation>
 <translation id="2595239820337756193">5 كيلومتر بالميل</translation>
 <translation id="2596078834055697711">أخذ لقطة شاشة للنافذة</translation>
 <translation id="2607678425161541573">يجب تسجيل الدخول على الإنترنت</translation>
@@ -623,6 +626,7 @@
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، التقييم بالنجوم <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون يوم واحد}zero{إعادة الجهاز إلى الإصدار السابق في غضون # يوم}two{إعادة الجهاز إلى الإصدار السابق في غضون يومين}few{إعادة الجهاز إلى الإصدار السابق في غضون # أيام}many{إعادة الجهاز إلى الإصدار السابق في غضون # يومًا}other{إعادة الجهاز إلى الإصدار السابق في غضون # يوم}}</translation>
 <translation id="4642092649622328492">أخذ لقطة شاشة جزئية</translation>
+<translation id="4644727592819780893">مساحة عرض اللقطة الحالية صغيرة جدًا ولا تناسب معاينة الكاميرا.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، اقتراح تطبيق</translation>
 <translation id="4657775630156561295">ستتم إزالة الاقتراح التالي نهائيًا من سجلّ الاقتراحات في حسابك:
 
@@ -668,6 +672,7 @@
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4918086044614829423">قبول</translation>
 <translation id="4925542575807923399">يحتاج مشرف هذا الحساب أن يكون هذا الحساب الأول في تسجيل الدخول إلى جلسة دخول متعدد.</translation>
+<translation id="4938176435186993759">إخفاء جميع الاقتراحات</translation>
 <translation id="4945196315133970626">إيقاف الإشعارات</translation>
 <translation id="4946376291507881335">التقاط</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
@@ -734,6 +739,7 @@
 <translation id="5331975486040154427">‏جهاز USB-C (المنفذ الخلفي الأيسر)</translation>
 <translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليمنى)</translation>
 <translation id="5352250171825660495">المظهر الداكن مُفعَّل.</translation>
+<translation id="5356963482258194581">يمكنك التبديل بين المظهرَين الداكن والفاتح. انقر بزر الماوس الأيمن على سطح المكتب ثم اختَر "صورة الشاشة والأسلوب".</translation>
 <translation id="5379115545237091094">محاولات كثيرة جدًا</translation>
 <translation id="5393156353051693207">انقر مع الاستمرار على أي مكان على الشاشة لإعادة ترتيب التطبيقات</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> في أعلى <ph name="IN_PLACE_APP" />، يُرجى التحرير لإنشاء مجلد.</translation>
@@ -755,6 +761,7 @@
 <translation id="5520229639206813572">‏أزال المشرف جميع الملفات الشخصية لشريحة eSIM. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5523434445161341166">جارٍ اتصال <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">انقر في أي مكان للتسجيل في وضع ملء الشاشة.</translation>
+<translation id="5536723544185013515">التطبيقات المُستخدَمة مؤخرًا: يمكنك التنقّل باستخدام السهم المتّجه لليمين أو لليسار للوصول إلى التطبيقات المُستخدَمة مؤخرًا.</translation>
 <translation id="553675580533261935">جارٍ الخروج من الجلسة</translation>
 <translation id="5537725057119320332">إرسال</translation>
 <translation id="554893713779400387">تبديل الإملاء</translation>
@@ -777,10 +784,12 @@
 <translation id="5673434351075758678">من "<ph name="FROM_LOCALE" />" إلى "<ph name="TO_LOCALE" />" بعد مزامنة الإعدادات.</translation>
 <translation id="5675363643668471212">عنصر الرف</translation>
 <translation id="5677928146339483299">الحظر</translation>
+<translation id="5678564054339031017">عرض الأسبوع التالي</translation>
 <translation id="5679050765726761783">تم توصيل محوِّل طاقة منخفضة</translation>
 <translation id="5682642926269496722">‏لا يتوفر "مساعد Google" لحساب المستخدم الحالي.</translation>
 <translation id="5689633613396158040">تسهّل ميزة "الإضاءة الليلية" النظر إلى الشاشة أو القراءة في الإضاءة الخافتة. انقر لتغيير وقت تفعيل "الإضاءة الليلية" أو إيقافها تمامًا.</translation>
 <translation id="5691772641933328258">لم يتمّ التعرُّف على البصمة</translation>
+<translation id="570390244361237317">جميع التطبيقات: يمكنك التنقّل باستخدام مفاتيح الأسهم للوصول إلى جميع التطبيقات</translation>
 <translation id="5707775774148071965">يتوافق جهازك مع معدّل نقل بيانات أعلى منه في الكابل. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="5710450975648804523">تمّ تفعيل وضع "عدم الإزعاج"</translation>
 <translation id="571295407079589142">تم إيقاف بيانات الجوّال.</translation>

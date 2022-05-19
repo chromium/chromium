@@ -188,7 +188,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="1995884366040846621">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web. Consulta la <ph name="BEGIN_LINK1" />política de privadesa<ph name="END_LINK1" /> del lloc web.</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="200114059308480249">Vols incloure el text del voltant a les cerques de Google?</translation>
-<translation id="2011996512573319870">Sincronitza per obtenir el contingut més rellevant de Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxer}other{# fitxers}}</translation>
 <translation id="2020309681647789787">Tindràs l'historial en tots els dispositius sincronitzats perquè puguis continuar el que estaves fent</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
@@ -272,7 +271,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2472163211318554013">Inicia la sessió per treure el màxim profit de Chrome</translation>
 <translation id="247737702124049222">Les descripcions de les imatges estan activades</translation>
-<translation id="2481251096908459228">Mira les històries per a tu</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
 <translation id="2494974097748878569">Assistent de Google a Chrome</translation>
@@ -314,7 +312,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fitxer d'àudio}other{# fitxers d'àudio}}</translation>
 <translation id="265156376773362237">Càrrega prèvia estàndard</translation>
 <translation id="2656405586795711023">Aplicacions web</translation>
-<translation id="2700802943130197326">Sincronitza per obtenir les contrasenyes, les adreces d'interès i altres elements en tots els teus altres dispositius</translation>
 <translation id="2702516483241149200">Nou: comparteix un enllaç que es desplaça fins a aquest text</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2707726405694321444">Actualitza la pàgina</translation>

@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> نام، نشانی ایمیل، و عکس نمایه‌تان را با این سایت هم‌رسانی خواهد کرد. <ph name="BEGIN_LINK1" />خط‌مشی رازداری<ph name="END_LINK1" /> این سایت را مطالعه کنید.</translation>
 <translation id="2000419248597011803">برخی کوکی‌ها و جستجوها را از نوار نشانی و جعبه جستجو به موتور جستجوی پیش‌فرض ارسال می‌کند</translation>
 <translation id="200114059308480249">‏نوشتار اطراف در جستجوهای Google لحاظ شوند؟</translation>
-<translation id="2011996512573319870">‏برای دریافت مرتبط‌ترین محتوا از Google، همگام‌سازی کنید</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="2020309681647789787">سابقه ذخیره‌شده در همه دستگاه‌های همگام‌سازی‌شده را دراختیار خواهید داشت تا بتوانید آنچه را انجام می‌دادید ادامه دهید</translation>
 <translation id="2021896219286479412">کنترل‌های سایت تمام‌صفحه</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">فعلی</translation>
 <translation id="2472163211318554013">‏برای بردن بیشترین بهره از Chrome، به سیستم وارد شوید</translation>
 <translation id="247737702124049222">توضیحات تصویر روشن است</translation>
-<translation id="2481251096908459228">دیدن داستان‌هایی برای شما</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
 <translation id="2494974097748878569">‏«دستیار Google» در Chrome</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# فایل صوتی}one{# فایل صوتی}other{# فایل صوتی}}</translation>
 <translation id="265156376773362237">پیش‌بارگیری استاندارد</translation>
 <translation id="2656405586795711023">برنامه‌های وب</translation>
-<translation id="2700802943130197326">برای دریافت گذرواژه‌ها، نشانک‌ها، و سایر داده‌هایتان در همه دستگاه‌های دیگرتان، همگام‌سازی کنید</translation>
 <translation id="2702516483241149200">جدید: هم‌رسانی پیوندی که به این نوشتار پیمایش می‌کند</translation>
 <translation id="2704606927547763573">کپی شد</translation>
 <translation id="2707726405694321444">بازآوری صفحه</translation>

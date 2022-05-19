@@ -83,6 +83,7 @@
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1384704387250346179">‏תרגום תמונה באמצעות Google Lens‏ <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">פעילות אחרונה: לפני <ph name="LAST_UPDATED" /> ימים</translation>
+<translation id="13931502444227376">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, כתובת האימייל ותמונת הפרופיל שלך. <ph name="BEGIN_LINK1" />כאן מפורטים התנאים וההגבלות<ph name="END_LINK1" /> של האתר הזה.</translation>
 <translation id="1397811292916898096">חיפוש באמצעות <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">‏יש לך אפשרות לשנות את הבחירה בכל שלב בהגדרות של Chrome. גרסאות הניסיון יפעלו במקביל לשיטה הנוכחית של הצגת המודעות, אז השינויים לא יורגשו מיד.</translation>
 <translation id="1406000523432664303">‏'לא לעקוב (DNT)'</translation>
@@ -145,6 +146,7 @@
 <translation id="173522743738009831">מידע על ארגז החול לפרטיות</translation>
 <translation id="1736419249208073774">מידע נוסף</translation>
 <translation id="1749561566933687563">סנכרון הסימניות שלך</translation>
+<translation id="1750259112639922169">קבוצת כרטיסיות - <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
 <translation id="1754404134430936718">הטקסט הועתק</translation>
 <translation id="1779766957982586368">סגירת חלון</translation>
@@ -186,7 +188,6 @@
 <translation id="1995884366040846621">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישור הבא ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
 <translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
-<translation id="2011996512573319870">‏אפשר לבצע סנכרון כדי לקבל את התוכן הכי רלוונטי מ-Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{קובץ אחד (#)}two{# קבצים}many{# קבצים}other{# קבצים}}</translation>
 <translation id="2020309681647789787">תהיה לך גישה להיסטוריה שלך בכל המכשירים המסונכרנים, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
@@ -270,7 +271,6 @@
 <translation id="2461822463642141190">כרגע</translation>
 <translation id="2472163211318554013">‏כדי להפיק את המרב מ-Chrome, עליך להיכנס לחשבון</translation>
 <translation id="247737702124049222">התכונה 'תיאורי תמונות' מופעלת</translation>
-<translation id="2481251096908459228">הצגת סטוריז שרלוונטיים לך</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
 <translation id="2494974097748878569">‏Google Assistant ב-Chrome</translation>
@@ -312,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{קובץ אודיו אחד (#)}two{# קובצי אודיו}many{# קובצי אודיו}other{# קובצי אודיו}}</translation>
 <translation id="265156376773362237">טעינה רגילה מראש</translation>
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
-<translation id="2700802943130197326">אפשר לבצע סנכרון כדי לעדכן את הסיסמאות, הסימניות ונתונים נוספים בכל המכשירים האחרים שלך.</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
 <translation id="2704606927547763573">הועתק</translation>
 <translation id="2707726405694321444">רענון הדף</translation>
@@ -789,6 +788,7 @@
 <translation id="5368227114232678694">כדי לגלוש בפרטיות במכשיר, כדאי לנסות את המצב הפרטי</translation>
 <translation id="5375577065097716013">‏חיפוש תמונה בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">התגובה שונתה</translation>
+<translation id="5401851137404501592">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, כתובת האימייל ותמונת הפרופיל שלך.</translation>
 <translation id="5403644198645076998">גישה רק לאתרים ספציפיים</translation>
 <translation id="5409881200985013443">לשלוח את <ph name="ONE_TIME_CODE" /> באמצעות <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">בתהליך אימות…</translation>
@@ -1129,6 +1129,7 @@
 <translation id="7177873915659574692">‏לא ניתן ליצור קוד QR. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="7177959540995930968">‏מידע נוסף לגבי התכונות האלה זמין בהגדרות של Chrome.</translation>
 <translation id="718226107353899806">אפשר להוסיף עד <ph name="MAX_NUM_REACTIONS" /> תגובות</translation>
+<translation id="7183693674623539380">קבוצת כרטיסיות – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
 <translation id="7196215469483532480">ההסבר על המדריך בנושא פרטיות נפתח בגובה מלא</translation>

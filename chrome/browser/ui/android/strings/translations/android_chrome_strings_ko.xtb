@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
-<translation id="2011996512573319870">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{파일 #개}other{파일 #개}}</translation>
 <translation id="2020309681647789787">동기화된 모든 기기에 방문 기록이 유지되므로 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">현재</translation>
 <translation id="2472163211318554013">로그인하여 Chrome의 모든 기능을 이용하세요</translation>
 <translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
-<translation id="2481251096908459228">추천 스토리 보기</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2494974097748878569">Chrome의 Google 어시스턴트</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{오디오 파일 #개}other{오디오 파일 #개}}</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
 <translation id="2656405586795711023">웹 앱</translation>
-<translation id="2700802943130197326">동기화하여 다른 기기에서 비밀번호, 북마크 등을 가져오세요.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2704606927547763573">복사됨</translation>
 <translation id="2707726405694321444">페이지 새로고침</translation>

@@ -135,6 +135,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1715293566947629045">Desactivando perfil. Agarda uns minutos.</translation>
 <translation id="1719094688023114093">A función Subtítulos instantáneos está activada.</translation>
 <translation id="1720011244392820496">Activar Sincronización wifi</translation>
+<translation id="1733996486177697563">Cambia do tema claro ao escuro, e viceversa. Mantén premido o escritorio e despois selecciona Estilo e fondo de pantalla.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" detectable por dispositivos Bluetooth.</translation>
 <translation id="174102739345480129">O marcador está desactivado.</translation>
 <translation id="1743570585616704562">Non se recoñece</translation>
@@ -264,6 +265,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2573588302192866788">Non se puido conectar o dispositivo (<ph name="NAME" />)</translation>
 <translation id="2575685495496069081">Desactivouse o inicio de sesión múltiple</translation>
 <translation id="2582112259361606227">Reinicia o sistema para actualizalo</translation>
+<translation id="2586561057878260610">Preme Control + W para combinar con <ph name="DESK_NAME" />. Preme Control + Maiúsculas + W para pechar o escritorio e as ventás.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
@@ -670,6 +672,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceptar</translation>
 <translation id="4925542575807923399">O administrador desta conta require que esta conta sexa a primeira na que se inicie sesión cando se cree unha sesión de inicio de sesión múltiple.</translation>
+<translation id="4938176435186993759">Ocultar todas as suxestións</translation>
 <translation id="4945196315133970626">Desactivar notificacións</translation>
 <translation id="4946376291507881335">Zona que se capturará</translation>
 <translation id="495046168593986294">Desprazarse cara arriba</translation>
@@ -736,6 +739,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5331975486040154427">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (dispositivo dereito)</translation>
 <translation id="5352250171825660495">O tema escuro está activado</translation>
+<translation id="5356963482258194581">Cambia do tema claro ao escuro, e viceversa. Fai clic co botón dereito no escritorio e selecciona Estilo e fondo de pantalla.</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
 <translation id="5393156353051693207">Mantén premida calquera parte da pantalla para reordenar as aplicacións</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está sobre <ph name="IN_PLACE_APP" />, solta a aplicación para crear un cartafol.</translation>
@@ -757,6 +761,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5520229639206813572">O teu administrador quitou todos os perfís de eSIM. Para obter máis información, ponte en contacto con el.</translation>
 <translation id="5523434445161341166">A función <ph name="FEATURE_NAME" /> estase conectando.</translation>
 <translation id="5532994612895037630">Toca calquera parte para realizar unha gravación da pantalla completa</translation>
+<translation id="5536723544185013515">Aplicacións recentes. Desprázate coas teclas Frecha dereita ou Frecha esquerda para acceder a todas as aplicacións recentes</translation>
 <translation id="553675580533261935">Pechando sesión</translation>
 <translation id="5537725057119320332">Emitir</translation>
 <translation id="554893713779400387">Activar ou desactivar ditado</translation>
@@ -784,6 +789,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5682642926269496722">O Asistente de Google non está dispoñible para a conta de usuario actual.</translation>
 <translation id="5689633613396158040">Luz nocturna fai que sexa máis fácil mirar a pantalla ou ler con pouca luz. Toca para cambiar a hora á que se activa a función mencionada ou para desactivala completamente.</translation>
 <translation id="5691772641933328258">Non se recoñeceu a impresión dixital</translation>
+<translation id="570390244361237317">Todas as aplicacións. Desprázate coas teclas de frecha para acceder a todas as aplicacións</translation>
 <translation id="5707775774148071965">O teu dispositivo admite unha velocidade de datos maior que o cable. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="5710450975648804523">O modo Non molestar está activado</translation>
 <translation id="571295407079589142">Os datos móbiles están desactivados</translation>

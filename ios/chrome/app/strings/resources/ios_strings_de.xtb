@@ -526,7 +526,6 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5551897871312988470">Übersetzung anbieten</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5580834567471114021">Der Leseliste für später hinzufügen?</translation>
-<translation id="5592679540098330836">Synchronisierung für <ph name="NAME" /> aktivieren</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
@@ -903,6 +902,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8592752150819985187">Passwortfelder automatisch ausfüllen</translation>
 <translation id="8605219856220328675">Tab schließen.</translation>
 <translation id="8620640915598389714">Bearbeiten</translation>
+<translation id="8620785403235741379">Option auswählen</translation>
 <translation id="8626393685701737946">Du kannst unter Einstellungen &gt; Inhaltseinstellungen die Desktop-Ansicht als Standardeinstellung festlegen</translation>
 <translation id="863090005774946393">Dein Browser wird von deiner Organisation verwaltet. Einige Funktionen sind eventuell deaktiviert.</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>

@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Activer la protection en écriture</translation>
 <translation id="1308754910631152188">Mise à jour (effectuée à <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> disponible</translation>
 <translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
+<translation id="132712914231403017">Installer l'image du micrologiciel</translation>
 <translation id="1327977588028644528">Passerelle</translation>
 <translation id="1328223165223065150">Couleur du fond d'écran</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
 <translation id="1644574205037202324">Historique</translation>
+<translation id="1645954272419197032">Confirmer les informations concernant l'appareil</translation>
 <translation id="1662989795263954667">Tâche suspendue - À court d'encre</translation>
 <translation id="1668469839109562275">VPN intégré</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Connectivité</translation>
 <translation id="2008685064673031089">Recherche de nombres premiers</translation>
 <translation id="2016697457005847575">Essayer la procédure de dépannage</translation>
+<translation id="2016848882344942759">--pas de marque blanche--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2085089206770112532">Baisser la luminosité de l'écran</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2275586345903859204">La réparation est terminée</translation>
 <translation id="2287186687001756809">Aucune image disponible. Pour ajouter des photos, accédez à <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Insérez un périphérique de stockage externe contenant l'image téléchargée de Chromebook Recovery Utility, comme une clé USB ou une carte SD</translation>
 <translation id="2307344026739914387">Utiliser la paire de clés actuelle</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717139507051041123">Activer le mode couleur sombre</translation>
+<translation id="2727250716596204208">Impossible de trouver l'image du micrologiciel. Insérez un périphérique de stockage externe contenant l'image téléchargée de Chromebook Recovery Utility, comme une clé USB ou une carte SD.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2756652381241102009">Exécuter le diagnostic</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">UC</translation>
 <translation id="3124039320086536031">L'appareil est connecté.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Supprimer la page ?}=1{Supprimer la page {PAGE_NUMBER} ?}one{Supprimer la page {PAGE_NUMBER} ?}other{Supprimer les pages {PAGE_NUMBER} ?}}</translation>
+<translation id="3137983112374760826">Provisionnement de l'appareil…</translation>
 <translation id="315116470104423982">Données mobiles</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portail captif détecté</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique des impressions ? Vos tâches d'impression en cours ne seront pas supprimées de cet historique.</translation>
+<translation id="3383751554789092165">Modifiez les informations concernant l'appareil si nécessaire.</translation>
 <translation id="3404249063913988450">Activer l'économiseur d'écran</translation>
 <translation id="3404770484521709967">Les composants sont installés correctement.</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur "Suivant".</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
+<translation id="3774059845329307709">Numéro de série</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">Code incorrect.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">Batterie de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM débloquée</translation>
 <translation id="4562494484721939086">Aucun service</translation>
+<translation id="4568938274596692027">Installation terminée. Préparation du redémarrage…</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4609350030397390689">Baisser la luminosité du clavier</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Choisissez-en un nouveau immédiatement</translation>
 <translation id="4891842000192098784">Contrainte</translation>
 <translation id="4897058166682006107">L'écouteur gauche de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
+<translation id="4908030561598728899">Installation du micrologiciel…</translation>
 <translation id="4915052247106771211">La configuration d'usine sera rétablie sur l'appareil (Powerwash).</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4917889632206600977">Tâche suspendue - À court de papier</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Paramètres des Réponses rapides</translation>
 <translation id="5168185087976003268">État de la batterie</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
+<translation id="5179530508336824319">Activez la protection en écriture pour passer à l'écran suivant. Accédez à la page d'assistance du fabricant de l'appareil pour obtenir des instructions.</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter ou modifier un album, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Je ne parviens pas à détecter d'éléments sur votre écran pour lesquels je peux vous aider.
 Veuillez appuyer sur le micro pour me poser une question.</translation>
@@ -615,8 +627,10 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
+<translation id="6822504384524564824">Le code SKU ne doit être modifié que si les nouveaux composants sont différents de ceux qu'ils remplacent. Par exemple, un écran tactile remplace un écran non tactile ou une mémoire de 16 Go remplace une mémoire de 8 Go.</translation>
 <translation id="6840315122969944400">Réparation de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
+<translation id="6876833053687020046">Référence de la mémoire DRAM</translation>
 <translation id="6889786074662672253">Vous ne devez pas débrancher cet appareil externe ni éteindre votre ordinateur pendant le redémarrage. Vous pouvez réduire cette fenêtre. Le redémarrage peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil externe est compromis.</translation>
 <translation id="6905724422583748843">Revenir à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
@@ -664,6 +678,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7343649194310845056">Appareils sur le réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">Code SKU</translation>
 <translation id="7378886533986123738">Modifier l'économiseur d'écran</translation>
 <translation id="7397270852490618635">Annuler le thème clair</translation>
 <translation id="741244894080940828">conversion</translation>
@@ -763,6 +778,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8364946094152050673">Serveurs de noms vides</translation>
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
 <translation id="8378855320830505539">Section</translation>
+<translation id="8382302752385457774">Marque blanche</translation>
 <translation id="8395584934117017006">Votre <ph name="DEVICE_TYPE" /> est géré par une entreprise</translation>
 <translation id="8398927464629426868">Taux auquel l'appareil se recharge ou se décharge actuellement</translation>
 <translation id="8422748173858722634">IMEI</translation>

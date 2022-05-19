@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">Щоб продовжити, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> надасть ваші ім’я, електронну адресу й зображення профілю цьому сайту. Перегляньте його <ph name="BEGIN_LINK1" />політику конфіденційності<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Надсилає деякі файли cookie й пошукові запити з адресного рядка та вікна пошуку в пошукову систему за умовчанням</translation>
 <translation id="200114059308480249">Враховувати контекст у пошуку Google?</translation>
-<translation id="2011996512573319870">Увімкніть синхронізацію, щоб отримувати найактуальніший контент від Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="2020309681647789787">Історія зберігатиметься на всіх синхронізованих пристроях, щоб ви могли продовжувати те, що ви робили</translation>
 <translation id="2021896219286479412">Керування повноекранним режимом</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">Енергоспоживання</translation>
 <translation id="2472163211318554013">Увійдіть, щоб користуватися всіма можливостями Chrome</translation>
 <translation id="247737702124049222">Описи зображень увімкнено</translation>
-<translation id="2481251096908459228">Перегляньте історії</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2485422356828889247">Видалити</translation>
 <translation id="2494974097748878569">Google Асистент у Chrome</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудіофайл}one{# аудіофайл}few{# аудіофайли}many{# аудіофайлів}other{# аудіофайлу}}</translation>
 <translation id="265156376773362237">Звичайне попереднє завантаження</translation>
 <translation id="2656405586795711023">Веб-додатки</translation>
-<translation id="2700802943130197326">Увімкніть синхронізацію, щоб переглядати паролі, закладки тощо на всіх інших пристроях.</translation>
 <translation id="2702516483241149200">Новинка! Діліться посиланням, яке прокручує сторінку до цього тексту</translation>
 <translation id="2704606927547763573">Скопійов.</translation>
 <translation id="2707726405694321444">Оновити сторінку</translation>

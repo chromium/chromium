@@ -65,6 +65,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1275285675049378717">Powering <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Locate phone</translation>
+<translation id="1287002645302686982">A saved desk named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="1289185460362160437">Come back <ph name="COME_BACK_DAY_OF_WEEK" /> at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1290982764014248209">Move <ph name="DRAGGED_APP" /> to folder <ph name="FOLDER_NAME" />.</translation>
@@ -269,6 +270,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2586561057878260610">Press Ctrl + W to combine with <ph name="DESK_NAME" />. Press Ctrl + Shift + W to close desk and windows.</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
+<translation id="2598725286293895280">Unsupported apps in desk</translation>
 <translation id="2607678425161541573">Online sign-in required</translation>
 <translation id="2620016719323068571">Search your <ph name="CATEGORY" />, files, apps and more…</translation>
 <translation id="2620436844016719705">System</translation>
@@ -644,6 +646,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">The <ph name="LAUNCHER_KEY_NAME" /> + number keyboard shortcut has changed. To use function keys, press the <ph name="LAUNCHER_KEY_NAME" /> key + a key on the top row.</translation>
 <translation id="473775607612524610">Update</translation>
+<translation id="4740516757091333363">Delete saved desk?</translation>
 <translation id="4752784485658729358">Only six saved desks allowed. Remove a desk to save a new one.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
@@ -741,6 +744,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5356963482258194581">Switch between Dark and Light theme. Right-click on the desktop and select Wallpaper and style.</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
+<translation id="5391307769715781764">Replace saved desk?</translation>
 <translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
@@ -973,6 +977,7 @@ New install</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6801878137098616817">Recently edited</translation>
 <translation id="6803622936009808957">Could not mirror displays since no supported resolutions found. Entered extended desktop instead.</translation>
+<translation id="6812232930908427253">Couldn’t save desk. Too many windows or tabs.</translation>
 <translation id="6818242057446442178">Back by word</translation>
 <translation id="6819327813400217281">Camera snapped to the bottom-left corner</translation>
 <translation id="6820676911989879663">Take a break!</translation>

@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">יש חשד לפורטל שבוי</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">‏הפעלה של Write Protect</translation>
 <translation id="1308754910631152188">מתבצע עדכון (%‏<ph name="PERCENTAGE_VALUE" /> הושלמו)</translation>
 <translation id="1310380015393971138">אין רשת <ph name="NETWORK_NAME" /> זמינה</translation>
 <translation id="131421566576084655">התאריך של איפוס הנתונים האחרון לא זמין</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">רשת ביתית, לא בנדידה</translation>
+<translation id="132712914231403017">התקנה של תמונת הקושחה</translation>
 <translation id="1327977588028644528">שער</translation>
 <translation id="1328223165223065150">צבע הטפט</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1643449475550628585">החלפה של תמונת הטפט מדי יום</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
+<translation id="1645954272419197032">יש לאשר את פרטי המכשיר</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">קישוריות</translation>
 <translation id="2008685064673031089">חיפוש מספרים ראשוניים</translation>
 <translation id="2016697457005847575">להוראות לפתרון בעיות</translation>
+<translation id="2016848882344942759">--לא מכשיר גנרי--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">תזמון מצב כהה</translation>
 <translation id="2275586345903859204">התיקון הסתיים</translation>
 <translation id="2287186687001756809">אין תמונה זמינה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
+<translation id="2294753434210277304">‏יש להכניס התקן אחסון חיצוני, כמו כונן USB או כרטיס SD, עם התמונה שהורדת של כלי שחזור ה-Chromebook</translation>
 <translation id="2307344026739914387">שימוש בזוג המפתחות הנוכחי</translation>
 <translation id="2320295602967756579">הפעלת העיצוב הבהיר</translation>
 <translation id="2323506179655536734">לא בוצעה בדיקה</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">‏מפתח האימות של TLS (אבטחת שכבת התעבורה)</translation>
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2717139507051041123">הפעלה של מצב כהה</translation>
+<translation id="2727250716596204208">‏לא ניתן היה למצוא את תמונת הקושחה. יש להכניס התקן אחסון חיצוני, כמו כונן USB או כרטיס SD, עם התמונה שהורדת של כלי שחזור ה-Chromebook.</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
 <translation id="2756652381241102009">ביצוע אבחון</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">המכשיר מחובר.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{להסיר את הדף?}=1{להסיר את דף {PAGE_NUMBER}?}two{להסיר את דף {PAGE_NUMBER}?}many{להסיר את דף {PAGE_NUMBER}?}other{להסיר את דף {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">מתבצעת הקצאה של המכשיר…</translation>
 <translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3156846309055100599">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">זוהה פורטל שבוי</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
+<translation id="3383751554789092165">יש לך אפשרות לשנות את פרטי המכשיר לפי הצורך.</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3404770484521709967">הרכיבים הותקנו כמו שצריך.</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">לא מחובר</translation>
 <translation id="3749289110408117711">שם קובץ</translation>
 <translation id="3771294271822695279">קובצי וידאו</translation>
+<translation id="3774059845329307709">מספר סידורי</translation>
 <translation id="3784455785234192852">נעילה</translation>
 <translation id="38114475217616659">ניקוי כל ההיסטוריה</translation>
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930">סוללה בהספק של <ph name="CHARGE_VALUE" /> מיליאמפר לשעה</translation>
 <translation id="4561801978359312462">‏נעילת כרטיס ה-SIM בוטלה</translation>
 <translation id="4562494484721939086">אין שירות</translation>
+<translation id="4568938274596692027">ההתקנה הסתיימה. בהכנה להפעלה מחדש…</translation>
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4891842000192098784">בדיקת עומסים</translation>
 <translation id="4897058166682006107">רמת הטעינה של האוזנייה השמאלית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="4908030561598728899">מתבצעת התקנת קושחה…</translation>
 <translation id="4915052247106771211">‏המכשיר יאופס להגדרות המקוריות (Powerwash).</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">ההגדרות של התשובות המהירות</translation>
 <translation id="5168185087976003268">תקינות הסוללה</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
+<translation id="5179530508336824319">‏יש להפעיל את Write Protect כדי להמשיך למסך הבא. לקבלת הוראות, יש לעבור לדף התמיכה של יצרן המכשיר.</translation>
 <translation id="5190187232518914472">‏זיכרונות אהובים מתעוררים לחיים. כדי להוסיף או לערוך אלבומים, יש לעבור ל-<ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">לא מצאתי במסך משהו שאוכל לעזור בו.
 אפשר להקיש על המיקרופון כדי לשאול אותי משהו.</translation>
@@ -615,8 +627,10 @@
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
+<translation id="6822504384524564824">‏יש לשנות את המק"ט רק אם הרכיבים החדשים שונים מאלה שהוחלפו. לדוגמה, אם החלפת מסך מגע במסך שאינו מסך מגע, או אם שדרגת את הזיכרון מ-8GB ל-16GB.</translation>
 <translation id="6840315122969944400">תיקון של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
+<translation id="6876833053687020046">‏מספר החלק של זיכרון DRAM</translation>
 <translation id="6889786074662672253">במהלך ההפעלה מחדש אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. הפעולה עשויה להימשך כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל בזמן הזה.</translation>
 <translation id="6905724422583748843">חזרה אל <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">המכסה של הסורק פתוח. יש לסגור אותו ולנסות שוב.</translation>
@@ -664,6 +678,7 @@
 <translation id="7343649194310845056">מכשירים ברשת</translation>
 <translation id="7359657277149375382">סוג קובץ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">מק"ט</translation>
 <translation id="7378886533986123738">החלפת שומר המסך</translation>
 <translation id="7397270852490618635">השבתת העיצוב הבהיר</translation>
 <translation id="741244894080940828">המרה</translation>
@@ -763,6 +778,7 @@
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>
 <translation id="8372477600026034341">מארחים נוספים</translation>
 <translation id="8378855320830505539">אזור</translation>
+<translation id="8382302752385457774">מכשיר גנרי</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> זה מנוהל על ידי ארגון</translation>
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8422748173858722634">IMEI</translation>

@@ -32,11 +32,13 @@
 <translation id="1270369111467284986">Aizdomas par caurlaides lapu</translation>
 <translation id="1290331692326790741">Vājš signāls</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Aizsardzības pret rakstīšanu ieslēgšana</translation>
 <translation id="1308754910631152188">Notiek atjaunināšana (pabeigti: <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Nav pieejams neviens <ph name="NETWORK_NAME" /> tīkls</translation>
 <translation id="131421566576084655">Pēdējās atiestatīšanas datums nav pieejams</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Mājas tīkls bez viesabonēšanas</translation>
+<translation id="132712914231403017">Instalēt aparātprogrammatūras attēlu</translation>
 <translation id="1327977588028644528">Vārteja</translation>
 <translation id="1328223165223065150">Fona tapetes krāsa</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -80,6 +82,7 @@
 <translation id="1641857168437328880">Dokumentu padevējs (vienpusēji)</translation>
 <translation id="1643449475550628585">Katru dienu mainīt fona tapetes attēlu</translation>
 <translation id="1644574205037202324">Vēsture</translation>
+<translation id="1645954272419197032">Pārbaudiet informāciju par ierīci</translation>
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
 <translation id="1668469839109562275">Iebūvēts VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -118,6 +121,7 @@
 <translation id="2006864819935886708">Savienojamība</translation>
 <translation id="2008685064673031089">Pirmskaitļu meklēšana</translation>
 <translation id="2016697457005847575">Skatīt problēmu novēršanas darbības</translation>
+<translation id="2016848882344942759">--bez baltās etiķetes--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2085089206770112532">Samazināt displeja spilgtumu</translation>
@@ -148,6 +152,7 @@
 <translation id="2271469253353559191">Tumšā režīma grafiks</translation>
 <translation id="2275586345903859204">Remonts ir pabeigts</translation>
 <translation id="2287186687001756809">Nav pieejams neviens attēls. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
+<translation id="2294753434210277304">Ievietojiet ārējās atmiņas ierīci, piemēram, USB disku vai SD karti, ar lejupielādēto Chromebook atkopšanas utilītprogrammas attēlu</translation>
 <translation id="2307344026739914387">Izmantot pašreizējo atslēgu pāri</translation>
 <translation id="2320295602967756579">Iespējot gaišo motīvu</translation>
 <translation id="2323506179655536734">IZLAISTA</translation>
@@ -188,6 +193,7 @@
 <translation id="2712812801627182647">TLS autentifikācijas atslēga</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2717139507051041123">Atspējot tumšo krāsu režīmu</translation>
+<translation id="2727250716596204208">Nevarēja atrast aparātprogrammatūras attēlu. Ievietojiet ārējās atmiņas ierīci, piemēram, USB disku vai SD karti, ar lejupielādēto Chromebook atkopšanas utilītprogrammas attēlu.</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
 <translation id="2756652381241102009">Izpildīt diagnostiku</translation>
@@ -219,6 +225,7 @@
 <translation id="3122464029669770682">Maksa par daļas vienību</translation>
 <translation id="3124039320086536031">Ierīce ir pievienota.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Vai noņemt lapu?}=1{Vai noņemt {PAGE_NUMBER}. lapu?}zero{Vai noņemt {PAGE_NUMBER}. lapu?}one{Vai noņemt {PAGE_NUMBER}. lapu?}other{Vai noņemt {PAGE_NUMBER}. lapu?}}</translation>
+<translation id="3137983112374760826">Notiek ierīces nodrošināšana…</translation>
 <translation id="315116470104423982">Mobilie dati</translation>
 <translation id="3156846309055100599">Notiek <ph name="PAGE_NUMBER" />. lapas skenēšana…</translation>
 <translation id="315738237743207937">Konstatēta caurlaides lapa</translation>
@@ -240,6 +247,7 @@
 <translation id="3340011300870565703">Labās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3369013195428705271">Vai tiešām vēlaties notīrīt visu drukāšanas vēsturi? Netiks notīrīti drukas uzdevumi, kas tiek izpildīti.</translation>
+<translation id="3383751554789092165">Pēc vajadzības varat mainīt informāciju par ierīci.</translation>
 <translation id="3404249063913988450">Iespējot ekrānsaudzētāju</translation>
 <translation id="3404770484521709967">Komponenti ir instalēti pareizi.</translation>
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
@@ -278,6 +286,7 @@
 <translation id="3748026146096797577">Nav izveidots savienojums</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
 <translation id="3771294271822695279">Video faili</translation>
+<translation id="3774059845329307709">Sērijas numurs</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
@@ -361,6 +370,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh akumulators</translation>
 <translation id="4561801978359312462">SIM karte atbloķēta</translation>
 <translation id="4562494484721939086">Nav pakalpojuma</translation>
+<translation id="4568938274596692027">Instalēšana ir pabeigta. Notiek gatavošanās restartēšanai…</translation>
 <translation id="458794348635939462">Neizdevās atrisināt visu saimniekdatoru nosaukumus</translation>
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4609350030397390689">Samazināt tastatūras spilgtumu</translation>
@@ -403,6 +413,7 @@
 <translation id="4890353053343094602">Nekavējoties izvēlieties jaunu</translation>
 <translation id="4891842000192098784">Izturība</translation>
 <translation id="4897058166682006107">Kreisās austiņas akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="4908030561598728899">Notiek aparātprogrammatūras instalēšana…</translation>
 <translation id="4915052247106771211">Ierīcē tiks atjaunoti rūpnīcas iestatījumi (tiks izmantota funkcija Powerwash).</translation>
 <translation id="4917385247580444890">Spēcīgs</translation>
 <translation id="4917889632206600977">Apturēts — beidzies papīrs</translation>
@@ -432,6 +443,7 @@
 <translation id="5166918508782100047">Ātro atbilžu iestatījumi</translation>
 <translation id="5168185087976003268">Akumulatora stāvoklis</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
+<translation id="5179530508336824319">Iespējojiet aizsardzību pret rakstīšanu, lai pārietu uz nākamo ekrānu. Norādījumus skatiet ierīces ražotāja atbalsta lapā.</translation>
 <translation id="5190187232518914472">Iedzīviniet savas mīļākās atmiņas. Lai pievienotu vai rediģētu albumus, pārejiet uz pakalpojumu <ph name="LINK_BEGIN" />Google fotoattēli<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
 Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
@@ -615,8 +627,10 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6768237774506518020">Biežas DNS atrisināšanas kļūmes</translation>
 <translation id="680983167891198932">Atslēga</translation>
 <translation id="6816797338148849397">Ir pieejama informācija, kas saistīta ar jūsu atlasīto saturu. Lai piekļūtu informācijai, nospiediet augšupvērsto bulttaustiņu.</translation>
+<translation id="6822504384524564824">Mainiet produkta identifikācijas numuru tikai tad, ja jaunie komponenti atšķiras no aizstātajiem, piemēram, ja ekrāns bez skārienievades funkcijām tiek aizstāts ar skārienekrānu vai atmiņa tiek palielināta no 8 GB uz 16 GB.</translation>
 <translation id="6840315122969944400">Ierīces (<ph name="DEVICE_TYPE" />) labošana</translation>
 <translation id="6853312040151791195">Izlādes ātrums</translation>
+<translation id="6876833053687020046">DRAM daļas numurs</translation>
 <translation id="6889786074662672253">Kamēr notiek restartēšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Restartēšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="6905724422583748843">Atpakaļ uz lapu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Skenera vāks ir atvērts. Aizveriet vāku un mēģiniet vēlreiz.</translation>
@@ -664,6 +678,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7343649194310845056">Tīkla ierīces</translation>
 <translation id="7359657277149375382">Faila tips</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">Produkta identifikācijas numurs</translation>
 <translation id="7378886533986123738">Mainīt ekrānsaudzētāju</translation>
 <translation id="7397270852490618635">Izslēgt gaišo motīvu</translation>
 <translation id="741244894080940828">izteikšana citās mērvienībās</translation>
@@ -763,6 +778,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8364946094152050673">Tukši nosaukumu serveri</translation>
 <translation id="8372477600026034341">Citi mitinātāji</translation>
 <translation id="8378855320830505539">Reģions</translation>
+<translation id="8382302752385457774">Baltā etiķete</translation>
 <translation id="8395584934117017006">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda uzņēmums.</translation>
 <translation id="8398927464629426868">Ātrums, ar kādu pašlaik notiek ierīces uzlāde vai izlāde.</translation>
 <translation id="8422748173858722634">IMEI</translation>

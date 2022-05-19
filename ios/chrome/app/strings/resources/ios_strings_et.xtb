@@ -526,7 +526,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5551897871312988470">Paku tõlkimist</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5580834567471114021">Kas lisada hiljem lugemiseks lugemisloendisse?</translation>
-<translation id="5592679540098330836">Sünkroonimise sisselülitamine kasutaja <ph name="NAME" /> jaoks</translation>
 <translation id="560322036295180549">Teie organisatsioon on välja lülitanud</translation>
 <translation id="5614553682702429503">Kas salvestada parool?</translation>
 <translation id="5626245204502895507">Faili ei õnnestunud praegu alla laadida.</translation>
@@ -903,6 +902,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8592752150819985187">Paroolide automaatne täitmine</translation>
 <translation id="8605219856220328675">Sule vaheleht.</translation>
 <translation id="8620640915598389714">Muuda</translation>
+<translation id="8620785403235741379">Tehke valik</translation>
 <translation id="8626393685701737946">Saidi vaikevaate saate lauaarvuti versiooniks muuta valikutega Seaded &gt; Sisu seaded</translation>
 <translation id="863090005774946393">Teie brauserit haldab teie organisatsioon. Mõni funktsioon võib olla keelatud.</translation>
 <translation id="8636825310635137004">Vahelehtede hankimiseks oma teistest seadmetest lülitage sünkroonimine sisse.</translation>

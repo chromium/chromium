@@ -188,7 +188,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1995884366040846621">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> deste sitio.</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
 <translation id="200114059308480249">Queres incluír o texto circundante nas buscas de Google?</translation>
-<translation id="2011996512573319870">Sincroniza os datos para obter o contido máis relevante de Google</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
 <translation id="2020309681647789787">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
@@ -272,7 +271,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2472163211318554013">Inicia sesión para sacarlle o máximo partido a Chrome</translation>
 <translation id="247737702124049222">As descricións das imaxes están activadas</translation>
-<translation id="2481251096908459228">Obtén historias relevantes para ti</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2494974097748878569">Asistente de Google en Chrome</translation>
@@ -314,7 +312,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ficheiro de audio}other{# ficheiros de audio}}</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
 <translation id="2656405586795711023">Aplicacións web</translation>
-<translation id="2700802943130197326">Sincroniza os datos para ter todos os teus contrasinais, marcadores e máis en todos os teus dispositivos.</translation>
 <translation id="2702516483241149200">Novidade: Comparte unha ligazón que leve directamente a este texto</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2707726405694321444">Actualiza páxina</translation>

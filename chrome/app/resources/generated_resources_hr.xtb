@@ -3271,6 +3271,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
         Postavkama možete upravljati putem izbornika kartice ili možete vidjeti više opcija u odjeljku Prilagodba Chromea.</translation>
 <translation id="4115002065223188701">Mreža je izvan dometa</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Uvijek dopusti na ovoj web-lokaciji</translation>
 <translation id="4116704186509653070">Ponovo otvori</translation>
 <translation id="4117637339509843559">Tamni način</translation>
 <translation id="4117714603282104018">Dodirne povratne informacije dodirne podloge</translation>
@@ -4054,7 +4055,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4907306957610201395">Kategorija dopuštenja</translation>
 <translation id="4908811072292128752">Otvorite novu karticu za istodobni pregled dvije stranice</translation>
 <translation id="4909038193460299775">Budući da ovim računom upravlja <ph name="DOMAIN" />, vaše oznake, povijest, zaporke i druge postavke izbrisat će se s ovog uređaja. No vaši podaci ostat će pohranjeni na vašem Google računu i možete upravljati njima na <ph name="BEGIN_LINK" />Google nadzornoj ploči<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">Administrator vašeg telefona nije omogućio stream aplikacije.</translation>
 <translation id="4912643508233590958">Buđenja iz stanja mirovanja</translation>
 <translation id="4915961947098019832">Dopušteno je prikazivanje slika</translation>
 <translation id="4916542008280060967">Dopustiti web-lokaciji da uredi <ph name="FILE_NAME" />?</translation>
@@ -6892,7 +6892,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7758450972308449809">Prilagodite granice zaslona</translation>
 <translation id="7760004034676677601">Je li to početna stranica koju ste očekivali?</translation>
 <translation id="7762024824096060040">Upotreba računa nije moguća</translation>
-<translation id="7762463735017901568">Administrator vašeg telefona onemogućuje sinkronizaciju obavijesti</translation>
 <translation id="7764225426217299476">Dodaj adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> s <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Tijekom eksperimenata smanjenje količine neželjenog sadržaja i prijevara oslanja se na oznake povjerenja koje pomažu web-lokacijama da se bore protiv prijevara i razlikuju botove od osoba.</translation>

@@ -65,6 +65,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1275285675049378717">A carregar <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localizar telemóvel</translation>
+<translation id="1287002645302686982">Já existe um espaço de trabalho guardado com o nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Volte <ph name="COME_BACK_DAY_OF_WEEK" /> à(s) <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
 <translation id="1290982764014248209">Mova <ph name="DRAGGED_APP" /> para a pasta <ph name="FOLDER_NAME" />.</translation>
@@ -177,6 +178,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Olá, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrada de texto</translation>
+<translation id="1982717156487272186">Mostrar semana anterior</translation>
 <translation id="1989113344093894667">Não é possível capturar conteúdo</translation>
 <translation id="1990046457226896323">Ficheiros de voz transferidos.</translation>
 <translation id="1993072747612765854">Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -268,6 +270,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2586561057878260610">Prima Ctrl + W para combinar com <ph name="DESK_NAME" />. Prima Ctrl + Shift + W para fechar o espaço de trabalho e as janelas.</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
+<translation id="2598725286293895280">Apps não suportadas no espaço de trabalho</translation>
 <translation id="2607678425161541573">É necessário iniciar sessão online</translation>
 <translation id="2620016719323068571">Pesquise na categoria <ph name="CATEGORY" />, ficheiros, apps e muito mais…</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -625,6 +628,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, número de estrelas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Altere o dispositivo para uma versão anterior dentro de um dia}other{Altere o dispositivo para uma versão anterior dentro de # dias}}</translation>
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
+<translation id="4644727592819780893">A região é demasiado pequena para se ajustar à câmara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de aplicação</translation>
 <translation id="4657775630156561295">A sugestão seguinte irá ser removida permanentemente do histórico de sugestões da sua conta:
 
@@ -642,6 +646,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + número foi alterado. Para utilizar teclas de função, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
 <translation id="473775607612524610">Atualizar</translation>
+<translation id="4740516757091333363">Eliminar espaço de trabalho guardado?</translation>
 <translation id="4752784485658729358">Só é permitido guardar 6 espaços de trabalho. Remova um espaço de trabalho para guardar um novo.</translation>
 <translation id="4759238208242260848">Transferências</translation>
 <translation id="4774338217796918551">Volte amanhã à(s) <ph name="COME_BACK_TIME" />.</translation>
@@ -739,6 +744,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
 <translation id="5356963482258194581">Alterne entre o tema claro e escuro. Clique com o botão direito do rato no ambiente de trabalho e selecione Estilo e fundo de ecrã.</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
+<translation id="5391307769715781764">Substituir o espaço de trabalho guardado?</translation>
 <translation id="5393156353051693207">Toque sem soltar em qualquer local para reordenar as suas apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar uma pasta.</translation>
 <translation id="5397578532367286026">A utilização e o histórico deste utilizador podem ser consultados pelo gestor (<ph name="MANAGER_EMAIL" />) em chrome.com.</translation>
@@ -783,6 +789,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" para "<ph name="TO_LOCALE" />" após a sincronização das suas definições.</translation>
 <translation id="5675363643668471212">Item de prateleira</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5678564054339031017">Mostrar semana seguinte</translation>
 <translation id="5679050765726761783">Transformador de baixo consumo ligado</translation>
 <translation id="5682642926269496722">O Assistente Google não está disponível para a conta do utilizador atual.</translation>
 <translation id="5689633613396158040">A Luz noturna torna mais fácil olhar para o ecrã ou ler com pouca luz. Toque para alterar a hora em que a Luz noturna é ativada ou desativada totalmente.</translation>
@@ -971,6 +978,7 @@ Nova instalação</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6801878137098616817">Editado recentemente</translation>
 <translation id="6803622936009808957">Não foi possível espelhar os ecrãs, porque não foram encontradas resoluções suportadas. Em vez disso, entrou no ambiente de trabalho expandido.</translation>
+<translation id="6812232930908427253">Não foi possível guardar o espaço de trabalho. Existem demasiadas janelas ou separadores.</translation>
 <translation id="6818242057446442178">Recuar por palavra</translation>
 <translation id="6819327813400217281">Câmara ajustada ao canto inferior esquerdo</translation>
 <translation id="6820676911989879663">Faça uma pausa!</translation>

@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">‏درحال نمایش گذرواژه‌های ذخیره‌شده در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> شما</translation>
 <translation id="1026655690966755180">افزودن درگاه</translation>
 <translation id="1026822031284433028">بارگیری تصویر</translation>
+<translation id="1028700151766901954">‏دلیل: LBS به‌طور پیش‌فرض در <ph name="DEFAULT_OPEN_BROWSER" /> باقی می‌ماند.</translation>
 <translation id="1029317248976101138">بزرگ‌نمایی</translation>
 <translation id="1031362278801463162">بارگیری پیش‌نمایش</translation>
 <translation id="1032605640136438169">لطفاً «شرایط» جدید را مرور کنید</translation>
@@ -3280,6 +3281,7 @@
         از منوی کارت می‌توانید تنظیمات را مدیریت کنید یا در «سفارشی کردن Chrome» گزینه‌های بیشتری را ببینید.</translation>
 <translation id="4115002065223188701">شبکه خارج از محدوده است</translation>
 <translation id="4115378294792113321">سرخابی</translation>
+<translation id="4116663294526079822">همیشه مجاز در این سایت</translation>
 <translation id="4116704186509653070">باز کردن دوباره</translation>
 <translation id="4117637339509843559">حالت تاریک</translation>
 <translation id="4117714603282104018">بازخورد لمسی صفحه لمسی</translation>
@@ -3361,6 +3363,7 @@
 <translation id="4209092469652827314">بزرگ</translation>
 <translation id="4209251085232852247">خاموش</translation>
 <translation id="4210048056321123003">درحال بارگیری دستگاه مجازی</translation>
+<translation id="4210380525132844778">دلیل: <ph name="RULE" /> در فهرست «<ph name="LIST_NAME" />» پیدا شد.</translation>
 <translation id="421182450098841253">&amp;نمایش نوار نشانک‌ها</translation>
 <translation id="4211851069413100178">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های تشخیص عیب و داده‌های استفاده از دستگاه و برنامه به Google، به بهبود تجربه استفاده از Android کمک کنید. این داده‌ها به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند برنامه‌نویس‌های Android) کمک می‌کند. این <ph name="BEGIN_LINK1" />تنظیم<ph name="END_LINK1" /> توسط مالک اعمال می‌شود. ممکن است مالک انتخاب کند داده‌های استفاده و عیب‌یابی این دستگاه به Google ارسال شود. اگر تنظیم «فعالیت وب و برنامه» تکمیلی روشن باشد، ممکن است این داده‌ها در حساب Google شما ذخیره شود. <ph name="BEGIN_LINK2" />بیشتر بدانید<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">‏توقف استفاده در برنامه‌های Android</translation>
@@ -4063,7 +4066,6 @@
 <translation id="4907306957610201395">دسته مجوز</translation>
 <translation id="4908811072292128752">برای مرور دو سایت به‌طور هم‌زمان، برگه جدیدی را باز کنید</translation>
 <translation id="4909038193460299775">‏از آن‌جا که این حساب توسط <ph name="DOMAIN" /> مدیریت می‌شود، نشانک‌ها، سابقه، گذرواژه‌ها و دیگر تنظیماتتان از این دستگاه پاک می‌شوند. اما داده‌هایتان در حساب Google ذخیره می‌مانند و می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />داشبورد Google<ph name="END_LINK" /> مدیریت کنید.</translation>
-<translation id="4912265719039610598">سرپرست تلفنتان جاری‌سازی برنامه را غیرفعال کرده است.</translation>
 <translation id="4912643508233590958">خروج از حالت بیکار</translation>
 <translation id="4915961947098019832">اجازه دارد تصاویر را نشان دهد</translation>
 <translation id="4916542008280060967">به سایت اجازه می‌دهید <ph name="FILE_NAME" /> را ویرایش کند؟</translation>
@@ -5189,6 +5191,7 @@
 <translation id="6063284707309177505">ایجاد رمزینه پاسخ‌سریع</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> ممکن است صدای مشابه یا صدای ضبط‌شده هم بتواند به نتایج شخصی <ph name="SUPERVISED_USER_NAME" /> دسترسی یابد. برای صرفه‌جویی در مصرف باتری، می‌توانید در «تنظیمات دستیار» <ph name="SUPERVISED_USER_NAME" /> گزینه‌ای را انتخاب کنید تا تنها زمانی که این دستگاه به منبع نیرو متصل است، «Ok Google» روشن شود.</translation>
 <translation id="6064217302520318294">قفل صفحه</translation>
+<translation id="6065145031947216733">می‌خواهید مرورتان را جدا کنید؟</translation>
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
 <translation id="6066794465984119824">درهم‌سازی تصویر تنظیم نشده است</translation>
 <translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>
@@ -5267,6 +5270,7 @@
 <translation id="6129953537138746214">فاصله</translation>
 <translation id="6130692320435119637">‏افزودن Wi-Fi</translation>
 <translation id="6130887916931372608">کلید صفحه‌کلید</translation>
+<translation id="6135823405800500595">‏مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز باشد، و بلوتوث و Wi-Fi روشن باشند</translation>
 <translation id="6136114942382973861">بستن نوار بارگیری</translation>
 <translation id="6136287496450963112">کلید امنیتی‌تان پین ندارد و محافظت‌شده نیست. برای مدیریت اثر انگشت، ابتدا پین ایجاد کنید.</translation>
 <translation id="6138680304137685902">‏امضای X9.62 ECDSA با SHA-384</translation>
@@ -6902,7 +6906,6 @@
 <translation id="7758450972308449809">تنظیم مرزهای نمایشگرتان</translation>
 <translation id="7760004034676677601">آیا این صفحه راه‌اندازی مورد انتظار شماست؟</translation>
 <translation id="7762024824096060040">نمی‌توان از این حساب استفاده کرد</translation>
-<translation id="7762463735017901568">سرپرست تلفن همگام‌سازی اعلان را غیرفعال کرده است</translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> از <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">وقتی نسخه آزمایشی روشن باشد، «کاهش هرزنامه و تقلب» برای کمک به سایت‌ها در مبارزه با تقلب و تشخیص روبات‌ها از انسان، به کدهای اطمینان اتکا می‌کند.</translation>
@@ -7102,6 +7105,7 @@
 <translation id="7947962633355574091">کپی آدرس ویدئو</translation>
 <translation id="7947964080535614577">سایت‌ها معمولاً آگهی نشان می‌دهند تا بتوانند محتوا یا سرویس‌ها را به‌طور رایگان ارائه دهند. اما برخی‌از سایت‌ها به‌عنوان سایت‌هایی شناخته شده‌اند که آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند.</translation>
 <translation id="7948407723851303488">همه صفحه‌های <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">‏دلیل: LBS فقط از نشانی‌های وب http://‎،‏ https://‎، و file://‎ پشتیبانی می‌کند.</translation>
 <translation id="7951265006188088697">‏برای افزودن یا مدیریت روش‌های پرداخت Google Pay، به<ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود بروید</translation>
 <translation id="795130320946928025">خاموش کردن کارت مجازی</translation>
 <translation id="7952708427581814389">سایت‌ها می‌توانند دیدن نوشتار و تصاویر موجود در بریده‌دان را درخواست کنند</translation>
@@ -7646,6 +7650,7 @@
 <translation id="8480869669560681089">دستگاه نامشخص از <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">‏تأیید مجوز USB</translation>
 <translation id="8481980314595922412">ویژگی‌های آزمایشی روشن است</translation>
+<translation id="8486666913807228950">دلیل: قانون معکوس <ph name="REVERT_RULE" /> در فهرست «باز کردن اجباری در» پیدا شد.</translation>
 <translation id="848666842773560761">برنامه‌ای می‌خواهد به دوربین دسترسی داشته باشد. برای مجاز کردن دسترسی، کلید «حریم‌خصوصی دوربین» را خاموش کنید.</translation>
 <translation id="8487678622945914333">بزرگ‌نمایی</translation>
 <translation id="8489156414266187072">پیشنهادهای شخصی فقط در حساب شما نمایش داده می‌شوند</translation>

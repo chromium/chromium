@@ -188,7 +188,6 @@
 <translation id="1995884366040846621">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに名前、メールアドレス、プロフィール画像が共有されます。このサイトの<ph name="BEGIN_LINK1" />プライバシー ポリシー<ph name="END_LINK1" />をご確認ください。</translation>
 <translation id="2000419248597011803">Cookie と、アドレスバーや検索ボックスに入力した検索語句を既定の検索エンジンに送信します</translation>
 <translation id="200114059308480249">Google 検索に周辺のテキストを含めますか？</translation>
-<translation id="2011996512573319870">同期すると、最も関連性の高いコンテンツを表示できます</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 件のファイル}other{# 件のファイル}}</translation>
 <translation id="2020309681647789787">同期しているすべてのデバイスから履歴にアクセスして、作業の続きを行うことができます</translation>
 <translation id="2021896219286479412">全画面表示時のサイトの操作項目</translation>
@@ -272,7 +271,6 @@
 <translation id="2461822463642141190">現在</translation>
 <translation id="2472163211318554013">Chrome を最大限に活用するにはログインしてください</translation>
 <translation id="247737702124049222">画像の説明をオンにしました</translation>
-<translation id="2481251096908459228">パーソナライズされたストーリーを表示</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2494974097748878569">Chrome の Google アシスタント</translation>
@@ -314,7 +312,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 件の音声ファイル}other{# 件の音声ファイル}}</translation>
 <translation id="265156376773362237">標準プリロード</translation>
 <translation id="2656405586795711023">ウェブアプリ</translation>
-<translation id="2700802943130197326">同期すると、他のデバイスのパスワードやブックマークなどを使用できます。</translation>
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2707726405694321444">ページを更新</translation>

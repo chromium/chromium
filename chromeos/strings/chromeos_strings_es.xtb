@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Activar la protección contra escritura</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1310380015393971138">No hay redes <ph name="NETWORK_NAME" /> disponibles</translation>
 <translation id="131421566576084655">Fecha del último reinicio de datos no disponible</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Ajustes de Respuestas rápidas</translation>
 <translation id="5168185087976003268">Salud de la batería</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
+<translation id="5179530508336824319">Habilita la protección contra escritura para pasar a la siguiente pantalla. Ve a la página de asistencia del fabricante del dispositivo para obtener instrucciones.</translation>
 <translation id="5190187232518914472">Revive tus recuerdos favoritos. Para añadir o editar álbumes, ve a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5212593641110061691">Tabloide</translation>

@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">ඔබේ <ph name="BEGIN_LINK" />Google ගිණුම<ph name="END_LINK" /> වෙතින් මුරපද පෙන්වීම</translation>
 <translation id="1026655690966755180">තොට එක් කරන්න</translation>
 <translation id="1026822031284433028">රූපය පූරණය කරන්න</translation>
+<translation id="1028700151766901954">හේතුව: LBS පෙරනිමියෙන් <ph name="DEFAULT_OPEN_BROWSER" /> හි පවතී.</translation>
 <translation id="1029317248976101138">විශාලනය</translation>
 <translation id="1031362278801463162">පෙර දැක්ම පූර්ණය වෙමින්</translation>
 <translation id="1032605640136438169">නව නියම සමාලෝචන කරන්න</translation>
@@ -3272,6 +3273,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
         ඔබට කාඩ්පත් මෙනුවෙන් සැකසීම් කළමනාකරණය කිරීමට හෝ Chrome අභිරුචිකරණය තුළ තවත් විකල්ප බැලීමට හැකිය.</translation>
 <translation id="4115002065223188701">ජාලය පරාසයෙන් බැහැරය</translation>
 <translation id="4115378294792113321">මැජෙන්ටා</translation>
+<translation id="4116663294526079822">මෙම අඩවිය මත සැමවිටම අවසර දෙන්න</translation>
 <translation id="4116704186509653070">නැවත විවෘත කරන්න</translation>
 <translation id="4117637339509843559">අඳුරු ප්‍රකාරය</translation>
 <translation id="4117714603282104018">ස්පර්ශ පෑඩ ස්පෘශ්‍ය ප්‍රතිපෝෂණය</translation>
@@ -3353,6 +3355,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4209092469652827314">විශාල</translation>
 <translation id="4209251085232852247">අක්‍රියයි</translation>
 <translation id="4210048056321123003">අථත්‍ය යන්ත්‍රය බාගනිමින්</translation>
+<translation id="4210380525132844778">හේතුව: <ph name="RULE" /> "<ph name="LIST_NAME" />" ලැයිස්තුවේ හමු විය.</translation>
 <translation id="421182450098841253">පිටු සලකුණු තීරුව &amp;පෙන්වන්න</translation>
 <translation id="4211851069413100178">භාවිත සහ දෝෂ නිර්ණ දත්ත යවන්න. ස්වයංක්‍රියව රෝග විනිශ්චය, උපාංග සහ යෙදුම් භාවිත දත්ත Google වෙත යැවීමෙන් ඔබගේ Android අත්දැකීම වැඩි දියුණු කර ගැනීමට උපකාරී වන්න. මෙය පද්ධති සහ යෙදුම් ස්ථායිතාවට සහ අනෙකුත් වැඩිදියුණු කිරීම්වලට උදවු කරයි. සමහර එකතු කළ දත්ත Google යෙදුම්වලට සහ Android සංවර්ධකයින් වැනි හවුල්කරුවන්ට ද උදවු කරති. මෙම <ph name="BEGIN_LINK1" />සැකසීම<ph name="END_LINK1" /> හිමිකරු විසින් බලාත්මක කෙරේ. හිමිකරුට Google වෙත ස්වයංක්‍රියව දෝෂ නිර්ණ සහ භාවිත දත්ත යැවීමට තේරිය හැක. ඔබේ අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය නම්, මෙම දත්ත ඔබේ Google ගිණුුමට සුරකිනු ලැබේ. <ph name="BEGIN_LINK2" />තවත් දැන ගන්න<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Android යෙදුම් සමග භාවිත කිරීම නවත්වන්න</translation>
@@ -4054,7 +4057,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4907306957610201395">අවසර ප්‍රවර්ගය</translation>
 <translation id="4908811072292128752">අඩවි දෙකක් එකවර බ්‍රවුස් කිරීම සඳහා නව පටිත්තක් විවෘත කරන්න</translation>
 <translation id="4909038193460299775">මෙම ගිණුම <ph name="DOMAIN" /> මගින් කළමනාකරණය කරන නිසා, ඔබගේ පිටුසන්, ඉතිහාසය, මුරපද, සහ අනෙකුත් සැකසීම් මෙම උපාංගය වෙතින් හිස් කරනු ඇත. කෙසේ වෙතත්, ඔබගේ දත්ත ඔබගේ Google ගිණුමේ ගබඩා කර තිබෙනු ඇති අතර <ph name="BEGIN_LINK" />Google උපකරණ පුවරුව<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
-<translation id="4912265719039610598">යෙදුම් ප්‍රවාහය ඔබගේ දුරකථනයේ පරිපාලක විසින් අබල කර ඇත.</translation>
 <translation id="4912643508233590958">අක්‍රීය අවධි වීම්</translation>
 <translation id="4915961947098019832">රූප පෙන්වීමට ඉඩ දේ</translation>
 <translation id="4916542008280060967">වෙබ් අඩවියට <ph name="FILE_NAME" /> සංස්කරණ කිරීමට ඉඩ දෙන්නේද?</translation>
@@ -5181,6 +5183,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6063284707309177505">QR කේතය තනන්න</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />සටහන:<ph name="END_BOLD" /> ඒ හා සමාන කටහඬ හෝ පටිගත කිරීමකට <ph name="SUPERVISED_USER_NAME" />ගේ පුද්ගලික ප්‍රතිඵල වෙත ප්‍රවේශ විය හැකිය. බැටරිය සුරැකීමට, මෙම උපාංගය බල මූලාශ්‍රයකට සම්බන්ධ විට පමණක් “Hey Google” ක්‍රියාත්මක කිරීමට ඔබට <ph name="SUPERVISED_USER_NAME" />ගේ සහායක සැකසීම් තුළ තෝරා ගත හැකිය.</translation>
 <translation id="6064217302520318294">තිර අගුල</translation>
+<translation id="6065145031947216733">ඔබගේ බ්‍රවුස් කිරීම වෙන් කරන්නද?</translation>
 <translation id="6065289257230303064">සහතික මාතෘකා නාමාවලි ලක්ෂණ</translation>
 <translation id="6066794465984119824">රූප හැෂ් සකසා නැත</translation>
 <translation id="6069464830445383022">ඔබගේ Google ගිණුම ඔබගේ Chromebook පිරීමයි</translation>
@@ -5259,6 +5262,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6129953537138746214">හිඩස</translation>
 <translation id="6130692320435119637">Wi-Fi එක් කරන්න</translation>
 <translation id="6130887916931372608">යතුරු පුවරු යතුර</translation>
+<translation id="6135823405800500595">ඔබගේ දුරකථනය ළඟ තිබෙන බව, අගුලු හැර ඇති බව, බ්ලූටූත් සහ Wi-Fi ක්‍රියාත්මක කර ඇති බව සහතික කර ගන්න</translation>
 <translation id="6136114942382973861">බාගැනීම් තීරුව වසන්න</translation>
 <translation id="6136287496450963112">ඔබගේ ආරක්ෂක යතුර PIN අංකයකින් ආරක්ෂා නොකෙරේ. ඇඟිලි සලකුණු කළමනාකරණය කිරීමට, පළමුව PIN එකක් තනන්න.</translation>
 <translation id="6138680304137685902">SHA-384 සහිත X9.62 ECDSA අත්සන</translation>
@@ -6892,7 +6896,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7758450972308449809">ඔබේ සංදර්ශකයේ මායිම් සීරුමාරු කරන්න</translation>
 <translation id="7760004034676677601">මෙය ඔබ බලාපොරොත්තු වූ ආරම්භක පිටුව ද?</translation>
 <translation id="7762024824096060040">මෙම ගිණුම භාවිත කළ නොහැකිය</translation>
-<translation id="7762463735017901568">ඔබගේ දුරකථනයේ පරිපාලක විසින් දැනුම්දීම් සමමුහුර්ත කිරීම අබල කර ඇත</translation>
 <translation id="7764225426217299476">ලිපිනය එක් කරන්න</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> වෙතින් <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7764857504908700767">අත්හදා බැලීම් ක්‍රියාත්මක විට, අයාචිත සහ වංචාව අඩු කිරීම අඩවිවලට වංචාවට එරෙහිව සටන් කිරීමට සහ මිනිසුන්ගෙන් බොට් වෙන් කර හඳුනා ගැනීමට උපකාර කිරීමට විශ්වාස ටෝකන මත රඳා පවතී.</translation>
@@ -7091,6 +7094,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7947962633355574091">වීඩියෝ ලිපිනය පිටපත් කරන්න</translation>
 <translation id="7947964080535614577">අඩවි සාමාන්‍යයෙන් වෙළඳ දැන්වීම් පෙන්වන බැවින් ඒවාට ගාස්තු රහිත අන්තර්ගතය හෝ සේවා සැපයිය හැකිය. නමුත්, සමහර අඩවි ආක්‍රමණශීලී හෝ නොමඟ යවන වෙළඳ දැන්වීම් සඳහා ප්‍රසිද්ධය.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> හි සියලු පිටු</translation>
+<translation id="7950629216186736592">හේතුව: LBS http://, https:// සහ file:// URL සඳහා පමණක් සහාය දක්වයි.</translation>
 <translation id="7951265006188088697">Google Pay ගෙවීමේ ක්‍රම එක් කිරීමට හෝ කළමනා කිරීමට, ඔබේ <ph name="BEGIN_LINK" />Google ගිණුමට පැමිණෙන්න<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">අතථ්‍ය කාඩ්පත ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="7952708427581814389">අඩවි ඔබේ පසුරු පුවරුවේ පෙළ සහ රූප බැලීමට ඉල්ලිය හැකිය</translation>
@@ -7634,6 +7638,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> වෙතින් වන නොදන්නා උපාංගය</translation>
 <translation id="8481187309597259238">USB අවසරය තහවුරු කරන්න</translation>
 <translation id="8481980314595922412">අත්හදා බැලීමේ විශේෂාංග ක්‍රියාත්මකයි</translation>
+<translation id="8486666913807228950">හේතුව: <ph name="REVERT_RULE" /> ප්‍රතිලෝම රීතිය "බලෙන් විවෘත කිරීම" ලැයිස්තුවේ හමු විය.</translation>
 <translation id="848666842773560761">යෙදුමක් කැමරාවට ප්‍රවේශ වීමට උත්සාහ කරයි. ප්‍රවේශ වීමට ඉඩ දීම සඳහා කැමරා පෞද්ගලිකත්ව ස්විචය ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="8487678622945914333">විශාලනය කරන්න</translation>
 <translation id="8489156414266187072">පුද්ගලික යෝජනා ඔබගේ ගිණුමේ පමණක් පෙන්වයි</translation>

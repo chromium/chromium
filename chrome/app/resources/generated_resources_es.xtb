@@ -3267,6 +3267,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
         Puedes gestionar los ajustes en el menú de la tarjeta, o ver más opciones en Personalizar Chrome.</translation>
 <translation id="4115002065223188701">La red está fuera del alcance</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116663294526079822">Permitir siempre en este sitio</translation>
 <translation id="4116704186509653070">Volver a abrir</translation>
 <translation id="4117637339509843559">Modo Oscuro</translation>
 <translation id="4117714603282104018">Vibración al pulsar del panel táctil</translation>
@@ -3446,6 +3447,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4307992518367153382">Configuración básica</translation>
 <translation id="4309165024397827958">Permite que las aplicaciones y los servicios de Android que tengan permiso de ubicación usen la ubicación de tu dispositivo. Es posible que Google recoja datos de ubicación periódicamente y que los use de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K activos)</translation>
+<translation id="4310132194679586591">Selecciona una aplicación en tu dispositivo con la que abrir este enlace</translation>
 <translation id="4310139701823742692">El formato del archivo no es correcto. Comprueba el archivo PPD e inténtalo de nuevo.</translation>
 <translation id="431076611119798497">&amp;Detalles</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> cuentas de Google}}</translation>
@@ -3974,6 +3976,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4842976633412754305">Esta página está intentando cargar scripts de fuentes no autorizadas.</translation>
 <translation id="4844333629810439236">Otros teclados</translation>
 <translation id="4844633725025837809">Para mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el gestor de contraseñas de Google</translation>
+<translation id="4846628405149428620">Selecciona dónde puede guardar los cambios este sitio</translation>
 <translation id="4846680374085650406">Estás siguiendo la recomendación del administrador para esta opción.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seleccionado, pulsa Intro para seleccionar los álbumes de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">"Ok Google" en el Asistente de Google</translation>
@@ -4048,7 +4051,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4907306957610201395">Categoría de permisos</translation>
 <translation id="4908811072292128752">Abre una pestaña nueva para navegar por dos sitios a la vez</translation>
 <translation id="4909038193460299775">Dado que <ph name="DOMAIN" /> administra esta cuenta, tus marcadores, tu historial, tus contraseñas y otros ajustes se borrarán de este dispositivo. No obstante, tus datos permanecerán almacenados en tu cuenta de Google y se podrán gestionar en el <ph name="BEGIN_LINK" />Panel de Control de Google<ph name="END_LINK" />.</translation>
-<translation id="4912265719039610598">El administrador de tu teléfono ha inhabilitado el streaming de aplicaciones.</translation>
 <translation id="4912643508233590958">Activación inactiva</translation>
 <translation id="4915961947098019832">Puede mostrar imágenes</translation>
 <translation id="4916542008280060967">¿Permitir que el sitio web edite <ph name="FILE_NAME" />?</translation>
@@ -4676,6 +4678,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5554403733534868102">En adelante, actualizaciones sin esperas</translation>
 <translation id="5554489410841842733">Este icono aparecerá cuando la extensión pueda actuar en la página actual.</translation>
 <translation id="5554720593229208774">Entidad emisora de certificados de correo electrónico</translation>
+<translation id="5554866693883022680">Selecciona una aplicación en tu <ph name="DEVICE_TYPE" /> con la que abrir este enlace</translation>
 <translation id="5555363196923735206">Cambiar de cámara</translation>
 <translation id="5555525474779371165">Elige tu nivel de protección de Navegación segura</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
@@ -6884,7 +6887,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7758450972308449809">Ajusta los extremos de la pantalla</translation>
 <translation id="7760004034676677601">¿Es esta la página de inicio que esperabas?</translation>
 <translation id="7762024824096060040">No se puede usar esta cuenta</translation>
-<translation id="7762463735017901568">El administrador de tu teléfono ha inhabilitado la sincronización de notificaciones</translation>
 <translation id="7764225426217299476">Añadir dirección</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> desde <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764857504908700767">Cuando las pruebas están activas, la reducción del spam y el fraude se basa en tokens de confianza que ayudan a los sitios a luchar contra el fraude y a distinguir a los bots de las personas.</translation>

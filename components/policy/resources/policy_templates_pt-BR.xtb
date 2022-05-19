@@ -425,6 +425,18 @@ Se você ativar ou não configurar essa política, a rolagem via URL para fragme
 
 Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1474273443907024088">Desativar TLS False Start</translation>
+<translation id="1476128579011024193">
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta.
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta com a opção de manter os dados de navegação existentes. Essa opção tem suporte no Chrome 102 e em versões mais recentes.
+
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta. Este perfil não vai permitir contas secundárias.
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />, depois de fazer login em uma conta gerenciada sujeita à política, o usuário vai receber uma solicitação para criar um novo perfil para a conta com a opção de manter os dados de navegação existentes. Este perfil não vai permitir contas secundárias. Essa opção tem suporte no Chrome 102 e em versões mais recentes.
+
+      Se a política for definida como <ph name="POLICY_VALUE_NONE" /> ou for deixada sem definição, as contas gerenciadas não vão ter restrições. Isso pode fazer com a conta gerenciada se torne uma conta secundária. Com isso ela perde a capacidade de receber políticas definidas pelo administrador para a conta.
+
+      Se esta política for definida no dispositivo, todas as contas no navegador vão ficar sujeitas a ela.
+      Se esta política for definida na conta, somente essa conta vai ser afetada no navegador.
+    </translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Se a política for definida, será configurada uma lista de dispositivos USB que o usuário pode remover do driver de kernel dele para uso pela API chrome.usb diretamente dentro de um app da Web. As entradas são pares de um identificador de fornecedor e um identificador de produto USB para reconhecer um hardware específico.
 
@@ -4388,6 +4400,37 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se a política for definida como falsa ou não for definida, <ph name="PLUGIN_VM_NAME" /> não terá permissão para coletar dados.
       Se ela for definida como verdadeira, <ph name="PLUGIN_VM_NAME" /> poderá coletar dados de uso de <ph name="PLUGIN_VM_NAME" />, que serão combinados e analisados para melhorar a experiência com <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="5874896145772824604">Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjunto primário.
+
+      Cada item na lista do navegador precisa atender aos requisitos de um conjunto primário,
+      que consiste em um site proprietário e um ou mais sites membros. Todos os sites em um conjunto primário precisam
+      ser um domínio registrável exibido por HTTPS, não importando se eles são um site proprietário ou membro.
+      Cada site em um conjunto primário também precisa ser único, o que significa que um site não pode ser proprietário e membro ao mesmo tempo, nem ser
+      listado mais de uma vez como membro de um conjunto primário.
+      Consulte https://github.com/privacycg/first-party-sets (link em inglês) para ver mais informações sobre conjuntos primários.
+
+      Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de conjuntos primários.
+
+      Para todos os sites em um conjunto primário da lista de <ph name="REPLACEMENTS" />, se o site também estiver presente
+      em um conjunto primário na lista do navegador, ele será removido desse último.
+      Em seguida, o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
+
+      Para todos os sites em um conjunto primário da lista de <ph name="ADDITIONS" />, se um site também estiver presente
+      em um conjunto primário na lista do navegador, esse último será atualizado para que o
+       novo conjunto primário possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
+       o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
+
+      A lista de conjuntos primários do navegador exige que nenhum dos sites na lista esteja em
+       mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
+      e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar tanto na lista de
+      <ph name="REPLACEMENTS" /> quanto na de <ph name="ADDITIONS" />.
+
+      Caracteres curinga (*) não podem ser usados como valor da política nem dentro de conjuntos primários nessas listas.
+
+      Todos os conjuntos fornecidos pela política precisam ser um conjunto primário válido. Se não forem,
+      um erro será gerado.
+
+      Esta política está disponível apenas em: instâncias do Windows associadas a um domínio do <ph name="MS_AD_NAME" />, instâncias do Windows 10 Pro ou Enterprise registradas no gerenciamento de dispositivos e em instâncias do macOS gerenciadas via MDM ou associadas a um domínio via MCX.</translation>
 <translation id="5875873062228321803">Configura o requisito da versão mínima permitida do <ph name="PRODUCT_OS_NAME" />.
 
       Quando esta política for definida como uma lista não vazia:

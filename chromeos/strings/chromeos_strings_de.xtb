@@ -32,6 +32,7 @@
 <translation id="1270369111467284986">Verdacht auf Captive Portal</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308067967278144752">Schreibschutz aktivieren</translation>
 <translation id="1308754910631152188">Wird aktualisiert (<ph name="PERCENTAGE_VALUE" /> % abgeschlossen)</translation>
 <translation id="1310380015393971138">Kein Netzwerk (<ph name="NETWORK_NAME" />) verfügbar</translation>
 <translation id="131421566576084655">Datum, an dem die Datennutzung zuletzt zurückgesetzt wurde, nicht verfügbar</translation>
@@ -442,6 +443,7 @@
 <translation id="5166918508782100047">Einstellungen für die Funktion „Schnellinfo“</translation>
 <translation id="5168185087976003268">Akkuzustand</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
+<translation id="5179530508336824319">Aktiviere den Schreibschutz, um zur nächsten Seite zu gelangen. Besuche die Supportseite des Geräteherstellers, um eine Anleitung zu erhalten.</translation>
 <translation id="5190187232518914472">Die schönsten Erinnerungen immer vor Augen. Wenn du Alben hinzufügst oder bearbeiten möchtest, gehe zu <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
 Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>

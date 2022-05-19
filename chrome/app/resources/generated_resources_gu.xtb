@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માંથી પાસવર્ડ બતાવી રહ્યાં છીએ</translation>
 <translation id="1026655690966755180">પોર્ટ ઉમેરો</translation>
 <translation id="1026822031284433028">છબી લોડ કરો</translation>
+<translation id="1028700151766901954">કારણ: LBS <ph name="DEFAULT_OPEN_BROWSER" />માં ડિફૉલ્ટ તરીકે રહે છે.</translation>
 <translation id="1029317248976101138">ઝૂમ કરો</translation>
 <translation id="1031362278801463162">પ્રીવ્યૂ લોડ થાય છે</translation>
 <translation id="1032605640136438169">કૃપા કરીને નવી શરતોને રિવ્યૂ કરો</translation>
@@ -3266,6 +3267,7 @@
         તમે કાર્ડ મેનૂમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં વધુ વિકલ્પો જોઈ શકો છો.</translation>
 <translation id="4115002065223188701">નેટવર્ક પહોંચની બહાર છે</translation>
 <translation id="4115378294792113321">કિરમજી</translation>
+<translation id="4116663294526079822">હંમેશા આ સાઇટ પર મંજૂરી આપો</translation>
 <translation id="4116704186509653070">ફરી ખોલો</translation>
 <translation id="4117637339509843559">ઘેરો મોડ</translation>
 <translation id="4117714603282104018">ટચપૅડ પર સ્પર્શ દ્વારા આપેલ અભિપ્રાય</translation>
@@ -3347,6 +3349,7 @@
 <translation id="4209092469652827314">મોટું</translation>
 <translation id="4209251085232852247">બંધ છે</translation>
 <translation id="4210048056321123003">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરી રહ્યાં છીએ</translation>
+<translation id="4210380525132844778">કારણ: <ph name="RULE" />, "<ph name="LIST_NAME" />" સૂચિમાં જોવા મળ્યો હતો.</translation>
 <translation id="421182450098841253">બુકમાર્ક બાર &amp;બતાવો</translation>
 <translation id="4211851069413100178">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. આ <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" /> માલિક દ્વારા લાગુ કરવામાં આવેલ છે. માલિક, Googleને આ ડિવાઇસ માટે નિદાન અને વપરાશ ડેટા મોકલવાનું પસંદ કરી શકે છે. જો તમારી વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK2" />વધુ જાણો<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Android ઍપ સાથે ઉપયોગ કરવાનું રોકો</translation>
@@ -3445,6 +3448,7 @@
 <translation id="4307992518367153382">પાયાગત</translation>
 <translation id="4309165024397827958">તમારા ડિવાઇસના સ્થાનનો ઉપયોગ કરવા માટે, સ્થાનની પરવાનગી ધરાવતી Android ઍપ અને સેવાઓને મંજૂરી આપો. Google સમય-સમય પર સ્થાન ડેટા એકત્રિત કરી અને આ ડેટાને સ્થાનની સચોટતા અને સ્થાન-આધારિત સેવાઓને બહેતર બનાવવા માટે અનામી રીતે ઉપયોગમાં લઈ શકે છે.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K લાઇવ)</translation>
+<translation id="4310132194679586591">આ લિંક ખોલવા માટે તમારા પર કોઈ ઍપ પસંદ કરો</translation>
 <translation id="4310139701823742692">ખોટા ફોર્મેટની ફાઇલ છે. PPD ફાઇલ તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="431076611119798497">&amp;વિગતો</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google એકાઉન્ટ}one{<ph name="EXTRA_ACCOUNTS" /> Google એકાઉન્ટ}other{<ph name="EXTRA_ACCOUNTS" /> Google એકાઉન્ટ}}</translation>
@@ -4047,7 +4051,6 @@
 <translation id="4907306957610201395">પરવાનગી કૅટેગરી</translation>
 <translation id="4908811072292128752">બે સાઇટ એકસાથે બ્રાઉઝ કરવા માટે એક નવી ટૅબ ખોલો</translation>
 <translation id="4909038193460299775">આ એકાઉન્ટ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવી રહ્યું હોવાથી, આ ડિવાઇસ પરથી તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ સાફ કરવામાં આવશે. જો કે, તમારો ડેટા તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે અને <ph name="BEGIN_LINK" />Google ડૅશબોર્ડ<ph name="END_LINK" /> પર મેનેજ કરવામાં આવી શકે છે.</translation>
-<translation id="4912265719039610598">તમારા ફોનના ઍડમિનિસ્ટ્રેટર દ્વારા ઍપ સ્ટ્રીમિંગ બંધ કરવામાં આવી છે.</translation>
 <translation id="4912643508233590958">નિષ્ક્રિય વેકઅપ્સ</translation>
 <translation id="4915961947098019832">છબીઓ બતાવવાની મંજૂરી છે</translation>
 <translation id="4916542008280060967">સાઇટને <ph name="FILE_NAME" />માં ફેરફાર કરવાની મંજૂરી આપીએ?</translation>
@@ -4675,6 +4678,7 @@
 <translation id="5554403733534868102">આના પછી, અપડેટ માટે ક્યારેય રાહ જોવી જરૂરી નહીં રહે</translation>
 <translation id="5554489410841842733">જ્યારે એક્સટેન્શન હાલના પેજ પર કામ કરી શકે ત્યારે આ આઇકન દેખાશે.</translation>
 <translation id="5554720593229208774">ઇમેઇલ પ્રમાણન અધિકારી</translation>
+<translation id="5554866693883022680">આ લિંક ખોલવા માટે તમારા <ph name="DEVICE_TYPE" /> પર કોઈ ઍપ પસંદ કરો</translation>
 <translation id="5555363196923735206">કૅમેરાને ફ્લિપ કરો</translation>
 <translation id="5555525474779371165">તમારું Safe Browsing સંરક્ષણ પસંદ કરો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
@@ -5174,6 +5178,7 @@ USB ડિવાઇસ</translation>
 <translation id="6063284707309177505">QR કોડ બનાવો</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />નોંધ<ph name="END_BOLD" />: સમાન વૉઇસ અથવા રેકોર્ડિંગ કદાચ <ph name="SUPERVISED_USER_NAME" />ના વ્યક્તિગત પરિણામોને ઍક્સેસ કરી શકે છે. બૅટરીની બચત કરવા માટે, આ ડિવાઇસ પાવર સૉર્સ સાથે કનેક્ટ કરેલું હોય માત્ર ત્યારે જ તમે <ph name="SUPERVISED_USER_NAME" />ના Assistantના સેટિંગમાં “Ok Google”ની સુવિધા ચાલુ રાખવાનું પસંદ કરી શકો છો.</translation>
 <translation id="6064217302520318294">સ્ક્રીન લૉક</translation>
+<translation id="6065145031947216733">તમારું બ્રાઉઝિંગ અલગ રાખીએ?</translation>
 <translation id="6065289257230303064">પ્રમાણપત્ર વિષય ડિરેક્ટરીનાં લક્ષણો</translation>
 <translation id="6066794465984119824">છબીના હૅશની માહિતી સેટ કરવામાં આવી નથી</translation>
 <translation id="6069464830445383022">તમારું Google એકાઉન્ટ જ તમારા Chromebookમાં સાઇન ઇન કરવાની રીત છે</translation>
@@ -5252,6 +5257,7 @@ USB ડિવાઇસ</translation>
 <translation id="6129953537138746214">જગ્યા</translation>
 <translation id="6130692320435119637">વાઇ-ફાઇ ઉમેરો</translation>
 <translation id="6130887916931372608">કીબોર્ડની કી</translation>
+<translation id="6135823405800500595">ખાતરી કરો કે તમારો ફોન નજીકમાં, અનલૉક કરેલો હોય તેમજ તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સેવા ચાલુ કરવામાં આવી હોય</translation>
 <translation id="6136114942382973861">ડાઉનલોડ બાર બંધ કરો</translation>
 <translation id="6136287496450963112">તમારી 'સિક્યુરિટી કી' પિન વડે સુરક્ષિત નથી. ફિંગરપ્રિન્ટ મેનેજ કરવા માટે, પહેલાં પિન બનાવો.</translation>
 <translation id="6138680304137685902">SHA-384 સાથે X9.62 ECDSA સહી</translation>
@@ -6887,7 +6893,6 @@ USB ડિવાઇસ</translation>
 <translation id="7758450972308449809">તમારા ડિસ્પ્લેની સીમાઓને ગોઠવો</translation>
 <translation id="7760004034676677601">શું આ તમારી અપેક્ષા મુજબનું શરૂઆતનું પેજ છે?</translation>
 <translation id="7762024824096060040">આ એકાઉન્ટનો ઉપયોગ કરી શકાતો નથી</translation>
-<translation id="7762463735017901568">નોટિફિકેશન સિંક કરવાનું કાર્ય તમારા ફોનના ઍડમિન દ્વારા બંધ કરવામાં આવ્યું છે</translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> પરથી <ph name="DOWNLOAD_RECEIVED" /> પ્રાપ્ત કર્યું</translation>
 <translation id="7764857504908700767">અજમાયશો ચાલુ હોય ત્યારે, કપટ સામે લડવામાં અને બૉટને લોકોથી અલગ પાડવામાં સાઇટને સહાય કરવા માટે, સ્પામ અને કપટમાં થતો ઘટાડો ટ્રસ્ટ ટોકન પર નિર્ભર કરે છે.</translation>
@@ -7087,6 +7092,7 @@ USB ડિવાઇસ</translation>
 <translation id="7947962633355574091">વીડિયો ઍડ્રેસ કૉ&amp;પિ કરો</translation>
 <translation id="7947964080535614577">સાઇટ સામાન્ય રીતે જાહેરાતો બતાવે છે, જેથી તેઓ કોઈ કિંમત વિના કન્ટેન્ટ અથવા સેવાઓ આપી શકે. પણ કેટલીક સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવવા માટે જાણીતી હોય છે.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" />ના તમામ પેજ</translation>
+<translation id="7950629216186736592">કારણ: LBS માત્ર http://, https:// અને file:// URLsને જ સપોર્ટ કરે છે.</translation>
 <translation id="7951265006188088697">Google Pay ચુકવણી પદ્ધતિઓ ઉમેરવા અથવા મેનેજ કરવા માટે, તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />ની મુલાકાત લો</translation>
 <translation id="795130320946928025">વર્ચ્યુઅલ કાર્ડની સુવિધા બંધ કરો</translation>
 <translation id="7952708427581814389">સાઇટ તમારા ક્લિપબોર્ડ પરની ટેક્સ્ટ અને છબીઓ જોવાનું પૂછી શકે છે</translation>
@@ -7626,6 +7632,7 @@ USB ડિવાઇસ</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> તરફથી અજાણ્યું ઉપકરણ</translation>
 <translation id="8481187309597259238">USB પરવાનગી કન્ફર્મ કરો</translation>
 <translation id="8481980314595922412">અજમાયશની સુવિધાઓ ચાલુ છે</translation>
+<translation id="8486666913807228950">કારણ: વિપરિત નિયમ <ph name="REVERT_RULE" /> "આમાં જ ફરજિયાત રીતે ખોલો" સૂચિમાં જોવા મળ્યો હતો.</translation>
 <translation id="848666842773560761">કોઈ ઍપ કૅમેરા ઍક્સેસ કરવાનો પ્રયાસ કરી રહી છે. ઍક્સેસની મંજૂરી આપવા માટે કૅમેરાની પ્રાઇવસી સ્વિચ બંધ કરો.</translation>
 <translation id="8487678622945914333">ઝૂમ વધારો</translation>
 <translation id="8489156414266187072">માત્ર તમારા એકાઉન્ટ પર વ્યક્તિગત સૂચનો બતાવવામાં આવે છે</translation>
