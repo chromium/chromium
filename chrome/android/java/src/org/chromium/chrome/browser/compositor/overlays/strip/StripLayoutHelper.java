@@ -526,18 +526,21 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param time   The current time of the app in ms.
      * @param id     The id of the selected tab.
      * @param prevId The id of the previously selected tab.
+     * @param skipAutoScroll Whether autoscroll to bring selected tab to view can be skipped.
      */
-    public void tabSelected(long time, int id, int prevId) {
+    public void tabSelected(long time, int id, int prevId, boolean skipAutoScroll) {
         StripLayoutTab stripTab = findTabById(id);
         if (stripTab == null) {
-            tabCreated(time, id, prevId, true);
+            tabCreated(time, id, prevId, true, false);
         } else {
             updateVisualTabOrdering();
             updateCloseButtons();
 
-            // If the tab was selected through a method other than the user tapping on the strip, it
-            // may not be currently visible. Scroll if necessary.
-            bringSelectedTabToVisibleArea(time, true);
+            if (!skipAutoScroll) {
+                // If the tab was selected through a method other than the user tapping on the
+                // strip, it may not be currently visible. Scroll if necessary.
+                bringSelectedTabToVisibleArea(time, true);
+            }
 
             mUpdateHost.requestUpdate();
 
@@ -596,7 +599,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void tabClosureCancelled(long time, int id) {
         final boolean selected = TabModelUtils.getCurrentTabId(mModel) == id;
-        tabCreated(time, id, Tab.INVALID_TAB_ID, selected);
+        tabCreated(time, id, Tab.INVALID_TAB_ID, selected, true);
     }
 
     /**
@@ -605,8 +608,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param id       The id of the newly created tab.
      * @param prevId   The id of the source tab.
      * @param selected Whether the tab will be selected.
+     * @param restoredTab Whether the tab was restored by a tab closure cancellation.
      */
-    public void tabCreated(long time, int id, int prevId, boolean selected) {
+    public void tabCreated(long time, int id, int prevId, boolean selected, boolean restoredTab) {
         if (findTabById(id) != null) return;
 
         // 1. Build any tabs that are missing.
@@ -630,10 +634,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             allowLeftExpand = true;
         }
 
+        boolean tabStripImprovementsEnabled =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
         if (!mShouldCascadeTabs) {
             int selIndex = mModel.index();
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS) && !selected
-                    && selIndex >= 0 && selIndex < mStripTabs.length) {
+            if (tabStripImprovementsEnabled && !selected && selIndex >= 0
+                    && selIndex < mStripTabs.length) {
                 // Prioritize focusing on selected tab over newly created unselected tabs.
                 fastExpandTab = mStripTabs[selIndex];
             } else {
@@ -643,8 +649,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             canExpandSelectedTab = true;
         }
 
-        // 4. Scroll the stack so that the fast expand tab is visible.
-        if (fastExpandTab != null) {
+        // 4. Scroll the stack so that the fast expand tab is visible. Skip if tab was restored.
+        boolean skipAutoScroll = tabStripImprovementsEnabled && restoredTab;
+        if (fastExpandTab != null && !skipAutoScroll) {
             float delta = calculateOffsetToMakeTabVisible(
                     fastExpandTab, canExpandSelectedTab, allowLeftExpand, true, selected);
 
@@ -652,9 +659,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 // If the ScrollingStripStacker is being used and the new tab button is visible, go
                 // directly to the new scroll offset rather than animating. Animating the scroll
                 // causes the new tab button to disappear for a frame.
-                boolean shouldAnimate = (!mNewTabButton.isVisible()
-                                                || CachedFeatureFlags.isEnabled(
-                                                        ChromeFeatureList.TAB_STRIP_IMPROVEMENTS))
+                boolean shouldAnimate = (!mNewTabButton.isVisible() || tabStripImprovementsEnabled)
                         && !mAnimationsDisabledForTesting;
                 setScrollForScrollingTabStacker(delta, shouldAnimate, time);
             } else if (delta != 0.f) {
@@ -999,8 +1004,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         tab.setIsDying(true);
 
         // 3. Fake a selection on the next tab now.
+        // If a tab other than the selected tab was closed, do not autoscroll to bring next tab to
+        // visible area.
+        boolean skipAutoScroll = mStripTabs[mModel.index()].getId() != tab.getId()
+                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
         Tab nextTab = mModel.getNextTabIfClosed(tab.getId(), /*uponExit=*/false);
-        if (nextTab != null) tabSelected(time, nextTab.getId(), tab.getId());
+        if (nextTab != null) tabSelected(time, nextTab.getId(), tab.getId(), skipAutoScroll);
     }
 
     @Override

@@ -64,4 +64,20 @@ public class TestTabModel extends EmptyTabModel {
     public List<Tab> getAllTabs() {
         return mMockTabs;
     }
+
+    /**
+     * Returns the next tab to be selected when a tab is closed.
+     * @param id Id of the tab being closed.
+     * @param uponExit ignored.
+     * @return The next tab if available or null.
+     */
+    @Override
+    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+        if (id > 0 && id < mMockTabs.size()) {
+            return mMockTabs.get(id - 1);
+        } else if (id == 0 && mMockTabs.size() > 1) {
+            return mMockTabs.get(1);
+        }
+        return null;
+    }
 }

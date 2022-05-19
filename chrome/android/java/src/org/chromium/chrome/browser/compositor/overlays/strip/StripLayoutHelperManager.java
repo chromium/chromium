@@ -592,7 +592,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                 if (tab.getId() == lastId) return;
-                getStripLayoutHelper(tab.isIncognito()).tabSelected(time(), tab.getId(), lastId);
+                getStripLayoutHelper(tab.isIncognito())
+                        .tabSelected(time(), tab.getId(), lastId, false);
             }
 
             @Override
@@ -600,8 +601,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 boolean selected = type != TabLaunchType.FROM_LONGPRESS_BACKGROUND
                         || (mTabModelSelector.isIncognitoSelected() && tab.isIncognito());
                 getStripLayoutHelper(tab.isIncognito())
-                        .tabCreated(
-                                time(), tab.getId(), mTabModelSelector.getCurrentTabId(), selected);
+                        .tabCreated(time(), tab.getId(), mTabModelSelector.getCurrentTabId(),
+                                selected, false);
             }
         };
 

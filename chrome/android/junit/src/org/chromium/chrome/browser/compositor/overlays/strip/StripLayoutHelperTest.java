@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -190,7 +191,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1);
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Close btn should be visible on the selected tab.
         Mockito.verify(tabs[3]).setCanShowCloseButton(true);
@@ -212,7 +213,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
         when(tabs[3].getDrawX()).thenReturn(600.f);
 
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Close btn should be hidden on the selected tab as its an edge tab.
         Mockito.verify(tabs[3]).setCanShowCloseButton(false);
@@ -238,7 +239,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         // Act
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Assert
         // Close btn should be hidden for the partially visible edge tab.
@@ -266,7 +267,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         // Act
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Assert
         // Close button is visible for the rest of the tabs.
@@ -292,7 +293,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         // Act
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Assert
         // Close button is visible for all tabs.
@@ -318,7 +319,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         // Act
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Assert
         // Close btn should be visible for rest of the tabs.
@@ -348,7 +349,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         // Act
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Assert
         // Close button is visible for the rest of the tabs.
@@ -374,7 +375,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         // Act
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Assert
         // Close btn should be hidden for the partially visible edge tab.
@@ -401,7 +402,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
 
         // Act
-        mStripLayoutHelper.tabSelected(1, 3, 0);
+        mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Assert
         // Close button is visible for the rest of the tabs.
@@ -551,6 +552,72 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Tab Strip Improvements")
+    public void testTabSelected_AfterTabClose_SkipsAutoScroll() {
+        initializeTest(false, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        // Set initial scroller position to 1000.
+        mStripLayoutHelper.getScroller().setFinalX(1000);
+
+        // Act: close a non selected tab.
+        mStripLayoutHelper.handleCloseButtonClick(tabs[1], TIMESTAMP);
+
+        // Assert: scroller position is not modified.
+        assertEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabSelected_AfterSelectedTabClose_DoesNotSkipAutoScroll() {
+        initializeTest(false, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        // Set initial scroller position to 1000.
+        mStripLayoutHelper.getScroller().setFinalX(1000);
+
+        // Act: close the selected tab.
+        mStripLayoutHelper.handleCloseButtonClick(tabs[3], TIMESTAMP);
+
+        // Assert: scroller position is modified.
+        assertNotEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabCreated_RestoredTab_SkipsAutoscroll() {
+        initializeTest(false, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        // Set initial scroller position to 1000.
+        mStripLayoutHelper.getScroller().setFinalX(1000);
+
+        // Act: Tab was restored after undoing a tab closure.
+        boolean restoredTab = true;
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 6, 3, false, restoredTab);
+
+        // Assert: scroller position is not modified.
+        assertEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    public void testTabCreated_NonRestoredTab_SkipsAutoscroll() {
+        initializeTest(false, true, 3);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_MEDIUM);
+        mStripLayoutHelper.setStripLayoutTabsForTest(tabs);
+        // Set initial scroller position to 1000.
+        mStripLayoutHelper.getScroller().setFinalX(1000);
+
+        // Act: Tab was restored after undoing a tab closure.
+        boolean restoredTab = false;
+        mStripLayoutHelper.tabCreated(TIMESTAMP, 6, 3, false, restoredTab);
+
+        // Assert: scroller position is modified.
+        assertNotEquals(1000, mStripLayoutHelper.getScroller().getFinalX());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
     public void testScrollDuration() {
         initializeTest(false, true, 3);
 
@@ -601,7 +668,7 @@ public class StripLayoutHelperTest {
         }
         mModel.setIndex(tabIndex);
         mStripLayoutHelper.setTabModel(mModel, null);
-        mStripLayoutHelper.tabSelected(0, tabIndex, 0);
+        mStripLayoutHelper.tabSelected(0, tabIndex, 0, false);
         // Flush UI updated
     }
 
