@@ -63,7 +63,7 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
                   views::LayoutAlignment::kStart,
                   views::TableLayout::kFixedSize,
                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddPaddingColumn(views::GridLayout::kFixedSize, 10)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, 10)
       .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)

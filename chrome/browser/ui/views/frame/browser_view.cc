@@ -236,7 +236,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/native_widget.h"
@@ -300,7 +299,6 @@
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::WebContents;
-using views::ColumnSet;
 using web_modal::WebContentsModalDialogHost;
 
 namespace {
