@@ -73,9 +73,14 @@ export function clear(): void {
  * Remove undefined keys in enum in local storage.
  */
 export function cleanup(): void {
-  for (const key of Object.keys(window.localStorage)) {
-    if (checkEnumVariant(LocalStorageKey, key) === null) {
-      remove(key);
+  // Iteration order is not defined and can change upon most mutations. See
+  // https://html.spec.whatwg.org/multipage/webstorage.html#the-storage-interface
+  const undefinedKeys = [];
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i);
+    if (key !== null && checkEnumVariant(LocalStorageKey, key) === null) {
+      undefinedKeys.push(key);
     }
   }
+  remove(...undefinedKeys);
 }

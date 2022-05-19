@@ -454,6 +454,7 @@ export enum LocalStorageKey {
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',
   EXPERT_MODE = 'expert',
   ENABLE_MULTISTREAM_RECORDING = 'enableMultistreamRecording',
+  ENANLE_PTZ_FOR_BUILTIN = 'enablePTZForBuiltin',
   GA_USER_ID = 'google-analytics.analytics.user-id',
   MIRRORING_TOGGLES = 'mirroringToggles',
   PREF_DEVICE_PHOTO_ASPECT_RATIO_SET = 'devicePhotoAspectRatioSet',
@@ -464,8 +465,8 @@ export enum LocalStorageKey {
   PREF_DEVICE_VIDEO_RESOLUTION_LEVEL = 'deviceVideoResolutionLevel',
   PRINT_PERFORMANCE_LOGS = 'printPerformanceLogs',
   PTZ_TOAST_SHOWN = 'isPTZToastShown',
-  SAVE_META_DATA = 'saveMetadata',
+  SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
-  SHOW_META_DATA = 'showMetadata',
+  SHOW_METADATA = 'showMetadata',
   TOGGLE_MIC = 'toggleMic',
 }
