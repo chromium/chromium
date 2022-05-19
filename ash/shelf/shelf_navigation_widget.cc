@@ -841,7 +841,10 @@ gfx::Rect ShelfNavigationWidget::CalculateClipRectAfterRTL() const {
 
 gfx::Size ShelfNavigationWidget::CalculateIdealSize(
     bool only_visible_area) const {
-  if (!ShelfConfig::Get()->shelf_controls_shown())
+  const bool home_button_shown = IsHomeButtonShown();
+  const bool back_button_shown =
+      IsBackButtonShown(shelf_->IsHorizontalAlignment());
+  if (!home_button_shown && !back_button_shown)
     return gfx::Size();
 
   int controls_space = 0;
@@ -853,11 +856,10 @@ gfx::Size ShelfNavigationWidget::CalculateIdealSize(
   } else {
     // Use CalculatePreferredSize here to take the launcher nudge label into
     // consider.
-    controls_space += IsHomeButtonShown()
+    controls_space += home_button_shown
                           ? GetHomeButton()->CalculatePreferredSize().width()
                           : 0;
-    controls_space +=
-        IsBackButtonShown(shelf_->IsHorizontalAlignment()) ? control_size : 0;
+    controls_space += back_button_shown ? control_size : 0;
     controls_space +=
         (CalculateButtonCount() - 1) * ShelfConfig::Get()->button_spacing();
   }
