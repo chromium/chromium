@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
     name="Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
     expires_after="2022-10-30">
-  <owner>vitaliii@chromium.org</owner>
+  <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
     expires_after="2022-10-30">
-  <owner>vitaliii@chromium.org</owner>
+  <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -279,8 +279,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Crypto.NigoriKeyDerivationDuration.{Method}" units="ms"
-    expires_after="2022-06-29">
-  <owner>vitaliii@chromium.org</owner>
+    expires_after="2022-10-30">
+  <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
