@@ -142,10 +142,11 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
     return delegated_ink_renderer_receiver_arrived_;
   }
 
- private:
+ protected:
   explicit FakeSkiaOutputSurface(
       scoped_refptr<ContextProvider> context_provider);
 
+ private:
   ContextProvider* context_provider() { return context_provider_.get(); }
   GrDirectContext* gr_context() { return context_provider()->GrContext(); }
 

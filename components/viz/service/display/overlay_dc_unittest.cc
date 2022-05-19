@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -25,11 +26,12 @@
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
-#include "components/viz/service/display/display_resource_provider_gl.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/overlay_processor_win.h"
+#include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -48,43 +50,21 @@ namespace {
 const gfx::Rect kOverlayRect(0, 0, 256, 256);
 const gfx::Rect kOverlayBottomRightRect(128, 128, 128, 128);
 
-class OverlayOutputSurface : public OutputSurface {
+class MockDCLayerOutputSurface : public FakeSkiaOutputSurface {
  public:
-  explicit OverlayOutputSurface(
-      scoped_refptr<TestContextProvider> context_provider)
-      : OutputSurface(std::move(context_provider)) {
+  static std::unique_ptr<MockDCLayerOutputSurface> Create() {
+    auto provider = TestContextProvider::Create();
+    provider->BindToCurrentThread();
+    return std::make_unique<MockDCLayerOutputSurface>(std::move(provider));
+  }
+
+  explicit MockDCLayerOutputSurface(scoped_refptr<ContextProvider> provider)
+      : FakeSkiaOutputSurface(std::move(provider)) {
     capabilities_.supports_dc_layers = true;
   }
 
   // OutputSurface implementation.
-  void BindToClient(OutputSurfaceClient* client) override {}
-  void EnsureBackbuffer() override {}
-  void DiscardBackbuffer() override {}
-  void BindFramebuffer() override { bind_framebuffer_count_ += 1; }
-  void SetDrawRectangle(const gfx::Rect& rect) override {}
   MOCK_METHOD1(SetEnableDCLayers, void(bool));
-  void Reshape(const ReshapeParams& params) override {}
-  void SwapBuffers(OutputSurfaceFrame frame) override {}
-  uint32_t GetFramebufferCopyTextureFormat() override {
-    // TestContextProvider has no real framebuffer, just use RGB.
-    return GL_RGB;
-  }
-  bool HasExternalStencilTest() const override { return false; }
-  void ApplyExternalStencil() override {}
-  bool IsDisplayedAsOverlayPlane() const override { return false; }
-  unsigned GetOverlayTextureId() const override { return 10000; }
-  unsigned UpdateGpuFence() override { return 0; }
-  void SetUpdateVSyncParametersCallback(
-      UpdateVSyncParametersCallback callback) override {}
-  void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
-  gfx::OverlayTransform GetDisplayTransform() override {
-    return gfx::OVERLAY_TRANSFORM_NONE;
-  }
-
-  unsigned bind_framebuffer_count() const { return bind_framebuffer_count_; }
-
- private:
-  unsigned bind_framebuffer_count_ = 0;
 };
 
 class DCTestOverlayProcessor : public OverlayProcessorWin {
@@ -219,13 +199,12 @@ SkM44 GetIdentityColorMatrix() {
 class DCLayerOverlayTest : public testing::Test {
  protected:
   void SetUp() override {
-    provider_ = TestContextProvider::Create();
-    provider_->BindToCurrentThread();
-    output_surface_ = std::make_unique<OverlayOutputSurface>(provider_);
-    output_surface_->BindToClient(&client_);
+    output_surface_ = MockDCLayerOutputSurface::Create();
+    output_surface_->BindToClient(&output_surface_client_);
 
-    resource_provider_ =
-        std::make_unique<DisplayResourceProviderGL>(provider_.get());
+    resource_provider_ = std::make_unique<DisplayResourceProviderSkia>();
+    lock_set_for_external_use_.emplace(resource_provider_.get(),
+                                       output_surface_.get());
 
     child_provider_ = TestContextProvider::Create();
     child_provider_->BindToCurrentThread();
@@ -243,15 +222,16 @@ class DCLayerOverlayTest : public testing::Test {
     child_resource_provider_->ShutdownAndReleaseAllResources();
     child_resource_provider_ = nullptr;
     child_provider_ = nullptr;
+    lock_set_for_external_use_.reset();
     resource_provider_ = nullptr;
     output_surface_ = nullptr;
-    provider_ = nullptr;
   }
 
-  scoped_refptr<TestContextProvider> provider_;
-  std::unique_ptr<OverlayOutputSurface> output_surface_;
-  cc::FakeOutputSurfaceClient client_;
-  std::unique_ptr<DisplayResourceProviderGL> resource_provider_;
+  std::unique_ptr<MockDCLayerOutputSurface> output_surface_;
+  cc::FakeOutputSurfaceClient output_surface_client_;
+  std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
+  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
+      lock_set_for_external_use_;
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<OverlayProcessorWin> overlay_processor_;
@@ -306,7 +286,6 @@ TEST_F(DCLayerOverlayTest, Occluded) {
         &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(2U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.front().z_order);
     EXPECT_EQ(-2, dc_layer_list.back().z_order);
     // Entire underlay rect must be redrawn.
@@ -357,7 +336,6 @@ TEST_F(DCLayerOverlayTest, Occluded) {
         &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(2U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.front().z_order);
     EXPECT_EQ(-2, dc_layer_list.back().z_order);
 
@@ -408,7 +386,6 @@ TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
         std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
         &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.back().z_order);
     // All rects must be redrawn at the first frame.
     EXPECT_EQ(gfx::Rect(0, 0, 230, 230), damage_rect_);
@@ -452,7 +429,6 @@ TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
         std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
         &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.back().z_order);
     // Only the non-overlay damaged rect need to be drawn by the gl compositor
     EXPECT_EQ(gfx::Rect(210, 210, 20, 20), damage_rect_);
@@ -482,7 +458,6 @@ TEST_F(DCLayerOverlayTest, DamageRect) {
         std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
         &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(1, dc_layer_list.back().z_order);
     // Damage rect should be unchanged on initial frame because of resize, but
     // should be empty on the second frame because everything was put in a
@@ -609,7 +584,6 @@ TEST_F(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
         std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
         &damage_rect_, &content_bounds_);
     EXPECT_EQ(1U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(-1, dc_layer_list.back().z_order);
     // Damage rect should be unchanged on initial frame, but should be reduced
     // to the size of quad on top, and empty on the third frame.
@@ -835,7 +809,6 @@ TEST_F(DCLayerOverlayTest, MultipleYUVOverlay) {
 
     // Skip overlays.
     EXPECT_EQ(0U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(gfx::Rect(0, 0, 220, 220), damage_rect_);
 
     // Check whether all 3 quads including two YUV quads are still in the render
@@ -883,7 +856,6 @@ TEST_F(DCLayerOverlayTest, SetEnableDCLayers) {
         &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(1U, dc_layer_list.size());
-    EXPECT_EQ(0U, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(1, dc_layer_list.back().z_order);
     EXPECT_EQ(damage_rect_, expected_damage);
 
@@ -928,7 +900,6 @@ TEST_F(DCLayerOverlayTest, SetEnableDCLayers) {
         &damage_rect_, &content_bounds_);
 
     EXPECT_EQ(0u, dc_layer_list.size());
-    EXPECT_EQ(0u, output_surface_->bind_framebuffer_count());
     EXPECT_EQ(damage_rect_, expected_damage);
 
     Mock::VerifyAndClearExpectations(output_surface_.get());

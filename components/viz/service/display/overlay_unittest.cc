@@ -32,7 +32,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/ca_layer_overlay.h"
-#include "components/viz/service/display/display_resource_provider_gl.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
@@ -44,6 +44,7 @@
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
+#include "components/viz/test/fake_skia_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -392,54 +393,6 @@ class FullThresholdUnderlayOverlayProcessor : public DefaultOverlayProcessor {
   }
 };
 
-class OverlayOutputSurface : public OutputSurface {
- public:
-  explicit OverlayOutputSurface(
-      scoped_refptr<TestContextProvider> context_provider)
-      : OutputSurface(std::move(context_provider)) {
-    is_displayed_as_overlay_plane_ = true;
-    capabilities_.supports_viewporter = true;
-  }
-
-  // OutputSurface implementation.
-  void BindToClient(OutputSurfaceClient* client) override {}
-  void EnsureBackbuffer() override {}
-  void DiscardBackbuffer() override {}
-  void BindFramebuffer() override { bind_framebuffer_count_ += 1; }
-  void Reshape(const ReshapeParams& params) override { size_ = params.size; }
-  void SwapBuffers(OutputSurfaceFrame frame) override {}
-  uint32_t GetFramebufferCopyTextureFormat() override {
-    // TestContextProvider has no real framebuffer, just use RGB.
-    return GL_RGB;
-  }
-  bool HasExternalStencilTest() const override { return false; }
-  void ApplyExternalStencil() override {}
-  bool IsDisplayedAsOverlayPlane() const override {
-    return is_displayed_as_overlay_plane_;
-  }
-  unsigned GetOverlayTextureId() const override { return 10000; }
-  unsigned UpdateGpuFence() override { return 0; }
-  void SetUpdateVSyncParametersCallback(
-      UpdateVSyncParametersCallback callback) override {}
-  void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
-  gfx::OverlayTransform GetDisplayTransform() override {
-    return gfx::OVERLAY_TRANSFORM_NONE;
-  }
-
-  void set_is_displayed_as_overlay_plane(bool value) {
-    is_displayed_as_overlay_plane_ = value;
-  }
-
-  unsigned bind_framebuffer_count() const { return bind_framebuffer_count_; }
-  void clear_bind_framebuffer_count() { bind_framebuffer_count_ = 0; }
-  gfx::Size size() const { return size_; }
-
- private:
-  gfx::Size size_;
-  bool is_displayed_as_overlay_plane_;
-  unsigned bind_framebuffer_count_ = 0;
-};
-
 std::unique_ptr<AggregatedRenderPass> CreateRenderPass() {
   AggregatedRenderPassId render_pass_id{1};
   gfx::Rect output_rect(0, 0, 256, 256);
@@ -735,13 +688,12 @@ template <typename OverlayProcessorType>
 class OverlayTest : public testing::Test {
  protected:
   void SetUp() override {
-    provider_ = TestContextProvider::Create();
-    provider_->BindToCurrentThread();
-    output_surface_ = std::make_unique<OverlayOutputSurface>(provider_);
-    output_surface_->BindToClient(&client_);
+    output_surface_ = FakeSkiaOutputSurface::Create3d();
+    output_surface_->BindToClient(&output_surface_client_);
 
-    resource_provider_ =
-        std::make_unique<DisplayResourceProviderGL>(provider_.get());
+    resource_provider_ = std::make_unique<DisplayResourceProviderSkia>();
+    lock_set_for_external_use_.emplace(resource_provider_.get(),
+                                       output_surface_.get());
 
     child_provider_ = TestContextProvider::Create();
     child_provider_->BindToCurrentThread();
@@ -755,9 +707,9 @@ class OverlayTest : public testing::Test {
     child_resource_provider_->ShutdownAndReleaseAllResources();
     child_resource_provider_ = nullptr;
     child_provider_ = nullptr;
+    lock_set_for_external_use_.reset();
     resource_provider_ = nullptr;
     output_surface_ = nullptr;
-    provider_ = nullptr;
   }
 
   void AddExpectedRectToOverlayProcessor(const gfx::RectF& rect) {
@@ -768,10 +720,11 @@ class OverlayTest : public testing::Test {
     overlay_processor_->AddScalingSequence(scaling, uses_overlay);
   }
 
-  scoped_refptr<TestContextProvider> provider_;
-  std::unique_ptr<OverlayOutputSurface> output_surface_;
-  cc::FakeOutputSurfaceClient client_;
-  std::unique_ptr<DisplayResourceProvider> resource_provider_;
+  std::unique_ptr<SkiaOutputSurface> output_surface_;
+  cc::FakeOutputSurfaceClient output_surface_client_;
+  std::unique_ptr<DisplayResourceProviderSkia> resource_provider_;
+  absl::optional<DisplayResourceProviderSkia::LockSetForExternalUse>
+      lock_set_for_external_use_;
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<OverlayProcessorType> overlay_processor_;
@@ -821,15 +774,6 @@ using SizeSortedMultiOverlayTest =
     UseMultipleOverlaysTest<SizeSortedMultiOverlayProcessor>;
 
 TEST(OverlayTest, OverlaysProcessorHasStrategy) {
-  scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
-  provider->BindToCurrentThread();
-  OverlayOutputSurface output_surface(provider);
-  cc::FakeOutputSurfaceClient client;
-  output_surface.BindToClient(&client);
-
-  auto resource_provider =
-      std::make_unique<DisplayResourceProviderGL>(provider.get());
-
   auto overlay_processor = std::make_unique<TestOverlayProcessor>();
   EXPECT_GE(2U, overlay_processor->GetStrategyCount());
 }
