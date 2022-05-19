@@ -285,6 +285,7 @@ WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
       app_type_(app_type),
       delegate_(delegate) {
   DCHECK(profile_);
+  DCHECK(delegate_);
   Init(observe_media_requests);
 }
 
@@ -1139,18 +1140,6 @@ WebAppPublisherHelper::ConvertOsLoginModeToWebAppConstants(
   return web_app_constant_login_mode;
 }
 
-apps::RunOnOsLoginMode WebAppPublisherHelper::ConvertOsLoginMode(
-    web_app::RunOnOsLoginMode login_mode) {
-  switch (login_mode) {
-    case web_app::RunOnOsLoginMode::kWindowed:
-      return apps::RunOnOsLoginMode::kWindowed;
-    case web_app::RunOnOsLoginMode::kNotRun:
-      return apps::RunOnOsLoginMode::kNotRun;
-    case web_app::RunOnOsLoginMode::kMinimized:
-      return apps::RunOnOsLoginMode::kUnknown;
-  }
-}
-
 apps::WindowMode WebAppPublisherHelper::ConvertDisplayModeToWindowMode(
     blink::mojom::DisplayMode display_mode) {
   switch (display_mode) {
@@ -1516,6 +1505,7 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
     return;
   }
 
+  DCHECK(provider_);
   install_manager_observation_.Observe(&install_manager());
   registrar_observation_.Observe(&registrar());
   content_settings_observation_.Observe(

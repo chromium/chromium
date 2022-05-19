@@ -248,11 +248,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   web_app::RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
       apps::mojom::RunOnOsLoginMode login_mode);
 
-  // Converts RunOnOsLoginMode from web_app::RunOnOsLoginMode to
-  // apps::RunOnOsLoginMode.
-  apps::RunOnOsLoginMode ConvertOsLoginMode(
-      web_app::RunOnOsLoginMode login_mode);
-
   void PublishWindowModeUpdate(const std::string& app_id,
                                blink::mojom::DisplayMode display_mode);
 

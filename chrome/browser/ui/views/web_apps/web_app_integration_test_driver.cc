@@ -63,6 +63,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -2085,9 +2086,6 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
     WebAppRegistrar& registrar = GetProviderForProfile(profile)->registrar();
     auto app_ids = registrar.GetAppIds();
     base::flat_map<AppId, AppState> app_state;
-    WebAppPublisherHelper web_app_publisher_helper(profile, provider(),
-                                                   apps::AppType::kWeb,
-                                                   /*delegate=*/nullptr, true);
     for (const auto& app_id : app_ids) {
       std::string manifest_launcher_icon_filename;
       std::vector<apps::IconInfo> icon_infos =
@@ -2101,8 +2099,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       auto state = AppState(
           app_id, registrar.GetAppShortName(app_id),
           registrar.GetAppScope(app_id),
-          web_app_publisher_helper.ConvertOsLoginMode(
-              registrar.GetAppRunOnOsLoginMode(app_id).value),
+          ConvertOsLoginMode(registrar.GetAppRunOnOsLoginMode(app_id).value),
           registrar.GetAppEffectiveDisplayMode(app_id),
           registrar.GetAppUserDisplayMode(app_id),
           manifest_launcher_icon_filename, registrar.IsLocallyInstalled(app_id),
