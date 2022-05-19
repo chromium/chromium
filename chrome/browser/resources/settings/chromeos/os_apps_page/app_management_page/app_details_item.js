@@ -151,9 +151,11 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
       case AppType.kArc:
         return this.i18n('appManagementAppDetailsTypeAndroid');
       case AppType.kChromeApp:
+      case AppType.kStandaloneBrowserChromeApp:
         return this.i18n('appManagementAppDetailsTypeChrome');
       case AppType.kWeb:
       case AppType.kExtension:
+      case AppType.kStandaloneBrowserExtension:
         return this.i18n('appManagementAppDetailsTypeWeb');
       case AppType.kBuiltIn:
       case AppType.kSystemWeb:
