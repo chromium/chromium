@@ -255,9 +255,8 @@ class ExtensionDownloader {
       ExtensionDownloaderDelegate::Error error,
       const ExtensionDownloaderDelegate::FailureData& data);
 
-  // Tries fetching the extension from cache. Returns true if all extensions
-  // have been found, otherwise modifies |fetch_data| to keep only not found
-  // extension there.
+  // Tries fetching the extension from cache. Removes found extensions from
+  // |fetch_data|. Return true if all extensions were found.
   bool TryFetchingExtensionsFromCache(ManifestFetchData* fetch_data);
 
   // Makes a retry attempt, reports failure by calling

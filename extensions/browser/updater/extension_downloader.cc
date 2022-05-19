@@ -642,12 +642,9 @@ bool ExtensionDownloader::TryFetchingExtensionsFromCache(
       extensions_fetched_from_cache.insert(extension_id);
     }
   }
-  // TODO(b/232900595): Always remove extensions from |fetch_data|.
-  if (extensions_fetched_from_cache.size() == extension_ids.size())
-    return true;
   fetch_data->RemoveExtensions(extensions_fetched_from_cache,
                                manifest_query_params_);
-  return false;
+  return extensions_fetched_from_cache.size() == extension_ids.size();
 }
 
 void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
