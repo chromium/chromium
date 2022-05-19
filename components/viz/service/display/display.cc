@@ -895,21 +895,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     renderer_->DrawFrame(&frame.render_pass_list, device_scale_factor_,
                          current_surface_size, display_color_spaces_,
                          std::move(frame.surface_damage_rect_list_));
-    switch (output_surface_->type()) {
-      case OutputSurface::Type::kSoftware:
-        UMA_HISTOGRAM_COUNTS_1M(
-            "Compositing.DirectRenderer.Software.DrawFrameUs",
-            draw_timer->Elapsed().InMicroseconds());
-        break;
-      case OutputSurface::Type::kOpenGL:
-        UMA_HISTOGRAM_COUNTS_1M("Compositing.DirectRenderer.GL.DrawFrameUs",
-                                draw_timer->Elapsed().InMicroseconds());
-        break;
-      case OutputSurface::Type::kVulkan:
-        UMA_HISTOGRAM_COUNTS_1M("Compositing.DirectRenderer.VK.DrawFrameUs",
-                                draw_timer->Elapsed().InMicroseconds());
-        break;
-    }
   } else {
     TRACE_EVENT_INSTANT0("viz", "Draw skipped.", TRACE_EVENT_SCOPE_THREAD);
   }

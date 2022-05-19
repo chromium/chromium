@@ -135,21 +135,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.DirectRenderer.GL.DrawFrameUs"
-    units="microseconds" expires_after="2022-10-30">
-  <owner>weiliangc@chromium.org</owner>
-  <summary>
-    Time spent drawing of composited layers by GLRenderer, in microseconds. This
-    is logged once per frame, when a frame should be drawn.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.DirectRenderer.OverlayProcessingUs"
     units="microseconds" expires_after="2022-11-13">
   <owner>khaslett@chromium.org</owner>
@@ -211,38 +196,6 @@ chromium-metrics-reviews@google.com.
 
     This metric is reported only on platforms/devices that support partial swap
     and does not include &quot;empty swap&quot; (no frame damage) case.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.DirectRenderer.Software.DrawFrameUs"
-    units="microseconds" expires_after="2021-08-09">
-  <owner>weiliangc@chromium.org</owner>
-  <summary>
-    Time spent drawing of composited layers by SoftwareRenderer, in
-    microseconds. This is logged once per frame, when a frame should be drawn.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.DirectRenderer.VK.DrawFrameUs"
-    units="microseconds" expires_after="2020-11-29">
-  <owner>penghuang@chromium.org</owner>
-  <owner>backer@chromium.org</owner>
-  <summary>
-    Time spent drawing of composited layers by SkiaRenderer with Vulkan backend,
-    in microseconds. This is logged once per frame, when a frame should be
-    drawn.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 
@@ -756,8 +709,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.SurfaceAggregator.AggregateUs"
     units="microseconds" expires_after="2022-10-23">
-  <owner>weiliangc@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Time spent aggregating compositor frames from different surfaces in
     microseconds. This is logged once per frame.
