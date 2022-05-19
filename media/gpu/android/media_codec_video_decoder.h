@@ -20,6 +20,7 @@
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/overlay_info.h"
+#include "media/base/scoped_async_trace.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/android/android_video_surface_chooser.h"
@@ -34,7 +35,6 @@
 namespace media {
 
 class MediaLog;
-class ScopedAsyncTrace;
 struct SupportedVideoDecoderConfig;
 
 struct PendingDecode {
