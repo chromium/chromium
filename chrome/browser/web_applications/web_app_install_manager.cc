@@ -390,7 +390,6 @@ void WebAppInstallManager::MaybeStartQueuedTask() {
   task_queue_.pop();
   current_queued_task_ = pending_task.task;
 
-  // Load about:blank to ensure ready and clean up any left over state.
   url_loader_->PrepareForLoad(
       web_contents_.get(),
       base::BindOnce(&WebAppInstallManager::OnWebContentsReadyRunTask,
