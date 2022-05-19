@@ -7,6 +7,8 @@ import("//build/config/ios/swift_source_set.gni")
 source_set("overflow_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "destination_usage_history.h",
+    "destination_usage_history.mm",
     "overflow_menu_mediator.h",
     "overflow_menu_mediator.mm",
   ]
@@ -60,6 +62,7 @@ source_set("overflow_menu") {
     "//components/translate/core/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/follow",
     "//ios/chrome/browser/follow:enums",
@@ -145,8 +148,10 @@ source_set("feature_flags") {
 
 source_set("unit_tests") {
   testonly = true
-
-  sources = [ "overflow_menu_mediator_unittest.mm" ]
+  sources = [
+    "destination_usage_history_unittest.mm",
+    "overflow_menu_mediator_unittest.mm",
+  ]
   deps = [
     ":overflow_menu",
     "//base",
@@ -161,6 +166,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/translate/core/browser",
+    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",

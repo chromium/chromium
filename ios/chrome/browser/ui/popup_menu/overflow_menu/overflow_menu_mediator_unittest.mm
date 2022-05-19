@@ -330,7 +330,7 @@ TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.prefService = prefs_.get();
+  mediator_.browserStatePrefs = prefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
@@ -435,7 +435,7 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   bookmarks::AddIfNotBookmarked(bookmark_model_, bookmarkedURL,
                                 base::SysNSStringToUTF16(@"Test bookmark"));
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.prefService = prefs_.get();
+  mediator_.browserStatePrefs = prefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
@@ -465,7 +465,7 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
   CreateMediator(/*is_incognito=*/NO);
   CreatePrefs();
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.prefService = prefs_.get();
+  mediator_.browserStatePrefs = prefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];

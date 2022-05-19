@@ -67,8 +67,11 @@ class WebStateList;
 // The bookmarks model to know if the page is bookmarked.
 @property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 
-// Pref service to retrieve preference values.
-@property(nonatomic, assign) PrefService* prefService;
+// Pref service to retrieve browser state preference values.
+@property(nonatomic, assign) PrefService* browserStatePrefs;
+
+// Pref service to retrieve local state preference values.
+@property(nonatomic, assign) PrefService* localStatePrefs;
 
 // The overlay presenter for OverlayModality::kWebContentArea.  This mediator
 // listens for overlay presentation events to determine whether the "Add to

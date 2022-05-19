@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -164,26 +165,6 @@ void RecordUmaActionForDestination(Destination destination) {
   }
 }
 
-OverflowMenuDestination* CreateOverflowMenuDestination(
-    int nameID,
-    Destination destinationEnum,
-    NSString* imageName,
-    NSString* accessibilityID,
-    Handler handler) {
-  NSString* name = l10n_util::GetNSString(nameID);
-
-  auto handlerWithMetrics = ^{
-    RecordUmaActionForDestination(destinationEnum);
-    handler();
-  };
-
-  return [[OverflowMenuDestination alloc] initWithName:name
-                                             imageName:imageName
-                               accessibilityIdentifier:accessibilityID
-                                    enterpriseDisabled:NO
-                                               handler:handlerWithMetrics];
-}
-
 OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                     int linkID,
                                                     NSString* imageName,
@@ -224,6 +205,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   // Registrar for pref changes notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
 }
+
+// The destination usage history, which (1) tracks which items from the carousel
+// are clicked, and (2) suggests a sorted order for carousel menu items.
+@property(nonatomic, strong) DestinationUsageHistory* destinationUsageHistory;
 
 // The current web state.
 @property(nonatomic, assign) web::WebState* webState;
@@ -304,11 +289,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (self.webState && self.followAction) {
     FollowTabHelper::FromWebState(self.webState)->remove_follow_menu_updater();
   }
+
+  self.destinationUsageHistory = nil;
   self.webState = nullptr;
   self.webStateList = nullptr;
 
   self.bookmarkModel = nullptr;
-  self.prefService = nullptr;
+  self.browserStatePrefs = nullptr;
+  self.localStatePrefs = nullptr;
 }
 
 #pragma mark - Property getters/setters
@@ -378,19 +366,26 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self updateModel];
 }
 
-- (void)setPrefService:(PrefService*)prefService {
+- (void)setBrowserStatePrefs:(PrefService*)browserStatePrefs {
   _prefObserverBridge.reset();
   _prefChangeRegistrar.reset();
 
-  _prefService = prefService;
+  _browserStatePrefs = browserStatePrefs;
 
-  if (_prefService) {
+  if (_browserStatePrefs) {
     _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
-    _prefChangeRegistrar->Init(prefService);
+    _prefChangeRegistrar->Init(browserStatePrefs);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
   }
+}
+
+- (void)setLocalStatePrefs:(PrefService*)localStatePrefs {
+  _localStatePrefs = localStatePrefs;
+
+  _destinationUsageHistory =
+      [[DestinationUsageHistory alloc] initWithPrefService:localStatePrefs];
 }
 
 - (void)setEngagementTracker:(feature_engagement::Tracker*)engagementTracker {
@@ -433,33 +428,47 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (OverflowMenuModel*)createModel {
   __weak __typeof(self) weakSelf = self;
 
+  // Bookmarks destination.
   NSString* bookmarksIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
           ? @"overflow_menu_destination_bookmarks_simple"
           : @"overflow_menu_destination_bookmarks";
-  self.bookmarksDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_BOOKMARKS, Destination::Bookmarks, bookmarksIconName,
-      kToolsMenuBookmarksId, ^{
-        [weakSelf openBookmarks];
-      });
+  self.bookmarksDestination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
+                          destinationEnum:Destination::Bookmarks
+                                imageName:bookmarksIconName
+                          accessibilityID:kToolsMenuBookmarksId
+                                  handler:^{
+                                    [weakSelf openBookmarks];
+                                  }];
+  // Downloads destination.
   NSString* downloadsIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
           ? @"overflow_menu_destination_downloads_simple"
           : @"overflow_menu_destination_downloads";
-  self.downloadsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_DOWNLOADS, Destination::Downloads, downloadsIconName,
-      kToolsMenuDownloadsId, ^{
-        [weakSelf openDownloads];
-      });
+  self.downloadsDestination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
+                          destinationEnum:Destination::Downloads
+                                imageName:downloadsIconName
+                          accessibilityID:kToolsMenuDownloadsId
+                                  handler:^{
+                                    [weakSelf openDownloads];
+                                  }];
+
+  // History destination.
   NSString* historyIconName = IsNewOverflowMenuSimpleDestinationIconsEnabled()
                                   ? @"overflow_menu_destination_history_simple"
                                   : @"overflow_menu_destination_history";
-  self.historyDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_HISTORY, Destination::History, historyIconName,
-      kToolsMenuHistoryId, ^{
-        [weakSelf openHistory];
-      });
+  self.historyDestination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
+                          destinationEnum:Destination::History
+                                imageName:historyIconName
+                          accessibilityID:kToolsMenuHistoryId
+                                  handler:^{
+                                    [weakSelf openHistory];
+                                  }];
 
+  // Passwords destination.
   int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
                             ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
                             : IDS_IOS_TOOLS_MENU_PASSWORDS;
@@ -469,47 +478,67 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           : (IsPasswordManagerBrandingUpdateEnabled()
                  ? @"overflow_menu_destination_passwords_rebrand"
                  : @"overflow_menu_destination_passwords");
-  self.passwordsDestination = CreateOverflowMenuDestination(
-      passwordTitleID, Destination::Passwords, passwordIconImageName, @"", ^{
-        [weakSelf openPasswords];
-      });
-
+  self.passwordsDestination =
+      [self createOverflowMenuDestination:passwordTitleID
+                          destinationEnum:Destination::Passwords
+                                imageName:passwordIconImageName
+                          accessibilityID:@""
+                                  handler:^{
+                                    [weakSelf openPasswords];
+                                  }];
+  // Reading List destination.
   NSString* readingListIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
           ? @"overflow_menu_destination_reading_list_simple"
           : @"overflow_menu_destination_reading_list";
-  self.readingListDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_READING_LIST, Destination::ReadingList,
-      readingListIconName, kToolsMenuReadingListId, ^{
-        [weakSelf openReadingList];
-      });
+  self.readingListDestination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
+                          destinationEnum:Destination::ReadingList
+                                imageName:readingListIconName
+                          accessibilityID:kToolsMenuReadingListId
+                                  handler:^{
+                                    [weakSelf openReadingList];
+                                  }];
+
+  // Recent Tabs destination.
   NSString* recentTabsIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
           ? @"overflow_menu_destination_recent_tabs_simple"
           : @"overflow_menu_destination_recent_tabs";
-  self.recentTabsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_RECENT_TABS, Destination::RecentTabs,
-      recentTabsIconName, kToolsMenuOtherDevicesId, ^{
-        [weakSelf openRecentTabs];
-      });
+  self.recentTabsDestination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
+                          destinationEnum:Destination::RecentTabs
+                                imageName:recentTabsIconName
+                          accessibilityID:kToolsMenuOtherDevicesId
+                                  handler:^{
+                                    [weakSelf openRecentTabs];
+                                  }];
+  // Settings destination.
   NSString* settingsIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
           ? @"overflow_menu_destination_settings_simple"
           : @"overflow_menu_destination_settings";
-  self.settingsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_SETTINGS, Destination::Settings, settingsIconName,
-      kToolsMenuSettingsId, ^{
-        [weakSelf openSettings];
-      });
+  self.settingsDestination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
+                          destinationEnum:Destination::Settings
+                                imageName:settingsIconName
+                          accessibilityID:kToolsMenuSettingsId
+                                  handler:^{
+                                    [weakSelf openSettings];
+                                  }];
+  // Site Info destination.
   NSString* siteInfoIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
           ? @"overflow_menu_destination_site_info_simple"
           : @"overflow_menu_destination_site_info";
-  self.siteInfoDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_SITE_INFORMATION, Destination::SiteInfo,
-      siteInfoIconName, kToolsMenuSiteInformation, ^{
-        [weakSelf openSiteInformation];
-      });
+  self.siteInfoDestination =
+      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
+                          destinationEnum:Destination::SiteInfo
+                                imageName:siteInfoIconName
+                          accessibilityID:kToolsMenuSiteInformation
+                                  handler:^{
+                                    [weakSelf openSiteInformation];
+                                  }];
 
   [self logTranslateAvailability];
 
@@ -792,6 +821,36 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 #pragma mark - Private
 
+// Creates an OverflowMenuDestination to be displayed in the destinations
+// carousel.
+- (OverflowMenuDestination*)
+    createOverflowMenuDestination:(int)nameID
+                  destinationEnum:(Destination)destinationEnum
+                        imageName:(NSString*)imageName
+                  accessibilityID:(NSString*)accessibilityID
+                          handler:(Handler)handler {
+  __weak __typeof(self) weakSelf = self;
+
+  NSString* name = l10n_util::GetNSString(nameID);
+
+  auto handlerWithMetrics = ^{
+    RecordUmaActionForDestination(destinationEnum);
+
+    if (IsSmartSortingNewOverflowMenuEnabled()) {
+      [weakSelf.destinationUsageHistory trackDestinationClick:name];
+    }
+
+    handler();
+  };
+
+  return [[OverflowMenuDestination alloc]
+                 initWithName:name
+                      uiImage:[UIImage imageNamed:imageName]
+      accessibilityIdentifier:accessibilityID
+           enterpriseDisabled:NO
+                      handler:handlerWithMetrics];
+}
+
 // Make sure the model to match the current page state.
 - (void)updateModel {
   // If the model hasn't been created, there's no need to update.
@@ -932,9 +991,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   // Enable/disable items based on enterprise policies.
   self.openTabAction.enterpriseDisabled =
-      IsIncognitoModeForced(self.prefService);
+      IsIncognitoModeForced(self.browserStatePrefs);
   self.openIncognitoTabAction.enterpriseDisabled =
-      IsIncognitoModeDisabled(self.prefService);
+      IsIncognitoModeDisabled(self.browserStatePrefs);
 
   // Set badges if necessary
   self.readingListDestination.showBadge =
@@ -1000,7 +1059,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Returns YES if user is allowed to edit any bookmarks.
 - (BOOL)isEditBookmarksEnabled {
-  return self.prefService->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled);
+  return self.browserStatePrefs->GetBoolean(
+      bookmarks::prefs::kEditBookmarksEnabled);
 }
 
 // Whether the page is currently loading.
