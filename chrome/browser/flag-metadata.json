@@ -5632,6 +5632,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "sync-android-promos-with-illustration",
+    "owners": ["mmrashad@google.com", "chrome-sync-dev@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "sync-android-promos-with-single-button",
     "owners": ["mmrashad@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 105

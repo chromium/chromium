@@ -3588,6 +3588,11 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+const char kSyncAndroidPromosWithIllustrationName[] =
+    "Enable the illustration sync promos on Android";
+const char kSyncAndroidPromosWithIllustrationDescription[] =
+    "Adds illustration to sync promos.";
+
 const char kSyncAndroidPromosWithSingleButtonName[] =
     "Enable the single button sync promos on Android";
 const char kSyncAndroidPromosWithSingleButtonDescription[] =

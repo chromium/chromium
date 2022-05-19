@@ -2032,6 +2032,9 @@ extern const char kStartSurfaceAndroidDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
+extern const char kSyncAndroidPromosWithIllustrationName[];
+extern const char kSyncAndroidPromosWithIllustrationDescription[];
+
 extern const char kSyncAndroidPromosWithSingleButtonName[];
 extern const char kSyncAndroidPromosWithSingleButtonDescription[];
 

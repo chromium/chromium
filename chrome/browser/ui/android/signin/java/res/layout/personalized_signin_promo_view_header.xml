@@ -8,6 +8,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="@layout/personalized_signin_promo_view_settings">
 
+    <!-- TODO(crbug.com/1319351): Rename the file to personalized_sync_promo_view_header for consistency -->
+    <ImageView
+        android:id="@+id/sync_promo_illustration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/sync_promo_illustration"
+        style="@style/SigninPromoIllustrationVisibility"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/new_signin_promo_image"
+        android:layout_width="@dimen/new_signin_promo_account_image_size"
+        android:layout_height="@dimen/new_signin_promo_account_image_size"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/signin_promo_image"
         android:layout_width="@dimen/signin_promo_account_image_size"

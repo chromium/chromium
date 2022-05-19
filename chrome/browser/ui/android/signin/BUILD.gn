@@ -86,6 +86,7 @@ android_resources("java_resources") {
     "java/res/drawable-hdpi/ic_account_child_20dp.png",
     "java/res/drawable-mdpi/chrome_sync_logo.png",
     "java/res/drawable-mdpi/ic_account_child_20dp.png",
+    "java/res/drawable-night/sync_promo_illustration.xml",
     "java/res/drawable-xhdpi/chrome_sync_logo.png",
     "java/res/drawable-xhdpi/ic_account_child_20dp.png",
     "java/res/drawable-xxhdpi/chrome_sync_logo.png",
@@ -93,6 +94,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/chrome_sync_logo.png",
     "java/res/drawable-xxxhdpi/ic_account_child_20dp.png",
     "java/res/drawable/ic_expand_more_in_circle_24dp.xml",
+    "java/res/drawable/sync_promo_illustration.xml",
     "java/res/layout/account_picker_bottom_sheet_continue_button.xml",
     "java/res/layout/account_picker_bottom_sheet_header.xml",
     "java/res/layout/account_picker_bottom_sheet_view.xml",
@@ -120,7 +122,9 @@ android_resources("java_resources") {
     "java/res/layout/signin_progress_bar_dialog.xml",
     "java/res/layout/signin_view.xml",
     "java/res/layout/signout_wipe_storage_dialog.xml",
+    "java/res/values-sw320dp/styles.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",

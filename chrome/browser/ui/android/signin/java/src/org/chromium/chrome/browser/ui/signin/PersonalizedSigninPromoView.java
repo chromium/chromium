@@ -20,6 +20,7 @@ import org.chromium.ui.widget.ButtonCompat;
  * Container view for personalized signin promos.
  */
 public class PersonalizedSigninPromoView extends LinearLayout {
+    private ImageView mIllustration;
     private ImageView mImage;
     private ImageButton mDismissButton;
     private TextView mTitle;
@@ -35,7 +36,7 @@ public class PersonalizedSigninPromoView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mImage = findViewById(R.id.signin_promo_image);
+        mIllustration = findViewById(R.id.sync_promo_illustration);
         mDismissButton = findViewById(R.id.signin_promo_close_button);
         mPrimaryButton = findViewById(R.id.signin_promo_signin_button);
         mSecondaryButton = findViewById(R.id.signin_promo_choose_account_button);
@@ -52,6 +53,22 @@ public class PersonalizedSigninPromoView extends LinearLayout {
             mDescription = findViewById(R.id.signin_promo_description);
             findViewById(R.id.new_signin_promo_description).setVisibility(View.GONE);
         }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION)) {
+            // TODO(crbug.com/1323197): remove new_signin_promo_image or signin_promo_image, if the
+            // feature enabled or disabled by default.
+            mImage = findViewById(R.id.new_signin_promo_image);
+            mImage.setVisibility(View.VISIBLE);
+            findViewById(R.id.signin_promo_image).setVisibility(View.GONE);
+            return;
+        }
+        mImage = findViewById(R.id.signin_promo_image);
+    }
+
+    /**
+     * @return A reference to the illustration of the promo.
+     */
+    public ImageView getIllustration() {
+        return mIllustration;
     }
 
     /**

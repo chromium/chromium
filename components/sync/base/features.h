@@ -49,6 +49,8 @@ inline constexpr base::Feature
         base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID)
+inline constexpr base::Feature kSyncAndroidPromosWithIllustration{
+    "SyncAndroidPromosWithIllustration", base::FEATURE_DISABLED_BY_DEFAULT};
 inline constexpr base::Feature kSyncAndroidPromosWithSingleButton{
     "SyncAndroidPromosWithSingleButton", base::FEATURE_DISABLED_BY_DEFAULT};
 inline constexpr base::Feature kSyncAndroidPromosWithTitle{
