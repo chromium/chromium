@@ -527,12 +527,8 @@ void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
   if (ShouldStopInstall())
     return;
 
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != WebAppUrlLoader::Result::kUrlLoaded)
     LogUrlLoaderError("OnWebAppUrlLoaded", url_to_load.spec(), result);
-    CallInstallCallback(AppId(),
-                        webapps::InstallResultCode::kInstallURLLoadFailed);
-    return;
-  }
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
     CallInstallCallback(AppId(),
@@ -543,6 +539,12 @@ void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
   if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
     CallInstallCallback(AppId(),
                         webapps::InstallResultCode::kInstallURLLoadTimeOut);
+    return;
+  }
+
+  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+    CallInstallCallback(AppId(),
+                        webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }
 
