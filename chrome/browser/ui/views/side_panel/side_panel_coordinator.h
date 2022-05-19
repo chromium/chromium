@@ -44,6 +44,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   SidePanelRegistry* GetGlobalSidePanelRegistry();
 
+  // Prevent content swapping delays from happening for testing.
+  // This should be called before the side panel is first shown.
+  void SetNoDelaysForTesting();
+
  private:
   friend class SidePanelCoordinatorTest;
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
@@ -56,8 +60,12 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void InitializeSidePanel();
 
   // Removes existing SidePanelEntry contents from the side panel if any exist
-  // and populates the side panel with the provided SidePanelEntry.
-  void PopulateSidePanel(SidePanelEntry* entry);
+  // and populates the side panel with the provided SidePanelEntry and
+  // |content_view| if provided, otherwise get the content_view from the
+  // provided SidePanelEntry.
+  void PopulateSidePanel(
+      SidePanelEntry* entry,
+      absl::optional<std::unique_ptr<views::View>> content_view);
 
   // Clear cached views for registry entries for global and contextual
   // registries.
@@ -82,6 +90,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
+  // When true, prevent loading delays when switching between side panel
+  // entries.
+  bool no_delays_for_testing_ = false;
 
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<SidePanelRegistry> global_registry_;

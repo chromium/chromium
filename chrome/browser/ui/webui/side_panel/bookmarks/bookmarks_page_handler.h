@@ -30,6 +30,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
                     int32_t parent_folder_depth,
                     ui::mojom::ClickModifiersPtr click_modifiers) override;
   void ShowContextMenu(const std::string& id, const gfx::Point& point) override;
+  void ShowUI() override;
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;

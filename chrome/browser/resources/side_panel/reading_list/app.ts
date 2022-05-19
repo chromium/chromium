@@ -112,12 +112,11 @@ export class ReadingListAppElement extends PolymerElement {
             (state: CurrentPageActionButtonState) =>
                 this.updateCurrentPageActionButton_(state)));
 
-    if (this.unifiedSidePanel_) {
-      this.apiProxy_.showUI();
-    }
-
     // If added in a visible state update current reading list items.
-    if (document.visibilityState === 'visible') {
+    // If UnifiedSidePanel is enabled do this immediately. This is only
+    // undesirable when UnifiedSidePanel is not enabled since previously reading
+    // list and bookmarks shared a webview.
+    if (document.visibilityState === 'visible' || this.unifiedSidePanel_) {
       this.updateReadLaterEntries_();
       this.apiProxy_.updateCurrentPageActionButtonState();
     }

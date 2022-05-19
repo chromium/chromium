@@ -112,10 +112,7 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
 BookmarksPageHandler::BookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
     BookmarksSidePanelUI* bookmarks_ui)
-    : receiver_(this, std::move(receiver)), bookmarks_ui_(bookmarks_ui) {
-  if (auto embedder = bookmarks_ui_->embedder())
-    embedder->ShowUI();
-}
+    : receiver_(this, std::move(receiver)), bookmarks_ui_(bookmarks_ui) {}
 
 BookmarksPageHandler::BookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
@@ -176,5 +173,12 @@ void BookmarksPageHandler::ShowContextMenu(const std::string& id_string,
   if (embedder) {
     embedder->ShowContextMenu(point, std::make_unique<BookmarkContextMenu>(
                                          browser, embedder, bookmark));
+  }
+}
+
+void BookmarksPageHandler::ShowUI() {
+  auto embedder = bookmarks_ui_->embedder();
+  if (embedder) {
+    embedder->ShowUI();
   }
 }

@@ -46,6 +46,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     contextual_registries_.push_back(SidePanelRegistry::Get(active_contents));
 
     coordinator_ = browser_view()->side_panel_coordinator();
+    coordinator_->SetNoDelaysForTesting();
     global_registry_ = coordinator_->global_registry_;
 
     // Verify the first tab has one entry, kSideSearch.

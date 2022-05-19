@@ -26,6 +26,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'copyBookmark',
       'pasteToBookmark',
       'showContextMenu',
+      'showUI',
     ]);
 
     this.callbackRouter = {
@@ -66,5 +67,9 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   showContextMenu(id: string, x: number, y: number) {
     this.methodCalled('showContextMenu', id, x, y);
+  }
+
+  showUI() {
+    this.methodCalled('showUI');
   }
 }

@@ -4740,6 +4740,8 @@ static_library("ui") {
       "views/side_panel/side_panel.h",
       "views/side_panel/side_panel_combobox_model.cc",
       "views/side_panel/side_panel_combobox_model.h",
+      "views/side_panel/side_panel_content_proxy.cc",
+      "views/side_panel/side_panel_content_proxy.h",
       "views/side_panel/side_panel_coordinator.cc",
       "views/side_panel/side_panel_coordinator.h",
       "views/side_panel/side_panel_entry.cc",

@@ -5,16 +5,20 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include <memory>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -75,6 +79,77 @@ class SidePanelSeparator : public views::Separator {
 BEGIN_METADATA(SidePanelSeparator, views::Separator)
 END_METADATA
 
+using PopulateSidePanelCallback = base::OnceCallback<void(
+    SidePanelEntry* entry,
+    absl::optional<std::unique_ptr<views::View>> content_view)>;
+
+// SidePanelContentSwappingContainer is used as the content wrapper for views
+// hosted in the side panel. This uses the SidePanelContentProxy to check if or
+// wait for a SidePanelEntry's content view to be ready to be shown then only
+// swaps the views when the content is ready. If the SidePanelContextProxy
+// doesn't exist, the content is swapped immediately.
+class SidePanelContentSwappingContainer : public views::View {
+ public:
+  explicit SidePanelContentSwappingContainer(bool show_immediately_for_testing)
+      : show_immediately_for_testing_(show_immediately_for_testing) {
+    SetUseDefaultFillLayout(true);
+    SetBackground(
+        views::CreateThemedSolidBackground(kColorSidePanelBackground));
+    SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+    SetID(kSidePanelContentWrapperViewId);
+  }
+
+  ~SidePanelContentSwappingContainer() override {
+    ResetLoadingEntryIfNecessary();
+  }
+
+  void RequestEntry(SidePanelEntry* entry, PopulateSidePanelCallback callback) {
+    DCHECK(entry);
+    ResetLoadingEntryIfNecessary();
+    auto content_view = entry->GetContent();
+    SidePanelContentProxy* content_proxy =
+        SidePanelUtil::GetSidePanelContentProxy(content_view.get());
+    if (content_proxy->IsAvailable() || show_immediately_for_testing_) {
+      std::move(callback).Run(entry, std::move(content_view));
+    } else {
+      entry->CacheView(std::move(content_view));
+      content_proxy->SetAvailableCallback(
+          base::BindOnce(&SidePanelContentSwappingContainer::RunLoadedCallback,
+                         base::Unretained(this)));
+      loading_entry_ = entry;
+      loaded_callback_ = std::move(callback);
+    }
+  }
+
+ private:
+  void RunLoadedCallback() {
+    DCHECK(!loaded_callback_.is_null());
+    SidePanelEntry* entry = loading_entry_;
+    loading_entry_ = nullptr;
+    std::move(loaded_callback_).Run(entry, absl::nullopt);
+  }
+
+  void ResetLoadingEntryIfNecessary() {
+    if (loading_entry_ && loading_entry_->CachedView()) {
+      SidePanelUtil::GetSidePanelContentProxy(loading_entry_->CachedView())
+          ->ResetAvailableCallback();
+    }
+    loading_entry_ = nullptr;
+  }
+
+  // When true, don't delay switching panels.
+  bool show_immediately_for_testing_;
+  // If the SidePanelEntry is ever discarded by the SidePanelCoordinator then we
+  // are always either immediately switching to a different entry (where this
+  // value would be reset) or closing the side panel (where this would be
+  // destroyed).
+  raw_ptr<SidePanelEntry> loading_entry_ = nullptr;
+  PopulateSidePanelCallback loaded_callback_;
+};
+
 }  // namespace
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
@@ -119,8 +194,13 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
     browser_view_->browser()->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
   }
-
-  PopulateSidePanel(entry);
+  SidePanelContentSwappingContainer* content_wrapper =
+      static_cast<SidePanelContentSwappingContainer*>(
+          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
+  DCHECK(content_wrapper);
+  content_wrapper->RequestEntry(
+      entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
+                            base::Unretained(this)));
 }
 
 void SidePanelCoordinator::Close() {
@@ -167,6 +247,10 @@ SidePanelRegistry* SidePanelCoordinator::GetGlobalSidePanelRegistry() {
       browser_view_->browser()->GetUserData(kGlobalSidePanelRegistryKey));
 }
 
+void SidePanelCoordinator::SetNoDelaysForTesting() {
+  no_delays_for_testing_ = true;
+}
+
 views::View* SidePanelCoordinator::GetContentView() {
   return browser_view_->right_aligned_side_panel()->GetViewByID(
       kSidePanelContentViewId);
@@ -199,25 +283,27 @@ void SidePanelCoordinator::InitializeSidePanel() {
   container->AddChildView(CreateHeader());
   container->AddChildView(std::make_unique<SidePanelSeparator>());
 
-  auto content_wrapper = std::make_unique<views::View>();
-  content_wrapper->SetUseDefaultFillLayout(true);
-  content_wrapper->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  content_wrapper->SetID(kSidePanelContentWrapperViewId);
+  auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>(
+      no_delays_for_testing_);
   container->AddChildView(std::move(content_wrapper));
+  // Set to not visible so that the side panel is not shown until content is
+  // ready to be shown.
+  container->SetVisible(false);
 
   browser_view_->right_aligned_side_panel()->AddChildView(std::move(container));
 }
 
-void SidePanelCoordinator::PopulateSidePanel(SidePanelEntry* entry) {
-  views::View* content_wrapper =
+void SidePanelCoordinator::PopulateSidePanel(
+    SidePanelEntry* entry,
+    absl::optional<std::unique_ptr<views::View>> content_view) {
+  auto* content_wrapper =
       GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
   DCHECK(content_wrapper);
   // |content_wrapper| should have either no child views or one child view for
   // the currently hosted SidePanelEntry.
   DCHECK(content_wrapper->children().size() <= 1);
+
+  GetContentView()->SetVisible(true);
   if (content_wrapper->children().size()) {
     DCHECK(GetLastActiveEntryId().has_value());
     SidePanelEntry* current_entry =
@@ -228,7 +314,9 @@ void SidePanelCoordinator::PopulateSidePanel(SidePanelEntry* entry) {
     current_entry->CacheView(std::move(current_entry_view));
     current_entry->OnEntryHidden();
   }
-  content_wrapper->AddChildView(entry->GetContent());
+  content_wrapper->AddChildView(content_view.has_value()
+                                    ? std::move(content_view.value())
+                                    : entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry())
     contextual_registry->ResetActiveEntry();
   entry->OnEntryShown();

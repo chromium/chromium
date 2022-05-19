@@ -43,6 +43,7 @@ class UserNoteUICoordinatorTest : public TestWithBrowserView {
     user_note_ui_coordinator_->CreateAndRegisterEntry(registry);
 
     coordinator_ = browser_view()->side_panel_coordinator();
+    coordinator_->SetNoDelaysForTesting();
 
     // Verify the first tab has one entry, kUserNote.
     active_contents = browser_view()->GetActiveWebContents();

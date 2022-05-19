@@ -255,6 +255,7 @@
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
   /* Side panel colors. */ \
+  E_CPONLY(kColorSidePanelBackground) \
   E(kColorSidePanelContentAreaSeparator, \
     ThemeProperties::COLOR_SIDE_PANEL_CONTENT_AREA_SEPARATOR) \
   /* Status bubble colors. */ \

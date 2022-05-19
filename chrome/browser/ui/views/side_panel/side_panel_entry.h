@@ -49,6 +49,9 @@ class SidePanelEntry final {
   std::unique_ptr<views::View> GetContent();
   void CacheView(std::unique_ptr<views::View> view);
   void ClearCachedView();
+  views::View* CachedView() {
+    return content_view_ ? content_view_.get() : nullptr;
+  }
 
   // Called when the entry has been shown/hidden in the side panel.
   void OnEntryShown();

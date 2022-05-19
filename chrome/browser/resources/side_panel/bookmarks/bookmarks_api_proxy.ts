@@ -17,6 +17,7 @@ export interface BookmarksApiProxy {
   openBookmark(id: string, depth: number, clickModifiers: ClickModifiers): void;
   pasteToBookmark(parentId: string, destinationId?: string): Promise<void>;
   showContextMenu(id: string, x: number, y: number): void;
+  showUI(): void;
 }
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
@@ -73,6 +74,10 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   showContextMenu(id: string, x: number, y: number) {
     this.handler.showContextMenu(id, {x, y});
+  }
+
+  showUI() {
+    this.handler.showUI();
   }
 
   static getInstance(): BookmarksApiProxy {
