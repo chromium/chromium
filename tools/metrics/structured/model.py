@@ -15,6 +15,10 @@ import textwrap as tw
 import model_util as util
 
 
+# Default key rotation period if not explicitly specified in the XML.
+DEFAULT_KEY_ROTATION_PERIOD = 90
+
+
 def wrap(text, indent):
   wrapper = tw.TextWrapper(width=80,
                            initial_indent=indent,
@@ -75,6 +79,7 @@ class Model:
   TYPE_REGEX = r'^(hmac-string|raw-string|int)$'
   ID_REGEX = r'^(none|per-project|uma)$'
   SCOPE_REGEX = r'^(profile|device)$'
+  KEY_REGEX = r'^[0-9]+$'
 
   def __init__(self, xml_string):
     elem = ET.fromstring(xml_string)
@@ -106,6 +111,7 @@ class Project:
       <owner>owner@chromium.org</owner>
       <id>none</id>
       <scope>project</scope>
+      <key-rotation>60</key-rotation>
       <summary> My project. </summary>
 
       <event name="MyEvent">
@@ -130,6 +136,14 @@ class Project:
     self.summary = util.get_text_child(elem, 'summary')
     self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
 
+    self.key_rotation_period = DEFAULT_KEY_ROTATION_PERIOD
+
+    # Check if key-rotation is specified. If so, then change the
+    # key_rotation_period.
+    if elem.find('key-rotation') is not None:
+      self.key_rotation_period = util.get_text_child(elem, 'key-rotation',
+                                                     Model.KEY_REGEX)
+
     self.events = [
         Event(e, self) for e in util.get_compound_children(elem, 'event')
     ]
@@ -145,6 +159,7 @@ class Project:
                {owners}
                  <id>{id}</id>
                  <scope>{scope}</scope>
+                 <key-rotation>{key_rotation}</key-rotation>
                  <summary>
                {summary}
                  </summary>
@@ -156,6 +171,7 @@ class Project:
                          id=self.id,
                          scope=self.scope,
                          summary=summary,
+                         key_rotation=self.key_rotation_period,
                          events=events)
 
 

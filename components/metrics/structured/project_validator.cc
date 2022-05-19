@@ -14,11 +14,13 @@ namespace structured {
 ProjectValidator::ProjectValidator(uint64_t project_hash,
                                    IdType id_type,
                                    IdScope id_scope,
-                                   EventType event_type)
+                                   EventType event_type,
+                                   int key_rotation_period)
     : project_hash_(project_hash),
       id_type_(id_type),
       id_scope_(id_scope),
-      event_type_(event_type) {}
+      event_type_(event_type),
+      key_rotation_period_(key_rotation_period) {}
 
 ProjectValidator::~ProjectValidator() = default;
 

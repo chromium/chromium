@@ -23,12 +23,14 @@ EventBase::EventBase(uint64_t event_name_hash,
                      uint64_t project_name_hash,
                      IdType id_type,
                      IdScope id_scope,
-                     StructuredEventProto_EventType event_type)
+                     StructuredEventProto_EventType event_type,
+                     int key_rotation_period)
     : event_name_hash_(event_name_hash),
       project_name_hash_(project_name_hash),
       id_type_(id_type),
       id_scope_(id_scope),
-      event_type_(event_type) {}
+      event_type_(event_type),
+      key_rotation_period_(key_rotation_period) {}
 EventBase::EventBase(const EventBase& other) = default;
 EventBase::~EventBase() = default;
 
@@ -95,7 +97,8 @@ absl::optional<EventBase> EventBase::FromEvent(const Event& event) {
                        project_validator.value()->project_hash(),
                        project_validator.value()->id_type(),
                        project_validator.value()->id_scope(),
-                       project_validator.value()->event_type());
+                       project_validator.value()->event_type(),
+                       project_validator.value()->key_rotation_period());
 
   for (const auto& metric_value : event.metric_values()) {
     // Validate that both name and metric type are valid structured metrics.

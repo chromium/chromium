@@ -50,6 +50,8 @@ class {event.name} final : public ::metrics::structured::EventBase {{
   static constexpr IdScope kIdScope = IdScope::{project.id_scope};
   static constexpr StructuredEventProto_EventType kEventType =
       StructuredEventProto_EventType_{project.event_type};
+  static constexpr int kKeyRotationPeriod =
+      {project.key_rotation_period};
 
 {metric_code}\
 }};
@@ -89,7 +91,7 @@ namespace {project.namespace} {{
 IMPL_EVENT_TEMPLATE = """\
 {event.name}::{event.name}() :
   ::metrics::structured::EventBase(kEventNameHash, kProjectNameHash,
-    kIdType, kIdScope, kEventType) {{}}
+    kIdType, kIdScope, kEventType, kKeyRotationPeriod) {{}}
 {event.name}::~{event.name}() = default;
 {metric_code}\
 """

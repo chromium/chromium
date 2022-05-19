@@ -76,6 +76,8 @@ class EventBase {
 
   EventType event_type() const { return event_type_; }
 
+  int key_rotation_period() const { return key_rotation_period_; }
+
   // Converts an unhashed,raw |event| into an EventBase. If |event| is
   // malformatted (ie wrong metric name or metric vlaue type) or is not
   // registered within structured.xml, then returns absl::nullopt.
@@ -86,7 +88,8 @@ class EventBase {
             uint64_t project_name_hash,
             IdType id_type,
             IdScope id_scope,
-            EventType event_type);
+            EventType event_type,
+            int max_key_rotation_period);
 
   void AddHmacMetric(uint64_t name_hash, const std::string& value);
 
@@ -122,6 +125,9 @@ class EventBase {
   // upload. See /third_party/metrics_proto/structured_data.proto for more
   // information.
   EventType event_type_;
+
+  // Key rotation period for this event.
+  int key_rotation_period_;
 
   std::vector<Metric> metrics_;
 };

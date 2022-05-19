@@ -18,9 +18,9 @@ import re
 
 def error(elem, msg):
   """Raise a nicely formatted error with some context."""
-  name = elem.attrib.get('name', None)
-  name = name + ' ' if name else ''
-  msg = 'Structured metrics error, {} node {}: {}.'.format(elem.tag, name, msg)
+  name = elem.attrib.get("name", None)
+  name = name + " " if name else ""
+  msg = "Structured metrics error, {} node {}: {}.".format(elem.tag, name, msg)
   raise ValueError(msg)
 
 
@@ -105,23 +105,23 @@ def check_attributes(elem, expected_attrs):
   actual_attrs = set(elem.attrib.keys())
   unexpected_attrs = actual_attrs - set(expected_attrs)
   if unexpected_attrs:
-    attrs = ' '.join(unexpected_attrs)
-    error(elem, 'has unexpected attributes: ' + attrs)
+    attrs = " ".join(unexpected_attrs)
+    error(elem, "has unexpected attributes: " + attrs)
 
 
 def check_children(elem, expected_children):
-  """Ensure `elem` has no children without tags in `expected_children`."""
+  """Ensure all children in `expected_children` are in `elem`."""
   actual_children = {child.tag for child in elem}
-  unexpected_children = actual_children - set(expected_children)
+  unexpected_children = set(expected_children) - actual_children
   if unexpected_children:
-    children = ' '.join(unexpected_children)
-    error(elem, 'has unexpected nodes: ' + children)
+    children = " ".join(unexpected_children)
+    error(elem, "is missing nodes: " + children)
 
 
 def check_child_names_unique(elem, tag):
   """Ensure uniqueness of the 'name' of all children of `elem` with `tag`."""
-  names = [child.attrib.get('name', None) for child in elem if child.tag == tag]
+  names = [child.attrib.get("name", None) for child in elem if child.tag == tag]
   name_counts = collections.Counter(names)
   has_duplicates = any(c > 1 for c in name_counts.values())
   if has_duplicates:
-    error(elem, 'has {} nodes with duplicate names'.format(tag))
+    error(elem, "has {} nodes with duplicate names".format(tag))

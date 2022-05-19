@@ -109,6 +109,8 @@ class ProjectInfo:
           self.event_type = 'RAW_STRING'
           break
 
+    self.key_rotation_period = project.key_rotation_period
+
   def build_event_map(self) -> str:
     event_infos = (EventInfo(event, self) for event in self.events)
 
