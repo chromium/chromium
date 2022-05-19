@@ -297,7 +297,6 @@ source_set("common") {
     deps += [
       ":mac_helpers",
       "//sandbox/mac:seatbelt",
-      "//ui/resources",
     ]
   }
 

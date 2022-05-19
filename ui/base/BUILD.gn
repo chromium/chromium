@@ -283,6 +283,8 @@ component("base") {
       "cocoa/command_dispatcher.mm",
       "cocoa/constrained_window/constrained_window_animation.h",
       "cocoa/constrained_window/constrained_window_animation.mm",
+      "cocoa/cursor_utils.h",
+      "cocoa/cursor_utils.mm",
       "cocoa/defaults_utils.h",
       "cocoa/defaults_utils.mm",
       "cocoa/find_pasteboard.h",
@@ -520,6 +522,11 @@ component("base") {
       "//ui/base/cursor/mojom:cursor_type_shared",
     ]
     deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
+  }
+
+  if (is_mac) {
+    public_deps += [ "//ui/base/cursor" ]
+    deps += [ "//ui/resources:ui_resources_grd" ]
   }
 
   if (toolkit_views) {
