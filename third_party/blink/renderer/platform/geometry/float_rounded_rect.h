@@ -104,7 +104,7 @@ class PLATFORM_EXPORT FloatRoundedRect {
     friend class FloatRoundedRect;
     void Scale(float factor);
     void Outset(const gfx::OutsetsF& outsets);
-    void OutsetForMarginOrShadow(float outset);
+    void OutsetForMarginOrShadow(const gfx::OutsetsF&);
     void OutsetForShapeMargin(float outset);
 
     gfx::SizeF top_left_;
@@ -155,7 +155,10 @@ class PLATFORM_EXPORT FloatRoundedRect {
   // the margin/shadow algorithm to all outsets except shape-margin. For now
   // this is blocked by a problem of the algorithm
   // (https://github.com/w3c/csswg-drafts/issues/7103).
-  void OutsetForMarginOrShadow(float outset);
+  void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets);
+  void OutsetForMarginOrShadow(float outset) {
+    OutsetForMarginOrShadow(gfx::OutsetsF(outset));
+  }
 
   // Inflates the rounded rect by the specified amount on each side and corner
   // for shape-margin. |outset| must be non-negative. This is different from

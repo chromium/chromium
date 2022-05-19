@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
@@ -213,6 +214,7 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange&,
                                        const CSSParserContext&);
 
 CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenRange&);
+CSSIdentifierValue* ConsumeVisualBox(CSSParserTokenRange&);
 
 enum class IsImplicitProperty { kNotImplicit, kImplicit };
 

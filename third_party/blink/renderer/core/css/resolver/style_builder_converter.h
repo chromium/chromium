@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/style/quotes_data.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -327,6 +328,10 @@ class StyleBuilderConverter {
       const CSSValue&);
   static scoped_refptr<ToggleTriggerList> ConvertToggleTrigger(
       const StyleResolverState&,
+      const CSSValue&);
+
+  static absl::optional<StyleOverflowClipMargin> ConvertOverflowClipMargin(
+      StyleResolverState&,
       const CSSValue&);
 };
 

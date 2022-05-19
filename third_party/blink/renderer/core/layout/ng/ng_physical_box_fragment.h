@@ -9,12 +9,14 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_mathml_paint_info.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -317,6 +319,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                        Vector<PhysicalRect>* outline_rects) const;
 
   PositionWithAffinity PositionForPoint(PhysicalOffset) const;
+
+  // The outsets to apply to the border-box of this fragment for
+  // |overflow-clip-margin|.
+  NGPhysicalBoxStrut OverflowClipMarginOutsets() const;
 
   PhysicalBoxSides SidesToInclude() const {
     return PhysicalBoxSides(include_border_top_, include_border_right_,

@@ -27,8 +27,10 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
@@ -41,17 +43,20 @@
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
@@ -60,8 +65,10 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -2502,6 +2509,53 @@ scoped_refptr<ToggleTriggerList> StyleBuilderConverter::ConvertToggleTrigger(
     result->Append(ToggleTrigger(name, mode, value));
   }
   return result;
+}
+
+absl::optional<StyleOverflowClipMargin>
+StyleBuilderConverter::ConvertOverflowClipMargin(StyleResolverState& state,
+                                                 const CSSValue& value) {
+  const auto& css_value_list = To<CSSValueList>(value);
+  DCHECK(css_value_list.length() == 1u || css_value_list.length() == 2u);
+
+  const CSSIdentifierValue* reference_box_value = nullptr;
+  const CSSPrimitiveValue* length_value = nullptr;
+
+  if (css_value_list.Item(0).IsIdentifierValue()) {
+    reference_box_value = &To<CSSIdentifierValue>(css_value_list.Item(0));
+  } else {
+    DCHECK(css_value_list.Item(0).IsPrimitiveValue());
+    length_value = &To<CSSPrimitiveValue>(css_value_list.Item(0));
+  }
+
+  if (css_value_list.length() > 1) {
+    const auto& value = css_value_list.Item(1);
+    DCHECK(value.IsPrimitiveValue());
+    DCHECK(!length_value);
+    length_value = &To<CSSPrimitiveValue>(value);
+  }
+
+  auto reference_box = StyleOverflowClipMargin::ReferenceBox::kPaddingBox;
+  if (reference_box_value) {
+    switch (reference_box_value->GetValueID()) {
+      case CSSValueID::kBorderBox:
+        reference_box = StyleOverflowClipMargin::ReferenceBox::kBorderBox;
+        break;
+      case CSSValueID::kContentBox:
+        reference_box = StyleOverflowClipMargin::ReferenceBox::kContentBox;
+        break;
+      case CSSValueID::kPaddingBox:
+        reference_box = StyleOverflowClipMargin::ReferenceBox::kPaddingBox;
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  LayoutUnit margin;
+  if (length_value) {
+    margin = StyleBuilderConverter::ConvertLayoutUnit(state, *length_value);
+  }
+  return StyleOverflowClipMargin(reference_box, margin);
 }
 
 }  // namespace blink

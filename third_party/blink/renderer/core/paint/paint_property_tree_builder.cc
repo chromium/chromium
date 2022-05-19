@@ -57,12 +57,16 @@
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
@@ -1793,11 +1797,27 @@ static void AdjustRoundedClipForOverflowClipMargin(
     gfx::RectF& layout_clip_rect,
     FloatRoundedRect& paint_clip_rect) {
   const auto& style = box.StyleRef();
-  LayoutUnit overflow_clip_margin = style.OverflowClipMargin();
+  auto overflow_clip_margin = style.OverflowClipMargin();
   if (!overflow_clip_margin || !box.ShouldApplyOverflowClipMargin())
     return;
-  layout_clip_rect.Outset(overflow_clip_margin.ToFloat());
-  paint_clip_rect.OutsetForMarginOrShadow(overflow_clip_margin.ToFloat());
+
+  // The default rects map to the inner border-radius which is the padding-box.
+  // First apply a margin for the reference-box.
+  LayoutRectOutsets outsets;
+  switch (overflow_clip_margin->GetReferenceBox()) {
+    case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
+      outsets = box.BorderBoxOutsets();
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kContentBox:
+      outsets = -box.PaddingOutsets();
+      break;
+  }
+
+  outsets += overflow_clip_margin->GetMargin();
+  layout_clip_rect.Outset(gfx::OutsetsF(outsets));
+  paint_clip_rect.OutsetForMarginOrShadow(gfx::OutsetsF(outsets));
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {

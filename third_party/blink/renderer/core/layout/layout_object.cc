@@ -244,6 +244,20 @@ StyleDifference AdjustForBackgroundColorPaint(
 
 static int g_allow_destroying_layout_object_in_finalizer = 0;
 
+void ApplyVisibleOverflowToClipRect(OverflowClipAxes overflow_clip,
+                                    PhysicalRect& clip_rect) {
+  DCHECK_NE(overflow_clip, kOverflowClipBothAxis);
+  const LayoutRect infinite_rect(LayoutRect::InfiniteIntRect());
+  if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
+    clip_rect.offset.left = infinite_rect.X();
+    clip_rect.size.width = infinite_rect.Width();
+  }
+  if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
+    clip_rect.offset.top = infinite_rect.Y();
+    clip_rect.size.height = infinite_rect.Height();
+  }
+}
+
 AllowDestroyingLayoutObjectInFinalizerScope::
     AllowDestroyingLayoutObjectInFinalizerScope() {
   ++g_allow_destroying_layout_object_in_finalizer;

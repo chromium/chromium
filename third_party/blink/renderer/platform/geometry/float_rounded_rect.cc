@@ -126,24 +126,25 @@ static void OutsetCornerForMarginOrShadow(gfx::SizeF& corner, float outset) {
     return;
 
   float width_factor = 1;
-  if (corner.width() < outset)
-    width_factor = 1 + pow(corner.width() / outset - 1, 3);
+  if (corner.width() < abs(outset))
+    width_factor = 1 + pow(corner.width() / abs(outset) - 1, 3);
 
   float height_factor = 1;
   if (corner.height() == corner.width())
     height_factor = width_factor;
-  else if (corner.height() < outset)
-    height_factor = 1 + pow(corner.height() / outset - 1, 3);
+  else if (corner.height() < abs(outset))
+    height_factor = 1 + pow(corner.height() / abs(outset) - 1, 3);
 
-  corner.set_width(corner.width() + width_factor * outset);
-  corner.set_height(corner.height() + height_factor * outset);
+  corner.set_width(std::max(corner.width() + width_factor * outset, 0.f));
+  corner.set_height(std::max(corner.height() + height_factor * outset, 0.f));
 }
 
-void FloatRoundedRect::Radii::OutsetForMarginOrShadow(float outset) {
-  OutsetCornerForMarginOrShadow(top_left_, outset);
-  OutsetCornerForMarginOrShadow(top_right_, outset);
-  OutsetCornerForMarginOrShadow(bottom_left_, outset);
-  OutsetCornerForMarginOrShadow(bottom_right_, outset);
+void FloatRoundedRect::Radii::OutsetForMarginOrShadow(
+    const gfx::OutsetsF& outsets) {
+  OutsetCornerForMarginOrShadow(top_left_, outsets.top());
+  OutsetCornerForMarginOrShadow(top_right_, outsets.right());
+  OutsetCornerForMarginOrShadow(bottom_left_, outsets.bottom());
+  OutsetCornerForMarginOrShadow(bottom_right_, outsets.right());
 }
 
 void FloatRoundedRect::Radii::OutsetForShapeMargin(float outset) {
@@ -219,11 +220,11 @@ void FloatRoundedRect::Outset(const gfx::OutsetsF& outsets) {
   radii_.Outset(outsets);
 }
 
-void FloatRoundedRect::OutsetForMarginOrShadow(float size) {
-  if (size == 0.f)
+void FloatRoundedRect::OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
+  if (outsets.IsEmpty())
     return;
-  rect_.Outset(size);
-  radii_.OutsetForMarginOrShadow(size);
+  rect_.Outset(outsets);
+  radii_.OutsetForMarginOrShadow(outsets);
 }
 
 void FloatRoundedRect::OutsetForShapeMargin(float outset) {

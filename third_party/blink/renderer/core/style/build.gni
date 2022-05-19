@@ -90,6 +90,7 @@ blink_core_sources_style = [
   "style_name_or_keyword.h",
   "style_non_inherited_variables.h",
   "style_offset_rotation.h",
+  "style_overflow_clip_margin.h",
   "style_path.cc",
   "style_path.h",
   "style_pending_image.cc",

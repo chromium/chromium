@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/custom_scrollbar.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_deprecated_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -108,7 +110,10 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
+#include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -1898,23 +1903,6 @@ PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {
   return result;
 }
 
-void LayoutBox::ApplyVisibleOverflowToClipRect(PhysicalRect& clip_rect) const {
-  const OverflowClipAxes overflow_clip = GetOverflowClipAxes();
-  if (overflow_clip != kOverflowClipBothAxis) {
-    const LayoutRect infinite_rect(LayoutRect::InfiniteIntRect());
-    if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
-      clip_rect.offset.left = infinite_rect.X();
-      clip_rect.size.width = infinite_rect.Width();
-    }
-    if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
-      clip_rect.offset.top = infinite_rect.Y();
-      clip_rect.size.height = infinite_rect.Height();
-    }
-  } else if (ShouldApplyOverflowClipMargin()) {
-    clip_rect.Inflate(StyleRef().OverflowClipMargin());
-  }
-}
-
 gfx::PointF LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
   if (!HasTransformRelatedProperty())
     return gfx::PointF();
@@ -2857,8 +2845,24 @@ PhysicalRect LayoutBox::OverflowClipRect(
     clip_rect = PhysicalBorderBoxRect();
     clip_rect.Contract(BorderBoxOutsets());
     clip_rect.Move(location);
-    if (HasNonVisibleOverflow())
-      ApplyVisibleOverflowToClipRect(clip_rect);
+    if (HasNonVisibleOverflow()) {
+      const auto overflow_clip = GetOverflowClipAxes();
+      if (overflow_clip != kOverflowClipBothAxis) {
+        ApplyVisibleOverflowToClipRect(overflow_clip, clip_rect);
+      } else if (ShouldApplyOverflowClipMargin()) {
+        switch (StyleRef().OverflowClipMargin()->GetReferenceBox()) {
+          case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
+            clip_rect.Expand(BorderBoxOutsets());
+            break;
+          case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
+            break;
+          case StyleOverflowClipMargin::ReferenceBox::kContentBox:
+            clip_rect.Contract(PaddingOutsets());
+            break;
+        }
+        clip_rect.Inflate(StyleRef().OverflowClipMargin()->GetMargin());
+      }
+    }
   }
 
   if (IsScrollContainer()) {
@@ -7321,6 +7325,26 @@ LayoutRect LayoutBox::LogicalLayoutOverflowRectForPropagation(
   return rect;
 }
 
+LayoutRectOutsets LayoutBox::BorderBoxOutsetsForClipping() const {
+  auto padding_box = -BorderBoxOutsets();
+  if (!ShouldApplyOverflowClipMargin())
+    return padding_box;
+
+  LayoutRectOutsets overflow_clip_margin;
+  switch (StyleRef().OverflowClipMargin()->GetReferenceBox()) {
+    case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
+      overflow_clip_margin = padding_box;
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kContentBox:
+      overflow_clip_margin = padding_box - PaddingOutsets();
+      break;
+  }
+
+  return overflow_clip_margin + StyleRef().OverflowClipMargin()->GetMargin();
+}
+
 DISABLE_CFI_PERF
 LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
     LayoutObject* container) const {
@@ -7338,8 +7362,7 @@ LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
         // We should apply overflow clip margin only if we clip overflow on both
         // axes.
         DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
-        clip_rect.Contract(BorderBoxOutsets());
-        clip_rect.Inflate(StyleRef().OverflowClipMargin());
+        clip_rect.Expand(BorderBoxOutsetsForClipping());
         overflow.Intersect(clip_rect);
       } else {
         ApplyOverflowClip(overflow_clip_axes, clip_rect, overflow);
@@ -7402,7 +7425,7 @@ LayoutRect LayoutBox::VisualOverflowRect() const {
         overflow_->visual_overflow->ContentsVisualOverflowRect();
     if (!contents_visual_overflow_rect.IsEmpty()) {
       LayoutRect result = BorderBoxRect();
-      result.Inflate(StyleRef().OverflowClipMargin());
+      result.Expand(BorderBoxOutsetsForClipping());
       result.Intersect(contents_visual_overflow_rect);
       result.Unite(self_visual_overflow_rect);
       return result;

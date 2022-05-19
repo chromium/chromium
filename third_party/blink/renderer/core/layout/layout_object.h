@@ -146,6 +146,10 @@ enum {
   kOverflowClipBothAxis = kOverflowClipX | kOverflowClipY,
 };
 
+// Expands |clip_rect| to allow infinite overflow in horizontal and/or vertical
+// direction.
+void ApplyVisibleOverflowToClipRect(OverflowClipAxes, PhysicalRect& clip_rect);
+
 #if DCHECK_IS_ON()
 const int kShowTreeCharacterOffset = 39;
 #endif

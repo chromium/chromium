@@ -9,12 +9,14 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -735,7 +738,7 @@ PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
           ink_overflow_.Contents(InkOverflowType(), Size());
       if (!contents_rect.IsEmpty()) {
         PhysicalRect result = LocalRect();
-        result.Inflate(style.OverflowClipMargin());
+        result.Expand(OverflowClipMarginOutsets());
         result.Intersect(contents_rect);
         result.Unite(self_rect);
         return result;
@@ -785,9 +788,18 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
       Size().ConvertToLogical(writing_direction.GetWritingMode()));
   PhysicalRect physical_fragment_rect =
       converter.ToPhysical(logical_fragment_rect);
-  box->ApplyVisibleOverflowToClipRect(physical_fragment_rect);
+
+  const auto overflow_clip = box->GetOverflowClipAxes();
+  PhysicalRect overflow_physical_fragment_rect = physical_fragment_rect;
+  if (overflow_clip != kOverflowClipBothAxis) {
+    ApplyVisibleOverflowToClipRect(overflow_clip,
+                                   overflow_physical_fragment_rect);
+  } else if (box->ShouldApplyOverflowClipMargin()) {
+    overflow_physical_fragment_rect.Expand(OverflowClipMarginOutsets());
+  }
+
   // Clip against the fragment's bounds.
-  clip_rect.Intersect(physical_fragment_rect);
+  clip_rect.Intersect(overflow_physical_fragment_rect);
   // Make the clip rectangle relative to the fragment.
   clip_rect.offset -= physical_fragment_rect.offset;
   // Make the clip rectangle relative to whatever the caller wants.
@@ -1584,6 +1596,37 @@ NGPhysicalBoxFragment::PositionForPointRespectingEditingBoundaries(
   if (logical_point_in_child.inline_offset < logical_child_inline_size / 2)
     return child.GetLayoutObject()->PositionBeforeThis();
   return child.GetLayoutObject()->PositionAfterThis();
+}
+
+NGPhysicalBoxStrut NGPhysicalBoxFragment::OverflowClipMarginOutsets() const {
+  DCHECK(Style().OverflowClipMargin());
+  DCHECK(ShouldApplyOverflowClipMargin());
+  DCHECK(!IsScrollContainer());
+
+  const auto& overflow_clip_margin = Style().OverflowClipMargin();
+  NGPhysicalBoxStrut outsets;
+
+  // First inset the overflow rect based on the reference box. The
+  // |child_overflow_rect| initialized above assumes clipping to
+  // border-box.
+  switch (overflow_clip_margin->GetReferenceBox()) {
+    case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
+      outsets -= Borders();
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kContentBox:
+      outsets -= Borders();
+      outsets -= Padding();
+      break;
+  }
+
+  // Now expand the rect based on the given margin. The margin only
+  // applies if the side is a painted with this child fragment.
+  outsets += NGPhysicalBoxStrut(overflow_clip_margin->GetMargin());
+  outsets.TruncateSides(SidesToInclude());
+
+  return outsets;
 }
 
 #if DCHECK_IS_ON()

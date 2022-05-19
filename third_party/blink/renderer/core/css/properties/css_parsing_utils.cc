@@ -2713,6 +2713,12 @@ CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenRange& range) {
                       CSSValueID::kBorderBox, CSSValueID::kMarginBox>(range);
 }
 
+// https://drafts.csswg.org/css-box-4/#typedef-visual-box
+CSSIdentifierValue* ConsumeVisualBox(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kContentBox, CSSValueID::kPaddingBox,
+                      CSSValueID::kBorderBox>(range);
+}
+
 void AddProperty(CSSPropertyID resolved_property,
                  CSSPropertyID current_shorthand,
                  const CSSValue& value,
