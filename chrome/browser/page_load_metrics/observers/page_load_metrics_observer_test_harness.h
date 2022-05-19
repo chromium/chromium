@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 
@@ -29,7 +30,9 @@ class PageLoadMetricsObserverTestHarness
   template <typename... TaskEnvironmentTraits>
   explicit PageLoadMetricsObserverTestHarness(TaskEnvironmentTraits&&... traits)
       : ChromeRenderViewHostTestHarness(
-            std::forward<TaskEnvironmentTraits>(traits)...) {}
+            std::forward<TaskEnvironmentTraits>(traits)...) {
+    InitializeFeatureList();
+  }
 
   PageLoadMetricsObserverTestHarness(
       const PageLoadMetricsObserverTestHarness&) = delete;
@@ -46,7 +49,10 @@ class PageLoadMetricsObserverTestHarness
   const PageLoadMetricsObserverTester* tester() const { return tester_.get(); }
 
  private:
+  void InitializeFeatureList();
+
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace page_load_metrics
