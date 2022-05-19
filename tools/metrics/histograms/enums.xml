@@ -54460,6 +54460,8 @@ from previous Chrome versions.
   <int value="-2111273398" label="SendTabToSelfManageDevicesLink:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
+  <int value="-2107423227"
+      label="AccessibilityOSSettingsReorganization:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
   <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
   <int value="-2105498697" label="EnableImeSandbox:disabled"/>
@@ -59165,6 +59167,7 @@ from previous Chrome versions.
   <int value="996637686" label="NativeFileSystemAPI:enabled"/>
   <int value="996643125" label="EnableAppShortcutSearch:disabled"/>
   <int value="996701528" label="SystemKeyboardLock:enabled"/>
+  <int value="997697448" label="AccessibilityOSSettingsReorganization:enabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>
   <int value="1000045846" label="OverlayNewLayout:disabled"/>
   <int value="1000587036" label="OfflinePagesDescriptiveFailStatus:disabled"/>

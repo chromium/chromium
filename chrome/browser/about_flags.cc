@@ -6294,6 +6294,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnhancedNetworkVoicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnhancedNetworkVoices)},
 
+    {"enable-accessibility-os-settings-reorganization",
+     flag_descriptions::kAccessibilityOSSettingsReorganizationName,
+     flag_descriptions::kAccessibilityOSSettingsReorganizationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityOSSettingsReorganization)},
+
     {"enable-accessibility-os-settings-visibility",
      flag_descriptions::kAccessibilityOSSettingsVisibilityName,
      flag_descriptions::kAccessibilityOSSettingsVisibilityDescription, kOsCrOS,

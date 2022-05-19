@@ -553,6 +553,9 @@ extern const char kEnableTLS13EarlyDataDescription[];
 extern const char kEnhancedNetworkVoicesName[];
 extern const char kEnhancedNetworkVoicesDescription[];
 
+extern const char kAccessibilityOSSettingsReorganizationName[];
+extern const char kAccessibilityOSSettingsReorganizationDescription[];
+
 extern const char kAccessibilityOSSettingsVisibilityName[];
 extern const char kAccessibilityOSSettingsVisibilityDescription[];
 

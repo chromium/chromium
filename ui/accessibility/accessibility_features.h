@@ -118,6 +118,13 @@ AX_BASE_EXPORT extern const base::Feature kEnhancedNetworkVoices;
 // Returns true if network-based voices are enabled in Select-to-speak.
 AX_BASE_EXPORT bool IsEnhancedNetworkVoicesEnabled();
 
+// Enables improved Accessibility OS Settings reorganization.
+AX_BASE_EXPORT extern const base::Feature
+    kAccessibilityOSSettingsReorganization;
+
+// Returns true if improved Accessibility OS Settings reorganization is enabled.
+AX_BASE_EXPORT bool IsAccessibilityOSSettingsReorganizationEnabled();
+
 // Enables improved Accessibility OS Settings visibility.
 AX_BASE_EXPORT extern const base::Feature kAccessibilityOSSettingsVisibility;
 
