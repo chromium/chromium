@@ -637,7 +637,7 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
   while (curr != nullptr) {
     auto* next = curr->next;
     internal::AddressPoolManager::GetInstance().UnreserveAndDecommit(
-        pool_handle, reinterpret_cast<uintptr_t>(curr),
+        pool_handle, SuperPagesBeginFromExtent(curr),
         internal::kSuperPageSize * curr->number_of_consecutive_super_pages);
     curr = next;
   }
@@ -1238,6 +1238,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
   dumper->PartitionDumpTotals(partition_name, &stats);
 }
 
+// static
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::DeleteForTesting(
     PartitionRoot* partition_root) {
@@ -1245,6 +1246,8 @@ void PartitionRoot<thread_safe>::DeleteForTesting(
     ThreadCache::SwapForTesting(nullptr);
     partition_root->flags.with_thread_cache = false;
   }
+
+  partition_root->DestructForTesting();  // IN-TEST
 
   delete partition_root;
 }
