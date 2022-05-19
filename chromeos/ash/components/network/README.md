@@ -6,8 +6,8 @@ below:
 ![Chrome OS Connectivity Layers](docs/cros_connectivity_layers.svg){width="1200" height="864"}
 
 This document describes the Chrome layer (light blue rectangle above). This
-layer is implemented within `//chromeos/network`. To describe this layer, we
-highlight three primary processes:
+layer is implemented within `//chromeos/ash/components/network`. To describe
+this layer, we highlight three primary processes:
 
 *   ***Chrome.*** Contains all system UI (e.g., settings) and processes inputs
     from the user as well as enterprise policies. Chrome sits atop the
@@ -22,6 +22,10 @@ highlight three primary processes:
 Shill and Hermes interface with several other components (e.g., ModemManager,
 wpa_supplicant), but these are beyond the scope of this README since these
 interactions are encapsulated from Chrome.
+
+TODO(crbug.com/1164001): As part of [Chrome OS source directory migration](https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE/edit),
+the migration of codes for Chrome OS networking is in-progress and being moved
+from `//chromeos/network` to `//chromeos/ash/components/network` for now.
 
 ## Background
 

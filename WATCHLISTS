@@ -764,6 +764,7 @@
     },
     'chromeos_net': {
       'filepath': 'ash/system/network/|'\
+                  'chromeos/ash/components/network/|'\
                   'chromeos/dbus/shill/|'\
                   'chromeos/network/|'\
                   'chromeos/services/network_config/|'\
