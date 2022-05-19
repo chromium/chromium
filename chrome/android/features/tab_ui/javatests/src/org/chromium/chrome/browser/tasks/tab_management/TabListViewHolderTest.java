@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -296,7 +297,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         doNothing().when(mCurrencyFormatterJniMock).setMaxFractionalDigits(anyLong(), anyInt());
         doReturn(1L).when(mOptimizationGuideBridgeJniMock).init();
         mMocker.mock(OptimizationGuideBridgeJni.TEST_HOOKS, mOptimizationGuideBridgeJniMock);
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
     }
 
     private void testGridSelected(ViewGroup holder, PropertyModel model) {
@@ -954,7 +955,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         testValues.addFeatureFlagOverride(ChromeFeatureList.CONTINUOUS_SEARCH, true);
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingUtilities.PRICE_TRACKING_PARAM, String.valueOf(value));
+                PriceTrackingFeatures.PRICE_TRACKING_PARAM, String.valueOf(value));
         FeatureList.setTestValues(testValues);
     }
 }

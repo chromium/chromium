@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.price_tracking;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -41,7 +41,7 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Tests for {@link PriceTrackingUtilities}.
+ * Tests for {@link PriceTrackingFeatures}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -49,7 +49,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
-public class PriceTrackingUtilitiesTest {
+public class PriceTrackingFeaturesTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -86,7 +86,7 @@ public class PriceTrackingUtilitiesTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.resetForTests());
         IdentityServicesProvider.setInstanceForTests(null);
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(null);
     }
 
     @UiThreadTest
@@ -94,7 +94,7 @@ public class PriceTrackingUtilitiesTest {
     @SmallTest
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
     public void testIsPriceTrackingEligible() {
-        Assert.assertTrue(PriceTrackingUtilities.isPriceTrackingEligible());
+        Assert.assertTrue(PriceTrackingFeatures.isPriceTrackingEligible());
     }
 
     @UiThreadTest
@@ -102,7 +102,7 @@ public class PriceTrackingUtilitiesTest {
     @SmallTest
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/false"})
     public void testIsPriceTrackingEligibleFlagIsDisabled() {
-        Assert.assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
+        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
     }
 
     @UiThreadTest
@@ -112,7 +112,7 @@ public class PriceTrackingUtilitiesTest {
 
     public void testIsPriceTrackingEligibleNoMbb() {
         setMbbStatus(false);
-        Assert.assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
+        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
     }
 
     @UiThreadTest
@@ -122,7 +122,7 @@ public class PriceTrackingUtilitiesTest {
 
     public void testIsPriceTrackingEligibleNotSignedIn() {
         setSignedInStatus(false);
-        Assert.assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
+        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
     }
 
     @UiThreadTest
@@ -133,9 +133,9 @@ public class PriceTrackingUtilitiesTest {
         setMbbStatus(false);
         setSignedInStatus(false);
         setTabSyncStatus(false, false);
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
-        Assert.assertTrue(PriceTrackingUtilities.isPriceTrackingEligible());
+        Assert.assertTrue(PriceTrackingFeatures.isPriceTrackingEligible());
     }
 
     private void setMbbStatus(boolean isEnabled) {

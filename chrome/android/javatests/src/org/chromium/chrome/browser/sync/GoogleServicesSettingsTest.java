@@ -26,11 +26,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -340,7 +341,7 @@ public class GoogleServicesSettingsTest {
     public void
     testPriceTrackingAnnotations() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true));
+                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true));
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -368,7 +369,7 @@ public class GoogleServicesSettingsTest {
     public void
     testPriceTrackingAnnotations_FeatureDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true));
+                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true));
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -388,7 +389,7 @@ public class GoogleServicesSettingsTest {
     public void
     testPriceTrackingAnnotations_NotSignedIn() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false));
+                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false));
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 

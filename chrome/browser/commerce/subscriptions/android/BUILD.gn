@@ -10,3 +10,13 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorage.java",
   ]
 }
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceConfig.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}

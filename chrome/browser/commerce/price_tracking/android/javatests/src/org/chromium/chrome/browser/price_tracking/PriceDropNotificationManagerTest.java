@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingId
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsService;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManagerImpl;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -144,8 +143,8 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotification_FeatureDisabled() {
         mMockNotificationManager.setNotificationsEnabled(true);
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
-        assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
+        assertFalse(PriceTrackingFeatures.isPriceTrackingEligible());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
     }
@@ -153,7 +152,7 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testCanPostNotification_NotificationDisabled() {
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mMockNotificationManager.setNotificationsEnabled(false);
         assertFalse(mPriceDropNotificationManager.areAppNotificationsEnabled());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
@@ -163,8 +162,8 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testCanPostNotificaton() {
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
-        assertTrue(PriceTrackingUtilities.isPriceTrackingEligible());
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+        assertTrue(PriceTrackingFeatures.isPriceTrackingEligible());
         mMockNotificationManager.setNotificationsEnabled(true);
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 

@@ -42,12 +42,12 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsMetrics.AccountWaaStatus;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.prefs.PrefService;
@@ -118,12 +118,12 @@ public class CommerceSubscriptionsServiceUnitTest {
                 System.currentTimeMillis()
                         - TimeUnit.SECONDS.toMillis(
                                 CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds()));
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         mTestValues = new FeatureList.TestValues();
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "true");
+                PriceTrackingFeatures.PRICE_NOTIFICATION_PARAM, "true");
         FeatureList.setTestValues(mTestValues);
 
         mMockNotificationManager = new MockNotificationManagerProxy();
@@ -228,7 +228,7 @@ public class CommerceSubscriptionsServiceUnitTest {
     @SmallTest
     public void testOnResume_FeatureDisabled() {
         mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "false");
+                PriceTrackingFeatures.PRICE_NOTIFICATION_PARAM, "false");
         FeatureList.setTestValues(mTestValues);
 
         setupTestOnResume();

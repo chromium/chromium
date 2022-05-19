@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.widget.SwitchCompat;
 
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -66,11 +68,10 @@ public class PriceTrackingDialogView extends LinearLayout {
      */
     void setupRowMenuVisibility() {
         mPriceAnnotationsRowMenu.setVisibility(
-                PriceTrackingUtilities.allowUsersToDisablePriceAnnotations() ? View.VISIBLE
-                                                                             : View.GONE);
-        mPriceAlertsRowMenu.setVisibility(PriceTrackingUtilities.isPriceDropNotificationEligible()
-                        ? View.VISIBLE
-                        : View.GONE);
+                PriceTrackingFeatures.allowUsersToDisablePriceAnnotations() ? View.VISIBLE
+                                                                            : View.GONE);
+        mPriceAlertsRowMenu.setVisibility(
+                PriceTrackingFeatures.isPriceDropNotificationEligible() ? View.VISIBLE : View.GONE);
         // At least one row should be visible.
         assert mPriceAnnotationsRowMenu.getVisibility() == View.VISIBLE
                 || mPriceAlertsRowMenu.getVisibility() == View.VISIBLE;

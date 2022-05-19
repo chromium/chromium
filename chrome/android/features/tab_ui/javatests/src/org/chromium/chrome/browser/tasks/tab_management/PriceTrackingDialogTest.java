@@ -52,6 +52,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -100,7 +102,7 @@ public class PriceTrackingDialogTest {
     @Before
     public void setUp() throws Exception {
         Intents.init();
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
@@ -111,7 +113,7 @@ public class PriceTrackingDialogTest {
 
     @After
     public void tearDown() {
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         Intents.release();
     }
@@ -206,7 +208,7 @@ public class PriceTrackingDialogTest {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         // The price alerts row menu should be invisible if user doesn't sign in.
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
         verifyDialogShowing(cta, true, false);
@@ -215,7 +217,7 @@ public class PriceTrackingDialogTest {
         verifyDialogHiding(cta);
 
         // When user signs in, the price alerts row menu should be visible.
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
         verifyDialogShowing(cta, true, true);

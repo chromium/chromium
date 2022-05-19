@@ -33,8 +33,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -91,9 +91,9 @@ public class SubscriptionsManagerImplTest {
         mTestValues = new FeatureList.TestValues();
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "true");
+                PriceTrackingFeatures.PRICE_NOTIFICATION_PARAM, "true");
         FeatureList.setTestValues(mTestValues);
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         mMocker.mock(CommerceSubscriptionsStorageJni.TEST_HOOKS, mCommerceSubscriptionsStorageJni);
         mSubscriptionsManager = new SubscriptionsManagerImpl(mProfile, mStorage, mProxy);
@@ -500,7 +500,7 @@ public class SubscriptionsManagerImplTest {
                         any(Callback.class));
 
         // Simulate user signs out. We should delete local storage but not fetch data from server.
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
         mSubscriptionsManager.onIdentityChanged();
         verify(mStorage, times(1)).deleteAll();
         verify(mProxy, times(1))
@@ -519,7 +519,7 @@ public class SubscriptionsManagerImplTest {
 
         // Simulate user switches account. We should delete local storage and also fetch new data
         // from server.
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         mSubscriptionsManager.onIdentityChanged();
         verify(mStorage, times(1)).deleteAll();
         verify(mProxy, times(2))

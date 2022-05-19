@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 
 /**
  * A class to handle whether store hours feature is enabled.
