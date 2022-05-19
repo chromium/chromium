@@ -12,6 +12,8 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace storage {
 class QuotaOverrideHandle;
@@ -41,6 +43,8 @@ class StorageHandler : public DevToolsDomainHandler,
   Response Disable() override;
 
   // content::protocol::storage::Backend
+  Response GetStorageKeyForFrame(const std::string& frame_id,
+                                 std::string* serialized_storage_key) override;
   void ClearDataForOrigin(
       const std::string& origin,
       const std::string& storage_types,
@@ -118,7 +122,8 @@ class StorageHandler : public DevToolsDomainHandler,
                                 StoragePartition** storage_partition);
 
   std::unique_ptr<Storage::Frontend> frontend_;
-  StoragePartition* storage_partition_;
+  StoragePartition* storage_partition_{nullptr};
+  RenderFrameHostImpl* frame_host_ = nullptr;
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
 

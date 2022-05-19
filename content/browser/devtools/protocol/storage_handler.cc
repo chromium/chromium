@@ -16,6 +16,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
+#include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
@@ -269,8 +270,7 @@ class StorageHandler::IndexedDBObserver
 };
 
 StorageHandler::StorageHandler()
-    : DevToolsDomainHandler(Storage::Metainfo::domainName),
-      storage_partition_(nullptr) {}
+    : DevToolsDomainHandler(Storage::Metainfo::domainName) {}
 
 StorageHandler::~StorageHandler() {
   DCHECK(!cache_storage_observer_);
@@ -286,6 +286,7 @@ void StorageHandler::SetRenderer(int process_host_id,
                                  RenderFrameHostImpl* frame_host) {
   RenderProcessHost* process = RenderProcessHost::FromID(process_host_id);
   storage_partition_ = process ? process->GetStoragePartition() : nullptr;
+  frame_host_ = frame_host;
 }
 
 Response StorageHandler::Disable() {
@@ -357,6 +358,20 @@ void StorageHandler::ClearCookies(
       base::BindOnce([](std::unique_ptr<ClearCookiesCallback> callback,
                         uint32_t) { callback->sendSuccess(); },
                      std::move(callback)));
+}
+
+Response StorageHandler::GetStorageKeyForFrame(
+    const std::string& frame_id,
+    std::string* serialized_storage_key) {
+  if (!frame_host_)
+    return Response::InvalidParams("Frame host not found");
+  FrameTreeNode* node = protocol::FrameTreeNodeFromDevToolsFrameToken(
+      frame_host_->frame_tree_node(), frame_id);
+  if (!node)
+    return Response::InvalidParams("Frame tree node for given frame not found");
+  RenderFrameHostImpl* rfh = node->current_frame_host();
+  *serialized_storage_key = rfh->storage_key().Serialize();
+  return Response::Success();
 }
 
 void StorageHandler::ClearDataForOrigin(

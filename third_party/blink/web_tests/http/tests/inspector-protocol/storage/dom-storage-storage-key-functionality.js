@@ -15,7 +15,7 @@
   testRunner.log(storageId.storageKey ? "not empty\n" : "empty\n");
 
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
-  const key = (await dp.DOMStorage.getStorageKeyForFrame({frameId: frameId})).result.storageKey;
+  const key = (await dp.Storage.getStorageKeyForFrame({frameId: frameId})).result.storageKey;
 
   testRunner.log("Get storage key by frame");
   testRunner.log(`storageKey obtained: ${!!key}`)

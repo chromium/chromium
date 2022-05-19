@@ -176,18 +176,6 @@ Response InspectorDOMStorageAgent::removeDOMStorageItem(
   return ToResponse(exception_state);
 }
 
-Response InspectorDOMStorageAgent::getStorageKeyForFrame(
-    const String& frame_id,
-    String* serialized_storage_key) {
-  LocalFrame* frame =
-      IdentifiersFactory::FrameById(inspected_frames_, frame_id);
-  if (!frame)
-    return Response::ServerError("Frame not found");
-  *serialized_storage_key = WTF::String(
-      static_cast<StorageKey>(frame->DomWindow()->GetStorageKey()).Serialize());
-  return Response::Success();
-}
-
 std::unique_ptr<protocol::DOMStorage::StorageId>
 InspectorDOMStorageAgent::GetStorageId(const BlinkStorageKey& storage_key,
                                        bool is_local_storage) {

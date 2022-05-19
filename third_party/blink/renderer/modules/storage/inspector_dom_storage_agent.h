@@ -76,9 +76,6 @@ class MODULES_EXPORT InspectorDOMStorageAgent final
   protocol::Response removeDOMStorageItem(
       std::unique_ptr<protocol::DOMStorage::StorageId>,
       const String& key) override;
-  protocol::Response getStorageKeyForFrame(
-      const String& frame_id,
-      String* serialized_storage_key) override;
 
   protocol::Response FindStorageArea(
       std::unique_ptr<protocol::DOMStorage::StorageId>,

@@ -3434,12 +3434,6 @@ experimental domain DOMStorage
       string key
       string value
 
-  command getStorageKeyForFrame
-    parameters
-      Page.FrameId frameId
-    returns
-      SerializedStorageKey storageKey
-
   event domStorageItemAdded
     parameters
       StorageId storageId
@@ -8903,6 +8897,13 @@ experimental domain Storage
       optional string userBiddingSignals
       array of InterestGroupAd ads
       array of InterestGroupAd adComponents
+
+  # Returns a storage key given a frame id.
+  command getStorageKeyForFrame
+    parameters
+      Page.FrameId frameId
+    returns
+      SerializedStorageKey storageKey
 
   # Clears storage for origin.
   command clearDataForOrigin
