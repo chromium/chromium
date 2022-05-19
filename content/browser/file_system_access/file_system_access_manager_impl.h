@@ -114,6 +114,12 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   // blink::mojom::FileSystemAccessManager:
   void GetSandboxedFileSystem(GetSandboxedFileSystemCallback callback) override;
+  // Get the FileSystem with a custom bucket override. Must provide a binding
+  // context for this request.
+  void GetSandboxedFileSystem(
+      const BindingContext& binding_context,
+      const absl::optional<storage::BucketLocator>& bucket,
+      GetSandboxedFileSystemCallback callback);
   void ChooseEntries(blink::mojom::FilePickerOptionsPtr options,
                      blink::mojom::CommonFilePickerOptionsPtr common_options,
                      ChooseEntriesCallback callback) override;

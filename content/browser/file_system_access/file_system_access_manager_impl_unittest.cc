@@ -16,6 +16,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
@@ -428,6 +430,37 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CreateBucket) {
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key, kTestStorageKey);
   EXPECT_GT(result->id.value(), 0);
+}
+
+TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+      directory_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL, web_contents_->GetMainFrame()->GetGlobalId()};
+  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+      bucket_future;
+  quota_manager_proxy_->CreateBucketForTesting(
+      kTestStorageKey, "custom_bucket", blink::mojom::StorageType::kTemporary,
+      base::SequencedTaskRunnerHandle::Get(), bucket_future.GetCallback());
+  auto bucket = bucket_future.Take();
+  EXPECT_TRUE(bucket.ok());
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      handle_future;
+  manager_->GetSandboxedFileSystem(binding_context, bucket->ToBucketLocator(),
+                                   handle_future.GetCallback());
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
+            handle_future.Get<0>()->status);
+
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
+      std::move(std::get<1>(handle_future.Take())));
+  // Note: we can test that the open succeeded, but because the FileSystemURL
+  // is not exposed to the callback we rely on WPTs to ensure the bucket
+  // locator was actually used.
+  // TODO(crbug.com/1322897): Ensure the bucket override is actually used.
+  ASSERT_TRUE(root);
 }
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_Permissions) {

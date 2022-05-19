@@ -345,10 +345,19 @@ void FileSystemAccessManagerImpl::BindInternalsReceiver(
 void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
     GetSandboxedFileSystemCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GetSandboxedFileSystem(receivers_.current_context(),
+                         /*bucket=*/absl::nullopt, std::move(callback));
+}
+
+void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
+    const BindingContext& binding_context,
+    const absl::optional<storage::BucketLocator>& bucket,
+    GetSandboxedFileSystemCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto response_callback = base::BindOnce(
       [](base::WeakPtr<FileSystemAccessManagerImpl> manager,
-         const BindingContext& binding_context,
+         const BindingContext& callback_binding_context,
          GetSandboxedFileSystemCallback callback,
          scoped_refptr<base::SequencedTaskRunner> task_runner,
          const storage::FileSystemURL& root, const std::string& fs_name,
@@ -357,18 +366,15 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
             FROM_HERE,
             base::BindOnce(
                 &FileSystemAccessManagerImpl::DidOpenSandboxedFileSystem,
-                std::move(manager), binding_context, std::move(callback), root,
-                fs_name, result));
+                std::move(manager), callback_binding_context,
+                std::move(callback), root, fs_name, result));
       },
-      weak_factory_.GetWeakPtr(), receivers_.current_context(),
-      std::move(callback), base::SequencedTaskRunnerHandle::Get());
+      weak_factory_.GetWeakPtr(), binding_context, std::move(callback),
+      base::SequencedTaskRunnerHandle::Get());
 
-  // TODO(crbug.com/1300211): Allow a custom bucket to be provided and populate
-  // it here.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemContext::OpenFileSystem, context(),
-                                receivers_.current_context().storage_key,
-                                /*bucket=*/absl::nullopt,
+                                binding_context.storage_key, bucket,
                                 storage::kFileSystemTypeTemporary,
                                 storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
                                 std::move(response_callback)));
