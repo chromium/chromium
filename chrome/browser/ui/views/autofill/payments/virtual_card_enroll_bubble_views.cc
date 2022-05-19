@@ -126,7 +126,7 @@ void VirtualCardEnrollBubbleViews::Init() {
     auto* const explanation_label =
         AddChildView(std::make_unique<views::StyledLabel>());
     explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    explanation_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
+    explanation_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
     explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
     explanation_label->SetText(explanation);
 
@@ -172,7 +172,7 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   auto* const card_identifier_label =
       description_view->AddChildView(std::make_unique<views::StyledLabel>());
-  card_identifier_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
+  card_identifier_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   card_identifier_label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
   card_identifier_label->SetText(card_label_text);
 

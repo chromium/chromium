@@ -168,7 +168,7 @@ LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
     views::StyledLabel* label =
         AddChildView(std::make_unique<views::StyledLabel>());
     label->SetText(line.text());
-    label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+    label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
     label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
     for (const LegalMessageLine::Link& link : line.links()) {
       label->AddStyleRange(link.range,
