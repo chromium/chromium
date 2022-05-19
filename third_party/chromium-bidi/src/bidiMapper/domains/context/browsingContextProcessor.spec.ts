@@ -22,7 +22,7 @@ import * as sinon from 'sinon';
 import { BrowsingContextProcessor } from './browsingContextProcessor';
 import { CdpClient, CdpConnection } from '../../../cdp';
 import { Context } from './context';
-import { BrowsingContext } from '../../bidiProtocolTypes';
+import { BrowsingContext } from '../protocol/bidiProtocolTypes';
 import { BidiServer, IBidiServer } from '../../utils/bidiServer';
 import { EventManager, IEventManager } from '../events/EventManager';
 

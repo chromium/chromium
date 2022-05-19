@@ -22,14 +22,21 @@ import {
   Message,
   Script,
   Session,
-} from './bidiProtocolTypes';
-import { CdpClient, CdpConnection } from '../cdp';
+} from './domains/protocol/bidiProtocolTypes';
+import { CdpConnection } from '../cdp';
 import { IBidiServer } from './utils/bidiServer';
 import { IEventManager } from './domains/events/EventManager';
+import {
+  ErrorResponseClass,
+  UnknownCommandErrorResponse,
+  UnknownErrorResponse,
+} from './domains/protocol/error';
+import { SessionParser } from './domains/protocol/parsers/sessionParser';
 
 export class CommandProcessor {
-  private _browserCdpClient: CdpClient;
-  private _contextProcessor: BrowsingContextProcessor;
+  #contextProcessor: BrowsingContextProcessor;
+  #bidiServer: IBidiServer;
+  #eventManager: IEventManager;
 
   static run(
     cdpConnection: CdpConnection,
@@ -44,166 +51,152 @@ export class CommandProcessor {
       selfTargetId
     );
 
-    commandProcessor._run();
+    commandProcessor.#run();
   }
 
   private constructor(
-    private _cdpConnection: CdpConnection,
-    private _bidiServer: IBidiServer,
-    private _eventManager: IEventManager,
-    _selfTargetId: string
+    cdpConnection: CdpConnection,
+    bidiServer: IBidiServer,
+    eventManager: IEventManager,
+    selfTargetId: string
   ) {
-    this._browserCdpClient = this._cdpConnection.browserClient();
-
-    this._contextProcessor = new BrowsingContextProcessor(
-      this._cdpConnection,
-      _selfTargetId,
-      this._bidiServer,
-      this._eventManager
+    this.#eventManager = eventManager;
+    this.#bidiServer = bidiServer;
+    this.#contextProcessor = new BrowsingContextProcessor(
+      cdpConnection,
+      selfTargetId,
+      bidiServer,
+      eventManager
     );
   }
 
-  private _run() {
-    this._bidiServer.on('message', (messageObj) => {
-      return this._onBidiMessage(messageObj);
+  #run() {
+    this.#bidiServer.on('message', (messageObj) => {
+      return this.#onBidiMessage(messageObj);
     });
   }
 
-  // noinspection JSMethodCanBeStatic
-  private _getErrorResponse(
-    commandData: any,
-    errorCode: string,
-    errorMessage: string
-  ): Message.Error {
-    // TODO: this is bizarre per spec. We reparse the payload and
-    // extract the ID, regardless of what kind of value it was.
-    let commandId = undefined;
-    try {
-      commandId = commandData.id;
-    } catch {}
-
-    return {
-      id: commandId,
-      error: errorCode,
-      message: errorMessage,
-      // TODO: optional stacktrace field.
-    };
-  }
-
-  private async _respondWithError(
-    commandData: any,
-    errorCode: string,
-    errorMessage: string
-  ) {
-    const errorResponse = this._getErrorResponse(
-      commandData,
-      errorCode,
-      errorMessage
-    );
-    await this._bidiServer.sendMessage(errorResponse);
-  }
-
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
-  private async _process_session_status(
+  async #process_session_status(
     commandData: Session.StatusCommand
   ): Promise<Session.StatusResult> {
     return { result: { ready: true, message: 'ready' } };
   }
 
-  private async _process_session_subscribe(
-    commandData: Session.SubscribeCommand
+  async #process_session_subscribe(
+    params: Session.SubscribeParameters
   ): Promise<Session.SubscribeResult> {
-    await this._eventManager.subscribe(
-      commandData.params.events,
-      commandData.params.contexts ?? null
-    );
-
+    await this.#eventManager.subscribe(params.events, params.contexts ?? null);
     return { result: {} };
   }
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
-  private _process_session_unsubscribe(
+  #process_session_unsubscribe(
     commandData: Session.UnsubscribeCommand
   ): Promise<Session.UnsubscribeResult> {
     throw new Error('Not implemented');
   }
 
-  private async _processCommand(
-    commandData: Message.Command
+  async #processCommand(
+    commandData: Message.RawCommandRequest
   ): Promise<Message.CommandResponseResult> {
     switch (commandData.method) {
       case 'session.status':
-        return await this._process_session_status(
+        return await this.#process_session_status(
+          // TODO(sadym): add params parsing.
           commandData as Session.StatusCommand
         );
       case 'session.subscribe':
-        return await this._process_session_subscribe(
-          commandData as Session.SubscribeCommand
+        return await this.#process_session_subscribe(
+          SessionParser.SubscribeParamsParser.parse(commandData.params)
         );
       case 'session.unsubscribe':
-        return await this._process_session_unsubscribe(
+        return await this.#process_session_unsubscribe(
+          // TODO(sadym): add params parsing.
           commandData as Session.UnsubscribeCommand
         );
 
       case 'browsingContext.create':
-        return await this._contextProcessor.process_browsingContext_create(
+        return await this.#contextProcessor.process_browsingContext_create(
+          // TODO(sadym): add params parsing.
           commandData as BrowsingContext.CreateCommand
         );
       case 'browsingContext.getTree':
-        return await this._contextProcessor.process_browsingContext_getTree(
+        return await this.#contextProcessor.process_browsingContext_getTree(
+          // TODO(sadym): add params parsing.
           commandData as BrowsingContext.GetTreeCommand
         );
       case 'browsingContext.navigate':
-        return await this._contextProcessor.process_browsingContext_navigate(
+        return await this.#contextProcessor.process_browsingContext_navigate(
+          // TODO(sadym): add params parsing.
           commandData as BrowsingContext.NavigateCommand
         );
 
       case 'script.callFunction':
-        return await this._contextProcessor.process_script_callFunction(
+        return await this.#contextProcessor.process_script_callFunction(
+          // TODO(sadym): add params parsing.
           commandData as Script.CallFunctionCommand
         );
       case 'script.evaluate':
-        return await this._contextProcessor.process_script_evaluate(
+        return await this.#contextProcessor.process_script_evaluate(
+          // TODO(sadym): add params parsing.
           commandData as Script.EvaluateCommand
         );
 
       case 'PROTO.browsingContext.findElement':
-        return await this._contextProcessor.process_PROTO_browsingContext_findElement(
+        return await this.#contextProcessor.process_PROTO_browsingContext_findElement(
+          // TODO(sadym): add params parsing.
           commandData as BrowsingContext.PROTO.FindElementCommand
         );
       case 'PROTO.browsingContext.close':
-        return await this._contextProcessor.process_PROTO_browsingContext_close(
+        return await this.#contextProcessor.process_PROTO_browsingContext_close(
+          // TODO(sadym): add params parsing.
           commandData as BrowsingContext.PROTO.CloseCommand
         );
 
       case 'PROTO.cdp.sendCommand':
-        return await this._contextProcessor.process_PROTO_cdp_sendCommand(
+        return await this.#contextProcessor.process_PROTO_cdp_sendCommand(
+          // TODO(sadym): add params parsing.
           commandData as CDP.PROTO.SendCommandCommand
         );
       case 'PROTO.cdp.getSession':
-        return await this._contextProcessor.process_PROTO_cdp_getSession(
+        return await this.#contextProcessor.process_PROTO_cdp_getSession(
+          // TODO(sadym): add params parsing.
           commandData as CDP.PROTO.GetSessionCommand
         );
 
       default:
-        throw new Error('unknown command');
+        throw new UnknownCommandErrorResponse(
+          `Unknown command '${commandData.method}'.`
+        );
     }
   }
 
-  private _onBidiMessage = async (message: Message.Command) => {
+  #onBidiMessage = async (command: Message.RawCommandRequest) => {
     try {
-      const result = await this._processCommand(message);
+      const result = await this.#processCommand(command);
 
       const response = {
-        id: message.id,
+        id: command.id,
         ...result,
       };
 
-      await this._bidiServer.sendMessage(response);
+      await this.#bidiServer.sendMessage(response);
     } catch (e) {
-      const error = e as Error;
-      console.error(error);
-      await this._respondWithError(message, 'unknown error', error.message);
+      if (e instanceof ErrorResponseClass) {
+        const errorResponse = e as ErrorResponseClass;
+
+        await this.#bidiServer.sendMessage(
+          errorResponse.toErrorResponse(command.id)
+        );
+      } else {
+        const error = e as Error;
+        console.error(error);
+
+        await this.#bidiServer.sendMessage(
+          new UnknownErrorResponse(error.message).toErrorResponse(command.id)
+        );
+      }
     }
   };
 }

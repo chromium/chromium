@@ -17,7 +17,11 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import { CommonDataTypes, Message, Script } from '../../bidiProtocolTypes';
+import {
+  CommonDataTypes,
+  Message,
+  Script,
+} from '../protocol/bidiProtocolTypes';
 
 export class ScriptEvaluator {
   #cdpClient: CdpClient;

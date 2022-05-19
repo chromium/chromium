@@ -17,7 +17,7 @@
 
 import { CdpClient } from '../../../cdp';
 import { IBidiServer } from '../../utils/bidiServer';
-import { Log, Script } from '../../bidiProtocolTypes';
+import { Log, Script } from '../protocol/bidiProtocolTypes';
 import { getRemoteValuesText } from './logHelper';
 import { ScriptEvaluator } from './scriptEvaluator';
 import { Protocol } from 'devtools-protocol';
@@ -63,9 +63,8 @@ export class LogManager {
         })
       );
 
-      await this._bidiServer.sendMessage({
-        method: 'log.entryAdded',
-        params: {
+      await this._bidiServer.sendMessage(
+        new Log.LogEntryAddedEvent({
           level: this._getLogLevel(params.type),
           text: getRemoteValuesText(args, true),
           timestamp: params.timestamp,
@@ -74,8 +73,8 @@ export class LogManager {
           method: params.type,
           realm: this._contextId,
           args: args,
-        },
-      });
+        })
+      );
     });
 
     this._cdpClient.Runtime.on('exceptionThrown', async (params) => {
@@ -90,9 +89,8 @@ export class LogManager {
         }
       }
 
-      await this._bidiServer.sendMessage({
-        method: 'log.entryAdded',
-        params: {
+      await this._bidiServer.sendMessage(
+        new Log.LogEntryAddedEvent({
           level: 'error',
           text,
           timestamp: params.timestamp,
@@ -101,8 +99,8 @@ export class LogManager {
           ),
           type: 'javascript',
           realm: this._contextId,
-        },
-      });
+        })
+      );
     });
   }
 

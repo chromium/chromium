@@ -18,7 +18,7 @@
 import { log } from '../../../utils/log';
 import { CdpClient, CdpConnection } from '../../../cdp';
 import { Context } from './context';
-import { BrowsingContext, CDP, Script } from '../../bidiProtocolTypes';
+import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
@@ -45,20 +45,14 @@ export class BrowsingContextProcessor {
 
   private async _onContextCreated(context: Context): Promise<void> {
     await this._eventManager.sendEvent(
-      {
-        method: 'browsingContext.contextCreated',
-        params: context.serializeToBidiValue(),
-      },
+      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
       context.id
     );
   }
 
   private async _onContextDestroyed(context: Context): Promise<void> {
     await this._eventManager.sendEvent(
-      {
-        method: 'browsingContext.contextDestroyed',
-        params: context.serializeToBidiValue(),
-      },
+      new BrowsingContext.ContextDestroyedEvent(context.serializeToBidiValue()),
       context.id
     );
   }

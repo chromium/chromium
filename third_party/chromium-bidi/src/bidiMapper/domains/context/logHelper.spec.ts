@@ -16,7 +16,7 @@
  */
 
 import * as chai from 'chai';
-import { CommonDataTypes } from '../../bidiProtocolTypes';
+import { CommonDataTypes } from '../protocol/bidiProtocolTypes';
 import { logMessageFormatter, getRemoteValuesText } from './logHelper';
 
 const expect = chai.expect;

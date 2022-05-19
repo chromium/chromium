@@ -1,9 +1,9 @@
-import { BrowsingContext, Message } from '../../bidiProtocolTypes';
+import { BrowsingContext, Message } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 
 export interface IEventManager {
   sendEvent(
-    event: Message.Event,
+    event: Message.EventMessage,
     contextId: BrowsingContext.BrowsingContext | null
   ): Promise<void>;
 
@@ -28,7 +28,7 @@ export class EventManager implements IEventManager {
   constructor(private _bidiServer: IBidiServer) {}
 
   async sendEvent(
-    event: Message.Event,
+    event: Message.EventMessage,
     contextId: BrowsingContext.BrowsingContext | null
   ): Promise<void> {
     if (

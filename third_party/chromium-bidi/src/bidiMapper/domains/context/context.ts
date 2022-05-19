@@ -17,11 +17,12 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import { BrowsingContext, Script } from '../../bidiProtocolTypes';
+import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
 import { LogManager } from './logManager';
 import { ScriptEvaluator } from './scriptEvaluator';
+import LoadEvent = BrowsingContext.LoadEvent;
 
 export class Context {
   #targetInfo?: Protocol.Target.TargetInfo;
@@ -207,26 +208,20 @@ export class Context {
       switch (params.name) {
         case 'DOMContentLoaded':
           await this.#eventManager.sendEvent(
-            {
-              method: 'browsingContext.domContentLoaded',
-              params: {
-                context: this.#contextId,
-                navigation: params.loaderId,
-              },
-            },
+            new BrowsingContext.DomContentLoadedEvent({
+              context: this.#contextId,
+              navigation: params.loaderId,
+            }),
             this.#contextId
           );
           break;
 
         case 'load':
           await this.#eventManager.sendEvent(
-            {
-              method: 'browsingContext.load',
-              params: {
-                context: this.#contextId,
-                navigation: params.loaderId,
-              },
-            },
+            new LoadEvent({
+              context: this.#contextId,
+              navigation: params.loaderId,
+            }),
             this.#contextId
           );
           break;

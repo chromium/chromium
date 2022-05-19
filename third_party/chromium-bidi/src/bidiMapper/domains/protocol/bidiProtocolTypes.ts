@@ -1,7 +1,15 @@
-export namespace Message {
-  export type OutgoingMessage = CommandResponse | Event | Error;
+import { EventResponseClass } from './event';
 
-  export type Command = { id: number } & (
+export namespace Message {
+  export type OutgoingMessage = CommandResponse | EventMessage;
+
+  export type RawCommandRequest = {
+    id: number;
+    method: string;
+    params: object;
+  };
+
+  export type CommandRequest = { id: number } & (
     | BrowsingContext.Command
     | Script.Command
     | Session.Command
@@ -17,22 +25,24 @@ export namespace Message {
     | Script.CommandResult
     | Session.CommandResult
     | CDP.CommandResult
-    | ExceptionResult;
+    | ExceptionResult
+    | ErrorResult;
 
   export type ExceptionResult = {
     exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
-  export type Event =
-    | BrowsingContext.Event
-    | Script.Event
-    | Log.Event
-    | CDP.Event;
+  export type EventMessage = BrowsingContext.Event | Log.Event | CDP.Event;
 
-  export type Error = {
-    id?: number;
-    error: string;
-    message: string;
+  export type ErrorCode =
+    | 'unknown error'
+    | 'unknown command'
+    | 'invalid argument';
+
+  export type ErrorResult = {
+    readonly error: ErrorCode;
+    readonly message: string;
+    readonly stacktrace?: string;
   };
 }
 
@@ -257,7 +267,6 @@ export namespace CommonDataTypes {
 export namespace Script {
   export type Command = EvaluateCommand | CallFunctionCommand;
   export type CommandResult = EvaluateResult | CallFunctionResult;
-  export type Event = PROTO.CalledEvent;
   export type Realm = string;
 
   export type RealmTarget = {
@@ -310,18 +319,6 @@ export namespace Script {
     | CommonDataTypes.RemoteReference
     | CommonDataTypes.LocalValue;
 
-  export namespace PROTO {
-    export type CalledEvent = {
-      method: 'PROTO.script.called';
-      params: CalledEventParams;
-    };
-
-    export type CalledEventParams = {
-      id: string;
-      arguments: CommonDataTypes.RemoteValue[];
-    };
-  }
-
   export type StackTrace = {
     callFrames: StackFrame[];
   };
@@ -351,8 +348,8 @@ export namespace BrowsingContext {
   export type Event =
     | LoadEvent
     | DomContentLoadedEvent
-    | CreatedEvent
-    | DestroyedEvent;
+    | ContextCreatedEvent
+    | ContextDestroyedEvent;
 
   export type BrowsingContext = string;
   export type Navigation = string;
@@ -419,15 +416,21 @@ export namespace BrowsingContext {
   };
 
   // events
-  export type LoadEvent = {
-    method: 'browsingContext.load';
-    params: NavigationInfo;
-  };
+  export class LoadEvent extends EventResponseClass<NavigationInfo> {
+    static readonly method = 'browsingContext.load';
 
-  export type DomContentLoadedEvent = {
-    method: 'browsingContext.domContentLoaded';
-    params: NavigationInfo;
-  };
+    constructor(params: BrowsingContext.NavigationInfo) {
+      super(LoadEvent.method, params);
+    }
+  }
+
+  export class DomContentLoadedEvent extends EventResponseClass<NavigationInfo> {
+    static readonly method = 'browsingContext.domContentLoaded';
+
+    constructor(params: BrowsingContext.NavigationInfo) {
+      super(DomContentLoadedEvent.method, params);
+    }
+  }
 
   export type NavigationInfo = {
     context: BrowsingContext;
@@ -436,15 +439,21 @@ export namespace BrowsingContext {
     // url: string;
   };
 
-  export type CreatedEvent = {
-    method: 'browsingContext.contextCreated';
-    params: BrowsingContextInfo;
-  };
+  export class ContextCreatedEvent extends EventResponseClass<BrowsingContextInfo> {
+    static readonly method = 'browsingContext.contextCreated';
 
-  export type DestroyedEvent = {
-    method: 'browsingContext.contextDestroyed';
-    params: BrowsingContextInfo;
-  };
+    constructor(params: BrowsingContext.BrowsingContextInfo) {
+      super(ContextCreatedEvent.method, params);
+    }
+  }
+
+  export class ContextDestroyedEvent extends EventResponseClass<BrowsingContextInfo> {
+    static readonly method = 'browsingContext.contextDestroyed';
+
+    constructor(params: BrowsingContextInfo) {
+      super(ContextDestroyedEvent.method, params);
+    }
+  }
 
   // proto
   export namespace PROTO {
@@ -479,6 +488,13 @@ export namespace BrowsingContext {
 
     export type CloseResult = { result: {} };
   }
+
+  export const EventNames = new Set([
+    LoadEvent.method,
+    DomContentLoadedEvent.method,
+    ContextCreatedEvent.method,
+    ContextDestroyedEvent.method,
+  ]);
 }
 
 export namespace Session {
@@ -549,10 +565,15 @@ export namespace Log {
     type: 'javascript';
   };
 
-  export type LogEntryAddedEvent = {
-    method: 'log.entryAdded';
-    params: LogEntry;
-  };
+  export class LogEntryAddedEvent extends EventResponseClass<LogEntry> {
+    static readonly method = 'log.entryAdded';
+
+    constructor(params: LogEntry) {
+      super(LogEntryAddedEvent.method, params);
+    }
+  }
+
+  export const EventNames = new Set([LogEntryAddedEvent.method]);
 }
 
 export namespace CDP {
@@ -585,10 +606,13 @@ export namespace CDP {
 
     export type GetSessionResult = { result: { session: string } };
 
-    export type EventReceivedEvent = {
-      method: 'PROTO.cdp.eventReceived';
-      params: EventReceivedParams;
-    };
+    export class EventReceivedEvent extends EventResponseClass<EventReceivedParams> {
+      static readonly method = 'PROTO.cdp.eventReceived';
+
+      constructor(params: EventReceivedParams) {
+        super(EventReceivedEvent.method, params);
+      }
+    }
 
     export type EventReceivedParams = {
       cdpMethod: string;
@@ -596,4 +620,11 @@ export namespace CDP {
       session?: string;
     };
   }
+  export const EventNames = new Set([PROTO.EventReceivedEvent.method]);
 }
+
+export const EventNames = new Set([
+  ...BrowsingContext.EventNames.keys(),
+  ...Log.EventNames.keys(),
+  ...CDP.EventNames.keys(),
+]);

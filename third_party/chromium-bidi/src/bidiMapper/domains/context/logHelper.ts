@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { CommonDataTypes } from '../../bidiProtocolTypes';
+import { CommonDataTypes } from '../protocol/bidiProtocolTypes';
 
 const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 

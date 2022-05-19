@@ -19,12 +19,15 @@ import { log } from '../../utils/log';
 import { EventEmitter } from 'events';
 
 import { ITransport } from '../../utils/transport';
-import { Message } from '../bidiProtocolTypes';
+import { Message } from '../domains/protocol/bidiProtocolTypes';
 
 const logBidi = log('bidi');
 
 export interface IBidiServer {
-  on(event: 'message', handler: (messageObj: Message.Command) => void): void;
+  on(
+    event: 'message',
+    handler: (messageObj: Message.RawCommandRequest) => void
+  ): void;
 
   sendMessage: (messageObj: Message.OutgoingMessage) => Promise<void>;
 
@@ -32,7 +35,7 @@ export interface IBidiServer {
 }
 
 interface BidiServerEvents {
-  message: Message.Command;
+  message: Message.RawCommandRequest;
 }
 
 export declare interface BidiServer {
@@ -125,7 +128,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     };
   }
 
-  private _parseBidiMessage(messageStr: string): Message.Command {
+  private _parseBidiMessage(messageStr: string): Message.RawCommandRequest {
     let messageObj: any;
     try {
       messageObj = JSON.parse(messageStr);
