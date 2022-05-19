@@ -47,6 +47,15 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
   helper_.CheckPlatformShortcutNotExists(Site::kSiteA);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckDeletePlatformShortcut) {
+  helper_.DeletePlatformShortcut(Site::kSiteA);
+  helper_.InstallCreateShortcutWindowed(Site::kSiteA);
+  helper_.CheckPlatformShortcutAndIcon(Site::kSiteA);
+  helper_.DeletePlatformShortcut(Site::kSiteA);
+  helper_.CheckPlatformShortcutNotExists(Site::kSiteA);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(
