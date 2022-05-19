@@ -11,10 +11,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
+#include "cc/base/switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
@@ -238,12 +240,6 @@ IN_PROC_BROWSER_TEST_F(
                    /*expected=*/false);
 }
 
-// On MacOS, the functionality required for testing mouse moves is not
-// implemented:
-// https://chromium-review.googlesource.com/c/chromium/src/+/2971065
-// Hence, we're only testing this in Aura capable platforms.
-// FWIW, the test is passing on MacOS when the mouse is manually moved.
-#if defined(USE_AURA)
 class MouseoverLCPTest : public MetricIntegrationTest {
  public:
   void test_mouseover(const char* html_name,
@@ -265,13 +261,20 @@ class MouseoverLCPTest : public MetricIntegrationTest {
     Load(html_name);
     EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(), "run_test(1)").error, "");
 
-    gfx::NativeView view = web_contents()->GetNativeView();
-    ui::test::EventGenerator event_generator(view->GetRootWindow());
-    gfx::Rect offset = web_contents()->GetContainerBounds();
-    gfx::Point point(x1 + offset.x(), y1 + offset.y());
-    event_generator.MoveMouseTo(point);
-    RunUntilInputProcessed(
-        web_contents()->GetRenderWidgetHostView()->GetRenderWidgetHost());
+    // We should wait for the main frame's hit-test data to be ready before
+    // sending the mouse events below to avoid flakiness.
+    content::WaitForHitTestData(web_contents()->GetMainFrame());
+    // Ensure the compositor thread is aware of the mouse events.
+    content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
+    frame_observer.Wait();
+
+    // Simulate a mouse move event which will generate a mouse over event.
+    EXPECT_TRUE(
+        ExecJs(web_contents(),
+               "chrome.gpuBenchmarking.pointerActionSequence( "
+               "[{ source: 'mouse', actions: [ { name: 'pointerMove', x: " +
+                   base::NumberToString(x1) +
+                   ", y: " + base::NumberToString(y1) + " }, ] }], ()=>{});"));
 
     // Wait for a second image to load and for LCP entry to be there.
     EXPECT_EQ(EvalJs(web_contents()->GetMainFrame(),
@@ -306,6 +309,14 @@ class MouseoverLCPTest : public MetricIntegrationTest {
     ExpectUKMPageLoadMetricFlagSet(
         PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
         LargestContentfulPaintTypeToUKMFlags(flag_set), expected);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MetricIntegrationTest::SetUpCommandLine(command_line);
+
+    // chrome.gpuBenchmarking.pointerActionSequence can be used on all
+    // platforms.
+    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
   }
 };
 
@@ -352,4 +363,3 @@ IN_PROC_BROWSER_TEST_F(MouseoverLCPTest,
                  /*x2=*/30, /*y2=*/10,
                  /*expected=*/false);
 }
-#endif
