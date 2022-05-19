@@ -11,7 +11,7 @@ import UIKit
 /// 1. To get notified when the layout guide is added to a new window:
 ///
 ///     let layoutGuide = FrameLayoutGuide()
-///     layoutGuide.onDidMoveToWindow = { guide, _ in
+///     layoutGuide.onDidMoveToWindow = { guide in
 ///       if let window = guide.owningView?.window {
 ///         print("\(guide) moved to \(guide.owningView?.window)")
 ///       } else {
