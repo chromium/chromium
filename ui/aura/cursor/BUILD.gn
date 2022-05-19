@@ -42,8 +42,11 @@ source_set("unittests") {
     "//skia",
     "//testing/gtest",
     "//ui/aura:test_support",
+    "//ui/base",
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx/geometry",
   ]
+  data_deps = [ "//ui/resources:ui_test_pak_data" ]
 }

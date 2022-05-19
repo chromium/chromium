@@ -32,8 +32,10 @@ bool GetCursorDataFor(ui::CursorSize cursor_size,
                       int* resource_id,
                       gfx::Point* point);
 
+COMPONENT_EXPORT(UI_AURA_CURSOR)
 SkBitmap GetDefaultBitmap(const ui::Cursor& cursor);
 
+COMPONENT_EXPORT(UI_AURA_CURSOR)
 gfx::Point GetDefaultHotspot(const ui::Cursor& cursor);
 
 }  // namespace aura
