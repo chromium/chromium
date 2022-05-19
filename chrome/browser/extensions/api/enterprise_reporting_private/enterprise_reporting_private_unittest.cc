@@ -1081,8 +1081,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(enqueue_record_request.ToValue());
 
   // Set up DM token
   policy::SetDMTokenForTesting(
@@ -1109,8 +1108,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
@@ -1138,8 +1136,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
       policy::DMToken::CreateValidTokenForTesting(kTestDMTokenValue));
@@ -1164,8 +1161,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
       api::enterprise_reporting_private::EventType::EVENT_TYPE_USER;
 
   std::unique_ptr<base::ListValue> params = std::make_unique<base::ListValue>();
-  params->Append(
-      base::Value::FromUniquePtrValue(enqueue_record_request.ToValue()));
+  params->Append(enqueue_record_request.ToValue());
 
   // Set up invalid DM token
   policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());

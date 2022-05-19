@@ -1818,6 +1818,10 @@ bool ListValue::GetDictionary(size_t index, DictionaryValue** out_value) {
       index, const_cast<const DictionaryValue**>(out_value));
 }
 
+void ListValue::Append(std::unique_ptr<Value> in_value) {
+  list().push_back(std::move(*in_value));
+}
+
 void ListValue::Append(base::Value::Dict in_dict) {
   list().emplace_back(std::move(in_dict));
 }
