@@ -939,8 +939,15 @@ IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
   EXPECT_FALSE(expected_report.HasRequest());
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ConversionsRegisteredOnActivatedPrerender \
+  DISABLED_ConversionsRegisteredOnActivatedPrerender
+#else
+#define MAYBE_ConversionsRegisteredOnActivatedPrerender \
+  ConversionsRegisteredOnActivatedPrerender
+#endif
 IN_PROC_BROWSER_TEST_F(AttributionsPrerenderBrowserTest,
-                       ConversionsRegisteredOnActivatedPrerender) {
+                       MAYBE_ConversionsRegisteredOnActivatedPrerender) {
   ExpectedReportWaiter expected_report(
       GURL("https://a.test/.well-known/attribution-reporting/"
            "report-event-attribution"),
