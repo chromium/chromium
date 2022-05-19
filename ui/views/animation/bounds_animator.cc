@@ -248,11 +248,13 @@ void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
       DCHECK_EQ(AnimationEndType::kCanceled, type);
       // Get the existing transform and apply it to the start bounds which is
       // the current bounds of the view. This will place the bounds at the place
-      // where the animation stopped.
+      // where the animation stopped. See comment in AnimateViewTo() for details
+      // as to why GetMirroredRect() is used.
       const gfx::Transform transform = view->GetTransform();
-      gfx::RectF bounds_f(view->bounds());
+      gfx::RectF bounds_f(parent_->GetMirroredRect(view->bounds()));
       transform.TransformRect(&bounds_f);
-      view->SetBoundsRect(gfx::ToRoundedRect(bounds_f));
+      view->SetBoundsRect(
+          parent_->GetMirroredRect(gfx::ToRoundedRect(bounds_f)));
     }
     view->SetTransform(gfx::Transform());
   }
