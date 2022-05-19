@@ -91,7 +91,10 @@ class TestSupportToolBrowserProxy extends TestBrowserProxy implements
 
   getEmailAddresses() {
     this.methodCalled('getEmailAddresses');
-    return Promise.resolve(EMAIL_ADDRESSES);
+    // We don't return EMAIL_ADDRESSES directly since we don't want the caller
+    // to be able to modify the const array as it's possible in Typescript to
+    // change the values of the contents of const arrays.
+    return Promise.resolve(Array.from(EMAIL_ADDRESSES));
   }
 
   getDataCollectors() {
@@ -186,8 +189,8 @@ suite('SupportToolTest', function() {
         issueDetails.shadowRoot!.querySelector('cr-input')!.value,
         'testcaseid');
     const emailOptions = issueDetails.shadowRoot!.querySelectorAll('option')!;
-    // IssueDetailsElement adds empty string to the email addresses options as a
-    // default value.
+    // IssueDetailsElement adds DONT_INCLUDE_EMAIL string to the email addresses
+    // options as for use to give the option to not include email address.
     assertEquals(EMAIL_ADDRESSES.length + 1, emailOptions.length);
   });
 

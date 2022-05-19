@@ -13,6 +13,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {BrowserProxy, BrowserProxyImpl, IssueDetails} from './browser_proxy.js';
 import {getTemplate} from './issue_details.html.js';
 
+const DONT_INCLUDE_EMAIL: string = 'Do not include email address';
+
 export class IssueDetailsElement extends PolymerElement {
   static get is() {
     return 'issue-details';
@@ -30,7 +32,7 @@ export class IssueDetailsElement extends PolymerElement {
       },
       emails_: {
         type: Array,
-        value: () => [],
+        value: () => [DONT_INCLUDE_EMAIL],
       },
       issueDescription_: {
         type: String,
@@ -54,13 +56,20 @@ export class IssueDetailsElement extends PolymerElement {
 
     this.browserProxy_.getEmailAddresses().then((emails: string[]) => {
       this.emails_ = emails;
+      // Add default email at the end of emails list for user to be able to
+      // choose to not include email address.
+      this.emails_.push(DONT_INCLUDE_EMAIL);
     });
   }
 
   getIssueDetails(): IssueDetails {
     return {
       caseId: this.caseId_,
-      emailAddress: this.selectedEmail_,
+      // Set emailAddress field to empty string if user selected to not include
+      // email address.
+      emailAddress: (this.selectedEmail_ === DONT_INCLUDE_EMAIL) ?
+          '' :
+          this.selectedEmail_,
       issueDescription: this.issueDescription_
     };
   }
