@@ -10,7 +10,10 @@
 #include "ash/components/phonehub/fake_camera_roll_manager.h"
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include "ash/components/phonehub/pref_names.h"
+#include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
@@ -292,6 +295,12 @@ class MultideviceHandlerTest : public testing::Test {
     prefs_->registry()->RegisterBooleanPref(
         multidevice_setup::kInstantTetheringAllowedPrefName,
         /*default_value=*/true);
+    prefs_->registry()->RegisterBooleanPref(ash::prefs::kEnableAutoScreenLock,
+                                            false);
+    prefs_->registry()->RegisterIntegerPref(
+        ash::phonehub::prefs::kScreenLockStatus,
+        static_cast<int>(
+            ash::phonehub::ScreenLockManager::LockStatus::kLockedOff));
 
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(),
@@ -743,6 +752,38 @@ class MultideviceHandlerTest : public testing::Test {
     EXPECT_EQ("settings.onCombinedAccessSetupStatusChanged",
               call_data.arg1()->GetString());
     EXPECT_EQ(call_data.arg2()->GetInt(), static_cast<int32_t>(status));
+  }
+
+  void SimulateEnableScreenLockChanged() {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+
+    prefs_->SetBoolean(ash::prefs::kEnableAutoScreenLock, true);
+
+    EXPECT_EQ(call_data_count_before_call + 1u,
+              test_web_ui()->call_data().size());
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(call_data_count_before_call);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.OnEnableScreenLockChanged",
+              call_data.arg1()->GetString());
+  }
+
+  void SimulateScreenLockStatusChanged() {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+
+    prefs_->SetInteger(
+        ash::phonehub::prefs::kScreenLockStatus,
+        static_cast<int>(
+            ash::phonehub::ScreenLockManager::LockStatus::kLockedOn));
+
+    EXPECT_EQ(call_data_count_before_call + 1u,
+              test_web_ui()->call_data().size());
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(call_data_count_before_call);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.OnScreenLockStatusChanged",
+              call_data.arg1()->GetString());
+    EXPECT_TRUE(call_data.arg2()->GetBool());
   }
 
   bool IsCameraRollAccessSetupOperationInProgress() {
@@ -1224,6 +1265,22 @@ TEST_F(MultideviceHandlerTest, PageContentDataWhenPhoneHubCameraRollDisabled) {
   feature_states_map[multidevice_setup::mojom::Feature::kPhoneHubCameraRoll] =
       multidevice_setup::mojom::FeatureState::kProhibitedByPolicy;
   SimulateFeatureStatesUpdate(feature_states_map);
+}
+
+TEST_F(MultideviceHandlerTest, EnableScreenLockChanged) {
+  InitWithFeatures(/* enabled_features */ {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA},
+                   {});
+  SetUpHandlerWithEmptyManagers();
+
+  SimulateEnableScreenLockChanged();
+}
+
+TEST_F(MultideviceHandlerTest, ScreenLockStatusChanged) {
+  InitWithFeatures(/* enabled_features */ {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA},
+                   {});
+  SetUpHandlerWithEmptyManagers();
+
+  SimulateScreenLockStatusChanged();
 }
 
 }  // namespace settings

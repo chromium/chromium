@@ -342,6 +342,10 @@ MultiDeviceSection::MultiDeviceSection(
         ash::prefs::kEnableAutoScreenLock,
         base::BindRepeating(&MultiDeviceSection::OnEnableScreenLockChanged,
                             base::Unretained(this)));
+    pref_change_registrar_.Add(
+        phonehub::prefs::kScreenLockStatus,
+        base::BindRepeating(&MultiDeviceSection::OnScreenLockStatusChanged,
+                            base::Unretained(this)));
   }
 
   // Note: |multidevice_setup_client_| is null when multi-device features are
@@ -616,13 +620,8 @@ void MultiDeviceSection::AddLoadTimeData(
                           base::FeatureList::IsEnabled(
                               ::features::kNearbySharingBackgroundScanning));
   html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
-  bool is_phone_screen_lock_enabled =
-      static_cast<phonehub::ScreenLockManager::LockStatus>(
-          pref_service_->GetInteger(phonehub::prefs::kScreenLockStatus)) ==
-      phonehub::ScreenLockManager::LockStatus::kLockedOn;
-  html_source->AddBoolean("isPhoneScreenLockEnabled",
-                          is_phone_screen_lock_enabled);
   OnEnableScreenLockChanged();
+  OnScreenLockStatusChanged();
   html_source->AddBoolean("isOnePageOnboardingEnabled",
                           base::FeatureList::IsEnabled(
                               ::features::kNearbySharingOnePageOnboarding));
@@ -836,12 +835,27 @@ void MultiDeviceSection::OnIsFastInitiationHardwareSupportedChanged(
 }
 
 void MultiDeviceSection::OnEnableScreenLockChanged() {
+  // We need AddBoolean here to update value because users could into onboarding
+  // flow directly from phone hub tray.
   const bool is_screen_lock_enabled =
       SessionControllerClientImpl::CanLockScreen() &&
       SessionControllerClientImpl::ShouldLockScreenAutomatically();
   if (html_source_) {
     html_source_->AddBoolean("isChromeosScreenLockEnabled",
                              is_screen_lock_enabled);
+  }
+}
+
+void MultiDeviceSection::OnScreenLockStatusChanged() {
+  // We need AddBoolean here to update value because users could into onboarding
+  // flow directly from phone hub tray.
+  const bool is_phone_screen_lock_enabled =
+      static_cast<phonehub::ScreenLockManager::LockStatus>(
+          pref_service_->GetInteger(phonehub::prefs::kScreenLockStatus)) ==
+      phonehub::ScreenLockManager::LockStatus::kLockedOn;
+  if (html_source_) {
+    html_source_->AddBoolean("isPhoneScreenLockEnabled",
+                             is_phone_screen_lock_enabled);
   }
 }
 

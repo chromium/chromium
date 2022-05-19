@@ -461,13 +461,13 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: true,
+      isChromeosScreenLockEnabled: false
     });
     flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
-    loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
-    loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
     buttonContainer.querySelector('#getStartedButton').click();
 
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 0);
@@ -484,13 +484,13 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: true,
+      isChromeosScreenLockEnabled: true
     });
     flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
-    loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
-    loadTimeData.overrideValues({isChromeosScreenLockEnabled: true});
     buttonContainer.querySelector('#getStartedButton').click();
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
   });
@@ -500,13 +500,13 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: false,
+      isChromeosScreenLockEnabled: true
     });
     flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
-    loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
-    loadTimeData.overrideValues({isChromeosScreenLockEnabled: true});
     buttonContainer.querySelector('#getStartedButton').click();
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
   });
@@ -516,13 +516,13 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: true,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: false,
+      isChromeosScreenLockEnabled: false
     });
     flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
-    loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
-    loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
     buttonContainer.querySelector('#getStartedButton').click();
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
   });
@@ -532,13 +532,13 @@ suite('Multidevice', () => {
       showCameraRoll: false,
       showNotifications: true,
       showAppStreaming: false,
-      combinedSetupSupported: false
+      combinedSetupSupported: false,
+      isPhoneScreenLockEnabled: true,
+      isChromeosScreenLockEnabled: false
     });
     flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: false});
-    loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
-    loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
     buttonContainer.querySelector('#getStartedButton').click();
 
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
@@ -552,13 +552,13 @@ suite('Multidevice', () => {
           showCameraRoll: false,
           showNotifications: true,
           showAppStreaming: false,
-          combinedSetupSupported: false
+          combinedSetupSupported: false,
+          isPhoneScreenLockEnabled: true,
+          isChromeosScreenLockEnabled: false
         });
         flush();
 
         loadTimeData.overrideValues({isEcheAppEnabled: true});
-        loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
-        loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
         buttonContainer.querySelector('#getStartedButton').click();
 
         assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);

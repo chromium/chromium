@@ -33,6 +33,16 @@ suite('Multidevice', function() {
     flush();
   }
 
+  /**
+   * Sets screen lock status via WebUI Listener and flushes.
+   */
+  function setScreenLockStatus(chromeStatus, phoneStatus) {
+    cr.webUIListenerCallback(
+        'settings.OnEnableScreenLockChanged', chromeStatus);
+    cr.webUIListenerCallback('settings.OnScreenLockStatusChanged', phoneStatus);
+    flush();
+  }
+
   function flushAsync() {
     flush();
     // Use setTimeout to wait for the next macrotask.
@@ -199,6 +209,12 @@ suite('Multidevice', function() {
 
     loadTimeData.overrideValues({
       isNearbyShareSupported: true,
+    });
+    loadTimeData.overrideValues({
+      isChromeosScreenLockEnabled: false,
+    });
+    loadTimeData.overrideValues({
+      isPhoneScreenLockEnabled: false,
     });
 
     multidevicePage = document.createElement('settings-multidevice-page');
@@ -753,6 +769,13 @@ suite('Multidevice', function() {
     await fakeSettings.setEnabled(newEnabledState);
     await flushAsync();
     assertEquals(newEnabledState, multidevicePage.get('settings.enabled'));
+  });
+
+  test('Screen lock changes propagate to settings property', () => {
+    setScreenLockStatus(/* chromeStatus= */ true, /* phoneStatus= */ true);
+
+    assertTrue(multidevicePage.isChromeosScreenLockEnabled_);
+    assertTrue(multidevicePage.isPhoneScreenLockEnabled_);
   });
 
   suite('Background Scanning Enabled', function() {

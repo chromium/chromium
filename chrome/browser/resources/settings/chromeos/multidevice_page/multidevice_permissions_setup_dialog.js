@@ -147,6 +147,26 @@ Polymer({
       notify: true,
     },
 
+    /**
+     * Get the value of settings.OnEnableScreenLockChanged from
+     * multidevice_page.js because multidevice_permissions_setup_dialog.js
+     * doesn't always popup to receive event from FireWebUIListener.
+     */
+    isChromeosScreenLockEnabled: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Get the value of settings.OnScreenLockStatusChanged from
+     * multidevice_page.js because multidevice_permissions_setup_dialog.js
+     * doesn't always popup to receive event from FireWebUIListener.
+     */
+    isPhoneScreenLockEnabled: {
+      type: Boolean,
+      value: false,
+    },
+
     /** Whether this dialog should show Camera Roll info */
     showCameraRoll: {
       type: Boolean,
@@ -546,8 +566,7 @@ Polymer({
    */
   isScreenLockRequired_() {
     return loadTimeData.getBoolean('isEcheAppEnabled') &&
-        loadTimeData.getBoolean('isPhoneScreenLockEnabled') &&
-        !loadTimeData.getBoolean('isChromeosScreenLockEnabled') &&
+        this.isPhoneScreenLockEnabled && !this.isChromeosScreenLockEnabled &&
         this.showAppStreaming;
   },
 });

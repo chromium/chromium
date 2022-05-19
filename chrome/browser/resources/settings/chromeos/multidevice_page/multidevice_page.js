@@ -148,6 +148,22 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    isChromeosScreenLockEnabled_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('isChromeosScreenLockEnabled');
+      }
+    },
+
+    /** @private */
+    isPhoneScreenLockEnabled_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('isPhoneScreenLockEnabled');
+      }
+    },
   },
 
   listeners: {
@@ -167,6 +183,12 @@ Polymer({
     this.addWebUIListener(
         'settings.updateMultidevicePageContentData',
         (data) => this.onPageContentDataChanged_(data));
+    this.addWebUIListener(
+        'settings.OnEnableScreenLockChanged',
+        this.onEnableScreenLockChanged_.bind(this));
+    this.addWebUIListener(
+        'settings.OnScreenLockStatusChanged',
+        this.onScreenLockStatusChanged_.bind(this));
 
     this.browserProxy_.getPageContentData().then(
         (data) => this.onInitialPageContentDataFetched_(data));
@@ -709,5 +731,27 @@ Polymer({
    */
   isCombinedSetupSupported_() {
     return this.pageContentData.isPhoneHubFeatureCombinedSetupSupported;
+  },
+
+  /**
+   * Due to loadTimeData is not guaranteed to be consistent between page
+   * refreshes, use FireWebUIListener() to update dynamic value of screen lock
+   * setting.
+   * @param {boolean} enabled
+   * @private
+   */
+  onEnableScreenLockChanged_(enabled) {
+    this.isChromeosScreenLockEnabled_ = enabled;
+  },
+
+  /**
+   * Due to loadTimeData is not guaranteed to be consistent between page
+   * refreshes, use FireWebUIListener() to update dynamic value of screen lock
+   * status of phone.
+   * @param {boolean} enabled
+   * @private
+   */
+  onScreenLockStatusChanged_(enabled) {
+    this.isPhoneScreenLockEnabled_ = enabled;
   },
 });
