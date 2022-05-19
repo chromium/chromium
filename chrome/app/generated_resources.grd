@@ -7519,10 +7519,16 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             Save to Device
           </message>
         </if>
-
-        <message name="IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON" desc="Button text for the 'save unsynced credentials' bubble's discard option.">
-          No thanks
-        </message>
+        <if expr="not use_titlecase">
+          <message name="IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON" desc="Button text for the 'save unsynced credentials' bubble's discard option.">
+            No thanks
+          </message>
+        </if>
+        <if expr="use_titlecase">
+          <message name="IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON" desc="In Title Case: Button text for the 'save unsynced credentials' bubble's discard option.">
+            No Thanks
+          </message>
+        </if>
       </if>
       <if expr="is_android">
         <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Remember password' option">
