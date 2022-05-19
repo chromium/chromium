@@ -119,6 +119,7 @@ const SessionCommand::id_type kCommandSetTabGroupData = 10;
 const SessionCommand::id_type kCommandSetTabUserAgentOverride2 = 11;
 const SessionCommand::id_type kCommandSetWindowUserTitle = 12;
 const SessionCommand::id_type kCommandCreateGroup = 13;
+const SessionCommand::id_type kCommandAddTabExtraData = 14;
 
 // Number of entries (not commands) before we clobber the file and write
 // everything.
@@ -862,6 +863,11 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForTab(
                                            navigations[i]));
     }
   }
+
+  for (const auto& data : tab.extra_data) {
+    command_storage_manager_->ScheduleCommand(CreateAddExtraDataCommand(
+        kCommandAddTabExtraData, tab.id, data.first, data.second));
+  }
 }
 
 // static
@@ -1269,6 +1275,21 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
           return;
 
         current_window->first->user_title.swap(title);
+        break;
+      }
+
+      case kCommandAddTabExtraData: {
+        if (!current_tab) {
+          // Should be in a tab when we get this.
+          return;
+        }
+        SessionID tab_id = SessionID::InvalidValue();
+        std::string key;
+        std::string data;
+        if (!RestoreAddExtraDataCommand(command, &tab_id, &key, &data))
+          return;
+
+        current_tab->extra_data[key] = std::move(data);
         break;
       }
 

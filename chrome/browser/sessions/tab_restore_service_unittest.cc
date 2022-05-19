@@ -59,6 +59,7 @@
 typedef sessions::TabRestoreService::Entry Entry;
 typedef sessions::TabRestoreService::Tab Tab;
 typedef sessions::TabRestoreService::Window Window;
+typedef std::map<std::string, std::string> ExtraData;
 
 using content::NavigationEntry;
 using content::WebContentsTester;
@@ -266,7 +267,8 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
       bool pinned,
       absl::optional<tab_groups::TabGroupId> group = absl::nullopt,
       absl::optional<tab_groups::TabGroupVisualData> group_visual_data =
-          absl::nullopt) {
+          absl::nullopt,
+      absl ::optional<ExtraData> extra_data = absl::nullopt) {
     // Create new window / tab IDs so that these remain distinct.
     window_id_ = SessionID::NewUnique();
     tab_id_ = SessionID::NewUnique();
@@ -1245,4 +1247,31 @@ TEST_F(TabRestoreServiceImplTest, TabGroupsRestoredFromSessionData) {
   ASSERT_EQ(1u, window->tabs.size());
   EXPECT_EQ(group, window->tabs[0]->group);
   EXPECT_EQ(group_visual_data, window->tab_groups[group]);
+}
+
+// Ensures tab extra data is restored from previous session.
+TEST_F(TabRestoreServiceImplTest, TabExtraDataRestoredFromSessionData) {
+  const char kSampleKey[] = "test";
+  const char kSampleData[] = "true";
+
+  CreateSessionServiceWithOneWindow(false);
+  AddWindowWithOneTabToSessionService(false);
+
+  SessionService* session_service =
+      SessionServiceFactory::GetForProfile(profile());
+  session_service->AddTabExtraData(window_id(), tab_id(), kSampleKey,
+                                   kSampleData);
+
+  SessionServiceFactory::GetForProfile(profile())
+      ->MoveCurrentSessionToLastSession();
+  EXPECT_FALSE(service_->IsLoaded());
+  SynchronousLoadTabsFromLastSession();
+
+  ASSERT_EQ(2U, service_->entries().size());
+  Entry* entry = service_->entries().back().get();
+  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
+  auto* window = static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(1U, window->tabs.size());
+  ASSERT_EQ(1U, window->tabs[0]->extra_data.size());
+  EXPECT_EQ(kSampleData, window->tabs[0]->extra_data[kSampleKey]);
 }
