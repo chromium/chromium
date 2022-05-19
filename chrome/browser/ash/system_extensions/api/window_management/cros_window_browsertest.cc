@@ -23,6 +23,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/aura/window.h"
 
+namespace ash {
+
 namespace {
 
 static constexpr char kEventListenerCode[] = R"(
@@ -59,7 +61,7 @@ static constexpr char kPostTestStart[] = R"(
 class CrosWindowBrowserTest : public InProcessBrowserTest {
  public:
   CrosWindowBrowserTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kSystemExtensions);
+    feature_list_.InitAndEnableFeature(features::kSystemExtensions);
 
     installation_ =
         web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
@@ -71,9 +73,9 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
   // chrome-untrusted://
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(ash::switches::kSystemExtensionsDebug);
+    command_line->AppendSwitch(switches::kSystemExtensionsDebug);
     command_line->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
+        ::switches::kEnableBlinkFeatures,
         "BlinkExtensionChromeOS,BlinkExtensionChromeOSWindowManagement");
   }
 
@@ -559,3 +561,5 @@ async function cros_test() {
 
   RunTest(test_code);
 }
+
+}  //  namespace ash
