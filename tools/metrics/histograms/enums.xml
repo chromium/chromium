@@ -40116,6 +40116,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4226" label="FedCmLogoutRps"/>
   <int value="4227" label="V8Navigator_DeprecatedReplaceInURN_Method"/>
   <int value="4228" label="WebAppBorderless"/>
+  <int value="4229" label="PaymentInstruments"/>
+  <int value="4230" label="V8PaymentInstruments_Clear_Method"/>
+  <int value="4231" label="V8PaymentInstruments_Delete_Method"/>
+  <int value="4232" label="V8PaymentInstruments_Get_Method"/>
+  <int value="4233" label="V8PaymentInstruments_Has_Method"/>
+  <int value="4234" label="V8PaymentInstruments_Keys_Method"/>
+  <int value="4235" label="V8PaymentInstruments_Set_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

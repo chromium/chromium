@@ -8,10 +8,10 @@
     RuntimeEnabled=PaymentApp,
     Exposed=(Window,Worker)
 ] interface PaymentInstruments {
-    [CallWith=ScriptState, RaisesException, ImplementedAs=deleteInstrument] Promise<boolean> delete(DOMString instrumentKey);
-    [CallWith=ScriptState, RaisesException] Promise<any> get(DOMString instrumentKey);
-    [CallWith=ScriptState, RaisesException] Promise<sequence<DOMString>> keys();
-    [CallWith=ScriptState, RaisesException] Promise<boolean> has(DOMString instrumentKey);
-    [CallWith=ScriptState, RaisesException] Promise<void> set(DOMString instrumentKey, PaymentInstrument details);
-    [CallWith=ScriptState, RaisesException] Promise<void> clear();
+    [CallWith=ScriptState, RaisesException, ImplementedAs=deleteInstrument, Measure] Promise<boolean> delete(DOMString instrumentKey);
+    [CallWith=ScriptState, RaisesException, Measure] Promise<any> get(DOMString instrumentKey);
+    [CallWith=ScriptState, RaisesException, Measure] Promise<sequence<DOMString>> keys();
+    [CallWith=ScriptState, RaisesException, Measure] Promise<boolean> has(DOMString instrumentKey);
+    [CallWith=ScriptState, RaisesException, Measure] Promise<void> set(DOMString instrumentKey, PaymentInstrument details);
+    [CallWith=ScriptState, RaisesException, Measure] Promise<void> clear();
 };

@@ -3546,6 +3546,14 @@ enum WebFeature {
   kFedCmLogout = 4225,
   kFedCmLogoutRps = 4226,
   kV8Navigator_DeprecatedReplaceInURN_Method = 4227,
+  kWebAppBorderless = 4228,
+  kPaymentInstruments = 4229,
+  kV8PaymentInstruments_Clear_Method = 4230,
+  kV8PaymentInstruments_Delete_Method = 4231,
+  kV8PaymentInstruments_Get_Method = 4232,
+  kV8PaymentInstruments_Has_Method = 4233,
+  kV8PaymentInstruments_Keys_Method = 4234,
+  kV8PaymentInstruments_Set_Method = 4235,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
