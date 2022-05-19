@@ -206,10 +206,9 @@ struct IntelVpeExt {
   void* param;
 };
 
-void ToggleIntelVpSuperResolution(
-    Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context,
-    Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
-    bool is_on_battery_power) {
+void ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
+                                  ID3D11VideoProcessor* video_processor,
+                                  bool is_on_battery_power) {
   TRACE_EVENT1("gpu", "ToggleIntelVpSuperResolution", "on",
                !is_on_battery_power);
 
@@ -220,19 +219,21 @@ void ToggleIntelVpSuperResolution(
   ext.function = kIntelVpeFnVersion;
   param = kIntelVpeVersion3;
   HRESULT hr = video_context->VideoProcessorSetOutputExtension(
-      video_processor.Get(), &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+      video_processor, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
+    return;
   }
 
   ext.function = kIntelVpeFnMode;
   param = is_on_battery_power ? kIntelVpeModeNone : kIntelVpeModePreproc;
   hr = video_context->VideoProcessorSetOutputExtension(
-      video_processor.Get(), &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+      video_processor, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
+    return;
   }
 
   ext.function = kIntelVpeFnScaling;
@@ -240,7 +241,7 @@ void ToggleIntelVpSuperResolution(
                               : kIntelVpeScalingSuperResolution;
 
   hr = video_context->VideoProcessorSetStreamExtension(
-      video_processor.Get(), 0, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+      video_processor, 0, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
@@ -1475,7 +1476,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
 
     if (!layer_tree_->disable_vp_super_resolution() &&
         base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
-      ToggleIntelVpSuperResolution(video_context, video_processor,
+      ToggleIntelVpSuperResolution(video_context.Get(), video_processor.Get(),
                                    is_on_battery_power_);
     }
 
