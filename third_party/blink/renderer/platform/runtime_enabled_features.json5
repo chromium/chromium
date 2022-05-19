@@ -1328,6 +1328,10 @@
       status: "stable",
     },
     {
+      // crbug.com/989916
+      name: "LayoutNGForeignObject",
+    },
+    {
       // Block fragmentation support in the grid layout algorithm.
       // https://drafts.csswg.org/css-grid-1/#pagination
       name: "LayoutNGGridFragmentation",

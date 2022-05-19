@@ -1286,6 +1286,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGSVGText);
   }
+  bool IsNGSVGForeignObject() const {
+    NOT_DESTROYED();
+    return IsOfType(kLayoutObjectNGSVGForeignObject);
+  }
 
   // FIXME: Those belong into a SVG specific base-class for all layoutObjects
   // (see above). Unfortunately we don't have such a class yet, because it's not
@@ -3579,6 +3583,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectView,
     kLayoutObjectWidget,
 
+    kLayoutObjectNGSVGForeignObject,
     kLayoutObjectNGSVGText,
     kLayoutObjectSVG, /* Keep by itself? */
     kLayoutObjectSVGContainer,
