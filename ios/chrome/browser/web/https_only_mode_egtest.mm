@@ -17,6 +17,7 @@
 #include "ios/chrome/browser/metrics/metrics_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/web/https_only_mode_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -43,6 +44,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace {
 
 const long kVeryLongTimeout = 100 * 3600 * 1000;
+
+const char kInterstitialText[] =
+    "You are seeing this warning because this site does not support HTTPS";
 
 // net::EmbeddedTestServer handler that responds with the request's query as the
 // title and body.
@@ -309,6 +313,17 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
              @"Timer is still running");
 }
 
+// Performs the steps to clear browsing data. Must be called on the
+// Clear Browsing Data settings screen, after having selected the data types
+// scheduled for removal.
+- (void)clearBrowsingData {
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        chrome_test_util::ClearBrowsingDataButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConfirmClearBrowsingDataButton()]
+      performAction:grey_tap()];
+}
+
 #pragma mark - Tests
 
 // Disable the feature and navigate to an HTTP URL directly. Since the feature
@@ -401,9 +416,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   GURL testURL = upgradedURL.ReplaceComponents(replacements);
 
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:1];
 
   // Click through the interstitial. This should load the HTTP page.
@@ -451,9 +464,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_typeText([pageString stringByAppendingString:@"\n"])];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:1];
   GREYAssertEqual(2, _HTTPResponseCounter,
                   @"The server should have responded twice");
@@ -498,6 +509,56 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // elements. Not currently supported by MetricsAppInterface.
 }
 
+// Navigate to an HTTP URL and allowlist the URL. Then clear browsing data via
+// UI settings. This should clear the HTTP allowlist.
+- (void)testUpgrade_RemoveBrowsingData_ShouldClearAllowlist {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.badHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertFailedUpgrade:1];
+
+  // Click through the interstitial. This should load the HTTP page.
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
+
+  // Reload. Since the URL is now allowlisted, this should immediately load
+  // HTTP without trying to upgrade.
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:2
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"Unexpected histogram event recorded.");
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:chrome_test_util::ClearBrowsingDataCell()];
+  [self clearBrowsingData];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Clearing the browsing data automatically reloads tabs. Check that the
+  // interstitial is showing.
+  // TODO(crbug.com/1302509): Doing an extra reload here hits a DCHECK, consider
+  // moving ShouldAllowRequest() code to ShouldAllowResponse() to avoid this.
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertFailedUpgrade:2];
+  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
+             @"Timer is still running");
+}
+
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Click through the interstitial, then reload the page. The HTTP page should
@@ -510,9 +571,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:1];
 
   // Click through the interstitial. This should load the HTTP page.
@@ -554,9 +613,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
 
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   // Click through the interstitial. This should load the HTTP page.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
@@ -589,9 +646,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertTimedOutUpgrade:1];
 
   // Click through the interstitial. This should load the HTTP page.
@@ -628,9 +683,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Load a site with a bad HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:1];
 
   // Tap "Go back" on the interstitial. This should go back to chrome://version.
@@ -639,9 +692,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
   // Go forward. Should hit the interstitial again.
   [ChromeEarlGrey goForward];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:2];
 }
 
@@ -664,9 +715,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Load a site with a slow HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertTimedOutUpgrade:1];
 
   // Tap "Go back" on the interstitial. This should go back to
@@ -676,9 +725,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
   // Go forward. Should hit the interstitial again.
   [ChromeEarlGrey goForward];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertTimedOutUpgrade:2];
 }
 
@@ -696,9 +743,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Load a site with a bad HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:1];
 
   // Click through the interstitial. This should load the HTTP page.
@@ -736,9 +781,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Load a site with a bad HTTPS upgrade. This shows an interstitial.
   GURL testURL = self.testServer->GetURL("/");
   [ChromeEarlGrey loadURL:testURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:"You are seeing this warning because this "
-                                    "site does not support HTTPS"];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertTimedOutUpgrade:1];
 
   // Click through the interstitial. This should load the HTTP page.

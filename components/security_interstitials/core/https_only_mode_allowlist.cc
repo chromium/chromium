@@ -104,12 +104,13 @@ void HttpsOnlyModeAllowlist::Clear(
       pattern_filter);
 }
 
-void HttpsOnlyModeAllowlist::SetClockForTesting(base::Clock* clock) {
-  clock_ = clock;
+void HttpsOnlyModeAllowlist::ClearAllowlist() {
+  Clear(HostContentSettingsMap::PatternSourcePredicate());
+  allowed_http_hosts_for_non_default_storage_partitions_.clear();
 }
 
-void HttpsOnlyModeAllowlist::ClearInMemoryAllowlistForTesting() {
-  allowed_http_hosts_for_non_default_storage_partitions_.clear();
+void HttpsOnlyModeAllowlist::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
 }
 
 }  // namespace security_interstitials

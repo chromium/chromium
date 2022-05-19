@@ -40,6 +40,6 @@ void HttpsUpgradeServiceImpl::AllowHttpForHost(const std::string& host) {
   allowlist_.AllowHttpForHost(host, context_->IsOffTheRecord());
 }
 
-void HttpsUpgradeServiceImpl::ClearAllowlistForTesting() {
-  allowlist_.ClearInMemoryAllowlistForTesting();
+void HttpsUpgradeServiceImpl::ClearAllowlist() {
+  allowlist_.ClearAllowlist();
 }

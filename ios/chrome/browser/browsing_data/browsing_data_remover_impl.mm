@@ -46,6 +46,7 @@
 #include "ios/chrome/browser/external_files/external_file_remover_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
+#import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
@@ -59,6 +60,7 @@
 #include "ios/chrome/browser/snapshots/snapshots_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #include "ios/net/http_cache_helper.h"
 #import "ios/web/common/web_view_creation_util.h"
@@ -286,6 +288,12 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // Remove the screenshots taken by the system when backgrounding the
     // application. Partial removal based on timePeriod is not required.
     ClearIOSSnapshots(CreatePendingTaskCompletionClosure());
+
+    // Remove all HTTPS-Only Mode allowlist decisions. Partial removal based on
+    // timePeriod is not required.
+    HttpsUpgradeService* https_upgrade_service =
+        HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_);
+    https_upgrade_service->ClearAllowlist();
   }
 
   auto io_thread_task_runner = web::GetIOThreadTaskRunner({});

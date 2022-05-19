@@ -61,7 +61,7 @@ class HttpsOnlyModeUpgradeTabHelperTest : public PlatformTest {
     HttpsUpgradeService* service =
         HttpsUpgradeServiceFactory::GetForBrowserState(
             web_state_.GetBrowserState());
-    service->ClearAllowlistForTesting();
+    service->ClearAllowlist();
   }
 
   // Helper function that calls into WebState::ShouldAllowResponse with the

@@ -34,17 +34,27 @@ class HttpsOnlyModeAllowlist {
 
   ~HttpsOnlyModeAllowlist();
 
+  // Adds host to the list of sites allowed to load over HTTP.
   void AllowHttpForHost(const std::string& host, bool is_nondefault_storage);
+
+  // Returns true if host is allowed to be loaded over HTTP. If so, we don't
+  // attempt to upgrade it to HTTPS.
   bool IsHttpAllowedForHost(const std::string& host,
                             bool is_nondefault_storage) const;
+
+  // Revokes all HTTP exceptions made by the user for host.
   void RevokeUserAllowExceptions(const std::string& host);
+
+  // Clears allowlist for the given pattern filter. If the pattern filter is
+  // empty, clears allowlist for all hosts.
   void Clear(
       const HostContentSettingsMap::PatternSourcePredicate& pattern_filter);
 
+  // Clears the persistent and in-memory allowlist entries.
+  void ClearAllowlist();
+
   // Sets the test clock.
   void SetClockForTesting(base::Clock* clock);
-  // Clears the in-memory allowlist.
-  void ClearInMemoryAllowlistForTesting();
 
  private:
   HostContentSettingsMap* host_content_settings_map_;

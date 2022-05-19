@@ -28,7 +28,7 @@ class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
   // Allows future navigations to |host| over http://.
   void AllowHttpForHost(const std::string& host) override;
 
-  void ClearAllowlistForTesting() override;
+  void ClearAllowlist() override;
 
  private:
   std::unique_ptr<base::Clock> clock_;
