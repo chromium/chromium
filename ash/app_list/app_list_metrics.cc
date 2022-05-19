@@ -268,25 +268,47 @@ void RecordAppListUserJourneyTime(AppListShowSource source,
 void RecordPeriodicAppListMetrics() {
   int number_of_apps_in_launcher = 0;
   int number_of_root_level_items = 0;
+  int number_of_folders = 0;
+  int number_of_non_system_folders = 0;
+  int number_of_apps_in_non_system_folders = 0;
 
   AppListModel* const model = AppListModelProvider::Get()->model();
   AppListItemList* const item_list = model->top_level_item_list();
   for (size_t i = 0; i < item_list->item_count(); ++i) {
     AppListItem* item = item_list->item_at(i);
+    if (item->is_page_break())
+      continue;
+    number_of_root_level_items++;
+
+    // Item is a folder.
     if (item->GetItemType() == AppListFolderItem::kItemType) {
       AppListFolderItem* folder = static_cast<AppListFolderItem*>(item);
       number_of_apps_in_launcher += folder->item_list()->item_count();
-      number_of_root_level_items++;
-    } else if (!item->is_page_break()) {
-      number_of_apps_in_launcher++;
-      number_of_root_level_items++;
+      number_of_folders++;
+
+      // Ignore the OEM folder and the "Linux apps" folder because those folders
+      // are automatically created. The following metrics are trying to measure
+      // how often users engage with folders that they created themselves.
+      if (folder->IsPersistent())
+        continue;
+      number_of_apps_in_non_system_folders += folder->item_list()->item_count();
+      number_of_non_system_folders++;
+      continue;
     }
+
+    // Item is an app that isn't in a folder.
+    number_of_apps_in_launcher++;
   }
 
   UMA_HISTOGRAM_COUNTS_100("Apps.AppList.NumberOfApps",
                            number_of_apps_in_launcher);
   UMA_HISTOGRAM_COUNTS_100("Apps.AppList.NumberOfRootLevelItems",
                            number_of_root_level_items);
+  UMA_HISTOGRAM_COUNTS_100("Apps.AppList.NumberOfFolders", number_of_folders);
+  UMA_HISTOGRAM_COUNTS_100("Apps.AppList.NumberOfNonSystemFolders",
+                           number_of_non_system_folders);
+  UMA_HISTOGRAM_COUNTS_100("Apps.AppList.NumberOfAppsInNonSystemFolders",
+                           number_of_apps_in_non_system_folders);
 }
 
 void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,

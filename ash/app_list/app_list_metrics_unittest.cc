@@ -830,10 +830,10 @@ TEST_F(AppListBubbleShowSourceMetricTest, ToggleDoesNotRecordOnHide) {
   histogram_tester.ExpectTotalCount("Apps.AppListBubbleShowSource", 1);
 }
 
-using AppListAppCountMetricTest = AshTestBase;
+using AppListPeriodicMetricsTest = AshTestBase;
 
 // Verify that the number of items in the app list are recorded correctly.
-TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
+TEST_F(AppListPeriodicMetricsTest, PeriodicAppListMetrics_NumberOfApps) {
   base::HistogramTester histogram;
   histogram.ExpectTotalCount("Apps.AppList.NumberOfApps", 0);
   histogram.ExpectTotalCount("Apps.AppList.NumberOfRootLevelItems", 0);
@@ -866,6 +866,57 @@ TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
   RecordPeriodicAppListMetrics();
   histogram.ExpectBucketCount("Apps.AppList.NumberOfApps", 8, 1);
   histogram.ExpectBucketCount("Apps.AppList.NumberOfRootLevelItems", 6, 1);
+}
+
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_ZeroFolders) {
+  base::HistogramTester histogram;
+  GetAppListTestHelper()->model()->PopulateApps(2);
+
+  RecordPeriodicAppListMetrics();
+
+  // 1 sample in the 0 folders bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.AppList.NumberOfFolders", 0));
+  // 1 sample in the 0 folders bucket.
+  EXPECT_EQ(
+      1, histogram.GetBucketCount("Apps.AppList.NumberOfNonSystemFolders", 0));
+  // 1 sample in the 0 apps bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppList.NumberOfAppsInNonSystemFolders", 0));
+}
+
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_OneRegularFolder) {
+  base::HistogramTester histogram;
+  GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(2);
+
+  RecordPeriodicAppListMetrics();
+
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.AppList.NumberOfFolders", 1));
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(
+      1, histogram.GetBucketCount("Apps.AppList.NumberOfNonSystemFolders", 1));
+  // 1 sample in the 2 apps bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppList.NumberOfAppsInNonSystemFolders", 2));
+}
+
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_PersistentFolder) {
+  base::HistogramTester histogram;
+  AppListFolderItem* folder =
+      GetAppListTestHelper()->model()->CreateSingleItemFolder("folder_id",
+                                                              "item_id");
+  folder->SetIsPersistent(true);
+
+  RecordPeriodicAppListMetrics();
+
+  // 1 sample in the 1 folder bucket.
+  EXPECT_EQ(1, histogram.GetBucketCount("Apps.AppList.NumberOfFolders", 1));
+  // 1 sample in the 0 folders bucket, because the folder is a system folder.
+  EXPECT_EQ(
+      1, histogram.GetBucketCount("Apps.AppList.NumberOfNonSystemFolders", 0));
+  // 1 sample in the 0 apps bucket, because items in system folders don't count.
+  EXPECT_EQ(1, histogram.GetBucketCount(
+                   "Apps.AppList.NumberOfAppsInNonSystemFolders", 0));
 }
 
 }  // namespace ash

@@ -150,6 +150,7 @@ class AppListTestHelper {
   views::View* GetBubbleLauncherAppsSeparatorView();
   std::vector<ash::AppListSearchResultCategory>* GetOrderedResultCategories();
 
+  test::AppListTestModel* model() { return &model_; }
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
  private:

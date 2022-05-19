@@ -509,10 +509,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   const std::vector<SkColor>& GetWallpaperProminentColors();
   void SetBackgroundShieldColor();
 
-  // Records the number of folders, and the number of items in folders for UMA
-  // histograms.
-  void RecordFolderMetrics();
-
   // Returns true if scroll events should be ignored.
   bool ShouldIgnoreScrollEvents();
 

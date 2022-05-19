@@ -666,6 +666,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.NumberOfAppsInNonSystemFolders" units="count"
+    expires_after="2022-12-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The total number of apps in folders ignoring system-created folders like the
+    OEM folder and the Linux apps folder. Recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.NumberOfFolders" units="count"
+    expires_after="2022-12-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>mmourgos@chromium.org</owner>
+  <summary>
+    The number of folders that users have in their Launcher. Includes
+    system-created folders like the OEM folder and the Linux apps folder.
+    Recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.NumberOfNonSystemFolders" units="count"
+    expires_after="2022-12-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The number of folders that users have in their launcher. Does not include
+    system-created folders like the OEM folder and the Linux apps folder.
+    Recorded every 30 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.NumberOfRootLevelItems" units="count"
     expires_after="2022-12-01">
   <owner>tbarzic@chromium.org</owner>
@@ -1782,6 +1816,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppsInFolders{AppListFolderExperiment}" units="Apps"
     expires_after="2022-10-09">
+  <obsolete>
+    Deprecated in May 2022. Replaced with
+    Apps.AppList.NumberOfAppsInNonSystemFolders, which is recorded periodically,
+    for consistency with other app list metrics.
+  </obsolete>
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -2429,6 +2468,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.NumberOfFolders" units="folder(s)"
     expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in May 2022. Replaced with Apps.AppList.NumberOfFolders, which is
+    recorded periodically, for consistency with other app list metrics.
+  </obsolete>
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -2441,6 +2484,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.NumberOfNonSystemFolders" units="folder(s)"
     expires_after="2022-10-04">
+  <obsolete>
+    Deprecated in May 2022. Replaced with Apps.AppList.NumberOfNonSystemFolders,
+    which is recorded periodically, for consistency with other app list metrics.
+  </obsolete>
   <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>

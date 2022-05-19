@@ -32,8 +32,8 @@ namespace {
 
 using ::chromeos::WindowStateType;
 
-// Time in seconds between calls to "RecordPeriodicMetrics".
-const int kAshPeriodicMetricsTimeInSeconds = 30 * 60;
+// Time between calls to "RecordPeriodicMetrics".
+constexpr base::TimeDelta kRecordPeriodicMetricsInterval = base::Minutes(30);
 
 enum ActiveWindowStateType {
   ACTIVE_WINDOW_STATE_TYPE_NO_ACTIVE_WINDOW,
@@ -219,7 +219,7 @@ bool UserMetricsRecorder::IsUserInActiveDesktopEnvironment() const {
 }
 
 void UserMetricsRecorder::StartTimer() {
-  timer_.Start(FROM_HERE, base::Seconds(kAshPeriodicMetricsTimeInSeconds), this,
+  timer_.Start(FROM_HERE, kRecordPeriodicMetricsInterval, this,
                &UserMetricsRecorder::RecordPeriodicMetrics);
 }
 

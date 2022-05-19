@@ -2021,65 +2021,6 @@ TEST_F(AppListViewPeekingTest, ShowPeekingByDefault) {
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
 }
 
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_ZeroFolders) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->PopulateApps(2);
-  Show();
-
-  // 1 sample in the 0 folders bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 0));
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
-  // 1 sample in the 0 apps bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
-}
-
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_OneRegularFolder) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->CreateAndPopulateFolderWithApps(2);
-  Show();
-
-  // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 1));
-  // 1 sample in the 2 apps bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 2));
-}
-
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_OemFolder) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->CreateSingleItemFolder(kOemFolderId, "item_id");
-  Show();
-
-  // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
-  // 1 sample in the 0 folders bucket, because OEM folder is a system folder.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
-  // 1 sample in the 0 apps bucket, because OEM apps don't count.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
-}
-
-TEST_P(AppListViewTabletTest, RecordFolderMetrics_LinuxAppsFolder) {
-  base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/true);
-  delegate_->GetTestModel()->CreateSingleItemFolder(kCrostiniFolderId,
-                                                    "item_id");
-  Show();
-
-  // 1 sample in the 1 folder bucket.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfFolders", 1));
-  // 1 sample in the 0 folders bucket, because "Linux apps" is a system folder.
-  EXPECT_EQ(1, histogram.GetBucketCount("Apps.NumberOfNonSystemFolders", 0));
-  // 1 sample in the 1 app bucket, because Linux apps do count.
-  EXPECT_EQ(1, histogram.GetBucketCount(
-                   "Apps.AppsInFolders.FullscreenAppListEnabled", 1));
-}
-
 // Tests that in side shelf mode, the app list opens in fullscreen by default
 // and verifies that the top rounded corners of the app list background are
 // hidden (see https://crbug.com/920082). ProductivityLauncher does not change

@@ -259,6 +259,7 @@ void RecordSearchResultRemovalDialogDecision(
 void RecordAppListUserJourneyTime(AppListShowSource source,
                                   base::TimeDelta time);
 
+// Records metrics periodically (see interval in UserMetricsRecorder).
 void RecordPeriodicAppListMetrics();
 
 ASH_EXPORT void RecordSearchResultOpenSource(const SearchResult* result,
