@@ -147,7 +147,21 @@ class NSSInitSingleton {
     const std::string modspec =
         base::StringPrintf("configDir='sql:%s' tokenDescription='%s'",
                            path.value().c_str(), description.c_str());
-    PK11SlotInfo* db_slot_info = SECMOD_OpenUserDB(modspec.c_str());
+
+    // TODO(crbug.com/1163303): Presumably there's a race condition with
+    // session_manager around creating/opening the software NSS database. The
+    // retry loop is a temporary workaround that should at least reduce the
+    // amount of failures until a proper fix is implemented.
+    PK11SlotInfo* db_slot_info = nullptr;
+    int attempts_counter = 0;
+    for (; !db_slot_info && (attempts_counter < 10); ++attempts_counter) {
+      db_slot_info = SECMOD_OpenUserDB(modspec.c_str());
+    }
+    if (db_slot_info && (attempts_counter > 1)) {
+      LOG(ERROR) << "Opening persistent database failed "
+                 << attempts_counter - 1 << " times before succeeding";
+    }
+
     if (db_slot_info) {
       if (PK11_NeedUserInit(db_slot_info))
         PK11_InitPin(db_slot_info, nullptr, nullptr);
