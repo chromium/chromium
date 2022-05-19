@@ -62,6 +62,10 @@ class IsJsonMatcher {
                        testing::MatchResultListener* listener) const;
   bool MatchAndExplain(const base::Value& value,
                        testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::Dict& dict,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value::List& list,
+                       testing::MatchResultListener* listener) const;
   void DescribeTo(std::ostream* os) const;
   void DescribeNegationTo(std::ostream* os) const;
 

@@ -210,6 +210,18 @@ bool IsJsonMatcher::MatchAndExplain(
   return expected_value_ == value;
 }
 
+bool IsJsonMatcher::MatchAndExplain(
+    const base::Value::Dict& dict,
+    testing::MatchResultListener* /* listener */) const {
+  return expected_value_.is_dict() && expected_value_.GetDict() == dict;
+}
+
+bool IsJsonMatcher::MatchAndExplain(
+    const base::Value::List& list,
+    testing::MatchResultListener* /* listener */) const {
+  return expected_value_.is_list() && expected_value_.GetList() == list;
+}
+
 void IsJsonMatcher::DescribeTo(std::ostream* os) const {
   *os << "is the JSON value " << expected_value_;
 }
