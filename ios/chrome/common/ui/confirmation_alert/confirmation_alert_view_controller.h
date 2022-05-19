@@ -70,6 +70,10 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // view is loaded.
 @property(nonatomic) BOOL helpButtonAvailable;
 
+// Set to YES to enclose the image in a frame with a shadow and a corner badge
+// with a green checkmark. Must be set before the view is loaded. Default is NO.
+@property(nonatomic) BOOL imageEnclosedWithShadowAndBadge;
+
 // When set, this value will be set as the accessibility label for the help
 // button.
 @property(nonatomic, copy) NSString* helpButtonAccessibilityLabel;
