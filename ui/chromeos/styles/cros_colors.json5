@@ -191,7 +191,11 @@
     /*
      * Other foundational colors.
      */
-    focus_ring_color: "$color_prominent",
+    focus_ring_color: {
+      light: "$color_prominent",
+      dark: "$color_prominent",
+      generate_per_mode: true,
+    },
     focus_ring_color_inactive: "$icon_color_secondary",
     focus_aura_color: "rgba($color_prominent_rgb, 0.24)",
     separator_color: {
