@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 
 #include "base/check_op.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/label_button.h"
@@ -15,20 +17,31 @@ namespace translate {
 
 namespace test_utils {
 
+TranslateBubbleView* GetTranslateBubble(Browser* browser) {
+  return TranslateBubbleController::FromWebContents(
+             browser->tab_strip_model()->GetActiveWebContents())
+      ->GetTranslateBubble();
+}
+
 const TranslateBubbleModel* GetCurrentModel(Browser* browser) {
   DCHECK(browser);
-  TranslateBubbleView* view = TranslateBubbleView::GetCurrentBubble();
+  TranslateBubbleView* view = GetTranslateBubble(browser);
+
   return view ? view->model() : nullptr;
 }
 
 void CloseCurrentBubble(Browser* browser) {
   DCHECK(browser);
-  TranslateBubbleView::CloseCurrentBubble();
+  TranslateBubbleController* controller =
+      TranslateBubbleController::FromWebContents(
+          browser->tab_strip_model()->GetActiveWebContents());
+  if (controller)
+    controller->CloseBubble();
 }
 
 void PressTranslate(Browser* browser) {
   DCHECK(browser);
-  TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();
+  TranslateBubbleView* bubble = GetTranslateBubble(browser);
   DCHECK(bubble);
 
   bubble->TabSelectedAt(1);
@@ -36,7 +49,7 @@ void PressTranslate(Browser* browser) {
 
 void PressRevert(Browser* browser) {
   DCHECK(browser);
-  TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();
+  TranslateBubbleView* bubble = GetTranslateBubble(browser);
   DCHECK(bubble);
 
   bubble->TabSelectedAt(0);
@@ -46,7 +59,7 @@ void SelectTargetLanguageByDisplayName(Browser* browser,
                                        const std::u16string& display_name) {
   DCHECK(browser);
 
-  TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();
+  TranslateBubbleView* bubble = GetTranslateBubble(browser);
   DCHECK(bubble);
 
   TranslateBubbleModel* model = bubble->model();

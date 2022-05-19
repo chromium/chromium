@@ -188,3 +188,7 @@ void TranslateBubbleModelImpl::ReportUIInteraction(
     translate::UIInteraction ui_interaction) {
   ui_delegate_->ReportUIInteraction(ui_interaction);
 }
+
+void TranslateBubbleModelImpl::ReportUIChange(bool is_ui_shown) {
+  ui_delegate_->ReportUIChange(is_ui_shown);
+}

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -74,30 +75,15 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   TranslateBubbleView(views::View* anchor_view,
                       std::unique_ptr<TranslateBubbleModel> model,
                       translate::TranslateErrors::Type error_type,
-                      content::WebContents* web_contents);
+                      content::WebContents* web_contents,
+                      base::OnceClosure on_closing);
 
   TranslateBubbleView(const TranslateBubbleView&) = delete;
   TranslateBubbleView& operator=(const TranslateBubbleView&) = delete;
 
   ~TranslateBubbleView() override;
 
-  // Shows the Translate bubble. Returns the newly created bubble's Widget or
-  // nullptr in cases when the bubble already exists or when the bubble is not
-  // created.
-  static views::Widget* ShowBubble(views::View* anchor_view,
-                                   views::Button* highlighted_button,
-                                   content::WebContents* web_contents,
-                                   translate::TranslateStep step,
-                                   const std::string& source_language,
-                                   const std::string& target_language,
-                                   translate::TranslateErrors::Type error_type,
-                                   DisplayReason reason);
-
-  // Closes the current bubble if it exists.
-  static void CloseCurrentBubble();
-
-  // Returns the bubble view currently shown. This may return nullptr.
-  static TranslateBubbleView* GetCurrentBubble();
+  void CloseTranslateBubble();
 
   TranslateBubbleModel* model() { return model_.get(); }
 
@@ -282,8 +268,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // translation. Then close the bubble view.
   void RevertOrDeclineTranslation();
 
-  static TranslateBubbleView* translate_bubble_view_;
-
   raw_ptr<views::View> translate_view_ = nullptr;
   raw_ptr<views::View> error_view_ = nullptr;
   raw_ptr<views::View> advanced_view_source_ = nullptr;
@@ -320,6 +304,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   bool should_never_translate_site_ = false;
 
   std::unique_ptr<WebContentMouseHandler> mouse_handler_;
+
+  base::OnceClosure on_closing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_VIEW_H_

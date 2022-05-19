@@ -121,6 +121,10 @@ class TranslateBubbleModel : public TranslateLanguageListModel {
   // Reports a high level UI interaction to the centralzied
   // TranslateMetricsLogger.
   virtual void ReportUIInteraction(translate::UIInteraction ui_interaction) = 0;
+
+  // Updates TranslateMetricsLogger state of whether Translate UI is currently
+  // shown.
+  virtual void ReportUIChange(bool is_ui_shown) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_MODEL_H_

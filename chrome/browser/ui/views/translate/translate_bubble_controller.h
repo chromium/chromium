@@ -29,8 +29,9 @@ class TranslateBubbleController
   views::Widget* ShowTranslateBubble(
       views::View* anchor_view,
       views::Button* highlighted_button,
-      std::unique_ptr<translate::TranslateUIDelegate> ui_delegate,
       translate::TranslateStep step,
+      const std::string& source_language,
+      const std::string& target_language,
       translate::TranslateErrors::Type error_type,
       LocationBarBubbleDelegateView::DisplayReason reason);
 
@@ -57,6 +58,13 @@ class TranslateBubbleController
   // if the bubble is not currently shown.
   PartialTranslateBubbleView* GetPartialTranslateBubble() const;
 
+  void SetTranslateBubbleModelFactory(
+      base::RepeatingCallback<std::unique_ptr<TranslateBubbleModel>()>
+          callback);
+  void SetPartialTranslateBubbleModelFactory(
+      base::RepeatingCallback<std::unique_ptr<PartialTranslateBubbleModel>()>
+          callback);
+
   base::OnceClosure GetOnTranslateBubbleClosedCallback();
   base::OnceClosure GetOnPartialTranslateBubbleClosedCallback();
 
@@ -70,11 +78,21 @@ class TranslateBubbleController
   raw_ptr<TranslateBubbleView> translate_bubble_view_ = nullptr;
   raw_ptr<PartialTranslateBubbleView> partial_translate_bubble_view_ = nullptr;
 
+  // Factories used to construct models for the two different translate bubbles.
+  // If the factory is null, the standard implementations -
+  // TranslateBubbleModelImpl and PartialTranslateBubbleModelImpl - will be
+  // used.
+  base::RepeatingCallback<std::unique_ptr<TranslateBubbleModel>()>
+      model_factory_callback_;
+  base::RepeatingCallback<std::unique_ptr<PartialTranslateBubbleModel>()>
+      partial_model_factory_callback_;
+
   // Handlers for when translate bubbles are closed.
   void OnTranslateBubbleClosed();
   void OnPartialTranslateBubbleClosed();
 
   friend class content::WebContentsUserData<TranslateBubbleController>;
+  friend class TranslateBubbleControllerTest;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<TranslateBubbleController> weak_ptr_factory_{this};

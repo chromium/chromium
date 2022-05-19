@@ -159,6 +159,8 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
 
   void ReportUIInteraction(translate::UIInteraction ui_interaction) override {}
 
+  void ReportUIChange(bool is_ui_shown) override {}
+
   ViewState current_view_state_;
   translate::TranslateErrors::Type error_type_;
   int source_language_index_;
@@ -199,7 +201,7 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
     std::unique_ptr<TranslateBubbleModel> model(mock_model_);
     bubble_ = new TranslateBubbleView(
         anchor_widget_->GetContentsView(), std::move(model),
-        translate::TranslateErrors::NONE, nullptr);
+        translate::TranslateErrors::NONE, nullptr, base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
 

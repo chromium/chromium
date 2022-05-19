@@ -59,6 +59,7 @@ class TranslateBubbleModelImpl : public TranslateBubbleModel {
   bool IsPageTranslatedInCurrentLanguages() const override;
   bool CanAddSiteToNeverPromptList() override;
   void ReportUIInteraction(translate::UIInteraction ui_interaction) override;
+  void ReportUIChange(bool is_ui_shown) override;
 
  private:
   std::unique_ptr<translate::TranslateUIDelegate> ui_delegate_;

@@ -26,8 +26,9 @@ TranslateBubbleController* TranslateBubbleController::GetOrCreate(
 views::Widget* TranslateBubbleController::ShowTranslateBubble(
     views::View* anchor_view,
     views::Button* highlighted_button,
-    std::unique_ptr<translate::TranslateUIDelegate> ui_delegate,
     translate::TranslateStep step,
+    const std::string& source_language,
+    const std::string& target_language,
     translate::TranslateErrors::Type error_type,
     LocationBarBubbleDelegateView::DisplayReason reason) {
   // If the partial translate bubble is already being shown, close it before
@@ -54,14 +55,22 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   }
 
   content::WebContents* web_contents = &GetWebContents();
-  std::unique_ptr<TranslateBubbleModel> model =
-      std::make_unique<TranslateBubbleModelImpl>(step, std::move(ui_delegate));
 
-  // TODO(cuianthony): In the follow-up CL, the TranslateBubbleView constructor
-  // will take the OnTranslateBubbleClosed Closure so that it can notify this
-  // controller when it is closing.
+  std::unique_ptr<TranslateBubbleModel> model;
+  if (model_factory_callback_) {
+    model = std::move(model_factory_callback_).Run();
+  } else {
+    auto ui_delegate = std::make_unique<translate::TranslateUIDelegate>(
+        ChromeTranslateClient::GetManagerFromWebContents(web_contents)
+            ->GetWeakPtr(),
+        source_language, target_language);
+    model = std::make_unique<TranslateBubbleModelImpl>(step,
+                                                       std::move(ui_delegate));
+  }
+
   auto translate_bubble_view = std::make_unique<TranslateBubbleView>(
-      anchor_view, std::move(model), error_type, web_contents);
+      anchor_view, std::move(model), error_type, web_contents,
+      GetOnTranslateBubbleClosedCallback());
   translate_bubble_view_ = translate_bubble_view.get();
 
   if (highlighted_button)
@@ -76,9 +85,7 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   translate_bubble_view_->ShowForReason(reason);
   translate::ReportUiAction(translate::BUBBLE_SHOWN);
 
-  ChromeTranslateClient::GetManagerFromWebContents(web_contents)
-      ->GetActiveTranslateMetricsLogger()
-      ->LogUIChange(true);
+  translate_bubble_view_->model()->ReportUIChange(true);
 
   return bubble_widget;
 }
@@ -108,27 +115,31 @@ views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
     return nullptr;
   }
   content::WebContents* web_contents = &GetWebContents();
-  // TODO(crbug/1314825): When the PartialTranslateManager is added it
-  // will replace and take the role of the TranslateUIDelegate.
-  auto ui_delegate = std::make_unique<translate::TranslateUIDelegate>(
-      ChromeTranslateClient::GetManagerFromWebContents(web_contents)
-          ->GetWeakPtr(),
-      source_language, target_language);
 
-  // TODO(cuianthony): In the follow-up CL, the TranslateBubbleView constructor
-  // will take the OnPartialTranslateBubbleClosed Closure so that it can notify
-  // this controller when it is closing.
-  auto model = std::make_unique<PartialTranslateBubbleModelImpl>(
-      view_state, std::move(ui_delegate));
+  std::unique_ptr<PartialTranslateBubbleModel> model;
+  if (partial_model_factory_callback_) {
+    model = std::move(partial_model_factory_callback_).Run();
+  } else {
+    // TODO(crbug/1314825): When the PartialTranslateManager is added it
+    // will replace and take the role of the TranslateUIDelegate.
+    auto ui_delegate = std::make_unique<translate::TranslateUIDelegate>(
+        ChromeTranslateClient::GetManagerFromWebContents(web_contents)
+            ->GetWeakPtr(),
+        source_language, target_language);
+    model = std::make_unique<PartialTranslateBubbleModelImpl>(
+        view_state, std::move(ui_delegate));
+  }
+
   auto partial_translate_bubble_view =
       std::make_unique<PartialTranslateBubbleView>(
-          anchor_view, std::move(model), error_type, web_contents);
+          anchor_view, std::move(model), error_type, web_contents,
+          GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
 
   if (highlighted_button)
     partial_translate_bubble_view_->SetHighlightedButton(highlighted_button);
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      partial_translate_bubble_view_.get());
+      std::move(partial_translate_bubble_view));
 
   partial_translate_bubble_view_->SetViewState(view_state, error_type);
 
@@ -153,6 +164,17 @@ TranslateBubbleView* TranslateBubbleController::GetTranslateBubble() const {
 PartialTranslateBubbleView*
 TranslateBubbleController::GetPartialTranslateBubble() const {
   return partial_translate_bubble_view_;
+}
+
+void TranslateBubbleController::SetTranslateBubbleModelFactory(
+    base::RepeatingCallback<std::unique_ptr<TranslateBubbleModel>()> callback) {
+  model_factory_callback_ = std::move(callback);
+}
+
+void TranslateBubbleController::SetPartialTranslateBubbleModelFactory(
+    base::RepeatingCallback<std::unique_ptr<PartialTranslateBubbleModel>()>
+        callback) {
+  partial_model_factory_callback_ = std::move(callback);
 }
 
 base::OnceClosure

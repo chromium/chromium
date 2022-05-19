@@ -226,6 +226,14 @@ void PartialTranslateBubbleView::ResetLanguage() {
   UpdateAdvancedView();
 }
 
+void PartialTranslateBubbleView::WindowClosing() {
+  // We have to reset the controller reference to the view here, not in our
+  // destructor, because we'll be destroyed asynchronously and the shown state
+  // will be checked before then.
+  if (on_closing_)
+    std::move(on_closing_).Run();
+}
+
 bool PartialTranslateBubbleView::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   switch (GetViewState()) {
@@ -331,10 +339,12 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
     views::View* anchor_view,
     std::unique_ptr<PartialTranslateBubbleModel> model,
     translate::TranslateErrors::Type error_type,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    base::OnceClosure on_closing)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       model_(std::move(model)),
-      error_type_(error_type) {
+      error_type_(error_type),
+      on_closing_(std::move(on_closing)) {
   UpdateInsets(PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
 
   if (web_contents)  // web_contents can be null in unit_tests.

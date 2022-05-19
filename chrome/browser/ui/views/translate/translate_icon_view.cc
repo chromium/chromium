@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/translate/core/browser/language_state.h"
@@ -35,7 +36,15 @@ TranslateIconView::TranslateIconView(
 TranslateIconView::~TranslateIconView() = default;
 
 views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
-  return TranslateBubbleView::GetCurrentBubble();
+  if (GetWebContents()) {
+    TranslateBubbleController* translate_bubble_controller =
+        TranslateBubbleController::FromWebContents(GetWebContents());
+
+    if (translate_bubble_controller)
+      return translate_bubble_controller->GetTranslateBubble();
+  }
+
+  return nullptr;
 }
 
 void TranslateIconView::UpdateImpl() {
@@ -55,8 +64,8 @@ void TranslateIconView::UpdateImpl() {
   // Enable Translate page command or disable icon.
   enabled &= SetCommandEnabled(enabled);
   SetVisible(enabled);
-  if (!enabled)
-    TranslateBubbleView::CloseCurrentBubble();
+  if (!enabled && TranslateBubbleController::FromWebContents(GetWebContents()))
+    TranslateBubbleController::FromWebContents(GetWebContents())->CloseBubble();
 }
 
 void TranslateIconView::OnExecuting(
@@ -64,8 +73,8 @@ void TranslateIconView::OnExecuting(
 
 void TranslateIconView::OnPressed(bool activated) {
   translate::ReportUiAction(activated
-                                 ? translate::PAGE_ACTION_ICON_ACTIVATED
-                                 : translate::PAGE_ACTION_ICON_DEACTIVATED);
+                                ? translate::PAGE_ACTION_ICON_ACTIVATED
+                                : translate::PAGE_ACTION_ICON_DEACTIVATED);
 }
 
 const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {

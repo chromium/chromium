@@ -154,6 +154,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
@@ -1561,7 +1562,13 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Update all the UI bits.
   UpdateTitleBar();
 
-  TranslateBubbleView::CloseCurrentBubble();
+  if (old_contents) {
+    TranslateBubbleController* translate_bubble_controller =
+        TranslateBubbleController::FromWebContents(old_contents);
+
+    if (translate_bubble_controller)
+      translate_bubble_controller->CloseBubble();
+  }
 }
 
 void BrowserView::OnTabDetached(content::WebContents* contents,
@@ -2454,12 +2461,13 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   PageActionIconView* translate_icon =
       toolbar_button_provider()
           ->GetPageActionIconView(PageActionIconType::kTranslate);
-  TranslateBubbleView::ShowBubble(
-      toolbar_button_provider()->GetAnchorView(PageActionIconType::kTranslate),
-      translate_icon, web_contents, step, source_language, target_language,
-      error_type,
-      is_user_gesture ? TranslateBubbleView::USER_GESTURE
-                      : TranslateBubbleView::AUTOMATIC);
+  TranslateBubbleController::GetOrCreate(web_contents)
+      ->ShowTranslateBubble(toolbar_button_provider()->GetAnchorView(
+                                PageActionIconType::kTranslate),
+                            translate_icon, step, source_language,
+                            target_language, error_type,
+                            is_user_gesture ? TranslateBubbleView::USER_GESTURE
+                                            : TranslateBubbleView::AUTOMATIC);
 
   return ShowTranslateBubbleResult::SUCCESS;
 }
