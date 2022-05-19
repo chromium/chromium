@@ -671,6 +671,7 @@ static_library("test_support") {
     "//remoting/host/remote_open_url:common",
     "//remoting/host/remote_open_url:test_support",
     "//remoting/host/security_key:security_key",
+    "//remoting/host/webauthn",
     "//remoting/proto",
     "//remoting/protocol:protocol",
     "//remoting/protocol:test_support",

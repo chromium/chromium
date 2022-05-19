@@ -29,6 +29,7 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -90,6 +91,10 @@ class MockDesktopEnvironment : public DesktopEnvironment {
   MOCK_METHOD(std::unique_ptr<DesktopAndCursorConditionalComposer>,
               CreateComposingVideoCapturer,
               (std::unique_ptr<DesktopDisplayInfoMonitor> monitor),
+              (override));
+  MOCK_METHOD(std::unique_ptr<RemoteWebAuthnStateChangeNotifier>,
+              CreateRemoteWebAuthnStateChangeNotifier,
+              (),
               (override));
   MOCK_METHOD(std::string, GetCapabilities, (), (const, override));
   MOCK_METHOD(void, SetCapabilities, (const std::string&), (override));

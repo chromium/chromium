@@ -40,6 +40,7 @@
 #include "remoting/host/remote_open_url/url_forwarder_control_message_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/audio_stream.h"
@@ -1197,8 +1198,9 @@ void ClientSession::CreateRemoteWebAuthnMessageHandler(
   // RemoteWebAuthnMessageHandler manages its own lifetime and is tied to the
   // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
   // up.
-  auto* unowned_handler =
-      new RemoteWebAuthnMessageHandler(channel_name, std::move(pipe));
+  auto* unowned_handler = new RemoteWebAuthnMessageHandler(
+      channel_name, std::move(pipe),
+      desktop_environment_->CreateRemoteWebAuthnStateChangeNotifier());
   remote_webauthn_message_handler_ = unowned_handler->GetWeakPtr();
 }
 

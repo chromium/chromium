@@ -38,6 +38,7 @@
 #include "remoting/host/mojom/desktop_session.mojom-shared.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
@@ -470,6 +471,9 @@ void DesktopSessionAgent::Start(
   url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
       &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
 
+  webauthn_state_change_notifier_ =
+      desktop_environment_->CreateRemoteWebAuthnStateChangeNotifier();
+
   std::move(callback).Run(
       desktop_session_control_.BindNewEndpointAndPassRemote());
 }
@@ -609,6 +613,7 @@ void DesktopSessionAgent::Stop() {
     desktop_session_agent_.reset();
 
     url_forwarder_configurator_.reset();
+    webauthn_state_change_notifier_.reset();
 
     remote_input_filter_.reset();
 
@@ -802,6 +807,13 @@ void DesktopSessionAgent::SetUpUrlForwarder() {
 
   url_forwarder_configurator_->SetUpUrlForwarder(base::BindRepeating(
       &DesktopSessionAgent::OnUrlForwarderSetUpStateChanged, this));
+}
+
+void DesktopSessionAgent::SignalWebAuthnExtension() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
+
+  webauthn_state_change_notifier_->NotifyStateChange();
 }
 
 void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {

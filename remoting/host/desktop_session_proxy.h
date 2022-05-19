@@ -28,6 +28,7 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
@@ -109,6 +110,8 @@ class DesktopSessionProxy
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
   std::unique_ptr<FileOperations> CreateFileOperations();
   std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator();
+  std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+  CreateRemoteWebAuthnStateChangeNotifier();
   std::string GetCapabilities() const;
   void SetCapabilities(const std::string& capabilities);
 
@@ -225,6 +228,8 @@ class DesktopSessionProxy
   // Handles CaptureResult notification from the desktop session agent.
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        const SerializedDesktopFrame& serialized_frame);
+
+  void SignalWebAuthnExtension();
 
   // Sends a message to the desktop session agent. The message is silently
   // deleted if the channel is broken.
