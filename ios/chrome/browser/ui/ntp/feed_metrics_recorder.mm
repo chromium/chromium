@@ -697,7 +697,6 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 #pragma mark - Follow
 
 - (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType {
-  // TODO(crbug.com/1324452): Record histogram.
   switch (followRequestType) {
     case FollowRequestType::kFollowRequestFollow:
       base::RecordAction(base::UserMetricsAction(kFollowRequested));
@@ -708,34 +707,67 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
   }
 }
 
+- (void)recordFollowFromMenu {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedFollowButton];
+  base::RecordAction(base::UserMetricsAction("MobileMenuUnfollow"));
+}
+
+- (void)recordUnfollowFromMenu {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedUnfollowButton];
+  base::RecordAction(base::UserMetricsAction("MobileMenuFollow"));
+}
+
 - (void)recordFollowConfirmationShownWithType:
     (FollowConfirmationType)followConfirmationType {
-  // TODO(crbug.com/1324452): Record histogram.
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
+                            FeedUserActionType::kShowSnackbar);
   switch (followConfirmationType) {
     case FollowConfirmationType::kFollowSucceedSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
+                                FeedUserActionType::kShowFollowSucceedSnackbar);
+      break;
     case FollowConfirmationType::kFollowErrorSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram,
+                                FeedUserActionType::kShowFollowFailedSnackbar);
+      break;
     case FollowConfirmationType::kUnfollowSucceedSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(
+          kDiscoverFeedUserActionHistogram,
+          FeedUserActionType::kShowUnfollowSucceedSnackbar);
+      break;
     case FollowConfirmationType::kUnfollowErrorSnackbarShown:
+      UMA_HISTOGRAM_ENUMERATION(
+          kDiscoverFeedUserActionHistogram,
+          FeedUserActionType::kShowUnfollowFailedSnackbar);
       break;
   }
 }
 
 - (void)recordFollowSnackbarTappedWithAction:
     (FollowSnackbarActionType)followSnackbarActionType {
-  // TODO(crbug.com/1324452): Record histogram.
   switch (followSnackbarActionType) {
     case FollowSnackbarActionType::kSnackbarActionGoToFeed:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedGoToFeedOnSnackbar];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarGoToFeedButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionUndo:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedRefollowAfterUnfollowOnSnackbar];
       base::RecordAction(base::UserMetricsAction(kSnackbarUndoButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionRetryFollow:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedFollowTryAgainOnSnackbar];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarRetryFollowButtonTapped));
       break;
     case FollowSnackbarActionType::kSnackbarActionRetryUnfollow:
+      [self recordDiscoverFeedUserActionHistogram:
+                FeedUserActionType::kTappedUnfollowTryAgainOnSnackbar];
       base::RecordAction(
           base::UserMetricsAction(kSnackbarRetryUnfollowButtonTapped));
       break;

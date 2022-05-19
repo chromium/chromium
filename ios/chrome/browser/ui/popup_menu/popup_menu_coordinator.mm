@@ -12,6 +12,8 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -367,6 +369,10 @@ enum class IOSOverflowMenuActionType {
             GetApplicationContext()->GetBrowserPolicyConnector();
 
         if (IsWebChannelsEnabled()) {
+          self.overflowMenuMediator.feedMetricsRecorder =
+              DiscoverFeedServiceFactory::GetForBrowserState(
+                  self.browser->GetBrowserState())
+                  ->GetFeedMetricsRecorder();
           ios::GetChromeBrowserProvider()
               .GetFollowProvider()
               ->SetFollowEventDelegate(self.browser);
@@ -446,6 +452,12 @@ enum class IOSOverflowMenuActionType {
   self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
   self.mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  if (IsWebChannelsEnabled()) {
+    self.mediator.feedMetricsRecorder =
+        DiscoverFeedServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState())
+            ->GetFeedMetricsRecorder();
+  }
 
   self.contentBlockerMediator.consumer = self.mediator;
 

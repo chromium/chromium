@@ -40640,6 +40640,15 @@ Called by update_permissions_policy_enum.py.-->
       label="User selected the Discover feed from the feed header."/>
   <int value="46"
       label="User selected the Following feed from the feed header."/>
+  <int value="47"
+      label="User tapped the Unfollow button on the page overflow menu."/>
+  <int value="48" label="Show Follow Succeed Snackbar"/>
+  <int value="49" label="Show Follow Failed Snackbar"/>
+  <int value="50" label="Show Unfollow Succeed Snackbar"/>
+  <int value="51" label="Show Unfollow Failed Snackbar"/>
+  <int value="52"
+      label="User tapped to go to feed using the snackbar 'go to feed'
+             option."/>
 </enum>
 
 <enum name="FeedUserCommandType">

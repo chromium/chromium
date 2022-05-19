@@ -240,6 +240,12 @@ class Time;
 // the overflow menu.
 - (void)recordFollowRequestedWithType:(FollowRequestType)followRequestType;
 
+// Record metrics for when the user tapped "follow" from menu entry point.
+- (void)recordFollowFromMenu;
+
+// Record metrics for when the user tapped "unfollow" from menu entry point.
+- (void)recordUnfollowFromMenu;
+
 // Record metrics for when the follow confirmation snckbar is shown, according
 // to |followConfirmationType|.
 - (void)recordFollowConfirmationShownWithType:
