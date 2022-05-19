@@ -102,6 +102,8 @@ CaptureModeToggleButton* GetRegionToggleButton();
 
 UserNudgeController* GetUserNudgeController();
 
+bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling);
+
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
 // related features in its constructor, so test fixtures that use this should

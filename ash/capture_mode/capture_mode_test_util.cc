@@ -198,4 +198,12 @@ void ProjectorCaptureModeIntegrationHelper::StartProjectorModeSession() {
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
+bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
+  DCHECK_EQ(layer->parent(), sibling->parent());
+  const auto& children = layer->parent()->children();
+  const int sibling_index =
+      std::find(children.begin(), children.end(), sibling) - children.begin();
+  return sibling_index > 0 && children[sibling_index - 1] == layer;
+}
+
 }  // namespace ash
