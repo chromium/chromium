@@ -102,13 +102,12 @@ public interface TasksSurface {
      * @param height Current height of the fake search box layout.
      * @param topMargin Current top margin of the fake search box layout.
      * @param endPadding Current end padding of the fake search box layout.
-     * @param textSize Current text size of text view in fake search box layout.
      * @param translationX Current translationX of text view in fake search box layout.
      * @param buttonSize Current height and width of the buttons in fake search box layout.
      * @param lensButtonLeftMargin Current left margin of the lens button in fake search box layout.
      */
-    void updateFakeSearchBox(int height, int topMargin, int endPadding, float textSize,
-            float translationX, int buttonSize, int lensButtonLeftMargin);
+    void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
+            int buttonSize, int lensButtonLeftMargin);
 
     /**
      * Called when the Tasks surface is hidden.

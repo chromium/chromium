@@ -177,10 +177,6 @@ class SearchBoxMediator
         mModel.set(SearchBoxProperties.SEARCH_BOX_END_PADDING, endPadding);
     }
 
-    void setTextSize(float textSize) {
-        mModel.set(SearchBoxProperties.SEARCH_TEXT_SIZE, textSize);
-    }
-
     void setTextViewTranslationX(float translationX) {
         mModel.set(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X, translationX);
     }
