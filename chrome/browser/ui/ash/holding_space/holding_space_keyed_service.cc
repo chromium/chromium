@@ -333,6 +333,10 @@ void HoldingSpaceKeyedService::RemoveAll() {
   holding_space_model_.RemoveAll();
 }
 
+void HoldingSpaceKeyedService::RemoveItem(const std::string& id) {
+  holding_space_model_.RemoveItem(id);
+}
+
 void HoldingSpaceKeyedService::CancelItem(const HoldingSpaceItem* item) {
   // Currently it is only possible to cancel download type items.
   if (!HoldingSpaceItem::IsDownload(item->type()) || !downloads_delegate_)
