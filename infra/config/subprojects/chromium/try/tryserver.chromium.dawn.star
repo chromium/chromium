@@ -27,6 +27,11 @@ consoles.list_view(
 try_.builder(
     name = "dawn-linux-x64-deps-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Dawn Linux x64 DEPS Builder",
+        "ci/Dawn Linux x64 DEPS Release (Intel HD 630)",
+        "ci/Dawn Linux x64 DEPS Release (NVIDIA)",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
