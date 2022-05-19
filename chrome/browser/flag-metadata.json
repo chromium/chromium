@@ -394,12 +394,12 @@
   {
     "name": "autofill-address-save-prompt",
     "owners": [ "mamir", "koerber" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 106
   },
   {
       "name": "autofill-address-verification-in-save-prompt",
       "owners": [ "mamir", "koerber" ],
-      "expiry_milestone": 103
+      "expiry_milestone": 106
   },
   {
     "name": "autofill-always-return-cloud-tokenized-card",
@@ -414,7 +414,7 @@
   {
     "name": "autofill-center-aligned-suggestions",
     "owners": [ "koerber", "mamir" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 106
   },
   {
     "name": "autofill-enable-manual-fallback-for-virtual-cards",
@@ -512,7 +512,7 @@
   {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
     "owners": [ "koerber", "mamir" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 106
   },
   {
     "name": "autofill-ios-delay-between-fields",
@@ -567,22 +567,22 @@
   {
     "name": "autofill-use-consistent-popup-settings-icons",
     "owners": [ "koerber", "mamir" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 106
   },
   {
     "name": "autofill-use-improved-label-disambiguation",
     "owners": [ "autofill-squad-muc@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 106
   },
   {
     "name": "autofill-use-mobile-label-disambiguation",
     "owners": [ "autofill-squad-muc@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 106
   },
   {
     "name": "autofill-visual-improvements-for-suggestion-ui",
     "owners": [ "koerber", "vasilii" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 106
   },
   {
     "name": "back-forward-cache",
