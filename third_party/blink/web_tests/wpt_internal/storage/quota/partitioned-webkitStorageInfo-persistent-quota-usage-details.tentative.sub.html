@@ -45,8 +45,6 @@
           test.step(() => {
             assert_true(details.cross_site.init.usage == 0,
               "Usage should be 0");
-            assert_true(details.cross_site.init.quota == 0,
-              "Quota should be 0");
             assert_equals(details.same_site.init.usage, details.after.usage);
             assert_equals(details.same_site.init.quota, details.after.quota);
           });
