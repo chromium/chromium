@@ -305,6 +305,9 @@ bool UtilityProcessHost::StartProcess() {
 #if BUILDFLAG(IS_CHROMEOS)
       switches::kSchedulerBoostUrgent,
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      switches::kEnableResourcesFileSharing,
+#endif
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
                                std::size(kSwitchNames));

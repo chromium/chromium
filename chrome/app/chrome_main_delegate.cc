@@ -189,11 +189,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
+#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
+#include "chromeos/lacros/lacros_paths.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"  // nogncheck
 #include "media/base/media_switches.h"
+#include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
+#include "ui/base/ui_base_switches.h"
 #endif
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -834,6 +838,9 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::RegisterPathProvider();
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::lacros_paths::RegisterPathProvider();
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
@@ -1043,11 +1050,33 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (process_type.empty() || process_type == switches::kZygoteProcess ||
       process_type == switches::kUtilityProcess) {
-    // TODO(elkurin): Add comments here when resource loading using ash
-    // resources is implemented.
+    // Initialize BrowserInitParams before generating and loading shared
+    // resource file since the path required for the feature is set by
+    // BrowserInitParams initialization.
     const crosapi::mojom::BrowserInitParams* init_params =
         chromeos::BrowserInitParams::Get();
     chrome::SetLacrosDefaultPathsFromInitParams(init_params);
+  }
+
+  // Generate shared resource file only on browser process. This is to avoid
+  // generating a file in different processes again.
+  // Also generate only when resource file sharing feature is enabled.
+  if (command_line.HasSwitch(switches::kEnableResourcesFileSharing) &&
+      process_type.empty()) {
+    base::FilePath ash_resources_dir;
+    base::FilePath lacros_resources_dir;
+    base::FilePath user_data_dir;
+    if (base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
+                               &ash_resources_dir) &&
+        base::PathService::Get(base::DIR_ASSETS, &lacros_resources_dir) &&
+        base::PathService::Get(chromeos::lacros_paths::USER_DATA_DIR,
+                               &user_data_dir)) {
+      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
+          ash_resources_dir.Append(FILE_PATH_LITERAL("resources.pak")),
+          lacros_resources_dir.Append(FILE_PATH_LITERAL("resources.pak")),
+          user_data_dir.Append(crosapi::kSharedResourcesPackName),
+          ui::kScaleFactorNone);
+    }
   }
 #endif
 
@@ -1156,9 +1185,29 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
     base::FilePath resources_pack_path;
     base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (command_line.HasSwitch(switches::kEnableResourcesFileSharing)) {
+      // If LacrosResourcesFileSharing feature is enabled, Lacros refers to ash
+      // resources pak file.
+      base::FilePath ash_resources_pack_path;
+      base::PathService::Get(chrome::FILE_ASH_RESOURCES_PACK,
+                             &ash_resources_pack_path);
+      base::FilePath shared_resources_pack_path;
+      base::PathService::Get(chrome::FILE_RESOURCES_FOR_SHARING_PACK,
+                             &shared_resources_pack_path);
+      ui::ResourceBundle::GetSharedInstance()
+          .AddDataPackFromPathWithAshResources(
+              shared_resources_pack_path, ash_resources_pack_path,
+              resources_pack_path, ui::kScaleFactorNone);
+    } else {
+      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+          resources_pack_path, ui::kScaleFactorNone);
+    }
+#else
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         resources_pack_path, ui::kScaleFactorNone);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_ANDROID)
     CHECK(!loaded_locale.empty()) << "Locale could not be found for " <<
         locale;
   }

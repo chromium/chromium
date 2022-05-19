@@ -226,8 +226,10 @@ static_library("test_support") {
 
   if (is_chromeos_lacros) {
     deps += [
+      "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/lacros:lacros_paths",
       "//chromeos/lacros/dbus",
       "//chromeos/startup",
     ]
