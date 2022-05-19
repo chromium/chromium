@@ -884,9 +884,9 @@ bool LoopbackServer::LoadStateFromFile() {
   if (state_file_error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION("Sync.Local.ReadPlatformFileError",
                               -state_file_error, -base::File::FILE_ERROR_MAX);
-    LOG(ERROR)
-        << "Loopback sync cannot read the persistent state file with error "
-        << base::File::ErrorToString(state_file_error);
+    LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
+               << persistent_file_ << ") with error "
+               << base::File::ErrorToString(state_file_error);
     return false;
   }
 
@@ -896,10 +896,12 @@ bool LoopbackServer::LoadStateFromFile() {
     if (serialized.length() > 0 && proto.ParseFromString(serialized)) {
       return DeSerializeState(proto);
     }
-    LOG(ERROR) << "Loopback sync cannot parse the persistent state file.";
+    LOG(ERROR) << "Loopback sync cannot parse the persistent state file ("
+               << persistent_file_ << ").";
     return false;
   }
-  LOG(ERROR) << "Loopback sync cannot read the persistent state file.";
+  LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
+             << persistent_file_ << ").";
   return false;
 }
 
