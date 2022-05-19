@@ -88,8 +88,6 @@ void HTMLLinkElement::ParseAttribute(
     if (!IsRenderBlocking()) {
       if (GetLinkStyle() && GetLinkStyle()->StyleSheetIsLoading())
         GetLinkStyle()->UnblockRenderingForPendingSheet();
-      if (link_loader_)
-        link_loader_->UnblockRenderingForPendingLinkPreload();
     }
   } else if (name == html_names::kHrefAttr) {
     // Log href attribute before logging resource fetching in process().
