@@ -21,6 +21,7 @@ from common import GetHostOsFromPlatform, GetHostArchFromPlatform, \
 sys.path.append(os.path.join(DIR_SOURCE_ROOT, 'build'))
 import find_depot_tools
 
+LICENSE_FILE = 'LICENSE'
 SDK_SIGNATURE_FILE = '.hash'
 SDK_TARBALL_PATH_TEMPLATE = (
     'gs://{bucket}/development/{sdk_hash}/sdk/{platform}-amd64/gn.tar.gz')
@@ -154,9 +155,14 @@ def main():
     return 1
 
   signature_filename = os.path.join(SDK_ROOT, SDK_SIGNATURE_FILE)
+
+  # crbug.com/1325179: Need to check LICENSE file existence due to transition
+  # to using CIPD to download the SDK.
+  license_filename = os.path.join(SDK_ROOT, LICENSE_FILE)
+
   current_signature = (open(signature_filename, 'r').read().strip()
                        if os.path.exists(signature_filename) else '')
-  if current_signature != sdk_hash:
+  if current_signature != sdk_hash or not os.path.exists(license_filename):
     logging.info('Downloading GN SDK %s...' % sdk_hash)
 
     MakeCleanDirectory(SDK_ROOT)
