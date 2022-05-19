@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_id.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,7 +80,7 @@ class SystemWebAppDelegate {
 
   // If specified, the apps in |uninstall_and_replace| will have their data
   // migrated to this System App.
-  virtual std::vector<web_app::AppId> GetAppIdsToUninstallAndReplace() const;
+  virtual std::vector<SystemWebAppId> GetAppIdsToUninstallAndReplace() const;
 
   // Minimum window size in DIPs. Empty if the app does not have a minimum.
   // TODO(https://github.com/w3c/manifest/issues/436): Replace with PWA manifest

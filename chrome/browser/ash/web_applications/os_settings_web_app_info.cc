@@ -72,7 +72,7 @@ gfx::Size OSSettingsSystemAppDelegate::GetMinimumWindowSize() const {
   return {300, 100};
 }
 
-std::vector<web_app::AppId>
+std::vector<ash::SystemWebAppId>
 OSSettingsSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return {web_app::kSettingsAppId, ash::kInternalAppIdSettings};
 }
