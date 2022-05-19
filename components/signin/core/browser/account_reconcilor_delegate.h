@@ -85,12 +85,6 @@ class AccountReconcilorDelegate {
   // |OnReconcileError| is called before |OnReconcileFinished|.
   virtual void OnReconcileError(const GoogleServiceAuthError& error);
 
-  // If this returns false, the reconcilor ensures that all accounts unknown to
-  // Chrome are always removed from the cookies (even if their session is
-  // expired). Returning false is only supported in with multilogin UPDATE mode.
-  // Defaults to true.
-  virtual bool IsUnknownInvalidAccountInCookieAllowed() const;
-
   void set_reconcilor(AccountReconcilor* reconcilor) {
     reconcilor_ = reconcilor;
   }
