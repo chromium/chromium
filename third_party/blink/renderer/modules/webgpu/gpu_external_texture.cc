@@ -27,10 +27,12 @@
 namespace blink {
 
 namespace {
-void GetYUVToRGBMatrix(gfx::ColorSpace colorSpace, float matrix[12]) {
+void GetYUVToRGBMatrix(gfx::ColorSpace colorSpace,
+                       size_t bitDepth,
+                       float matrix[12]) {
   // Get the appropriate YUV to RGB conversion matrix.
   SkYUVColorSpace srcSkColorSpace;
-  colorSpace.ToSkYUVColorSpace(8, &srcSkColorSpace);
+  colorSpace.ToSkYUVColorSpace(static_cast<int>(bitDepth), &srcSkColorSpace);
   SkColorMatrix skColorMatrix = SkColorMatrix::YUVtoRGB(srcSkColorSpace);
   float yuvM[20];
   skColorMatrix.getRowMajor(yuvM);
@@ -167,6 +169,7 @@ GPUExternalTexture* GPUExternalTexture::Create(
     return nullptr;
   }
 
+  gfx::ColorSpace srcColorSpace = media_video_frame->ColorSpace();
   gfx::ColorSpace dstColorSpace;
   switch (webgpu_desc->colorSpace().AsEnum()) {
     case V8GPUPredefinedColorSpace::Enum::kSRGB:
@@ -206,10 +209,9 @@ GPUExternalTexture* GPUExternalTexture::Create(
     external_texture_desc.plane1 = plane1;
     external_texture_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
 
-    gfx::ColorSpace srcColorSpace = media_video_frame->ColorSpace();
-
     float yuvToRgbMatrix[12];
-    GetYUVToRGBMatrix(srcColorSpace, yuvToRgbMatrix);
+    GetYUVToRGBMatrix(srcColorSpace, media_video_frame->BitDepth(),
+                      yuvToRgbMatrix);
     external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix;
 
     float gamutConversionMatrix[9];
@@ -299,10 +301,6 @@ GPUExternalTexture* GPUExternalTexture::Create(
   dawn_desc.plane0 = plane0;
   dawn_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
 
-  // The method that performs YUV to RGB conversion
-  // (DrawVideoFrameIntoResourceProvider) on the video frame is hardcoded to use
-  // BT.601, so we must specify that as our source color space here.
-  gfx::ColorSpace srcColorSpace = gfx::ColorSpace::CreateREC601();
   float gamutMatrix[9];
   float srcTransferFn[7];
   float dstTransferFn[7];
