@@ -231,12 +231,6 @@ COMPONENT_EXPORT(AUTOFILL)
 bool IsMacViewsAutofillPopupExperimentEnabled();
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature
-    kAutofillEnableNewAddressProfileCreationInSettingsOnIOS;
-#endif  // BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
 bool IsAutofillManualFallbackEnabled();

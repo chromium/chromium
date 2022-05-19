@@ -575,15 +575,6 @@ const char kAutofillUseMobileLabelDisambiguationParameterShowAll[] = "show-all";
 const char kAutofillUseMobileLabelDisambiguationParameterShowOne[] = "show-one";
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_IOS)
-// Controls whether the creation of new address profiles is enabled in settings
-// on IOS.
-// TODO(crbug/1167105): Remove once it's launched.
-const base::Feature kAutofillEnableNewAddressProfileCreationInSettingsOnIOS{
-    "AutofillEnableNewAddressProfileCreationInSettingsOnIOS",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 bool IsAutofillManualFallbackEnabled() {
   return base::FeatureList::IsEnabled(kAutofillKeyboardAccessory) &&
