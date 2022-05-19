@@ -860,7 +860,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.WasClusterFiltered.{ClusterFilterReason}"
-    enum="BooleanFiltered" expires_after="2022-05-15">
+    enum="BooleanFiltered" expires_after="2022-11-15">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
