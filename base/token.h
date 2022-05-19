@@ -66,6 +66,10 @@ class BASE_EXPORT Token {
   // Generates a string representation of this Token useful for e.g. logging.
   std::string ToString() const;
 
+  // FromString is the opposite of ToString. It returns absl::nullopt if the
+  // |string_representation| is invalid.
+  static absl::optional<Token> FromString(StringPiece string_representation);
+
  private:
   // Note: Two uint64_t are used instead of uint8_t[16] in order to have a
   // simpler implementation, paricularly for |ToString()|, |is_zero()|, and
