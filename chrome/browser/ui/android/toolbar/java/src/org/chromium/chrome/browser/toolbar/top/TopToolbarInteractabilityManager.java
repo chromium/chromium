@@ -37,15 +37,12 @@ public class TopToolbarInteractabilityManager {
     private final TokenHolder mNewTabInteractabilityTokenHolder =
             new TokenHolder(() -> onNewTabButtonTokenUpdate());
 
-    private boolean mIsNewTabEnabled;
-
     /**
      * @param delegate The {@link Delegate} that is responsible for relaying signal to toolbar
      *         coordinator.
      */
     TopToolbarInteractabilityManager(@NonNull Delegate delegate) {
         mDelegate = delegate;
-        mIsNewTabEnabled = true;
     }
 
     /**
@@ -74,16 +71,10 @@ public class TopToolbarInteractabilityManager {
      * non-empty.
      */
     private void onNewTabButtonTokenUpdate() {
-        // There exists clients who wants to keep the new tab button disabled.
-        if (mNewTabInteractabilityTokenHolder.hasTokens() && !mIsNewTabEnabled) return;
-        // We have our first client who want to disable the new tab button.
-        if (mNewTabInteractabilityTokenHolder.hasTokens() && mIsNewTabEnabled) {
-            mIsNewTabEnabled = false;
+        if (mNewTabInteractabilityTokenHolder.hasTokens()) {
             mDelegate.setNewTabButtonEnabled(/*enabled=*/false);
-            return;
+        } else {
+            mDelegate.setNewTabButtonEnabled(/*enabled=*/true);
         }
-        // We have no more clients who want to keep the new tab button disabled. So enable it.
-        mDelegate.setNewTabButtonEnabled(/*enabled=*/true);
-        mIsNewTabEnabled = true;
     }
 }
