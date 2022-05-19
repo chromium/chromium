@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".NTPSnippets" summary="NTP snippets"/>
 </variants>
 
-<histogram name="Android.ActivityStop.NumberOfTabsUsed" units="%"
+<histogram name="Android.ActivityStop.NumberOfTabsUsed" units="count"
     expires_after="2022-11-06">
   <owner>gauravjj@google.com</owner>
   <owner>skavuluru@google.com</owner>
