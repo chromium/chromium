@@ -159,6 +159,7 @@ class CallbackTester {
     has_maskable_splash_icon_ = data.has_maskable_splash_icon;
     valid_manifest_ = data.valid_manifest;
     worker_check_passed_ = data.worker_check_passed;
+    screenshots_ = data.screenshots;
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure_);
   }
 
@@ -174,6 +175,7 @@ class CallbackTester {
   const GURL& splash_icon_url() const { return splash_icon_url_; }
   bool has_maskable_splash_icon() const { return has_maskable_splash_icon_; }
   const SkBitmap* splash_icon() const { return splash_icon_.get(); }
+  const std::vector<SkBitmap>& screenshots() const { return screenshots_; }
   bool valid_manifest() const { return valid_manifest_; }
   bool worker_check_passed() const { return worker_check_passed_; }
 
@@ -187,6 +189,7 @@ class CallbackTester {
   bool has_maskable_primary_icon_;
   GURL splash_icon_url_;
   std::unique_ptr<SkBitmap> splash_icon_;
+  std::vector<SkBitmap> screenshots_;
   bool has_maskable_splash_icon_;
   bool valid_manifest_;
   bool worker_check_passed_;
@@ -256,6 +259,8 @@ class NestedCallbackTester {
 class InstallableManagerBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/banners");
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Make sure app banners are disabled in the browser so they do not
@@ -1919,6 +1924,29 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckSplashIcon) {
     EXPECT_TRUE(tester->has_maskable_splash_icon());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
+  base::RunLoop run_loop;
+  std::unique_ptr<CallbackTester> tester(
+      new CallbackTester(run_loop.QuitClosure()));
+
+  InstallableParams params = GetManifestParams();
+  params.fetch_screenshots = true;
+
+  NavigateAndRunInstallableManager(
+      browser(), tester.get(), params,
+      GetURLOfPageWithServiceWorkerAndManifest(
+          "/banners/manifest_bottom_sheet_install.json"));
+
+  run_loop.Run();
+
+  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
+  EXPECT_FALSE(tester->manifest_url().is_empty());
+
+  EXPECT_FALSE(tester->valid_manifest());
+  EXPECT_EQ(1u, tester->screenshots().size());
+  EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
