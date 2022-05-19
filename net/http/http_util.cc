@@ -131,7 +131,7 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
   // If `mime_type_value` is the same as `mime_type`, then just update
   // `charset`. However, if `charset` is empty and `mime_type` hasn't changed,
   // then don't wipe-out an existing `charset`.
-  bool eq = base::LowerCaseEqualsASCII(mime_type->data(), mime_type_value);
+  bool eq = base::EqualsCaseInsensitiveASCII(mime_type_value, *mime_type);
   if (!eq) {
     *mime_type = base::ToLowerASCII(mime_type_value);
   }

@@ -987,6 +987,8 @@ TEST(HttpUtilTest, ParseContentType) {
     { "*/*", "", "", false, "" },
     { "*/*; charset=utf-8", "*/*", "utf-8", true, "" },
     { "*/* ", "*/*", "", false, "" },
+    // Regression test for https://crbug.com/1326529
+    { "teXT/html", "text/html", "", false, ""},
     // TODO(abarth): Add more interesting test cases.
   };
   // clang-format on
@@ -1006,6 +1008,42 @@ TEST(HttpUtilTest, ParseContentType) {
     EXPECT_EQ(tests[i].expected_boundary, boundary)
         << "content_type=" << tests[i].content_type;
   }
+}
+
+TEST(HttpUtilTest, ParseContentResetCharset) {
+  std::string mime_type;
+  std::string charset;
+  bool had_charset = false;
+  std::string boundary;
+
+  // Set mime (capitalization should be ignored), but not charset.
+  HttpUtil::ParseContentType("Text/Html", &mime_type, &charset, &had_charset,
+                             &boundary);
+  EXPECT_EQ("text/html", mime_type);
+  EXPECT_EQ("", charset);
+  EXPECT_FALSE(had_charset);
+
+  // The same mime, add charset.
+  HttpUtil::ParseContentType("tExt/hTml;charset=utf-8", &mime_type, &charset,
+                             &had_charset, &boundary);
+  EXPECT_EQ("text/html", mime_type);
+  EXPECT_EQ("utf-8", charset);
+  EXPECT_TRUE(had_charset);
+
+  // The same mime (different capitalization), but no charset - should not clear
+  // charset.
+  HttpUtil::ParseContentType("teXt/htMl", &mime_type, &charset, &had_charset,
+                             &boundary);
+  EXPECT_EQ("text/html", mime_type);
+  EXPECT_EQ("utf-8", charset);
+  EXPECT_TRUE(had_charset);
+
+  // A different mime will clear charset.
+  HttpUtil::ParseContentType("texT/plaiN", &mime_type, &charset, &had_charset,
+                             &boundary);
+  EXPECT_EQ("text/plain", mime_type);
+  EXPECT_EQ("", charset);
+  EXPECT_TRUE(had_charset);
 }
 
 TEST(HttpUtilTest, ParseContentRangeHeader) {
