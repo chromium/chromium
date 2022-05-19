@@ -18,6 +18,9 @@
 
 ; Allow communication between the GPU process and the UI server.
 (allow mach-lookup
+  ; Needed for AudioToolbox AAC encoding (https://crbug.com/1321287) and
+  ; xHE-AAC decoding (https://crbug.com/1289825).
+  (global-name "com.apple.audio.AudioComponentRegistrar")
   (global-name "com.apple.bsd.dirhelper")
   (global-name "com.apple.CARenderServer")
   (global-name "com.apple.cfprefsd.agent")
@@ -47,16 +50,6 @@
   (begin
     (allow mach-lookup (global-name "com.apple.trustd.agent"))
     (allow file-read* (path "/Library/Preferences/com.apple.security.plist"))
-  )
-)
-
-; Needed for AudioToolbox xHE-AAC decoding. https://crbug.com/1289825
-(if (>= os-version 1015)
-  (begin
-    (allow mach-lookup
-      (global-name "com.apple.audio.AudioComponentRegistrar"))
-    (allow file-read-data
-      (subpath "/System/Library/Components/AudioCodecs.component"))
   )
 )
 
@@ -121,6 +114,7 @@
   (subpath "/Library/GPUBundles")
   (subpath "/Library/Video/Plug-Ins")
   (subpath "/System/Library/ColorSync/Profiles")
+  (subpath "/System/Library/Components/AudioCodecs.component")
   (subpath "/System/Library/CoreServices/RawCamera.bundle")
   (subpath "/System/Library/Extensions")  ; https://crbug.com/515280
   (subpath "/System/Library/Video/Plug-Ins")

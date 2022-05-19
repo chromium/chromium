@@ -325,7 +325,7 @@ const base::Feature kUseAndroidOverlayForSecureOnly{
 // Allows usage of OS-level (platform) audio encoders.
 const base::Feature kPlatformAudioEncoder {
   "PlatformAudioEncoder",
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

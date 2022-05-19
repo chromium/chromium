@@ -87,6 +87,8 @@ async function main(args) {
   await encoder.flush();
   encoder.close();
 
+  // Maximum amount of padding from supported encoders.
+  timestamp_us += (2112 / config.sampleRate) * 1_000_000;
 
   TEST.assert(decoder_config != null, "No decoder config");
   TEST.assert(outputs.length > 0, "no outputs");
@@ -95,7 +97,8 @@ async function main(args) {
   let total_encoded_duration = 0
   for (let chunk of outputs) {
     TEST.assert(chunk.byteLength > 0,  "chunk is empty");
-    TEST.assert(timestamp_us >= chunk.timestamp, "chunk timestamp is too small");
+    TEST.assert(timestamp_us >= chunk.timestamp,
+        `chunk timestamp is too small. ${timestamp_us} vs ${chunk.timestamp}`);
     TEST.assert(chunk.duration >= 0, "chunk duration is zero");
     total_encoded_duration += chunk.duration;
   }
