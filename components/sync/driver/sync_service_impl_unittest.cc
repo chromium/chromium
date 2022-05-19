@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -257,6 +258,10 @@ class SyncServiceImplTest : public ::testing::Test {
   raw_ptr<SyncClientMock> sync_client_;  // Owned by |service_|.
   // The controllers are owned by |service_|.
   std::map<ModelType, FakeDataTypeController*> controller_map_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kLacrosNonSyncingProfiles};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 class SyncServiceImplTestWithSyncInvalidationsServiceCreated
@@ -1010,10 +1015,8 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
   service()->OnActionableError(client_cmd);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS does not support signout.
-  // TODO(https://crbug.com/1233933): Update this when Lacros profiles support
-  //                                  signed-in-but-not-consented-to-sync state.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Ash does not support signout.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_EQ(

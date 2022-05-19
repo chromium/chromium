@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -827,13 +828,13 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       // Sync-the-feature remains off.
       StopAndClear();
 
-#if !BUILDFLAG(IS_CHROMEOS)
-      // TODO(https://crbug.com/1233933): Update this when Lacros profiles
-      //     support signed-in-but-not-consented-to-sync state.
-
-      // On every platform except ChromeOS, revoke the Sync consent in
-      // IdentityManager after a dashboard clear.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+      // On every platform except ash, revoke the Sync consent/Clear primary
+      // account after a dashboard clear.
       if (!IsLocalSyncEnabled() &&
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
+#endif
           identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
         signin::PrimaryAccountMutator* account_mutator =
             identity_manager_->GetPrimaryAccountMutator();
@@ -856,9 +857,9 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
         account_mutator->RevokeSyncConsent(
             signin_metrics::SERVER_FORCED_DISABLE,
             signin_metrics::SignoutDelete::kIgnoreMetric);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       break;
     case STOP_SYNC_FOR_DISABLED_ACCOUNT:
       // Sync disabled by domain admin. Stop syncing until next restart.
