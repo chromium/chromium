@@ -202,7 +202,7 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
                              Feature::kEche) == FeatureState::kEnabledByUser;
 
   bool is_apps_access_required =
-      features::IsEchePhoneHubPermissionsOnboarding() &&
+      features::IsEcheSWAEnabled() &&
       multidevice_feature_access_manager_->GetAppsAccessStatus() ==
           phonehub::MultideviceFeatureAccessManager::AccessStatus::
               kAvailableButNotGranted;

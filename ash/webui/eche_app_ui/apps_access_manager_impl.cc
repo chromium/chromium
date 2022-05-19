@@ -149,15 +149,6 @@ void AppsAccessManagerImpl::OnConnectionStatusChanged() {
 }
 
 void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kEchePhoneHubPermissionsOnboarding)) {
-    PA_LOG(INFO) << "kEchePhoneHubPermissionsOnboarding flag is false, ignores "
-                    "to get apps access status from phone.";
-    pref_service_->SetInteger(prefs::kAppsAccessStatus,
-                              static_cast<int>(AccessStatus::kAccessGranted));
-    return;
-  }
-
   if (initialized_)
     return;
 
@@ -241,10 +232,6 @@ AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState() {
 
 void AppsAccessManagerImpl::UpdateFeatureEnabledState(
     AccessStatus access_status) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kEchePhoneHubPermissionsOnboarding))
-    return;
-
   const FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kEche);
   switch (access_status) {

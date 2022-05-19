@@ -2715,9 +2715,6 @@ extern const char kTrimOnMemoryPressureDescription[];
 extern const char kEapGtcWifiAuthenticationName[];
 extern const char kEapGtcWifiAuthenticationDescription[];
 
-extern const char kEchePhoneHubPermissionsOnboardingName[];
-extern const char kEchePhoneHubPermissionsOnboardingDescription[];
-
 extern const char kEcheSWAName[];
 extern const char kEcheSWADescription[];
 

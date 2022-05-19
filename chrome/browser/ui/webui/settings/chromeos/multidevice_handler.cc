@@ -521,7 +521,6 @@ void MultideviceHandler::HandleCancelNotificationSetup(
 
 void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEcheSWAEnabled());
-  DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
   DCHECK(!apps_access_operation_);
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
@@ -541,7 +540,6 @@ void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
 
 void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEcheSWAEnabled());
-  DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
   DCHECK(apps_access_operation_);
 
   apps_access_operation_.reset();
@@ -781,9 +779,7 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
                                       is_nearby_share_disallowed_by_policy);
 
   bool is_phone_hub_permissions_dialog_supported =
-      base::FeatureList::IsEnabled(
-          chromeos::features::kEchePhoneHubPermissionsOnboarding) ||
-      base::FeatureList::IsEnabled(chromeos::features::kPhoneHubCameraRoll);
+      features::IsEcheSWAEnabled() || features::IsPhoneHubCameraRollEnabled();
   page_content_dictionary->SetBoolean(
       kIsPhoneHubPermissionsDialogSupported,
       is_phone_hub_permissions_dialog_supported);

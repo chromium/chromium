@@ -50,9 +50,7 @@ class LaunchAppHelperTest : public ash::AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA,
-                              chromeos::features::
-                                  kEchePhoneHubPermissionsOnboarding},
+        /*enabled_features=*/{chromeos::features::kEcheSWA},
         /*disabled_features=*/{});
 
     fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();

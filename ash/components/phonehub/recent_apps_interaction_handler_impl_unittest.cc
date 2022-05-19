@@ -61,7 +61,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEchePhoneHubPermissionsOnboarding},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
     RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
     fake_multidevice_setup_client_ =

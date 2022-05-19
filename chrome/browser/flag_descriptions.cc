@@ -4764,12 +4764,6 @@ const char kEapGtcWifiAuthenticationName[] = "EAP-GTC WiFi Authentication";
 const char kEapGtcWifiAuthenticationDescription[] =
     "Allows configuration of WiFi networks using EAP-GTC authentication";
 
-const char kEchePhoneHubPermissionsOnboardingName[] =
-    "Enable Eche Phone Hub Permissions Onboarding";
-const char kEchePhoneHubPermissionsOnboardingDescription[] =
-    "Enable the new permissions onboarding flow for Phone Hub notifications "
-    "and Eche.";
-
 const char kEcheSWAName[] = "Enable Eche feature";
 const char kEcheSWADescription[] = "This is the main flag for enabling Eche.";
 

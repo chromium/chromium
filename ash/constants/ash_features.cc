@@ -493,10 +493,6 @@ const base::Feature kDriveFsMirroring{"DriveFsMirroring",
 const base::Feature kEapGtcWifiAuthentication{
     "EapGtcWifiAuthentication", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the Eche Phone Hub permission onboarding.
-const base::Feature kEchePhoneHubPermissionsOnboarding{
-    "EchePhoneHubPermissionsOnboarding", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the System Web App (SWA) version of Eche.
 const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1745,10 +1741,6 @@ bool IsDriveFsMirroringEnabled() {
 
 bool IsEapGtcWifiAuthenticationEnabled() {
   return base::FeatureList::IsEnabled(kEapGtcWifiAuthentication);
-}
-
-bool IsEchePhoneHubPermissionsOnboarding() {
-  return base::FeatureList::IsEnabled(kEchePhoneHubPermissionsOnboarding);
 }
 
 bool IsEcheSWAEnabled() {

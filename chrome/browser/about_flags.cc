@@ -4886,11 +4886,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEapGtcWifiAuthenticationName,
      flag_descriptions::kEapGtcWifiAuthenticationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEapGtcWifiAuthentication)},
-    {"eche-phone-hub-permissions-onboarding",
-     flag_descriptions::kEchePhoneHubPermissionsOnboardingName,
-     flag_descriptions::kEchePhoneHubPermissionsOnboardingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kEchePhoneHubPermissionsOnboarding)},
     {"eche-swa", flag_descriptions::kEcheSWAName,
      flag_descriptions::kEcheSWADescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEcheSWA)},
