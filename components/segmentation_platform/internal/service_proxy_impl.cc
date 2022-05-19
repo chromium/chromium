@@ -81,8 +81,11 @@ void ServiceProxyImpl::OnServiceStatusChanged(bool is_initialized,
 }
 
 void ServiceProxyImpl::UpdateObservers(bool update_service_status) {
+  if (observers_.empty())
+    return;
+
   if (update_service_status) {
-    for (Observer& obs : observers_)
+    for (auto& obs : observers_)
       obs.OnServiceStatusChanged(is_service_initialized_, service_status_flag_);
   }
 
@@ -193,8 +196,14 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
     }
   }
 
-  for (Observer& obs : observers_)
+  for (auto& obs : observers_)
     obs.OnClientInfoAvailable(result);
+}
+
+void ServiceProxyImpl::OnModelExecutionCompleted(
+    OptimizationTarget segment_id) {
+  // Update the observers with the new execution results.
+  UpdateObservers(false);
 }
 
 }  // namespace segmentation_platform

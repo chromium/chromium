@@ -169,6 +169,7 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
   std::vector<ModelExecutionSchedulerImpl::Observer*> observers;
   for (auto& key_and_selector : segment_selectors_)
     observers.push_back(key_and_selector.second.get());
+  observers.push_back(proxy_.get());
   execution_service_.Initialize(
       storage_service_.get(), &signal_handler_, clock_,
       base::BindRepeating(
