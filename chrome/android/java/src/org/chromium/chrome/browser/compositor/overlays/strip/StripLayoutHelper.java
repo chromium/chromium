@@ -209,7 +209,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 NEW_TAB_BUTTON_HEIGHT_DP, newTabClickHandler, R.drawable.btn_tabstrip_new_tab);
 
         mNewTabButton.setTintResources(R.color.new_tab_button_tint_list,
-                R.color.new_tab_button_pressed_tint, R.color.modern_white,
+                R.color.new_tab_button_pressed_tint_list, R.color.modern_white,
                 R.color.default_icon_color_blue_light);
         mNewTabButton.setIncognito(incognito);
         mNewTabButton.setY(NEW_TAB_BUTTON_Y_OFFSET_DP);
