@@ -6211,7 +6211,7 @@
   {
     "name": "web-midi",
     "owners": [ "reillyg", "hongchan", "deviceapi-team@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 109
   },
   {
     "name": "web-otp-backend",
