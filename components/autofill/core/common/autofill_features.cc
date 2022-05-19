@@ -472,6 +472,13 @@ const base::Feature kAutofillSharedAutofill{"AutofillSharedAutofill",
 const base::FeatureParam<bool> kAutofillSharedAutofillRelaxedParam{
     &kAutofillSharedAutofill, "relax_shared_autofill", false};
 
+// Controls whether Manual fallbacks would be shown in the context menu for
+// filling. Used only in Desktop.
+// TODO(crbug.com/1326895): Clean up when launched.
+const base::Feature kAutofillShowManualFallbackInContextMenu{
+    "AutofillShowManualFallbackInContextMenu",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls attaching the autofill type predictions to their respective
 // element in the DOM.
 const base::Feature kAutofillShowTypePredictions{

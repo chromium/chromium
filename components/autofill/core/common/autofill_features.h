@@ -171,6 +171,8 @@ extern const base::Feature kAutofillSharedAutofill;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillSharedAutofillRelaxedParam;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillShowManualFallbackInContextMenu;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillShowTypePredictions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillSilentProfileUpdateForInsufficientImport;
