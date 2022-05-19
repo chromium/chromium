@@ -32,10 +32,11 @@ public final class FeedFeatures {
 
     /**
      * @return Whether the feed is allowed to be used. Returns false if the feed is disabled due to
-     *         enterprise policy. The value returned should not be cached as it may change.
+     *         enterprise policy, or by flag. The value returned should not be cached as it may
+     * change.
      */
     public static boolean isFeedEnabled() {
-        return getPrefService().getBoolean(Pref.ENABLE_SNIPPETS);
+        return FeedServiceBridge.isEnabled();
     }
 
     /**

@@ -643,6 +643,16 @@ public class NewTabPageTest {
         });
     }
 
+    @Test
+    @MediumTest
+    @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
+    @Features.EnableFeatures(ChromeFeatureList.FEED_ABLATION)
+    public void testRender_LoadNewTabPageWithDisabledFeed() throws IOException {
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().getActivityTab().getNativePage().getView(),
+                "feed_is_ablated");
+    }
+
     private void assertThumbnailInvalidAndRecapture() {
         Assert.assertTrue(mNtp.shouldCaptureThumbnail());
         captureThumbnail();

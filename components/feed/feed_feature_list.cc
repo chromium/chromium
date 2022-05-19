@@ -116,4 +116,6 @@ const base::Feature kInfoCardAcknowledgementTracking{
 const base::Feature kShareCrowButton{"ShareCrowButton",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIsAblated{"FeedAblation",
+                               base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace feed

@@ -106,6 +106,8 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kAccountTokenFetchTimedOut";
     case LoadStreamStatus::kNetworkFetchTimedOut:
       return out << "kNetworkFetchTimedOut";
+    case LoadStreamStatus::kLoadNotAllowedDisabled:
+      return out << "kLoadNotAllowedDisabled";
   }
 #else
   return out << (static_cast<int>(value));
@@ -147,6 +149,7 @@ bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status) {
     case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
     case LoadStreamStatus::kAccountTokenFetchTimedOut:
     case LoadStreamStatus::kNetworkFetchTimedOut:
+    case LoadStreamStatus::kLoadNotAllowedDisabled:
       return false;
   }
 }
@@ -238,6 +241,8 @@ base::StringPiece ToString(UserSettingsOnStart v) {
       return "SignedInWaaOffDpOff";
     case UserSettingsOnStart::kSignedInNoRecentData:
       return "SignedInNoRecentData";
+    case UserSettingsOnStart::kFeedNotEnabled:
+      return "FeedNotEnabled";
   }
   return "Unknown";
 }

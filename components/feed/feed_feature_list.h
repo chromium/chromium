@@ -116,6 +116,9 @@ extern const base::Feature kInfoCardAcknowledgementTracking;
 // component, since it is being used in the feed component.
 extern const base::Feature kShareCrowButton;
 
+// Feature that when enabled completely removes all Feeds from chrome.
+extern const base::Feature kIsAblated;
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_

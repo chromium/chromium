@@ -116,7 +116,7 @@ void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(
 }
 
 bool FeedV2InternalsPageHandler::IsFeedAllowed() {
-  return pref_service_->GetBoolean(feed::prefs::kEnableSnippets);
+  return feed::FeedService::IsEnabled(*pref_service_);
 }
 
 void FeedV2InternalsPageHandler::GetFeedHistograms(

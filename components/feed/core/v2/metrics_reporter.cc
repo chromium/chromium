@@ -182,9 +182,12 @@ UserSettingsOnStart GetUserSettingsOnStart(
     bool isEnabledByEnterprisePolicy,
     bool isFeedVisible,
     bool isSignedIn,
+    bool isEnabled,
     const feedstore::Metadata& metadata) {
   if (!isEnabledByEnterprisePolicy)
     return UserSettingsOnStart::kFeedNotEnabledByPolicy;
+  if (!isEnabled)
+    return UserSettingsOnStart::kFeedNotEnabled;
   if (!isFeedVisible) {
     if (isSignedIn)
       return UserSettingsOnStart::kFeedNotVisibleSignedIn;
@@ -252,9 +255,11 @@ void MetricsReporter::OnMetadataInitialized(
     bool isEnabledByEnterprisePolicy,
     bool isFeedVisible,
     bool isSignedIn,
+    bool isEnabled,
     const feedstore::Metadata& metadata) {
-  UserSettingsOnStart settings = GetUserSettingsOnStart(
-      isEnabledByEnterprisePolicy, isFeedVisible, isSignedIn, metadata);
+  UserSettingsOnStart settings =
+      GetUserSettingsOnStart(isEnabledByEnterprisePolicy, isFeedVisible,
+                             isSignedIn, isEnabled, metadata);
   delegate_->RegisterFeedUserSettingsFieldTrial(ToString(settings));
   base::UmaHistogramEnumeration("ContentSuggestions.Feed.UserSettingsOnStart",
                                 settings);

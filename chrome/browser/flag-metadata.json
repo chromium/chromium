@@ -3181,6 +3181,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "feed-ablation",
+    "owners": [ "//chrome/android/feed/OWNERS", "dewittj@chromium.org" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "feed-back-to-top",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 101

@@ -86,7 +86,8 @@ enum class LoadStreamStatus {
   kAccountTokenFetchFailedWrongAccount = 27,
   kAccountTokenFetchTimedOut = 28,
   kNetworkFetchTimedOut = 29,
-  kMaxValue = kNetworkFetchTimedOut,
+  kLoadNotAllowedDisabled = 30,
+  kMaxValue = kLoadNotAllowedDisabled,
 };
 
 // Were we able to load fresh Feed data. This should be 'true' unless some kind
@@ -181,7 +182,9 @@ enum class UserSettingsOnStart {
   // The Feed is enabled, but there is no recent Feed data, so user settings
   // state is unknown.
   kSignedInNoRecentData = 8,
-  kMaxValue = kSignedInNoRecentData,
+  // The Feed is disabled.
+  kFeedNotEnabled = 9,
+  kMaxValue = kFeedNotEnabled,
 };
 base::StringPiece ToString(UserSettingsOnStart v);
 std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);
