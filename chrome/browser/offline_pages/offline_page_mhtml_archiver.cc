@@ -28,11 +28,14 @@
 
 namespace offline_pages {
 namespace {
+
 void DeleteFileOnFileThread(const base::FilePath& file_path,
                             base::OnceClosure callback) {
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::GetDeleteFileCallback(file_path), std::move(callback));
+      base::GetDeleteFileCallback(
+          file_path, base::OnceCallback<void(bool)>(base::DoNothing())
+                         .Then(std::move(callback))));
 }
 
 // Compute a SHA256 digest using a background thread. The computed digest will
