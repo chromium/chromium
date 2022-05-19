@@ -392,9 +392,6 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
                policy_map, 2 /*BlockGeolocation*/, &filtered_policies);
   MapBoolToBool("unmuteMicrophoneDisabled", policy::key::kAudioCaptureAllowed,
                 policy_map, /* invert_bool_value */ true, &filtered_policies);
-  MapBoolToBool("mountPhysicalMediaDisabled",
-                policy::key::kExternalStorageDisabled, policy_map,
-                /* invert_bool_value */ false, &filtered_policies);
   MapObjectToPresenceBool("setWallpaperDisabled", policy::key::kWallpaperImage,
                           policy_map, &filtered_policies, {"url", "hash"});
   MapBoolToBool("vpnConfigDisabled", policy::key::kVpnConfigAllowed, policy_map,
@@ -408,6 +405,14 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   filtered_policies.SetBoolKey("apkCacheEnabled", is_affiliated);
 
   filtered_policies.SetStringKey("guid", guid);
+
+  // Always allow mounting physical media because mounts are controlled outside
+  // of ARC based on policy in file_manager::VolumeManager.
+  // Since this Android policy used to be mapped from Chrome-side policy
+  // policy::key::kExternalStoragePolicy before, we hard-code it to false to
+  // ensure that the old policy setting does not remain on the ARC side.
+  // See b/217531658 for details.
+  filtered_policies.SetBoolKey("mountPhysicalMediaDisabled", false);
 
   AddRequiredKeyPairs(cert_store_service, &filtered_policies);
   AddChoosePrivateKeyRuleToPolicy(policy_service, cert_store_service,
