@@ -64,6 +64,9 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
       int listener_process_id,
       content::WebContents* web_contents);
 
+  // Undoes the Register call above. May result in disabling of automation.
+  void UnregisterListenerWithDesktopPermission(int lsitener_process_id);
+
   // The following two methods should only be called by Lacros.
   void NotifyAllAutomationExtensionsGone();
   void NotifyExtensionListenerAdded();

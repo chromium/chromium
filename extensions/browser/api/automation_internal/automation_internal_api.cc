@@ -786,6 +786,21 @@ AutomationInternalEnableDesktopFunction::Run() {
 #endif  // defined(USE_AURA)
 }
 
+ExtensionFunction::ResponseAction
+AutomationInternalDisableDesktopFunction::Run() {
+#if defined(USE_AURA)
+  const AutomationInfo* automation_info = AutomationInfo::Get(extension());
+  if (!automation_info || !automation_info->desktop)
+    return RespondNow(Error("desktop permission must be requested"));
+
+  AutomationEventRouter::GetInstance()->UnregisterListenerWithDesktopPermission(
+      source_process_id());
+  return RespondNow(NoArguments());
+#else
+  return RespondNow(Error("getDesktop is unsupported by this platform"));
+#endif  // defined(USE_AURA)
+}
+
 // static
 int AutomationInternalQuerySelectorFunction::query_request_id_counter_ = 0;
 

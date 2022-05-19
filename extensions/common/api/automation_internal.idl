@@ -137,6 +137,10 @@ namespace automationInternal {
   // tree id of the desktop tree.
   callback EnableDesktopCallback = void(DOMString tree_id);
 
+  // Callback called when disableDesktop() returns. It is safe to clear
+  // accessibility api state at that point.
+  callback DisableDesktopCallback = void();
+
   // Callback called when querySelector() returns.
   callback QuerySelectorCallback = void(long resultAutomationNodeID);
 
@@ -153,6 +157,9 @@ namespace automationInternal {
     // Enables desktop automation.
     [supportsPromises] static void enableDesktop(
         EnableDesktopCallback callback);
+
+    // Disables desktop automation.
+    static void disableDesktop(DisableDesktopCallback callback);
 
     // Performs an action on an automation node.
     static void performAction(PerformActionRequiredParams args,
@@ -184,5 +191,7 @@ namespace automationInternal {
     static void onAccessibilityTreeSerializationError(DOMString treeID);
 
     static void onActionResult(DOMString treeID, long requestID, boolean result);
+
+    static void onAllAutomationEventListenersRemoved();
   };
 };

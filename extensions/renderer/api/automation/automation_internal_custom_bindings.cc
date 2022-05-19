@@ -484,11 +484,12 @@ class NodeIDPlusDimensionsWrapper
   NodeIDPlusDimensionsFunction function_;
 };
 
-using NodeIDPlusEventFunction = void (*)(v8::Isolate* isolate,
-                                         v8::ReturnValue<v8::Value> result,
-                                         AutomationAXTreeWrapper* tree_wrapper,
-                                         ui::AXNode* node,
-                                         api::automation::EventType event_type);
+typedef std::function<void(v8::Isolate* isolate,
+                           v8::ReturnValue<v8::Value> result,
+                           AutomationAXTreeWrapper* tree_wrapper,
+                           ui::AXNode* node,
+                           api::automation::EventType event_type)>
+    NodeIDPlusEventFunction;
 
 class NodeIDPlusEventWrapper
     : public base::RefCountedThreadSafe<NodeIDPlusEventWrapper> {
@@ -629,6 +630,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
   ROUTE_FUNCTION(IsInteractPermitted);
   ROUTE_FUNCTION(GetSchemaAdditions);
   ROUTE_FUNCTION(StartCachingAccessibilityTrees);
+  ROUTE_FUNCTION(StopCachingAccessibilityTrees);
   ROUTE_FUNCTION(DestroyAccessibilityTree);
   ROUTE_FUNCTION(AddTreeChangeObserver);
   ROUTE_FUNCTION(RemoveTreeChangeObserver);
@@ -1726,17 +1728,19 @@ void AutomationInternalCustomBindings::AddRoutes() {
   });
   RouteNodeIDPlusEventFunction(
       "EventListenerAdded",
-      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
-         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
-         api::automation::EventType event_type) {
+      [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+             AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
+             api::automation::EventType event_type) {
         tree_wrapper->EventListenerAdded(event_type, node);
+        TreeEventListenersChanged(tree_wrapper);
       });
   RouteNodeIDPlusEventFunction(
       "EventListenerRemoved",
-      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
-         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
-         api::automation::EventType event_type) {
+      [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+             AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
+             api::automation::EventType event_type) {
         tree_wrapper->EventListenerRemoved(event_type, node);
+        TreeEventListenersChanged(tree_wrapper);
       });
 }
 
@@ -1798,6 +1802,14 @@ void AutomationInternalCustomBindings::StartCachingAccessibilityTrees(
     message_filter_ = base::MakeRefCounted<AutomationMessageFilter>(
         this, std::move(task_runner));
   }
+}
+
+void AutomationInternalCustomBindings::StopCachingAccessibilityTrees(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  message_filter_.reset();
+  tree_change_observers_.clear();
+  tree_id_to_tree_wrapper_map_.clear();
+  AutomationAXTreeWrapper::GetChildTreeIDReverseMap().clear();
 }
 
 void AutomationInternalCustomBindings::GetSchemaAdditions(
@@ -2450,6 +2462,10 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
         nullptr, context());
     return;
   }
+
+  // After handling events in js, if the client did not add any event listeners,
+  // shut things down.
+  TreeEventListenersChanged(tree_wrapper);
 }
 
 void AutomationInternalCustomBindings::OnAccessibilityLocationChange(
@@ -2949,6 +2965,25 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
   }
 
   return gfx::ToEnclosingRect(bounds);
+}
+
+void AutomationInternalCustomBindings::TreeEventListenersChanged(
+    AutomationAXTreeWrapper* tree_wrapper) {
+  if (tree_wrapper->EventListenerCount() != 0) {
+    trees_with_event_listeners_.insert(tree_wrapper->GetTreeID());
+    return;
+  }
+
+  if (trees_with_event_listeners_.empty())
+    return;
+
+  trees_with_event_listeners_.erase(tree_wrapper->GetTreeID());
+  if (!trees_with_event_listeners_.empty())
+    return;
+
+  bindings_system_->DispatchEventInContext(
+      "automationInternal.onAllAutomationEventListenersRemoved",
+      base::Value::List(), nullptr, context());
 }
 
 }  // namespace extensions

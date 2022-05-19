@@ -648,6 +648,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
                                {.page_url = "iframenav.html"}))
       << message_;
 }
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, AddRemoveEventListeners) {
+  StartEmbeddedTestServer();
+  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
+                               {.page_url = "add_remove_event_listeners.html"}))
+      << message_;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
