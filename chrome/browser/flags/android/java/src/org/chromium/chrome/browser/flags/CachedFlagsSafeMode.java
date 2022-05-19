@@ -233,6 +233,11 @@ class CachedFlagsSafeMode {
         TraceEvent.begin("writeSafeValues");
         SharedPreferences.Editor editor = getSafeValuePreferences().edit();
 
+        // Remove values from other versions, since leftover values from previous version are not
+        // safe for the current one. Most will get overwritten, but there is no guarantee that all
+        // will.
+        editor.clear();
+
         synchronized (safeValuesReturned.boolValues) {
             for (Entry<String, Boolean> pair : safeValuesReturned.boolValues.entrySet()) {
                 editor.putBoolean(pair.getKey(), pair.getValue());
