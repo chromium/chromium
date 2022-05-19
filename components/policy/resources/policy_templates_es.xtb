@@ -4950,7 +4950,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="640827304541402854">Inhabilitar cruce de cortafuegos desde un host de acceso remoto</translation>
 <translation id="6412352702230183710">Permitir solo hosts de mensajes nativos a nivel de sistema</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
-<translation id="6422575351619065453">En modo kiosco, permite controlar si se muestra el menú de accesibilidad flotante.
+<translation id="6422575351619065453">En modo Kiosco, permite controlar si se muestra el menú de accesibilidad flotante.
 
       Si se habilita esta política, el menú de accesibilidad flotante se mostrará siempre.
 
@@ -5184,7 +5184,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se le asigna el valor "False" o no se le asigna ninguno, se inhabilitará en el teclado en pantalla.
 
-      Nota: Esta política solo está disponible en modo kiosco de PWA.</translation>
+      Nota: Esta política solo está disponible en modo Kiosco de PWA.</translation>
 <translation id="6647965994887675196">Si se establece el valor "true", se permitirá la creación y el uso de usuarios supervisados.
 
           Si se establece el valor "false" o no se configura la política, se inhabilitarán el inicio de sesión y la creación de usuarios supervisados y se ocultarán todos los usuarios supervisados creados anteriormente.

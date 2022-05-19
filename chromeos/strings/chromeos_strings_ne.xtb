@@ -422,7 +422,7 @@
 <translation id="5691511426247308406">परिवार</translation>
 <translation id="5695599963893094957">आफ्नो किबोर्डको कुनै की थिच्नुहोस्। तपाईं एकै पटकमा ४ वटासम्म कीहरू थिच्न सक्नुहुन्छ।</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
-<translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> औँ पेज</translation>
+<translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> पृष्ठ</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट गर्नुहोस्</translation>
 <translation id="5760715441271661976">पोर्टलको स्थिति</translation>
 <translation id="576835345334454681">डिस्प्लेको चमक बढाउने की</translation>
@@ -717,7 +717,7 @@
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} औँ पेज स्क्यान गर्नुहोस्}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}}</translation>
 <translation id="8997710128084572139">यो डिभाइसमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="9003704114456258138">फ्रिक्वेन्सी</translation>
 <translation id="9039663905644212491">PEAP</translation>
