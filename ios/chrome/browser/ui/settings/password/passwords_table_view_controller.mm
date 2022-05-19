@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -118,6 +119,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOnDeviceEncryptionSetUp,
   ItemTypeOnDeviceEncryptionOptedInDescription,
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
+};
+
+// State of on-device encryption used for
+// ItemTypeOnDeviceEncryptionOptInDescription, ItemTypeOnDeviceEncryptionSetUp
+// and ItemTypeOnDeviceEncryptionSetUp.
+typedef NS_ENUM(NSInteger, OnDeviceEncryptionState) {
+  // On device encryption is on.
+  // ItemTypeOnDeviceEncryptionOptInDescription is shown.
+  OnDeviceEncryptionStateOptedIn,
+  // User can opt-in on device encryption.
+  // ItemTypeOnDeviceEncryptionOptInDescription and
+  // ItemTypeOnDeviceEncryptionSetUp are shown.
+  OnDeviceEncryptionStateOfferOptIn,
+  // User can not opt-in in their current state.
+  // Currently it is either because:
+  // * User is not signed-in,
+  // * User hasn’t opted in to or disabled Sync for passwords (or equivalent
+  // enterprise policies),
+  // * User has a custom passphrase.
+  // SectionIdentifierOnDeviceEncryption is hidden.
+  OnDeviceEncryptionStateNotShown,
 };
 
 std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
@@ -635,42 +657,36 @@ bool IsFaviconEnabled() {
 - (void)updateOnDeviceEncryptionSessionWithUpdateTableView:
     (BOOL)updateTableView {
   OnDeviceEncryptionState oldState = self.onDeviceEncryptionStateInModel;
-  OnDeviceEncryptionState newState =
-      self.navigationItem.searchController.active
-          ? OnDeviceEncryptionStateNotShown
-          : [self.delegate onDeviceEncryptionState];
+  OnDeviceEncryptionState newState = [self onDeviceEncryptionState];
   if (newState == oldState) {
     return;
   }
   self.onDeviceEncryptionStateInModel = newState;
   TableViewModel* model = self.tableViewModel;
 
+  // Index of the OnDeviceEncryption section if it exists.
+  // Index where it should be added if it does not exists.
+  NSInteger sectionIdentifierOnDeviceEncryptionIndex =
+      [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck] + 1;
+  NSIndexSet* sectionIdentifierOnDeviceEncryptionIndexSet =
+      [NSIndexSet indexSetWithIndex:sectionIdentifierOnDeviceEncryptionIndex];
+
   if (newState == OnDeviceEncryptionStateNotShown) {
-    // Previous state was not `OnDeviceEncryptionStateNotShown`, which means the
+    // Previous state was not `OnDeviceEncryptionStateNotShown`, wich mean the
     // section `SectionIdentifierOnDeviceEncryption` exists and must be removed.
     // It also mean the table view is not yet shown and thus should not be
     // updated.
-    DCHECK(updateTableView);
+    DCHECK(!updateTableView);
     [self clearSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
                     withRowAnimation:UITableViewRowAnimationAutomatic];
     return;
   }
-  NSInteger onDeviceEncryptionSectionIndex = NSNotFound;
 
   if (oldState == OnDeviceEncryptionStateNotShown) {
-    NSInteger passwordCheckSectionIndex =
-        [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
-    DCHECK_NE(NSNotFound, passwordCheckSectionIndex);
-    onDeviceEncryptionSectionIndex = passwordCheckSectionIndex + 1;
-    [model insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
-                               atIndex:onDeviceEncryptionSectionIndex];
-  } else {
-    onDeviceEncryptionSectionIndex =
-        [model sectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption];
+    [model
+        insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
+                            atIndex:sectionIdentifierOnDeviceEncryptionIndex];
   }
-  DCHECK_NE(NSNotFound, onDeviceEncryptionSectionIndex);
-  NSIndexSet* sectionIdentifierOnDeviceEncryptionIndexSet =
-      [NSIndexSet indexSetWithIndex:onDeviceEncryptionSectionIndex];
 
   [model deleteAllItemsFromSectionWithIdentifier:
              SectionIdentifierOnDeviceEncryption];
@@ -1845,6 +1861,21 @@ bool IsFaviconEnabled() {
                                   animated:NO];
     self.legacyMostRecentlyUpdatedItem = nil;
   }
+}
+
+// Returns the on-device encryption state according to the sync service.
+- (OnDeviceEncryptionState)onDeviceEncryptionState {
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(_browserState);
+  if (ShouldOfferTrustedVaultOptIn(syncService)) {
+    return OnDeviceEncryptionStateOfferOptIn;
+  }
+  syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
+  if (syncUserSettings->GetPassphraseType() ==
+      syncer::PassphraseType::kTrustedVaultPassphrase) {
+    return OnDeviceEncryptionStateOptedIn;
+  }
+  return OnDeviceEncryptionStateNotShown;
 }
 
 // Notifies accessibility to focus on the Password Check Status cell when its
