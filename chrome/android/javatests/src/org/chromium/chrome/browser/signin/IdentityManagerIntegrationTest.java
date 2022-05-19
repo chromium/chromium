@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -21,12 +22,15 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -52,6 +56,9 @@ public class IdentityManagerIntegrationTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Rule
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private static final String TEST_ACCOUNT1 = "foo@gmail.com";
     private static final String TEST_ACCOUNT2 = "bar@gmail.com";
@@ -340,7 +347,7 @@ public class IdentityManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"enable-features=AllowSyncOffForChildAccounts"})
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void testRevokeSyncConsent_whenSyncOffAlwaysAllowed_disablesSync() {
         // Add account.
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
@@ -366,6 +373,7 @@ public class IdentityManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
     public void testRevokeSyncConsent_whenSyncOffNotAlwaysAllowed_signsOut() {
         // Add accounts.
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();

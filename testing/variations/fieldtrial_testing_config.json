@@ -62,6 +62,21 @@
             ]
         }
     ],
+    "AllowSyncOffForChildAccounts": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_448423144",
+                    "enable_features": [
+                        "AllowSyncOffForChildAccounts"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnchorElementInteractionPreloader": [
         {
             "platforms": [
