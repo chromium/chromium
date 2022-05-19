@@ -377,6 +377,10 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_chromeos_asan_rel_ng",
+    mirrors = [
+        "ci/Linux Chromium OS ASan LSan Builder",
+        "ci/Linux Chromium OS ASan LSan Tests (1)",
+    ],
     goma_jobs = goma.jobs.J150,
     # TODO(crbug/1144484): Remove this timeout once we figure out the
     # regression in compiler or toolchain.
