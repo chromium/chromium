@@ -288,6 +288,8 @@ def _OptimizeWithR8(options,
 
     # R8 OOMs with the default xmx=1G.
     cmd = build_utils.JavaCmd(options.warnings_as_errors, xmx='2G') + [
+        # Needed for -whyareyounotinlining.
+        '-Dcom.android.tools.r8.allowTestProguardOptions=1',
         '-Dcom.android.tools.r8.disableHorizontalClassMerging=1',
     ]
     if options.dump_inputs:
@@ -306,6 +308,8 @@ def _OptimizeWithR8(options,
     if options.disable_checks:
       # Info level priority logs are not printed by default.
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'info']
+    elif not options.warnings_as_errors:
+      cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'warning']
 
     if options.desugar_jdk_libs_json:
       cmd += [
@@ -439,6 +443,8 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
   for path in dex_files:
     cmd += ['--source', path]
 
+  failed_holder = [False]
+
   def stderr_filter(stderr):
     ignored_lines = [
         # Summary contains warning count, which our filtering makes wrong.
@@ -482,6 +488,7 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
         stderr, '|'.join(re.escape(x) for x in ignored_lines))
     if stderr:
       if 'Missing' in stderr:
+        failed_holder[0] = True
         stderr = 'TraceReferences failed: ' + error_title + """
 Tip: Build with:
         is_java_debug=false
@@ -509,6 +516,7 @@ https://chromium.googlesource.com/chromium/src.git/+/main/docs/ui/android/byteco
                           print_stdout=True,
                           stderr_filter=stderr_filter,
                           fail_on_output=warnings_as_errors)
+  return failed_holder[0]
 
 
 def _CombineConfigs(configs,
@@ -638,8 +646,10 @@ def _DoTraceReferencesChecks(options, split_contexts_by_name):
   error_title = 'DEX contains references to non-existent symbols after R8.'
   dex_files = sorted(c.final_output_path
                      for c in split_contexts_by_name.values())
-  _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
-                          options.warnings_as_errors, error_title)
+  if _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
+                             options.warnings_as_errors, error_title):
+    # Failed but didn't raise due to warnings_as_errors=False
+    return
 
   for context_set in context_sets:
     # Ensure there are no references from base -> chrome module, or from
@@ -651,8 +661,10 @@ def _DoTraceReferencesChecks(options, split_contexts_by_name):
     # run 3 of them (all, base, base+chrome).
     # We could run them concurrently, to shave off 5-6 seconds, but would need
     # to make sure that the order is maintained.
-    _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
-                            options.warnings_as_errors, error_title)
+    if _CheckForMissingSymbols(options.r8_path, dex_files, options.classpath,
+                               options.warnings_as_errors, error_title):
+      # Failed but didn't raise due to warnings_as_errors=False
+      return
 
 
 def main():
