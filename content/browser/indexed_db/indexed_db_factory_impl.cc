@@ -730,7 +730,6 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
                      bucket_locator);
 
     if (disk_full) {
-      // TODO(crbug.com/1322226): Use bucket variant when available.
       context_->quota_manager_proxy()->NotifyWriteFailed(
           bucket_locator.storage_key);
       return {IndexedDBBucketStateHandle(), s,
@@ -973,7 +972,6 @@ void IndexedDBFactoryImpl::OnDatabaseError(
     HandleBackingStoreCorruption(bucket_locator, error);
   } else {
     if (status.IsIOError()) {
-      // TODO(crbug.com/1322226): Use bucket variant when available.
       context_->quota_manager_proxy()->NotifyWriteFailed(
           bucket_locator.storage_key);
     }
