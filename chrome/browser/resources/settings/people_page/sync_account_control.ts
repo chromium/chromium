@@ -14,7 +14,7 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './profile_info_browser_proxy.js';
-import '../icons.js';
+import '../icons.html.js';
 import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 

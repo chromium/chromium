@@ -8,9 +8,10 @@
  * card that contains the welcome screen and its description.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import './privacy_guide_fragment_shared_css.js';
+import './privacy_guide_fragment_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getTemplate} from './privacy_guide_welcome_fragment.html.js';
 
 export interface PrivacyGuideWelcomeFragmentElement {

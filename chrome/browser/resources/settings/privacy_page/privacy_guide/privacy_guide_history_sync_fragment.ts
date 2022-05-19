@@ -9,8 +9,8 @@
  */
 import '../../prefs/prefs.js';
 import './privacy_guide_description_item.js';
-import './privacy_guide_fragment_shared_css.js';
-import './privacy_guide_fragment_shared_css.js';
+import './privacy_guide_fragment_shared.css.js';
+import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';

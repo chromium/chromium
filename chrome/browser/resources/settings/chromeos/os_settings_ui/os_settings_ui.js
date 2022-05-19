@@ -20,7 +20,7 @@ import '../os_settings_main/os_settings_main.js';
 import '../os_toolbar/os_toolbar.js';
 import '../../settings_shared_css.js';
 import '../../prefs/prefs.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 
 import {CrContainerShadowBehavior} from '//resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';

@@ -8,7 +8,7 @@ import '//resources/cr_elements/chromeos/cros_color_overrides.m.js';
 import '//resources/cr_elements/search_highlight_style.css.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
-import './settings_vars_css.js';
+import './settings_vars.css.js';
 
 const styleMod = document.createElement('dom-module');
 styleMod.innerHTML = `{__html_template__}`;

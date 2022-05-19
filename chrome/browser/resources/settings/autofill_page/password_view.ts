@@ -17,7 +17,7 @@ import '../controls/password_prompt_dialog.js';
 import '../settings_shared_css.js';
 import './password_edit_dialog.js';
 import './password_remove_dialog.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

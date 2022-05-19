@@ -397,7 +397,7 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "controls/settings_boolean_control_mixin.js",
     "extension_control_browser_proxy.js",
     "i18n_setup.js",
-    "icons.js",
+    "icons.html.js",
     "lifetime_browser_proxy.js",
     "open_window_proxy.js",
     "people_page/profile_info_browser_proxy.js",
@@ -409,9 +409,9 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "privacy_page/privacy_page_browser_proxy.js",
     "relaunch_mixin.js",
     "setting_id_param_util.js",
-    "settings_page_css.js",
+    "settings_page_styles.css.js",
     "settings_shared_css.js",
-    "settings_vars_css.js",
+    "settings_vars.css.js",
   ]
 
   foreach(f, settings_web_component_files) {

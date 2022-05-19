@@ -16,7 +16,7 @@ import '../../controls/extension_controlled_indicator.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 import '../google_assistant_page/google_assistant_page.js';
 import './search_subpage.js';
 import './search_engine.js';

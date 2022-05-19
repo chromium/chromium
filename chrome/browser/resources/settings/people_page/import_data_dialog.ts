@@ -13,8 +13,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../controls/settings_checkbox.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.js';
-import '../settings_vars_css.js';
+import '../icons.html.js';
+import '../settings_vars.css.js';
 import '../i18n_setup.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';

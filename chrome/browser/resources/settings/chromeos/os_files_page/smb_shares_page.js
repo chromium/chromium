@@ -9,7 +9,7 @@ import '//resources/js/action_link.js';
 import '//resources/cr_elements/action_link_css.m.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

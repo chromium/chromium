@@ -8,6 +8,7 @@ import("//crypto/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
@@ -157,11 +158,12 @@ preprocess_if_expr("preprocess_generated") {
   defines = chrome_grit_defines
   deps = [
     ":css_wrapper_files",
+    ":css_wrapper_files_old",
     ":html_wrapper_files",
   ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files
+  in_files = html_wrapper_files + css_wrapper_files + css_wrapper_files_old
 }
 
 grit("resources") {
@@ -256,12 +258,16 @@ js_library("setting_id_param_util") {
   extra_deps = [ ":build_ts" ]
 }
 
-html_to_js("css_wrapper_files") {
-  js_files = css_wrapper_files
+html_to_js("css_wrapper_files_old") {
+  js_files = css_wrapper_files_old
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
+  in_files = html_files + icons_html_files
+}
+
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
 }
 
 ts_library("build_ts") {
@@ -269,7 +275,8 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files
+  in_files =
+      ts_files + css_wrapper_files + css_wrapper_files_old + html_wrapper_files
 
   deps = [
     "//third_party/polymer/v3_0:library",

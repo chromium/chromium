@@ -4,7 +4,7 @@
 
 import '//resources/cr_components/chromeos/network/network_icon.m.js';
 import '../../settings_shared_css.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 import './multidevice_feature_item.js';
 
 import {MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';

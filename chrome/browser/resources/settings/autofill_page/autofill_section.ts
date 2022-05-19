@@ -18,7 +18,7 @@ import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
-import './passwords_shared_css.js';
+import './passwords_shared.css.js';
 import '../i18n_setup.js';
 
 import {I18nMixin} from '//resources/js/i18n_mixin.js';

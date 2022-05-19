@@ -14,7 +14,7 @@ import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 import './home_url_input.js';
 import '../controls/settings_dropdown_menu.js';
 
@@ -23,8 +23,7 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {AppearancePageVisibility} from '../page_visibility.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';

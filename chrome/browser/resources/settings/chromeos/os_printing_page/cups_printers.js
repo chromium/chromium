@@ -24,7 +24,7 @@ import './cups_printer_shared_css.js';
 import './cups_saved_printers.js';
 import './cups_nearby_printers.js';
 import '//resources/cr_components/localized_link/localized_link.js';
-import '../../icons.js';
+import '../../icons.html.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/network/network_listener_behavior.m.js';

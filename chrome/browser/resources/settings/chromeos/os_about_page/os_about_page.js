@@ -7,12 +7,12 @@
  * information.
  */
 
-import '../../icons.js';
+import '../../icons.html.js';
 import '../../prefs/prefs.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_page_css.js';
+import '../../settings_page_styles.css.js';
 import '../../settings_shared_css.js';
 import '../os_icons.js';
 import '../os_reset_page/os_powerwash_dialog.js';

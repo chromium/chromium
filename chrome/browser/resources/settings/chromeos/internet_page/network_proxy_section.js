@@ -15,7 +15,7 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/hidden_style_css.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../controls/extension_controlled_indicator.js';
-import '../../settings_vars_css.js';
+import '../../settings_vars.css.js';
 import './internet_shared_css.js';
 import '../../controls/settings_toggle_button.js';
 

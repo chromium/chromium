@@ -18,7 +18,7 @@ import './sync_account_control.js';
 import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
 import '../settings_shared_css.js';
-import '../settings_vars_css.js';
+import '../settings_vars.css.js';
 // <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
