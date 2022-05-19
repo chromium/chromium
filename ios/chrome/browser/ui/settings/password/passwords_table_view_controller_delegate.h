@@ -7,6 +7,27 @@
 
 #import <Foundation/Foundation.h>
 
+// State of on-device encryption used for
+// ItemTypeOnDeviceEncryptionOptInDescription, ItemTypeOnDeviceEncryptionSetUp
+// and ItemTypeOnDeviceEncryptionSetUp.
+typedef NS_ENUM(NSInteger, OnDeviceEncryptionState) {
+  // On device encryption is on.
+  // ItemTypeOnDeviceEncryptionOptInDescription is shown.
+  OnDeviceEncryptionStateOptedIn,
+  // User can opt-in on device encryption.
+  // ItemTypeOnDeviceEncryptionOptInDescription and
+  // ItemTypeOnDeviceEncryptionSetUp are shown.
+  OnDeviceEncryptionStateOfferOptIn,
+  // User can not opt-in in their current state.
+  // Currently it is either because:
+  // * User is not signed-in,
+  // * User hasn’t opted in to or disabled Sync for passwords (or equivalent
+  // enterprise policies),
+  // * User has a custom passphrase.
+  // SectionIdentifierOnDeviceEncryption is hidden.
+  OnDeviceEncryptionStateNotShown,
+};
+
 namespace password_manager {
 struct PasswordForm;
 }
@@ -29,6 +50,9 @@ struct PasswordForm;
 
 // Returns detailed information about Password Check error if applicable.
 - (NSAttributedString*)passwordCheckErrorInfo;
+
+// Returns the on-device encryption state according to the sync service.
+- (OnDeviceEncryptionState)onDeviceEncryptionState;
 
 @end
 
