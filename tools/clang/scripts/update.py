@@ -163,7 +163,7 @@ def DownloadAndUnpack(url, output_dir, path_prefixes=None):
       assert path_prefixes is None
       zipfile.ZipFile(f).extractall(path=output_dir)
     else:
-      t = tarfile.open(mode='r:gz', fileobj=f)
+      t = tarfile.open(mode='r:*', fileobj=f)
       members = None
       if path_prefixes is not None:
         members = [m for m in t.getmembers()
