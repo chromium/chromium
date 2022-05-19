@@ -84,7 +84,7 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   void SetRequestTimeoutForTest(base::TimeDelta timeout) override;
 
   // Sets up the socket used for accepting new connections.
-  void CreateSocket();
+  void CreateSocket(bool success);
 
   // Starts listening for connection.
   void DoAccept();
@@ -170,16 +170,22 @@ void SecurityKeyAuthHandlerPosix::CreateSecurityKeyConnection() {
   // blocking function call which cannot be run on the main thread.  Once
   // that task has completed, the main thread will be called back and we will
   // resume setting up our security key auth socket there.
-  file_task_runner_->PostTaskAndReply(
-      FROM_HERE, base::GetDeleteFileCallback(g_security_key_socket_name.Get()),
-      base::BindOnce(&SecurityKeyAuthHandlerPosix::CreateSocket,
-                     weak_factory_.GetWeakPtr()));
+  file_task_runner_->PostTask(
+      FROM_HERE, base::GetDeleteFileCallback(
+                     g_security_key_socket_name.Get(),
+                     base::BindOnce(&SecurityKeyAuthHandlerPosix::CreateSocket,
+                                    weak_factory_.GetWeakPtr())));
 }
 
-void SecurityKeyAuthHandlerPosix::CreateSocket() {
+void SecurityKeyAuthHandlerPosix::CreateSocket(bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
   HOST_LOG << "Listening for security key requests on "
            << g_security_key_socket_name.Get().value();
+
+  if (!success) {
+    LOG(ERROR) << "Delete g_security_key_socket_name failed";
+    return;
+  }
 
   auth_socket_ = std::make_unique<net::UnixDomainServerSocket>(
       base::BindRepeating(MatchUid), false);
