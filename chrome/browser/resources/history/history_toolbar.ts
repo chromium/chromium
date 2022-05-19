@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_style.js';
+import './shared_style.css.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';

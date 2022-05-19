@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './history_item.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';

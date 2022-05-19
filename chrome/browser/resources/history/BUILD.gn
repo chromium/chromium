@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -100,12 +100,12 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("css_wrapper_files") {
-  js_files = css_wrapper_files
+css_to_wrapper("css_wrapper_files") {
+  in_files = css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
+  in_files = html_files + icons_html_files
 }
 
 ts_library("build_ts") {

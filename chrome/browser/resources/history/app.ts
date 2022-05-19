@@ -12,7 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './history_list.js';
 import './history_toolbar.js';
 import './query_manager.js';
-import './shared_style.js';
+import './shared_style.css.js';
 import './side_bar.js';
 import './strings.m.js';
 
