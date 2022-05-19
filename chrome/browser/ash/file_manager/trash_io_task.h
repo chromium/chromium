@@ -48,14 +48,19 @@ struct TrashEntry {
 };
 
 struct DirectoryInfo {
-  explicit DirectoryInfo(int64_t free_space);
+  DirectoryInfo(storage::FileSystemURL supplied_trash_files,
+                storage::FileSystemURL supplied_trash_info,
+                int64_t supplied_free_space);
   ~DirectoryInfo();
 
   DirectoryInfo(DirectoryInfo&& other);
   DirectoryInfo& operator=(DirectoryInfo&& other);
 
-  // TODO(b/231830211): Store the .Trash/{files/info} storage::FileSystemURLs to
-  // enable creating the directory on the file_system_context_.
+  // The location of the .Trash/files folder.
+  storage::FileSystemURL trash_files;
+
+  // The location of the .Trash/info folder.
+  storage::FileSystemURL trash_info;
 
   // The free space on the underlying filesystem that .Trash is located on.
   int64_t free_space;
@@ -65,6 +70,12 @@ struct DirectoryInfo {
 
 // Constant representing the Trash folder name.
 extern const char kTrashFolderName[];
+
+// Constant representing the "info" folder name inside .Trash.
+extern const char kInfoFolderName[];
+
+// Constant representing the "files" folder name inside .Trash.
+extern const char kFilesFolderName[];
 
 // This class represents a trash task. A trash task attempts to trash zero or
 // more files by first moving them to a .Trash/files or .Trash-{UID}/files
@@ -99,12 +110,27 @@ class TrashIOTask : public IOTask {
   void GotFileSize(size_t idx,
                    base::File::Error error,
                    const base::File::Info& file_info);
+  const storage::FileSystemURL CreateFileSystemURL(
+      const storage::FileSystemURL& original_url,
+      const base::FilePath& path);
+  void SetCurrentOperationID(
+      storage::FileSystemOperationRunner::OperationID id);
   using FreeSpaceMap = std::map<base::FilePath, DirectoryInfo>;
   void ValidateAndDecrementFreeSpace(size_t idx, FreeSpaceMap::iterator& it);
   void GetFreeDiskSpace(size_t idx, const base::FilePath& trash_parent_path);
   void GotFreeDiskSpace(size_t idx,
                         const base::FilePath& trash_parent_path,
                         int64_t free_space);
+
+  // Sets up the .Trash/files and .Trash/info subdirectories specified by the
+  // `trash_subdirectory` parameter. Will create the parent directories as well
+  // in the instance .Trash folder does not exist.
+  void SetupSubDirectory(FreeSpaceMap::const_iterator& it,
+                         const storage::FileSystemURL trash_subdirectory);
+  void OnSetupSubDirectory(FreeSpaceMap::const_iterator& it,
+                           const storage::FileSystemURL trash_subdirectory,
+                           base::File::Error error);
+  base::FilePath MakeRelativeFromBasePath(const base::FilePath& absolute_path);
 
   raw_ptr<Profile> profile_;
 
@@ -118,8 +144,8 @@ class TrashIOTask : public IOTask {
   // with the underlying locations of the .Trash/{files,info} directories.
   FreeSpaceMap free_space_map_;
 
-  // Stores the id of the trash operation if one is in progress. Used so the
-  // trash can be cancelled.
+  // Stores the id of the operations currently behind undertaken by Trash,
+  // including directory creation. Enables cancelling an inflight operation.
   absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
 
   ProgressCallback progress_callback_;

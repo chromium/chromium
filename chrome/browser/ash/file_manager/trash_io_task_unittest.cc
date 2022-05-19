@@ -87,6 +87,13 @@ class TrashIOTaskTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 };
 
+void AssertTrashSetup(const base::FilePath& parent_path) {
+  base::FilePath trash_path = parent_path.Append(kTrashFolderName);
+  ASSERT_TRUE(base::DirectoryExists(trash_path));
+  ASSERT_TRUE(base::DirectoryExists(trash_path.Append(kFilesFolderName)));
+  ASSERT_TRUE(base::DirectoryExists(trash_path.Append(kInfoFolderName)));
+}
+
 TEST_F(TrashIOTaskTest, FileInUnsupportedDirectoryShouldError) {
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
   const base::FilePath file_path = temp_dir_.GetPath().Append("foo.txt");
@@ -171,6 +178,8 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
                    temp_dir_.GetPath());
   task.Execute(progress_callback.Get(), complete_callback.Get());
   run_loop.Run();
+
+  AssertTrashSetup(downloads_dir_);
 }
 
 }  // namespace

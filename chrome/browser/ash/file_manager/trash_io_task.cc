@@ -20,6 +20,8 @@ namespace file_manager {
 namespace io_task {
 
 constexpr char kTrashFolderName[] = ".Trash";
+constexpr char kInfoFolderName[] = "info";
+constexpr char kFilesFolderName[] = "files";
 
 namespace {
 
@@ -30,14 +32,27 @@ const std::string GenerateTrashInfoContents(
                        "\nDeletionDate=", base::TimeToISO8601(deletion_time)});
 }
 
+storage::FileSystemOperationRunner::OperationID StartCreateDirectoryOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL url,
+    storage::FileSystemOperationRunner::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  return file_system_context->operation_runner()->CreateDirectory(
+      url, /*exclusive=*/false, /*recursive=*/true, std::move(callback));
+}
+
 TrashEntry::TrashEntry() : deletion_time(base::Time::Now()) {}
 TrashEntry::~TrashEntry() = default;
 
 TrashEntry::TrashEntry(TrashEntry&& other) = default;
 TrashEntry& TrashEntry::operator=(TrashEntry&& other) = default;
 
-DirectoryInfo::DirectoryInfo(int64_t supplied_free_space)
-    : free_space(supplied_free_space) {}
+DirectoryInfo::DirectoryInfo(storage::FileSystemURL supplied_trash_files,
+                             storage::FileSystemURL supplied_trash_info,
+                             int64_t supplied_free_space)
+    : trash_files(supplied_trash_files),
+      trash_info(supplied_trash_info),
+      free_space(supplied_free_space) {}
 DirectoryInfo::~DirectoryInfo() = default;
 
 DirectoryInfo::DirectoryInfo(DirectoryInfo&& other) = default;
@@ -203,9 +218,8 @@ void TrashIOTask::GotFileSize(size_t idx,
     return;
   }
 
-  // TODO(b/231830211): Update to ensure the trash directory is properly
-  // initialised.
-  Complete(State::kSuccess);
+  auto it = free_space_map_.cbegin();
+  SetupSubDirectory(it, it->second.trash_files);
 }
 
 void TrashIOTask::GetFreeDiskSpace(size_t idx,
@@ -217,17 +231,94 @@ void TrashIOTask::GetFreeDiskSpace(size_t idx,
                      weak_ptr_factory_.GetWeakPtr(), idx, trash_parent_path));
 }
 
+base::FilePath TrashIOTask::MakeRelativeFromBasePath(
+    const base::FilePath& absolute_path) {
+  if (base_path_.empty() || !base_path_.IsParent(absolute_path)) {
+    return absolute_path;
+  }
+  std::string relative_path = absolute_path.value();
+  if (!file_manager::util::ReplacePrefix(
+          &relative_path, base_path_.AsEndingWithSeparator().value(), "")) {
+    LOG(ERROR) << "Failed to make absolute path relative";
+    return absolute_path;
+  }
+  return base::FilePath(relative_path);
+}
+
 void TrashIOTask::GotFreeDiskSpace(size_t idx,
                                    const base::FilePath& trash_parent_path,
                                    int64_t free_space) {
-  auto it =
-      free_space_map_.try_emplace(trash_parent_path, DirectoryInfo(free_space));
+  base::FilePath trash_path =
+      MakeRelativeFromBasePath(trash_parent_path.Append(kTrashFolderName));
+  const storage::FileSystemURL files_url = CreateFileSystemURL(
+      progress_.sources[idx].url, trash_path.Append(kFilesFolderName));
+  const storage::FileSystemURL info_url = CreateFileSystemURL(
+      progress_.sources[idx].url, trash_path.Append(kInfoFolderName));
+
+  auto it = free_space_map_.try_emplace(
+      trash_parent_path, DirectoryInfo(files_url, info_url, free_space));
   ValidateAndDecrementFreeSpace(idx, it.first);
+}
+
+void TrashIOTask::SetupSubDirectory(
+    FreeSpaceMap::const_iterator& it,
+    const storage::FileSystemURL trash_subdirectory) {
+  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&StartCreateDirectoryOnIOThread, file_system_context_,
+                     trash_subdirectory,
+                     base::BindOnce(&TrashIOTask::OnSetupSubDirectory,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    base::OwnedRef(it), trash_subdirectory)),
+      base::BindOnce(&TrashIOTask::SetCurrentOperationID,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TrashIOTask::OnSetupSubDirectory(
+    FreeSpaceMap::const_iterator& it,
+    const storage::FileSystemURL trash_subdirectory,
+    base::File::Error error) {
+  if (error != base::File::FILE_OK) {
+    // TODO(b/231830211): We can potentially continue if one .Trash directory
+    // fails to create, but we should also rollback if the files directory
+    // succeeds but info fails.
+    Complete(State::kError);
+    return;
+  }
+
+  // Make sure to setup the .Trash/info directory after the .Trash/files
+  // directory.
+  if (trash_subdirectory == it->second.trash_files) {
+    SetupSubDirectory(it, it->second.trash_info);
+    return;
+  }
+
+  it++;
+  if (it == free_space_map_.end()) {
+    // TODO(b/231830211): Implement trash logic here, the directory structure
+    // has been setup successfully.
+    Complete(State::kSuccess);
+    return;
+  }
+
+  SetupSubDirectory(it, it->second.trash_files);
+}
+
+const storage::FileSystemURL TrashIOTask::CreateFileSystemURL(
+    const storage::FileSystemURL& original_url,
+    const base::FilePath& path) {
+  return file_system_context_->CreateCrackedFileSystemURL(
+      original_url.storage_key(), original_url.type(), path);
 }
 
 void TrashIOTask::Cancel() {
   progress_.state = State::kCancelled;
   // Any inflight operation will be cancelled when the task is destroyed.
+}
+
+void TrashIOTask::SetCurrentOperationID(
+    storage::FileSystemOperationRunner::OperationID id) {
+  operation_id_.emplace(id);
 }
 
 }  // namespace io_task
