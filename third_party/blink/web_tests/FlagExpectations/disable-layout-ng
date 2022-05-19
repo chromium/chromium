@@ -13,6 +13,9 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-writing-modes/abs-pos-border-offset-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/abs-pos-border-offset-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-writing-modes/abs-pos-vlr-border-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-001a.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-002.tentative.html [ Failure ]
