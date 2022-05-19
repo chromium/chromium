@@ -86,7 +86,7 @@ NSString* const kSaveCardImageName = @"infobar_save_card_icon";
       setButtonText:base::SysUTF16ToNSString(self.config->button_label_text())];
   UIImage* iconImage = UseSymbols()
                            ? DefaultSymbolTemplateWithPointSize(
-                                 kCreditCardFillSymbol, kSymbolImagePointSize)
+                                 kCreditCardSymbol, kSymbolImagePointSize)
                            : [UIImage imageNamed:kSaveCardImageName];
   [self.consumer setIconImage:iconImage];
   [self.consumer
