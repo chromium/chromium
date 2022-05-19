@@ -150,7 +150,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // Manual WP disable complete
       {"wpDisableCompletePageTitleText",
        IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE},
-      {"wpDisableSkippedText", IDS_SHIMLESS_RMA_WP_DISABLE_SKIPPED_MESSAGE},
       {"wpDisableReassembleNowText",
        IDS_SHIMLESS_RMA_WP_DISABLE_REASSEMBLE_NOW_MESSAGE},
       {"wpDisableLeaveDisassembledText",

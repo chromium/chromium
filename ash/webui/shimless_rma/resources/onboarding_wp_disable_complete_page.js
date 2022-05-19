@@ -15,7 +15,7 @@ import {enableNextButton} from './shimless_rma_util.js';
 /** @type {!Object<WriteProtectDisableCompleteAction, string>} */
 const disableActionTextKeys = {
   [WriteProtectDisableCompleteAction.kSkippedAssembleDevice]:
-      'wpDisableSkippedText',
+      'wpDisableReassembleNowText',
   [WriteProtectDisableCompleteAction.kCompleteAssembleDevice]:
       'wpDisableReassembleNowText',
   [WriteProtectDisableCompleteAction.kCompleteKeepDeviceOpen]:

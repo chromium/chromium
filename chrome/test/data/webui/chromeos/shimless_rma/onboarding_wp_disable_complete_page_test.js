@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -63,7 +64,7 @@ export function onboardingWpDisableCompletePageTest() {
         component.shadowRoot.querySelector('#writeProtectAction');
 
     assertEquals(
-        'Write protection disable complete, you can reassemble the device.',
+        loadTimeData.getString('wpDisableReassembleNowText'),
         actionComponent.textContent.trim());
   });
 
