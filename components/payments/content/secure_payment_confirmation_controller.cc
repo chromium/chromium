@@ -226,10 +226,6 @@ void SecurePaymentConfirmationController::OnInitialized(
     SetupModelAndShowDialogIfApplicable();
 }
 
-void SecurePaymentConfirmationController::OnDismiss() {
-  OnCancel();
-}
-
 void SecurePaymentConfirmationController::OnCancel() {
   CloseDialog();
 

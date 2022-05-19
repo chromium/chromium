@@ -50,7 +50,6 @@ class SecurePaymentConfirmationController
   void OnInitialized(InitializationTask* initialization_task) override;
 
   // Callbacks for user interaction.
-  void OnDismiss();
   void OnCancel();
   void OnConfirm();
 
