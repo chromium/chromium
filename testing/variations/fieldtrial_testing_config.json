@@ -8610,7 +8610,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled,max_queue_time:75ms,_V2"
+                    "name": "Enabled,max_queue_time:75ms,_V4",
+                    "enable_features": [
+                        "ThreadWrapperUsesMetronome",
+                        "WebRtcMetronomeTaskQueue",
+                        "WebRtcTimerUsesMetronome"
+                    ]
                 }
             ]
         }
@@ -8663,29 +8668,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AllowWgcDesktopCapturer"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebRtcMetronomeTaskQueue": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ThreadWrapperUsesMetronome",
-                        "WebRtcMetronomeTaskQueue",
-                        "WebRtcTimerUsesMetronome"
                     ]
                 }
             ]
