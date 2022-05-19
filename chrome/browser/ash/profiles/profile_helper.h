@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "components/user_manager/user_manager.h"
 
 class IndependentOTRProfileManagerTest;
@@ -124,19 +123,11 @@ class ProfileHelper
   static bool IsRegularProfile(const Profile* profile);
   static bool IsRegularProfilePath(const base::FilePath& profile_path);
 
-  // Initialize a bunch of services that are tied to a browser profile.
-  // TODO(dzhioev): Investigate whether or not this method is needed.
-  virtual void ProfileStartup(Profile* profile) = 0;
-
   // Returns active user profile dir in a format [u-$hash].
   virtual base::FilePath GetActiveUserProfileDir() = 0;
 
   // Should called once after UserManager instance has been created.
   virtual void Initialize() = 0;
-
-  // Clears site data (cookies, history, etc) for signin profile.
-  // Callback can be empty. Not thread-safe.
-  virtual void ClearSigninProfile(base::OnceClosure on_clear_callback) = 0;
 
   // Returns profile of the user associated with |account_id| if it is created
   // and fully initialized. Otherwise, returns NULL.

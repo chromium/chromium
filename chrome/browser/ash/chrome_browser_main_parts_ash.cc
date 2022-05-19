@@ -150,6 +150,7 @@
 #include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/psi_memory_metrics.h"
 #include "chrome/browser/ash/quick_pair/quick_pair_browser_delegate_impl.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
@@ -849,6 +850,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   // ProfileHelper has to be initialized after UserManager instance is created.
   ProfileHelper::Get()->Initialize();
+  signin_profile_handler_ = std::make_unique<ash::SigninProfileHandler>();
 
   // If kLoginUser is passed this indicates that user has already
   // logged in and we should behave accordingly.

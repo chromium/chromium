@@ -94,6 +94,7 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -1801,7 +1802,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
     return false;
   }
 
-  ProfileHelper::Get()->ProfileStartup(profile);
+  SigninProfileHandler::Get()->ProfileStartUp(profile);
 
   PrefService* prefs = profile->GetPrefs();
   arc::RecordPlayStoreLaunchWithinAWeek(prefs, /*launched=*/false);

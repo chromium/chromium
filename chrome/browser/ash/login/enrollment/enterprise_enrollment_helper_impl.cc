@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -152,7 +152,7 @@ void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
     }
   }
   auth_data_ = policy::DMAuth::NoAuth();
-  ProfileHelper::Get()->ClearSigninProfile(
+  SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

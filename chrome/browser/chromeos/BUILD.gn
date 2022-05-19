@@ -2950,6 +2950,8 @@ source_set("chromeos") {
     "../ash/process_snapshot_server.h",
     "../ash/profiles/profile_helper.cc",
     "../ash/profiles/profile_helper.h",
+    "../ash/profiles/signin_profile_handler.cc",
+    "../ash/profiles/signin_profile_handler.h",
     "../ash/psi_memory_metrics.cc",
     "../ash/psi_memory_metrics.h",
     "../ash/quick_pair/fast_pair_support_utils.cc",

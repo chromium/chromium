@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 
 namespace ash {
@@ -90,8 +90,7 @@ void GaiaPasswordChangedScreen::CancelPasswordChangedFlow() {
   if (account_id_.is_valid()) {
     RecordReauthReason(account_id_, ReauthReason::PASSWORD_UPDATE_SKIPPED);
   }
-  ProfileHelper* profile_helper = ProfileHelper::Get();
-  profile_helper->ClearSigninProfile(
+  SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&GaiaPasswordChangedScreen::OnCookiesCleared,
                      weak_factory_.GetWeakPtr()));
 }

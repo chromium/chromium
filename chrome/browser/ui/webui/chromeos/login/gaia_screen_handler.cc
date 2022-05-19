@@ -63,6 +63,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -1082,10 +1083,9 @@ void GaiaScreenHandler::OnDnsCleared() {
 void GaiaScreenHandler::StartClearingCookies(
     base::OnceClosure on_clear_callback) {
   cookies_cleared_ = false;
-  ProfileHelper* profile_helper = ProfileHelper::Get();
   LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
-             profile_helper->GetSigninProfile());
-  profile_helper->ClearSigninProfile(
+             ProfileHelper::Get()->GetSigninProfile());
+  ash::SigninProfileHandler::Get()->ClearSigninProfile(
       base::BindOnce(&GaiaScreenHandler::OnCookiesCleared,
                      weak_factory_.GetWeakPtr(), std::move(on_clear_callback)));
 }

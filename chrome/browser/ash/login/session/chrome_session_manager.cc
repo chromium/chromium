@@ -36,7 +36,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/tether/tether_service.h"
 #include "chrome/browser/ash/tpm_firmware_update_notification.h"
 #include "chrome/browser/ash/u2f_notification.h"
@@ -134,7 +134,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
       return;
     }
 
-    ProfileHelper::Get()->ProfileStartup(user_profile);
+    SigninProfileHandler::Get()->ProfileStartUp(user_profile);
 
     user_session_mgr->NotifyUserProfileLoaded(user_profile, user);
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/ash/net/network_portal_web_dialog.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -192,7 +193,7 @@ void NetworkPortalNotificationController::OnDialogDestroyed(
     const NetworkPortalWebDialog* dialog) {
   if (dialog == dialog_) {
     dialog_ = nullptr;
-    ProfileHelper::Get()->ClearSigninProfile(base::NullCallback());
+    ash::SigninProfileHandler::Get()->ClearSigninProfile(base::NullCallback());
   }
 }
 

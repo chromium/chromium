@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -671,7 +672,7 @@ void LoginDisplayHostCommon::NotifyWizardCreated() {
 }
 
 void LoginDisplayHostCommon::Cleanup() {
-  ProfileHelper::Get()->ClearSigninProfile(base::DoNothing());
+  SigninProfileHandler::Get()->ClearSigninProfile(base::DoNothing());
   registrar_.RemoveAll();
   BrowserList::RemoveObserver(this);
 }

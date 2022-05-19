@@ -85,6 +85,7 @@ class RendererFreezer;
 class SessionTerminationManager;
 class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
+class SigninProfileHandler;
 class WebKioskAppManager;
 
 namespace device_activity {
@@ -244,6 +245,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   // early, this will be false during PostMainMessageLoopRun(), etc.
   // Used to prevent shutting down classes that were not initialized.
   bool pre_profile_init_called_ = false;
+  std::unique_ptr<ash::SigninProfileHandler> signin_profile_handler_;
 
   std::unique_ptr<policy::LockToSingleUserManager> lock_to_single_user_manager_;
   std::unique_ptr<WilcoDtcSupportdManager> wilco_dtc_supportd_manager_;
