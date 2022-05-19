@@ -417,25 +417,30 @@ Response PageHandler::Close() {
 void PageHandler::Reload(Maybe<bool> bypassCache,
                          Maybe<std::string> script_to_evaluate_on_load,
                          std::unique_ptr<ReloadCallback> callback) {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents) {
-    callback->sendFailure(Response::InternalError());
+  if (!host_) {
+    callback->sendFailure(Response::ServerError("Not attached to a page"));
+    return;
+  }
+
+  if (host_->GetParentOrOuterDocument()) {
+    callback->sendFailure(
+        Response::ServerError("Reload is only supported for top-level frames"));
     return;
   }
 
   // In the case of inspecting a GuestView (e.g. a PDF), we should reload
   // the outer web contents (embedder), since otherwise reloading the guest by
   // itself will fail.
-  if (web_contents->GetOuterWebContents())
-    web_contents = web_contents->GetOuterWebContents();
+  RenderFrameHostImpl* outermost_main_frame =
+      host_->GetOutermostMainFrameOrEmbedder();
 
   // It is important to fallback before triggering reload, so that
   // renderer could prepare beforehand.
   callback->fallThrough();
-  web_contents->GetController().Reload(bypassCache.fromMaybe(false)
-                                           ? ReloadType::BYPASSING_CACHE
-                                           : ReloadType::NORMAL,
-                                       false);
+  outermost_main_frame->frame_tree()->controller().Reload(
+      bypassCache.fromMaybe(false) ? ReloadType::BYPASSING_CACHE
+                                   : ReloadType::NORMAL,
+      false);
 }
 
 static network::mojom::ReferrerPolicy ParsePolicyFromString(
