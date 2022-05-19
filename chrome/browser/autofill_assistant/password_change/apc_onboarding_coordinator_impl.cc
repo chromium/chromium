@@ -11,7 +11,10 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 ApcOnboardingCoordinatorImpl::ApcOnboardingCoordinatorImpl(
     Profile* profile,
@@ -29,10 +32,26 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
   }
 
   // If not, construct controller and view and wait for signal.
-  // TODO(crbug.com/1322387): User proper consent texts.
+  // TODO(crbug.com/1322387): Remove the "translateable='false'" tag in the
+  // string definition once all strings are final.
   AssistantOnboardingInformation info;
-  info.title = u"Dummy string 1";
-  info.sub_title = u"Dummy string 2";
+  info.title = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_TITLE);
+  info.description = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_DESCRIPTION);
+  info.consent_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_CONSENT_TEXT);
+  info.learn_more_title = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_LEARN_MORE);
+  info.button_cancel_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_BUTTON_CANCEL_TEXT);
+  info.button_accept_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_BUTTON_ACCEPT_TEXT);
+
+  // TODO(crbug.com/1322387): Update link so that it also applies to Desktop.
+  info.learn_more_url = GURL(
+      "https://support.google.com/assistant/answer/"
+      "9201753?visit_id=637880404267471228-1286648363&p=fast_checkout&rd=1");
 
   dialog_controller_ = CreateOnboardingController(info);
   dialog_controller_->Show(

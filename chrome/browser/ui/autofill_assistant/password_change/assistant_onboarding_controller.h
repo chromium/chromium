@@ -25,9 +25,9 @@ struct AssistantOnboardingInformation {
   AssistantOnboardingInformation(AssistantOnboardingInformation&&);
   AssistantOnboardingInformation& operator=(AssistantOnboardingInformation&&);
 
-  // The header title and sub-title.
+  // The header title and the description.
   std::u16string title;
-  std::u16string sub_title;
+  std::u16string description;
 
   // The consent text containing the legal disclaimer.
   std::u16string consent_text;

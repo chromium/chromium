@@ -13115,6 +13115,28 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_OPEN_SETTINGS_BUTTON" desc="The user can choose “Settings” to visit chrome://settings/privacySandbox. If they do, they’ll find the toggle on for Sandbox trials, which include everything they’ve read above. They can leave trials on or turn them off on this page. Choosing “Settings”, the user will navigate away from this page and won’t be able to return here.">
       Settings
     </message>
+
+    <!-- Automated Password Change on Desktop strings -->
+    <if expr="not is_android">
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_TITLE" translateable="false" desc="The title for the Automated Password Change on Desktop onboarding dialog. The onboarding dialog is a modal dialog that is shown if a user has not previously consented to using Assistant features.">
+        Let Google Assistant help you change your password
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_DESCRIPTION" translateable="false" desc="The description / sub-title of the Automated Password Change on Desktop onboarding dialog.">
+        Google Assistant in Chrome can complete actions across websites for you
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_CONSENT_TEXT" translateable="false" desc="The description of what kind of data Google will send and process in order to enable Automated Password Change. This is shown at the bottom of the onboarding dialog.">
+        To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information you submit through Assistant. This information may be stored in your Google Account. You can turn it off in Chrome settings. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_LEARN_MORE" translateable="false" desc="The text displayed on a link on the onboarding dialog that a user can click to navigate to a Google website with detailed information on how Automated Password Change on Desktop/ Assistant works and what data is collected.">
+        Learn more
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_BUTTON_CANCEL_TEXT" translateable="false" desc="The text on the button that declines the onboarding for Automated Password Change on Desktop.">
+        Cancel
+      </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_BUTTON_ACCEPT_TEXT" translateable="false" desc="The text on the button that declines the onboarding for Automated Password Change on Desktop.">
+        I agree
+      </message>
+    </if>
   </messages>
 </release>
 </grit>
