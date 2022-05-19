@@ -851,9 +851,8 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
   // only pass the data starting from the tile list OBU to reduce the size of
   // the VA buffer. When this is changed, the encrypted subsample ranges must
   // also be adjusted.
-  // Always re-create |encoded_data| because reusing the buffer causes horrific
-  // artifacts in decoded buffers. TODO(b/177028692): This seems to be a driver
-  // bug, fix it and reuse the buffer.
+  // Create VASliceData buffer |encoded_data| every frame so that decoding can
+  // be more asynchronous than reusing the buffer.
   auto encoded_data =
       vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType, data.size_bytes());
   if (!encoded_data)
