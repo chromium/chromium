@@ -90,11 +90,14 @@ export class CommandProcessor {
     return { result: {} };
   }
 
-  // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
-  #process_session_unsubscribe(
-    commandData: Session.UnsubscribeCommand
+  async #process_session_unsubscribe(
+    params: Session.SubscribeParameters
   ): Promise<Session.UnsubscribeResult> {
-    throw new Error('Not implemented');
+    await this.#eventManager.unsubscribe(
+      params.events,
+      params.contexts ?? null
+    );
+    return { result: {} };
   }
 
   async #processCommand(
@@ -112,8 +115,7 @@ export class CommandProcessor {
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
-          // TODO(sadym): add params parsing.
-          commandData as Session.UnsubscribeCommand
+          SessionParser.SubscribeParamsParser.parse(commandData.params)
         );
 
       case 'browsingContext.create':
