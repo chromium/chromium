@@ -2087,25 +2087,28 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
       GetPage()->GlobalRootScrollerController();
   Node* root_scroller = controller.GlobalRootScroller();
 
-  gfx::Rect element_bounds_in_document =
-      MainFrameImpl()->GetFrameView()->RootFrameToDocument(
-          element_bounds_in_root_frame);
-  gfx::Rect caret_bounds_in_document =
-      MainFrameImpl()->GetFrameView()->RootFrameToDocument(
-          caret_bounds_in_root_frame);
+  gfx::Rect element_bounds_in_content;
+  gfx::Rect caret_bounds_in_content;
 
-  gfx::Rect element_bounds_in_content = element_bounds_in_document;
-  gfx::Rect caret_bounds_in_content = caret_bounds_in_document;
-
-  // If the page has a non-default root scroller then we need to scroll that
-  // rather than the "real" viewport. However, the given coordinates are in the
-  // real viewport's document space rather than the root scroller's so we
-  // perform the conversion here.
+  // If the page has a non-default root scroller then we need to put the
+  // "in_content" coordinates into that scroller's coordinate space, rather
+  // than the root frame's.
   if (root_scroller != MainFrameImpl()->GetFrame()->GetDocument() &&
       controller.RootScrollerArea()) {
     ScrollOffset offset = controller.RootScrollerArea()->GetScrollOffset();
+
+    element_bounds_in_content = element_bounds_in_root_frame;
+    caret_bounds_in_content = caret_bounds_in_root_frame;
+
     element_bounds_in_content.Offset(gfx::ToFlooredVector2d(offset));
     caret_bounds_in_content.Offset(gfx::ToFlooredVector2d(offset));
+  } else {
+    element_bounds_in_content =
+        MainFrameImpl()->GetFrameView()->RootFrameToDocument(
+            element_bounds_in_root_frame);
+    caret_bounds_in_content =
+        MainFrameImpl()->GetFrameView()->RootFrameToDocument(
+            caret_bounds_in_root_frame);
   }
 
   if (!zoom_into_legible_scale) {

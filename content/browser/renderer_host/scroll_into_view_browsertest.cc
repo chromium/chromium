@@ -191,7 +191,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
 
-    // Need this to control page scale factor via script.
+    // Need this to control page scale factor via script or check for root
+    // scroller.
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 
@@ -753,8 +754,8 @@ IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest, DesktopViewportMustZoom) {
 // zooming behavior so that "mobile-friendly" pages do not zoom in on input
 // boxes.
 IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest,
-                       ViewportMetaDisablesZoom) {
-  ASSERT_TRUE(SetupTest("siteA{ViewportMeta}(siteB)"));
+                       MobileViewportDisablesZoom) {
+  ASSERT_TRUE(SetupTest("siteA{MobileViewport}(siteB)"));
 
   EXPECT_EQ(kMobileMinimumScale, GetVisualViewport().scale);
 
@@ -777,6 +778,39 @@ IN_PROC_BROWSER_TEST_P(ZoomScrollIntoViewBrowserTest,
   // touch-action: none must prevent the zooming behavior since the user may
   // not be able to zoom back out.
   EXPECT_EQ(kMobileMinimumScale, GetVisualViewport().scale);
+}
+
+class RootScrollerScrollIntoViewBrowserTest
+    : public ScrollIntoViewBrowserTestBase {
+ public:
+  bool IsForceLocalFrames() const override { return false; }
+  bool IsWritingModeLTR() const override { return true; }
+  TestInvokeMethod GetInvokeMethod() const override { return kInputHandler; }
+};
+
+IN_PROC_BROWSER_TEST_F(RootScrollerScrollIntoViewBrowserTest,
+                       FocusInRootScroller) {
+  ASSERT_TRUE(SetupTest("siteA{RootScroller,MobileViewportNoZoom}"));
+
+  // Root scroller is recomputed after a Blink lifecycle so ensure a frame is
+  // produced to make sure the renderer has had time to evaluate the root
+  // scroller.
+  {
+    base::RunLoop loop;
+    shell()->web_contents()->GetMainFrame()->InsertVisualStateCallback(
+        base::BindLambdaForTesting(
+            [&loop](bool visual_state_updated) { loop.Quit(); }));
+    loop.Run();
+  }
+
+  ASSERT_EQ(1.0, GetVisualViewport().scale);
+  ASSERT_EQ(
+      true,
+      EvalJs(
+          InnerMostFrameTreeNode(),
+          "window.internals.effectiveRootScroller(document).tagName == 'DIV'"));
+
+  RunTest();
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
