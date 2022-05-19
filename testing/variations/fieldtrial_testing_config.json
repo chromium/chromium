@@ -22,6 +22,27 @@
             ]
         }
     ],
+    "ActivateMetricsReportingEnabledPolicyAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ActivateMetricsReportingEnabledPolicyAndroid"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ActivateMetricsReportingEnabledPolicyAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "AddToHomescreenIPH": [
         {
             "platforms": [
@@ -4846,21 +4867,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MetrickitCrashReport"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MetricsReportingEnabledAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "MetricsReportingEnabledAndroid",
-                    "enable_features": [
-                        "ActivateMetricsReportingEnabledPolicyAndroid"
                     ]
                 }
             ]
