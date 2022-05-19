@@ -2656,7 +2656,7 @@ public class ExternalNavigationHandlerTest {
 
         @Override
         protected OverrideUrlLoadingResult startActivity(Intent intent, boolean proxy,
-                boolean requiresIntentChooser, QueryIntentActivitiesSupplier resolvingInfos,
+                boolean requiresIntentChooser, List<ResolveInfo> resolvingInfos,
                 ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl,
                 GURL intentDataUrl, GURL referrerUrl) {
             mStartActivityIntent = intent;

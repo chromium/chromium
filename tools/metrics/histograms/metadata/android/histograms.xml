@@ -82,7 +82,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".AutoDarkWebContents"/>
   <variant name=".ChromeSurvey"/>
   <variant name=".DownloadProgress"/>
-  <variant name=".ExternalNavigation"/>
   <variant name=".GeneratedPasswordSaved"/>
   <variant name=".InstallableAmbientBadge"/>
   <variant name=".InstantApps"/>
