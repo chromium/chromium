@@ -550,15 +550,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Log whether the UX was suppressed by a recent scroll.
-     * @param wasSuppressed Whether showing the UX was suppressed by a recent scroll.
-     */
-    public static void logRecentScrollSuppression(boolean wasSuppressed) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearchRecentScrollSuppression", wasSuppressed);
-    }
-
-    /**
      * Logs the duration between the panel being triggered due to a tap and the panel being
      * dismissed due to a scroll.
      * @param durationSincePanelTriggerMs The amount of time between the panel getting triggered and
