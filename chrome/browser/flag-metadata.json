@@ -3143,7 +3143,7 @@
   {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz" ],
-    "expiry_milestone":  104
+    "expiry_milestone":  112
   },
   {
     "name": "extensions-on-chrome-urls",
