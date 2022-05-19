@@ -72,11 +72,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       uint32_t usage) override;
 
-  gpu::Mailbox CreateSharedImageWithAHB(
-      const gpu::Mailbox& mailbox,
-      uint32_t usage,
-      const gpu::SyncToken& sync_token) override;
-
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override;
   void UpdateSharedImage(const gpu::SyncToken& sync_token,

@@ -53,11 +53,6 @@ class GPU_GLES2_EXPORT TextureOwner
   // whether SurfaceControl is being used or not.
   enum class Mode {
     kAImageReaderInsecure,
-
-    // This mode indicates that the frame is going to be used in multi-threaded
-    // compositor where compositor is running on a different gpu thread and
-    // context than chrome's gpu main thread/context.
-    kAImageReaderInsecureMultithreaded,
     kAImageReaderInsecureSurfaceControl,
     kAImageReaderSecureSurfaceControl,
     kSurfaceTextureInsecure

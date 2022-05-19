@@ -16,10 +16,6 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_fence.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_hardware_buffer_fence_sync.h"
-#endif
-
 namespace gpu {
 
 SharedImageRepresentation::SharedImageRepresentation(
@@ -382,13 +378,6 @@ SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
   backing()->UnregisterImageFactory();
   backing()->MarkForDestruction();
 }
-
-#if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-SharedImageRepresentationFactoryRef::GetAHardwareBuffer() {
-  return backing()->GetAHardwareBuffer();
-}
-#endif
 
 SharedImageRepresentationVaapi::SharedImageRepresentationVaapi(
     SharedImageManager* manager,

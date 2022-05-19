@@ -101,14 +101,6 @@ const base::Feature kAImageReader{"AImageReader",
 const base::Feature kWebViewVulkan{"WebViewVulkan",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Used to enable/disable zero copy video path on webview for MCVD.
-const base::Feature kWebViewZeroCopyVideo{"WebViewZeroCopyVideo",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-// List of devices on which WebViewZeroCopyVideo should be disabled.
-const base::FeatureParam<std::string> kWebViewZeroCopyVideoBlocklist{
-    &kWebViewZeroCopyVideo, "WebViewZeroCopyVideoBlocklist", ""};
-
 // Used to limit AImageReader max queue size to 1 since many devices especially
 // android Tv devices do not support more than 1 images.
 const base::Feature kLimitAImageReaderMaxSizeToOne{
@@ -429,9 +421,8 @@ bool IsAndroidSurfaceControlEnabled() {
   if (LimitAImageReaderMaxSizeToOne())
     return false;
 
-  // On WebView we also require zero copy or thread-safe media to use
-  // SurfaceControl
-  if (IsWebViewZeroCopyVideoEnabled() || IsUsingThreadSafeMediaForWebView()) {
+  // On WebView we require thread-safe media to use SurfaceControl
+  if (IsUsingThreadSafeMediaForWebView()) {
     // If main feature is not overridden from command line and we're running T+
     // use kWebViewSurfaceControlForT to decide feature status instead so we
     // can target pre-release android to fish out platform side bugs.
@@ -462,19 +453,6 @@ bool LimitAImageReaderMaxSizeToOne() {
 
   return (FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
                              kLimitAImageReaderMaxSizeToOneBlocklist.Get()));
-}
-
-// Zero copy is disabled if device can not support 3 max images.
-bool IsWebViewZeroCopyVideoEnabled() {
-  const bool limit_max_size_to_one = LimitAImageReaderMaxSizeToOne();
-  if (!IsAImageReaderEnabled() || limit_max_size_to_one)
-    return false;
-
-  if (!base::FeatureList::IsEnabled(kWebViewZeroCopyVideo))
-    return false;
-
-  return !(FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
-                              kWebViewZeroCopyVideoBlocklist.Get()));
 }
 
 bool IncreaseBufferCountForHighFrameRate() {

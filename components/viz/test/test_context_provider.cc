@@ -187,16 +187,6 @@ TestSharedImageInterface::CreateSharedImageVideoPlanes(
   return mailboxes;
 }
 
-gpu::Mailbox TestSharedImageInterface::CreateSharedImageWithAHB(
-    const gpu::Mailbox& mailbox,
-    uint32_t usage,
-    const gpu::SyncToken& sync_token) {
-  base::AutoLock locked(lock_);
-  auto out_mailbox = gpu::Mailbox::GenerateForSharedImage();
-  shared_images_.insert(out_mailbox);
-  return out_mailbox;
-}
-
 void TestSharedImageInterface::UpdateSharedImage(
     const gpu::SyncToken& sync_token,
     const gpu::Mailbox& mailbox) {

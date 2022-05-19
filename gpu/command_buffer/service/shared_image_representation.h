@@ -32,12 +32,6 @@ typedef unsigned int GLenum;
 class GrBackendSurfaceMutableState;
 class SkPromiseImageTexture;
 
-namespace base {
-namespace android {
-class ScopedHardwareBufferFenceSync;
-}  // namespace android
-}  // namespace base
-
 namespace cc {
 class PaintOpBuffer;
 }
@@ -166,11 +160,6 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
   void RegisterImageFactory(SharedImageFactory* factory) {
     backing()->RegisterImageFactory(factory);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-  GetAHardwareBuffer();
-#endif
 };
 
 class GPU_GLES2_EXPORT SharedImageRepresentationGLTextureBase

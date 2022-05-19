@@ -40,6 +40,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
     // shared between contexts of different share group. AHB from existing
     // mailbox is wrapped into a new mailbox(AHB backed) which can then be used
     // by another context.
+    // NO LONGER USED: After enabling WebViewThreadSafeMedia, ZeroCopy path is
+    // no longer used.
     kCopyMailboxesOnly = 1,
   };
 

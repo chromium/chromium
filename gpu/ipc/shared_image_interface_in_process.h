@@ -110,12 +110,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
                             SkAlphaType alpha_type,
                             uint32_t usage) override;
 
-#if BUILDFLAG(IS_ANDROID)
-  Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
-                                   uint32_t usage,
-                                   const SyncToken& sync_token) override;
-#endif
-
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.
   void UpdateSharedImage(const SyncToken& sync_token,
@@ -232,12 +226,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
   void WaitSyncTokenOnGpuThread(const SyncToken& sync_token);
   void WrapTaskWithGpuUrl(base::OnceClosure task);
-#if BUILDFLAG(IS_ANDROID)
-  void CreateSharedImageWithAHBOnGpuThread(const Mailbox& out_mailbox,
-                                           const Mailbox& in_mailbox,
-                                           uint32_t usage,
-                                           const SyncToken& sync_token);
-#endif
 
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the

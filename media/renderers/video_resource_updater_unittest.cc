@@ -602,38 +602,6 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(1u, GetSharedImageCount());
 }
 
-TEST_F(VideoResourceUpdaterTest,
-       CreateForHardwarePlanes_StreamTexture_CopyMailboxesOnly) {
-  // Note that |use_stream_video_draw_quad| is true for this test.
-  std::unique_ptr<VideoResourceUpdater> updater =
-      CreateUpdaterForHardware(true);
-  EXPECT_EQ(0u, GetSharedImageCount());
-  scoped_refptr<VideoFrame> video_frame =
-      CreateTestStreamTextureHardwareVideoFrame(absl::nullopt);
-  VideoFrameExternalResources resources =
-      updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resources.type);
-  EXPECT_EQ(1u, resources.resources.size());
-  EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
-            resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(1u, resources.release_callbacks.size());
-  EXPECT_EQ(0u, GetSharedImageCount());
-
-  // If mailbox is copied, the texture target should still be
-  // GL_TEXTURE_EXTERNAL_OES and resource type should be STREAM_TEXTURE.
-  video_frame = CreateTestStreamTextureHardwareVideoFrame(
-      VideoFrameMetadata::CopyMode::kCopyMailboxesOnly);
-  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::STREAM_TEXTURE, resources.type);
-  EXPECT_EQ(1u, resources.resources.size());
-  EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
-            resources.resources[0].mailbox_holder.texture_target);
-  EXPECT_EQ(1u, resources.release_callbacks.size());
-  // This count will be 1 since a new mailbox will be created when mailbox is
-  // being copied.
-  EXPECT_EQ(1u, GetSharedImageCount());
-}
-
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_TextureQuad) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());

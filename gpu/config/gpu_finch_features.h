@@ -23,7 +23,6 @@ GPU_EXPORT extern const base::Feature kWebViewSurfaceControl;
 GPU_EXPORT extern const base::Feature kAImageReader;
 GPU_EXPORT extern const base::Feature kWebViewVulkan;
 GPU_EXPORT extern const base::Feature kLimitAImageReaderMaxSizeToOne;
-GPU_EXPORT extern const base::Feature kWebViewZeroCopyVideo;
 GPU_EXPORT extern const base::Feature kWebViewThreadSafeMediaDefault;
 GPU_EXPORT extern const base::Feature kIncreaseBufferCountForHighFrameRate;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -85,7 +84,6 @@ GPU_EXPORT bool IsANGLEValidationEnabled();
 GPU_EXPORT bool IsAImageReaderEnabled();
 GPU_EXPORT bool IsAndroidSurfaceControlEnabled();
 GPU_EXPORT bool LimitAImageReaderMaxSizeToOne();
-GPU_EXPORT bool IsWebViewZeroCopyVideoEnabled();
 GPU_EXPORT bool IncreaseBufferCountForHighFrameRate();
 GPU_EXPORT bool IncreaseBufferCountForWebViewOverlays();
 #endif

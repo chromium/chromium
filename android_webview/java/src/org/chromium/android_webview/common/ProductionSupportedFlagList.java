@@ -109,10 +109,8 @@ public final class ProductionSupportedFlagList {
                     "Use Vulkan for composite. Requires Android device and OS support. May crash "
                             + "if enabled on unsupported device."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_SURFACE_CONTROL,
-                    "Use SurfaceControl. Requires WebViewZeroCopyVideo and Android device and OS "
+                    "Use SurfaceControl. Requires WebViewThreadSafeMedia and Android device and OS "
                             + "support."),
-            Flag.baseFeature(GpuFeatures.WEBVIEW_ZERO_COPY_VIDEO,
-                    "Avoid extra copy for video frames when possible"),
             Flag.baseFeature(GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
                     "Use thread-safe media path, requires Android P."),
             Flag.baseFeature(VizFeatures.WEBVIEW_NEW_INVALIDATE_HEURISTIC,

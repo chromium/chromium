@@ -166,14 +166,6 @@ size_t SharedImageVideoImageReader::EstimatedSizeForMemTracking() const {
   return stream_texture_sii_->IsUsingGpuMemory() ? estimated_size() : 0;
 }
 
-std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-SharedImageVideoImageReader::GetAHardwareBuffer() {
-  base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-
-  DCHECK(stream_texture_sii_);
-  return stream_texture_sii_->GetAHardwareBuffer();
-}
-
 // Representation of SharedImageVideoImageReader as a GL Texture.
 class SharedImageVideoImageReader::SharedImageRepresentationGLTextureVideo
     : public SharedImageRepresentationGLTexture,

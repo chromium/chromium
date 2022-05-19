@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -46,19 +47,11 @@ absl::optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
   if (features::NeedThreadSafeAndroidMedia())
     return absl::nullopt;
 
-  return features::IsWebViewZeroCopyVideoEnabled()
-             ? VideoFrameMetadata::CopyMode::kCopyMailboxesOnly
-             : VideoFrameMetadata::CopyMode::kCopyToNewTexture;
+  return VideoFrameMetadata::CopyMode::kCopyToNewTexture;
 }
 
 gpu::TextureOwner::Mode GetTextureOwnerMode(
-    VideoFrameFactory::OverlayMode overlay_mode,
-    const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode) {
-  if (copy_mode == VideoFrameMetadata::kCopyMailboxesOnly) {
-    DCHECK(features::IsWebViewZeroCopyVideoEnabled());
-    return gpu::TextureOwner::Mode::kAImageReaderInsecureMultithreaded;
-  }
-
+    VideoFrameFactory::OverlayMode overlay_mode) {
   switch (overlay_mode) {
     case VideoFrameFactory::OverlayMode::kDontRequestPromotionHints:
     case VideoFrameFactory::OverlayMode::kRequestPromotionHints:
@@ -82,7 +75,6 @@ gpu::TextureOwner::Mode GetTextureOwnerMode(
 static void AllocateTextureOwnerOnGpuThread(
     VideoFrameFactory::InitCB init_cb,
     VideoFrameFactory::OverlayMode overlay_mode,
-    const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode,
     scoped_refptr<gpu::RefCountedLock> drdc_lock,
     scoped_refptr<gpu::SharedContextState> shared_context_state) {
   if (!shared_context_state) {
@@ -92,7 +84,7 @@ static void AllocateTextureOwnerOnGpuThread(
 
   std::move(init_cb).Run(gpu::TextureOwner::Create(
       gpu::TextureOwner::CreateTexture(shared_context_state),
-      GetTextureOwnerMode(overlay_mode, copy_mode), shared_context_state,
+      GetTextureOwnerMode(overlay_mode), shared_context_state,
       std::move(drdc_lock)));
 }
 
@@ -113,7 +105,10 @@ VideoFrameFactoryImpl::VideoFrameFactoryImpl(
       copy_mode_(GetVideoFrameCopyMode(
           gpu_preferences.enable_threaded_texture_mailboxes)),
       mre_manager_(std::move(mre_manager)),
-      frame_info_helper_(std::move(frame_info_helper)) {}
+      frame_info_helper_(std::move(frame_info_helper)) {
+  DCHECK(!copy_mode_.has_value() ||
+         *copy_mode_ != VideoFrameMetadata::CopyMode::kCopyMailboxesOnly);
+}
 
 VideoFrameFactoryImpl::~VideoFrameFactoryImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -128,7 +123,7 @@ void VideoFrameFactoryImpl::Initialize(OverlayMode overlay_mode,
   // call |init_cb|.
   auto gpu_init_cb = base::BindOnce(&AllocateTextureOwnerOnGpuThread,
                                     BindToCurrentLoop(std::move(init_cb)),
-                                    overlay_mode, copy_mode_, GetDrDcLock());
+                                    overlay_mode, GetDrDcLock());
   image_provider_->Initialize(std::move(gpu_init_cb));
 }
 

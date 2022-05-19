@@ -91,16 +91,6 @@ void SharedImageStub::ExecuteDeferredRequest(
       OnCreateGMBSharedImage(std::move(request->get_create_gmb_shared_image()));
       break;
 
-#if BUILDFLAG(IS_ANDROID)
-    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithAhb: {
-      auto& create_request = *request->get_create_shared_image_with_ahb();
-      OnCreateSharedImageWithAHB(
-          create_request.out_mailbox, create_request.in_mailbox,
-          create_request.usage, create_request.release_id);
-      break;
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-
     case mojom::DeferredSharedImageRequest::Tag::kRegisterUploadBuffer:
       OnRegisterSharedImageUploadBuffer(
           std::move(request->get_register_upload_buffer()));
@@ -197,29 +187,6 @@ bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
   }
   return true;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-bool SharedImageStub::CreateSharedImageWithAHB(const Mailbox& out_mailbox,
-                                               const Mailbox& in_mailbox,
-                                               uint32_t usage) {
-  TRACE_EVENT0("gpu", "SharedImageStub::CreateSharedImageWithAHB");
-  if (!out_mailbox.IsSharedImage() || !in_mailbox.IsSharedImage()) {
-    LOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
-                  "non-SharedImage mailbox.";
-    OnError();
-    return false;
-  }
-  if (!MakeContextCurrent()) {
-    OnError();
-    return false;
-  }
-  if (!factory_->CreateSharedImageWithAHB(out_mailbox, in_mailbox, usage)) {
-    LOG(ERROR) << "SharedImageStub: Unable to update shared image";
-    return false;
-  }
-  return true;
-}
-#endif
 
 void SharedImageStub::OnCreateSharedImage(
     mojom::CreateSharedImageParamsPtr params) {
@@ -332,20 +299,6 @@ void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
 
   sync_point_client_state_->ReleaseFenceSync(release_id);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void SharedImageStub::OnCreateSharedImageWithAHB(const Mailbox& out_mailbox,
-                                                 const Mailbox& in_mailbox,
-                                                 uint32_t usage,
-                                                 uint32_t release_id) {
-  TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSharedImageWithAHB");
-
-  if (!CreateSharedImageWithAHB(out_mailbox, in_mailbox, usage))
-    return;
-
-  sync_point_client_state_->ReleaseFenceSync(release_id);
-}
-#endif
 
 void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnDestroySharedImage");

@@ -68,12 +68,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
                          SkAlphaType alpha_type,
                          uint32_t usage);
 
-#if BUILDFLAG(IS_ANDROID)
-  bool CreateSharedImageWithAHB(const Mailbox& out_mailbox,
-                                const Mailbox& in_mailbox,
-                                uint32_t usage);
-#endif
-
   bool UpdateSharedImage(const Mailbox& mailbox,
                          gfx::GpuFenceHandle in_fence_handle);
 
@@ -96,12 +90,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            uint32_t release_id,
                            gfx::GpuFenceHandle in_fence_handle);
-#if BUILDFLAG(IS_ANDROID)
-  void OnCreateSharedImageWithAHB(const Mailbox& out_mailbox,
-                                  const Mailbox& in_mailbox,
-                                  uint32_t usage,
-                                  uint32_t release_id);
-#endif
   void OnDestroySharedImage(const Mailbox& mailbox);
   void OnRegisterSharedImageUploadBuffer(base::ReadOnlySharedMemoryRegion shm);
 #if BUILDFLAG(IS_WIN)

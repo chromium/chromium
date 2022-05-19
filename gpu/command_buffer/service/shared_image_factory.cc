@@ -79,9 +79,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
-#include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_egl.h"
-#include "gpu/command_buffer/service/shared_image_backing_scoped_hardware_buffer_fence_sync.h"
 #endif
 
 namespace gpu {
@@ -677,30 +675,6 @@ bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
     return false;
   }
   return (*it)->CopyToGpuMemoryBuffer();
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-bool SharedImageFactory::CreateSharedImageWithAHB(const Mailbox& out_mailbox,
-                                                  const Mailbox& in_mailbox,
-                                                  uint32_t usage) {
-  auto it = shared_images_.find(in_mailbox);
-  if (it == shared_images_.end()) {
-    LOG(ERROR)
-        << "CreateSharedImageWithAHB: Could not find shared image mailbox";
-    return false;
-  }
-  auto ahb = (*it)->GetAHardwareBuffer();
-  if (!ahb) {
-    LOG(ERROR) << "CreateSharedImageWithAHB: AHardwareBuffer is null";
-    return false;
-  }
-  auto backing =
-      std::make_unique<SharedImageBackingScopedHardwareBufferFenceSync>(
-          std::move(ahb), out_mailbox, (*it)->format(), (*it)->size(),
-          (*it)->color_space(), (*it)->surface_origin(), (*it)->alpha_type(),
-          usage, false);
-  return RegisterBacking(std::move(backing), false /* allow_legacy_mailbox */);
 }
 #endif
 

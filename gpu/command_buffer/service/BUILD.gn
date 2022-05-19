@@ -487,8 +487,6 @@ target(link_target_type, "gles2_sources") {
       "shared_image_backing_factory_ahardwarebuffer.h",
       "shared_image_backing_factory_egl.cc",
       "shared_image_backing_factory_egl.h",
-      "shared_image_backing_scoped_hardware_buffer_fence_sync.cc",
-      "shared_image_backing_scoped_hardware_buffer_fence_sync.h",
       "shared_image_batch_access_manager.cc",
       "shared_image_batch_access_manager.h",
       "shared_image_representation_gl_texture_android.cc",

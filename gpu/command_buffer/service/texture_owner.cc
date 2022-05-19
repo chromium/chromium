@@ -71,7 +71,6 @@ scoped_refptr<TextureOwner> TextureOwner::Create(
     scoped_refptr<RefCountedLock> drdc_lock) {
   switch (mode) {
     case Mode::kAImageReaderInsecure:
-    case Mode::kAImageReaderInsecureMultithreaded:
     case Mode::kAImageReaderInsecureSurfaceControl:
     case Mode::kAImageReaderSecureSurfaceControl:
       return new ImageReaderGLOwner(std::move(texture), mode,

@@ -135,12 +135,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool CopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  bool CreateSharedImageWithAHB(const Mailbox& out_mailbox,
-                                const Mailbox& in_mailbox,
-                                uint32_t usage);
-#endif
-
   void RegisterSharedImageBackingFactoryForTesting(
       SharedImageBackingFactory* factory);
 

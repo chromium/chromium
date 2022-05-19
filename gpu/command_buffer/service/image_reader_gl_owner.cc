@@ -41,7 +41,6 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
     case TextureOwner::Mode::kAImageReaderSecureSurfaceControl:
       return true;
     case TextureOwner::Mode::kAImageReaderInsecure:
-    case TextureOwner::Mode::kAImageReaderInsecureMultithreaded:
       return false;
     case TextureOwner::Mode::kSurfaceTextureInsecure:
       NOTREACHED();
@@ -65,8 +64,7 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
 // display compositor, 1 frame in flight and 1 frame being prepared by the
 // renderer.
 uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
-  if (IsSurfaceControl(mode) ||
-      mode == TextureOwner::Mode::kAImageReaderInsecureMultithreaded) {
+  if (IsSurfaceControl(mode)) {
     DCHECK(!features::LimitAImageReaderMaxSizeToOne());
     if (features::IncreaseBufferCountForHighFrameRate())
       return 5;
