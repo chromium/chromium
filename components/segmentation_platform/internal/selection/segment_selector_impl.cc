@@ -16,9 +16,11 @@
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/metric_filter_utils.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/selection/experimental_group_recorder.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -135,6 +137,19 @@ void SegmentSelectorImpl::OnPlatformInitialized(
       execution_service, clock_, platform_options_.force_refresh_results);
   if (IsPreviousSelectionInvalid()) {
     GetRankForNextSegment(std::make_unique<SegmentRanks>());
+  }
+
+  // If the segment selection is ready, also record the subsegment for all the
+  // segments.
+  // TODO(ssid): Store the scores in prefs so that this can be recorded earlier
+  // in startup.
+  if (selected_segment_last_session_.is_ready) {
+    for (const OptimizationTarget segment_id : config_->segment_ids) {
+      experimental_group_recorder_.emplace_back(
+          std::make_unique<ExperimentalGroupRecorder>(
+              segment_database_, field_trial_register_,
+              config_->segmentation_key, segment_id));
+    }
   }
 }
 

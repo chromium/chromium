@@ -41,6 +41,8 @@ const char kFeedUserSegmentationKey[] = "feed_user_segment";
 const char kSegmentIdsAllowedForReportingKey[] =
     "segment_ids_allowed_for_reporting";
 
+const char kSubsegmentDiscreteMappingSuffix[] = "_subsegment";
+
 // Contains various finch configuration params used by the segmentation
 // platform.
 struct Config {

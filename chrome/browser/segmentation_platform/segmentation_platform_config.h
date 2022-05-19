@@ -57,6 +57,11 @@ class FieldTrialRegisterImpl : public FieldTrialRegister {
   // FieldTrialRegister:
   void RegisterFieldTrial(base::StringPiece trial_name,
                           base::StringPiece group_name) override;
+
+  void RegisterSubsegmentFieldTrialIfNeeded(
+      base::StringPiece trial_name,
+      optimization_guide::proto::OptimizationTarget segment_id,
+      int subsegment_rank) override;
 };
 
 }  // namespace segmentation_platform

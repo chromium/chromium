@@ -15,33 +15,6 @@
 
 namespace segmentation_platform::stats {
 namespace {
-// Should map to SegmentationModel variant in
-// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
-std::string OptimizationTargetToHistogramVariant(
-    OptimizationTarget segment_id) {
-  switch (segment_id) {
-    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
-      return "NewTab";
-    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
-      return "Share";
-    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
-      return "Voice";
-    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
-      return "Dummy";
-    case OptimizationTarget::
-        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
-      return "ChromeStartAndroid";
-    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
-      return "QueryTiles";
-    case OptimizationTarget::
-        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
-      return "ChromeLowUserEngagement";
-    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
-      return "FeedUserSegment";
-    default:
-      return "Other";
-  }
-}
 
 // Keep in sync with AdaptiveToolbarButtonVariant in enums.xml.
 enum class AdaptiveToolbarButtonVariant {
@@ -249,6 +222,36 @@ float ZeroValueFraction(const std::vector<float>& tensor) {
   return static_cast<float>(zero_values) / static_cast<float>(tensor.size());
 }
 
+}  // namespace
+
+// Should map to SegmentationModel variant in
+// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+std::string OptimizationTargetToHistogramVariant(
+    OptimizationTarget segment_id) {
+  switch (segment_id) {
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
+      return "NewTab";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
+      return "Share";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
+      return "Voice";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
+      return "Dummy";
+    case OptimizationTarget::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
+      return "ChromeStartAndroid";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
+      return "QueryTiles";
+    case OptimizationTarget::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
+      return "ChromeLowUserEngagement";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
+      return "FeedUserSegment";
+    default:
+      return "Other";
+  }
+}
+
 const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
   // Please keep in sync with SegmentationKey variant in
   // //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
@@ -269,18 +272,6 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
   }
   NOTREACHED();
   return "Unknown";
-}
-
-}  // namespace
-
-std::string OptimizationTargetToSegmentGroupName(
-    OptimizationTarget segment_id) {
-  return OptimizationTargetToHistogramVariant(segment_id);
-}
-
-std::string SegmentationKeyToTrialName(const std::string& segmentation_key) {
-  return base::StrCat(
-      {"Segmentation_", SegmentationKeyToUmaName(segmentation_key)});
 }
 
 void RecordModelScore(OptimizationTarget segment_id, float score) {

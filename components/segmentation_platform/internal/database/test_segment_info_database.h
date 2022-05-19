@@ -66,7 +66,7 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                            float score,
                            base::Time timestamp);
   void AddDiscreteMapping(OptimizationTarget segment_id,
-                          float mappings[][2],
+                          const float mappings[][2],
                           int num_pairs,
                           const std::string& discrete_mapping_key);
   void SetBucketDuration(OptimizationTarget segment_id,

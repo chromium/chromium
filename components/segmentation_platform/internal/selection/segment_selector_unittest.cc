@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
+#include "components/segmentation_platform/internal/metric_filter_utils.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
@@ -21,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 
@@ -36,6 +38,11 @@ class MockFieldTrialRegister : public FieldTrialRegister {
   MOCK_METHOD2(RegisterFieldTrial,
                void(base::StringPiece trial_name,
                     base::StringPiece group_name));
+
+  MOCK_METHOD3(RegisterSubsegmentFieldTrialIfNeeded,
+               void(base::StringPiece trial_name,
+                    optimization_guide::proto::OptimizationTarget segment_id,
+                    int subsegment_rank));
 };
 
 Config CreateTestConfig() {
@@ -374,6 +381,75 @@ TEST_F(SegmentSelectorTest, UpdateSelectedSegment) {
   segment_selector_->UpdateSelectedSegment(segment_id);
   ASSERT_TRUE(prefs_->selection.has_value());
   ASSERT_EQ(segment_id, prefs_->selection->segment_id);
+}
+
+TEST_F(SegmentSelectorTest, SubsegmentRecording) {
+  const OptimizationTarget kSubsegmentEnabledTarget =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
+
+  // Create config with Feed segment.
+  Config config = CreateTestConfig();
+  config.segment_ids.push_back(kSubsegmentEnabledTarget);
+  // Previous selection result is not available at this time, so it should
+  // record unselected.
+  EXPECT_CALL(field_trial_register_,
+              RegisterFieldTrial(base::StringPiece("Segmentation_TestKey"),
+                                 base::StringPiece("Unselected")));
+  SetUpWithConfig(config);
+
+  // Store model metadata, model scores and selection results.
+  OptimizationTarget segment_id0 =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+  float mapping0[][2] = {{1.0, 0}};
+  InitializeMetadataForSegment(segment_id0, mapping0, 1);
+  segment_database_->AddPredictionResult(segment_id0, 0.7, clock_.Now());
+
+  float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
+  InitializeMetadataForSegment(kSubsegmentEnabledTarget, mapping1, 3);
+  constexpr float kMVTScore = 0.7;
+  segment_database_->AddPredictionResult(kSubsegmentEnabledTarget, kMVTScore,
+                                         clock_.Now());
+
+  // Additionally store subsegment mapping for Feed segment.
+  static constexpr std::array<float[2], 3> kFeedUserScoreToSubGroup = {{
+      {1.0, 2},
+      {kMVTScore, 3},
+      {0.0, 4},
+  }};
+  segment_database_->AddDiscreteMapping(
+      kSubsegmentEnabledTarget, kFeedUserScoreToSubGroup.data(),
+      kFeedUserScoreToSubGroup.size(),
+      config_.segmentation_key + kSubsegmentDiscreteMappingSuffix);
+
+  // Set up a selected segment in prefs.
+  SelectedSegment from_history(segment_id0);
+  auto prefs_moved = std::make_unique<TestSegmentationResultPrefs>();
+  prefs_ = prefs_moved.get();
+  prefs_->selection = from_history;
+
+  EXPECT_CALL(field_trial_register_,
+              RegisterFieldTrial(base::StringPiece("Segmentation_TestKey"),
+                                 base::StringPiece("Share")));
+
+  // Construct a segment selector. It should read result from last session.
+  segment_selector_ = std::make_unique<SegmentSelectorImpl>(
+      segment_database_.get(), &signal_storage_config_, std::move(prefs_moved),
+      &config_, &field_trial_register_, &clock_,
+      PlatformOptions::CreateDefault(), default_manager_.get());
+
+  // The new selector will record subsegment metric groups based on the mapping.
+  base::RunLoop wait_for_subsegment;
+  EXPECT_CALL(field_trial_register_,
+              RegisterSubsegmentFieldTrialIfNeeded(
+                  base::StringPiece("Segmentation_TestKey_FeedUserSegment"),
+                  kSubsegmentEnabledTarget, 3))
+      .WillOnce(Invoke(
+          [&wait_for_subsegment](base::StringPiece, OptimizationTarget, int) {
+            wait_for_subsegment.QuitClosure().Run();
+          }));
+
+  segment_selector_->OnPlatformInitialized(nullptr);
+  wait_for_subsegment.Run();
 }
 
 }  // namespace segmentation_platform

@@ -25,6 +25,10 @@ class MockFieldTrialRegister : public FieldTrialRegister {
   MOCK_METHOD2(RegisterFieldTrial,
                void(base::StringPiece trial_name,
                     base::StringPiece group_name));
+  MOCK_METHOD3(RegisterSubsegmentFieldTrialIfNeeded,
+               void(base::StringPiece trial_name,
+                    optimization_guide::proto::OptimizationTarget segment_id,
+                    int subsegment_rank));
 };
 
 std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
