@@ -727,6 +727,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {
   VISIT(encrypted);
   VISIT(unencrypted_metadata);
   VISIT(client_only_encrypted_data);
+  VISIT(encrypted_notes_backup);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData& proto) {
@@ -759,6 +760,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
   VISIT(date_last_used);
   VISIT(password_issues);
   VISIT(date_password_modified_windows_epoch_micros);
+  VISIT(notes);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_PasswordIssues& proto) {
@@ -772,6 +774,18 @@ VISIT_PROTO_FIELDS(
     const sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue& proto) {
   VISIT(date_first_detection_microseconds);
   VISIT(is_muted);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_Notes& proto) {
+  VISIT_REP(note);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_Notes_Note& proto) {
+  VISIT(id);
+  VISIT(unique_display_name);
+  VISIT(value);
+  VISIT(date_created_windows_epoch_micros);
+  VISIT(hide_by_default);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsMetadata& proto) {
