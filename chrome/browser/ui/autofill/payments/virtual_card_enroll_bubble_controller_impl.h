@@ -101,11 +101,14 @@ class VirtualCardEnrollBubbleControllerImpl
   // Contains more details regarding the sort of bubble to show the users.
   VirtualCardEnrollmentFields virtual_card_enrollment_fields_;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // Whether we should re-show the dialog when users return to the tab.
+  bool reprompt_required_ = false;
+#else
   // Returns whether the web content associated with this controller is active.
   virtual bool IsWebContentsActive();
 
-  // True if the icon should be showing on the webpage
+  // Represents the current state of icon and bubble.
   BubbleState bubble_state_ = BubbleState::kHidden;
 #endif
 
