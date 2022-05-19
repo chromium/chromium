@@ -81,6 +81,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     void reset() {
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, false);
         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
     }
 
@@ -185,7 +186,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
             mDelegate.advanceToNextPage();
             return;
         }
-        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
+        mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         signinManager.onFirstRunCheckDone();
@@ -234,8 +235,9 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      * See crbug.com/1294994 for details.
      */
     private boolean isContinueOrDismissClicked() {
-        // This property key is set when continue or dismiss button is clicked.
-        return mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
+        // These property keys are set when continue or dismiss button is clicked respectively.
+        return mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
+                || mModel.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
     }
 
     private void setSelectedAccountName(String accountName) {

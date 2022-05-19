@@ -2829,6 +2829,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_TITLE_VARIATION_2" desc="Title shown on the very first screen after opening Chrome for the first time. Asks the user to sign in to Chrome with their Google Account, so they can personalize and customize Chrome and remember their settings in their Google Account. Try to limit translations to 40 characters. Do not exceed 50 characters.">
         Sign in to make Chrome your own
       </message>
+      <message name="IDS_FRE_SIGNING_IN" desc="Text to show below a progress spinner in the signin FRE to notify the user that signing in is in progress.">
+        Signing in\u2026
+      </message>
 
       <!-- Account Signin Strings -->
       <message name="IDS_SIGNIN_ADD_ACCOUNT" desc="Text for adding another Google Account">

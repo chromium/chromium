@@ -131,4 +131,16 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/fre_signin_progress_text"
+        style="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="80dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="@string/fre_signing_in"
+        android:visibility="gone" />
+
 </org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView>

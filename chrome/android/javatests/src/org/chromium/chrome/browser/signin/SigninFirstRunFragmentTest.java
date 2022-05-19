@@ -594,6 +594,7 @@ public class SigninFirstRunFragmentTest {
 
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
         onView(withId(R.id.fre_signin_progress_spinner)).check(matches(isDisplayed()));
+        onView(withText(R.string.fre_signing_in)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
         onView(withText(TEST_EMAIL1)).check(matches(not(isDisplayed())));

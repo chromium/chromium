@@ -29,15 +29,13 @@ class SigninFirstRunViewBinder {
         } else if (propertyKey == SigninFirstRunProperties.ON_DISMISS_CLICKED) {
             view.getDismissButtonView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_DISMISS_CLICKED));
+        } else if (propertyKey == SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT) {
+            updateVisibilityOnButtonClick(view,
+                    model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT),
+                    true);
         } else if (propertyKey == SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER) {
-            final boolean showSigninProgressSpinner =
-                    model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
-            if (showSigninProgressSpinner) {
-                // Transition is only used when the progress spinner is shown.
-                TransitionManager.beginDelayedTransition(
-                        view, new AutoTransition().setStartDelay(300).setDuration(300));
-            }
-            updateVisibilityOnButtonClick(view, showSigninProgressSpinner);
+            updateVisibilityOnButtonClick(
+                    view, model.get(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER), false);
         } else if (propertyKey == SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED) {
             view.getSelectedAccountView().setOnClickListener(
                     model.get(SigninFirstRunProperties.ON_SELECTED_ACCOUNT_CLICKED));
@@ -127,7 +125,12 @@ class SigninFirstRunViewBinder {
     }
 
     private static void updateVisibilityOnButtonClick(
-            SigninFirstRunView view, boolean showSigninProgressSpinner) {
+            SigninFirstRunView view, boolean showSigninProgressSpinner, boolean showSigningInText) {
+        if (showSigninProgressSpinner) {
+            // Transition is only used when the progress spinner is shown.
+            TransitionManager.beginDelayedTransition(
+                    view, new AutoTransition().setStartDelay(300).setDuration(300));
+        }
         final int bottomGroupVisibility = showSigninProgressSpinner ? View.INVISIBLE : View.VISIBLE;
         view.getSelectedAccountView().setVisibility(bottomGroupVisibility);
         view.getDismissButtonView().setVisibility(bottomGroupVisibility);
@@ -136,6 +139,7 @@ class SigninFirstRunViewBinder {
 
         view.getSigninProgressSpinner().setVisibility(
                 showSigninProgressSpinner ? View.VISIBLE : View.GONE);
+        view.getSigninProgressText().setVisibility(showSigningInText ? View.VISIBLE : View.GONE);
     }
 
     private SigninFirstRunViewBinder() {}
