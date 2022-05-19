@@ -596,6 +596,29 @@ VideoCaptureManager::GetDeviceFormatInUse(
   return device_in_use ? device_in_use->GetVideoCaptureFormat() : absl::nullopt;
 }
 
+GlobalRoutingID VideoCaptureManager::GetGlobalRoutingID(
+    const base::UnguessableToken& session_id) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  VideoCaptureController* const controller =
+      LookupControllerBySessionId(session_id);
+  if (!controller || !controller->IsDeviceAlive() ||
+      !blink::IsVideoDesktopCaptureMediaType(controller->stream_type())) {
+    return GlobalRoutingID();
+  }
+
+  const DesktopMediaID desktop_media_id =
+      DesktopMediaID::Parse(controller->device_id());
+
+  if (desktop_media_id.type != DesktopMediaID::Type::TYPE_WEB_CONTENTS ||
+      desktop_media_id.web_contents_id.is_null()) {
+    return GlobalRoutingID();
+  }
+
+  return GlobalRoutingID(desktop_media_id.web_contents_id.render_process_id,
+                         desktop_media_id.web_contents_id.main_render_frame_id);
+}
+
 void VideoCaptureManager::SetDesktopCaptureWindowId(
     const media::VideoCaptureSessionId& session_id,
     gfx::NativeViewId window_id) {
@@ -798,7 +821,7 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
 }
 
 VideoCaptureController* VideoCaptureManager::LookupControllerBySessionId(
-    const base::UnguessableToken& session_id) {
+    const base::UnguessableToken& session_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   SessionMap::const_iterator session_it = sessions_.find(session_id);
   if (session_it == sessions_.end())
