@@ -27,19 +27,20 @@ namespace drivefs {
 namespace {
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("...", R"pb(
+    net::DefineNetworkTrafficAnnotation("drivefs_http_client", R"(
       semantics {
           sender: "Files App - Google Drive"
-          description: "Files App integrates with Google Drive to provide a
-          local view of what is available on the Google Drive Web interface.
-          This allows users to navigate Google Drive as if it was a local
-          file system."
-          trigger: "User navigates through the Google Drive directory in the
-          Files App. User opens a file in the Google Drive directory in the
-          Files App. Additionally, the Files App will sync Google Drive data
-          in the background as changes are made on the web or on other devices."
-          data: "All metadata related to files stored in Google Drive as well
-          as content of files stored in Google Drive."
+          description: "Files App integrates with Google Drive to provide a "
+          "local view of what is available on the Google Drive Web interface. "
+          "This allows users to navigate Google Drive as if it was a local "
+          "file system."
+          trigger: "User navigates through the Google Drive directory in the "
+          "Files App. User opens a file in the Google Drive directory in the "
+          "Files App. Additionally, the Files App will sync Google Drive data "
+          "in the background as changes are made on the web or on other "
+          "devices."
+          data: "All metadata related to files stored in Google Drive as well "
+          "as content of files stored in Google Drive."
           destination: GOOGLE_OWNED_SERVICE
           }
         policy {
@@ -50,11 +51,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           }
         }
-        comments: "There are two policies that control this integration.
-        DriveDisabled will disable all communications while
-        DriveDisabledOverCellular will disable communication over cellular
-        networks"
-    )pb");
+        comments: "There are two policies that control this integration. "
+        "DriveDisabled will disable all communications while "
+        "DriveDisabledOverCellular will disable communication over cellular "
+        "networks"
+    )");
 
 class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
                                public network::mojom::DataPipeGetter {

@@ -244,6 +244,8 @@ after discussions on the right group.
     </sender>
     <sender name="Recently Added">
       <annotation id="share_preview_image_fetch"/>
+      <annotation id="fast_pair_image_decoder"/>
+      <annotation id="drivefs_http_client"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

@@ -474,6 +474,7 @@ group("gn_all") {
       "//components/exo/wayland:wayland_client_compatibility_tests",
       "//components/session_manager/core",
       "//third_party/shell-encryption:shell_encryption_unittests",
+      "//tools/traffic_annotation/auditor:traffic_annotation_auditor",
       "//ui/chromeos:ui_chromeos_unittests",
     ]
   }
@@ -888,6 +889,16 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
     if (is_win) {
       deps += [ "//chrome/chrome_cleaner:shipped_binaries" ]
     }
+  }
+}
+
+if (is_chromeos_ash) {
+  group("traffic_annotation_auditor_dependencies") {
+    deps = [
+      "//chrome",
+      "//chromeos",
+      "//tools/traffic_annotation/summary:annotations_xml",
+    ]
   }
 }
 

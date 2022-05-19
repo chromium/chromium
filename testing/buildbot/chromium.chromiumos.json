@@ -4979,6 +4979,14 @@
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       }
+    ],
+    "scripts": [
+      {
+        "isolate_profile_data": true,
+        "name": "check_network_annotations",
+        "script": "check_network_annotations.py",
+        "swarming": {}
+      }
     ]
   },
   "linux-lacros-dbg": {

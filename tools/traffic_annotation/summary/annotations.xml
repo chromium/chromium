@@ -288,8 +288,9 @@ Refer to README.md for content description and update process.
  <item id="tailored_security_service" added_in_milestone="97" content_hash_code="021a7daf" os_list="linux,windows,chromeos,android" file_path="components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.cc" />
  <item id="managed_acccount_signin_restrictions_secure_connect" added_in_milestone="97" content_hash_code="0119d88f" os_list="linux,windows,chromeos,android" file_path="components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.cc" />
  <item id="ambient_photo_cache" added_in_milestone="98" content_hash_code="07dbf21e" os_list="chromeos" file_path="ash/ambient/ambient_photo_cache.cc" />
- <item id="ambient_photo_controller" added_in_milestone="98" content_hash_code="03284b8a" os_list="chromeos" file_path="ash/ambient/ambient_photo_controller.cc" />
+ <item id="ambient_photo_controller" added_in_milestone="98" content_hash_code="03284b8a" os_list="chromeos" file_path="ash/ambient/ambient_weather_controller.cc" />
  <item id="image_downloader" added_in_milestone="98" content_hash_code="05b52680" os_list="chromeos" file_path="ash/assistant/assistant_controller_impl.cc" />
+ <item id="fast_pair_footprints_request" added_in_milestone="102" type="partial" second_id="oauth2_api_call_flow" content_hash_code="01d3d58d" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="-1,3,4" file_path="ash/quick_pair/repository/fast_pair/footprints_fetcher_impl.cc" />
  <item id="kiosk_app_icon" added_in_milestone="98" content_hash_code="04f02fef" os_list="chromeos" file_path="chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.cc" />
  <item id="arc_auth_code_fetcher" added_in_milestone="98" content_hash_code="057519ca" os_list="chromeos" file_path="chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.cc" />
  <item id="customization_wallpaper_downloader" added_in_milestone="98" content_hash_code="03ee8364" os_list="chromeos" file_path="chrome/browser/ash/customization/customization_wallpaper_downloader.cc" />
@@ -349,7 +350,6 @@ Refer to README.md for content description and update process.
  <item id="webapk_update" added_in_milestone="99" content_hash_code="0763f8a7" os_list="android" file_path="chrome/browser/android/webapk/webapk_installer.cc" />
  <item id="safe_browsing_extension_telemetry" added_in_milestone="98" content_hash_code="06f81c76" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.cc" />
  <item id="fast_pair_device_metadata_fetcher" added_in_milestone="100" content_hash_code="0655adc6" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc" />
- <item id="fast_pair_image_decoder" added_in_milestone="99" content_hash_code="04d764bc" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc" />
  <item id="wallpaper_google_photos_photos" added_in_milestone="100" content_hash_code="00c76007" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
  <item id="webview_proxy_config" added_in_milestone="100" content_hash_code="009d2396" os_list="android" file_path="android_webview/browser/network_service/aw_proxy_config_monitor.cc" />
  <item id="device_trust_key_rotation" added_in_milestone="100" content_hash_code="05cc1b9b" os_list="linux" file_path="chrome/browser/enterprise/connectors/device_trust/key_management/core/network/linux_key_network_delegate.cc" />
@@ -362,7 +362,6 @@ Refer to README.md for content description and update process.
  <item id="printing_oauth2_http_exchange" added_in_milestone="101" type="completing" content_hash_code="079d0e2f" os_list="chromeos" semantics_fields="1,3,5,6" policy_fields="-1,3,5" file_path="chrome/browser/ash/printing/oauth2/http_exchange.cc" />
  <item id="printing_oauth2_first_token_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="00850a77" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_session.cc" />
  <item id="printing_oauth2_next_token_request" added_in_milestone="102" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="002fbbfd" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_session.cc" />
- <item id="fast_pair_footprints_request" added_in_milestone="102" type="partial" second_id="oauth2_api_call_flow" content_hash_code="01d3d58d" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="-1,3,4" file_path="ash/quick_pair/repository/fast_pair/footprints_fetcher_impl.cc" />
  <item id="help_content_provider" added_in_milestone="102" content_hash_code="0839311f" os_list="chromeos" file_path="ash/webui/os_feedback_ui/backend/help_content_provider.cc" />
  <item id="managed_acccount_signin_restrictions_secure_connect_chromeos" added_in_milestone="102" content_hash_code="068bc93d" os_list="chromeos" file_path="chrome/browser/ui/webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos.cc" />
  <item id="wallpaper_download_google_photo" added_in_milestone="102" content_hash_code="034be7b5" os_list="chromeos" file_path="ash/wallpaper/wallpaper_controller_impl.cc" />
@@ -375,4 +374,6 @@ Refer to README.md for content description and update process.
  <item id="interest_group_well_known_fetcher" added_in_milestone="103" content_hash_code="01ea06eb" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/interest_group_permissions_checker.cc" />
  <item id="speculation_rules_prefetch" added_in_milestone="103" content_hash_code="015fd398" os_list="linux,windows,android,chromeos" file_path="content/browser/speculation_rules/prefetch/prefetch_service.cc" />
  <item id="share_preview_image_fetch" added_in_milestone="103" content_hash_code="03f3333d" os_list="linux,windows" file_path="chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc" />
+ <item id="fast_pair_image_decoder" added_in_milestone="103" content_hash_code="04d764bc" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc" />
+ <item id="drivefs_http_client" added_in_milestone="104" content_hash_code="042b8f2c" os_list="chromeos" file_path="ash/components/drivefs/drivefs_http_client.cc" />
 </annotations>

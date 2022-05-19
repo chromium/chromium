@@ -599,6 +599,12 @@
       'chromedriver_replay_unittests': {},
     },
 
+    'chromeos_annotation_scripts': {
+      'check_network_annotations': {
+        'script': 'check_network_annotations.py',
+      },
+    },
+
     'chromeos_browser_finch_tests': {
       'chrome_variations_tast_tests': {
         'swarming': {
