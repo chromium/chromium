@@ -67,6 +67,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
+import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunUtilsJni;
@@ -130,9 +131,6 @@ public class SigninFirstRunFragmentTest {
     @Rule
     public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @Mock
-    public EnterpriseInfo mEnterpriseInfoMock;
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock
@@ -156,19 +154,16 @@ public class SigninFirstRunFragmentTest {
     @Captor
     private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
+    private FakeEnterpriseInfo mFakeEnterpriseInfo = new FakeEnterpriseInfo();
     private CustomSigninFirstRunFragment mFragment;
 
     @Before
     public void setUp() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        EnterpriseInfo.setInstanceForTest(mEnterpriseInfoMock);
-        doAnswer(AdditionalAnswers.answerVoid(
-                         (Callback<OwnedState> callback)
-                                 -> callback.onResult(new OwnedState(
-                                         /*isDeviceOwned=*/false, /*isProfileOwned=*/false))))
-                .when(mEnterpriseInfoMock)
-                .getDeviceEnterpriseInfo(any());
+        EnterpriseInfo.setInstanceForTest(mFakeEnterpriseInfo);
+        mFakeEnterpriseInfo.initialize(new OwnedState(
+                /*isDeviceOwned=*/false, /*isProfileOwned=*/false));
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
@@ -835,12 +830,8 @@ public class SigninFirstRunFragmentTest {
                 .when(mFirstRunPageDelegateMock)
                 .exitFirstRun();
         when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(true);
-        doAnswer(AdditionalAnswers.answerVoid(
-                         (Callback<OwnedState> callback)
-                                 -> callback.onResult(new OwnedState(
-                                         /*isDeviceOwned=*/true, /*isProfileOwned=*/false))))
-                .when(mEnterpriseInfoMock)
-                .getDeviceEnterpriseInfo(any());
+        mFakeEnterpriseInfo.initialize(new OwnedState(
+                /*isDeviceOwned=*/true, /*isProfileOwned=*/false));
         doAnswer(AdditionalAnswers.answerVoid(
                          (Callback<Boolean> callback) -> callback.onResult(true)))
                 .when(mPolicyLoadListenerMock)

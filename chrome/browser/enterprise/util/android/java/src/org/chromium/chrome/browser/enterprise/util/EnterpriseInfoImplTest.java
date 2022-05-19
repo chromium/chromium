@@ -28,13 +28,11 @@ import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.concurrent.RejectedExecutionException;
 
-/**
- * Tests EnterpriseInfo.
- */
+/** Unit tests for {@link EnterpriseInfoImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
-public class EnterpriseInfoTest {
+public class EnterpriseInfoImplTest {
     @Mock
     public EnterpriseInfo.Natives mNatives;
 
@@ -42,7 +40,7 @@ public class EnterpriseInfoTest {
     public void setUp() {
         EnterpriseInfo.reset();
         // Skip the AsyncTask, we don't actually want to query the device, just enqueue callbacks.
-        EnterpriseInfo.getInstance().setSkipAsyncCheckForTesting(true);
+        getEnterpriseInfoImpl().setSkipAsyncCheckForTesting(true);
 
         MockitoAnnotations.initMocks(this);
         EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(mNatives);
@@ -54,6 +52,10 @@ public class EnterpriseInfoTest {
         EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(null);
     }
 
+    private EnterpriseInfoImpl getEnterpriseInfoImpl() {
+        return (EnterpriseInfoImpl) EnterpriseInfo.getInstance();
+    }
+
     /**
      * Tests that the callback is called with the correct result.
      * Tests both the first computation and the cached value.
@@ -61,7 +63,7 @@ public class EnterpriseInfoTest {
     @Test
     @SmallTest
     public void testCallbacksGetResultValue() {
-        EnterpriseInfo instance = EnterpriseInfo.getInstance();
+        EnterpriseInfoImpl instance = getEnterpriseInfoImpl();
 
         EnterpriseInfo.OwnedState stateIn = new EnterpriseInfo.OwnedState(false, true);
 
@@ -113,7 +115,7 @@ public class EnterpriseInfoTest {
     @Test
     @SmallTest
     public void testMultipleCallbacksServiced() {
-        EnterpriseInfo instance = EnterpriseInfo.getInstance();
+        EnterpriseInfoImpl instance = getEnterpriseInfoImpl();
         CallbackHelper helper = new CallbackHelper();
 
         Callback<EnterpriseInfo.OwnedState> callback = (result) -> {
@@ -145,7 +147,7 @@ public class EnterpriseInfoTest {
     @Test
     @SmallTest
     public void testReentrantCallback() {
-        EnterpriseInfo instance = EnterpriseInfo.getInstance();
+        EnterpriseInfoImpl instance = getEnterpriseInfoImpl();
         CallbackHelper helper = new CallbackHelper();
 
         // Make sure there is a cached value so that the getDeviceEnterpriseInfo() calls below will
@@ -239,15 +241,15 @@ public class EnterpriseInfoTest {
         EnterpriseInfo.getManagedStateForNative();
         Mockito.verifyZeroInteractions(mNatives);
 
-        EnterpriseInfo.getInstance().setCacheResult(new EnterpriseInfo.OwnedState(true, false));
-        EnterpriseInfo.getInstance().onEnterpriseInfoResultAvailable();
+        getEnterpriseInfoImpl().setCacheResult(new EnterpriseInfo.OwnedState(true, false));
+        getEnterpriseInfoImpl().onEnterpriseInfoResultAvailable();
         Mockito.verify(mNatives, Mockito.times(1)).updateNativeOwnedState(true, false);
     }
 
     @Test
     @SmallTest
     public void testGetManagedStateForNativeNullOwnedState() {
-        EnterpriseInfo.getInstance().setSkipAsyncCheckForTesting(false);
+        getEnterpriseInfoImpl().setSkipAsyncCheckForTesting(false);
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             @Override
             public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {

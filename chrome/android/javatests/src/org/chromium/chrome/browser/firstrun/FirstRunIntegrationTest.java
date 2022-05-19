@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.chrome.browser.enterprise.util.FakeEnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -128,8 +129,6 @@ public class FirstRunIntegrationTest {
     private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
-    @Mock
-    public EnterpriseInfo mEnterpriseInfo;
     @Mock
     private AccountManagerFacade mAccountManagerFacade;
     @Mock
@@ -224,17 +223,6 @@ public class FirstRunIntegrationTest {
         FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
     }
 
-    private void setDeviceOwnedForMock() {
-        Mockito.doAnswer(invocation -> {
-                   Callback<EnterpriseInfo.OwnedState> callback = invocation.getArgument(0);
-                   callback.onResult(new EnterpriseInfo.OwnedState(true, false));
-                   return null;
-               })
-                .when(mEnterpriseInfo)
-                .getDeviceEnterpriseInfo(any());
-        EnterpriseInfo.setInstanceForTest(mEnterpriseInfo);
-    }
-
     private void setTemplateUrlServiceForMock() {
         Mockito.doAnswer(invocation -> {
                    mTemplateUrlServiceWhenLoadedRunnables.add(invocation.getArgument(0));
@@ -262,7 +250,10 @@ public class FirstRunIntegrationTest {
         Bundle restrictions = new Bundle();
         restrictions.putInt("TosDialogBehavior", TosDialogBehavior.SKIP);
         AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
-        setDeviceOwnedForMock();
+
+        FakeEnterpriseInfo fakeEnterpriseInfo = new FakeEnterpriseInfo();
+        fakeEnterpriseInfo.initialize(new EnterpriseInfo.OwnedState(true, false));
+        EnterpriseInfo.setInstanceForTest(fakeEnterpriseInfo);
     }
 
     private void enableCloudManagementViaPolicy() {
