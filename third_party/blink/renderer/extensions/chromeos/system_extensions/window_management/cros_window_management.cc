@@ -26,13 +26,26 @@ CrosWindowManagement& CrosWindowManagement::From(
   return *supplement;
 }
 
+void CrosWindowManagement::BindWindowManagerStartObserver(
+    ExecutionContext* execution_context,
+    mojo::PendingReceiver<mojom::blink::CrosWindowManagementStartObserver>
+        receiver) {
+  // The InterfaceProvider pipe, which calls binders, is destroyed before the
+  // ExecutionContext, so `execution_context` should never be null.
+  DCHECK(execution_context);
+  auto& window_management = CrosWindowManagement::From(*execution_context);
+  window_management.BindWindowManagerStartObserverImpl(std::move(receiver));
+}
+
 CrosWindowManagement::CrosWindowManagement(ExecutionContext& execution_context)
     : Supplement(execution_context),
       ExecutionContextClient(&execution_context),
-      cros_window_management_(&execution_context) {}
+      cros_window_management_(&execution_context),
+      receiver_(this, &execution_context) {}
 
 void CrosWindowManagement::Trace(Visitor* visitor) const {
   visitor->Trace(cros_window_management_);
+  visitor->Trace(receiver_);
   Supplement<ExecutionContext>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
@@ -87,6 +100,13 @@ void CrosWindowManagement::WindowsCallback(
     results.push_back(result);
   }
   resolver->Resolve(results);
+}
+
+void CrosWindowManagement::BindWindowManagerStartObserverImpl(
+    mojo::PendingReceiver<mojom::blink::CrosWindowManagementStartObserver>
+        receiver) {
+  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
+                                          TaskType::kInternalDefault));
 }
 
 }  // namespace blink

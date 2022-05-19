@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
 
+#include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_chrome_os.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
+#include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -45,6 +48,19 @@ void InstallChromeOSExtensions(ScriptState* script_state) {
 void ChromeOSExtensions::Initialize() {
   ExtensionsRegistry::GetInstance().RegisterBlinkExtensionInstallCallback(
       &InstallChromeOSExtensions);
+}
+
+void ChromeOSExtensions::InitServiceWorkerGlobalScope(
+    ServiceWorkerGlobalScope& worker_global_scope) {
+  if (!RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled())
+    return;
+
+  if (RuntimeEnabledFeatures::BlinkExtensionChromeOSWindowManagementEnabled()) {
+    auto& interface_registry = worker_global_scope.GetInterfaceRegistry();
+    interface_registry.AddInterface(WTF::BindRepeating(
+        &CrosWindowManagement::BindWindowManagerStartObserver,
+        WrapWeakPersistent(&worker_global_scope)));
+  }
 }
 
 }  // namespace blink

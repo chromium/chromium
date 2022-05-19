@@ -44,7 +44,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     ukm::SourceId ukm_source_id,
     const absl::optional<ExecutionContextToken>& parent_context_token,
     bool parent_cross_origin_isolated_capability,
-    bool parent_direct_socket_capability)
+    bool parent_direct_socket_capability,
+    InterfaceRegistry* interface_registry)
     : script_url(script_url.Copy()),
       script_type(script_type),
       global_scope_name(global_scope_name.IsolatedCopy()),
@@ -79,7 +80,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       parent_context_token(parent_context_token),
       parent_cross_origin_isolated_capability(
           parent_cross_origin_isolated_capability),
-      parent_direct_socket_capability(parent_direct_socket_capability) {
+      parent_direct_socket_capability(parent_direct_socket_capability),
+      interface_registry(interface_registry) {
   this->inherited_trial_features =
       std::make_unique<Vector<OriginTrialFeature>>();
   if (inherited_trial_features) {

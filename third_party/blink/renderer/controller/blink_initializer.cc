@@ -264,6 +264,13 @@ void BlinkInitializer::InitLocalFrame(LocalFrame& frame) const {
   ModulesInitializer::InitLocalFrame(frame);
 }
 
+void BlinkInitializer::InitServiceWorkerGlobalScope(
+    ServiceWorkerGlobalScope& worker_global_scope) const {
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+  ChromeOSExtensions::InitServiceWorkerGlobalScope(worker_global_scope);
+#endif
+}
+
 void BlinkInitializer::OnClearWindowObjectInMainWorld(
     Document& document,
     const Settings& settings) const {

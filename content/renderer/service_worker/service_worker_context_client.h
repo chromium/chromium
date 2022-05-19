@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
@@ -55,6 +56,7 @@ struct WebServiceWorkerInstalledScriptsManagerParams;
 
 namespace content {
 
+class BlinkInterfaceRegistryImpl;
 class EmbeddedWorkerInstanceClientImpl;
 
 // ServiceWorkerContextClient is a "client" of a service worker execution
@@ -229,6 +231,10 @@ class ServiceWorkerContextClient : public blink::WebServiceWorkerContextClient {
       controller_receiver_;
   mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
       pending_subresource_loader_updater_;
+
+  // Holds renderer interfaces exposed to the browser.
+  service_manager::BinderRegistry registry_;
+  std::unique_ptr<BlinkInterfaceRegistryImpl> blink_interface_registry_;
 
   // This is bound on the initiator thread.
   mojo::SharedAssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>

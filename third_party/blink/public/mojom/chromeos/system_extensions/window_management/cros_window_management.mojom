@@ -90,3 +90,8 @@ interface CrosWindowManagement {
   // Closes the window identified by id if it exists, else do nothing.
   Close(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
 };
+
+// Interface used by the browser to send the `start` event to Window Management
+// System Extensions service workers. This is only bound once when the system
+// extension is installed and the event is dispatched.
+interface CrosWindowManagementStartObserver {};

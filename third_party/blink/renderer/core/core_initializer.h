@@ -60,6 +60,7 @@ class LocalFrame;
 class MediaControls;
 class Page;
 class PictureInPictureController;
+class ServiceWorkerGlobalScope;
 class Settings;
 class ShadowRoot;
 class WebLocalFrameClient;
@@ -92,6 +93,9 @@ class CORE_EXPORT CoreInitializer {
   // bypass the inverted dependency from core/ to modules/.
   // Mojo Interfaces registered with LocalFrame
   virtual void InitLocalFrame(LocalFrame&) const = 0;
+  // Mojo Interfaces registered with ServiceWorkerGlobalScope.
+  virtual void InitServiceWorkerGlobalScope(
+      ServiceWorkerGlobalScope&) const = 0;
   // Supplements installed on a frame using ChromeClient
   virtual void InstallSupplements(LocalFrame&) const = 0;
   virtual MediaControls* CreateMediaControls(HTMLMediaElement&,

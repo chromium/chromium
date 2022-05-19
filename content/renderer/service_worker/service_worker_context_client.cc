@@ -27,6 +27,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/worker_thread.h"
+#include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
 #include "content/renderer/service_worker/service_worker_type_converters.h"
@@ -137,6 +138,10 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
       mojo::SharedAssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>(
           std::move(instance_host), initiator_thread_task_runner_);
 
+  // At the time of writing, there is no need for associated interfaces.
+  blink_interface_registry_ = std::make_unique<BlinkInterfaceRegistryImpl>(
+      registry_.GetWeakPtr(), /*associated_interface_registry=*/nullptr);
+
   if (IsOutOfProcessNetworkService()) {
     // If the network service crashes, this worker self-terminates, so it can
     // be restarted later with a connection to the restarted network
@@ -187,7 +192,8 @@ void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
   worker_->StartWorkerContext(
       std::move(start_data), std::move(installed_scripts_manager_params),
       std::move(content_settings), std::move(cache_storage),
-      std::move(browser_interface_broker), initiator_thread_task_runner_);
+      std::move(browser_interface_broker), blink_interface_registry_.get(),
+      initiator_thread_task_runner_);
 }
 
 blink::WebEmbeddedWorker& ServiceWorkerContextClient::worker() {

@@ -33,6 +33,7 @@
 
 namespace blink {
 
+class InterfaceRegistry;
 class WorkerClients;
 
 // GlobalScopeCreationParams contains parameters for initializing
@@ -74,7 +75,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const absl::optional<ExecutionContextToken>& parent_context_token =
           absl::nullopt,
       bool parent_cross_origin_isolated_capability = false,
-      bool parent_direct_socket_capability = false);
+      bool parent_direct_socket_capability = false,
+      InterfaceRegistry* interface_registry = nullptr);
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
       delete;
@@ -197,6 +199,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   //
   // TODO(mkwst): We need a specification for this capability.
   const bool parent_direct_socket_capability;
+
+  InterfaceRegistry* const interface_registry;
 };
 
 }  // namespace blink

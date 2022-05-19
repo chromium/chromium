@@ -9,10 +9,15 @@
 
 namespace blink {
 
+class ServiceWorkerGlobalScope;
+
 class EXTENSIONS_CHROMEOS_EXPORT ChromeOSExtensions {
  public:
   // Should be called by clients before trying to create Frames.
   static void Initialize();
+
+  // Registers Mojo interfaces with ServiceWorkerGlobalScope.
+  static void InitServiceWorkerGlobalScope(ServiceWorkerGlobalScope&);
 };
 
 }  // namespace blink

@@ -75,6 +75,7 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
           cache_storage,
       CrossVariantMojoRemote<mojom::blink::BrowserInterfaceBrokerInterfaceBase>
           browser_interface_broker,
+      InterfaceRegistry* interface_registry,
       scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner)
       override;
   void TerminateWorkerContext() override;
@@ -88,6 +89,7 @@ class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
       std::unique_ptr<ServiceWorkerContentSettingsProxy>,
       mojo::PendingRemote<mojom::blink::CacheStorage>,
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>,
+      InterfaceRegistry* interface_registry,
       scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner);
 
   // Creates a cross-thread copyable outside settings object for top-level

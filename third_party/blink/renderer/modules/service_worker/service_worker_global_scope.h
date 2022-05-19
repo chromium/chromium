@@ -60,6 +60,7 @@
 
 namespace blink {
 
+class InterfaceRegistry;
 class ExceptionState;
 class FetchEvent;
 class RespondWithObserver;
@@ -101,8 +102,11 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       std::unique_ptr<ServiceWorkerInstalledScriptsManager>,
       mojo::PendingRemote<mojom::blink::CacheStorage>,
       base::TimeTicks time_origin,
-      const ServiceWorkerToken& service_worker_token);
+      const ServiceWorkerToken& service_worker_token,
+      InterfaceRegistry* interface_registry);
   ~ServiceWorkerGlobalScope() override;
+
+  InterfaceRegistry& GetInterfaceRegistry() { return *interface_registry_; }
 
   // ExecutionContext overrides:
   bool IsServiceWorkerGlobalScope() const override { return true; }
@@ -566,6 +570,9 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   Member<ServiceWorkerClients> clients_;
   Member<ServiceWorkerRegistration> registration_;
   Member<::blink::ServiceWorker> service_worker_;
+
+  // Registry of interfaces exposed to the browser from Service Workers.
+  InterfaceRegistry* const interface_registry_;
 
   // Map from service worker version id to JavaScript ServiceWorker object in
   // current execution context.
