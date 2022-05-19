@@ -55,10 +55,6 @@ public class ThreadUtils {
      *     public void doFoo() {
      *         mThreadChecker.assertOnValidThreadAndState();
      *     }
-     *
-     *     public void destroy() {
-     *         mThreadChecker.destroy();
-     *     }
      * }
      * }
      * </pre>
