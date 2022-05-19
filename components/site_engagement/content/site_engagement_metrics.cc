@@ -40,9 +40,6 @@ const char SiteEngagementMetrics::kEngagementScoreHistogram[] =
 const char SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram[] =
     "SiteEngagementService.OriginsWithMaxEngagement";
 
-const char SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram[] =
-    "SiteEngagementService.OriginsWithMaxDailyEngagement";
-
 const char SiteEngagementMetrics::kEngagementTypeHistogram[] =
     "SiteEngagementService.EngagementType";
 
@@ -101,12 +98,6 @@ void SiteEngagementMetrics::RecordEngagementScores(
 
 void SiteEngagementMetrics::RecordOriginsWithMaxEngagement(int total_origins) {
   UMA_HISTOGRAM_COUNTS_100(kOriginsWithMaxEngagementHistogram, total_origins);
-}
-
-void SiteEngagementMetrics::RecordOriginsWithMaxDailyEngagement(
-    int total_origins) {
-  UMA_HISTOGRAM_COUNTS_100(kOriginsWithMaxDailyEngagementHistogram,
-                           total_origins);
 }
 
 void SiteEngagementMetrics::RecordEngagement(EngagementType type) {

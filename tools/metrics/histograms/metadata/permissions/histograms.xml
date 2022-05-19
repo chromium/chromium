@@ -1072,6 +1072,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SiteEngagementService.OriginsWithMaxDailyEngagement"
     units="units" expires_after="2021-01-01">
+  <obsolete>
+    Removed in May 2022 / M104.
+  </obsolete>
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>

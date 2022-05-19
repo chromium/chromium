@@ -298,10 +298,6 @@ class SiteEngagementService : public KeyedService,
   // browser for an extended period of time do not have their engagement decay.
   bool IsLastEngagementStale() const;
 
-  // Returns the number of origins with maximum daily and total engagement
-  // respectively.
-  int OriginsWithMaxDailyEngagement() const;
-
   // Add and remove observers of this service.
   void AddObserver(SiteEngagementObserver* observer);
   void RemoveObserver(SiteEngagementObserver* observer);
