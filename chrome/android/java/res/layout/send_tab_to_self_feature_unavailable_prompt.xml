@@ -23,7 +23,6 @@
     app:srcCompat="@drawable/shared_clipboard_zero_state"/>
 
   <TextView
-    android:id="@+id/title"
     android:layout_width="match_parent"
     android:layout_height="@dimen/min_touch_target_size"
     android:gravity="center"
@@ -32,10 +31,9 @@
     android:paddingTop="16dp"
     android:ellipsize="end"
     android:textAppearance="@style/TextAppearance.BlackToolbarTitle"
-    android:text="@string/sharing_no_devices_available_title"/>
+    android:text="@string/send_tab_to_self_share_activity_title"/>
 
   <TextView
-    android:id="@+id/instructions_to_enable"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
@@ -44,5 +42,5 @@
     android:paddingTop="16dp"
     android:ellipsize="end"
     android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
-    android:text="@string/sharing_hub_sync_disabled_text"/>
+    android:text="@string/send_tab_to_self_when_signed_in_unavailable"/>
 </LinearLayout>

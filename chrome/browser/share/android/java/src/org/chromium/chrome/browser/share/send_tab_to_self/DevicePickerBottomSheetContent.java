@@ -84,17 +84,10 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
                 SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
 
         // First check if sharing is unavailable, e.g. because there are no target devices. If so,
-        // show |sharingUnavailableView|, modulo adjusting the strings and the visibility of the
-        // settings button.
-        ViewGroup sharingUnavailableView = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.send_tab_to_self_feature_unavailable_prompt, null);
-        TextView title = sharingUnavailableView.findViewById(R.id.title);
-        TextView instructionsToEnable =
-                sharingUnavailableView.findViewById(R.id.instructions_to_enable);
+        // show send_tab_to_self_feature_unavailable_prompt.
         if (targetDeviceList.isEmpty()) {
-            mContentView = sharingUnavailableView;
-            title.setText(R.string.send_tab_to_self_share_activity_title);
-            instructionsToEnable.setText(R.string.send_tab_to_self_when_signed_in_unavailable);
+            mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
+                    R.layout.send_tab_to_self_feature_unavailable_prompt, null);
             mToolbarView.setVisibility(View.GONE);
             // TODO(crbug.com/1298185): This is cumulating both signed-out and single device users.
             // Those should be recorded separately instead.
