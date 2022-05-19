@@ -20,7 +20,7 @@
 // Onboarding, ScriptExecution, etc. on close.
 
 // Implementation of the ApcClient interface that attaches itself to a
-// |WebContents|.
+// `WebContents`.
 class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
                       public ApcClient {
  public:
@@ -39,11 +39,12 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
  protected:
   // Creates an onboarding coordinator. Protected to allow for overrides
   // by test classes.
-  virtual std::unique_ptr<ApcOnboardingCoordinator> CreateOnboardingCoordinator(
-      AssistantDisplayDelegate* display_delegate);
+  virtual std::unique_ptr<ApcOnboardingCoordinator>
+  CreateOnboardingCoordinator();
+
+  explicit ApcClientImpl(content::WebContents* web_contents);
 
  private:
-  explicit ApcClientImpl(content::WebContents* web_contents);
   friend class content::WebContentsUserData<ApcClientImpl>;
 
   // Registers whether onboarding was successful or not (i.e. whether consent
@@ -53,7 +54,7 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // Registers when a run is complete. Used in callbacks.
   void OnRunComplete();
 
-  // The state of the |ApcClient| to avoid that a run is started while
+  // The state of the `ApcClient` to avoid that a run is started while
   // another is already ongoing in the tab.
   bool is_running_ = false;
 

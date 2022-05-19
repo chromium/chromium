@@ -7,19 +7,20 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 ApcOnboardingCoordinatorImpl::ApcOnboardingCoordinatorImpl(
-    Profile* profile,
-    AssistantDisplayDelegate* display_delegate)
-    : pref_service_(profile->GetPrefs()), display_delegate_(display_delegate) {}
+    content::WebContents* web_contents)
+    : web_contents_(web_contents) {}
 
 ApcOnboardingCoordinatorImpl::~ApcOnboardingCoordinatorImpl() = default;
 
@@ -55,7 +56,7 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
 
   dialog_controller_ = CreateOnboardingController(info);
   dialog_controller_->Show(
-      CreateOnboardingPrompt(dialog_controller_.get(), display_delegate_),
+      CreateOnboardingPrompt(dialog_controller_->GetWeakPtr()),
       base::BindOnce(
           &ApcOnboardingCoordinatorImpl::OnControllerResponseReceived,
           base::Unretained(this)));
@@ -67,27 +68,30 @@ ApcOnboardingCoordinatorImpl::CreateOnboardingController(
   return AssistantOnboardingController::Create(onboarding_information);
 }
 
-AssistantOnboardingPrompt* ApcOnboardingCoordinatorImpl::CreateOnboardingPrompt(
-    AssistantOnboardingController* controller,
-    AssistantDisplayDelegate* display_delegate) {
-  return AssistantOnboardingPrompt::Create(controller, display_delegate);
+base::WeakPtr<AssistantOnboardingPrompt>
+ApcOnboardingCoordinatorImpl::CreateOnboardingPrompt(
+    base::WeakPtr<AssistantOnboardingController> controller) {
+  return AssistantOnboardingPrompt::Create(controller, web_contents_);
 }
 
 bool ApcOnboardingCoordinatorImpl::IsOnboardingAlreadyAccepted() {
-  return pref_service_->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled);
+  return GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopEnabled);
 }
 
 void ApcOnboardingCoordinatorImpl::OnControllerResponseReceived(bool success) {
   if (success) {
-    pref_service_->SetBoolean(prefs::kAutofillAssistantOnDesktopEnabled, true);
+    GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopEnabled, true);
   }
   std::move(callback_).Run(success);
 }
 
+PrefService* ApcOnboardingCoordinatorImpl::GetPrefs() {
+  return Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+      ->GetPrefs();
+}
+
 // static
 std::unique_ptr<ApcOnboardingCoordinator> ApcOnboardingCoordinator::Create(
-    Profile* profile,
-    AssistantDisplayDelegate* display_delegate) {
-  return std::make_unique<ApcOnboardingCoordinatorImpl>(profile,
-                                                        display_delegate);
+    content::WebContents* web_contents) {
+  return std::make_unique<ApcOnboardingCoordinatorImpl>(web_contents);
 }

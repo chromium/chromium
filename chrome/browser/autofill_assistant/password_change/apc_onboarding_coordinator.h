@@ -7,8 +7,9 @@
 
 #include "base/callback.h"
 
-class AssistantDisplayDelegate;
-class Profile;
+namespace content {
+class WebContents;
+}  // namespace content
 
 // Abstract interface for an onboarding coordinator.
 class ApcOnboardingCoordinator {
@@ -17,11 +18,10 @@ class ApcOnboardingCoordinator {
   // given.
   using Callback = base::OnceCallback<void(bool)>;
 
-  // Factory function to create an |ApcOnboardingCoordinator| that is defined
+  // Factory function to create an `ApcOnboardingCoordinator` that is defined
   // in `apc_onboarding_controller_impl.cc`.
   static std::unique_ptr<ApcOnboardingCoordinator> Create(
-      Profile* profile,
-      AssistantDisplayDelegate* display_delegate);
+      content::WebContents* web_contents);
 
   ApcOnboardingCoordinator() = default;
   virtual ~ApcOnboardingCoordinator() = default;

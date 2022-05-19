@@ -7891,6 +7891,8 @@ static_library("test_support") {
     deps += [ "//chrome/android:test_support_jni_headers" ]
   } else {
     sources += [
+      "autofill_assistant/password_change/mock_apc_onboarding_coordinator.cc",
+      "autofill_assistant/password_change/mock_apc_onboarding_coordinator.h",
       "download/test_download_shelf.cc",
       "download/test_download_shelf.h",
       "hid/mock_hid_device_observer.cc",

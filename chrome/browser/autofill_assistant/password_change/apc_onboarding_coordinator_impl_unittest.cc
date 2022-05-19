@@ -7,57 +7,61 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
-#include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_onboarding_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class TestApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinatorImpl {
  public:
-  TestApcOnboardingCoordinatorImpl(Profile* profile,
-                                   AssistantDisplayDelegate* display_delegate);
+  explicit TestApcOnboardingCoordinatorImpl(content::WebContents* web_contents);
 
   MOCK_METHOD(std::unique_ptr<AssistantOnboardingController>,
               CreateOnboardingController,
               (const AssistantOnboardingInformation&),
               (override));
-  MOCK_METHOD(AssistantOnboardingPrompt*,
+  MOCK_METHOD(base::WeakPtr<AssistantOnboardingPrompt>,
               CreateOnboardingPrompt,
-              (AssistantOnboardingController*, AssistantDisplayDelegate*),
+              (base::WeakPtr<AssistantOnboardingController>),
               (override));
 };
 
 TestApcOnboardingCoordinatorImpl::TestApcOnboardingCoordinatorImpl(
-    Profile* profile,
-    AssistantDisplayDelegate* display_delegate)
-    : ApcOnboardingCoordinatorImpl(profile, display_delegate) {}
+    content::WebContents* web_contents)
+    : ApcOnboardingCoordinatorImpl(web_contents) {}
 
 class ApcOnboardingCoordinatorImplTest : public ::testing::Test {
  public:
   ApcOnboardingCoordinatorImplTest() {
-    coordinator_ = std::make_unique<TestApcOnboardingCoordinatorImpl>(
-        &profile_, &display_delegate_);
+    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
+
+    web_contents_ = web_contents_factory_->CreateWebContents(&profile_);
+    coordinator_ =
+        std::make_unique<TestApcOnboardingCoordinatorImpl>(web_contents());
   }
 
   TestApcOnboardingCoordinatorImpl* coordinator() { return coordinator_.get(); }
+  content::WebContents* web_contents() { return web_contents_; }
   PrefService* GetPrefs() { return profile_.GetPrefs(); }
 
  private:
-  // Testing setup.
+  // Testing setup. The `TestWebContentsFactory` needs to be listed after the
+  // profile so that it is destroyed first.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-
-  // Mocks
-  MockAssistantDisplayDelegate display_delegate_;
+  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The object to be tested.
   std::unique_ptr<TestApcOnboardingCoordinatorImpl> coordinator_;

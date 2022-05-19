@@ -11,19 +11,21 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 
-class PrefService;
-class Profile;
+namespace content {
+class WebContents;
+}  // namespace content
 
-// Implementation of the |ApcOnboardingCoordinator| interface that takes care
+class PrefService;
+
+// Implementation of the `ApcOnboardingCoordinator` interface that takes care
 // of onboarding/consent for automated password change.
 class ApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinator {
  public:
-  ApcOnboardingCoordinatorImpl(Profile* profile,
-                               AssistantDisplayDelegate* display_delegate);
+  explicit ApcOnboardingCoordinatorImpl(content::WebContents* web_contents);
   ~ApcOnboardingCoordinatorImpl() override;
 
   // ApcOnboardingCoordinator:
@@ -36,9 +38,8 @@ class ApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinator {
   virtual std::unique_ptr<AssistantOnboardingController>
   CreateOnboardingController(
       const AssistantOnboardingInformation& onboarding_information);
-  virtual AssistantOnboardingPrompt* CreateOnboardingPrompt(
-      AssistantOnboardingController* controller,
-      AssistantDisplayDelegate* display_delegate);
+  virtual base::WeakPtr<AssistantOnboardingPrompt> CreateOnboardingPrompt(
+      base::WeakPtr<AssistantOnboardingController> controller);
 
  private:
   // Returns whether the user has previously accepted onboarding by checking
@@ -48,11 +49,12 @@ class ApcOnboardingCoordinatorImpl : public ApcOnboardingCoordinator {
   // Handles the response from the UI controller prompting the user for consent.
   void OnControllerResponseReceived(bool success);
 
-  // Handles the pref that stores whether onboarding was accepted.
-  raw_ptr<PrefService> pref_service_;
+  // Returns the pref service needed to check whether onboarding was previously
+  // accepted.
+  PrefService* GetPrefs();
 
-  // Provides the ability to (un-)register the onboarding view.
-  raw_ptr<AssistantDisplayDelegate> display_delegate_;
+  // The `WebContents` for which onboarding is conducted.
+  raw_ptr<content::WebContents> web_contents_;
 
   // Informs the caller about the success of the onboarding process.
   Callback callback_;

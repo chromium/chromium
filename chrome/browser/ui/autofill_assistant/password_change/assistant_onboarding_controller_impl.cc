@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 
@@ -17,9 +18,10 @@ AssistantOnboardingControllerImpl::~AssistantOnboardingControllerImpl() {
   ClosePrompt();
 }
 
-void AssistantOnboardingControllerImpl::Show(AssistantOnboardingPrompt* prompt,
-                                             Callback callback) {
-  // If there is another prompt that is controlled by |this|, close it.
+void AssistantOnboardingControllerImpl::Show(
+    base::WeakPtr<AssistantOnboardingPrompt> prompt,
+    Callback callback) {
+  // If there is another prompt that is controlled by `this`, close it.
   ClosePrompt();
 
   callback_ = std::move(callback);
@@ -51,6 +53,11 @@ void AssistantOnboardingControllerImpl::OnClose() {
 const AssistantOnboardingInformation&
 AssistantOnboardingControllerImpl::GetOnboardingInformation() {
   return onboarding_information_;
+}
+
+base::WeakPtr<AssistantOnboardingController>
+AssistantOnboardingControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AssistantOnboardingControllerImpl::ClosePrompt() {

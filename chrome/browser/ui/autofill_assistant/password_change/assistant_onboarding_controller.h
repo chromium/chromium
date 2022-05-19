@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
 class AssistantOnboardingPrompt;
@@ -41,10 +42,10 @@ struct AssistantOnboardingInformation {
   std::u16string button_accept_text;
 };
 
-// Abstract interface for a controller of an |OnboardingPrompt|.
+// Abstract interface for a controller of an `OnboardingPrompt`.
 class AssistantOnboardingController {
  public:
-  // A callback that is called with |true| if consent was given and false
+  // A callback that is called with `true` if consent was given and false
   // otherwise (either by denying explicitly or by closing the prompt).
   using Callback = base::OnceCallback<void(bool)>;
 
@@ -56,8 +57,9 @@ class AssistantOnboardingController {
   AssistantOnboardingController() = default;
   virtual ~AssistantOnboardingController() = default;
 
-  // Shows the |OnboardingPrompt|.
-  virtual void Show(AssistantOnboardingPrompt* prompt, Callback callback) = 0;
+  // Shows the `OnboardingPrompt`.
+  virtual void Show(base::WeakPtr<AssistantOnboardingPrompt> prompt,
+                    Callback callback) = 0;
 
   // Registers that the consent was given.
   virtual void OnAccept() = 0;
@@ -73,6 +75,9 @@ class AssistantOnboardingController {
   // Provides the "model" behind the controller by returning a struct
   // specifying the consent text.
   virtual const AssistantOnboardingInformation& GetOnboardingInformation() = 0;
+
+  // Returns a weak pointer to this controller.
+  virtual base::WeakPtr<AssistantOnboardingController> GetWeakPtr() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ASSISTANT_ONBOARDING_CONTROLLER_H_

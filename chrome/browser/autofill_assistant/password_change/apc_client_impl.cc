@@ -28,12 +28,18 @@ bool ApcClientImpl::Start(const GURL& url,
     return false;
   is_running_ = true;
 
-  // TODO(crbug.com/1322419): Obtain the side panel.
-  // TODO(crbug.com/1322387): Perform onboarding
+  // The coordinator takes care of checking whether a user has previously given
+  // consent and, if not, prompts the user to give consent now.
+  onboarding_coordinator_ = CreateOnboardingCoordinator();
+  onboarding_coordinator_->PerformOnboarding(base::BindOnce(
+      &ApcClientImpl::OnOnboardingComplete, base::Unretained(this)));
+
   return true;
 }
 
 void ApcClientImpl::Stop() {
+  onboarding_coordinator_.reset();
+
   is_running_ = false;
 }
 
@@ -41,22 +47,26 @@ bool ApcClientImpl::IsRunning() const {
   return is_running_;
 }
 
-void ApcClientImpl::OnOnboardingComplete(bool success) {}
+// `success` indicates whether onboarding was successful, i.e. whether consent
+// has been given.
+void ApcClientImpl::OnOnboardingComplete(bool success) {
+  if (!success) {
+    Stop();
+    return;
+  }
 
-void ApcClientImpl::OnRunComplete() {}
+  // TODO(crbug.com/1324089): Start execution. For now, immediately mark the run
+  // as complete.
+  OnRunComplete();
+}
+
+void ApcClientImpl::OnRunComplete() {
+  Stop();
+}
 
 std::unique_ptr<ApcOnboardingCoordinator>
-ApcClientImpl::CreateOnboardingCoordinator(
-    AssistantDisplayDelegate* display_delegate) {
-  return ApcOnboardingCoordinator::Create(
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()),
-      display_delegate);
+ApcClientImpl::CreateOnboardingCoordinator() {
+  return ApcOnboardingCoordinator::Create(&GetWebContents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ApcClientImpl);
-
-ApcClient* ApcClient::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  ApcClientImpl::CreateForWebContents(web_contents);
-  return ApcClientImpl::FromWebContents(web_contents);
-}
