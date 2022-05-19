@@ -148,10 +148,6 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   // the system or by the browser.
   void CloseInternal(bool should_pause_video);
 
-  // Creates a new window if the previous one was destroyed. It can happen
-  // because of the system control of the window.
-  void EnsureWindow();
-
   // Allow play/pause button to be visible if Media Session actions "play" and
   // "pause" are both handled by the website or if
   // always_hide_play_pause_button_ is false.

@@ -327,10 +327,10 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller() != nullptr);
 
-  ASSERT_TRUE(window_controller()->GetWindowForTesting() != nullptr);
-  EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
+  EXPECT_FALSE(window_controller()->GetWindowForTesting());
   ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
 
+  ASSERT_TRUE(window_controller()->GetWindowForTesting());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   gfx::NativeWindow native_window = GetOverlayWindow()->GetNativeWindow();
@@ -607,10 +607,12 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  ASSERT_NE(GetOverlayWindow(), nullptr);
-  ASSERT_FALSE(GetOverlayWindow()->IsVisible());
+  ASSERT_FALSE(GetOverlayWindow());
 
   ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+
+  ASSERT_TRUE(GetOverlayWindow());
+  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
 
   GetOverlayWindow()->SetSize(gfx::Size(400, 400));
 
@@ -1377,10 +1379,12 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
   ASSERT_TRUE(window_controller());
 
-  ASSERT_NE(GetOverlayWindow(), nullptr);
-  ASSERT_FALSE(GetOverlayWindow()->IsVisible());
+  ASSERT_FALSE(GetOverlayWindow());
 
   ASSERT_EQ(true, EvalJs(active_web_contents, "enterPictureInPicture();"));
+
+  ASSERT_TRUE(GetOverlayWindow());
+  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
 
   // The PiP window starts in the bottom-right quadrant of the screen.
   gfx::Rect bottom_right_bounds = GetOverlayWindow()->GetBounds();

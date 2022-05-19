@@ -1523,13 +1523,13 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_VideoPictureInPicture) {
   content::VideoPictureInPictureWindowController* window_controller =
       content::PictureInPictureWindowController::
           GetOrCreateVideoPictureInPictureController(web_contents);
-  ASSERT_TRUE(window_controller->GetWindowForTesting());
-  EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
+  EXPECT_FALSE(window_controller->GetWindowForTesting());
 
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       web_contents, "enterPictureInPicture();", &result));
   EXPECT_TRUE(result);
+  ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_TRUE(window_controller->GetWindowForTesting()->IsVisible());
 
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(

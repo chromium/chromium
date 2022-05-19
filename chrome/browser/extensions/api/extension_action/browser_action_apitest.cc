@@ -1022,18 +1022,19 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest,
   content::VideoPictureInPictureWindowController* window_controller =
       content::PictureInPictureWindowController::
           GetOrCreateVideoPictureInPictureController(web_contents);
-  ASSERT_TRUE(window_controller->GetWindowForTesting());
-  EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
+  EXPECT_FALSE(window_controller->GetWindowForTesting());
 
   // Click on the browser action icon to enter Picture-in-Picture.
   ResultCatcher catcher;
   GetBrowserActionsBar()->Press(extension->id());
   EXPECT_TRUE(catcher.GetNextResult());
+  ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_TRUE(window_controller->GetWindowForTesting()->IsVisible());
 
   // Click on the browser action icon to exit Picture-in-Picture.
   GetBrowserActionsBar()->Press(extension->id());
   EXPECT_TRUE(catcher.GetNextResult());
+  ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
 }
 
