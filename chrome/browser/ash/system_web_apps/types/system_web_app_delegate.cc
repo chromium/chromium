@@ -34,8 +34,8 @@ SystemWebAppDelegate::SystemWebAppDelegate(
 
 SystemWebAppDelegate::~SystemWebAppDelegate() = default;
 
-std::vector<web_app::AppId>
-SystemWebAppDelegate::GetAppIdsToUninstallAndReplace() const {
+std::vector<std::string> SystemWebAppDelegate::GetAppIdsToUninstallAndReplace()
+    const {
   return {};
 }
 

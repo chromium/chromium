@@ -10,7 +10,6 @@
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 
 struct WebAppInstallInfo;
 
@@ -24,7 +23,7 @@ class FileManagerSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool IsAppEnabled() const override;
-  std::vector<web_app::AppId> GetAppIdsToUninstallAndReplace() const override;
+  std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
 };
 
 // Return a WebAppInstallInfo used to install the app.
