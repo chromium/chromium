@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 namespace syncer {
@@ -64,7 +65,7 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                 delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
-      const sync_pb::EntitySpecifics& entity_specifics) override;
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
   static std::string ComputeClientTagForTesting(
       const sync_pb::PasswordSpecificsData& password_data);
@@ -84,6 +85,11 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   // given |storage_key|. By default, empty PasswordSpecificsData is returned.
   const sync_pb::PasswordSpecificsData& GetPossiblyTrimmedPasswordSpecificsData(
       const std::string& storage_key);
+
+  // Checks whether any password entity on `metadata_map` persists specifics
+  // fields in cache that are supported in the current browser version.
+  bool SyncMetadataCacheContainsSupportedFields(
+      const syncer::EntityMetadataMap& metadata_map) const;
 
   // Password store responsible for persistence.
   const raw_ptr<PasswordStoreSync> password_store_sync_;

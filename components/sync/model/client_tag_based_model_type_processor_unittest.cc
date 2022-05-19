@@ -131,7 +131,7 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
   }
 
   sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
-      const sync_pb::EntitySpecifics& entity_specifics) override {
+      const sync_pb::EntitySpecifics& entity_specifics) const override {
     DCHECK(entity_specifics.has_preference());
     sync_pb::EntitySpecifics trimmed_specifics = entity_specifics;
     trimmed_specifics.mutable_preference()->clear_value();

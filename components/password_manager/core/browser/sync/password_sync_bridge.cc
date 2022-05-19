@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -250,6 +251,17 @@ PasswordSyncBridge::PasswordSyncBridge(
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadSuccessButCleared;
+    } else if (base::FeatureList::IsEnabled(
+                   syncer::kCacheBaseEntitySpecificsInMetadata) &&
+               SyncMetadataCacheContainsSupportedFields(
+                   batch->GetAllMetadata())) {
+      // Caching entity specifics is meant to preserve fields not supported in a
+      // given browser version during commits to the server. If the cache
+      // contains supported fields, this means that the browser was updated and
+      // we should force the initial sync flow to propagate the cached data into
+      // the local model.
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      batch = std::make_unique<syncer::MetadataBatch>();
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError",
@@ -850,7 +862,7 @@ void PasswordSyncBridge::ApplyStopSyncChanges(
 }
 
 sync_pb::EntitySpecifics PasswordSyncBridge::TrimRemoteSpecificsForCaching(
-    const sync_pb::EntitySpecifics& entity_specifics) {
+    const sync_pb::EntitySpecifics& entity_specifics) const {
   DCHECK(entity_specifics.has_password());
   sync_pb::EntitySpecifics trimmed_entity_specifics;
   *trimmed_entity_specifics.mutable_password()
@@ -867,6 +879,31 @@ PasswordSyncBridge::GetPossiblyTrimmedPasswordSpecificsData(
       ->GetPossiblyTrimmedRemoteSpecifics(storage_key)
       .password()
       .client_only_encrypted_data();
+}
+
+// TODO(crbug.com/1296159): Consider moving this logic to processor. If not
+// moved, add a metric for read errors where this function is being called.
+bool PasswordSyncBridge::SyncMetadataCacheContainsSupportedFields(
+    const syncer::EntityMetadataMap& metadata_map) const {
+  for (const auto& metadata_entry : metadata_map) {
+    // Serialize the cached specifics and parse them back to a proto. Any fields
+    // that were cached as unknown and are known in the current browser version
+    // should be parsed correctly.
+    std::string serialized_specifics;
+    metadata_entry.second->possibly_trimmed_base_specifics().SerializeToString(
+        &serialized_specifics);
+    sync_pb::EntitySpecifics parsed_specifics;
+    parsed_specifics.ParseFromString(serialized_specifics);
+
+    // If `parsed_specifics` contain any supported fields, they would be cleared
+    // by the trimming function.
+    if (parsed_specifics.ByteSizeLong() !=
+        TrimRemoteSpecificsForCaching(parsed_specifics).ByteSizeLong()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 std::set<FormPrimaryKey> PasswordSyncBridge::GetUnsyncedPasswordsStorageKeys() {
