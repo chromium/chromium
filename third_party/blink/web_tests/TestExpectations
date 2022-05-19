@@ -1784,6 +1784,7 @@ crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-002.html [ Fail
 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-004.html [ Failure ]
 crbug.com/1295264 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-currentcolor-001.html [ Failure ]
 crbug.com/1295264 crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-currentcolor-002.html [ Failure ]
+crbug.com/1295264 external/wpt/css/css-pseudo/highlight-pseudos-currentcolor-visited-computed-001.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-pseudos-inheritance-computed-001.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-pseudos-currentcolor-inheritance-computed-001.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-pseudo/first-letter-exclude-inline-marker.html [ Failure ]

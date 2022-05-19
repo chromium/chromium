@@ -164,6 +164,7 @@ class CORE_EXPORT StyleResolverState {
     return originating_element_style_.get();
   }
   bool IsForHighlight() const { return is_for_highlight_; }
+  bool IsForCustomHighlight() const { return is_for_custom_highlight_; }
 
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 

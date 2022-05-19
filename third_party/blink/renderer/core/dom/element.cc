@@ -6277,8 +6277,11 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   StyleRequest style_request;
   style_request.pseudo_id = pseudo_element_specifier;
   style_request.type = StyleRequest::kForComputedStyle;
-  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-      IsHighlightPseudoElement(pseudo_element_specifier)) {
+  // IsHighlightPseudoElement returns true for all kinds of highlights including
+  // custom highlights which use Highlight Inheritance even when it is off.
+  if ((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+       IsHighlightPseudoElement(pseudo_element_specifier)) ||
+      pseudo_element_specifier == PseudoId::kPseudoIdHighlight) {
     const ComputedStyle* highlight_element_style = nullptr;
     ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this);
     if (parent && parent->GetComputedStyle()->HighlightData()) {

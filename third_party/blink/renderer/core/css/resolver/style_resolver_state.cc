@@ -85,8 +85,9 @@ StyleResolverState::StyleResolverState(
 
   DCHECK(document.IsActive());
 
-  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-      is_for_highlight_)
+  if ((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+       is_for_highlight_) ||
+      is_for_custom_highlight_)
     DCHECK(originating_element_style_);
 }
 

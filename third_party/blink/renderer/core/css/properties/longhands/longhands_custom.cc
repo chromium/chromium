@@ -1582,8 +1582,10 @@ void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
       identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
     ApplyInherit(state);
     state.Style()->SetColorIsCurrentColor(true);
-    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-        state.IsForHighlight() && state.OriginatingElementStyle())
+    if (((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+          state.IsForHighlight()) ||
+         state.IsForCustomHighlight()) &&
+        state.OriginatingElementStyle())
       state.Style()->SetColor(state.OriginatingElementStyle()->GetColor());
     return;
   }
