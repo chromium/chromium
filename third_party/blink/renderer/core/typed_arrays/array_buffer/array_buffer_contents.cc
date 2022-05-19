@@ -161,13 +161,17 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
     }
   }
 
+#ifdef V8_SANDBOX
   // The V8 sandbox requires all ArrayBuffer backing stores to be allocated
   // inside the sandbox address space. This isn't guaranteed if allocation
-  // override hooks (which are e.g. used by GWP-ASan) are enabled for those
-  // allocations. However, allocation observer hooks (which are e.g. used by
-  // the heap profiler) should still be invoked. Using the kNoOverrideHooks
-  // flag with AllocWithFlags accomplishes this.
+  // override hooks (which are e.g. used by GWP-ASan) are enabled or if a
+  // memory tool (e.g. ASan) overrides malloc. However, allocation observer
+  // hooks (which are e.g. used by the heap profiler) should still be invoked.
+  // Using the kNoOverrideHooks and kNoMemoryToolOverride flags with
+  // accomplishes this.
   flags |= partition_alloc::AllocFlags::kNoOverrideHooks;
+  flags |= partition_alloc::AllocFlags::kNoMemoryToolOverride;
+#endif
   if (policy == kZeroInitialize) {
     flags |= partition_alloc::AllocFlags::kZeroFill;
   }
@@ -192,7 +196,12 @@ void* ArrayBufferContents::AllocateMemoryOrNull(size_t size,
 void ArrayBufferContents::FreeMemory(void* data) {
   InstanceCounters::DecrementCounter(
       InstanceCounters::kArrayBufferContentsCounter);
-  WTF::Partitions::ArrayBufferPartition()->Free(data);
+  unsigned int flags = 0;
+#ifdef V8_SANDBOX
+  // See |AllocateMemoryWithFlags|.
+  flags |= partition_alloc::FreeFlags::kNoMemoryToolOverride;
+#endif
+  WTF::Partitions::ArrayBufferPartition()->FreeWithFlags(flags, data);
 }
 
 }  // namespace blink

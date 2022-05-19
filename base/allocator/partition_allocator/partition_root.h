@@ -473,6 +473,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
                                   size_t new_size,
                                   const char* type_name) PA_MALLOC_ALIGNED;
   NOINLINE static void Free(void* object);
+  ALWAYS_INLINE static void FreeWithFlags(unsigned int flags, void* object);
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* object);
   // Immediately frees the pointer bypassing the quarantine. |slot_start| is the
@@ -1066,9 +1067,21 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
 // static
 template <bool thread_safe>
 NOINLINE void PartitionRoot<thread_safe>::Free(void* object) {
+  return FreeWithFlags(0, object);
+}
+
+// static
+template <bool thread_safe>
+ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeWithFlags(unsigned int flags,
+                                                             void* object) {
+  PA_DCHECK(flags < FreeFlags::kLastFlag << 1);
+
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  free(object);
-#else
+  if (!(flags & FreeFlags::kNoMemoryToolOverride)) {
+    free(object);
+    return;
+  }
+#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if (UNLIKELY(!object))
     return;
 
@@ -1079,7 +1092,6 @@ NOINLINE void PartitionRoot<thread_safe>::Free(void* object) {
   }
 
   FreeNoHooks(object);
-#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }
 
 // static
@@ -1614,13 +1626,15 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsInternal(
   PA_DCHECK(initialized);
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  CHECK_MAX_SIZE_OR_RETURN_NULLPTR(requested_size, flags);
-  const bool zero_fill = flags & AllocFlags::kZeroFill;
-  void* result = zero_fill ? calloc(1, requested_size) : malloc(requested_size);
-  PA_CHECK(result || flags & AllocFlags::kReturnNull);
-  return result;
-#else
-  PA_DCHECK(initialized);
+  if (!(flags & AllocFlags::kNoMemoryToolOverride)) {
+    CHECK_MAX_SIZE_OR_RETURN_NULLPTR(requested_size, flags);
+    const bool zero_fill = flags & AllocFlags::kZeroFill;
+    void* result =
+        zero_fill ? calloc(1, requested_size) : malloc(requested_size);
+    PA_CHECK(result || flags & AllocFlags::kReturnNull);
+    return result;
+  }
+#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   void* object = nullptr;
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   if (UNLIKELY(hooks_enabled)) {
@@ -1640,7 +1654,6 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsInternal(
   }
 
   return object;
-#endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 }
 
 template <bool thread_safe>

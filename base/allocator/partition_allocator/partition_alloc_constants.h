@@ -34,15 +34,26 @@ struct AllocFlags {
     // Don't allow allocation override hooks. Override hooks are expected to
     // check for the presence of this flag and return false if it is active.
     kNoOverrideHooks = 1 << 2,
+    // Never let a memory tool like ASan (if active) perform the allocation.
+    kNoMemoryToolOverride = 1 << 3,
     // Don't allow any hooks (override or observers).
-    kNoHooks = 1 << 3,  // Internal only.
+    kNoHooks = 1 << 4,  // Internal only.
     // If the allocation requires a "slow path" (such as allocating/committing a
     // new slot span), return nullptr instead. Note this makes all large
     // allocations return nullptr, such as direct-mapped ones, and even for
     // smaller ones, a nullptr value is common.
-    kFastPathOrReturnNull = 1 << 4,  // Internal only.
+    kFastPathOrReturnNull = 1 << 5,  // Internal only.
 
     kLastFlag = kFastPathOrReturnNull
+  };
+};
+
+// Bit flag constants used as `flag` argument of PartitionRoot::FreeWithFlags.
+struct FreeFlags {
+  enum : unsigned int {
+    kNoMemoryToolOverride = 1 << 0,  // See AllocFlags::kNoMemoryToolOverride.
+
+    kLastFlag = kNoMemoryToolOverride
   };
 };
 
