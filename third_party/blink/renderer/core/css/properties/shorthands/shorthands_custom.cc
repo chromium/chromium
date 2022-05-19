@@ -80,7 +80,7 @@ bool Animation::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const StylePropertyShorthand shorthand = animationShorthand();
   const unsigned longhand_count = shorthand.length();
 
@@ -170,7 +170,7 @@ bool Background::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ParseBackgroundOrMask(important, range, context,
                                                   local_context, properties);
 }
@@ -188,7 +188,7 @@ bool BackgroundPosition::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
 
@@ -223,7 +223,7 @@ bool BackgroundRepeat::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
   bool implicit = false;
@@ -261,7 +261,7 @@ bool BorderBlockColor::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       borderBlockColorShorthand(), important, context, range, properties);
 }
@@ -279,7 +279,7 @@ bool BorderBlock::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* width = nullptr;
   const CSSValue* style = nullptr;
   const CSSValue* color = nullptr;
@@ -320,7 +320,7 @@ bool BorderBlockEnd::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderBlockEndShorthand(), important, context, range, properties);
 }
@@ -330,7 +330,7 @@ bool BorderBlockStart::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderBlockStartShorthand(), important, context, range, properties);
 }
@@ -340,7 +340,7 @@ bool BorderBlockStyle::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       borderBlockStyleShorthand(), important, context, range, properties);
 }
@@ -358,7 +358,7 @@ bool BorderBlockWidth::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       borderBlockWidthShorthand(), important, context, range, properties);
 }
@@ -376,7 +376,7 @@ bool BorderBottom::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderBottomShorthand(), important, context, range, properties);
 }
@@ -394,7 +394,7 @@ bool BorderColor::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       borderColorShorthand(), important, context, range, properties);
 }
@@ -412,7 +412,7 @@ bool Border::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* width = nullptr;
   const CSSValue* style = nullptr;
   const CSSValue* color = nullptr;
@@ -459,7 +459,7 @@ bool BorderImage::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* source = nullptr;
   CSSValue* slice = nullptr;
   CSSValue* width = nullptr;
@@ -522,7 +522,7 @@ bool BorderInlineColor::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       borderInlineColorShorthand(), important, context, range, properties);
 }
@@ -540,7 +540,7 @@ bool BorderInline::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* width = nullptr;
   const CSSValue* style = nullptr;
   const CSSValue* color = nullptr;
@@ -581,7 +581,7 @@ bool BorderInlineEnd::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderInlineEndShorthand(), important, context, range, properties);
 }
@@ -591,7 +591,7 @@ bool BorderInlineStart::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderInlineStartShorthand(), important, context, range, properties);
 }
@@ -601,7 +601,7 @@ bool BorderInlineStyle::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       borderInlineStyleShorthand(), important, context, range, properties);
 }
@@ -619,7 +619,7 @@ bool BorderInlineWidth::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       borderInlineWidthShorthand(), important, context, range, properties);
 }
@@ -637,7 +637,7 @@ bool BorderLeft::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderLeftShorthand(), important, context, range, properties);
 }
@@ -655,7 +655,7 @@ bool BorderRadius::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* horizontal_radii[4] = {nullptr};
   CSSValue* vertical_radii[4] = {nullptr};
 
@@ -707,7 +707,7 @@ bool BorderRight::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderRightShorthand(), important, context, range, properties);
 }
@@ -725,7 +725,7 @@ bool BorderSpacing::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* horizontal_spacing =
       ConsumeLength(range, context, CSSPrimitiveValue::ValueRange::kNonNegative,
                     css_parsing_utils::UnitlessQuirk::kAllow);
@@ -765,7 +765,7 @@ bool BorderStyle::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       borderStyleShorthand(), important, context, range, properties);
 }
@@ -783,7 +783,7 @@ bool BorderTop::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       borderTopShorthand(), important, context, range, properties);
 }
@@ -801,7 +801,7 @@ bool BorderWidth::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       borderWidthShorthand(), important, context, range, properties);
 }
@@ -819,7 +819,7 @@ bool ColumnRule::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       columnRuleShorthand(), important, context, range, properties);
 }
@@ -837,7 +837,7 @@ bool Columns::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* column_width = nullptr;
   CSSValue* column_count = nullptr;
   if (!css_parsing_utils::ConsumeColumnWidthOrCount(range, context,
@@ -875,7 +875,7 @@ bool ContainIntrinsicSize::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       containIntrinsicSizeShorthand(), important, context, range, properties);
 }
@@ -900,7 +900,7 @@ bool Container::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* name =
       css_parsing_utils::ConsumeContainerName(range, context);
   if (!name)
@@ -940,7 +940,7 @@ bool Flex::ParseShorthand(bool important,
                           CSSParserTokenRange& range,
                           const CSSParserContext& context,
                           const CSSParserLocalContext&,
-                          HeapVector<CSSPropertyValue, 256>& properties) const {
+                          HeapVector<CSSPropertyValue, 64>& properties) const {
   static const double kUnsetValue = -1;
   double flex_grow = kUnsetValue;
   double flex_shrink = kUnsetValue;
@@ -1033,7 +1033,7 @@ bool FlexFlow::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       flexFlowShorthand(), important, context, range, properties);
 }
@@ -1049,7 +1049,7 @@ namespace {
 
 bool ConsumeSystemFont(bool important,
                        CSSParserTokenRange& range,
-                       HeapVector<CSSPropertyValue, 256>& properties) {
+                       HeapVector<CSSPropertyValue, 64>& properties) {
   CSSValueID system_font_id = range.ConsumeIncludingWhitespace().Id();
   DCHECK(CSSParserFastPaths::IsValidSystemFont(system_font_id));
   if (!range.AtEnd())
@@ -1065,7 +1065,7 @@ bool ConsumeSystemFont(bool important,
 bool ConsumeFont(bool important,
                  CSSParserTokenRange& range,
                  const CSSParserContext& context,
-                 HeapVector<CSSPropertyValue, 256>& properties) {
+                 HeapVector<CSSPropertyValue, 64>& properties) {
   // Optional font-style, font-variant, font-stretch and font-weight.
   // Each may be normal.
   CSSValue* font_style = nullptr;
@@ -1201,7 +1201,7 @@ bool Font::ParseShorthand(bool important,
                           CSSParserTokenRange& range,
                           const CSSParserContext& context,
                           const CSSParserLocalContext&,
-                          HeapVector<CSSPropertyValue, 256>& properties) const {
+                          HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSParserToken& token = range.Peek();
   if (CSSParserFastPaths::IsValidSystemFont(token.Id()))
     return ConsumeSystemFont(important, range, properties);
@@ -1220,7 +1220,7 @@ bool FontVariant::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   if (css_parsing_utils::IdentMatches<CSSValueID::kNormal, CSSValueID::kNone>(
           range.Peek().Id())) {
     css_parsing_utils::AddProperty(
@@ -1321,7 +1321,7 @@ bool FontSynthesis::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   if (range.Peek().Id() == CSSValueID::kNone) {
     range.ConsumeIncludingWhitespace();
     css_parsing_utils::AddProperty(
@@ -1400,7 +1400,7 @@ bool Gap::ParseShorthand(bool important,
                          CSSParserTokenRange& range,
                          const CSSParserContext& context,
                          const CSSParserLocalContext&,
-                         HeapVector<CSSPropertyValue, 256>& properties) const {
+                         HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGap).length(), 2u);
   CSSValue* row_gap = css_parsing_utils::ConsumeGapLength(range, context);
   CSSValue* column_gap = css_parsing_utils::ConsumeGapLength(range, context);
@@ -1430,7 +1430,7 @@ bool GridArea::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(gridAreaShorthand().length(), 4u);
 
   CSSValue* row_start_value =
@@ -1505,7 +1505,7 @@ bool GridColumn::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const StylePropertyShorthand& shorthand =
       shorthandForProperty(CSSPropertyID::kGridColumn);
   DCHECK_EQ(shorthand.length(), 2u);
@@ -1542,7 +1542,7 @@ bool GridColumnGap::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* gap_length = css_parsing_utils::ConsumeGapLength(range, context);
   if (!gap_length || !range.AtEnd())
     return false;
@@ -1594,7 +1594,7 @@ bool Grid::ParseShorthand(bool important,
                           CSSParserTokenRange& range,
                           const CSSParserContext& context,
                           const CSSParserLocalContext&,
-                          HeapVector<CSSPropertyValue, 256>& properties) const {
+                          HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGrid).length(), 6u);
 
   CSSParserTokenRange range_copy = range;
@@ -1753,7 +1753,7 @@ bool GridGap::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kGridGap).length(), 2u);
   CSSValue* row_gap = css_parsing_utils::ConsumeGapLength(range, context);
   CSSValue* column_gap = css_parsing_utils::ConsumeGapLength(range, context);
@@ -1783,7 +1783,7 @@ bool GridRow::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const StylePropertyShorthand& shorthand =
       shorthandForProperty(CSSPropertyID::kGridRow);
   DCHECK_EQ(shorthand.length(), 2u);
@@ -1820,7 +1820,7 @@ bool GridRowGap::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* gap_length = css_parsing_utils::ConsumeGapLength(range, context);
   if (!gap_length || !range.AtEnd())
     return false;
@@ -1845,7 +1845,7 @@ bool GridTemplate::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* template_rows = nullptr;
   const CSSValue* template_columns = nullptr;
   const CSSValue* template_areas = nullptr;
@@ -1892,7 +1892,7 @@ bool InsetBlock::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       insetBlockShorthand(), important, context, range, properties);
 }
@@ -1905,12 +1905,11 @@ const CSSValue* InsetBlock::CSSValueFromComputedStyleInternal(
       insetBlockShorthand(), style, layout_object, allow_visited_style);
 }
 
-bool Inset::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+bool Inset::ParseShorthand(bool important,
+                           CSSParserTokenRange& range,
+                           const CSSParserContext& context,
+                           const CSSParserLocalContext&,
+                           HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       insetShorthand(), important, context, range, properties);
 }
@@ -1928,7 +1927,7 @@ bool InsetInline::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       insetInlineShorthand(), important, context, range, properties);
 }
@@ -1946,7 +1945,7 @@ bool ListStyle::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* none = nullptr;
   const CSSValue* list_style_position = nullptr;
   const CSSValue* list_style_image = nullptr;
@@ -2041,7 +2040,7 @@ bool MarginBlock::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       marginBlockShorthand(), important, context, range, properties);
 }
@@ -2059,7 +2058,7 @@ bool Margin::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       marginShorthand(), important, context, range, properties);
 }
@@ -2085,7 +2084,7 @@ bool MarginInline::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       marginInlineShorthand(), important, context, range, properties);
 }
@@ -2103,7 +2102,7 @@ bool Marker::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* marker = css_parsing_utils::ParseLonghand(
       CSSPropertyID::kMarkerStart, CSSPropertyID::kMarker, context, range);
   if (!marker || !range.AtEnd())
@@ -2141,7 +2140,7 @@ bool Offset::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   // TODO(meade): The propertyID parameter isn't used - it can be removed
   // once all of the ParseSingleValue implementations have been moved to the
   // CSSPropertys, and the base CSSProperty::ParseSingleValue contains
@@ -2253,7 +2252,7 @@ bool Outline::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       outlineShorthand(), important, context, range, properties);
 }
@@ -2271,7 +2270,7 @@ bool Overflow::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       overflowShorthand(), important, context, range, properties);
 }
@@ -2293,7 +2292,7 @@ bool OverscrollBehavior::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       overscrollBehaviorShorthand(), important, context, range, properties);
 }
@@ -2315,7 +2314,7 @@ bool PaddingBlock::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       paddingBlockShorthand(), important, context, range, properties);
 }
@@ -2333,7 +2332,7 @@ bool Padding::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       paddingShorthand(), important, context, range, properties);
 }
@@ -2359,7 +2358,7 @@ bool PaddingInline::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       paddingInlineShorthand(), important, context, range, properties);
 }
@@ -2377,7 +2376,7 @@ bool PageBreakAfter::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValueID value;
   if (!css_parsing_utils::ConsumeFromPageBreakBetween(range, value)) {
     return false;
@@ -2403,7 +2402,7 @@ bool PageBreakBefore::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValueID value;
   if (!css_parsing_utils::ConsumeFromPageBreakBetween(range, value)) {
     return false;
@@ -2429,7 +2428,7 @@ bool PageBreakInside::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValueID value;
   if (!css_parsing_utils::ConsumeFromColumnOrPageBreakInside(range, value)) {
     return false;
@@ -2454,7 +2453,7 @@ bool PlaceContent::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kPlaceContent).length(), 2u);
 
   CSSParserTokenRange range_copy = range;
@@ -2512,7 +2511,7 @@ bool PlaceItems::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kPlaceItems).length(), 2u);
 
   CSSParserTokenRange range_copy = range;
@@ -2559,7 +2558,7 @@ bool PlaceSelf::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kPlaceSelf).length(), 2u);
 
   CSSParserTokenRange range_copy = range;
@@ -2606,7 +2605,7 @@ bool ScrollMarginBlock::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       scrollMarginBlockShorthand(), important, context, range, properties);
 }
@@ -2624,7 +2623,7 @@ bool ScrollMargin::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       scrollMarginShorthand(), important, context, range, properties);
 }
@@ -2642,7 +2641,7 @@ bool ScrollMarginInline::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       scrollMarginInlineShorthand(), important, context, range, properties);
 }
@@ -2660,7 +2659,7 @@ bool ScrollPaddingBlock::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       scrollPaddingBlockShorthand(), important, context, range, properties);
 }
@@ -2678,7 +2677,7 @@ bool ScrollPadding::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia4Longhands(
       scrollPaddingShorthand(), important, context, range, properties);
 }
@@ -2696,7 +2695,7 @@ bool ScrollPaddingInline::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandVia2Longhands(
       scrollPaddingInlineShorthand(), important, context, range, properties);
 }
@@ -2715,7 +2714,7 @@ bool TextDecoration::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   // Use RuntimeEnabledFeature-aware shorthandForProperty() method until
   // text-decoration-thickness ships, see style_property_shorthand.cc.tmpl.
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
@@ -2784,7 +2783,7 @@ bool Transition::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const StylePropertyShorthand shorthand = transitionShorthandForParsing();
   const unsigned longhand_count = shorthand.length();
 
@@ -2857,7 +2856,7 @@ bool WebkitColumnBreakAfter::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValueID value;
   if (!css_parsing_utils::ConsumeFromColumnBreakBetween(range, value)) {
     return false;
@@ -2883,7 +2882,7 @@ bool WebkitColumnBreakBefore::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValueID value;
   if (!css_parsing_utils::ConsumeFromColumnBreakBetween(range, value)) {
     return false;
@@ -2909,7 +2908,7 @@ bool WebkitColumnBreakInside::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext&,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValueID value;
   if (!css_parsing_utils::ConsumeFromColumnOrPageBreakInside(range, value)) {
     return false;
@@ -2935,7 +2934,7 @@ bool WebkitMaskBoxImage::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* source = nullptr;
   CSSValue* slice = nullptr;
   CSSValue* width = nullptr;
@@ -2990,7 +2989,7 @@ bool WebkitMask::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ParseBackgroundOrMask(important, range, context,
                                                   local_context, properties);
 }
@@ -3000,7 +2999,7 @@ bool WebkitMaskPosition::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
 
@@ -3035,7 +3034,7 @@ bool WebkitMaskRepeat::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   CSSValue* result_x = nullptr;
   CSSValue* result_y = nullptr;
   bool implicit = false;
@@ -3073,7 +3072,7 @@ bool TextEmphasis::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       textEmphasisShorthand(), important, context, range, properties);
 }
@@ -3091,7 +3090,7 @@ bool WebkitTextStroke::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       webkitTextStrokeShorthand(), important, context, range, properties);
 }
@@ -3101,7 +3100,7 @@ bool Toggle::ParseShorthand(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 256>& properties) const {
+    HeapVector<CSSPropertyValue, 64>& properties) const {
   const CSSValue* toggle_root = css_parsing_utils::ParseLonghand(
       CSSPropertyID::kToggleRoot, CSSPropertyID::kToggle, context, range);
   if (!toggle_root || !range.AtEnd())

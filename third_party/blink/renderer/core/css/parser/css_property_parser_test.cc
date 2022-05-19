@@ -43,7 +43,7 @@ static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
   CSSTokenizer tokenizer(value);
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
-  HeapVector<CSSPropertyValue, 256> parsed_properties;
+  HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
       property_id, false, range,
       StrictCSSParserContext(SecureContextMode::kSecureContext),
@@ -770,7 +770,7 @@ bool ParseCSSValue(CSSPropertyID property_id,
   CSSTokenizer tokenizer(value);
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
-  HeapVector<CSSPropertyValue, 256> parsed_properties;
+  HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(property_id, false, range, context,
                                        parsed_properties,
                                        StyleRule::RuleType::kStyle);

@@ -367,7 +367,7 @@ bool AtRuleDescriptorParser::ParseAtRule(
     AtRuleDescriptorID id,
     const CSSTokenizedValue& tokenized_value,
     const CSSParserContext& context,
-    HeapVector<CSSPropertyValue, 256>& parsed_descriptors) {
+    HeapVector<CSSPropertyValue, 64>& parsed_descriptors) {
   CSSValue* result = ConsumeDescriptor(rule_type, id, tokenized_value, context);
 
   if (!result)

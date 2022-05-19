@@ -63,7 +63,7 @@ const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
 CSSPropertyParser::CSSPropertyParser(
     const CSSParserTokenRange& range,
     const CSSParserContext* context,
-    HeapVector<CSSPropertyValue, 256>* parsed_properties)
+    HeapVector<CSSPropertyValue, 64>* parsed_properties)
     : range_(range), context_(context), parsed_properties_(parsed_properties) {
   range_.ConsumeWhitespace();
 }
@@ -73,7 +73,7 @@ bool CSSPropertyParser::ParseValue(
     bool important,
     const CSSParserTokenRange& range,
     const CSSParserContext* context,
-    HeapVector<CSSPropertyValue, 256>& parsed_properties,
+    HeapVector<CSSPropertyValue, 64>& parsed_properties,
     StyleRule::RuleType rule_type) {
   int parsed_properties_size = parsed_properties.size();
 

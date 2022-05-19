@@ -26,7 +26,7 @@ class Shorthand : public CSSProperty {
       CSSParserTokenRange&,
       const CSSParserContext&,
       const CSSParserLocalContext&,
-      HeapVector<CSSPropertyValue, 256>& properties) const {
+      HeapVector<CSSPropertyValue, 64>& properties) const {
     NOTREACHED();
     return false;
   }

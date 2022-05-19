@@ -150,8 +150,8 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
 
 static inline void FilterProperties(
     bool important,
-    const HeapVector<CSSPropertyValue, 256>& input,
-    HeapVector<CSSPropertyValue, 256>& output,
+    const HeapVector<CSSPropertyValue, 64>& input,
+    HeapVector<CSSPropertyValue, 64>& output,
     wtf_size_t& unused_entries,
     std::bitset<kNumCSSProperties>& seen_properties,
     HashSet<AtomicString>& seen_custom_properties) {
@@ -177,11 +177,11 @@ static inline void FilterProperties(
 }
 
 static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
-    HeapVector<CSSPropertyValue, 256>& parsed_properties,
+    HeapVector<CSSPropertyValue, 64>& parsed_properties,
     CSSParserMode mode) {
   std::bitset<kNumCSSProperties> seen_properties;
   wtf_size_t unused_entries = parsed_properties.size();
-  HeapVector<CSSPropertyValue, 256> results(unused_entries);
+  HeapVector<CSSPropertyValue, 64> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;
 
   FilterProperties(true, parsed_properties, results, unused_entries,
@@ -241,7 +241,7 @@ bool CSSParserImpl::ParseDeclarationList(
 
   std::bitset<kNumCSSProperties> seen_properties;
   wtf_size_t unused_entries = parser.parsed_properties_.size();
-  HeapVector<CSSPropertyValue, 256> results(unused_entries);
+  HeapVector<CSSPropertyValue, 64> results(unused_entries);
   HashSet<AtomicString> seen_custom_properties;
   FilterProperties(true, parser.parsed_properties_, results, unused_entries,
                    seen_properties, seen_custom_properties);

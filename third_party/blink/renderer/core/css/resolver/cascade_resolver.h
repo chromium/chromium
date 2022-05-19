@@ -123,7 +123,7 @@ class CORE_EXPORT CascadeResolver {
 
    public:
     const cssvalue::CSSPendingSubstitutionValue* value = nullptr;
-    HeapVector<CSSPropertyValue, 256> parsed_properties;
+    HeapVector<CSSPropertyValue, 64> parsed_properties;
   } shorthand_cache_;
 };
 

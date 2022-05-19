@@ -200,8 +200,7 @@ class CORE_EXPORT CSSParserImpl {
       CSSParserTokenRange);
 
   // FIXME: Can we build CSSPropertyValueSets directly?
-  // FIXME: Investigate using a smaller inline buffer
-  HeapVector<CSSPropertyValue, 256> parsed_properties_;
+  HeapVector<CSSPropertyValue, 64> parsed_properties_;
 
   const CSSParserContext* context_;
   StyleSheetContents* style_sheet_;

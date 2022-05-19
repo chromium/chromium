@@ -221,7 +221,7 @@ void AddProperty(CSSPropertyID resolved_property,
                  const CSSValue&,
                  bool important,
                  IsImplicitProperty,
-                 HeapVector<CSSPropertyValue, 256>& properties);
+                 HeapVector<CSSPropertyValue, 64>& properties);
 
 void CountKeywordOnlyPropertyUsage(CSSPropertyID,
                                    const CSSParserContext&,
@@ -237,26 +237,26 @@ bool ConsumeShorthandVia2Longhands(
     bool important,
     const CSSParserContext&,
     CSSParserTokenRange&,
-    HeapVector<CSSPropertyValue, 256>& properties);
+    HeapVector<CSSPropertyValue, 64>& properties);
 
 bool ConsumeShorthandVia4Longhands(
     const StylePropertyShorthand&,
     bool important,
     const CSSParserContext&,
     CSSParserTokenRange&,
-    HeapVector<CSSPropertyValue, 256>& properties);
+    HeapVector<CSSPropertyValue, 64>& properties);
 
 bool ConsumeShorthandGreedilyViaLonghands(
     const StylePropertyShorthand&,
     bool important,
     const CSSParserContext&,
     CSSParserTokenRange&,
-    HeapVector<CSSPropertyValue, 256>& properties);
+    HeapVector<CSSPropertyValue, 64>& properties);
 
 void AddExpandedPropertyForValue(CSSPropertyID prop_id,
                                  const CSSValue&,
                                  bool,
-                                 HeapVector<CSSPropertyValue, 256>& properties);
+                                 HeapVector<CSSPropertyValue, 64>& properties);
 
 CSSValue* ConsumeTransformValue(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeTransformList(CSSParserTokenRange&, const CSSParserContext&);
@@ -337,7 +337,7 @@ bool ParseBackgroundOrMask(bool,
                            CSSParserTokenRange&,
                            const CSSParserContext&,
                            const CSSParserLocalContext&,
-                           HeapVector<CSSPropertyValue, 256>&);
+                           HeapVector<CSSPropertyValue, 64>&);
 
 bool ConsumeRepeatStyleComponent(CSSParserTokenRange&,
                                  CSSValue*& value1,

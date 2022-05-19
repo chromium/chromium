@@ -853,7 +853,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     if (!ResolveTokensInto(shorthand_data->Tokens(), resolver, sequence))
       return cssvalue::CSSUnsetValue::Create();
 
-    HeapVector<CSSPropertyValue, 256> parsed_properties;
+    HeapVector<CSSPropertyValue, 64> parsed_properties;
     const bool important = false;
 
     if (!CSSPropertyParser::ParseValue(

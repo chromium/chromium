@@ -489,7 +489,7 @@ void MutableCSSPropertyValueSet::ParseDeclarationList(
 
 MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::AddParsedProperties(
-    const HeapVector<CSSPropertyValue, 256>& properties) {
+    const HeapVector<CSSPropertyValue, 64>& properties) {
   SetResult changed = kUnchanged;
   property_vector_.ReserveCapacity(property_vector_.size() + properties.size());
   for (unsigned i = 0; i < properties.size(); ++i)
@@ -626,7 +626,7 @@ MutableCSSPropertyValueSet* CSSPropertyValueSet::MutableCopy() const {
 
 MutableCSSPropertyValueSet* CSSPropertyValueSet::CopyPropertiesInSet(
     const Vector<const CSSProperty*>& properties) const {
-  HeapVector<CSSPropertyValue, 256> list;
+  HeapVector<CSSPropertyValue, 64> list;
   list.ReserveInitialCapacity(properties.size());
   for (unsigned i = 0; i < properties.size(); ++i) {
     CSSPropertyName name(properties[i]->PropertyID());

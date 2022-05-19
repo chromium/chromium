@@ -2718,7 +2718,7 @@ void AddProperty(CSSPropertyID resolved_property,
                  const CSSValue& value,
                  bool important,
                  IsImplicitProperty implicit,
-                 HeapVector<CSSPropertyValue, 256>& properties) {
+                 HeapVector<CSSPropertyValue, 64>& properties) {
   DCHECK(!IsPropertyAlias(resolved_property));
   DCHECK(implicit == IsImplicitProperty::kNotImplicit ||
          implicit == IsImplicitProperty::kImplicit);
@@ -2903,7 +2903,7 @@ bool ConsumeShorthandVia2Longhands(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenRange& range,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+    HeapVector<CSSPropertyValue, 64>& properties) {
   DCHECK_EQ(shorthand.length(), 2u);
   const CSSProperty** longhands = shorthand.properties();
 
@@ -2935,7 +2935,7 @@ bool ConsumeShorthandVia4Longhands(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenRange& range,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+    HeapVector<CSSPropertyValue, 64>& properties) {
   DCHECK_EQ(shorthand.length(), 4u);
   const CSSProperty** longhands = shorthand.properties();
   const CSSValue* top =
@@ -2982,7 +2982,7 @@ bool ConsumeShorthandGreedilyViaLonghands(
     bool important,
     const CSSParserContext& context,
     CSSParserTokenRange& range,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+    HeapVector<CSSPropertyValue, 64>& properties) {
   // Existing shorthands have at most 6 longhands.
   DCHECK_LE(shorthand.length(), 6u);
   const CSSValue* longhands[6] = {nullptr, nullptr, nullptr,
@@ -3017,11 +3017,10 @@ bool ConsumeShorthandGreedilyViaLonghands(
   return true;
 }
 
-void AddExpandedPropertyForValue(
-    CSSPropertyID property,
-    const CSSValue& value,
-    bool important,
-    HeapVector<CSSPropertyValue, 256>& properties) {
+void AddExpandedPropertyForValue(CSSPropertyID property,
+                                 const CSSValue& value,
+                                 bool important,
+                                 HeapVector<CSSPropertyValue, 64>& properties) {
   const StylePropertyShorthand& shorthand = shorthandForProperty(property);
   unsigned shorthand_length = shorthand.length();
   DCHECK(shorthand_length);
@@ -3506,7 +3505,7 @@ bool ParseBackgroundOrMask(bool important,
                            CSSParserTokenRange& range,
                            const CSSParserContext& context,
                            const CSSParserLocalContext& local_context,
-                           HeapVector<CSSPropertyValue, 256>& properties) {
+                           HeapVector<CSSPropertyValue, 64>& properties) {
   CSSPropertyID shorthand_id = local_context.CurrentShorthand();
   DCHECK(shorthand_id == CSSPropertyID::kBackground ||
          shorthand_id == CSSPropertyID::kWebkitMask);

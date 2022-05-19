@@ -260,7 +260,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
     kChangedPropertySet = 3,
   };
 
-  SetResult AddParsedProperties(const HeapVector<CSSPropertyValue, 256>&);
+  SetResult AddParsedProperties(const HeapVector<CSSPropertyValue, 64>&);
 
   // Returns whether this style set was changed.
   bool AddRespectingCascade(const CSSPropertyValue&);
