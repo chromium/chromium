@@ -21,21 +21,14 @@ const base::TimeDelta kTestMetricsReportDelayTimeout =
     kMetricsReportDelayTimeout + base::Seconds(1);
 const char kHtmlMimeType[] = "text/html";
 
-// TODO(crbug.com/759905) Enable on Windows once this bug is fixed.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MetricsCollectorTest DISABLED_MetricsCollectorTest
-#else
-#define MAYBE_MetricsCollectorTest MetricsCollectorTest
-#endif
-class MAYBE_MetricsCollectorTest : public GraphTestHarness {
+class MetricsCollectorTest : public GraphTestHarness {
  public:
   using Super = GraphTestHarness;
 
-  MAYBE_MetricsCollectorTest() : GraphTestHarness() {}
+  MetricsCollectorTest() = default;
 
-  MAYBE_MetricsCollectorTest(const MAYBE_MetricsCollectorTest&) = delete;
-  MAYBE_MetricsCollectorTest& operator=(const MAYBE_MetricsCollectorTest&) =
-      delete;
+  MetricsCollectorTest(const MetricsCollectorTest&) = delete;
+  MetricsCollectorTest& operator=(const MetricsCollectorTest&) = delete;
 
   void SetUp() override {
     Super::SetUp();
@@ -59,7 +52,7 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
   raw_ptr<MetricsCollector> metrics_collector_ = nullptr;
 };
 
-TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {
+TEST_F(MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {
   auto page_node = CreateNode<PageNodeImpl>();
 
   page_node->OnMainFrameNavigationCommitted(
@@ -92,7 +85,7 @@ TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstTitleUpdatedUMA) {
                                      2);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest,
+TEST_F(MetricsCollectorTest,
        FromBackgroundedToFirstTitleUpdatedUMA5MinutesTimeout) {
   auto page_node = CreateNode<PageNodeImpl>();
 
@@ -111,7 +104,7 @@ TEST_F(MAYBE_MetricsCollectorTest,
                                      1);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest,
+TEST_F(MetricsCollectorTest,
        FromBackgroundedToFirstNonPersistentNotificationCreatedUMA) {
   auto process_node = CreateNode<ProcessNodeImpl>();
   auto page_node = CreateNode<PageNodeImpl>();
@@ -148,7 +141,7 @@ TEST_F(MAYBE_MetricsCollectorTest,
 }
 
 TEST_F(
-    MAYBE_MetricsCollectorTest,
+    MetricsCollectorTest,
     FromBackgroundedToFirstNonPersistentNotificationCreatedUMA5MinutesTimeout) {
   auto process_node = CreateNode<ProcessNodeImpl>();
   auto page_node = CreateNode<PageNodeImpl>();
@@ -169,7 +162,7 @@ TEST_F(
       kTabFromBackgroundedToFirstNonPersistentNotificationCreatedUMA, 1);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstFaviconUpdatedUMA) {
+TEST_F(MetricsCollectorTest, FromBackgroundedToFirstFaviconUpdatedUMA) {
   auto page_node = CreateNode<PageNodeImpl>();
 
   page_node->OnMainFrameNavigationCommitted(
@@ -202,7 +195,7 @@ TEST_F(MAYBE_MetricsCollectorTest, FromBackgroundedToFirstFaviconUpdatedUMA) {
       kTabFromBackgroundedToFirstFaviconUpdatedUMA, 2);
 }
 
-TEST_F(MAYBE_MetricsCollectorTest,
+TEST_F(MetricsCollectorTest,
        FromBackgroundedToFirstFaviconUpdatedUMA5MinutesTimeout) {
   auto page_node = CreateNode<PageNodeImpl>();
 
