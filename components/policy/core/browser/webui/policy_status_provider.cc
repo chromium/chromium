@@ -139,6 +139,16 @@ void PolicyStatusProvider::GetStatusFromPolicyData(
 
   dict->SetStringKey("clientId", client_id);
   dict->SetStringKey("username", username);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Include the "Managed by:" attribute for the user policy legend.
+  if (policy->state() == enterprise_management::PolicyData::ACTIVE) {
+    if (policy->has_managed_by())
+      dict->SetStringKey("enterpriseDomainManager", policy->managed_by());
+    else if (policy->has_display_domain())
+      dict->SetStringKey("enterpriseDomainManager", policy->display_domain());
+  }
+#endif
 }
 
 // CloudPolicyStore errors take precedence to show in the status message.
