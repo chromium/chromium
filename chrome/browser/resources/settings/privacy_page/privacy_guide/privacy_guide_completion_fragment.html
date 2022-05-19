@@ -150,9 +150,7 @@
       </picture>
     </div>
     <div class="headline">$i18n{privacyGuideCompletionCardHeader}</div>
-    <div class="cr-secondary-text">
-      $i18n{privacyGuideCompletionCardSubHeader}
-    </div>
+    <div class="cr-secondary-text">[[subheader_]]</div>
   </div>
 </template>
 <template is="dom-if" if="[[!enablePrivacyGuide2_]]">
@@ -164,18 +162,18 @@
       <img alt="" src="./images/privacy_guide/completion_banner.svg">
     </picture>
     <div class="headline">$i18n{privacyGuideCompletionCardHeader}</div>
-    <div class="cr-secondary-text">
-      $i18n{privacyGuideCompletionCardSubHeader}
-    </div>
+    <div class="cr-secondary-text">[[subheader_]]</div>
   </div>
 </template>
-<privacy-guide-completion-link-row id="privacySandboxRow"
-    label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"
-    sub-label="$i18n{privacyGuideCompletionCardPrivacySandboxSubLabel}"
-    light-img-src="./images/privacy_guide/privacy_sandbox_graphic.svg"
-    dark-img-src="./images/privacy_guide/privacy_sandbox_graphic_dark.svg"
-    on-click="onPrivacySandboxClick_">
-</privacy-guide-completion-link-row>
+<template is="dom-if" if="[[shouldShowPrivacySandbox_]]">
+  <privacy-guide-completion-link-row id="privacySandboxRow"
+      label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"
+      sub-label="$i18n{privacyGuideCompletionCardPrivacySandboxSubLabel}"
+      light-img-src="./images/privacy_guide/privacy_sandbox_graphic.svg"
+      dark-img-src="./images/privacy_guide/privacy_sandbox_graphic_dark.svg"
+      on-click="onPrivacySandboxClick_">
+  </privacy-guide-completion-link-row>
+</template>
 <div aria-disabled="true" role="none">
   <a id="privacySandboxLink" href="privacySandbox"
       target="_blank" tabindex="-1" aria-disabled="true"

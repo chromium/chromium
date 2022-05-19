@@ -1327,6 +1327,12 @@ suite('CompletionFragment', function() {
   let page: PrivacyGuideCompletionFragmentElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+    });
+  });
+
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -1397,6 +1403,52 @@ suite('CompletionFragment', function() {
     setSignInState(false);
     assertTrue(isChildVisible(page, '#privacySandboxRow'));
     assertFalse(isChildVisible(page, '#waaRow'));
+  });
+});
+
+suite('CompletionFragmentPrivacySandboxRestricted', function() {
+  let page: PrivacyGuideCompletionFragmentElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = '';
+    page = document.createElement('privacy-guide-completion-fragment');
+    document.body.appendChild(page);
+
+    setupPrivacyRouteForTest();
+    // The user navigates to the completion step.
+    navigateToStep(PrivacyGuideStep.COMPLETION);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('updateFragmentFromSignIn', function() {
+    setSignInState(true);
+    assertFalse(isChildVisible(page, '#privacySandboxRow'));
+    assertTrue(isChildVisible(page, '#waaRow'));
+    const subheader =
+        page.shadowRoot!.querySelector<HTMLElement>('.cr-secondary-text')!;
+    assertEquals(
+        page.i18n('privacyGuideCompletionCardSubHeader'), subheader.innerText);
+
+    setSignInState(false);
+    assertFalse(isChildVisible(page, '#privacySandboxRow'));
+    assertFalse(isChildVisible(page, '#waaRow'));
+    assertEquals(
+        page.i18n('privacyGuideCompletionCardSubHeaderNoLinks'),
+        subheader.innerText);
   });
 });
 

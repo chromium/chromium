@@ -314,8 +314,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   bool privacy_guide_enabled =
       !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild() &&
-      !PrivacySandboxServiceFactory::GetForProfile(profile)
-           ->IsPrivacySandboxRestricted() &&
       base::FeatureList::IsEnabled(features::kPrivacyGuide);
   html_source->AddBoolean("privacyGuideEnabled", privacy_guide_enabled);
 

@@ -536,6 +536,12 @@ TEST_F('CrSettingsPrivacyGuidePageTest', 'CompletionFragmentTests', function() {
 
 TEST_F(
     'CrSettingsPrivacyGuidePageTest',
+    'CompletionFragmentPrivacySandboxRestricted', function() {
+      runMochaSuite('CompletionFragmentPrivacySandboxRestricted');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest',
     'CompletionFragmentPrivacyGuide2DisabledTests', function() {
       runMochaSuite('CompletionFragmentPrivacyGuide2Disabled');
     });

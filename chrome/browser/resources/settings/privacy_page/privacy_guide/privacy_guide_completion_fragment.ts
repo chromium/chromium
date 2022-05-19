@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import './privacy_guide_completion_link_row.js';
 import './privacy_guide_fragment_shared_css.js';
 
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,7 +25,7 @@ import {Router} from '../../router.js';
 import {getTemplate} from './privacy_guide_completion_fragment.html.js';
 
 const PrivacyGuideCompletionFragmentElementBase =
-    WebUIListenerMixin(PolymerElement);
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class PrivacyGuideCompletionFragmentElement extends
     PrivacyGuideCompletionFragmentElementBase {
@@ -38,6 +39,17 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   static get properties() {
     return {
+      subheader_: {
+        type: String,
+        computed:
+            'computeSubheader_(shouldShowWaa_, shouldShowPrivacySandbox_)',
+      },
+
+      shouldShowPrivacySandbox_: {
+        type: Boolean,
+        value: () => !loadTimeData.getBoolean('isPrivacySandboxRestricted'),
+      },
+
       shouldShowWaa_: {
         type: Boolean,
         value: false,
@@ -50,6 +62,7 @@ export class PrivacyGuideCompletionFragmentElement extends
     };
   }
 
+  private shouldShowPrivacySandbox_: boolean;
   private shouldShowWaa_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -66,6 +79,12 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   override focus() {
     this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
+  }
+
+  private computeSubheader_(): string {
+    return (this.shouldShowWaa_ || this.shouldShowPrivacySandbox_) ?
+        this.i18n('privacyGuideCompletionCardSubHeader') :
+        this.i18n('privacyGuideCompletionCardSubHeaderNoLinks');
   }
 
   /**
