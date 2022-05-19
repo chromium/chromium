@@ -328,3 +328,39 @@ chrome.test.runTests([
 
 See [Using the chrome.test API](/extensions/docs/testing_api.md) for more
 information on how to write extension API tests.
+
+#### Test resources
+
+ExtensionBrowserTest provides a mapping for requests to
+chrome-extension://<id>/_test_resources/<path>, where the resource will be
+loaded from //chrome/test/data/extensions/<path> instead of from the
+extension's directory. This can be used to retrieve files from other
+locations in //chrome/test/data/ and have them be treated as same-origin to
+the extension (which is important for CSP and CORS rules).
+
+One example of when to use this is to share resources between tests: a
+common resource can live at //chrome/test/data/extensions/<common dir>
+and be leveraged by multiple test extensions without needing to duplicate
+the file into each test extension's directory.
+
+Any of the following URLs can be used to access the same resource.html using
+the same origin as extension. This extension lives in the `extension` dir. Note
+that the string representation of the urls are not expected to be identical.
+
+```js
+//chrome/test/data/extensions/api_test/extension/service_worker.js
+const url1 = '_test_resources/api_test/extension/resource.html';
+const url2 = chrome.runtime.getURL('resource.html'),
+const url3 = `chrome-extension://${chrome.runtime.id}/resource.html`;
+```
+
+The following is an example showcasing the use of a shared resource.
+The resource will have the same origin as the extension.
+```js
+//chrome/test/data/extensions/shared/resource.html
+This is a shared resource that lives outside of an extension.
+```
+```js
+//chrome/test/data/extensions/api_test/extension/service_worker.js
+fetch('_test_resources/shared/resource.html');
+```
