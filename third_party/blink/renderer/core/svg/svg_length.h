@@ -114,6 +114,9 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
   }
   bool IsCalculated() const { return value_->IsCalculated(); }
   bool IsPercentage() const { return value_->IsPercentage(); }
+  bool HasContainerRelativeUnits() const {
+    return value_->HasContainerRelativeUnits();
+  }
 
   bool IsNegativeNumericLiteral() const;
   bool IsZero() const { return value_->GetFloatValue() == 0; }
