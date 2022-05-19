@@ -39,6 +39,7 @@ WallpaperInfo::WallpaperInfo(
   } else {
     type = WallpaperType::kOnceGooglePhotos;
     location = google_photos_wallpaper_params.id;
+    dedup_key = google_photos_wallpaper_params.dedup_key;
   }
 }
 

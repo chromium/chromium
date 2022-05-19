@@ -81,6 +81,7 @@ constexpr char kGooglePhotosPhotosFullResponse[] =
     "      \"itemId\": {"
     "         \"mediaKey\": \"photoId\""
     "      },"
+    "      \"dedupKey\": \"dedupKey\","
     "      \"filename\": \"photoName.png\","
     "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
     "      \"photo\": {"
@@ -100,6 +101,7 @@ constexpr char kGooglePhotosPhotosSingleItemResponse[] =
     "      \"itemId\": {"
     "         \"mediaKey\": \"photoId\""
     "      },"
+    "      \"dedupKey\": \"dedupKey\","
     "      \"filename\": \"photoName.png\","
     "      \"creationTimestamp\": \"2021-12-31T07:07:07.000Z\","
     "      \"photo\": {"
@@ -877,7 +879,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   // Parse a response with a valid photo and a resume token.
   auto valid_photos_vector = std::vector<GooglePhotosPhotoPtr>();
   valid_photos_vector.push_back(GooglePhotosPhoto::New(
-      "photoId", "photoName", u"Friday, December 31, 2021",
+      "photoId", "dedupKey", "photoName", u"Friday, December 31, 2021",
       GURL("https://www.google.com/"), "home"));
   auto response = JsonToDict(kGooglePhotosPhotosFullResponse);
   auto result = FetchGooglePhotosPhotosResponse::New(
@@ -900,18 +902,35 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   EXPECT_EQ(google_photos_photos_fetcher->GetResultCount(result),
             absl::make_optional<size_t>(valid_photos_vector.size()));
 
+  // Parse a response with a valid photo and no dedup key.
+  auto valid_photos_vector_without_dedup_key =
+      std::vector<GooglePhotosPhotoPtr>();
+  valid_photos_vector_without_dedup_key.push_back(GooglePhotosPhoto::New(
+      "photoId", absl::nullopt, "photoName", u"Friday, December 31, 2021",
+      GURL("https://www.google.com/"), "home"));
+  response.RemoveByDottedPath("item.dedupKey");
+  result = FetchGooglePhotosPhotosResponse::New(
+      mojo::Clone(valid_photos_vector_without_dedup_key), absl::nullopt);
+  EXPECT_EQ(result, google_photos_photos_fetcher->ParseResponse(&response));
+  EXPECT_EQ(google_photos_photos_fetcher->GetResultCount(result),
+            absl::make_optional<size_t>(
+                valid_photos_vector_without_dedup_key.size()));
+
   // Parse a response with a valid photo and no location.
   auto valid_photos_vector_without_location =
       std::vector<GooglePhotosPhotoPtr>();
   valid_photos_vector_without_location.push_back(GooglePhotosPhoto::New(
-      "photoId", "photoName", u"Friday, December 31, 2021",
+      "photoId", absl::nullopt, "photoName", u"Friday, December 31, 2021",
       GURL("https://www.google.com/"), absl::nullopt));
   auto* name_list = response.FindListByDottedPath("item.locationFeature.name");
   EXPECT_FALSE(name_list->empty());
   name_list->clear();
-  EXPECT_EQ(FetchGooglePhotosPhotosResponse::New(
-                std::move(valid_photos_vector_without_location), absl::nullopt),
-            google_photos_photos_fetcher->ParseResponse(&response));
+  result = FetchGooglePhotosPhotosResponse::New(
+      mojo::Clone(valid_photos_vector_without_location), absl::nullopt);
+  EXPECT_EQ(result, google_photos_photos_fetcher->ParseResponse(&response));
+  EXPECT_EQ(
+      google_photos_photos_fetcher->GetResultCount(result),
+      absl::make_optional<size_t>(valid_photos_vector_without_location.size()));
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
@@ -933,7 +952,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                 {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
                  photo_id, /*daily_refresh_enabled=*/false,
                  ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                 /*preview_mode=*/false}),
+                 /*preview_mode=*/false, "dedup_key"}),
             test_wallpaper_controller()->wallpaper_info().value_or(
                 ash::WallpaperInfo()));
 
@@ -954,7 +973,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                 {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
                  photo_id, /*daily_refresh_enabled=*/false,
                  ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                 /*preview_mode=*/false}) ==
+                 /*preview_mode=*/false, "dedup_key"}) ==
                 test_wallpaper_controller()->wallpaper_info().value_or(
                     ash::WallpaperInfo()));
 }

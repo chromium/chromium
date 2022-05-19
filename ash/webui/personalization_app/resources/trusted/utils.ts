@@ -33,21 +33,23 @@ export function isGooglePhotosPhoto(obj: any): obj is GooglePhotosPhoto {
   return !!obj && typeof obj.id === 'string';
 }
 
-/** Returns the unique identifier for |image|. */
-export function getImageKey(image: DisplayableImage): string|
-    DefaultImageSymbol {
+/** Returns whether |image| is a match for the specified |key|. */
+export function isImageAMatchForKey(
+    image: DisplayableImage, key: string|DefaultImageSymbol): boolean {
   if (isWallpaperImage(image)) {
-    return image.assetId.toString();
+    return key === image.assetId.toString();
   }
   if (isDefaultImage(image)) {
-    return kDefaultImageSymbol;
+    return key === kDefaultImageSymbol;
   }
   if (isFilePath(image)) {
     // TODO(b/229420564): Update key extraction for local images.
-    return image.path.substr(image.path.lastIndexOf('/') + 1);
+    return key === image.path.substr(image.path.lastIndexOf('/') + 1);
   }
   assert(isGooglePhotosPhoto(image));
-  return image.id;
+  // NOTE: Old clients may not support |dedupKey| when setting Google Photos
+  // wallpaper, so use |id| in such cases for backwards compatibility.
+  return (image.dedupKey && key === image.dedupKey) || key === image.id;
 }
 
 /**
@@ -64,7 +66,7 @@ export function isImageEqualToSelected(
     // |CurrentWallpaper.key| cannot include javascript symbols.
     return selected.type === WallpaperType.kDefault;
   }
-  return getImageKey(image) === selected.key;
+  return isImageAMatchForKey(image, selected.key);
 }
 
 /**

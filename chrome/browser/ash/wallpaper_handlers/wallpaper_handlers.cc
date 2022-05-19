@@ -220,6 +220,7 @@ void AddGooglePhotosPhotoIfValid(
     return;
 
   const auto* id = photo->FindStringByDottedPath("itemId.mediaKey");
+  const auto* dedup_key = photo->FindString("dedupKey");
   const auto* filename = photo->FindString("filename");
   const auto* timestamp_string = photo->FindString("creationTimestamp");
   const auto* url = photo->FindStringByDottedPath("photo.servingUrl");
@@ -245,7 +246,8 @@ void AddGooglePhotosPhotoIfValid(
   // A photo from Google Photos may or may not have a location set.
   parsed_response->photos->push_back(
       ash::personalization_app::mojom::GooglePhotosPhoto::New(
-          *id, name, date, GURL(*url),
+          *id, dedup_key ? absl::make_optional(*dedup_key) : absl::nullopt,
+          name, date, GURL(*url),
           location ? absl::make_optional(*location) : absl::nullopt));
 }
 

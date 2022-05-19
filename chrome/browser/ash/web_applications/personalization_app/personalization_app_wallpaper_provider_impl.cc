@@ -393,15 +393,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
 
       return;
     }
-    case ash::WallpaperType::kOnceGooglePhotos:
-      client->FetchGooglePhotosPhoto(
-          GetAccountId(profile_), info.location,
-          base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
-                             SendGooglePhotosAttribution,
-                         weak_ptr_factory_.GetWeakPtr(), info,
-                         wallpaper_data_url));
-      return;
     case ash::WallpaperType::kDailyGooglePhotos:
+    case ash::WallpaperType::kOnceGooglePhotos:
       client->FetchGooglePhotosPhoto(
           GetAccountId(profile_), info.location,
           base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
@@ -535,7 +528,8 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
   client->SetGooglePhotosWallpaper(
       ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id,
                                        /*daily_refresh_enabled=*/false, layout,
-                                       preview_mode),
+                                       preview_mode,
+                                       /*dedup_key=*/absl::nullopt),
       base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
                          OnGooglePhotosWallpaperSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
@@ -564,7 +558,8 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
           GetAccountId(profile_), id,
           /*daily_refresh=*/true,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-          /*preview_mode=*/false),
+          /*preview_mode=*/false,
+          /*dedup_key=*/absl::nullopt),
       base::BindOnce(
           &PersonalizationAppWallpaperProviderImpl::OnGooglePhotosAlbumSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));
@@ -857,9 +852,11 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
   if (!photo.is_null()) {
     attribution.push_back(photo->name);
   }
+  // NOTE: Old clients may not support |dedup_key| when setting Google Photos
+  // wallpaper, so use |location| in such cases for backwards compatibility.
   NotifyWallpaperChanged(ash::personalization_app::mojom::CurrentWallpaper::New(
       wallpaper_data_url, attribution, info.layout, info.type,
-      /*key=*/info.location));
+      /*key=*/info.dedup_key.value_or(info.location)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SetMinimizedWindowStateForPreview(

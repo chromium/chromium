@@ -150,6 +150,7 @@ suite('GooglePhotosPhotosTest', function() {
       // First row.
       {
         id: '1',
+        dedupKey: '1',
         name: '1',
         date: toString16('First row'),
         url: {url: '1'},
@@ -158,6 +159,7 @@ suite('GooglePhotosPhotosTest', function() {
       // Second row.
       {
         id: '2',
+        dedupKey: '2',
         name: '2',
         date: toString16('Second row'),
         url: {url: '2'},
@@ -165,6 +167,7 @@ suite('GooglePhotosPhotosTest', function() {
       },
       {
         id: '3',
+        dedupKey: '3',
         name: '3',
         date: toString16('Second row'),
         url: {url: '3'},
@@ -173,6 +176,7 @@ suite('GooglePhotosPhotosTest', function() {
       // Third row.
       {
         id: '4',
+        dedupKey: '4',
         name: '4',
         date: toString16('Third row'),
         url: {url: '4'},
@@ -303,6 +307,7 @@ suite('GooglePhotosPhotosTest', function() {
       // Section of photos without location.
       {
         id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+        dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
         name: 'foo',
         date: toString16('Wednesday, February 16, 2022'),
         url: {url: 'foo.com'},
@@ -311,6 +316,7 @@ suite('GooglePhotosPhotosTest', function() {
       // Section of photos with one location.
       {
         id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
+        dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
         name: 'bar',
         date: toString16('Friday, November 12, 2021'),
         url: {url: 'bar.com'},
@@ -318,6 +324,7 @@ suite('GooglePhotosPhotosTest', function() {
       },
       {
         id: '0a268a37-877a-4936-81d4-38cc84b0f596',
+        dedupKey: 'd99eedfa-43e5-4bca-8882-b881222b8db9',
         name: 'baz',
         date: toString16('Friday, November 12, 2021'),
         url: {url: 'baz.com'},
@@ -326,6 +333,7 @@ suite('GooglePhotosPhotosTest', function() {
       // Section of photos with different locations.
       {
         id: '0a5231as-97a2-42e1-bdbf-3e75870ca042',
+        dedupKey: 'ef8795ae-e6c8-4580-8184-0bcad20fd013',
         name: 'bare',
         date: toString16('Friday, July 16, 2021'),
         url: {url: 'bare.com'},
@@ -333,6 +341,7 @@ suite('GooglePhotosPhotosTest', function() {
       },
       {
         id: '0a268a11-877a-4936-81d4-38cc8s9dn396',
+        dedupKey: 'c8817402-822f-4ee8-9716-1f4b36c3263f',
         name: 'baze',
         date: toString16('Friday, July 16, 2021'),
         url: {url: 'baze.com'},
@@ -417,6 +426,7 @@ suite('GooglePhotosPhotosTest', function() {
   test('displays photo selected', async () => {
     const photo: GooglePhotosPhoto = {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},
@@ -425,14 +435,25 @@ suite('GooglePhotosPhotosTest', function() {
 
     const anotherPhoto: GooglePhotosPhoto = {
       id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
+      dedupKey: '2cb1b955-0b7e-4f59-b9d0-802227aeeb28',
       name: 'bar',
       date: {data: []},
       url: {url: 'bar.com'},
       location: 'home2'
     };
 
+    const yetAnotherPhoto: GooglePhotosPhoto = {
+      id: '0a268a37-877a-4936-81d4-38cc84b0f596',
+      dedupKey: anotherPhoto.dedupKey,
+      name: 'baz',
+      date: {data: []},
+      url: {url: 'baz.com'},
+      location: 'home3'
+    };
+
     // Set values returned by |wallpaperProvider|.
-    wallpaperProvider.setGooglePhotosPhotos([photo, anotherPhoto]);
+    wallpaperProvider.setGooglePhotosPhotos(
+        [photo, anotherPhoto, yetAnotherPhoto]);
 
     // Initialize Google Photos data in the |personalizationStore|.
     await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
@@ -441,6 +462,7 @@ suite('GooglePhotosPhotosTest', function() {
     // The wallpaper controller is expected to impose max resolution.
     photo.url.url += '=s512';
     anotherPhoto.url.url += '=s512';
+    yetAnotherPhoto.url.url += '=s512';
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
@@ -450,11 +472,12 @@ suite('GooglePhotosPhotosTest', function() {
     // Verify that the expected photos are rendered.
     const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
     const photoEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
-    assertEquals(photoEls.length, 2);
+    assertEquals(photoEls.length, 3);
 
     // Verify selected states.
     assertEquals(photoEls[0]!.selected, false);
     assertEquals(photoEls[1]!.selected, false);
+    assertEquals(photoEls[2]!.selected, false);
 
     // Start a pending selection for |photo|.
     personalizationStore.data.wallpaper.pendingSelected = photo;
@@ -464,6 +487,7 @@ suite('GooglePhotosPhotosTest', function() {
     // Verify selected states.
     assertEquals(photoEls[0]!.selected, true);
     assertEquals(photoEls[1]!.selected, false);
+    assertEquals(photoEls[2]!.selected, false);
 
     // Complete the pending selection.
     personalizationStore.data.wallpaper.pendingSelected = null;
@@ -480,6 +504,7 @@ suite('GooglePhotosPhotosTest', function() {
     // Verify selected states.
     assertEquals(photoEls[0]!.selected, true);
     assertEquals(photoEls[1]!.selected, false);
+    assertEquals(photoEls[2]!.selected, false);
 
     // Start a pending selection for |anotherPhoto|.
     personalizationStore.data.wallpaper.pendingSelected = anotherPhoto;
@@ -497,7 +522,7 @@ suite('GooglePhotosPhotosTest', function() {
       attribution: [],
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnceGooglePhotos,
-      key: anotherPhoto.id
+      key: anotherPhoto.dedupKey
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosElement);
@@ -505,6 +530,7 @@ suite('GooglePhotosPhotosTest', function() {
     // Verify selected states.
     assertEquals(photoEls[0]!.selected, false);
     assertEquals(photoEls[1]!.selected, true);
+    assertEquals(photoEls[2]!.selected, true);
 
     // Start a pending selection for a |FilePath| backed wallpaper.
     personalizationStore.data.wallpaper.pendingSelected = {path: '//foo'};
@@ -514,6 +540,7 @@ suite('GooglePhotosPhotosTest', function() {
     // Verify selected states.
     assertEquals(photoEls[0]!.selected, false);
     assertEquals(photoEls[1]!.selected, false);
+    assertEquals(photoEls[2]!.selected, false);
 
     // Complete the pending selection.
     personalizationStore.data.wallpaper.pendingSelected = null;
@@ -530,6 +557,7 @@ suite('GooglePhotosPhotosTest', function() {
     // Verify selected states.
     assertEquals(photoEls[0]!.selected, false);
     assertEquals(photoEls[1]!.selected, false);
+    assertEquals(photoEls[2]!.selected, false);
   });
 
   test('displays placeholders until photos are present', async () => {
@@ -538,6 +566,7 @@ suite('GooglePhotosPhotosTest', function() {
     const photos: GooglePhotosPhoto[] =
         Array.from({length: photosCount}, (_, i) => ({
                                             id: `id-${i}`,
+                                            dedupKey: `dedupKey-${i}`,
                                             name: `name-${i}`,
                                             date: {data: []},
                                             url: {url: `url-${i}`},
@@ -598,6 +627,7 @@ suite('GooglePhotosPhotosTest', function() {
         Array.from({length: photosCount / 2}).map(() => {
           return {
             id: `id-${nextPhotoId}`,
+            dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: {data: []},
             url: {url: `url-${nextPhotoId}`},
@@ -625,6 +655,7 @@ suite('GooglePhotosPhotosTest', function() {
         Array.from({length: photosCount / 2}).map(() => {
           return {
             id: `id-${nextPhotoId}`,
+            dedupKey: `dedupKey-${nextPhotoId}`,
             name: `name-${nextPhotoId}`,
             date: {data: []},
             url: {url: `url-${nextPhotoId}`},
@@ -746,6 +777,7 @@ suite('GooglePhotosPhotosTest', function() {
   test('selects photo', async () => {
     const photo: GooglePhotosPhoto = {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: {data: []},
       url: {url: 'foo.com'},

@@ -22,7 +22,7 @@ import {getLoadingPlaceholders, isSelectionEvent} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isGooglePhotosPhoto} from '../utils.js';
+import {isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
 
 import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_by_album_id_element.html.js';
@@ -317,13 +317,18 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     if (!photo || (!currentSelected && !pendingSelected)) {
       return false;
     }
+    // NOTE: Old clients may not support |dedupKey| when setting Google Photos
+    // wallpaper, so use |id| in such cases for backwards compatibility.
     if (isGooglePhotosPhoto(pendingSelected) &&
-        pendingSelected!.id === photo.id) {
+        ((pendingSelected!.dedupKey &&
+          isImageAMatchForKey(photo, pendingSelected!.dedupKey)) ||
+         isImageAMatchForKey(photo, pendingSelected!.id))) {
       return true;
     }
     if (!pendingSelected && !!currentSelected &&
-        currentSelected.type === WallpaperType.kOnceGooglePhotos &&
-        currentSelected.key === photo.id) {
+        (currentSelected.type === WallpaperType.kOnceGooglePhotos ||
+         currentSelected.type === WallpaperType.kDailyGooglePhotos) &&
+        isImageEqualToSelected(photo, currentSelected)) {
       return true;
     }
     return false;

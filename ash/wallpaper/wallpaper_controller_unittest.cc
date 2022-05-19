@@ -270,6 +270,11 @@ base::Value CreateWallpaperInfoDict(WallpaperInfo info) {
         WallpaperControllerImpl::kNewWallpaperAssetIdNodeName,
         base::NumberToString(info.asset_id.value()));
   }
+  if (info.dedup_key.has_value()) {
+    wallpaper_info_dict.SetStringKey(
+        WallpaperControllerImpl::kNewWallpaperDedupKeyNodeName,
+        info.dedup_key.value());
+  }
   if (info.unit_id.has_value()) {
     wallpaper_info_dict.SetStringKey(
         WallpaperControllerImpl::kNewWallpaperUnitIdNodeName,
@@ -348,6 +353,8 @@ WallpaperInfo InfoWithType(WallpaperType type) {
     info.collection_id = "placeholder collection";
     info.location = "https://example.com/example.jpeg";
   }
+  if (type == WallpaperType::kOnceGooglePhotos)
+    info.dedup_key = "dedup_key";
   return info;
 }
 
@@ -2227,7 +2234,7 @@ TEST_P(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
     controller_->SetGooglePhotosWallpaper(
         GooglePhotosWallpaperParams(account_id_1, "id",
                                     /*daily_refresh_enabled=*/false, layout,
-                                    /*preview_mode=*/false),
+                                    /*preview_mode=*/false, "dedup_key"),
         base::DoNothing());
     RunAllTasksUntilIdle();
     EXPECT_EQ(1, GetWallpaperCount());
@@ -2239,7 +2246,7 @@ TEST_P(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
     EXPECT_EQ(wallpaper_info,
               WallpaperInfo(GooglePhotosWallpaperParams(
                   account_id_1, "id", /*daily_refresh_enabled=*/false, layout,
-                  /*preview_mode=*/false)));
+                  /*preview_mode=*/false, "dedup_key")));
 
     // Now change to a different layout. Verify that the layout is updated for
     // both the current wallpaper and the saved wallpaper info.
@@ -2253,7 +2260,7 @@ TEST_P(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
     EXPECT_EQ(wallpaper_info,
               WallpaperInfo(GooglePhotosWallpaperParams(
                   account_id_1, "id", /*daily_refresh_enabled=*/false,
-                  new_layout, /*preview_mode=*/false)));
+                  new_layout, /*preview_mode=*/false, "dedup_key")));
   }
 
   // Now set an online wallpaper. Verify that it's set successfully and the
@@ -3400,6 +3407,17 @@ TEST_P(WallpaperControllerTest, SetWallpaperInfoLocal) {
                              account_id_1, info);
 }
 
+TEST_P(WallpaperControllerTest, SetWallpaperInfoLocalFromGooglePhotos) {
+  WallpaperInfo info(
+      GooglePhotosWallpaperParams{account_id_1, kFakeGooglePhotosPhotoId,
+                                  /*daily_refresh_enabled=*/false,
+                                  WallpaperLayout::WALLPAPER_LAYOUT_STRETCH,
+                                  /*preview_mode=*/false, "dedup_key"});
+  EXPECT_TRUE(controller_->SetUserWallpaperInfo(account_id_1, info));
+  AssertWallpaperInfoInPrefs(GetLocalPrefService(), prefs::kUserWallpaperInfo,
+                             account_id_1, info);
+}
+
 // Test cases that only run with |kWallpaperWebUI| turned on.
 class WallpaperControllerWallpaperWebUiTest
     : public WallpaperControllerTestBase {
@@ -3482,6 +3500,17 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, SetWallpaperInfoSynced) {
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
+  EXPECT_TRUE(controller_->SetUserWallpaperInfo(account_id_1, info));
+  AssertWallpaperInfoInPrefs(GetProfilePrefService(account_id_1),
+                             prefs::kSyncableWallpaperInfo, account_id_1, info);
+}
+
+TEST_F(WallpaperControllerWallpaperWebUiTest,
+       SetWallpaperInfoSyncedFromGooglePhotos) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kOnceGooglePhotos);
   EXPECT_TRUE(controller_->SetUserWallpaperInfo(account_id_1, info));
   AssertWallpaperInfoInPrefs(GetProfilePrefService(account_id_1),
                              prefs::kSyncableWallpaperInfo, account_id_1, info);
@@ -4437,7 +4466,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
   GooglePhotosWallpaperParams params(account_id_1, kFakeGooglePhotosPhotoId,
                                      /*daily_refresh_enabled=*/false,
                                      WallpaperLayout::WALLPAPER_LAYOUT_STRETCH,
-                                     /*preview_mode=*/false);
+                                     /*preview_mode=*/false, "dedup_key");
 
   controller_->SetGooglePhotosWallpaper(params, base::DoNothing());
   if (feature_enabled)
@@ -4485,7 +4514,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   base::test::TestFuture<bool> google_photos_future;
   controller_->SetGooglePhotosWallpaper(
       {account_id_1, kFakeGooglePhotosPhotoId, false,
-       WallpaperLayout::WALLPAPER_LAYOUT_STRETCH, false},
+       WallpaperLayout::WALLPAPER_LAYOUT_STRETCH, false, "dedup_key"},
       google_photos_future.GetCallback());
   EXPECT_FALSE(google_photos_future.Get());
   EXPECT_NE(controller_->GetWallpaperType(), WallpaperType::kOnceGooglePhotos);
@@ -4565,7 +4594,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   controller_->SetGooglePhotosWallpaper(
       {account_id_1, kFakeGooglePhotosPhotoId, /*daily_refresh_enabled=*/false,
        WALLPAPER_LAYOUT_STRETCH,
-       /*preview_mode=*/false},
+       /*preview_mode=*/false, "dedup_key"},
       google_photos_future.GetCallback());
   EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
   RunAllTasksUntilIdle();
@@ -4591,7 +4620,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   controller_->SetGooglePhotosWallpaper(
       {account_id_1, kFakeGooglePhotosPhotoId, /*daily_refresh_enabled=*/false,
        WALLPAPER_LAYOUT_STRETCH,
-       /*preview_mode=*/false},
+       /*preview_mode=*/false, "dedup_key"},
       google_photos_future.GetCallback());
   EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
   RunAllTasksUntilIdle();
@@ -4615,7 +4644,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   GooglePhotosWallpaperParams params({account_id_1, kFakeGooglePhotosPhotoId,
                                       /*daily_refresh_enabled=*/false,
                                       WALLPAPER_LAYOUT_STRETCH,
-                                      /*preview_mode=*/false});
+                                      /*preview_mode=*/false, "dedup_key"});
   controller_->SetGooglePhotosWallpaper(params,
                                         google_photos_future.GetCallback());
   EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
@@ -4665,7 +4694,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, ConfirmPreviewWallpaper) {
   base::test::TestFuture<bool> google_photos_future;
   controller_->SetGooglePhotosWallpaper(
       {account_id_1, photo_id, /*daily_refresh_enabled=*/false, layout,
-       /*preview_mode=*/true},
+       /*preview_mode=*/true, "dedup_key"},
       google_photos_future.GetCallback());
   EXPECT_EQ(google_photos_future.Get(), GooglePhotosEnabled());
   RunAllTasksUntilIdle();
@@ -4731,7 +4760,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, CancelPreviewWallpaper) {
   base::test::TestFuture<bool> google_photos_future;
   controller_->SetGooglePhotosWallpaper(
       {account_id_1, photo_id, /*daily_refresh_enabled=*/false,
-       WALLPAPER_LAYOUT_STRETCH, /*preview_mode=*/true},
+       WALLPAPER_LAYOUT_STRETCH, /*preview_mode=*/true, "dedup_key"},
       google_photos_future.GetCallback());
   EXPECT_EQ(google_photos_future.Get(), GooglePhotosEnabled());
   RunAllTasksUntilIdle();
@@ -4790,7 +4819,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   base::test::TestFuture<bool> google_photos_future;
   controller_->SetGooglePhotosWallpaper(
       {account_id_1, photo_id, /*daily_refresh_enabled=*/false, layout,
-       /*preview_mode=*/true},
+       /*preview_mode=*/true, "dedup_key"},
       google_photos_future.GetCallback());
   EXPECT_EQ(google_photos_future.Get(), GooglePhotosEnabled());
   RunAllTasksUntilIdle();
@@ -4853,10 +4882,10 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   SimulateUserLogin(account_id_1);
 
-  GooglePhotosWallpaperParams params(account_id_1, kFakeGooglePhotosAlbumId,
-                                     /*daily_refresh_enabled=*/true,
-                                     WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                     /*preview_mode=*/false);
+  GooglePhotosWallpaperParams params(
+      account_id_1, kFakeGooglePhotosAlbumId,
+      /*daily_refresh_enabled=*/true, WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false, /*dedup_key=*/absl::nullopt);
   WallpaperInfo info(params);
   controller_->SetUserWallpaperInfo(account_id_1, info);
 
@@ -4877,10 +4906,10 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
        DailyRefreshTimerStartsForDailyGooglePhotos) {
   SimulateUserLogin(account_id_1);
 
-  GooglePhotosWallpaperParams params(account_id_1, kFakeGooglePhotosAlbumId,
-                                     /*daily_refresh_enabled=*/true,
-                                     WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                     /*preview_mode=*/false);
+  GooglePhotosWallpaperParams params(
+      account_id_1, kFakeGooglePhotosAlbumId,
+      /*daily_refresh_enabled=*/true, WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false, /*dedup_key=*/absl::nullopt);
   WallpaperInfo info(params);
   controller_->SetUserWallpaperInfo(account_id_1, info);
 
@@ -4905,10 +4934,10 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
        DailyRefreshRetryTimerStartsOnFailedFetch) {
   SimulateUserLogin(account_id_1);
 
-  GooglePhotosWallpaperParams params(account_id_1, kFakeGooglePhotosAlbumId,
-                                     /*daily_refresh_enabled=*/true,
-                                     WALLPAPER_LAYOUT_CENTER_CROPPED,
-                                     /*preview_mode=*/false);
+  GooglePhotosWallpaperParams params(
+      account_id_1, kFakeGooglePhotosAlbumId,
+      /*daily_refresh_enabled=*/true, WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false, /*dedup_key=*/absl::nullopt);
   WallpaperInfo info(params);
   controller_->SetUserWallpaperInfo(account_id_1, info);
 
@@ -4937,7 +4966,8 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   GooglePhotosWallpaperParams daily_google_photos_params(
       account_id_1, kFakeGooglePhotosAlbumId, /*daily_refresh_enabled=*/true,
-      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false);
+      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+      /*dedup_key=*/absl::nullopt);
   OnlineWallpaperParams online_params(
       account_id_1, kAssetId, GURL(kDummyUrl),
       TestWallpaperControllerClient::kDummyCollectionId,
@@ -4966,9 +4996,9 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   base::test::TestFuture<bool> google_photos_future;
   controller_->SetGooglePhotosWallpaper(
-      {account_id_1, kFakeGooglePhotosAlbumId, /*daily_refres_enabled=*/true,
+      {account_id_1, kFakeGooglePhotosAlbumId, /*daily_refresh_enabled=*/true,
        WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-       /*preview_mode=*/false},
+       /*preview_mode=*/false, /*dedup_key=*/absl::nullopt},
       google_photos_future.GetCallback());
   EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
   RunAllTasksUntilIdle();
@@ -5004,7 +5034,7 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
   controller_->SetGooglePhotosWallpaper(
       {account_id_1, kFakeGooglePhotosAlbumId, /*daily_refresh_enabled=*/true,
        WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-       /*preview_mode=*/false},
+       /*preview_mode=*/false, /*dedup_key=*/absl::nullopt},
       google_photos_future.GetCallback());
   EXPECT_EQ(GooglePhotosEnabled(), google_photos_future.Get());
   RunAllTasksUntilIdle();

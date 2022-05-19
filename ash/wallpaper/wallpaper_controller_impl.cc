@@ -588,12 +588,15 @@ void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
       WallpaperControllerImpl::kNewWallpaperAssetIdNodeName);
   const std::string* collection_id = info_dict.FindStringPath(
       WallpaperControllerImpl::kNewWallpaperCollectionIdNodeName);
+  const std::string* dedup_key = info_dict.FindStringPath(
+      WallpaperControllerImpl::kNewWallpaperDedupKeyNodeName);
   const std::string* unit_id_str = info_dict.FindStringPath(
       WallpaperControllerImpl::kNewWallpaperUnitIdNodeName);
   const base::Value* variant_list = info_dict.FindListPath(
       WallpaperControllerImpl::kNewWallpaperVariantListNodeName);
 
   info->collection_id = collection_id ? *collection_id : std::string();
+  info->dedup_key = dedup_key ? absl::make_optional(*dedup_key) : absl::nullopt;
 
   if (asset_id_str) {
     uint64_t asset_id;
@@ -717,6 +720,11 @@ bool SetWallpaperInfo(const AccountId& account_id,
   wallpaper_info_dict.SetStringPath(
       WallpaperControllerImpl::kNewWallpaperDateNodeName,
       base::NumberToString(info.date.ToInternalValue()));
+  if (info.dedup_key) {
+    wallpaper_info_dict.SetStringPath(
+        WallpaperControllerImpl::kNewWallpaperDedupKeyNodeName,
+        info.dedup_key.value());
+  }
   wallpaper_info_dict.SetStringPath(
       WallpaperControllerImpl::kNewWallpaperLocationNodeName, info.location);
   wallpaper_info_dict.SetIntPath(
@@ -803,6 +811,8 @@ const char WallpaperControllerImpl::kNewWallpaperAssetIdNodeName[] = "asset_id";
 const char WallpaperControllerImpl::kNewWallpaperCollectionIdNodeName[] =
     "collection_id";
 const char WallpaperControllerImpl::kNewWallpaperDateNodeName[] = "date";
+const char WallpaperControllerImpl::kNewWallpaperDedupKeyNodeName[] =
+    "dedup_key";
 const char WallpaperControllerImpl::kNewWallpaperLayoutNodeName[] = "layout";
 const char WallpaperControllerImpl::kNewWallpaperLocationNodeName[] = "file";
 const char WallpaperControllerImpl::kNewWallpaperTypeNodeName[] = "type";
@@ -2367,7 +2377,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
 }
 
 void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
-    const GooglePhotosWallpaperParams& params,
+    GooglePhotosWallpaperParams params,
     SetWallpaperCallback callback,
     ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
     bool success) {
@@ -2395,6 +2405,8 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
     std::move(callback).Run(false);
     return;
   }
+
+  params.dedup_key = photo->dedup_key;
 
   auto cached_path =
       GetUserGooglePhotosWallpaperDir(params.account_id).Append(params.id);
@@ -2436,7 +2448,7 @@ void WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched(
   ImageDownloader::DownloadCallback download_callback = base::BindOnce(
       &WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDownloaded,
       set_wallpaper_weak_factory_.GetWeakPtr(), account_id, photo->id, album_id,
-      std::move(callback));
+      photo->dedup_key, std::move(callback));
   wallpaper_controller_client_->FetchGooglePhotosAccessToken(
       account_id, base::BindOnce(&DownloadGooglePhotosImage, photo->url,
                                  account_id, std::move(download_callback)));
@@ -2446,6 +2458,7 @@ void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDownloaded(
     const AccountId& account_id,
     const std::string& photo_id,
     const std::string& album_id,
+    absl::optional<std::string> dedup_key,
     RefreshWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   DCHECK(callback);
@@ -2461,8 +2474,9 @@ void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDownloaded(
   WallpaperInfo wallpaper_info(
       {account_id, album_id, /*daily_refresh_enabled=*/true,
        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-       /*preview_mode=*/false});
+       /*preview_mode=*/false, /*dedup_key=*/absl::nullopt});
   wallpaper_info.location = photo_id;
+  wallpaper_info.dedup_key = dedup_key;
 
   if (!SetUserWallpaperInfo(account_id, wallpaper_info)) {
     LOG(ERROR) << "Setting user wallpaper info fails. This should never happen "
@@ -3498,17 +3512,18 @@ void WallpaperControllerImpl::HandleGooglePhotosWallpaperInfoSyncedIn(
     if (GetUserWallpaperInfo(account_id, &old_info) &&
         old_info.collection_id != info.collection_id) {
       SetGooglePhotosWallpaper(
-          GooglePhotosWallpaperParams(account_id, info.collection_id,
-                                      daily_refresh_enabled, info.layout,
-                                      /*preview_mode=*/false),
+          GooglePhotosWallpaperParams(
+              account_id, info.collection_id,
+              /*daily_refresh_enabled=*/true, info.layout,
+              /*preview_mode=*/false, /*dedup_key=*/absl::nullopt),
           base::DoNothing());
     }
   } else {
-    SetGooglePhotosWallpaper(
-        GooglePhotosWallpaperParams(account_id, info.location,
-                                    daily_refresh_enabled, info.layout,
-                                    /*preview_mode=*/false),
-        base::DoNothing());
+    SetGooglePhotosWallpaper(GooglePhotosWallpaperParams(
+                                 account_id, info.location,
+                                 /*daily_refresh_enabled=*/false, info.layout,
+                                 /*preview_mode=*/false, info.dedup_key),
+                             base::DoNothing());
   }
 }
 

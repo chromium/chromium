@@ -102,6 +102,7 @@ class ASH_EXPORT WallpaperControllerImpl
   static const char kNewWallpaperAssetIdNodeName[];
   static const char kNewWallpaperCollectionIdNodeName[];
   static const char kNewWallpaperDateNodeName[];
+  static const char kNewWallpaperDedupKeyNodeName[];
   static const char kNewWallpaperLayoutNodeName[];
   static const char kNewWallpaperLocationNodeName[];
   static const char kNewWallpaperTypeNodeName[];
@@ -478,7 +479,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // Used as the callback of fetching the data for a Google Photos photo from
   // the unique id.
   void OnGooglePhotosPhotoFetched(
-      const GooglePhotosWallpaperParams& params,
+      GooglePhotosWallpaperParams params,
       SetWallpaperCallback callback,
       ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
       bool success);
@@ -490,11 +491,13 @@ class ASH_EXPORT WallpaperControllerImpl
       ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
       bool success);
 
-  void OnDailyGooglePhotosWallpaperDownloaded(const AccountId& account_id,
-                                              const std::string& photo_id,
-                                              const std::string& album_id,
-                                              RefreshWallpaperCallback callback,
-                                              const gfx::ImageSkia& image);
+  void OnDailyGooglePhotosWallpaperDownloaded(
+      const AccountId& account_id,
+      const std::string& photo_id,
+      const std::string& album_id,
+      absl::optional<std::string> dedup_key,
+      RefreshWallpaperCallback callback,
+      const gfx::ImageSkia& image);
 
   void GetGooglePhotosWallpaperFromCacheOrDownload(
       const GooglePhotosWallpaperParams& params,
