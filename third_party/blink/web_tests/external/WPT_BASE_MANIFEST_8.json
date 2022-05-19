@@ -2423,6 +2423,13 @@
         {}
        ]
       ],
+      "empty-tbody-after-tall-section-crash.html": [
+       "b2d6e642540c9ab9eec3228bd1b4c60160eb4184",
+       [
+        null,
+        {}
+       ]
+      ],
       "empty_cells_crash.html": [
        "7635afc9e6c8b9a6810988695caf80b931c7a72d",
        [
@@ -86736,6 +86743,71 @@
         [
          [
           "/css/css-break/table/sections-and-captions-mixed-order-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-border-000.html": [
+       "1ec0efa2990867f9b3fd4938fcd46115c2998198",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-border-001.html": [
+       "97e4ba8dafcbe906dc9c8ea83d611663bc78c98f",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-border-002.html": [
+       "16c2a50395c5a3a3ae2e8f22197bf6b783a34303",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-border-003.html": [
+       "26b01599ad9a30c0ff3cedc1ae97b7cbaa5d014e",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-border-004.html": [
+       "ed8314f1d29e82dae42d3828aa327a513e7d35bf",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -381435,6 +381507,13 @@
        {}
       ]
      ],
+     "ignore-snap-points-orthogonal-to-snap-axis.html": [
+      "b0cde7fed1e2be57f0be340107c43ff9dd0b7df4",
+      [
+       null,
+       {}
+      ]
+     ],
      "inheritance.html": [
       "2569cf3d8bfbf46f1d9217642afbf637ff4600ca",
       [
@@ -430124,7 +430203,7 @@
      ]
     ],
     "FileSystemFileHandle-sync-access-handle-writable-lock.https.tentative.worker.js": [
-     "a2ed99db1d538ada4d76796ccd6a6c6cfba2565e",
+     "4fe120b21fb103fafd89d3f81151fff8f7894381",
      [
       "fs/FileSystemFileHandle-sync-access-handle-writable-lock.https.tentative.worker.html",
       {}
@@ -431403,6 +431482,24 @@
          ]
         ],
         "timeout": "long"
+       }
+      ]
+     ],
+     "initial-empty-document.tentative.https.window.js": [
+      "b4d4d5191a2985a5da4578552b9c04bfc2486234",
+      [
+       "html/anonymous-iframe/initial-empty-document.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ]
+        ]
        }
       ]
      ],
