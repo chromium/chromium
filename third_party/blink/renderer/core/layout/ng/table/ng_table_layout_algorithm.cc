@@ -926,6 +926,28 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     return section_space_builder.ToConstraintSpace();
   };
 
+  LogicalBoxSides border_padding_sides_to_include;
+
+  auto BlockStartBorderPadding = [&border_padding,
+                                  &border_padding_sides_to_include]() {
+    if (border_padding_sides_to_include.block_start)
+      return border_padding.block_start;
+    return LayoutUnit();
+  };
+
+  auto BlockEndBorderPadding = [&border_padding,
+                                &border_padding_sides_to_include]() {
+    if (border_padding_sides_to_include.block_end)
+      return border_padding.block_end;
+    return LayoutUnit();
+  };
+
+  auto TableBoxBorderPadding = [&border_padding, &BlockStartBorderPadding,
+                                &BlockEndBorderPadding]() {
+    return NGBoxStrut(border_padding.inline_start, border_padding.inline_end,
+                      BlockStartBorderPadding(), BlockEndBorderPadding());
+  };
+
   const LayoutUnit section_inline_offset =
       border_padding.inline_start + border_spacing.inline_size;
 
@@ -968,16 +990,25 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         is_past_last_section_end = true;
 
         if (!table_box_extent) {
-          // There was no section to kick off "table box" extent calculation. Do
-          // it now.
-          table_box_extent =
-              BeginTableBoxLayout(child_block_offset, border_padding);
+          if (IsResumingLayout(BreakToken()) && !has_processed_first_child) {
+            // We are resuming after the sections (if any). This means that
+            // the table box was finished in an earlier fragment.
+            border_padding_sides_to_include.block_start = false;
+            border_padding_sides_to_include.block_end = false;
+          } else {
+            // There was no section to kick off "table box" extent
+            // calculation. Do it now.
+            table_box_extent = BeginTableBoxLayout(child_block_offset,
+                                                   TableBoxBorderPadding());
+          }
         }
 
-        child_block_offset =
-            EndTableBoxLayout(border_padding, border_spacing_after_last_section,
-                              minimal_table_grid_block_size,
-                              &(*table_box_extent), &grid_block_size);
+        if (table_box_extent) {
+          child_block_offset = EndTableBoxLayout(
+              TableBoxBorderPadding(), border_spacing_after_last_section,
+              minimal_table_grid_block_size, &(*table_box_extent),
+              &grid_block_size);
+        }
       }
 
       LogicalSize available_size(container_builder_.InlineSize(),
@@ -999,13 +1030,16 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         collapsible_border_spacing = border_spacing.block_size;
       } else {
         // Entering the first section in this fragment. This is where the "table
-        // box" starts.
+        // box" starts. First check if we already added the block-start border
+        // in a previous fragment.
+        if (entry.GetSectionIndex() > 0 || IsResumingLayout(child_break_token))
+          border_padding_sides_to_include.block_start = false;
         table_box_extent =
-            BeginTableBoxLayout(child_block_offset, border_padding);
+            BeginTableBoxLayout(child_block_offset, TableBoxBorderPadding());
         // Only include border-spacing if we're at the start of the section.
         if (!IsResumingLayout(child_break_token))
           border_spacing_before_first_section = border_spacing.block_size;
-        child_block_offset += border_padding.block_start;
+        child_block_offset += BlockStartBorderPadding();
         // We need to lay the section out before we can tell whether it should
         // be preceded by border-spacing (if there is nothing inside, it should
         // be omitted).
@@ -1087,38 +1121,58 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   if (!child_iterator.NextChild())
     container_builder_.SetHasSeenAllChildren();
 
-  if (!table_box_extent) {
-    // There was no section to kick off "table box" extent calculation. Do it
-    // now.
-    table_box_extent = BeginTableBoxLayout(child_block_offset, border_padding);
-  }
-
-  // If we had (any) break inside, we don't need end border-spacing, and should
-  // be at-least the fragmentainer size (if definite).
-  if (broke_inside) {
-    if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
-      table_box_extent->end =
-          std::max(table_box_extent->end,
-                   FragmentainerSpaceAtBfcStart(ConstraintSpace()));
+  if (table_box_extent) {
+    // If we broke inside a section, the block-end border/padding shouldn't be
+    // added to this fragment.
+    if (broke_inside && !is_past_last_section_end)
+      border_padding_sides_to_include.block_end = false;
+  } else {
+    if (broke_inside) {
+      // There's no "table box" in this fragment, either because we broke inside
+      // a caption, or we're resuming layout after the table box. This means
+      // that we're either before or after any table sections that the table
+      // might have.
+      border_padding_sides_to_include.block_start = false;
+      border_padding_sides_to_include.block_end = false;
+    } else {
+      // There was no section to kick off "table box" extent calculation. Do it
+      // now.
+      table_box_extent =
+          BeginTableBoxLayout(child_block_offset, TableBoxBorderPadding());
     }
-    border_spacing_after_last_section = LayoutUnit();
   }
 
-  if (!is_past_last_section_end) {
-    child_block_offset = EndTableBoxLayout(
-        border_padding, border_spacing_after_last_section,
-        minimal_table_grid_block_size, &(*table_box_extent), &grid_block_size);
+  LayoutUnit column_block_size;
+  LogicalRect table_grid_rect;
+
+  if (table_box_extent) {
+    // If we had (any) break inside, we don't need end border-spacing, and
+    // should be at-least the fragmentainer size (if definite).
+    if (broke_inside) {
+      if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+        table_box_extent->end =
+            std::max(table_box_extent->end,
+                     FragmentainerSpaceAtBfcStart(ConstraintSpace()));
+      }
+      border_spacing_after_last_section = LayoutUnit();
+    }
+
+    if (!is_past_last_section_end) {
+      child_block_offset = EndTableBoxLayout(
+          TableBoxBorderPadding(), border_spacing_after_last_section,
+          minimal_table_grid_block_size, &(*table_box_extent),
+          &grid_block_size);
+    }
+
+    column_block_size = table_box_extent->end - table_box_extent->start;
+    column_block_size -= border_spacing_before_first_section +
+                         border_spacing_after_last_section +
+                         TableBoxBorderPadding().BlockSum();
+
+    table_grid_rect =
+        LogicalRect(LayoutUnit(), table_box_extent->start,
+                    container_builder_.InlineSize(), grid_block_size);
   }
-
-  LayoutUnit column_block_size =
-      table_box_extent->end - table_box_extent->start;
-  column_block_size -= border_spacing_before_first_section +
-                       border_spacing_after_last_section +
-                       border_padding.BlockSum();
-
-  const LogicalRect table_grid_rect(LayoutUnit(), table_box_extent->start,
-                                    container_builder_.InlineSize(),
-                                    grid_block_size);
 
   // Add all the bottom captions.
   if (!relayout_captions) {
@@ -1159,10 +1213,15 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinishFragmentation(
-        Node(), ConstraintSpace(), BorderPadding().block_end,
+        Node(), ConstraintSpace(), BlockEndBorderPadding(),
         FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
     // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, NGBreakStatus::kContinue);
+
+    // Which side to include is normally handled by FinishFragmentation(), but
+    // that function doesn't know about table weirdness (table captions flow
+    // before and after table borders and padding).
+    container_builder_.SetSidesToInclude(border_padding_sides_to_include);
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
