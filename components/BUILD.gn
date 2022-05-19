@@ -9,6 +9,7 @@ import("//build/config/ui.gni")
 import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//pdf/features.gni")
@@ -239,6 +240,10 @@ test("components_unittests") {
     "//components/webdata/common:unit_tests",
     "//components/webdata_services:unit_tests",
   ]
+
+  if (enable_screen_ai_service) {
+    deps += [ "//components/services/screen_ai:unit_tests" ]
+  }
 
   if (build_with_internal_optimization_guide && is_android) {
     loadable_module_deps = [

@@ -19,6 +19,20 @@ namespace {
 // adjust this threshold.
 const float kScreenAIMinConfidenceThreshold = 0.1;
 
+// Adds the subtree of |nodes[node_index_to_add]| to |nodes_order| with
+// pre-order traversal.
+// The comment at the beginning of |Screen2xSnapshotToViewHierarchy| explains
+// more.
+void AddSubTree(const std::vector<ui::AXNodeData>& nodes,
+                std::map<int, int>& id_to_position,
+                std::vector<int>& nodes_order,
+                const int node_index_to_add) {
+  nodes_order.push_back(node_index_to_add);
+  const ui::AXNodeData& node = nodes[node_index_to_add];
+  for (int32_t child_id : node.child_ids)
+    AddSubTree(nodes, id_to_position, nodes_order, id_to_position[child_id]);
+}
+
 }  // namespace
 
 namespace screen_ai {
@@ -77,43 +91,56 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
 std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
   screenai::ViewHierarchy view_hierarchy;
 
-  // TODO(https://crbug.com/1278249): Use actual screen resolution.
-  // As root's |relative_bounding_box| is relative to the outside container,
-  // we can assume it as resolution now.
-  float screen_width = -1;
-  float screen_height = -1;
-  for (auto& node : snapshot.nodes) {
-    if (node.id != snapshot.root_id)
-      continue;
-    screen_width = node.relative_bounds.bounds.width();
-    screen_height = node.relative_bounds.bounds.height();
-    break;
-  }
-  VLOG(2) << "Assumed screen size for Screen2x: " << screen_width << " x "
-          << screen_height;
+  // Screen2x requires the nodes to come in PRE-ORDER, and have only positive
+  // ids. |nodes_order| will specify the new order of the nodes, i.e.
+  // nodes_order[X] will tell which index in |snapshot.nodes| will be the new
+  // Xth node in the proto that is sent to Screen2x. Screen2x also requires that
+  // the node at position X would have id X.
+  std::vector<int> nodes_order;
 
-  // TODO(https://crbug.com/1278249): Screen2x requires id 0 for the root, and
-  // -1 as no-parent indicator. Consider just using the type and ignoring the id
-  // value for detecting root.
-  std::map<int, int> chrome_to_screen2x_ids;
-  int last_used_id = 0;
-  // A map for finding parents faster.
-  std::map<int, int> child_to_parent_map;
-  for (auto& node : snapshot.nodes) {
-    int ax_node_id = static_cast<int>(node.id);
-    if (node.id == snapshot.root_id)
-      chrome_to_screen2x_ids[ax_node_id] = 0;
-    else
-      chrome_to_screen2x_ids[ax_node_id] = ++last_used_id;
+  // A map for fast access from AXNode.id to position in |snapshot.nodex|.
+  std::map<int, int> id_to_position;
 
+  // A map for fast access from AXNode.id of a child node to its parent node.
+  std::map<int, int> child_id_to_parent_id;
+
+  // The new id for each node id in |snapshot.nodes|.
+  std::map<int, int> new_id;
+
+  int snapshot_width = -1;
+  int snapshot_height = -1;
+  int root_index = -1;
+
+  for (size_t i = 0; i < snapshot.nodes.size(); i++) {
+    const ui::AXNodeData& node = snapshot.nodes[i];
+
+    id_to_position[static_cast<int>(node.id)] = static_cast<int>(i);
     for (int32_t child_id : node.child_ids)
-      child_to_parent_map[child_id] = chrome_to_screen2x_ids[ax_node_id];
+      child_id_to_parent_id[child_id] = static_cast<int>(node.id);
+
+    // Set root as the first node and take its size as snapshot size.
+    if (node.id == snapshot.root_id) {
+      root_index = i;
+      snapshot_width = node.relative_bounds.bounds.width();
+      snapshot_height = node.relative_bounds.bounds.height();
+    }
   }
 
-  for (auto& node : snapshot.nodes) {
+  DCHECK_NE(root_index, -1) << "Root not found.";
+  AddSubTree(snapshot.nodes, id_to_position, nodes_order, root_index);
+
+  for (int i = 0; i < static_cast<int>(nodes_order.size()); i++)
+    new_id[snapshot.nodes[nodes_order[i]].id] = i;
+
+  for (int node_index : nodes_order) {
+    const ui::AXNodeData& node = snapshot.nodes[node_index];
+    int ax_node_id = static_cast<int>(node.id);
+
     screenai::UiElement* uie = view_hierarchy.add_ui_elements();
     screenai::UiElementAttribute* attrib = nullptr;
-    int ax_node_id = static_cast<int>(node.id);
+
+    // ID.
+    uie->set_id(new_id[ax_node_id]);
 
     // Text.
     attrib = uie->add_attributes();
@@ -132,7 +159,7 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
     attrib->set_name("chrome_role");
     attrib->set_string_value(ui::ToString(node.role));
 
-    // AxNode ID.
+    // AXNode ID.
     attrib = uie->add_attributes();
     attrib->set_name("/axnode/node_id");
     attrib->set_int_value(ax_node_id);
@@ -142,33 +169,33 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
       attrib = uie->add_attributes();
       attrib->set_name("/axnode/child_ids");
       attrib->set_int_value(id);
-      uie->add_child_ids(chrome_to_screen2x_ids[id]);
+      uie->add_child_ids(new_id[id]);
     }
 
-    // ID, Type, and parent.
-    uie->set_id(chrome_to_screen2x_ids[ax_node_id]);
+    // Type and parent.
     if (node.id == snapshot.root_id) {
-      uie->set_parent_id(-1);
       uie->set_type(screenai::UiElementType::ROOT);
+      uie->set_parent_id(-1);
     } else {
-      uie->set_parent_id(child_to_parent_map[ax_node_id]);
       uie->set_type(screenai::UiElementType::VIEW);
+      uie->set_parent_id(new_id[child_id_to_parent_id[ax_node_id]]);
     }
 
     // Bounding Box.
+    // These values are relative to the container position and not to the
+    // actual top-left of the screen. Screen2x is fine with that.
     uie->mutable_bounding_box()->set_top(node.relative_bounds.bounds.y() /
-                                         screen_height);
+                                         snapshot_height);
     uie->mutable_bounding_box()->set_left(node.relative_bounds.bounds.x() /
-                                          screen_width);
+                                          snapshot_width);
     uie->mutable_bounding_box()->set_bottom(
-        node.relative_bounds.bounds.bottom() / screen_height);
+        node.relative_bounds.bounds.bottom() / snapshot_height);
     uie->mutable_bounding_box()->set_right(node.relative_bounds.bounds.right() /
-                                           screen_width);
+                                           snapshot_width);
 
     // Bounding Box Pixels.
-    // TODO(https://crbug.com/1278249): These values are relative to the
-    // container position and not to the actual top-left of the screen. Consider
-    // getting the container position and update based on that.
+    // These values are relative to the container position and not to the
+    // actual top-left of the screen. Screen2x is fine with that.
     uie->mutable_bounding_box_pixels()->set_top(
         node.relative_bounds.bounds.y());
     uie->mutable_bounding_box_pixels()->set_left(
@@ -177,6 +204,10 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
         node.relative_bounds.bounds.bottom());
     uie->mutable_bounding_box_pixels()->set_right(
         node.relative_bounds.bounds.right());
+
+    // Ensure all |relative_bound| values are relative to the root.
+    DCHECK(node.relative_bounds.offset_container_id ==
+           snapshot.nodes[root_index].relative_bounds.offset_container_id);
 
     // TODO(https://crbug.com/1278249): Add non-essential values.
   }
