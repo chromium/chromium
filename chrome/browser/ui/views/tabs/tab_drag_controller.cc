@@ -2235,6 +2235,8 @@ void TabDragController::AdjustBrowserAndTabBoundsForDrag(
 
   // If the new tabstrip region is smaller than the old, resize the tabs.
   if (dragged_context_width < tab_area_width) {
+    // TODO(https://crbug.com/1324577): Fix the case where the source window
+    // spans two monitors horizontally, and IsRTL is true.
     const float leading_ratio =
         drag_bounds->front().x() / static_cast<float>(tab_area_width);
     *drag_bounds =
@@ -2251,11 +2253,22 @@ void TabDragController::AdjustBrowserAndTabBoundsForDrag(
     // Reposition the restored window such that the tab that was dragged remains
     // under the mouse cursor.
     gfx::Rect tab_bounds = (*drag_bounds)[source_view_index_];
+    int tab_bounds_x = tab_bounds.x();
+    if (source_context_) {
+      tab_bounds_x =
+          source_context_->AsView()->GetMirroredXInView(tab_bounds.x());
+    }
+    // `source_context_` can be null, e.g., if you drag the only tab in a window
+    // into another window's tab strip and then back out, in one continuous
+    // drag.
+    if (!source_context_ && base::i18n::IsRTL())
+      tab_bounds_x = tab_area_width - tab_bounds.x();
+
+    int tab_width_offset =
+        base::ClampRound(tab_bounds.width() * offset_to_width_ratio_);
     gfx::Point offset(
-        base::ClampRound(tab_bounds.width() * offset_to_width_ratio_) +
-            tab_bounds.x(),
+        base::i18n::IsRTL() ? tab_bounds_x : tab_bounds_x + tab_width_offset,
         0);
-    views::View::ConvertPointToWidget(attached_context_->AsView(), &offset);
     gfx::Rect bounds = GetAttachedBrowserWidget()->GetWindowBoundsInScreen();
     bounds.set_x(point_in_screen.x() - offset.x());
     GetAttachedBrowserWidget()->SetBounds(bounds);
