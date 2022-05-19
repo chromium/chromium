@@ -216,8 +216,7 @@ void AutocompleteResult::TransferOldMatches(
   SortAndCull(input, template_url_service);
 }
 
-void AutocompleteResult::AppendMatches(const AutocompleteInput& input,
-                                       const ACMatches& matches) {
+void AutocompleteResult::AppendMatches(const ACMatches& matches) {
   for (const auto& match : matches) {
     DCHECK_EQ(AutocompleteMatch::SanitizeString(match.contents),
               match.contents);

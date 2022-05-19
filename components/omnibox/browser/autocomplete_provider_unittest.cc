@@ -610,7 +610,7 @@ void AutocompleteProviderTest::RunKeywordTest(const std::u16string& input,
   autocomplete_input.set_prefer_keyword(true);
   controller_->input_ = autocomplete_input;
   AutocompleteResult result;
-  result.AppendMatches(controller_->input_, matches);
+  result.AppendMatches(matches);
   controller_->UpdateAssociatedKeywords(&result);
   for (size_t j = 0; j < result.size(); ++j) {
     EXPECT_EQ(match_data[j].expected_associated_keyword,
@@ -635,7 +635,7 @@ void AutocompleteProviderTest::UpdateResultsWithHeaderTestData(
   add_zero_suggest_provider_headers_map(headers_data.headers_map);
 
   result_.Reset();
-  result_.AppendMatches(AutocompleteInput(), matches);
+  result_.AppendMatches(matches);
 
   // Update the result with the header information.
   controller_->UpdateHeaderInfoFromZeroSuggestProvider(&result_);
@@ -660,7 +660,7 @@ void AutocompleteProviderTest::RunAssistedQueryStatsTest(
     matches.push_back(match);
   }
   result_.Reset();
-  result_.AppendMatches(AutocompleteInput(), matches);
+  result_.AppendMatches(matches);
 
   // Update AQS.
   controller_->UpdateAssistedQueryStats(&result_);

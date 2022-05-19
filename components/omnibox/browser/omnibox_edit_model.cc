@@ -863,7 +863,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   ACMatches fake_single_entry_matches;
   fake_single_entry_matches.push_back(match);
   AutocompleteResult fake_single_entry_result;
-  fake_single_entry_result.AppendMatches(input_, fake_single_entry_matches);
+  fake_single_entry_result.AppendMatches(fake_single_entry_matches);
 
   OmniboxLog log(
       input_.focus_type() != OmniboxFocusType::DEFAULT ? std::u16string()

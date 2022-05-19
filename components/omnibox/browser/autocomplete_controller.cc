@@ -770,7 +770,7 @@ void AutocompleteController::UpdateResult(
   old_matches_to_reuse.Swap(&result_);
 
   for (const auto& provider : providers_)
-    result_.AppendMatches(input_, provider->matches());
+    result_.AppendMatches(provider->matches());
 
   bool perform_tab_match = true;
 #if BUILDFLAG(IS_ANDROID)

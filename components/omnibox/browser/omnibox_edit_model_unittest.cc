@@ -641,7 +641,7 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLine) {
   auto* result = &model()->autocomplete_controller()->result_;
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_TRUE(model()->IsPopupSelectionOnInitialLine());
@@ -663,7 +663,7 @@ TEST_F(OmniboxEditModelPopupTest, SetSelectedLineWithNoDefaultMatches) {
   auto* result = &model()->autocomplete_controller()->result_;
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->SortAndCull(input, nullptr);
 
   model()->OnPopupResultChanged();
@@ -695,7 +695,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupPositionChanging) {
   auto* result = &model()->autocomplete_controller()->result_;
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
@@ -739,7 +739,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   auto* result = &model()->autocomplete_controller()->result_;
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
@@ -821,7 +821,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   auto* result = &model()->autocomplete_controller()->result_;
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
@@ -887,7 +887,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   auto* result = &model()->autocomplete_controller()->result_;
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->MergeHeadersMap({{7, u"header"}});
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
@@ -954,7 +954,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   auto* result = &model()->autocomplete_controller()->result_;
   AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
                           TestSchemeClassifier());
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   model()->SetPopupSelection(Selection(0), true, false);
@@ -973,7 +973,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   // Give it a different name so not deduped.
   matches[0].contents = u"match2.com";
   matches[0].destination_url = GURL("http://match2.com");
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(Selection::FOCUSED_BUTTON_TAB_SWITCH,
@@ -990,7 +990,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   matches[0].relevance = 999;
   matches[0].contents = u"match3.com";
   matches[0].destination_url = GURL("http://match3.com");
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0U, model()->GetPopupSelection().line);
@@ -1003,7 +1003,7 @@ TEST_F(OmniboxEditModelPopupTest, TestFocusFixing) {
   matches[0].relevance = 1100;
   matches[0].contents = u"match4.com";
   matches[0].destination_url = GURL("http://match4.com");
-  result->AppendMatches(input, matches);
+  result->AppendMatches(matches);
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0U, model()->GetPopupSelection().line);

@@ -104,7 +104,7 @@ class HistClustersActionTest : public testing::Test {
                                         HistoryClustersService* service,
                                         TestingPrefServiceSimple* prefs) {
     AutocompleteResult result;
-    result.AppendMatches({}, CreateACMatches(matches_data));
+    result.AppendMatches(CreateACMatches(matches_data));
 
     AttachHistoryClustersActions(service, prefs, result);
 

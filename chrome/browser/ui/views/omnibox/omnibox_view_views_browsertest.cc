@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag) {
   matches.push_back(match);
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle) {
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_current_url(GURL("http://autocomplete-result/"));
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
   matches.push_back(match);
   AutocompleteInput input(u"g", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   matches.push_back(match);
   AutocompleteInput input(u"e", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(
       input, TemplateURLServiceFactory::GetForProfile(browser()->profile()));
 

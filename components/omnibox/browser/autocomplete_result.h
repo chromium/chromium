@@ -94,11 +94,8 @@ class AutocompleteResult {
                           AutocompleteResult* old_matches,
                           TemplateURLService* template_url_service);
 
-  // Adds a new set of matches to the result set.  Does not re-sort.  Calls
-  // PossiblySwapContentsAndDescriptionForURLSuggestion(input) on all added
-  // matches; see comments there for more information.
-  void AppendMatches(const AutocompleteInput& input,
-                     const ACMatches& matches);
+  // Adds a new set of matches to the result set.  Does not re-sort.
+  void AppendMatches(const ACMatches& matches);
 
   // Removes duplicates, puts the list in sorted order and culls to leave only
   // the best GetMaxMatches() matches. Sets the default match to the best match

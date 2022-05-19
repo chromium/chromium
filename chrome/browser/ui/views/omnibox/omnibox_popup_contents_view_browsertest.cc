@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   match.contents = u"https://foobarbaz.com";
   match.description = u"FooBarBazCom";
   matches.push_back(match);
-  controller->result_.AppendMatches(controller->input_, matches);
+  controller->result_.AppendMatches(matches);
   popup_view()->UpdatePopupAppearance();
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
 
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   match.description = u"The Foo Of All Bars";
   match.has_tab_match = true;
   matches.push_back(match);
-  controller->result_.AppendMatches(controller->input_, matches);
+  controller->result_.AppendMatches(matches);
   popup_view()->UpdatePopupAppearance();
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
@@ -617,11 +617,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   AutocompleteResult& results = autocomplete_controller->result_;
   ACMatches matches;
   matches.push_back(match);
-  results.AppendMatches(input, matches);
+  results.AppendMatches(matches);
   results.SortAndCull(input, nullptr);
   autocomplete_controller->NotifyChanged(true);
 
-  // Lets check that arrowing up and down emits the event.
+  // Check that arrowing up and down emits the event.
   TestAXEventObserver observer;
   EXPECT_EQ(observer.selected_children_changed_count(), 0);
   EXPECT_EQ(observer.selection_changed_count(), 0);
