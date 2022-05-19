@@ -57,22 +57,11 @@ uint32_t CalculatePrivateFootprintKb(const mojom::RawOSMemDump& os_dump,
   uint64_t vm_swap_bytes = os_dump.platform_private_footprint->vm_swap_bytes;
   return (rss_anon_bytes + vm_swap_bytes) / 1024;
 #elif BUILDFLAG(IS_MAC)
-  if (base::mac::IsAtLeastOS10_12()) {
-    uint64_t phys_footprint_bytes =
-        os_dump.platform_private_footprint->phys_footprint_bytes;
-    return base::saturated_cast<uint32_t>(
-        base::saturated_cast<int32_t>(phys_footprint_bytes / 1024) -
-        base::saturated_cast<int32_t>(shared_resident_kb));
-  } else {
-    uint64_t internal_bytes =
-        os_dump.platform_private_footprint->internal_bytes;
-    uint64_t compressed_bytes =
-        os_dump.platform_private_footprint->compressed_bytes;
-    return base::saturated_cast<uint32_t>(
-        base::saturated_cast<int32_t>((internal_bytes + compressed_bytes) /
-                                      1024) -
-        base::saturated_cast<int32_t>(shared_resident_kb));
-  }
+  uint64_t phys_footprint_bytes =
+      os_dump.platform_private_footprint->phys_footprint_bytes;
+  return base::saturated_cast<uint32_t>(
+      base::saturated_cast<int32_t>(phys_footprint_bytes / 1024) -
+      base::saturated_cast<int32_t>(shared_resident_kb));
 #elif BUILDFLAG(IS_WIN)
   return base::saturated_cast<int32_t>(
       os_dump.platform_private_footprint->private_bytes / 1024);
