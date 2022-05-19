@@ -222,17 +222,9 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     }
 
     scoped_refptr<DrmDevice> drm = display->drm();
-
-    VLOG(1) << "DRM configuring: device=" << drm->device_path().value()
-            << " crtc=" << display->crtc()
-            << " connector=" << display->connector()
-            << " origin=" << config.origin.ToString() << " size="
-            << (mode_ptr ? ModeSize(*(mode_ptr.get())).ToString() : "0x0")
-            << " refresh_rate=" << (mode_ptr ? mode_ptr->vrefresh : 0) << "Hz";
-
     ScreenManager::ControllerConfigParams params(
         display->display_id(), drm, display->crtc(), display->connector(),
-        config.origin, std::move(mode_ptr));
+        config.origin, std::move(mode_ptr), display->base_connector_id());
     controllers_to_configure.push_back(std::move(params));
   }
 
@@ -246,17 +238,6 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
   for (const auto& controller : controllers_to_configure) {
     if (config_success) {
       FindDisplay(controller.display_id)->SetOrigin(controller.origin);
-    } else {
-      if (controller.mode) {
-        VLOG(1) << "Failed to enable device="
-                << controller.drm->device_path().value()
-                << " crtc=" << controller.crtc
-                << " connector=" << controller.connector;
-      } else {
-        VLOG(1) << "Failed to disable device="
-                << controller.drm->device_path().value()
-                << " crtc=" << controller.crtc;
-      }
     }
   }
 

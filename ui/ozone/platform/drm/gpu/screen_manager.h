@@ -39,7 +39,8 @@ class ScreenManager {
                            uint32_t crtc,
                            uint32_t connector,
                            gfx::Point origin,
-                           std::unique_ptr<drmModeModeInfo> pmode);
+                           std::unique_ptr<drmModeModeInfo> pmode,
+                           uint64_t base_connector_id = 0);
     ControllerConfigParams(const ControllerConfigParams& other);
     ControllerConfigParams(ControllerConfigParams&& other);
     ~ControllerConfigParams();
@@ -48,6 +49,7 @@ class ScreenManager {
     const scoped_refptr<DrmDevice> drm;
     const uint32_t crtc;
     const uint32_t connector;
+    const uint64_t base_connector_id;
     const gfx::Point origin;
     std::unique_ptr<drmModeModeInfo> mode;
   };
