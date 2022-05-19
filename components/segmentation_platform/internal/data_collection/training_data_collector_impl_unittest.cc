@@ -135,6 +135,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     auto model_update_time = clock()->Now() - base::Days(365);
     segment_info->set_model_update_time_s(
         model_update_time.ToDeltaSinceWindowsEpoch().InSeconds());
+    auto* prediction_result = segment_info->mutable_prediction_result();
+    prediction_result->set_result(0.6);
     return segment_info;
   }
 
@@ -332,13 +334,15 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
        Segmentation_ModelExecution::kModelVersionName,
        Segmentation_ModelExecution::kInput0Name,
        Segmentation_ModelExecution::kPredictionResultName,
+       Segmentation_ModelExecution::kSelectionResultName,
        Segmentation_ModelExecution::kOutputDelaySecName,
        Segmentation_ModelExecution::kActualResultName,
        Segmentation_ModelExecution::kActualResult2Name},
       {kTestOptimizationTarget0, kModelVersion,
        SegmentationUkmHelper::FloatToInt64(1.f),
-       SegmentationUkmHelper::FloatToInt64(5.f), base::Days(1).InSeconds(),
-       SegmentationUkmHelper::FloatToInt64(2.f),
+       SegmentationUkmHelper::FloatToInt64(0.6f),
+       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+       base::Days(1).InSeconds(), SegmentationUkmHelper::FloatToInt64(2.f),
        SegmentationUkmHelper::FloatToInt64(3.f)});
 }
 

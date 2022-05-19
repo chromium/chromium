@@ -19,6 +19,7 @@ class Segmentation_ModelExecution;
 }  // namespace ukm::builders
 
 namespace segmentation_platform {
+struct SelectedSegment;
 
 // A helper class to record segmentation model execution results in UKM.
 class SegmentationUkmHelper {
@@ -36,10 +37,13 @@ class SegmentationUkmHelper {
       float result);
 
   // Record segmentation model training data as UKM message.
-  // |input_tensors| contains the values for training inputs.
-  // |outputs| contains the values for outputs.
-  // |output_indexes| contains the indexes for outputs that needs to be included
+  // `input_tensors` contains the values for training inputs.
+  // `outputs` contains the values for outputs.
+  // `output_indexes` contains the indexes for outputs that needs to be included
   // in the ukm message.
+  // `prediction_result` is the most recent model execution result.
+  // `selected_segment` is the recently selected segment for the feature that is
+  // tied to the ML model.
   // Return the UKM source ID.
   ukm::SourceId RecordTrainingData(
       OptimizationTarget segment_id,
@@ -47,7 +51,8 @@ class SegmentationUkmHelper {
       const std::vector<float>& input_tensors,
       const std::vector<float>& outputs,
       const std::vector<int>& output_indexes,
-      const absl::optional<proto::PredictionResult>& prediction_result);
+      absl::optional<proto::PredictionResult> prediction_result,
+      absl::optional<SelectedSegment> selected_segment);
 
   // Helper method to encode a float number into int64.
   static int64_t FloatToInt64(float f);

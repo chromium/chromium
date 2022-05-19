@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
@@ -125,7 +126,8 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
     const std::vector<float>& input_tensor,
     const std::vector<float>& outputs,
     const std::vector<int>& output_indexes,
-    const absl::optional<proto::PredictionResult>& prediction_result) {
+    absl::optional<proto::PredictionResult> prediction_result,
+    absl::optional<SelectedSegment> selected_segment) {
   ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Segmentation_ModelExecution execution_result(source_id);
   if (!AddInputsToUkm(&execution_result, segment_id, model_version,
@@ -140,11 +142,13 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
   if (prediction_result.has_value()) {
     execution_result.SetPredictionResult(
         FloatToInt64(prediction_result->result()));
-    base::Time execution_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(prediction_result->timestamp_us()));
-    execution_result.SetOutputDelaySec(
-        (base::Time::Now() - execution_time).InSeconds());
   }
+  if (selected_segment.has_value()) {
+    execution_result.SetSelectionResult(selected_segment->segment_id);
+    execution_result.SetOutputDelaySec(
+        (base::Time::Now() - selected_segment->selection_time).InSeconds());
+  }
+
   execution_result.Record(ukm::UkmRecorder::Get());
   return source_id;
 }

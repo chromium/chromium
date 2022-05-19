@@ -292,19 +292,6 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
   // the segment selection result, rather than model result.
   std::string segmentation_key =
       GetSegmentationKey(configs_, segment_info.segment_id());
-  absl::optional<proto::PredictionResult> result;
-  auto selected_segment =
-      result_prefs_->ReadSegmentationResultFromPref(segmentation_key);
-  if (selected_segment.has_value()) {
-    DCHECK(!segmentation_key.empty());
-    proto::PredictionResult prediction_result;
-    prediction_result.set_result(
-        static_cast<int>(selected_segment->segment_id));
-    prediction_result.set_timestamp_us(
-        selected_segment->selection_time.ToDeltaSinceWindowsEpoch()
-            .InMicroseconds());
-    result = prediction_result;
-  }
 
   std::vector<int> output_indexes;
   if (param.has_value()) {
@@ -319,7 +306,8 @@ void TrainingDataCollectorImpl::OnGetTrainingTensors(
       segment_info.segment_id(), segment_info.model_version(), input_tensors,
       param.has_value() ? std::vector<float>{param->output_value}
                         : output_tensors,
-      output_indexes, result);
+      output_indexes, segment_info.prediction_result(),
+      result_prefs_->ReadSegmentationResultFromPref(segmentation_key));
   if (ukm_source_id == ukm::kInvalidSourceId) {
     VLOG(1) << "Failed to collect training data for segment:"
             << segment_info.segment_id();
