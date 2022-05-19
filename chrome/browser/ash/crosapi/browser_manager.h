@@ -165,9 +165,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // mode is enabled.
   void NewGuestWindow();
 
-  // Similar to NewWindow(), but opens a tab, instead.
-  // See crosapi::mojom::BrowserService::NewTab for more details
-  void NewTab();
+  // Similar to NewWindow(), but opens a tab instead if there already is a
+  // window. See crosapi::mojom::BrowserService::NewTab for more details.
+  void NewTab(bool should_trigger_session_restore);
 
   // Opens the specified URL in lacros-chrome. If it is not running,
   // it launches lacros-chrome with the given URL.

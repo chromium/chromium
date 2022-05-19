@@ -95,7 +95,8 @@ CrosapiNewWindowDelegate::CrosapiNewWindowDelegate(
 CrosapiNewWindowDelegate::~CrosapiNewWindowDelegate() = default;
 
 void CrosapiNewWindowDelegate::NewTab() {
-  crosapi::BrowserManager::Get()->NewTab();
+  crosapi::BrowserManager::Get()->NewTab(
+      /*should_trigger_session_restore=*/false);
 }
 
 void CrosapiNewWindowDelegate::NewWindow(bool incognito,

@@ -592,12 +592,13 @@ void BrowserManager::NewGuestWindow() {
   browser_service_->service->NewGuestWindow(base::DoNothing());
 }
 
-void BrowserManager::NewTab() {
+void BrowserManager::NewTab(bool should_trigger_session_restore) {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
-      mojom::InitialBrowserAction::kOpenNewTabPageWindow));
+      should_trigger_session_restore
+          ? mojom::InitialBrowserAction::kUseStartupPreference
+          : mojom::InitialBrowserAction::kOpenNewTabPageWindow));
   if (result != MaybeStartResult::kRunning)
     return;
-
   if (!browser_service_.has_value()) {
     LOG(ERROR) << "BrowserService was disconnected";
     return;
