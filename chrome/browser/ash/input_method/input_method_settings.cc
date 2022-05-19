@@ -96,8 +96,7 @@ std::string GetPrefKeyForEngineId(const std::string& engine_id) {
 mojom::LatinSettingsPtr CreateLatinSettings(
     const base::Value& input_method_specific_pref,
     const PrefService& prefs,
-    const std::string& engine_id,
-    const InputFieldContext& context) {
+    const std::string& engine_id) {
   auto settings = mojom::LatinSettings::New();
   settings->autocorrect =
       base::StartsWith(engine_id, "experimental_",
@@ -106,11 +105,9 @@ mojom::LatinSettingsPtr CreateLatinSettings(
       input_method_specific_pref
               .FindIntKey("physicalKeyboardAutoCorrectionLevel")
               .value_or(0) > 0;
-  // TODO(crbug.com/1263335): This should only look at the prefs and not the
-  // input field context.
   settings->predictive_writing =
-      context.multiword_enabled && context.multiword_allowed &&
-      !context.lacros_enabled &&
+      features::IsAssistiveMultiWordEnabled() &&
+      !base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport) &&
       prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
       IsUsEnglishEngine(engine_id);
   return settings;
@@ -251,8 +248,7 @@ mojom::ZhuyinSettingsPtr CreateZhuyinSettings(
 
 mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
-    const std::string& engine_id,
-    const InputFieldContext& context) {
+    const std::string& engine_id) {
   // All input method settings are stored in a single pref whose value is a
   // dictionary.
   const base::Value& all_input_method_pref =
@@ -275,8 +271,8 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
                                          : empty_value;
 
   if (IsFstEngine(engine_id)) {
-    return mojom::InputMethodSettings::NewLatinSettings(CreateLatinSettings(
-        input_method_specific_pref, prefs, engine_id, context));
+    return mojom::InputMethodSettings::NewLatinSettings(
+        CreateLatinSettings(input_method_specific_pref, prefs, engine_id));
   }
   if (IsKoreanEngine(engine_id)) {
     return mojom::InputMethodSettings::NewKoreanSettings(

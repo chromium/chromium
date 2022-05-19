@@ -50,6 +50,12 @@ namespace {
 
 namespace mojom = ::ash::ime::mojom;
 
+struct InputFieldContext {
+  bool lacros_enabled = false;
+  bool multiword_enabled = false;
+  bool multiword_allowed = false;
+};
+
 // These are persisted to logs. Entries should not be renumbered. Numeric values
 // should not be reused. Must stay in sync with IMENonAutocorrectDiacriticStatus
 // enum in: tools/metrics/histograms/enums.xml
@@ -596,7 +602,7 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
   host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
 
   ime::mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(*prefs_, engine_id, InputFieldContext{});
+      CreateSettingsFromPrefs(*prefs_, engine_id);
   connection_factory_->ConnectToInputMethod(
       engine_id, input_method_.BindNewEndpointAndPassReceiver(),
       std::move(input_method_host), std::move(settings),
@@ -707,17 +713,17 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
     return;
   }
 
+  // TODO(b/200611333): Make input_method_->OnFocus return the overriding
+  // XKB layout instead of having the logic here in Chromium.
+  ime::mojom::InputMethodSettingsPtr settings =
+      CreateSettingsFromPrefs(*prefs_, engine_id);
+  OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
+                            settings);
+
   InputFieldContext input_field_context =
       features::IsAssistiveMultiWordEnabled()
           ? CreateInputFieldContext(enabled_suggestions)
           : InputFieldContext{};
-  // TODO(b/200611333): Make input_method_->OnFocus return the overriding
-  // XKB layout instead of having the logic here in Chromium.
-  ime::mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(*prefs_, engine_id, input_field_context);
-  OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
-                            settings);
-
   const bool is_normal_screen =
       InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
       InputMethodManager::UIStyle::kNormal;

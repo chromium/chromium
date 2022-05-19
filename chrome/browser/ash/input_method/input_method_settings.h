@@ -11,18 +11,9 @@
 namespace ash {
 namespace input_method {
 
-struct InputFieldContext {
-  bool lacros_enabled = false;
-  bool multiword_enabled = false;
-  bool multiword_allowed = false;
-};
-
-// TODO(crbug.com/1263335): Remove `context` once input method settings are no
-// longer dependent on the current input field.
 ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
-    const std::string& engine_id,
-    const InputFieldContext& context);
+    const std::string& engine_id);
 
 }  // namespace input_method
 }  // namespace ash

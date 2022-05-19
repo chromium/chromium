@@ -38,8 +38,7 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsDefault) {
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kUsEnglishEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
@@ -59,13 +58,12 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
   prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
                                         true);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kUsEnglishEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
   EXPECT_TRUE(latin_settings.autocorrect);
-  EXPECT_FALSE(latin_settings.predictive_writing);
+  EXPECT_TRUE(latin_settings.predictive_writing);
 }
 
 TEST(CreateSettingsFromPrefsTest,
@@ -78,12 +76,7 @@ TEST(CreateSettingsFromPrefsTest,
   prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
                                         true);
 
-  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId,
-                                                InputFieldContext{
-                                                    .lacros_enabled = false,
-                                                    .multiword_enabled = true,
-                                                    .multiword_allowed = true,
-                                                });
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
@@ -92,41 +85,15 @@ TEST(CreateSettingsFromPrefsTest,
 
 TEST(CreateSettingsFromPrefsTest, PredictiveWritingDisabledWhenLacrosEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAssistMultiWord}, {});
+  features.InitWithFeatures(
+      {features::kAssistMultiWord, features::kLacrosSupport}, {});
   TestingPrefServiceSimple prefs;
   base::DictionaryValue dict;
   RegisterTestingPrefs(prefs, dict);
   prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
                                         true);
 
-  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId,
-                                                InputFieldContext{
-                                                    .lacros_enabled = true,
-                                                    .multiword_enabled = true,
-                                                    .multiword_allowed = true,
-                                                });
-
-  ASSERT_TRUE(settings->is_latin_settings());
-  const auto& latin_settings = *settings->get_latin_settings();
-  EXPECT_FALSE(latin_settings.predictive_writing);
-}
-
-TEST(CreateSettingsFromPrefsTest,
-     PredictiveWritingDisabledWhenMultiwordNotAllowed) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAssistMultiWord}, {});
-  TestingPrefServiceSimple prefs;
-  base::DictionaryValue dict;
-  RegisterTestingPrefs(prefs, dict);
-  prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
-                                        true);
-
-  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId,
-                                                InputFieldContext{
-                                                    .lacros_enabled = false,
-                                                    .multiword_enabled = true,
-                                                    .multiword_allowed = false,
-                                                });
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
@@ -136,19 +103,14 @@ TEST(CreateSettingsFromPrefsTest,
 TEST(CreateSettingsFromPrefsTest,
      PredictiveWritingDisabledWhenMultiwordDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAssistMultiWord}, {});
+  features.InitWithFeatures({}, {features::kAssistMultiWord});
   TestingPrefServiceSimple prefs;
   base::DictionaryValue dict;
   RegisterTestingPrefs(prefs, dict);
   prefs.registry()->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled,
                                         true);
 
-  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId,
-                                                InputFieldContext{
-                                                    .lacros_enabled = false,
-                                                    .multiword_enabled = false,
-                                                    .multiword_allowed = true,
-                                                });
+  const auto settings = CreateSettingsFromPrefs(prefs, kUsEnglishEngineId);
 
   ASSERT_TRUE(settings->is_latin_settings());
   const auto& latin_settings = *settings->get_latin_settings();
@@ -160,8 +122,7 @@ TEST(CreateSettingsFromPrefsTest, CreateKoreanSettingsDefault) {
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kKoreanEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kKoreanEngineId);
 
   ASSERT_TRUE(settings->is_korean_settings());
   const auto& korean_settings = *settings->get_korean_settings();
@@ -178,8 +139,7 @@ TEST(CreateSettingsFromPrefsTest, CreateKoreanSettings) {
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kKoreanEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kKoreanEngineId);
 
   ASSERT_TRUE(settings->is_korean_settings());
   const auto& korean_settings = *settings->get_korean_settings();
@@ -192,8 +152,7 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettingsDefault) {
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kPinyinEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kPinyinEngineId);
 
   ASSERT_TRUE(settings->is_pinyin_settings());
   const auto& pinyin_settings = *settings->get_pinyin_settings();
@@ -233,8 +192,7 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kPinyinEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kPinyinEngineId);
 
   ASSERT_TRUE(settings->is_pinyin_settings());
   const auto& pinyin_settings = *settings->get_pinyin_settings();
@@ -265,8 +223,7 @@ TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettingsDefault) {
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kZhuyinEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kZhuyinEngineId);
 
   ASSERT_TRUE(settings->is_zhuyin_settings());
   const auto& zhuyin_settings = *settings->get_zhuyin_settings();
@@ -284,8 +241,7 @@ TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
-  const auto settings =
-      CreateSettingsFromPrefs(prefs, kZhuyinEngineId, InputFieldContext{});
+  const auto settings = CreateSettingsFromPrefs(prefs, kZhuyinEngineId);
 
   ASSERT_TRUE(settings->is_zhuyin_settings());
   const auto& zhuyin_settings = *settings->get_zhuyin_settings();

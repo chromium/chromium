@@ -655,7 +655,7 @@ TEST_F(
                         *ime::mojom::InputMethodSettings::NewLatinSettings(
                             ime::mojom::LatinSettings::New(
                                 /*autocorrect=*/true,
-                                /*predictive_writing=*/false)));
+                                /*predictive_writing=*/true)));
               std::move(callback).Run(true);
             }));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
