@@ -371,17 +371,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.TotalSize" units="KB" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    The total in-memory size in KB of finished blobs. Recorded in
-    BlobStorageContext when the blob is finished being created. This can include
-    memory that is shared with other blobs or memory from repeated internal
-    items.
-  </summary>
-</histogram>
-
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
     units="ms" expires_after="2023-01-01">
   <owner>asully@chromium.org</owner>
