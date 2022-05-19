@@ -118,11 +118,11 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.ShadowPredictions.SourcePair">
-  <variant name="ExperimentalToDefaultHeuristics"
+  <variant name="ExperimentalToDefault"
       summary="the heuristics being rolled out, the default heuristics"/>
-  <variant name="NextGenToDefaultHeuristics"
+  <variant name="NextGenToDefault"
       summary="the next-gen heuristics, the default heuristics"/>
-  <variant name="NextGenToExperimentalHeuristics"
+  <variant name="NextGenToExperimental"
       summary="the next-gen heuristics, the experimental heuristics"/>
 </variants>
 
