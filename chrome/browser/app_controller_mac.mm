@@ -10,15 +10,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/allocator/allocator_shim.h"
-#include "base/allocator/buildflags.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
@@ -517,34 +514,6 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   ProfileManager* const profile_manager_;
   AppController* const app_controller_;  // Weak; owns us.
 };
-
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-// On macOS 10.12, the IME system attempts to allocate a 2^64 size buffer,
-// which would typically cause an OOM crash. To avoid this, the problematic
-// method is swizzled out and the make-OOM-fatal bit is disabled for the
-// duration of the original call. https://crbug.com/654695
-static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
-
-@interface OOMDisabledIMKInputSession : NSObject
-@end
-
-@implementation OOMDisabledIMKInputSession
-
-- (void)_coreAttributesFromRange:(NSRange)range
-                 whichAttributes:(long long)attributes
-               completionHandler:(void (^)(void))block {
-  // The allocator flag is per-process, so other threads may temporarily
-  // not have fatal OOM occur while this method executes, but it is better
-  // than crashing when using IME.
-  base::allocator::SetCallNewHandlerOnMallocFailure(false);
-  g_swizzle_imk_input_session
-      ->InvokeOriginal<void, NSRange, long long, void (^)(void)>(
-          self, _cmd, range, attributes, block);
-  base::allocator::SetCallNewHandlerOnMallocFailure(true);
-}
-
-@end
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 @implementation AppController
 

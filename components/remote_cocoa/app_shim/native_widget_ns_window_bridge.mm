@@ -1454,8 +1454,7 @@ void NativeWidgetNSWindowBridge::SetWindowTitle(const std::u16string& title) {
 }
 
 void NativeWidgetNSWindowBridge::ClearTouchBar() {
-  if ([bridged_view_ respondsToSelector:@selector(setTouchBar:)])
-    [bridged_view_ setTouchBar:nil];
+  [bridged_view_ setTouchBar:nil];
 }
 
 void NativeWidgetNSWindowBridge::UpdateTooltip() {
