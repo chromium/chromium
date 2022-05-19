@@ -882,7 +882,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 - (void)closeMediaPresentations {
-#if !TARGET_OS_MACCATALYST
   if (@available(iOS 15, *)) {
     [self.webView requestMediaPlaybackStateWithCompletionHandler:^(
                       WKMediaPlaybackState mediaPlaybackState) {
@@ -894,7 +893,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       }];
     }];
   }
-#endif
 }
 
 - (void)removeWebViewFromViewHierarchy {
@@ -942,7 +940,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return NO;
 }
 
-#if !TARGET_OS_MACCATALYST
 - (web::PermissionState)stateForPermission:(web::Permission)permission {
   WKMediaCaptureState captureState;
   switch (permission) {
@@ -996,22 +993,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         @([self stateForPermission:web::PermissionMicrophone])
   };
 }
-#else
-// Stub getter implementation for mac catalyst build.
-- (web::PermissionState)stateForPermission:(web::Permission)permission {
-  return web::PermissionStateNotAccessible;
-}
-
-// Stub setter implementation for mac catalyst build.
-- (void)setState:(web::PermissionState)state
-    forPermission:(web::Permission)permission {
-}
-
-// Stub implementation for mac catalyst build.
-- (NSDictionary<NSNumber*, NSNumber*>*)statesForAllPermissions {
-  return [NSDictionary dictionary];
-}
-#endif
 
 - (NSData*)sessionStateData {
   if (@available(iOS 15, *)) {
