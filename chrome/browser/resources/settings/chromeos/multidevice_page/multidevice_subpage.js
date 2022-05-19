@@ -201,8 +201,7 @@ Polymer({
       case PhoneHubFeatureAccessProhibitedReason.WORK_PROFILE:
         return this.i18n('multideviceNotificationAccessProhibitedTooltip');
       case PhoneHubFeatureAccessProhibitedReason.DISABLED_BY_PHONE_POLICY:
-        return this.i18n(
-            'multideviceNotificationAccessProhibitedDisabledByAdminTooltip');
+        return this.i18n('multideviceItemDisabledByPhoneAdminTooltip');
       default:
         return this.i18n('multideviceNotificationAccessProhibitedTooltip');
     }
@@ -215,7 +214,7 @@ Polymer({
     if (!this.isPhoneHubAppsAccessProhibited()) {
       return '';
     }
-    return this.i18n('multideviceAppsAccessProhibitedDisabledByAdminTooltip');
+    return this.i18n('multideviceItemDisabledByPhoneAdminTooltip');
   },
 
   /**
