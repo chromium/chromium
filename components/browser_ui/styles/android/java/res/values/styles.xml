@@ -23,8 +23,9 @@
         <item name="trackTintMode">src_in</item>
     </style>
     <style name="Widget.BrowserUI.Switch.Incognito" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/switch_thumb_tint_incognito</item>
+        <item name="thumbTint">@color/switch_thumb_tint_incognito_baseline_list</item>
         <item name="trackTint">@color/switch_track_tint_incognito_baseline_list</item>
+
     </style>
     <!-- TextInputLayout style -->
     <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
