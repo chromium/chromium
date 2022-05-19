@@ -321,6 +321,9 @@ crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWo
 # Failures on Mac FYI arm64 Release (Apple DTK)
 crbug.com/1175753 [ mac release apple-apple-m1 ] Pixel_Video_BackdropFilter [ Failure ]
 
+# Flaky timeout on Linux Intel
+crbug.com/1327482 [ linux display-server-x intel ] Pixel_CSS3DBlueBox [ RetryOnFailure ]
+
 # Flakily crashes on Lacros-like Linux configuration.
 crbug.com/1209344 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 crbug.com/1271184 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_Video_Context_Loss_MP4 [ RetryOnFailure ]
