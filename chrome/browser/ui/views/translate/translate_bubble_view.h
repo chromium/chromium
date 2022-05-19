@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -70,6 +71,11 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageDoneButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
 
+  TranslateBubbleView(views::View* anchor_view,
+                      std::unique_ptr<TranslateBubbleModel> model,
+                      translate::TranslateErrors::Type error_type,
+                      content::WebContents* web_contents);
+
   TranslateBubbleView(const TranslateBubbleView&) = delete;
   TranslateBubbleView& operator=(const TranslateBubbleView&) = delete;
 
@@ -113,7 +119,10 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   // Returns the current view state.
   TranslateBubbleModel::ViewState GetViewState() const;
 
- protected:
+  // Initialize the bubble in the correct view state when it is shown.
+  void SetViewState(translate::TranslateStep step,
+                    translate::TranslateErrors::Type error_type);
+
   // LocationBarBubbleDelegateView:
   void CloseBubble() override;
 
@@ -165,11 +174,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
                            AlwaysTranslateWithNeverTranslateSite);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            ShowOriginalUpdatesViewState);
-
-  TranslateBubbleView(views::View* anchor_view,
-                      std::unique_ptr<TranslateBubbleModel> model,
-                      translate::TranslateErrors::Type error_type,
-                      content::WebContents* web_contents);
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;

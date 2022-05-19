@@ -317,6 +317,16 @@ PartialTranslateBubbleView::GetViewState() const {
   return model_->GetViewState();
 }
 
+void PartialTranslateBubbleView::SetViewState(
+    PartialTranslateBubbleModel::ViewState view_state,
+    translate::TranslateErrors::Type error_type) {
+  if (view_state == PartialTranslateBubbleModel::VIEW_STATE_ERROR) {
+    SwitchToErrorView(error_type);
+  } else {
+    SwitchView(view_state);
+  }
+}
+
 PartialTranslateBubbleView::PartialTranslateBubbleView(
     views::View* anchor_view,
     std::unique_ptr<PartialTranslateBubbleModel> model,

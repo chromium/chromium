@@ -4901,6 +4901,8 @@ static_library("ui") {
       "views/touch_uma/touch_uma.h",
       "views/translate/partial_translate_bubble_view.cc",
       "views/translate/partial_translate_bubble_view.h",
+      "views/translate/translate_bubble_controller.cc",
+      "views/translate/translate_bubble_controller.h",
       "views/translate/translate_bubble_view.cc",
       "views/translate/translate_bubble_view.h",
       "views/translate/translate_icon_view.cc",

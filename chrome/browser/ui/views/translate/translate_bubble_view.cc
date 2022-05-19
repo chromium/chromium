@@ -510,6 +510,18 @@ TranslateBubbleModel::ViewState TranslateBubbleView::GetViewState() const {
   return model_->GetViewState();
 }
 
+void TranslateBubbleView::SetViewState(
+    translate::TranslateStep step,
+    translate::TranslateErrors::Type error_type) {
+  if (step == translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
+    SwitchToErrorView(error_type);
+  } else {
+    TranslateBubbleModel::ViewState state =
+        TranslateBubbleModelImpl::TranslateStepToViewState(step);
+    SwitchView(state);
+  }
+}
+
 TranslateBubbleView::TranslateBubbleView(
     views::View* anchor_view,
     std::unique_ptr<TranslateBubbleModel> model,
