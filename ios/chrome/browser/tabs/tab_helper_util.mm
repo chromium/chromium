@@ -150,9 +150,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
   SafeBrowsingUnsafeResourceContainer::CreateForWebState(web_state);
 
-  if (IsURLBlocklistEnabled()) {
-    PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
-  }
+  PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
 
   ImageFetchTabHelper::CreateForWebState(web_state);
 

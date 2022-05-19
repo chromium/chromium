@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_util.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -173,17 +172,15 @@ void AppLauncherTabHelper::ShouldAllowRequest(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  if (IsURLBlocklistEnabled()) {
-    // Do not allow allow navigation if URL is blocked by enterprise policy.
-    PolicyBlocklistService* blocklistService =
-        PolicyBlocklistServiceFactory::GetForBrowserState(
-            web_state()->GetBrowserState());
-    if (blocklistService->GetURLBlocklistState(request_url) ==
-        policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-      return std::move(callback).Run(
-          web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
-              policy_url_blocking_util::CreateBlockedUrlError()));
-    }
+  // Do not allow allow navigation if URL is blocked by enterprise policy.
+  PolicyBlocklistService* blocklistService =
+      PolicyBlocklistServiceFactory::GetForBrowserState(
+          web_state()->GetBrowserState());
+  if (blocklistService->GetURLBlocklistState(request_url) ==
+      policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
+            policy_url_blocking_util::CreateBlockedUrlError()));
   }
 
   // Disallow navigations to tel: URLs from cross-origin frames.

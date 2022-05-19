@@ -14,11 +14,4 @@ bool IsEnterprisePolicyEnabled();
 // policy data and make it user visible.
 bool ShouldInstallEnterprisePolicyHandlers();
 
-// Returns true if the URLBlocklist and URLAllowlist policy handlers should be
-// installed.
-bool ShouldInstallURLBlocklistPolicyHandlers();
-
-// Returns true if URLBlocklist/URLAllowlist enterprise policies are enabled.
-bool IsURLBlocklistEnabled();
-
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_FEATURES_H_

@@ -37,11 +37,3 @@ bool IsEnterprisePolicyEnabled() {
 bool ShouldInstallEnterprisePolicyHandlers() {
   return IsEnterprisePolicyEnabled();
 }
-
-bool ShouldInstallURLBlocklistPolicyHandlers() {
-  return HasSwitch(switches::kInstallURLBlocklistHandlers);
-}
-
-bool IsURLBlocklistEnabled() {
-  return ShouldInstallURLBlocklistPolicyHandlers();
-}
