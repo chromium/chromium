@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client_impl.h"
 
 #include <memory>
 #include <string>
@@ -88,9 +88,9 @@ bool ParseProtoFromFile(const base::FilePath& file_path,
 }  // namespace
 
 // The integer parameter represents the index of PSM test case.
-class PsmRlweDmserverClientTest : public testing::TestWithParam<int> {
+class PsmRlweDmserverClientImplTest : public testing::TestWithParam<int> {
  protected:
-  PsmRlweDmserverClientTest() {
+  PsmRlweDmserverClientImplTest() {
     // Create PSM test case, before PSM client to construct the
     // PSM RLWE testing client factory and its RLWE ID.
     CreatePsmTestCase();
@@ -99,7 +99,7 @@ class PsmRlweDmserverClientTest : public testing::TestWithParam<int> {
     CreateClient();
   }
 
-  ~PsmRlweDmserverClientTest() = default;
+  ~PsmRlweDmserverClientImplTest() = default;
 
   int GetPsmTestCaseIndex() const { return GetParam(); }
 
@@ -112,7 +112,7 @@ class PsmRlweDmserverClientTest : public testing::TestWithParam<int> {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
 
-    psm_client_ = std::make_unique<PsmRlweDmserverClient>(
+    psm_client_ = std::make_unique<PsmRlweDmserverClientImpl>(
         service_.get(), shared_url_loader_factory_,
         psm_rlwe_test_client_factory_.get(),
         testing_psm_rlwe_id_provider_.get());
@@ -266,9 +266,9 @@ class PsmRlweDmserverClientTest : public testing::TestWithParam<int> {
   }
 
   // Disallow copy constructor and assignment operator.
-  PsmRlweDmserverClientTest(const PsmRlweDmserverClientTest&) = delete;
-  PsmRlweDmserverClientTest& operator=(const PsmRlweDmserverClientTest&) =
-      delete;
+  PsmRlweDmserverClientImplTest(const PsmRlweDmserverClientImplTest&) = delete;
+  PsmRlweDmserverClientImplTest& operator=(
+      const PsmRlweDmserverClientImplTest&) = delete;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -321,7 +321,7 @@ class PsmRlweDmserverClientTest : public testing::TestWithParam<int> {
       kUMASuffixInitialEnrollment;
 };
 
-TEST_P(PsmRlweDmserverClientTest, MembershipRetrievedSuccessfully) {
+TEST_P(PsmRlweDmserverClientImplTest, MembershipRetrievedSuccessfully) {
   InSequence sequence;
 
   const bool kExpectedMembershipResult = GetExpectedMembershipResult();
@@ -349,7 +349,7 @@ TEST_P(PsmRlweDmserverClientTest, MembershipRetrievedSuccessfully) {
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientTest, EmptyRlweQueryResponse) {
+TEST_P(PsmRlweDmserverClientImplTest, EmptyRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithEmptyPsmResponse();
@@ -366,7 +366,7 @@ TEST_P(PsmRlweDmserverClientTest, EmptyRlweQueryResponse) {
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientTest, EmptyRlweOprfResponse) {
+TEST_P(PsmRlweDmserverClientImplTest, EmptyRlweOprfResponse) {
   InSequence sequence;
   ServerWillReplyWithEmptyPsmResponse();
 
@@ -382,7 +382,7 @@ TEST_P(PsmRlweDmserverClientTest, EmptyRlweOprfResponse) {
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientTest, ConnectionErrorForRlweQueryResponse) {
+TEST_P(PsmRlweDmserverClientImplTest, ConnectionErrorForRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
@@ -402,7 +402,7 @@ TEST_P(PsmRlweDmserverClientTest, ConnectionErrorForRlweQueryResponse) {
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientTest, ConnectionErrorForRlweOprfResponse) {
+TEST_P(PsmRlweDmserverClientImplTest, ConnectionErrorForRlweOprfResponse) {
   InSequence sequence;
   ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
 
@@ -419,7 +419,7 @@ TEST_P(PsmRlweDmserverClientTest, ConnectionErrorForRlweOprfResponse) {
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientTest, NetworkFailureForRlweOprfResponse) {
+TEST_P(PsmRlweDmserverClientImplTest, NetworkFailureForRlweOprfResponse) {
   InSequence sequence;
   ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
 
@@ -434,7 +434,7 @@ TEST_P(PsmRlweDmserverClientTest, NetworkFailureForRlweOprfResponse) {
   VerifyPsmLastRequestJobType();
 }
 
-TEST_P(PsmRlweDmserverClientTest, NetworkFailureForRlweQueryResponse) {
+TEST_P(PsmRlweDmserverClientImplTest, NetworkFailureForRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
@@ -453,8 +453,8 @@ TEST_P(PsmRlweDmserverClientTest, NetworkFailureForRlweQueryResponse) {
   VerifyPsmLastRequestJobType();
 }
 
-INSTANTIATE_TEST_SUITE_P(PsmRlweDmserverClientTest,
-                         PsmRlweDmserverClientTest,
+INSTANTIATE_TEST_SUITE_P(PsmRlweDmserverClientImplTest,
+                         PsmRlweDmserverClientImplTest,
                          // Loop over all indices starting from 0, and smaller
                          // than `kNumberOfPsmTestCases`.
                          ::testing::Range(0, kNumberOfPsmTestCases));

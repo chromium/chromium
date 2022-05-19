@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client_impl.h"
 
 #include <memory>
 #include <string>
@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_id_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -32,7 +33,7 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-PsmRlweDmserverClient::PsmRlweDmserverClient(
+PsmRlweDmserverClientImpl::PsmRlweDmserverClientImpl(
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
@@ -65,11 +66,11 @@ PsmRlweDmserverClient::PsmRlweDmserverClient(
   psm_rlwe_client_ = std::move(status_or_client).value();
 }
 
-PsmRlweDmserverClient::~PsmRlweDmserverClient() {
+PsmRlweDmserverClientImpl::~PsmRlweDmserverClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PsmRlweDmserverClient::CheckMembership(CompletionCallback callback) {
+void PsmRlweDmserverClientImpl::CheckMembership(CompletionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
@@ -92,17 +93,17 @@ void PsmRlweDmserverClient::CheckMembership(CompletionCallback callback) {
   // Start the protocol and its timeout timer.
   psm_timeout_.Start(
       FROM_HERE, kPsmTimeout,
-      base::BindOnce(&PsmRlweDmserverClient::StoreErrorAndStop,
+      base::BindOnce(&PsmRlweDmserverClientImpl::StoreErrorAndStop,
                      base::Unretained(this), PsmResult::kTimeout));
   SendPsmRlweOprfRequest();
 }
 
-bool PsmRlweDmserverClient::IsCheckMembershipInProgress() const {
+bool PsmRlweDmserverClientImpl::IsCheckMembershipInProgress() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return psm_request_job_ != nullptr;
 }
 
-void PsmRlweDmserverClient::StoreErrorAndStop(PsmResult psm_result) {
+void PsmRlweDmserverClientImpl::StoreErrorAndStop(PsmResult psm_result) {
   // Note that kUMAPsmResult histogram is only using initial enrollment as a
   // suffix until PSM support FRE.
   base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, psm_result);
@@ -117,7 +118,7 @@ void PsmRlweDmserverClient::StoreErrorAndStop(PsmResult psm_result) {
   std::move(on_completion_callback_).Run(last_psm_execution_result_.value());
 }
 
-void PsmRlweDmserverClient::SendPsmRlweOprfRequest() {
+void PsmRlweDmserverClientImpl::SendPsmRlweOprfRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Create RLWE OPRF request.
@@ -137,9 +138,9 @@ void PsmRlweDmserverClient::SendPsmRlweOprfRequest() {
   // The passed callback will not be called if |psm_request_job_| is
   // destroyed, so it's safe to use base::Unretained.
   std::unique_ptr<DMServerJobConfiguration> config =
-      CreatePsmRequestJobConfiguration(
-          base::BindOnce(&PsmRlweDmserverClient::OnRlweOprfRequestCompletion,
-                         base::Unretained(this)));
+      CreatePsmRequestJobConfiguration(base::BindOnce(
+          &PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion,
+          base::Unretained(this)));
 
   em::DeviceManagementRequest* request = config->request();
   em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
@@ -149,7 +150,7 @@ void PsmRlweDmserverClient::SendPsmRlweOprfRequest() {
   psm_request_job_ = device_management_service_->CreateJob(std::move(config));
 }
 
-void PsmRlweDmserverClient::OnRlweOprfRequestCompletion(
+void PsmRlweDmserverClientImpl::OnRlweOprfRequestCompletion(
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
     int net_error,
@@ -190,7 +191,7 @@ void PsmRlweDmserverClient::OnRlweOprfRequestCompletion(
   }
 }
 
-void PsmRlweDmserverClient::SendPsmRlweQueryRequest(
+void PsmRlweDmserverClientImpl::SendPsmRlweQueryRequest(
     const em::PrivateSetMembershipResponse& psm_response) {
   // Extract the oprf_response from |psm_response|.
   const psm_rlwe::PrivateMembershipRlweOprfResponse oprf_response =
@@ -213,9 +214,9 @@ void PsmRlweDmserverClient::SendPsmRlweQueryRequest(
 
   // Prepare the RLWE query request job.
   std::unique_ptr<DMServerJobConfiguration> config =
-      CreatePsmRequestJobConfiguration(
-          base::BindOnce(&PsmRlweDmserverClient::OnRlweQueryRequestCompletion,
-                         base::Unretained(this), oprf_response));
+      CreatePsmRequestJobConfiguration(base::BindOnce(
+          &PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion,
+          base::Unretained(this), oprf_response));
 
   em::DeviceManagementRequest* request = config->request();
   em::PrivateSetMembershipRlweRequest* psm_rlwe_request =
@@ -225,7 +226,7 @@ void PsmRlweDmserverClient::SendPsmRlweQueryRequest(
   psm_request_job_ = device_management_service_->CreateJob(std::move(config));
 }
 
-void PsmRlweDmserverClient::OnRlweQueryRequestCompletion(
+void PsmRlweDmserverClientImpl::OnRlweQueryRequestCompletion(
     const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response,
     DeviceManagementService::Job* job,
     DeviceManagementStatus status,
@@ -334,7 +335,7 @@ void PsmRlweDmserverClient::OnRlweQueryRequestCompletion(
 }
 
 std::unique_ptr<DMServerJobConfiguration>
-PsmRlweDmserverClient::CreatePsmRequestJobConfiguration(
+PsmRlweDmserverClientImpl::CreatePsmRequestJobConfiguration(
     DMServerJobConfiguration::Callback callback) {
   return std::make_unique<DMServerJobConfiguration>(
       device_management_service_,
@@ -345,7 +346,7 @@ PsmRlweDmserverClient::CreatePsmRequestJobConfiguration(
       /*oauth_token=*/absl::nullopt, url_loader_factory_, std::move(callback));
 }
 
-void PsmRlweDmserverClient::RecordPsmSuccessTimeHistogram() {
+void PsmRlweDmserverClientImpl::RecordPsmSuccessTimeHistogram() {
   // These values determine bucketing of the histogram, they should not be
   // changed.
   static const base::TimeDelta kMin = base::Milliseconds(1);
