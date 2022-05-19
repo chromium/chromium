@@ -31,7 +31,7 @@
                 "apply_configs": [
                   "use_clang_coverage"
                 ],
-                "config": "chromium"
+                "config": "chromium_no_telemetry_dependencies"
               }
             }
           },
@@ -59,7 +59,7 @@
                 "apply_configs": [
                   "use_clang_coverage"
                 ],
-                "config": "chromium"
+                "config": "chromium_no_telemetry_dependencies"
               }
             }
           },

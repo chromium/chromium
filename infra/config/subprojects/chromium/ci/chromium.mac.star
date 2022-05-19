@@ -56,7 +56,7 @@ ci.builder(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
-            config = "chromium",
+            config = "chromium_no_telemetry_dependencies",
             apply_configs = [
                 "use_clang_coverage",
             ],
