@@ -9,10 +9,16 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -80,7 +86,6 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
     }
   }
 
- private:
   KeyboardShortcutView* GetView() const {
     return KeyboardShortcutView::GetInstanceForTesting();
   }
@@ -282,6 +287,31 @@ TEST_F(KeyboardShortcutViewTest, ShouldAlignSubLabelsInSearchResults) {
       EXPECT_EQ(center_y, child->bounds().CenterPoint().y());
     }
   }
+}
+
+TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(chromeos::features::kDarkLightMode);
+  ash::AshTestBase::SimulateGuestLogin();
+  ash::AshColorProvider::Get()->SetDarkModeEnabledForTest(false);
+  // Show the widget.
+  Toggle();
+
+  auto* window = GetSearchBoxView()->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(SK_ColorWHITE, window->GetProperty(chromeos::kFrameActiveColorKey));
+  EXPECT_EQ(SK_ColorWHITE,
+            window->GetProperty(chromeos::kFrameInactiveColorKey));
+  EXPECT_EQ(SK_ColorWHITE, GetView()->GetBackground()->get_color());
+
+  ash::AshColorProvider::Get()->ToggleColorMode();
+
+  SkColor dark_mode_color = ash::AshColorProvider::Get()->GetBaseLayerColor(
+      ash::ColorProvider::BaseLayerType::kOpaque);
+  EXPECT_EQ(dark_mode_color,
+            window->GetProperty(chromeos::kFrameActiveColorKey));
+  EXPECT_EQ(dark_mode_color,
+            window->GetProperty(chromeos::kFrameInactiveColorKey));
+  EXPECT_EQ(dark_mode_color, GetView()->GetBackground()->get_color());
 }
 
 }  // namespace keyboard_shortcut_viewer

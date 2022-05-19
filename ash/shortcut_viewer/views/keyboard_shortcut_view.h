@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,6 +56,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // SearchBoxViewDelegate:
   void QueryChanged(ash::SearchBoxViewBase* sender) override;
@@ -96,6 +98,10 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   const std::vector<KeyboardShortcutItemView*>&
   GetFoundShortcutItemsForTesting() const;
 
+  // Determine correct color based on dark mode flag and preference.
+  void UpdateBackgroundColor();
+  void UpdateActiveAndInactiveFrameColor();
+
   // Owned by views hierarchy.
   // The container for category tabs and lists of KeyboardShortcutItemViews.
   views::TabbedPane* categories_tabbed_pane_ = nullptr;
@@ -134,6 +140,8 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // Indicates if recieved the first OnPaint event. Used to schedule
   // initialization of background panes in the following frame.
   bool did_first_paint_ = false;
+
+  ash::ColorProvider* color_provider_;  // Not owned.
 
   base::WeakPtrFactory<KeyboardShortcutView> weak_factory_{this};
 };
