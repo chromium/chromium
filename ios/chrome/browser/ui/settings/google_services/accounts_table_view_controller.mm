@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
@@ -60,6 +61,9 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 namespace {
+
+// The size of the symbol image.
+NSInteger kSymbolAddAccountPointSize = 20;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAccounts = kSectionIdentifierEnumZero,
@@ -366,8 +370,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON);
   item.accessibilityIdentifier = kSettingsAccountsTableViewAddAccountCellId;
-  item.image = [[UIImage imageNamed:@"settings_accounts_add_account"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  item.image =
+      UseSymbols()
+          ? CustomSymbolWithPointSize(kPlusCircleFillSymbol,
+                                      kSymbolAddAccountPointSize)
+          : [[UIImage imageNamed:@"settings_accounts_add_account"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   return item;
 }
 
