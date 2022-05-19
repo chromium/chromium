@@ -740,26 +740,22 @@
 
   # START content/ section.
   # content/ and ios/web/ must start at the same id.
-  # App only use one file depending on whether it is iOS or other platform.
-  "content/app/resources/content_resources.grd": {
+  "content/content_resources.grd": {
     # Big alignment at start of section.
     "META": {"join": 2, "align": 100},
-    "structures": [3800],
-  },
-  "content/content_resources.grd": {
-    "includes": [3820],
+    "includes": [3800],
   },
   "content/shell/shell_resources.grd": {
-    "includes": [3840],
+    "includes": [3820],
   },
   "content/test/web_ui_mojo_test_resources.grd": {
-    "includes": [3860],
+    "includes": [3840],
   },
 
   # This file is generated during the build.
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/tracing/tracing_resources.grd": {
     "META": {"sizes": {"includes": [20],}},
-    "includes": [3880],
+    "includes": [3860],
   },
   # END content/ section.
 

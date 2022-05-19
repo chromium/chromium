@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
-#include "content/app/resources/grit/content_resources.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"

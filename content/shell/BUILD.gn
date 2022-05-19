@@ -250,7 +250,6 @@ static_library("content_shell_lib") {
     "//components/web_cache/renderer",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/public/common",
     "//content/test:content_test_mojo_bindings",
     "//content/test:test_support",
@@ -415,7 +414,6 @@ repack("pak") {
 
   sources = [
     "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
@@ -442,7 +440,6 @@ repack("pak") {
     "//base/tracing/protos:chrome_track_event_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/browser/resources:resources",
     "//content/browser/resources/media:resources",
     "//content/browser/webrtc/resources",

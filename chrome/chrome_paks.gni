@@ -38,7 +38,6 @@ template("chrome_repack_percent") {
       "$root_gen_dir/chrome/renderer_resources_${percent}_percent.pak",
       "$root_gen_dir/chrome/theme_resources_${percent}_percent.pak",
       "$root_gen_dir/components/components_resources_${percent}_percent.pak",
-      "$root_gen_dir/content/app/resources/content_resources_${percent}_percent.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/resources/ui_resources_${percent}_percent.pak",
     ]
@@ -48,7 +47,6 @@ template("chrome_repack_percent") {
       "//chrome/renderer:resources",
       "//components/resources",
       "//components/strings",
-      "//content/app/resources",
       "//net:net_resources",
       "//third_party/blink/public:scaled_resources_${percent}_percent",
       "//ui/resources",

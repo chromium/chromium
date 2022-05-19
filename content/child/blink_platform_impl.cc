@@ -32,7 +32,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "content/app/resources/grit/content_resources.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/common/content_client.h"

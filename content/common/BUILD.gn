@@ -185,7 +185,6 @@ source_set("common") {
     "//components/tracing:startup_tracing",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/common/fetch:fetch_api_request_proto",
     "//content/public/common:interfaces",
     "//content/public/common/zygote:buildflags",
@@ -298,6 +297,7 @@ source_set("common") {
     deps += [
       ":mac_helpers",
       "//sandbox/mac:seatbelt",
+      "//ui/resources",
     ]
   }
 

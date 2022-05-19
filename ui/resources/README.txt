@@ -44,16 +44,6 @@ source tree or are derivative works of files from the WebKit source tree.
 They are licensed under a BSD license.  While binary files do not contain
 a license block, I have pasted the relevant WebKit license block below.
 
-pan_icon.png
-pan_east.cur
-pan_middle.cur
-pan_north.cur
-pan_north_east.cur
-pan_north_west.cur
-pan_south.cur
-pan_south_east.cur
-pan_south_west.cur
-pan_west.cur
 alias_cursor.png
 cell_cursor.png
 east_resize_cursor.png

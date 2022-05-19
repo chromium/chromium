@@ -74,7 +74,6 @@ target(link_target_type, "child") {
     "//components/tracing:startup_tracing",
     "//components/variations",
     "//components/webcrypto",
-    "//content/app/resources",
     "//content/common",
     "//content/common:mojo_bindings",
     "//content/public/common:common_sources",

@@ -11,14 +11,14 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
-#include "content/app/resources/grit/content_resources.h"
-#include "content/public/common/content_client.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image.h"
+#include "ui/resources/grit/ui_resources.h"
 
 // Private interface to CoreCursor. See
 // https://github.com/WebKit/WebKit/blob/main/Source/WebCore/PAL/pal/spi/mac/HIServicesSPI.h
@@ -105,7 +105,7 @@ namespace {
 
 NSCursor* LoadCursor(int resource_id, int hotspot_x, int hotspot_y) {
   const gfx::Image& cursor_image =
-      content::GetContentClient()->GetNativeImageNamed(resource_id);
+      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(resource_id);
   DCHECK(!cursor_image.IsEmpty());
   return [[[NSCursor alloc] initWithImage:cursor_image.ToNSImage()
                                   hotSpot:NSMakePoint(hotspot_x,

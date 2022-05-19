@@ -2351,7 +2351,6 @@ static_library("browser") {
     "//components/webrtc_logging/browser",
     "//components/webrtc_logging/common",
     "//components/zoom",
-    "//content/app/resources",
     "//content/public/browser",
     "//content/public/common",
     "//crypto",

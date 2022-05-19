@@ -611,7 +611,6 @@ static_library("ui") {
     "//components/webapps/common",
     "//components/webrtc_logging/browser",
     "//components/zoom",
-    "//content/app/resources",
     "//content/browser/webrtc/resources",
     "//content/public/common",
     "//crypto",

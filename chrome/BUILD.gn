@@ -394,7 +394,6 @@ if (is_win) {
       "//components/browser_watcher:stability_client",
       "//components/crash/core/app",
       "//components/policy:generated",
-      "//content/app/resources",
       "//content/public/app",
       "//crypto",
       "//headless:headless_renderer",

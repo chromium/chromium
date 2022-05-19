@@ -107,7 +107,6 @@ source_set("browser") {
     "//components/web_package",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/browser/attribution_reporting:attribution_reporting_proto",
     "//content/browser/attribution_reporting:mojo_bindings",
     "//content/browser/background_fetch:background_fetch_proto",

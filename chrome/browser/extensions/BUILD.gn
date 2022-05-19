@@ -881,7 +881,6 @@ static_library("extensions") {
     "//components/vector_icons",
     "//components/web_modal",
     "//components/zoom",
-    "//content/app/resources",
     "//content/public/common",
     "//crypto",
     "//device/bluetooth",

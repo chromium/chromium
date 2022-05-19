@@ -54,7 +54,6 @@ source_set("chromeos") {
     "//components/policy/proto",
     "//components/signin/core/browser",
     "//components/startup_metric_utils/browser:browser",
-    "//content/app/resources",
     "//mojo/public/cpp/bindings",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
     "//third_party/private_membership:private_membership",

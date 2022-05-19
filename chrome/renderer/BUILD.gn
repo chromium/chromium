@@ -175,7 +175,6 @@ static_library("renderer") {
     "//components/web_cache/public:features",
     "//components/web_cache/renderer",
     "//components/webapps/renderer",
-    "//content/app/resources",
     "//content/public/child",
     "//content/public/common",
     "//content/public/renderer",

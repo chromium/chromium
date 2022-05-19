@@ -26,7 +26,6 @@ fidl_library("fidl") {
 repack("web_engine_pak") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
@@ -41,7 +40,6 @@ repack("web_engine_pak") {
     "//components/resources:components_resources",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
-    "//content/app/resources",
     "//content/browser/tracing:resources",
     "//gpu/command_buffer/service",
     "//mojo/public/js:resources",
