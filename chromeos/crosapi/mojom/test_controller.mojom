@@ -31,12 +31,19 @@ enum OptionalBoolean {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
   // in a tab or window) and returns the ID of the installed app (see
   // |web_app::GenerateAppId|).
   InstallWebApp@0(string start_url, WindowMode mode) => (string app_id);
+
+  // Loads a fake extension in lacros-chrome, assigns it the given name and
+  // returns the ID of the loaded extension.
+  [MinVersion=1]
+  LoadVpnExtension@1(string extension_name) => (string extension_id);
 };
 
 // This interface is implemented by Ash-Chrome.

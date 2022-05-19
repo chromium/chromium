@@ -10,6 +10,7 @@ DemoAshRequiresLacrosTest*
 Dictation*
 SelectToSpeak*
 SwitchAccess*
+VpnExtensionObserverBrowserTest*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery

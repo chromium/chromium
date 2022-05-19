@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -29,10 +30,16 @@ class StandaloneBrowserTestController
                      apps::WindowMode window_mode,
                      InstallWebAppCallback callback) override;
 
+  void LoadVpnExtension(const std::string& extension_name,
+                        LoadVpnExtensionCallback callback) override;
+
  private:
   void WebAppInstallationDone(InstallWebAppCallback callback,
                               const web_app::AppId& installed_app_id,
                               webapps::InstallResultCode code);
+
+  base::Value::Dict CreateVpnExtensionManifest(
+      const std::string& extension_name);
 
   mojo::Receiver<crosapi::mojom::StandaloneBrowserTestController>
       controller_receiver_{this};

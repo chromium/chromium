@@ -83,6 +83,7 @@ class WebAppServiceAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
 class VideoCaptureDeviceFactoryAsh;
+class VpnExtensionObserverAsh;
 class NetworkSettingsServiceAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
@@ -251,6 +252,9 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
+  void BindVpnExtensionObserver(
+      mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver)
+      override;
   void BindWebAppPublisher(
       mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindNetworkSettingsService(
@@ -338,6 +342,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
 
+  VpnExtensionObserverAsh* vpn_extension_observer_ash() {
+    return vpn_extension_observer_ash_.get();
+  }
+
   // Caller is responsible for ensuring that the pointer stays valid.
   void SetTestControllerForTesting(TestControllerReceiver* test_controller);
 
@@ -408,6 +416,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
   std::unique_ptr<VideoCaptureDeviceFactoryAsh>
       video_capture_device_factory_ash_;
+  std::unique_ptr<VpnExtensionObserverAsh> vpn_extension_observer_ash_;
 
   // Only set in the test ash chrome binary. In production ash this is always
   // nullptr.

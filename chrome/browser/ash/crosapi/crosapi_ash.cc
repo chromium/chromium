@@ -75,6 +75,7 @@
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
+#include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -109,6 +110,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
@@ -210,7 +212,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
       video_capture_device_factory_ash_(
-          std::make_unique<VideoCaptureDeviceFactoryAsh>()) {
+          std::make_unique<VideoCaptureDeviceFactoryAsh>()),
+      vpn_extension_observer_ash_(std::make_unique<VpnExtensionObserverAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
@@ -628,6 +631,11 @@ void CrosapiAsh::BindMachineLearningService(
 void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
   video_capture_device_factory_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindVpnExtensionObserver(
+    mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver) {
+  vpn_extension_observer_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindWebAppPublisher(

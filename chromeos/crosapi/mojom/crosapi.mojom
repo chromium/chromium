@@ -67,6 +67,7 @@ import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
+import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
@@ -105,8 +106,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 75
-// Next method id: 78
+// Next version: 76
+// Next method id: 79
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -480,6 +481,11 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=20] BindVideoCaptureDeviceFactory@25(
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
+
+  // Binds the vpn extension observer so that lacros can inform ash about
+  // Vpn extension events.
+  [MinVersion=75] BindVpnExtensionObserver@78(
+      pending_receiver<VpnExtensionObserver> receiver);
 
   // Binds the Kiosk session service which sends session status changes from
   // lacros to ash.

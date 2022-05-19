@@ -5329,6 +5329,8 @@ static_library("browser") {
       "lacros/system_logs/lacros_system_log_fetcher.h",
       "lacros/task_manager_lacros.cc",
       "lacros/task_manager_lacros.h",
+      "lacros/vpn_extension_tracker_lacros.cc",
+      "lacros/vpn_extension_tracker_lacros.h",
       "lacros/web_app_provider_bridge_lacros.cc",
       "lacros/web_app_provider_bridge_lacros.h",
       "lacros/web_contents_can_go_back_observer.cc",

@@ -70,6 +70,7 @@
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/lacros/lacros_service_never_blocking_state.h"
@@ -400,6 +401,9 @@ LacrosService::LacrosService()
       crosapi::mojom::WebPageInfoFactory,
       &crosapi::mojom::Crosapi::BindWebPageInfoFactory,
       Crosapi::MethodMinVersions::kBindWebPageInfoFactoryMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::VpnExtensionObserver, &Crosapi::BindVpnExtensionObserver,
+      Crosapi::MethodMinVersions::kBindVpnExtensionObserverMinVersion>();
 
 #if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // The test controller is not available on production devices as tests only

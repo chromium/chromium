@@ -770,7 +770,7 @@
   "vpnProvider": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "webview": {
     "channel": "stable",
