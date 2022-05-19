@@ -630,6 +630,9 @@
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL" desc="As in 'Verify my identity', this is the label of the affirmitive button in a payment confirmation dialog that asks the user to verify their identity with a platform authenticator such as a fingerprint reader.">
     Verify
   </message>
+  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL" desc="Title of a link to opt-out in a payment confirmation dialog.">
+    Opt Out
+  </message>
   <if expr="is_android">
     <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
         <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment

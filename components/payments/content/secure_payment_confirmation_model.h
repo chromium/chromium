@@ -130,6 +130,18 @@ class SecurePaymentConfirmationModel {
     cancel_button_visible_ = cancel_button_visible;
   }
 
+  // Opt Out link visibility and label.
+  bool opt_out_link_visible() const { return opt_out_link_visible_; }
+  void set_opt_out_link_visible(const bool opt_out_link_visible) {
+    opt_out_link_visible_ = opt_out_link_visible;
+  }
+  const std::u16string& opt_out_link_label() const {
+    return opt_out_link_label_;
+  }
+  void set_opt_out_link_label(const std::u16string& opt_out_link_label) {
+    opt_out_link_label_ = opt_out_link_label;
+  }
+
   base::WeakPtr<SecurePaymentConfirmationModel> GetWeakPtr();
 
  private:
@@ -156,6 +168,9 @@ class SecurePaymentConfirmationModel {
 
   bool cancel_button_enabled_ = true;
   bool cancel_button_visible_ = true;
+
+  bool opt_out_link_visible_ = false;
+  std::u16string opt_out_link_label_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationModel> weak_ptr_factory_{this};
 };

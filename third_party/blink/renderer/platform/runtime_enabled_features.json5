@@ -2119,6 +2119,9 @@
       name: "SecurePaymentConfirmationDebug",
     },
     {
+      name: "SecurePaymentConfirmationOptOut",
+    },
+    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       status: "stable",
     },

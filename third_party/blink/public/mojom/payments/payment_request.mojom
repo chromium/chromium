@@ -158,6 +158,11 @@ struct SecurePaymentConfirmationRequest {
 
   // The relying party ID that must match the relying party of a credential.
   string rp_id;
+
+  // Whether or not to render an 'opt out' experience on the browser-hosted UX,
+  // which allows the user to indicate to the RP that they wish to remove any
+  // RP-stored information.
+  bool show_opt_out;
 };
 
 struct PaymentMethodData {

@@ -59,6 +59,11 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
   if (input->hasPayeeName())
     output->payee_name = input->payeeName();
 
+  output->show_opt_out = false;
+  if (blink::RuntimeEnabledFeatures::SecurePaymentConfirmationOptOutEnabled()) {
+    output->show_opt_out = input->getShowOptOutOr(false);
+  }
+
   return output;
 }
 

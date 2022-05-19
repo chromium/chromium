@@ -21,6 +21,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -152,6 +153,10 @@ void SecurePaymentConfirmationDialogView::OnDialogClosed() {
   }
 }
 
+void SecurePaymentConfirmationDialogView::OnOptOutClicked() {
+  // TODO(crbug.com/1325854): Handle opt-out clicks.
+}
+
 void SecurePaymentConfirmationDialogView::OnModelUpdated() {
   views::View* progress_bar =
       GetViewByID(static_cast<int>(DialogViewID::PROGRESS_BAR));
@@ -191,6 +196,17 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
 
   UpdateLabelView(DialogViewID::TOTAL_LABEL, model_->total_label());
   UpdateLabelView(DialogViewID::TOTAL_VALUE, model_->total_value());
+
+  // This method is called both during object construction, before the modal
+  // window widget is initialized, and also later if/when the underlying model
+  // updates (at which point the widget should be initialized). DialogDelegate
+  // only allows access to GetExtraView(), which stores the opt-out link, once
+  // the Widget has been initialized.
+  //
+  // Note that we set initial visibility of the opt-out link in InitChildViews.
+  if (GetWidget()) {
+    GetExtraView()->SetVisible(model_->opt_out_link_visible());
+  }
 }
 
 void SecurePaymentConfirmationDialogView::UpdateLabelView(
@@ -210,6 +226,17 @@ bool SecurePaymentConfirmationDialogView::ShouldShowCloseButton() const {
 
 bool SecurePaymentConfirmationDialogView::Accept() {
   views::DialogDelegateView::Accept();
+
+  // Disable the opt-out link to avoid the user clicking on it whilst the
+  // WebAuthn dialog is showing over the SPC one. If opt-out support wasn't
+  // requested by the SPC caller, it won't be visible and doesn't need disabled.
+  //
+  // TODO(crbug.com/1325854): Even disabled this link still looks clickable
+  // (underline disappears, but color doesn't change). Force style the color?
+  if (GetExtraView()->GetVisible()) {
+    GetExtraView()->SetEnabled(false);
+  }
+
   // Returning "false" to keep the dialog open after "Confirm" button is
   // pressed, so the dialog can show a progress bar and wait for the user to use
   // their authenticator device.
@@ -232,6 +259,17 @@ void SecurePaymentConfirmationDialogView::InitChildViews() {
       static_cast<int>(DialogViewID::HEADER_ICON)));
 
   AddChildView(CreateBodyView());
+
+  // We always create the view for the Opt Out link, but show or hide it
+  // depending on whether it was requested. The visibility status can also be
+  // updated in OnModelUpdated.
+  auto opt_out_link =
+      std::make_unique<views::Link>(model_->opt_out_link_label());
+  opt_out_link->SetVisible(model_->opt_out_link_visible());
+  opt_out_link->SetCallback(
+      base::BindRepeating(&SecurePaymentConfirmationDialogView::OnOptOutClicked,
+                          weak_ptr_factory_.GetWeakPtr()));
+  SetExtraView(std::move(opt_out_link));
 
   InvalidateLayout();
 }

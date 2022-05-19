@@ -23,6 +23,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 
 namespace payments {
 namespace {
@@ -132,6 +133,10 @@ class SecurePaymentConfirmationDialogViewTest
                         ->GetText());
   }
 
+  void ExpectLinkText(const std::u16string& text, views::View* link_view) {
+    EXPECT_EQ(text, static_cast<views::Link*>(link_view)->GetText());
+  }
+
   void ExpectViewMatchesModel() {
     ASSERT_NE(test_delegate_->dialog_view(), nullptr);
 
@@ -196,6 +201,12 @@ class SecurePaymentConfirmationDialogViewTest
     ExpectLabelText(
         model_.total_value(),
         SecurePaymentConfirmationDialogView::DialogViewID::TOTAL_VALUE);
+
+    // The Opt Out link always exists, but should only be visible if requested.
+    views::View* opt_out_view = test_delegate_->dialog_view()->GetExtraView();
+    EXPECT_NE(opt_out_view, nullptr);
+    EXPECT_EQ(opt_out_view->GetVisible(), model_.opt_out_link_visible());
+    ExpectLinkText(model_.opt_out_link_label(), opt_out_view);
   }
 
   void ClickAcceptAndWait() {
@@ -542,6 +553,24 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
             image_view->GetImageBounds().height());
 
   CloseDialogAndWait();
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       OptOutShownWhenRequested) {
+  CreateModel();
+
+  // Make sure that by default, opt-out wasn't requested. This means that every
+  // other test is correctly testing the 'no opt out' path.
+  ASSERT_FALSE(model_.opt_out_link_visible());
+
+  // Now set it to true, and invoke SPC.
+  model_.set_opt_out_link_visible(true);
+  model_.set_opt_out_link_label(l10n_util::GetStringUTF16(
+      IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL));
+
+  InvokeSecurePaymentConfirmationUI();
+
+  ExpectViewMatchesModel();
 }
 
 }  // namespace payments

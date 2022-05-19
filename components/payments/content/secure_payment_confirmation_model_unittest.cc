@@ -29,6 +29,7 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   std::u16string total_value(u"$20.00 USD");
   std::u16string verify_button_label(u"Verify");
   std::u16string cancel_button_label(u"Cancel");
+  std::u16string opt_out_label(u"Opt Out");
 
   model.set_title(title);
   EXPECT_EQ(title, model.title());
@@ -63,24 +64,30 @@ TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   model.set_cancel_button_label(cancel_button_label);
   EXPECT_EQ(cancel_button_label, model.cancel_button_label());
 
+  model.set_opt_out_link_label(opt_out_label);
+  EXPECT_EQ(opt_out_label, model.opt_out_link_label());
+
   // Default values for visibility and enabled states
   EXPECT_FALSE(model.progress_bar_visible());
   EXPECT_TRUE(model.verify_button_enabled());
   EXPECT_TRUE(model.verify_button_visible());
   EXPECT_TRUE(model.cancel_button_enabled());
   EXPECT_TRUE(model.cancel_button_visible());
+  EXPECT_FALSE(model.opt_out_link_visible());
 
   model.set_progress_bar_visible(true);
   model.set_verify_button_enabled(false);
   model.set_verify_button_visible(false);
   model.set_cancel_button_enabled(false);
   model.set_cancel_button_visible(false);
+  model.set_opt_out_link_visible(true);
 
   EXPECT_TRUE(model.progress_bar_visible());
   EXPECT_FALSE(model.verify_button_enabled());
   EXPECT_FALSE(model.verify_button_visible());
   EXPECT_FALSE(model.cancel_button_enabled());
   EXPECT_FALSE(model.cancel_button_visible());
+  EXPECT_TRUE(model.opt_out_link_visible());
 }
 
 }  // namespace payments

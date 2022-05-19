@@ -74,6 +74,7 @@ class SecurePaymentConfirmationDialogView
   void OnDialogAccepted();
   void OnDialogCancelled();
   void OnDialogClosed();
+  void OnOptOutClicked();
 
   void InitChildViews();
 
