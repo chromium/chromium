@@ -2437,13 +2437,13 @@ if (enable_java_templates) {
 
     action_with_pydeps(target_name) {
       script = _script
-      _depfile = "$target_gen_dir/${target_name}.d"
+      depfile = "$target_gen_dir/${target_name}.d"
       inputs = _inputs
       outputs = _outputs
       deps = _deps
       args = _args + [
                "--depfile",
-               rebase_path(_depfile, root_build_dir),
+               rebase_path(depfile, root_build_dir),
              ]
     }
   }
