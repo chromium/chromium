@@ -7302,6 +7302,10 @@ class SitePerProcessDelegatedInkBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
                        MAYBE_MetadataAndPointGoThroughOOPIF) {
+  // Delegated ink is only supported on Skia Renderer for now.
+  if (!features::IsUsingSkiaRenderer())
+    return;
+
   GURL main_url(embedded_test_server()->GetURL(
       "/frame_tree/page_with_positioned_frame.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

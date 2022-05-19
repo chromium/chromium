@@ -1157,6 +1157,7 @@ void LayerTreeTest::RequestNewLayerTreeFrameSink() {
   // Spend less time waiting for BeginFrame because the output is
   // mocked out.
   constexpr double refresh_rate = 200.0;
+  renderer_settings.use_skia_renderer = use_skia_renderer();
   auto layer_tree_frame_sink = CreateLayerTreeFrameSink(
       renderer_settings, refresh_rate, std::move(shared_context_provider),
       std::move(worker_context_provider));

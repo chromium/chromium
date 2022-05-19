@@ -141,6 +141,8 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
   renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
+  if (output_surface_->context_provider())
+    output_surface_->context_provider()->ContextGL()->Finish();
   run_loop.Run();
 
   return PixelsMatchReference(ref_file, comparator);
@@ -176,6 +178,8 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
+  if (output_surface_->context_provider())
+    output_surface_->context_provider()->ContextGL()->Finish();
   run_loop.Run();
 
   // Need to wrap |ref_pixels| in a SkBitmap.
