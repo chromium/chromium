@@ -55,7 +55,6 @@ namespace {
 
 // Returns the sign-in reason for |mode|.
 signin_metrics::Reason GetSigninReasonFromMode(profiles::BubbleViewMode mode) {
-  DCHECK(SigninViewController::ShouldShowSigninForMode(mode));
   switch (mode) {
     case profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN:
       return signin_metrics::Reason::kSigninPrimaryAccount;
@@ -156,20 +155,10 @@ SigninViewController::~SigninViewController() {
   CloseModalSignin();
 }
 
-// static
-bool SigninViewController::ShouldShowSigninForMode(
-    profiles::BubbleViewMode mode) {
-  return mode == profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN ||
-         mode == profiles::BUBBLE_VIEW_MODE_GAIA_ADD_ACCOUNT ||
-         mode == profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH;
-}
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void SigninViewController::ShowSignin(profiles::BubbleViewMode mode,
                                       signin_metrics::AccessPoint access_point,
                                       const GURL& redirect_url) {
-  DCHECK(ShouldShowSigninForMode(mode));
-
   Profile* profile = browser_->profile();
   std::string email;
   signin_metrics::Reason signin_reason = GetSigninReasonFromMode(mode);

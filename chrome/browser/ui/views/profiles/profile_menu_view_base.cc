@@ -496,8 +496,7 @@ ProfileMenuViewBase::EditButtonParams::EditButtonParams(
     const EditButtonParams&) = default;
 
 // static
-void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
-                                     views::Button* anchor_button,
+void ProfileMenuViewBase::ShowBubble(views::Button* anchor_button,
                                      Browser* browser,
                                      bool is_source_accelerator) {
   if (IsShowing())
@@ -509,8 +508,7 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
       feature_engagement::kIPHProfileSwitchFeature);
 
   ProfileMenuViewBase* bubble = nullptr;
-  if (view_mode == profiles::BUBBLE_VIEW_MODE_INCOGNITO) {
-    DCHECK(browser->profile()->IsIncognitoProfile());
+  if (browser->profile()->IsIncognitoProfile()) {
     bubble = new IncognitoMenuView(anchor_button, browser);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -518,7 +516,6 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
     // BUBBLE_VIEW_MODE_INCOGNITO.
     NOTREACHED() << "The profile menu is not implemented on Ash.";
 #else
-    DCHECK_EQ(profiles::BUBBLE_VIEW_MODE_PROFILE_CHOOSER, view_mode);
     bubble = new ProfileMenuView(anchor_button, browser);
 #endif
   }

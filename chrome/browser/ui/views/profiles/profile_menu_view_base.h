@@ -89,8 +89,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // call this function when the button is clicked and if the bubble isn't
   // showing it will appear while if it is showing, nothing will happen here and
   // the existing bubble will auto-close due to focus loss.
-  static void ShowBubble(profiles::BubbleViewMode view_mode,
-                         views::Button* anchor_button,
+  static void ShowBubble(views::Button* anchor_button,
                          Browser* browser,
                          bool is_source_accelerator);
 

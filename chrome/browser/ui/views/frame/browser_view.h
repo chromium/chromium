@@ -536,10 +536,7 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
-  void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_accelerator) override;
+  void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) override;
   void MaybeShowProfileSwitchIPH() override;
   void ShowHatsDialog(
       const std::string& site_id,

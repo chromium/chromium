@@ -72,9 +72,6 @@ class SigninViewController {
 
   virtual ~SigninViewController();
 
-  // Returns true if the signin flow should be shown for |mode|.
-  static bool ShouldShowSigninForMode(profiles::BubbleViewMode mode);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the signin attached to |browser_|'s active web contents.
   // |access_point| indicates the access point used to open the Gaia sign in

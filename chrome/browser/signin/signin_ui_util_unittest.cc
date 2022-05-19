@@ -89,21 +89,6 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
   ~SigninUiUtilTestBrowserWindow() override = default;
   void set_browser(Browser* browser) { browser_ = browser; }
 
-  void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_keyboard) override {
-    ASSERT_TRUE(browser_);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(https://crbug.com/1260291): add support for signed out profiles.
-    NOTREACHED();
-#else
-    // Simulate what |BrowserView| does for a regular Chrome sign-in flow.
-    browser_->signin_view_controller()->ShowSignin(
-        profiles::BubbleViewMode::BUBBLE_VIEW_MODE_GAIA_SIGNIN, access_point);
-#endif
-  }
-
  private:
   raw_ptr<Browser> browser_ = nullptr;
 };

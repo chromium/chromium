@@ -4206,28 +4206,14 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
 #endif
 }
 
-void BrowserView::ShowAvatarBubbleFromAvatarButton(
-    AvatarBubbleMode mode,
-    signin_metrics::AccessPoint access_point,
-    bool is_source_accelerator) {
+void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
   // Do not show avatar bubble if there is no avatar menu button.
   views::Button* avatar_button =
       toolbar_button_provider_->GetAvatarToolbarButton();
   if (!avatar_button)
     return;
 
-  profiles::BubbleViewMode bubble_view_mode;
-  profiles::BubbleViewModeFromAvatarBubbleMode(mode, GetProfile(),
-                                               &bubble_view_mode);
-// TODO(https://crbug.com/1260291): Add support for Lacros.
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (SigninViewController::ShouldShowSigninForMode(bubble_view_mode)) {
-    browser_->signin_view_controller()->ShowSignin(bubble_view_mode,
-                                                   access_point);
-    return;
-  }
-#endif
-  ProfileMenuViewBase::ShowBubble(bubble_view_mode, avatar_button, browser(),
+  ProfileMenuViewBase::ShowBubble(avatar_button, browser(),
                                   is_source_accelerator);
 }
 

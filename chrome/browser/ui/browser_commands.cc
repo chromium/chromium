@@ -1594,8 +1594,7 @@ void ShowAppMenu(Browser* browser) {
 
 void ShowAvatarMenu(Browser* browser) {
   browser->window()->ShowAvatarBubbleFromAvatarButton(
-      BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT,
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN, true);
+      /*is_source_accelerator=*/true);
 }
 
 void OpenUpdateChromeDialog(Browser* browser) {

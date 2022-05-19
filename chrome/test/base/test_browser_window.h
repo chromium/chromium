@@ -195,10 +195,7 @@ class TestBrowserWindow : public BrowserWindow {
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
-  void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_keyboard) override {}
+  void ShowAvatarBubbleFromAvatarButton(bool is_source_keyboard) override {}
   void MaybeShowProfileSwitchIPH() override {}
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \

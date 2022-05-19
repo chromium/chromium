@@ -522,21 +522,7 @@ class BrowserWindow : public ui::BaseWindow {
                                             bool user_gesture,
                                             bool in_tab_dragging);
 
-  // Shows the avatar bubble on the window frame off of the avatar button with
-  // the given mode. The Service Type specified by GAIA is provided as well.
-  // |access_point| indicates the access point used to open the Gaia sign in
-  // page.
-  enum AvatarBubbleMode {
-    AVATAR_BUBBLE_MODE_DEFAULT,
-    AVATAR_BUBBLE_MODE_SIGNIN,
-    AVATAR_BUBBLE_MODE_ADD_ACCOUNT,
-    AVATAR_BUBBLE_MODE_REAUTH,
-    AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN
-  };
-  virtual void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_accelerator) = 0;
+  virtual void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) = 0;
 
   // Attempts showing the In-Produce-Help for profile Switching. This is called
   // after creating a new profile or opening an existing profile. If the profile

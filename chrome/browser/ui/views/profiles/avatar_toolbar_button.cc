@@ -262,8 +262,6 @@ void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
 
 void AvatarToolbarButton::ButtonPressed() {
   browser_->window()->ShowAvatarBubbleFromAvatarButton(
-      BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT,
-      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
       /*is_source_accelerator=*/false);
 }
 

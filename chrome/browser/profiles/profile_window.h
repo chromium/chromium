@@ -80,12 +80,6 @@ bool HasProfileSwitchTargets(Profile* profile);
 // Close all the browser windows for |profile|.
 void CloseProfileWindows(Profile* profile);
 
-// Converts from modes in the avatar menu to modes understood by
-// ProfileMenuView.
-void BubbleViewModeFromAvatarBubbleMode(BrowserWindow::AvatarBubbleMode mode,
-                                        Profile* profile,
-                                        BubbleViewMode* bubble_view_mode);
-
 // Handles running a callback when a new Browser for the given profile
 // has been completely created.  This object deletes itself once the browser
 // is created and the callback is executed.
