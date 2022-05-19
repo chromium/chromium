@@ -87,6 +87,9 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       std::make_unique<views::ToggleButton>(base::BindRepeating(
           &PageInfoPermissionContentView::OnToggleButtonPressed,
           base::Unretained(this))));
+  toggle_button_->SetAccessibleName(
+      l10n_util::GetStringFUTF16(IDS_PAGE_INFO_SELECTOR_TOOLTIP,
+                                 PageInfoUI::PermissionTypeToUIString(type)));
   toggle_button_->SetPreferredSize(
       gfx::Size(toggle_button_->GetPreferredSize().width(), title_height));
 
