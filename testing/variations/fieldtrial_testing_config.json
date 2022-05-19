@@ -5021,7 +5021,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20220519",
                     "enable_features": [
                         "NearbySharingWifiLan"
                     ]
