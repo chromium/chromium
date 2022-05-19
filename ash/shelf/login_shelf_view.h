@@ -19,6 +19,7 @@
 #include "ash/shelf/kiosk_app_instruction_bubble.h"
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 #include "ash/shutdown_controller_impl.h"
+#include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/memory/weak_ptr.h"
@@ -47,7 +48,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
                                   public TrayActionObserver,
                                   public LockScreenActionBackgroundObserver,
                                   public ShutdownControllerImpl::Observer,
-                                  public LoginDataDispatcher::Observer {
+                                  public LoginDataDispatcher::Observer,
+                                  public EnterpriseDomainObserver {
  public:
   enum ButtonId {
     kShutdown = 1,          // Shut down the device.
@@ -161,6 +163,10 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // LoginDataDispatcher::Observer:
   void OnUsersChanged(const std::vector<LoginUserInfo>& users) override;
   void OnOobeDialogStateChanged(OobeDialogState state) override;
+
+  // ash::EnterpriseDomainObserver
+  void OnDeviceEnterpriseInfoChanged() override;
+  void OnEnterpriseAccountDomainChanged() override;
 
   // Called when a locale change is detected. Updates the login shelf button
   // strings.
