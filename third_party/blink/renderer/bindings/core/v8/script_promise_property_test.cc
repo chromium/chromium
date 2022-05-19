@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -539,7 +539,10 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
     ScriptState::Scope scope(MainScriptState());
     v8::MicrotasksScope microtasks_scope(
         GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
-    main_v8_resolution = ToV8(resolution, MainScriptState()).As<v8::Object>();
+    main_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
+                             MainScriptState(), resolution)
+                             .ToLocalChecked()
+                             .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(
             MainScriptState(),
@@ -556,7 +559,10 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
     ScriptState::Scope scope(OtherScriptState());
     v8::MicrotasksScope microtasks_scope(
         GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
-    other_v8_resolution = ToV8(resolution, OtherScriptState()).As<v8::Object>();
+    other_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
+                              OtherScriptState(), resolution)
+                              .ToLocalChecked()
+                              .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
         MakeGarbageCollected<ScriptFunction>(
             OtherScriptState(),
