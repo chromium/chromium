@@ -221,7 +221,7 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
   if (!lock.has_value()) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
-            FileSystemAccessStatus::kInvalidState,
+            FileSystemAccessStatus::kNoModificationAllowedError,
             "Access Handles cannot be created if there is another open Access "
             "Handle or Writable stream associated with the same file."),
         blink::mojom::FileSystemAccessAccessHandleFilePtr(),
@@ -495,12 +495,13 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
 
   auto lock = manager()->TakeWriteLock(url(), WriteLockType::kShared);
   if (!lock.has_value()) {
-    std::move(callback).Run(file_system_access_error::FromStatus(
-                                FileSystemAccessStatus::kInvalidState,
-                                "Writable streams cannot be created if there "
-                                "is an open Access Handle "
-                                "associated with the same file."),
-                            mojo::NullRemote());
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kNoModificationAllowedError,
+            "Writable streams cannot be created if there "
+            "is an open Access Handle "
+            "associated with the same file."),
+        mojo::NullRemote());
     return;
   }
 

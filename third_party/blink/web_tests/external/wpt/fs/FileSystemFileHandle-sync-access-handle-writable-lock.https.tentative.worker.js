@@ -8,7 +8,7 @@ directory_test(async (t, root_dir) =>  {
 
   const syncHandle1 = await fileHandle.createSyncAccessHandle();
   await promise_rejects_dom(
-      t, 'InvalidStateError', fileHandle.createSyncAccessHandle());
+      t, 'NoModificationAllowedError', fileHandle.createSyncAccessHandle());
 
   await syncHandle1.close();
   const syncHandle2 = await fileHandle.createSyncAccessHandle();
@@ -24,7 +24,7 @@ directory_test(async (t, root_dir) =>  {
 
   const barSyncHandle1 = await barFileHandle.createSyncAccessHandle();
   await promise_rejects_dom(
-      t, 'InvalidStateError', barFileHandle.createSyncAccessHandle());
+      t, 'NoModificationAllowedError', barFileHandle.createSyncAccessHandle());
 
   await barSyncHandle1.close();
   const barSyncHandle2 = await barFileHandle.createSyncAccessHandle();
@@ -61,7 +61,7 @@ directory_test(async (t, root_dir) =>  {
 
   const syncHandle = await fileHandle.createSyncAccessHandle();
   await promise_rejects_dom(
-      t, 'InvalidStateError', fileHandle.createWritable());
+      t, 'NoModificationAllowedError', fileHandle.createWritable());
 
   await syncHandle.close();
   const writable = await fileHandle.createWritable();
@@ -74,11 +74,11 @@ directory_test(async (t, root_dir) =>  {
   const writable1 = await fileHandle.createWritable();
   const writable2 = await fileHandle.createWritable();
   await promise_rejects_dom(
-      t, 'InvalidStateError', fileHandle.createSyncAccessHandle());
+      t, 'NoModificationAllowedError', fileHandle.createSyncAccessHandle());
 
   await writable1.close();
   await promise_rejects_dom(
-      t, 'InvalidStateError', fileHandle.createSyncAccessHandle());
+      t, 'NoModificationAllowedError', fileHandle.createSyncAccessHandle());
 
   await writable2.close();
   const syncHandle = await fileHandle.createSyncAccessHandle();
