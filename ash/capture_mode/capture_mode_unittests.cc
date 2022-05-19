@@ -3853,6 +3853,26 @@ TEST_F(CaptureModeTest, ClipboardWrite) {
   EXPECT_NE(before_sequence_number, after_sequence_number);
 }
 
+// Tests the reverse tabbing behavior of the keyboard navigation.
+TEST_F(CaptureModeTest, ReverseTabbingTest) {
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+  for (CaptureModeSource source :
+       {CaptureModeSource::kFullscreen, CaptureModeSource::kRegion,
+        CaptureModeSource::kWindow}) {
+    auto* controller = StartCaptureSession(source, CaptureModeType::kImage);
+    CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+    // Nothing is focused initially.
+    EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+    EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+    // Reverse tabbing once and the focus should be on the close button.
+    SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+    EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+    EXPECT_TRUE(GetCloseButton()->has_focus());
+    controller->Stop();
+  }
+}
+
 // A test class that uses a mock time task environment.
 class CaptureModeMockTimeTest : public CaptureModeTest {
  public:

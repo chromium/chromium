@@ -428,9 +428,9 @@ CaptureModeSessionFocusCycler::GetNextGroup(bool reverse) const {
   const auto iter = base::ranges::find(groups_list, current_focus_group_);
   DCHECK(iter != groups_list.end());
   size_t next_group_index = std::distance(groups_list.begin(), iter);
-
+  const auto group_size = groups_list.size();
   do {
-    next_group_index = (next_group_index + increment) % groups_list.size();
+    next_group_index = (group_size + next_group_index + increment) % group_size;
   } while (!IsGroupAvailable(groups_list[next_group_index]));
 
   return groups_list[next_group_index];
