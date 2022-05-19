@@ -54,6 +54,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}.
  */
 public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
+    private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
@@ -115,7 +116,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull BooleanSupplier supportsFindInPage,
             @NonNull Supplier<TabCreatorManager> tabCreatorManagerSupplier,
             @NonNull FullscreenManager fullscreenManager,
-            @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            @NonNull ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
@@ -143,6 +144,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(),
                 ephemeralTabCoordinatorSupplier, false);
         // clang-format on
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
@@ -198,7 +200,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 != null : "IntentDataProvider needs to be non-null after preInflationStartup";
 
         mCustomTabHeightStrategy = CustomTabHeightStrategy.createStrategy(mActivity,
-                intentDataProvider.getInitialActivityHeight(), mMultiWindowModeStateDispatcher,
+                mCompositorViewHolderSupplier, intentDataProvider.getInitialActivityHeight(),
+                mMultiWindowModeStateDispatcher,
+                intentDataProvider.getColorProvider().getNavigationBarColor(),
+                intentDataProvider.getColorProvider().getNavigationBarDividerColor(),
                 CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
                 mActivityLifecycleDispatcher);
     }

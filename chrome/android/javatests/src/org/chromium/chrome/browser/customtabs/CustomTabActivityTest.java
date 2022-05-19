@@ -1677,8 +1677,7 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         WindowManager.LayoutParams attributes = getActivity().getWindow().getAttributes();
-        assertNotEquals("The height shouldn't be match_parent",
-                WindowManager.LayoutParams.MATCH_PARENT, attributes.height);
+        assertNotEquals("The window should have non-zero y offset", 0, attributes.y);
     }
 
     private void verifyHistoryAfterHiddenTab(boolean speculationWasAHit) throws Exception {

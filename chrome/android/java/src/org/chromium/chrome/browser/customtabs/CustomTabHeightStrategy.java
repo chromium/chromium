@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -19,16 +21,18 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
  * The default strategy for setting the height of the custom tab.
  */
 public class CustomTabHeightStrategy {
-    public static CustomTabHeightStrategy createStrategy(Activity activity, @Px int initialHeight,
+    public static CustomTabHeightStrategy createStrategy(Activity activity,
+            ObservableSupplier<? extends FrameLayout> parentViewSupplier, @Px int initialHeight,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            Integer navigationBarColor, Integer navigationBarDividerColor,
             CustomTabsConnection connection, @Nullable CustomTabsSessionToken session,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         if (initialHeight <= 0) {
             return new CustomTabHeightStrategy();
         }
 
-        return new PartialCustomTabHeightStrategy(activity, initialHeight,
-                multiWindowModeStateDispatcher,
+        return new PartialCustomTabHeightStrategy(activity, parentViewSupplier, initialHeight,
+                multiWindowModeStateDispatcher, navigationBarColor, navigationBarDividerColor,
                 size -> connection.onResized(session, size), lifecycleDispatcher);
     }
 
