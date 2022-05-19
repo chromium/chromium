@@ -993,9 +993,10 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       child_inline_offset = caption.margins.inline_start;
     } else {
       DCHECK(child.IsTableSection());
+      LayoutUnit collapsible_border_spacing;
       if (table_box_extent) {
         // This is not the first section. Just add border-spacing.
-        child_block_offset += border_spacing.block_size;
+        collapsible_border_spacing = border_spacing.block_size;
       } else {
         // Entering the first section in this fragment. This is where the "table
         // box" starts.
@@ -1004,15 +1005,41 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         // Only include border-spacing if we're at the start of the section.
         if (!IsResumingLayout(child_break_token))
           border_spacing_before_first_section = border_spacing.block_size;
-        child_block_offset +=
-            border_padding.block_start + border_spacing_before_first_section;
+        child_block_offset += border_padding.block_start;
+        // We need to lay the section out before we can tell whether it should
+        // be preceded by border-spacing (if there is nothing inside, it should
+        // be omitted).
+        collapsible_border_spacing = border_spacing_before_first_section;
       }
+
+      LayoutUnit offset_for_childless_section = child_block_offset;
+      child_block_offset += collapsible_border_spacing;
 
       NGConstraintSpace child_space = CreateSectionConstraintSpace(
           child, child_block_offset, entry.GetSectionIndex());
       child_result =
           child.Layout(child_space, child_break_token, early_break_in_child);
       child_inline_offset = section_inline_offset;
+
+      border_spacing_after_last_section = border_spacing.block_size;
+      if (To<NGPhysicalBoxFragment>(child_result->PhysicalFragment())
+              .HasDescendantsForTablePart()) {
+        // We want to add border-spacing after this section, but not if the
+        // current fragment is past the block-end of the section. This might
+        // happen if there are overflowing descendants, and this section should
+        // just create an zero-sized fragment.
+        if (child_break_token && child_break_token->IsAtBlockEnd())
+          border_spacing_after_last_section = LayoutUnit();
+      } else {
+        // There were no children inside. Omit the border-spacing previously
+        // added. Note that we should ideally re-lay out now if we're
+        // block-fragmented and ran out of space (the section may have had a
+        // non-zero block-size, for instance), since that would mean that we've
+        // used less space than actually turned out to be available. However,
+        // nobody will probably notice, and besides, our "empty section
+        // handling" isn't identical to other engines anyway.
+        child_block_offset = offset_for_childless_section;
+      }
     }
     if (ConstraintSpace().HasBlockFragmentation()) {
       LayoutUnit fragmentainer_block_offset =
@@ -1034,29 +1061,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
     NGBoxFragment fragment(table_writing_direction, physical_fragment);
-    if (child.IsTableSection()) {
-      border_spacing_after_last_section = border_spacing.block_size;
-      if (fragment.HasDescendantsForTablePart()) {
-        // We want to add border-spacing after this section, but not if the
-        // current fragment is past the block-end of the section. This might
-        // happen if there are overflowing descendants, and this section should
-        // just create an zero-sized fragment.
-        if (child_break_token && child_break_token->IsAtBlockEnd())
-          border_spacing_after_last_section = LayoutUnit();
-      } else {
-        // There were no children inside. Omit the border-spacing previously
-        // added. Note that we should ideally re-lay out now if we're
-        // block-fragmented and ran out of space (the section may have had a
-        // non-zero block-size, for instance), since that would mean that we've
-        // used less space than actually turned out to be available. However,
-        // nobody will probably notice, and besides, our "empty section
-        // handling" isn't identical to other engines anyway.
-        child_block_offset -= border_spacing.block_size;
-      }
-      if (!table_baseline) {
-        if (const auto& section_baseline = fragment.Baseline())
-          table_baseline = *section_baseline + child_block_offset;
-      }
+    if (child.IsTableSection() && !table_baseline) {
+      if (const auto& section_baseline = fragment.Baseline())
+        table_baseline = *section_baseline + child_block_offset;
     }
 
     container_builder_.AddResult(
