@@ -71,6 +71,7 @@ target(_libcxx_target_type, "libc++") {
   sources = [
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
+    "trunk/src/assert.cpp",
     "trunk/src/atomic.cpp",
     "trunk/src/barrier.cpp",
     "trunk/src/bind.cpp",
@@ -80,12 +81,14 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/condition_variable_destructor.cpp",
     "trunk/src/debug.cpp",
     "trunk/src/exception.cpp",
+    "trunk/src/format.cpp",
     "trunk/src/functional.cpp",
     "trunk/src/future.cpp",
     "trunk/src/hash.cpp",
     "trunk/src/ios.cpp",
     "trunk/src/ios.instantiations.cpp",
     "trunk/src/iostream.cpp",
+    "trunk/src/legacy_pointer_safety.cpp",
     "trunk/src/locale.cpp",
     "trunk/src/memory.cpp",
     "trunk/src/mutex.cpp",
@@ -95,6 +98,9 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/random.cpp",
     "trunk/src/random_shuffle.cpp",
     "trunk/src/regex.cpp",
+    "trunk/src/ryu/d2fixed.cpp",
+    "trunk/src/ryu/d2s.cpp",
+    "trunk/src/ryu/f2s.cpp",
     "trunk/src/shared_mutex.cpp",
     "trunk/src/stdexcept.cpp",
     "trunk/src/string.cpp",
@@ -107,6 +113,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/variant.cpp",
     "trunk/src/vector.cpp",
   ]
+  include_dirs = [ "trunk/src" ]
   if (is_win) {
     sources += [
       "trunk/src/support/win32/locale_win32.cpp",
