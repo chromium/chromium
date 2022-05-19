@@ -32,17 +32,9 @@ class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
 class LorgnetteManagerClient;
-class ModemMessagingClient;
 class OobeConfigurationClient;
 class RuntimeProbeClient;
-class ShillDeviceClient;
-class ShillIPConfigClient;
-class ShillManagerClient;
-class ShillProfileClient;
-class ShillServiceClient;
-class ShillThirdPartyVpnDriverClient;
 class SmbProviderClient;
-class SMSClient;
 class UpdateEngineClient;
 class VirtualFileProviderClient;
 class VmPluginDispatcherClient;
@@ -103,17 +95,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   UpdateEngineClient* GetUpdateEngineClient();
   VirtualFileProviderClient* GetVirtualFileProviderClient();
   VmPluginDispatcherClient* GetVmPluginDispatcherClient();
-
-  // DEPRECATED, DO NOT USE. The static getter for each of these classes should
-  // be used instead. TODO(stevenjb): Remove. https://crbug.com/948390.
-  ModemMessagingClient* GetModemMessagingClient();
-  SMSClient* GetSMSClient();
-  ShillDeviceClient* GetShillDeviceClient();
-  ShillIPConfigClient* GetShillIPConfigClient();
-  ShillManagerClient* GetShillManagerClient();
-  ShillProfileClient* GetShillProfileClient();
-  ShillServiceClient* GetShillServiceClient();
-  ShillThirdPartyVpnDriverClient* GetShillThirdPartyVpnDriverClient();
 
  private:
   DBusThreadManager();

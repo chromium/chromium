@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -280,9 +279,7 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
  protected:
   void DisconnectNetworkService(const std::string& service_path) {
     chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+        chromeos::ShillServiceClient::Get()->GetTestInterface();
     base::Value value(shill::kStateIdle);
     service_test->SetServiceProperty(service_path, shill::kStateProperty,
                                      value);
@@ -293,9 +290,7 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
                                  const std::string& guid,
                                  const std::string& ssid) {
     chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+        chromeos::ShillServiceClient::Get()->GetTestInterface();
 
     service_test->AddService(service_path, guid, ssid, shill::kTypeWifi,
                              shill::kStateOnline, true /* add_to_visible */);
@@ -322,13 +317,9 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
  private:
   void SetupNetworkEnvironment() {
     chromeos::ShillProfileClient::TestInterface* profile_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillProfileClient()
-            ->GetTestInterface();
+        chromeos::ShillProfileClient::Get()->GetTestInterface();
     chromeos::ShillServiceClient::TestInterface* service_test =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+        chromeos::ShillServiceClient::Get()->GetTestInterface();
 
     profile_test->AddProfile(kUserProfilePath, "user");
 
@@ -875,9 +866,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   const char kWebProxyAutodetectionUrl[] = "www.proxyurl.com:443";
 
   chromeos::ShillIPConfigClient::TestInterface* ip_config_client =
-      chromeos::DBusThreadManager::Get()
-          ->GetShillIPConfigClient()
-          ->GetTestInterface();
+      chromeos::ShillIPConfigClient::Get()->GetTestInterface();
 
   // Set the WPAD DHCP URL. This should now have precedence over the PAC URL set
   // via DNS.
@@ -888,9 +877,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
   ip_config_client->AddIPConfig(kIPConfigPath, wpad_config);
 
   chromeos::ShillServiceClient::TestInterface* service_test =
-      chromeos::DBusThreadManager::Get()
-          ->GetShillServiceClient()
-          ->GetTestInterface();
+      chromeos::ShillServiceClient::Get()->GetTestInterface();
 
   service_test->SetServiceProperty(kDefaultServicePath,
                                    shill::kIPConfigProperty,

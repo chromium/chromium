@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -124,8 +123,7 @@ void DeviceDisablingTest::SetUpOnMainThread() {
   OobeBaseTest::SetUpOnMainThread();
 
   // Set up fake networks.
-  DBusThreadManager::Get()->GetShillManagerClient()->GetTestInterface()->
-      SetupDefaultEnvironment();
+  ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
 }
 
 void DeviceDisablingTest::UpdateState(NetworkError::ErrorReason reason) {
@@ -150,9 +148,9 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
   // Connect to the fake Ethernet network. This ensures that Chrome OS will not
   // try to show the offline error screen.
   base::RunLoop connect_run_loop;
-  DBusThreadManager::Get()->GetShillServiceClient()->Connect(
-      dbus::ObjectPath("/service/eth1"), connect_run_loop.QuitClosure(),
-      base::BindOnce(&ErrorCallbackFunction));
+  ShillServiceClient::Get()->Connect(dbus::ObjectPath("/service/eth1"),
+                                     connect_run_loop.QuitClosure(),
+                                     base::BindOnce(&ErrorCallbackFunction));
   connect_run_loop.Run();
 
   // Skip to the login screen.

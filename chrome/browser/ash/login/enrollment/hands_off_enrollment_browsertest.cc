@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
@@ -64,7 +63,7 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
         0,      // no limit to number of results
         &networks);
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     for (const auto* const network : networks) {
       service->SetServiceProperty(network->path(), shill::kStateProperty,
                                   base::Value(shill::kStateIdle));
@@ -75,7 +74,7 @@ class HandsOffEnrollmentTest : public MixinBasedInProcessBrowserTest {
   // Simulates device being connected to the network.
   void SimulateNetworkConnected() {
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     service->SetServiceProperty(kDefaultNetworkServicePath,
                                 shill::kStateProperty,
                                 base::Value(shill::kStateOnline));

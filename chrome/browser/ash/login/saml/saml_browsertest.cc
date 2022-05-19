@@ -75,7 +75,6 @@
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
@@ -1180,11 +1179,9 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       user_affiliation_ids);
 
   // Set up fake networks.
-  DBusThreadManager::Get()
-      ->GetShillManagerClient()
-      ->GetTestInterface()
-      ->SetupDefaultEnvironment();
+  ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
 }
+
 void SAMLPolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
   SamlTestBase::SetUpCommandLine(command_line);
 

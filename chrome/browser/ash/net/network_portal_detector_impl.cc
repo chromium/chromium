@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_event_log.h"
@@ -352,8 +351,8 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   // If using a fake profile client, also fake being behind a captive portal
   // if the default network is in portal state.
   if (result != captive_portal::RESULT_NO_RESPONSE &&
-      DBusThreadManager::Get()->GetShillProfileClient()->GetTestInterface() &&
-      network && network->IsShillCaptivePortal()) {
+      ShillProfileClient::Get()->GetTestInterface() && network &&
+      network->IsShillCaptivePortal()) {
     result = captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL;
     response_code = 200;
   }

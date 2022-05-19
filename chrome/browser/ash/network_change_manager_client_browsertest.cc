@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
@@ -101,8 +100,7 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    service_client_ =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+    service_client_ = ShillServiceClient::Get()->GetTestInterface();
     service_client_->ClearServices();
 
     // Make sure everyone thinks we have an ethernet connection.

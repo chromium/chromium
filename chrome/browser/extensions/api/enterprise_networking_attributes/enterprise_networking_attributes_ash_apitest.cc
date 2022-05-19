@@ -78,21 +78,13 @@ class EnterpriseNetworkingAttributesTest
 
   void SetupDisconnectedNetwork() {
     chromeos::ShillDeviceClient::TestInterface* shill_device_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillDeviceClient()
-            ->GetTestInterface();
+        chromeos::ShillDeviceClient::Get()->GetTestInterface();
     chromeos::ShillIPConfigClient::TestInterface* shill_ipconfig_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillIPConfigClient()
-            ->GetTestInterface();
+        chromeos::ShillIPConfigClient::Get()->GetTestInterface();
     chromeos::ShillServiceClient::TestInterface* shill_service_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+        chromeos::ShillServiceClient::Get()->GetTestInterface();
     chromeos::ShillProfileClient::TestInterface* shill_profile_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillProfileClient()
-            ->GetTestInterface();
+        chromeos::ShillProfileClient::Get()->GetTestInterface();
 
     shill_service_client->ClearServices();
     shill_device_client->ClearDevices();
@@ -140,9 +132,7 @@ class EnterpriseNetworkingAttributesTest
 
   void ConnectNetwork() {
     chromeos::ShillServiceClient::TestInterface* shill_service_client =
-        chromeos::DBusThreadManager::Get()
-            ->GetShillServiceClient()
-            ->GetTestInterface();
+        chromeos::ShillServiceClient::Get()->GetTestInterface();
     shill_service_client->SetServiceProperty(kWifiServicePath,
                                              shill::kStateProperty,
                                              base::Value(shill::kStateOnline));

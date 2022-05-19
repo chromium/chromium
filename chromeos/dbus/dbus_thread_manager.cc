@@ -28,15 +28,7 @@
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/dbus/runtime_probe/runtime_probe_client.h"
-#include "chromeos/dbus/shill/modem_messaging_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/dbus/shill/shill_device_client.h"
-#include "chromeos/dbus/shill/shill_ipconfig_client.h"
-#include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/dbus/shill/shill_profile_client.h"
-#include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
-#include "chromeos/dbus/shill/sms_client.h"
 #include "chromeos/dbus/smbprovider/smb_provider_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 
@@ -115,31 +107,6 @@ GnubbyClient* DBusThreadManager::GetGnubbyClient() {
   RETURN_DBUS_CLIENT(gnubby_client_);
 }
 
-ShillDeviceClient* DBusThreadManager::GetShillDeviceClient() {
-  return ShillDeviceClient::Get();
-}
-
-ShillIPConfigClient* DBusThreadManager::GetShillIPConfigClient() {
-  return ShillIPConfigClient::Get();
-}
-
-ShillManagerClient* DBusThreadManager::GetShillManagerClient() {
-  return ShillManagerClient::Get();
-}
-
-ShillServiceClient* DBusThreadManager::GetShillServiceClient() {
-  return ShillServiceClient::Get();
-}
-
-ShillProfileClient* DBusThreadManager::GetShillProfileClient() {
-  return ShillProfileClient::Get();
-}
-
-ShillThirdPartyVpnDriverClient*
-DBusThreadManager::GetShillThirdPartyVpnDriverClient() {
-  return ShillThirdPartyVpnDriverClient::Get();
-}
-
 ImageBurnerClient* DBusThreadManager::GetImageBurnerClient() {
   RETURN_DBUS_CLIENT(image_burner_client_);
 }
@@ -153,10 +120,6 @@ LorgnetteManagerClient* DBusThreadManager::GetLorgnetteManagerClient() {
                           : nullptr;
 }
 
-ModemMessagingClient* DBusThreadManager::GetModemMessagingClient() {
-  return ModemMessagingClient::Get();
-}
-
 OobeConfigurationClient* DBusThreadManager::GetOobeConfigurationClient() {
   return clients_browser_->oobe_configuration_client_.get();
 }
@@ -168,10 +131,6 @@ RuntimeProbeClient* DBusThreadManager::GetRuntimeProbeClient() {
 
 SmbProviderClient* DBusThreadManager::GetSmbProviderClient() {
   RETURN_DBUS_CLIENT(smb_provider_client_);
-}
-
-SMSClient* DBusThreadManager::GetSMSClient() {
-  return SMSClient::Get();
 }
 
 UpdateEngineClient* DBusThreadManager::GetUpdateEngineClient() {

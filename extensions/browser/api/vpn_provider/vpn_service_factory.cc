@@ -5,7 +5,7 @@
 #include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 
 #include "base/memory/singleton.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -54,13 +54,13 @@ KeyedService* VpnServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new VpnService(
-      context, context_user_hash, extensions::ExtensionRegistry::Get(context),
-      extensions::EventRouter::Get(context),
-      DBusThreadManager::Get()->GetShillThirdPartyVpnDriverClient(),
-      NetworkHandler::Get()->network_configuration_handler(),
-      NetworkHandler::Get()->network_profile_handler(),
-      NetworkHandler::Get()->network_state_handler());
+  return new VpnService(context, context_user_hash,
+                        extensions::ExtensionRegistry::Get(context),
+                        extensions::EventRouter::Get(context),
+                        ShillThirdPartyVpnDriverClient::Get(),
+                        NetworkHandler::Get()->network_configuration_handler(),
+                        NetworkHandler::Get()->network_profile_handler(),
+                        NetworkHandler::Get()->network_state_handler());
 }
 
 }  // namespace chromeos

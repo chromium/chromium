@@ -28,14 +28,6 @@ TEST(DBusThreadManagerTest, Initialize) {
   EXPECT_TRUE(manager->GetEasyUnlockClient());
   EXPECT_TRUE(manager->GetImageBurnerClient());
   EXPECT_TRUE(manager->GetLorgnetteManagerClient());
-  EXPECT_TRUE(manager->GetModemMessagingClient());
-  EXPECT_TRUE(manager->GetShillDeviceClient());
-  EXPECT_TRUE(manager->GetShillIPConfigClient());
-  EXPECT_TRUE(manager->GetShillManagerClient());
-  EXPECT_TRUE(manager->GetShillServiceClient());
-  EXPECT_TRUE(manager->GetShillProfileClient());
-  EXPECT_TRUE(manager->GetShillThirdPartyVpnDriverClient());
-  EXPECT_TRUE(manager->GetSMSClient());
   EXPECT_TRUE(manager->GetUpdateEngineClient());
 
   DBusThreadManager::Shutdown();

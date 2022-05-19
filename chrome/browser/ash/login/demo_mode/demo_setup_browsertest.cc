@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/network/network_handler.h"
@@ -221,7 +220,7 @@ class DemoSetupTestBase : public OobeBaseTest {
   // Simulates device being connected to the network.
   void SimulateNetworkConnected() {
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     service->SetServiceProperty(kDefaultNetworkServicePath,
                                 shill::kStateProperty,
                                 base::Value(shill::kStateOnline));
@@ -231,7 +230,7 @@ class DemoSetupTestBase : public OobeBaseTest {
   // Simulates device being disconnected from the network.
   void SimulateNetworkDisconnected() {
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     service->SetServiceProperty(kDefaultNetworkServicePath,
                                 shill::kStateProperty,
                                 base::Value(shill::kStateIdle));
@@ -248,7 +247,7 @@ class DemoSetupTestBase : public OobeBaseTest {
         0,      // no limit to number of results
         &networks);
     ShillServiceClient::TestInterface* service =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        ShillServiceClient::Get()->GetTestInterface();
     for (const auto* const network : networks) {
       service->SetServiceProperty(network->path(), shill::kStateProperty,
                                   base::Value(shill::kStateIdle));
