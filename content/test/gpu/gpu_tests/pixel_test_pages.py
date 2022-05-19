@@ -7,7 +7,9 @@
 
 from __future__ import print_function
 
+import datetime
 import os
+import typing
 
 from enum import Enum
 
@@ -37,6 +39,8 @@ VERY_PERMISSIVE_SOBEL_ALGO = algo.SobelMatchingAlgorithm(
     edge_threshold=0,
     ignored_border_thickness=1)
 
+BrowserArgType = typing.List[str]
+
 
 class PixelTestPage():
   """A wrapper class mimicking the functionality of the PixelTestsStorySet
@@ -45,17 +49,19 @@ class PixelTestPage():
 
   def __init__(  # pylint: disable=too-many-arguments
       self,
-      url,
-      name,
-      test_rect,
-      browser_args=None,
-      gpu_process_disabled=False,
-      optional_action=None,
-      restart_browser_after_test=False,
-      other_args=None,
-      grace_period_end=None,
-      expected_per_process_crashes=None,
-      matching_algorithm=None):
+      url: str,
+      name: str,
+      test_rect: typing.List[int],
+      browser_args: typing.Optional[BrowserArgType] = None,
+      gpu_process_disabled: bool = False,
+      optional_action: typing.Optional[str] = None,
+      restart_browser_after_test: bool = False,
+      other_args: typing.Optional[dict] = None,
+      grace_period_end: typing.Optional[datetime.date] = None,
+      expected_per_process_crashes: typing.Optional[
+          typing.Dict[str, int]] = None,
+      matching_algorithm: typing.Optional[algo.SkiaGoldMatchingAlgorithm] = None
+  ):
     super().__init__()
     self.url = url
     self.name = name
@@ -96,30 +102,42 @@ class PixelTestPage():
     self.matching_algorithm = (matching_algorithm
                                or algo.ExactMatchingAlgorithm())
 
-  def CopyWithNewBrowserArgsAndSuffix(self, browser_args, suffix):
+  # Strings used for the return type since at this point PixelTestPage is
+  # technically a forward reference. Python type hinting specifically supports
+  # string literals for this case.
+  def CopyWithNewBrowserArgsAndSuffix(self, browser_args: BrowserArgType,
+                                      suffix: str) -> 'PixelTestPage':
     return PixelTestPage(self.url, self.name + suffix, self.test_rect,
                          browser_args)
 
-  def CopyWithNewBrowserArgsAndPrefix(self, browser_args, prefix):
+  def CopyWithNewBrowserArgsAndPrefix(self, browser_args: BrowserArgType,
+                                      prefix: str) -> 'PixelTestPage':
     # Assuming the test name is 'Pixel'.
     split = self.name.split('_', 1)
     return PixelTestPage(self.url, split[0] + '_' + prefix + split[1],
                          self.test_rect, browser_args)
 
 
-def CopyPagesWithNewBrowserArgsAndSuffix(pages, browser_args, suffix):
+def CopyPagesWithNewBrowserArgsAndSuffix(pages: typing.List[PixelTestPage],
+                                         browser_args: BrowserArgType,
+                                         suffix: str
+                                         ) -> typing.List[PixelTestPage]:
   return [
       p.CopyWithNewBrowserArgsAndSuffix(browser_args, suffix) for p in pages
   ]
 
 
-def CopyPagesWithNewBrowserArgsAndPrefix(pages, browser_args, prefix):
+def CopyPagesWithNewBrowserArgsAndPrefix(pages: typing.List[PixelTestPage],
+                                         browser_args: BrowserArgType,
+                                         prefix: str
+                                         ) -> typing.List[PixelTestPage]:
   return [
       p.CopyWithNewBrowserArgsAndPrefix(browser_args, prefix) for p in pages
   ]
 
 
-def GetMediaStreamTestBrowserArgs(media_stream_source_relpath):
+def GetMediaStreamTestBrowserArgs(media_stream_source_relpath: str
+                                  ) -> typing.List[str]:
   return [
       '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
       '--use-file-for-fake-video-capture=' +
@@ -129,7 +147,7 @@ def GetMediaStreamTestBrowserArgs(media_stream_source_relpath):
 
 class PixelTestPages():
   @staticmethod
-  def DefaultPages(base_name):
+  def DefaultPages(base_name: str) -> typing.List[PixelTestPage]:
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
     browser_swap_args = ['--enable-features=ReportFCPOnlyOnSuccessfulCommit']
     browser_args_DXVA = [cba.DISABLE_FEATURES_D3D11_VIDEO_DECODER]
@@ -484,7 +502,7 @@ class PixelTestPages():
 
   # Pages that should be run with GPU rasterization enabled.
   @staticmethod
-  def GpuRasterizationPages(base_name):
+  def GpuRasterizationPages(base_name: str) -> typing.List[PixelTestPage]:
     browser_args = [
         cba.ENABLE_GPU_RASTERIZATION,
         cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
@@ -510,7 +528,7 @@ class PixelTestPages():
 
   # Pages that should be run with off-thread paint worklet flags.
   @staticmethod
-  def PaintWorkletPages(base_name):
+  def PaintWorkletPages(base_name: str) -> typing.List[PixelTestPage]:
     browser_args = [
         '--enable-blink-features=OffMainThreadCSSPaint',
         '--enable-gpu-rasterization'
@@ -526,7 +544,8 @@ class PixelTestPages():
 
   # Pages that should be run with experimental canvas features.
   @staticmethod
-  def ExperimentalCanvasFeaturesPages(base_name):
+  def ExperimentalCanvasFeaturesPages(base_name: str
+                                      ) -> typing.List[PixelTestPage]:
     browser_args = [
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
     ]
@@ -631,7 +650,7 @@ class PixelTestPages():
     ]
 
   @staticmethod
-  def LowLatencyPages(base_name):
+  def LowLatencyPages(base_name: str) -> typing.List[PixelTestPage]:
     unaccelerated_args = [
         cba.DISABLE_ACCELERATED_2D_CANVAS,
         cba.DISABLE_GPU_COMPOSITING,
@@ -671,7 +690,7 @@ class PixelTestPages():
   # Only add these tests on platforms where SwiftShader is enabled.
   # Currently this is Windows and Linux.
   @staticmethod
-  def SwiftShaderPages(base_name):
+  def SwiftShaderPages(base_name: str) -> typing.List[PixelTestPage]:
     browser_args = [cba.DISABLE_GPU]
     suffix = '_SwiftShader'
     return [
@@ -695,7 +714,7 @@ class PixelTestPages():
 
   # Test rendering where GPU process is blocked.
   @staticmethod
-  def NoGpuProcessPages(base_name):
+  def NoGpuProcessPages(base_name: str) -> typing.List[PixelTestPage]:
     browser_args = [cba.DISABLE_GPU, cba.DISABLE_SOFTWARE_RASTERIZER]
     suffix = '_NoGpuProcess'
     return [
@@ -716,7 +735,7 @@ class PixelTestPages():
   # Pages that should be run with various macOS specific command line
   # arguments.
   @staticmethod
-  def MacSpecificPages(base_name):
+  def MacSpecificPages(base_name: str) -> typing.List[PixelTestPage]:
     iosurface_2d_canvas_args = ['--enable-accelerated-2d-canvas']
 
     non_chromium_image_args = ['--disable-webgl-image-chromium']
@@ -824,7 +843,7 @@ class PixelTestPages():
   # Pages that should be run only on dual-GPU MacBook Pros (at the
   # present time, anyway).
   @staticmethod
-  def DualGPUMacSpecificPages(base_name):
+  def DualGPUMacSpecificPages(base_name: str) -> typing.List[PixelTestPage]:
     return [
         PixelTestPage('pixel_webgl_high_to_low_power.html',
                       base_name + '_WebGLHighToLowPower',
@@ -851,7 +870,7 @@ class PixelTestPages():
     ]
 
   @staticmethod
-  def DirectCompositionPages(base_name):
+  def DirectCompositionPages(base_name: str) -> typing.List[PixelTestPage]:
     browser_args = [
         cba.ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS,
         # All bots are connected with a power source, however, we want to to
@@ -1061,7 +1080,7 @@ class PixelTestPages():
     ]
 
   @staticmethod
-  def HdrTestPages(base_name):
+  def HdrTestPages(base_name: str) -> typing.List[PixelTestPage]:
     return [
         PixelTestPage(
             'pixel_canvas2d.html',
@@ -1076,7 +1095,7 @@ class PixelTestPages():
     ]
 
   @staticmethod
-  def ForceFullDamagePages(base_name):
+  def ForceFullDamagePages(base_name: str) -> typing.List[PixelTestPage]:
     return [
         PixelTestPage(
             'wait_for_compositing.html',

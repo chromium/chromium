@@ -7,7 +7,10 @@ import os
 import posixpath
 import sys
 import time
+import typing
+import unittest
 
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_integration_test_base
@@ -61,12 +64,12 @@ class PixelIntegrationTest(
   test_base_name = 'Pixel'
 
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     """The name by which this test is invoked on the command line."""
     return 'pixel'
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     cls.SetParsedCommandLineOptions(options)
     namespace = pixel_test_pages.PixelTestPages
     pages = namespace.DefaultPages(cls.test_base_name)
@@ -90,9 +93,9 @@ class PixelIntegrationTest(
       pages += namespace.HdrTestPages(cls.test_base_name)
     for p in pages:
       yield (p.name, posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
-                                    p.url), (p))
+                                    p.url), tuple([p]))
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, *args) -> None:
     page = args[0]
     # Some pixel tests require non-standard browser arguments. Need to
     # check before running each page that it can run in the current
@@ -134,7 +137,7 @@ class PixelIntegrationTest(
           # test makes assertions about the active GPU.
           time.sleep(4)
 
-  def GetExpectedCrashes(self, args):
+  def GetExpectedCrashes(self, args: ct.TestArgs) -> None:
     """Returns which crashes, per process type, to expect for the current test.
 
     Args:
@@ -149,7 +152,8 @@ class PixelIntegrationTest(
     # args[0] is the PixelTestPage for the current test.
     return args[0].expected_per_process_crashes
 
-  def _RunSkiaGoldBasedPixelTest(self, page):
+  def _RunSkiaGoldBasedPixelTest(self,
+                                 page: pixel_test_pages.PixelTestPage) -> None:
     """Captures and compares a test image using Skia Gold.
 
     Raises an Exception if the comparison fails.
@@ -184,19 +188,20 @@ class PixelIntegrationTest(
     image_name = self._UrlToImageName(page.name)
     self._UploadTestResultToSkiaGold(image_name, screenshot, page)
 
-  def _DoPageAction(self, tab, page):
+  def _DoPageAction(self, tab: ct.Tab,
+                    page: pixel_test_pages.PixelTestPage) -> None:
     getattr(self, '_' + page.optional_action)(tab, page)
     # Now that we've done the page's specific action, wait for it to
     # report completion.
     tab.action_runner.WaitForJavaScriptCondition(
         'domAutomationController._finished', timeout=300)
 
-  def _AssertLowPowerGPU(self):
+  def _AssertLowPowerGPU(self) -> None:
     if self._IsDualGPUMacLaptop():
       if not self._IsIntelGPUActive():
         self.fail("Low power GPU should have been active but wasn't")
 
-  def _AssertHighPerformanceGPU(self):
+  def _AssertHighPerformanceGPU(self) -> None:
     if self._IsDualGPUMacLaptop():
       if self._IsIntelGPUActive():
         self.fail("High performance GPU should have been active but wasn't")
@@ -206,7 +211,9 @@ class PixelIntegrationTest(
   # These are specified as methods taking the tab and the page as
   # arguments.
   #
-  def _CrashGpuProcess(self, tab, page):  # pylint: disable=no-self-use
+  # pylint: disable=no-self-use
+  def _CrashGpuProcess(self, tab: ct.Tab,
+                       page: pixel_test_pages.PixelTestPage) -> None:
     # Crash the GPU process.
     #
     # This used to create a new tab and navigate it to
@@ -217,8 +224,10 @@ class PixelIntegrationTest(
     # process was chosen.
     del page  # Unused in this particular action.
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
+  # pylint: enable=no-self-use
 
-  def _SwitchTabs(self, tab, page):
+  def _SwitchTabs(self, tab: ct.Tab,
+                  page: pixel_test_pages.PixelTestPage) -> None:
     del page  # Unused in this particular action.
     if not tab.browser.supports_tab_control:
       self.fail('Browser must support tab control')
@@ -228,7 +237,8 @@ class PixelIntegrationTest(
     dummy_tab.action_runner.Wait(2)
     tab.Activate()
 
-  def _SwitchTabsAndCopyImage(self, tab, page):
+  def _SwitchTabsAndCopyImage(self, tab: ct.Tab,
+                              page: pixel_test_pages.PixelTestPage) -> None:
     del page  # Unused in this particular action.
     if not tab.browser.supports_tab_control:
       self.fail('Browser must support tab control')
@@ -240,7 +250,9 @@ class PixelIntegrationTest(
     dummy_tab.Close()
     tab.EvaluateJavaScript('copyImage()')
 
-  def _RunTestWithHighPerformanceTab(self, tab, page):
+  def _RunTestWithHighPerformanceTab(self, tab: ct.Tab,
+                                     page: pixel_test_pages.PixelTestPage
+                                     ) -> None:
     del page  # Unused in this particular action.
     if not self._IsDualGPUMacLaptop():
       # Short-circuit this test.
@@ -278,7 +290,8 @@ class PixelIntegrationTest(
     # Run the page to completion.
     tab.EvaluateJavaScript('runToCompletion()')
 
-  def _RunLowToHighPowerTest(self, tab, page):
+  def _RunLowToHighPowerTest(self, tab: ct.Tab,
+                             page: pixel_test_pages.PixelTestPage) -> None:
     del page  # Unused in this particular action.
     is_dual_gpu = self._IsDualGPUMacLaptop()
     tab.EvaluateJavaScript('initialize(' +
@@ -286,7 +299,9 @@ class PixelIntegrationTest(
     # The harness above will take care of waiting for the test to
     # complete with either a success or failure.
 
-  def _RunOffscreenCanvasIBRCWebGLTest(self, tab, page):
+  def _RunOffscreenCanvasIBRCWebGLTest(self, tab: ct.Tab,
+                                       page: pixel_test_pages.PixelTestPage
+                                       ) -> None:
     del page  # Unused in this particular action.
     self._AssertLowPowerGPU()
     tab.EvaluateJavaScript('setup()')
@@ -296,7 +311,8 @@ class PixelIntegrationTest(
     self._AssertLowPowerGPU()
     tab.EvaluateJavaScript('render()')
 
-  def _RunOffscreenCanvasIBRCWebGLHighPerfTest(self, tab, page):
+  def _RunOffscreenCanvasIBRCWebGLHighPerfTest(
+      self, tab: ct.Tab, page: pixel_test_pages.PixelTestPage) -> None:
     del page  # Unused in this particular action.
     self._AssertLowPowerGPU()
     tab.EvaluateJavaScript('setup(true)')
@@ -307,7 +323,7 @@ class PixelIntegrationTest(
     tab.EvaluateJavaScript('render()')
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
@@ -315,10 +331,11 @@ class PixelIntegrationTest(
     ]
 
 
-def _TestHarnessMessages(tab):
+def _TestHarnessMessages(tab: ct.Tab) -> str:
   return tab.EvaluateJavaScript('domAutomationController._messages')
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])
