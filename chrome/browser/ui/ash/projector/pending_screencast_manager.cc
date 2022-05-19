@@ -8,8 +8,11 @@
 #include <vector>
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,13 +25,21 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 constexpr base::FilePath::CharType kMediaExtension[] =
     FILE_PATH_LITERAL(".webm");
+constexpr char kOpenUrlBase[] = "https://drive.google.com/open";
+
+// The metadata might not be ready as the file gets uploaded. On projector app
+// side, we fetch newly uploaded screencasts with 2s delay, and it works fine,
+// so put 3s here to allow Drive to populate the metadata.
+constexpr base::TimeDelta kDriveGetMetadataDelay = base::Seconds(3);
 
 const std::string GetMetadataFileExtension() {
   return base::StrCat({".", ash::kProjectorMetadataFileExtension});
@@ -44,6 +55,80 @@ drivefs::DriveFsHost* GetDriveFsHostForActiveProfile() {
   return drivefs_integration ? drivefs_integration->GetDriveFsHost() : nullptr;
 }
 
+// "Absolute path" is the DriveFS absolute path of `drive_relative_path` on
+// local file system, for example: absolute_path =
+// "/{$drivefs_mounted_point}/root/{$drive_relative_path}";
+base::FilePath GetLocalAbsolutePath(const base::FilePath& drivefs_mounted_point,
+                                    const base::FilePath& drive_relative_path) {
+  base::FilePath root("/");
+  base::FilePath absolute_path(drivefs_mounted_point);
+  root.AppendRelativePath(drive_relative_path, &absolute_path);
+  return absolute_path;
+}
+
+// Returns the Drive server side id from |url| e.g.
+// https://drive.google.com/open?id=[ID].
+absl::optional<std::string> GetIdFromDriveUrl(const GURL& url) {
+  const std::string& spec = url.spec();
+  if (!base::StartsWith(spec, kOpenUrlBase,
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    return absl::nullopt;
+  }
+  std::string id;
+  if (!net::GetValueForKeyInQuery(url, "id", &id))
+    return absl::nullopt;
+  return id;
+}
+
+// Retrieves the file id from `metadata` and runs the `get_file_id_callback`
+// callback.
+void ParseFileIdOnGetMetaData(
+    PendingScreencastManager::OnGetFileIdCallback get_file_id_callback,
+    const base::FilePath& local_file_path,
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
+  std::string file_id;
+  // TODO(b/232282526): Add metric to track how often we get metadata failed.
+  if (error != drive::FileError::FILE_ERROR_OK || !metadata) {
+    LOG(ERROR) << "Get Drive File metadata failed";
+  } else if (metadata->alternate_url.empty()) {
+    LOG(ERROR) << "No alternate_url found in file metadata";
+  } else {
+    // TODO(b/221078840): Use the file id directly when it is available in
+    // `metadata`.
+    absl::optional<std::string> parsed_file_id =
+        GetIdFromDriveUrl(GURL(metadata->alternate_url));
+    if (parsed_file_id.has_value()) {
+      file_id = parsed_file_id.value();
+    } else {
+      LOG(ERROR) << "Could not get file id from alternate url";
+    }
+  }
+
+  std::move(get_file_id_callback).Run(local_file_path, file_id);
+}
+
+// Gets the absolute path for `drive_relative_path` and gets Drive metadata for
+// the given file path. To execute the `callback`, we need to know the server
+// side file id, which could be learned from metadata.
+void GetDriveFileMetadata(
+    const base::FilePath& drive_relative_path,
+    PendingScreencastManager::OnGetFileIdCallback callback) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  auto* drive_integration_service =
+      GetDriveIntegrationServiceForActiveProfile();
+  if (!drive_integration_service)
+    return;
+  const base::FilePath local_path = GetLocalAbsolutePath(
+      drive_integration_service->GetMountPointPath(), drive_relative_path);
+
+  // drive::DriveIntegrationService::GetMetadata should only be called on UI
+  // thread.
+  drive_integration_service->GetMetadata(
+      local_path, base::BindOnce(&ParseFileIdOnGetMetaData, std::move(callback),
+                                 local_path));
+}
+
 // Returns a valid pending screencast from `container_absolute_path`.  A valid
 // screencast should have 1 media file and 1 metadata file.
 absl::optional<ash::PendingScreencast> GetPendingScreencast(
@@ -51,12 +136,8 @@ absl::optional<ash::PendingScreencast> GetPendingScreencast(
     const base::FilePath& drivefs_mounted_point,
     bool upload_failed) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::FilePath root("/");
-  // `container_absolute_path` is the DriveFS absolute path of
-  // `container_dir`, for example: container_absolute_path =
-  // "/{$drivefs_mounted_point}/root/{$container_dir}";
-  base::FilePath container_absolute_path(drivefs_mounted_point);
-  root.AppendRelativePath(container_dir, &container_absolute_path);
+  const base::FilePath container_absolute_path =
+      GetLocalAbsolutePath(drivefs_mounted_point, container_dir);
   if (!base::PathExists(container_absolute_path))
     return absl::nullopt;
 
@@ -102,6 +183,18 @@ absl::optional<ash::PendingScreencast> GetPendingScreencast(
   pending_screencast.total_size_in_bytes = total_size_in_bytes;
   pending_screencast.upload_failed = upload_failed;
   return pending_screencast;
+}
+
+void OnGetFileId(const base::FilePath& local_file_path,
+                 const std::string& file_id) {
+  // TODO(b/221078840): Extracts indexable text and
+  // build the request body
+  // from `metadata_file_local_path`. Then send
+  // drive patch request to update indexable text on
+  // get file id.
+  if (file_id.empty()) {
+    LOG(ERROR) << "Failed to get file id for path: " << local_file_path;
+  }
 }
 
 // The `pending_webm_or_projector_events` are new uploading ".webm" or
@@ -199,11 +292,6 @@ PendingScreencastManager::PendingScreencastManager(
 
 PendingScreencastManager::~PendingScreencastManager() = default;
 
-bool PendingScreencastManager::IsDriveFsObservationObservingSource(
-    drivefs::DriveFsHost* source) const {
-  return drivefs_observation_.IsObservingSource(source);
-}
-
 void PendingScreencastManager::OnUnmounted() {
   if (!pending_screencast_cache_.empty()) {
     pending_screencast_cache_.clear();
@@ -231,11 +319,10 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
     return;
   std::vector<drivefs::mojom::ItemEvent> pending_webm_or_projector_events;
   for (const auto& event : status.item_events) {
-    base::FilePath event_file = base::FilePath(event->path);
-    // If observe a error uploaded file is now successfully uploaded, remove it
-    // from `error_syncing_files_`.
+    const base::FilePath event_file = base::FilePath(event->path);
+
     if (event->state == drivefs::mojom::ItemEvent::State::kCompleted)
-      error_syncing_files_.erase(event_file);
+      OnFileSyncedCompletely(event_file);
 
     bool pending =
         event->state == drivefs::mojom::ItemEvent::State::kQueued ||
@@ -244,6 +331,14 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
     if (!pending || !IsWebmOrProjectorFile(event_file))
       continue;
 
+    // We might have received the same event with "kCompleted" state multiple
+    // times. The `syncing_metadata_files_` is used to watch the first
+    // "kCompleted" state for a file so that we could only update indexable text
+    // once.
+    if (ash::features::IsProjectorUpdateIndexableTextEnabled() &&
+        event_file.MatchesExtension(GetMetadataFileExtension())) {
+      syncing_metadata_files_.emplace(event_file);
+    }
     pending_webm_or_projector_events.push_back(
         drivefs::mojom::ItemEvent(*event.get()));
   }
@@ -292,6 +387,16 @@ void PendingScreencastManager::OnError(
 const ash::PendingScreencastSet&
 PendingScreencastManager::GetPendingScreencasts() const {
   return pending_screencast_cache_;
+}
+
+bool PendingScreencastManager::IsDriveFsObservationObservingSource(
+    drivefs::DriveFsHost* source) const {
+  return drivefs_observation_.IsObservingSource(source);
+}
+
+void PendingScreencastManager::SetOnGetFileIdCallbackForTest(
+    OnGetFileIdCallback callback) {
+  on_get_file_id_callback_ = std::move(callback);
 }
 
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
@@ -350,4 +455,32 @@ void PendingScreencastManager::MaybeSwitchDriveFsObservation() {
     drivefs_observation_.Reset();
 
   drivefs_observation_.Observe(drivefs_host);
+}
+
+void PendingScreencastManager::OnFileSyncedCompletely(
+    const base::FilePath& event_file) {
+  // If observes a error uploaded file is now successfully uploaded, removes
+  // it from `error_syncing_files_`:
+  error_syncing_files_.erase(event_file);
+  if (ash::features::IsProjectorUpdateIndexableTextEnabled()) {
+    // If observes a ".projector" file is now successfully uploaded, updates
+    // the indexable text and remove it from `syncing_metadata_files_`.
+    const auto iter = syncing_metadata_files_.find(event_file);
+    if (iter != syncing_metadata_files_.end()) {
+      auto on_get_file_id_callback = on_get_file_id_callback_
+                                         ? std::move(on_get_file_id_callback_)
+                                         : base::BindOnce(&OnGetFileId);
+
+      // Posts a delayed task to get Drive metadata because the metadata might
+      // not be polulated as the file get uploaded. This task has a long chain
+      // of callbacks. The calling order is: GetDriveFileMetadata() ->
+      // ParseFileIdOnGetMetaData() -> on_get_file_id_callback.
+      content::GetUIThreadTaskRunner({})->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&GetDriveFileMetadata, event_file,
+                         std::move(on_get_file_id_callback)),
+          kDriveGetMetadataDelay);
+      syncing_metadata_files_.erase(iter);
+    }
+  }
 }

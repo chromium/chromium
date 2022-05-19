@@ -47,12 +47,6 @@ class PendingScreencastManager
   PendingScreencastManager& operator=(const PendingScreencastManager&) = delete;
   ~PendingScreencastManager() override;
 
-  // Test only:
-  base::TimeTicks last_pending_screencast_change_tick() const {
-    return last_pending_screencast_change_tick_;
-  }
-  bool IsDriveFsObservationObservingSource(drivefs::DriveFsHost* source) const;
-
   // drivefs::DriveFsHostObserver:
   void OnUnmounted() override;
   void OnSyncingStatusUpdate(
@@ -61,6 +55,16 @@ class PendingScreencastManager
 
   // Returns a list of pending screencast from `pending_screencast_cache_`.
   const ash::PendingScreencastSet& GetPendingScreencasts() const;
+
+  // Test only:
+  base::TimeTicks last_pending_screencast_change_tick() const {
+    return last_pending_screencast_change_tick_;
+  }
+  bool IsDriveFsObservationObservingSource(drivefs::DriveFsHost* source) const;
+  using OnGetFileIdCallback =
+      base::OnceCallback<void(const base::FilePath& local_file_path,
+                              const std::string& file_id)>;
+  void SetOnGetFileIdCallbackForTest(OnGetFileIdCallback callback);
 
  private:
   // Updates `pending_screencast_cache_` and notifies pending screencast change.
@@ -77,6 +81,11 @@ class PendingScreencastManager
   // Maybe reset `drivefs_observation_` and observe the current active profile.
   void MaybeSwitchDriveFsObservation();
 
+  // Called when the `event_file` is synced to Drive. Removed completedly synced
+  // files from `error_syncing_files_` and `syncing_metadata_files_` cached. If
+  // it is a screencast metadata file, post task to update indexable text.
+  void OnFileSyncedCompletely(const base::FilePath& event_file);
+
   // TODO(b/221902328): Fix the case that user might delete files through file
   // app.
 
@@ -86,11 +95,21 @@ class PendingScreencastManager
   // A set of files failed to upload to Drive.
   std::set<base::FilePath> error_syncing_files_;
 
+  // A set of syncing screencast metadata files, which have ".projector"
+  // extension. This set is used to track which metadata files are being
+  // uploaded so we only update the indexable text once. File is removed from
+  // the set after updating indexable text completed.
+  std::set<base::FilePath> syncing_metadata_files_;
+
   // A callback to notify pending screencast status change.
   PendingScreencastChangeCallback pending_screencast_change_callback_;
 
   // A blocking task runner for file IO operations.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+
+  // Used to update indexable text on getting Drive server side file id.
+  // Currently only available in test.
+  OnGetFileIdCallback on_get_file_id_callback_;
 
   base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
       drivefs_observation_{this};

@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -41,6 +43,8 @@ constexpr char kTestScreencastPath[] = "/root/test_screencast";
 constexpr char kTestScreencastName[] = "test_screencast";
 constexpr char kTestMediaFile[] = "test_screencast.webm";
 constexpr char kTestMetadataFile[] = "test_screencast.projector";
+constexpr char kDefaultMetadataFilePath[] =
+    "/root/test_screencast/test_screencast.projector";
 
 constexpr char kProjectorPendingScreencastBatchIOTaskDurationHistogramName[] =
     "Ash.Projector.PendingScreencastBatchIOTaskDuration";
@@ -57,6 +61,16 @@ constexpr int64_t kTestMetadataFileBytes = 100 * 1024;
 // TODO(b/211000693) Replace all RunAllTasksUntilIdle with a waiting condition.
 class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
+  PendingScreencastMangerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kProjectorUpdateIndexableText}, {});
+  }
+  PendingScreencastMangerBrowserTest(
+      const PendingScreencastMangerBrowserTest&) = delete;
+  PendingScreencastMangerBrowserTest& operator=(
+      const PendingScreencastMangerBrowserTest&) = delete;
+  ~PendingScreencastMangerBrowserTest() override = default;
+
   bool SetUpUserDataDirectory() override {
     return drive::SetUpUserDataDirectoryForDriveFsTest();
   }
@@ -99,6 +113,10 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
         profile, std::string(), mount_path,
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return integration_service;
+  }
+
+  drivefs::FakeDriveFs* GetFakeDriveFs() {
+    return &fake_drivefs_helper_->fake_drivefs();
   }
 
   void CreateFileInDriveFsFolder(const std::string& file_path,
@@ -174,6 +192,25 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
         drivefs::mojom::ItemEventReason::kTransfer);
   }
 
+  // Notifies `pending_screencast_manager_` that a file with `file_path` and
+  // `total_size` with an uploading event and a completed event.
+  void MockSyncFileCompleted(const std::string& file_path,
+                             const int64_t total_size) {
+    drivefs::mojom::SyncingStatus syncing_status;
+    // Notifies with uploading event:
+    AddTransferItemEvent(syncing_status, file_path,
+                         /*total_bytes=*/0,
+                         /*transferred_bytes=*/total_size);
+    pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+    syncing_status.item_events.clear();
+
+    // Notifies with completed event:
+    AddTransferItemEvent(syncing_status, file_path,
+                         /*total_bytes=*/total_size,
+                         /*transferred_bytes=*/total_size);
+    pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  }
+
   MOCK_METHOD1(PendingScreencastChangeCallback,
                void(const PendingScreencastSet&));
 
@@ -184,6 +221,8 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>
@@ -196,15 +235,13 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   const std::string media_file =
       base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
-  const std::string metadata_file =
-      base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
   drivefs::mojom::SyncingStatus syncing_status;
   {
     // Create a valid pending screencast.
     CreateFileAndTransferItemEvent(media_file,
                                    /*total_bytes=*/kTestMediaFileBytes,
                                    /*transferred_bytes=*/0, syncing_status);
-    CreateFileAndTransferItemEvent(metadata_file,
+    CreateFileAndTransferItemEvent(kDefaultMetadataFilePath,
                                    /*total_bytes=*/kTestMetadataFileBytes,
                                    /*transferred_bytes=*/0, syncing_status);
   }
@@ -316,15 +353,13 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                        IgnoreCompletedEvent) {
   const std::string media_file =
       base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
-  const std::string metadata_file =
-      base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
   drivefs::mojom::SyncingStatus syncing_status;
   {
     // Create a valid uploaded screencast.
     CreateFileAndTransferItemEvent(media_file,
                                    /*total_bytes=*/kTestMediaFileBytes,
                                    kTestMediaFileBytes, syncing_status);
-    CreateFileAndTransferItemEvent(metadata_file,
+    CreateFileAndTransferItemEvent(kDefaultMetadataFilePath,
                                    /*total_bytes=*/kTestMetadataFileBytes,
                                    kTestMetadataFileBytes, syncing_status);
   }
@@ -407,15 +442,13 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
   const std::string media_file_path =
       base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
-  const std::string metadata_file_path =
-      base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
   drivefs::mojom::SyncingStatus syncing_status;
   {
     // Create a valid pending screencast.
     CreateFileAndTransferItemEvent(media_file_path,
                                    /*total_bytes=*/kTestMediaFileBytes,
                                    /*transferred_bytes=*/0, syncing_status);
-    CreateFileAndTransferItemEvent(metadata_file_path,
+    CreateFileAndTransferItemEvent(kDefaultMetadataFilePath,
                                    /*total_bytes=*/kTestMetadataFileBytes,
                                    /*transferred_bytes=*/0, syncing_status);
   }
@@ -444,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
                        /*total_bytes=*/kTestMediaFileBytes,
                        /*transferred_bytes=*/media_transferred_1_bytes);
   // Create a completed transferred event for metadata.
-  AddTransferItemEvent(syncing_status, metadata_file_path,
+  AddTransferItemEvent(syncing_status, kDefaultMetadataFilePath,
                        /*total_bytes=*/kTestMetadataFileBytes,
                        /*transferred_bytes=*/metadata_transferred_bytes);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
@@ -464,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
                        /*total_bytes=*/kTestMediaFileBytes,
                        /*transferred_bytes=*/kTestMediaFileBytes - 1);
   // Create a completed transferred event for metadata.
-  AddTransferItemEvent(syncing_status, metadata_file_path,
+  AddTransferItemEvent(syncing_status, kDefaultMetadataFilePath,
                        /*total_bytes=*/kTestMetadataFileBytes,
                        /*transferred_bytes=*/metadata_transferred_bytes);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
@@ -487,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
   AddTransferItemEvent(syncing_status, media_file_path,
                        /*total_bytes=*/kTestMediaFileBytes,
                        /*transferred_bytes=*/kTestMediaFileBytes);
-  AddTransferItemEvent(syncing_status, metadata_file_path,
+  AddTransferItemEvent(syncing_status, kDefaultMetadataFilePath,
                        /*total_bytes=*/kTestMetadataFileBytes,
                        /*transferred_bytes=*/kTestMetadataFileBytes);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
@@ -559,14 +592,12 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                        DriveOutOfSpaceError) {
   const std::string media_file_path =
       base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
-  const std::string metadata_file_path =
-      base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
   drivefs::mojom::SyncingStatus syncing_status;
   // Create a valid pending screencast.
   CreateFileAndTransferItemEvent(media_file_path,
                                  /*total_bytes=*/kTestMediaFileBytes,
                                  /*transferred_bytes=*/0, syncing_status);
-  CreateFileAndTransferItemEvent(metadata_file_path,
+  CreateFileAndTransferItemEvent(kDefaultMetadataFilePath,
                                  /*total_bytes=*/kTestMetadataFileBytes,
                                  /*transferred_bytes=*/0, syncing_status);
   content::RunAllTasksUntilIdle();
@@ -595,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   AddTransferItemEvent(syncing_status, media_file_path,
                        /*total_bytes=*/kTestMediaFileBytes,
                        /*transferred_bytes=*/kTestMediaFileBytes);
-  AddTransferItemEvent(syncing_status, metadata_file_path,
+  AddTransferItemEvent(syncing_status, kDefaultMetadataFilePath,
                        /*total_bytes=*/kTestMetadataFileBytes,
                        /*transferred_bytes=*/kTestMetadataFileBytes);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
@@ -607,6 +638,53 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   histogram_tester_.ExpectTotalCount(
       kProjectorPendingScreencastBatchIOTaskDurationHistogramName,
       /*count=*/2);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, GetFileIdSuccess) {
+  // Prepares a ".projector" file and it's metadata:
+  drivefs::mojom::SyncingStatus syncing_status;
+  CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+
+  GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
+                                "text/plain", kTestMetadataFile, false, false,
+                                {}, {}, "abc123",
+                                "https://drive.google.com/open?id=fileId");
+
+  // Sets get file id callback:
+  base::RunLoop run_loop;
+  pending_screencast_manager()->SetOnGetFileIdCallbackForTest(
+      base::BindLambdaForTesting([&](const base::FilePath& local_file_path,
+                                     const std::string& file_id) {
+        EXPECT_EQ(GetDriveFsAbsolutePath(kDefaultMetadataFilePath),
+                  local_file_path);
+        EXPECT_EQ("fileId", file_id);
+        run_loop.Quit();
+      }));
+
+  // Mocks a metadata file finishes upload:
+  MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, GetFileIdFail) {
+  // Does not create ".projector", which leads to drive::FILE_ERROR_NOT_FOUND.
+
+  // Sets get file id callback:
+  base::RunLoop run_loop;
+  pending_screencast_manager()->SetOnGetFileIdCallbackForTest(
+      base::BindLambdaForTesting([&](const base::FilePath& local_file_path,
+                                     const std::string& file_id) {
+        EXPECT_EQ(GetDriveFsAbsolutePath(kDefaultMetadataFilePath),
+                  local_file_path);
+        EXPECT_EQ(std::string(), file_id);
+        run_loop.Quit();
+      }));
+
+  // Mocks a metadata file finishes upload:
+  MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+
+  run_loop.Run();
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {
