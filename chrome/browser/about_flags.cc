@@ -971,18 +971,27 @@ const FeatureEntry::FeatureParam kJourneysOmniboxActionOnAllURLsParams[] = {
     {"omnibox_action_on_urls", "true"},
     {"omnibox_action_on_noisy_urls", "true"},
     {"omnibox_action_on_navigation_intents", "true"},
+    {"omnibox_action_with_pedals", "true"},
 };
 const FeatureEntry::FeatureParam kJourneysOmniboxActionOnNonNoisyURLsParams[] =
     {
         {"omnibox_action_on_urls", "true"},
         {"omnibox_action_on_noisy_urls", "false"},
         {"omnibox_action_on_navigation_intents", "true"},
+        {"omnibox_action_with_pedals", "true"},
 };
 const FeatureEntry::FeatureParam
     kJourneysOmniboxActionOnNonNavigationIntentsParams[] = {
         {"omnibox_action_on_urls", "false"},
         {"omnibox_action_on_noisy_urls", "false"},
         {"omnibox_action_on_navigation_intents", "false"},
+        {"omnibox_action_with_pedals", "true"},
+};
+const FeatureEntry::FeatureParam kJourneysOmniboxActionWithPedalsParams[] = {
+    {"omnibox_action_on_urls", "false"},
+    {"omnibox_action_on_noisy_urls", "false"},
+    {"omnibox_action_on_navigation_intents", "true"},
+    {"omnibox_action_with_pedals", "false"},
 };
 const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips on All URLs", kJourneysOmniboxActionOnAllURLsParams,
@@ -993,6 +1002,9 @@ const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips Disabled on Navigation Intents",
      kJourneysOmniboxActionOnNonNavigationIntentsParams,
      std::size(kJourneysOmniboxActionOnNonNavigationIntentsParams), nullptr},
+    {"Action Chips Disabled with Pedals",
+     kJourneysOmniboxActionWithPedalsParams,
+     std::size(kJourneysOmniboxActionWithPedalsParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
     {"labels_from_entities", "true"},

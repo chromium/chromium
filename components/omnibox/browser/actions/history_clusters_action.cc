@@ -106,6 +106,7 @@ class HistoryClustersAction : public OmniboxAction {
 
 }  // namespace
 
+// Should be invoked after `AutocompleteResult::AttachPedalsToMatches()`.
 void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
     PrefService* prefs,
@@ -130,6 +131,14 @@ void AttachHistoryClustersActions(
 
   if (result.empty())
     return;
+
+  // If there's a pedal in `result`, don't add a history cluster action to avoid
+  // over-crowding.
+  if (!GetConfig().omnibox_action_with_pedals &&
+      base::ranges::any_of(result,
+                           [](const auto& match) { return match.action; })) {
+    return;
+  }
 
   // If there's a reasonably clear navigation intent, don't distract the user
   // with the actions chip.

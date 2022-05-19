@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
@@ -15,6 +16,8 @@
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -25,10 +28,12 @@
 namespace history_clusters {
 
 struct MatchData {
-  std::u16string contents;  // Also assigned to `destination_url`.
-  int relevance;
-  AutocompleteMatchType::Type type;
-  bool expect_history_clusters_action;
+  std::u16string contents = u"keyword";  // Also assigned to `destination_url`.
+  int relevance = 1000;
+  AutocompleteMatchType::Type type =
+      AutocompleteMatchType::Type::SEARCH_SUGGEST;
+  bool already_has_action = false;
+  bool expect_history_clusters_action = false;
 };
 
 ACMatches CreateACMatches(std::vector<MatchData> matches_data) {
@@ -40,6 +45,10 @@ ACMatches CreateACMatches(std::vector<MatchData> matches_data) {
                                 match_data.type);
         match.contents = match_data.contents;
         match.destination_url = GURL(u"https://" + match_data.contents);
+        if (match_data.already_has_action) {
+          match.action = base::MakeRefCounted<OmniboxAction>(
+              OmniboxAction::LabelStrings{}, GURL{});
+        }
         return match;
       });
   return matches;
@@ -100,7 +109,11 @@ class HistClustersActionTest : public testing::Test {
     AttachHistoryClustersActions(service, prefs, result);
 
     for (size_t i = 0; i < matches_data.size(); ++i) {
-      EXPECT_EQ(!!result.match_at(i)->action,
+      bool has_history_clusters_action =
+          result.match_at(i)->action &&
+          result.match_at(i)->action->GetID() ==
+              static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
+      EXPECT_EQ(has_history_clusters_action,
                 matches_data[i].expect_history_clusters_action);
     }
 
@@ -134,10 +147,7 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
   {
     SCOPED_TRACE("Shouldn't add action if history cluster service is nullptr.");
     SetUpWithConfig(search_actions_config_);
-    TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          false}},
-        nullptr, &prefs_enabled_);
+    TestAttachHistoryClustersActions({{}}, nullptr, &prefs_enabled_);
   }
 
   {
@@ -145,9 +155,7 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
     Config config = search_actions_config_;
     config.is_journeys_enabled_no_locale_check = false;
     SetUpWithConfig(config);
-    TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          false}});
+    TestAttachHistoryClustersActions({{}});
   }
 
   {
@@ -155,9 +163,7 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
     Config config = search_actions_config_;
     config.omnibox_action = false;
     SetUpWithConfig(config);
-    TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          false}});
+    TestAttachHistoryClustersActions({{}});
   }
 
   {
@@ -166,10 +172,8 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
     TestingPrefServiceSimple prefs_disabled;
     prefs_disabled.registry()->RegisterBooleanPref(
         history_clusters::prefs::kVisible, false);
-    TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          false}},
-        history_clusters_service_.get(), &prefs_disabled);
+    TestAttachHistoryClustersActions({{}}, history_clusters_service_.get(),
+                                     &prefs_disabled);
   }
 
   {
@@ -179,11 +183,25 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
   }
 
   {
+    SCOPED_TRACE(
+        "Shouldn't add action if `result` contains a pedal, even if it's on a "
+        "different match.");
+    Config config = search_actions_config_;
+    config.omnibox_action_with_pedals = false;
+    SetUpWithConfig(config);
+    TestAttachHistoryClustersActions({
+        {},
+        {.contents = u"pedal-match",
+         .relevance = 500,
+         .already_has_action = true},
+    });
+  }
+
+  {
     SCOPED_TRACE("Should add action if a search suggestion matches.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          true}});
+        {{.expect_history_clusters_action = true}});
   }
 
   {
@@ -192,8 +210,7 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "suggestion matches.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY,
-          false}});
+        {{.type = AutocompleteMatchType::Type::SEARCH_SUGGEST_ENTITY}});
   }
 
   {
@@ -202,7 +219,8 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "`omnibox_action_on_urls` is enabled.");
     SetUpWithConfig(url_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::HISTORY_TITLE, true}});
+        {{.type = AutocompleteMatchType::Type::HISTORY_TITLE,
+          .expect_history_clusters_action = true}});
   }
 
   {
@@ -211,8 +229,7 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "`omnibox_action_on_urls` is disabled.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::HISTORY_TITLE,
-          false}});
+        {{.type = AutocompleteMatchType::Type::HISTORY_TITLE}});
   }
 
   {
@@ -222,8 +239,8 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "should have an action, even if it is ranked & scored lower.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::HISTORY_TITLE, false},
-         {u"keyword", 900, AutocompleteMatchType::Type::SEARCH_SUGGEST, true}});
+        {{.type = AutocompleteMatchType::Type::HISTORY_TITLE},
+         {.relevance = 900, .expect_history_clusters_action = true}});
   }
 
   {
@@ -232,11 +249,12 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "scored lower.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"bad-keyword", 1200, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          false},
-         {u"keyword", 900, AutocompleteMatchType::Type::SEARCH_SUGGEST, true},
-         {u"keyword", 1000, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          false}});
+        {{
+             .contents = u"bad-keyword",
+             .relevance = 1200,
+         },
+         {.relevance = 900, .expect_history_clusters_action = true},
+         {}});
   }
 
   {
@@ -245,8 +263,9 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "suggestion is a low score navigation suggestion.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::HISTORY_TITLE, false},
-         {u"keyword", 900, AutocompleteMatchType::Type::SEARCH_SUGGEST, true}});
+        {{u"keyword", 1000, AutocompleteMatchType::Type::HISTORY_TITLE},
+         {u"keyword", 900, AutocompleteMatchType::Type::SEARCH_SUGGEST, false,
+          true}});
   }
 
   {
@@ -255,7 +274,8 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "not high-scoring.");
     SetUpWithConfig(url_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1000, AutocompleteMatchType::Type::HISTORY_TITLE, true}});
+        {{.type = AutocompleteMatchType::Type::HISTORY_TITLE,
+          .expect_history_clusters_action = true}});
   }
 
   {
@@ -265,9 +285,12 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "doesn't match.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1340, AutocompleteMatchType::Type::SEARCH_SUGGEST, false},
-         {u"bad-keyword", 1350, AutocompleteMatchType::Type::HISTORY_TITLE,
-          false}});
+        {{.relevance = 1340},
+         {
+             .contents = u"bad-keyword",
+             .relevance = 1350,
+             .type = AutocompleteMatchType::Type::HISTORY_TITLE,
+         }});
   }
 
   {
@@ -277,9 +300,9 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
         "score navigation suggestion.");
     SetUpWithConfig(search_actions_config_);
     TestAttachHistoryClustersActions(
-        {{u"keyword", 1340, AutocompleteMatchType::Type::HISTORY_TITLE, false},
-         {u"keyword", 1350, AutocompleteMatchType::Type::SEARCH_SUGGEST,
-          true}});
+        {{.relevance = 1340,
+          .type = AutocompleteMatchType::Type::HISTORY_TITLE},
+         {.relevance = 1350, .expect_history_clusters_action = true}});
   }
 
   {
@@ -290,7 +313,9 @@ TEST_F(HistClustersActionTest, AttachHistoryClustersActions) {
     config.omnibox_action_on_navigation_intents = true;
     SetUpWithConfig(config);
     TestAttachHistoryClustersActions({
-        {u"keyword", 1350, AutocompleteMatchType::Type::HISTORY_TITLE, true},
+        {.relevance = 1350,
+         .type = AutocompleteMatchType::Type::HISTORY_TITLE,
+         .expect_history_clusters_action = true},
     });
   }
 }

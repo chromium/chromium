@@ -91,6 +91,10 @@ struct Config {
   // helps determine when the user is intending to perform a navigation.
   int omnibox_action_navigation_intent_score_threshold = 1300;
 
+  // If enabled, allows the Omnibox Action chip to appear when the suggestions
+  // contain pedals. Does nothing if `omnibox_action` is disabled.
+  bool omnibox_action_with_pedals = true;
+
   // If enabled, adds the keywords of aliases for detected entity names to a
   // cluster.
   bool keyword_filter_on_entity_aliases = false;

@@ -85,6 +85,10 @@ Config::Config() {
           "omnibox_action_on_navigation_intent_score_threshold",
           omnibox_action_navigation_intent_score_threshold);
 
+  omnibox_action_with_pedals = base::GetFieldTrialParamByFeatureAsBool(
+      internal::kOmniboxAction, "omnibox_action_with_pedals",
+      omnibox_action_with_pedals);
+
   keyword_filter_on_entity_aliases = base::GetFieldTrialParamByFeatureAsBool(
       history_clusters::features::kOnDeviceClusteringKeywordFiltering,
       "keyword_filter_on_entity_aliases", keyword_filter_on_entity_aliases);

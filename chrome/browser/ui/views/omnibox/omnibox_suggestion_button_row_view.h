@@ -56,6 +56,8 @@ class OmniboxSuggestionButtonRowView : public views::View {
   size_t const model_index_;
 
   raw_ptr<OmniboxSuggestionRowButton> keyword_button_ = nullptr;
+  // TODO(manukh): Rename `pedal_button_` to `action_button_` as it is shared by
+  //  other actions ('journeys' currently).
   raw_ptr<OmniboxSuggestionRowButton> pedal_button_ = nullptr;
   raw_ptr<OmniboxSuggestionRowButton> tab_switch_button_ = nullptr;
 };
