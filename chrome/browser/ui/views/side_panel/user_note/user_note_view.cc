@@ -15,7 +15,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_notes/browser/user_note_instance.h"
-#include "components/user_notes/browser/user_note_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
@@ -367,7 +366,7 @@ void UserNoteView::OnMenuClosed() {
 }
 
 void UserNoteView::OnCancelNewUserNote() {
-  // TODO(cheickcisse): Cancel adding a new note.
+  coordinator_->OnNoteCreationCancelled(UserNoteId());
 }
 
 void UserNoteView::OnAddUserNote() {

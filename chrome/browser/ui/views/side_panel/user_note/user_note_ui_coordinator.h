@@ -34,6 +34,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
   void OnNoteCreationDone(const base::UnguessableToken& id,
                           const std::string& note_content);
+  void OnNoteCreationCancelled(const base::UnguessableToken& id);
 
   // UserNoteUI overrides
   void FocusNote(const std::string& guid) override;

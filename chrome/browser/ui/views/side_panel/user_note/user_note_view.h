@@ -17,6 +17,9 @@ class View;
 }  // namespace views
 
 namespace views {
+class Label;
+class Textarea;
+class View;
 class MenuRunner;
 }
 

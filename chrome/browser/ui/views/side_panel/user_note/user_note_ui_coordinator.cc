@@ -60,6 +60,13 @@ void UserNoteUICoordinator::OnNoteCreationDone(
   service->OnNoteCreationDone(id, note_content);
 }
 
+void UserNoteUICoordinator::OnNoteCreationCancelled(
+    const base::UnguessableToken& id) {
+  auto* service =
+      user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
+  service->OnNoteCreationCancelled(id);
+}
+
 void UserNoteUICoordinator::FocusNote(const std::string& guid) {
   // TODO(cheickcisse): Implement FocusNote, which will be called by
   // UserNoteService to inform, inform the user note side panel to scroll the
