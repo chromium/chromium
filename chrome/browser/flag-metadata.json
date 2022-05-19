@@ -540,6 +540,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "autofill-show-manual-fallbacks-in-context-menu",
+    "owners": [ "vidhanj", "koerber"],
+    "expiry_milestone": 106
+  },
+  {
     "name":"autofill-suggest-virtual-cards-on-incomplete-form",
     "owners": ["siashah", "siyua"],
     "expiry_milestone": 105

@@ -259,6 +259,9 @@ extern const char kAutofillSaveCardUiExperimentDescription[];
 extern const char kAutofillSaveCardUiExperimentFasterAndProtected[];
 extern const char kAutofillSaveCardUiExperimentEncryptedAndSecure[];
 
+extern const char kAutofillShowManualFallbackInContextMenuName[];
+extern const char kAutofillShowManualFallbackInContextMenuDescription[];
+
 extern const char kAutofillSuggestVirtualCardsOnIncompleteFormName[];
 extern const char kAutofillSuggestVirtualCardsOnIncompleteFormDescription[];
 

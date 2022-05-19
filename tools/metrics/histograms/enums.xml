@@ -55574,6 +55574,8 @@ from previous Chrome versions.
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
+  <int value="-1399525696"
+      label="AutofillShowManualFallbackInContextMenu:enabled"/>
   <int value="-1399419572" label="enable-app-list"/>
   <int value="-1397387245" label="CompactBubbleLauncher:disabled"/>
   <int value="-1396974542" label="UserMediaScreenCapturing:enabled"/>
@@ -57674,6 +57676,8 @@ from previous Chrome versions.
   <int value="-11260186" label="enable-offline-pages-as-saved-pages"/>
   <int value="-10709540"
       label="OmniboxUIExperimentHideSuggestionUrlScheme:enabled"/>
+  <int value="-9881235"
+      label="AutofillShowManualFallbackInContextMenu:disabled"/>
   <int value="-9836751" label="SideSearchDSESupport:enabled"/>
   <int value="-9701088" label="ScanAppMediaLink:disabled"/>
   <int value="-9599490" label="KernelnextVMs:disabled"/>

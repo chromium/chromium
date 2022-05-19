@@ -7678,6 +7678,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAutoTriggerManualFallbackForCards)},
 
+    {"autofill-show-manual-fallbacks-in-context-menu",
+     flag_descriptions::kAutofillShowManualFallbackInContextMenuName,
+     flag_descriptions::kAutofillShowManualFallbackInContextMenuDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillShowManualFallbackInContextMenu)},
+
     {"autofill-suggest-virtual-cards-on-incomplete-form",
      flag_descriptions::kAutofillSuggestVirtualCardsOnIncompleteFormName,
      flag_descriptions::kAutofillSuggestVirtualCardsOnIncompleteFormDescription,
