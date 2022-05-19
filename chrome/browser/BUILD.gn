@@ -3544,6 +3544,8 @@ static_library("browser") {
       "apps/intent_helper/intent_picker_internal.h",
       "apps/intent_helper/page_transition_util.cc",
       "apps/intent_helper/page_transition_util.h",
+      "autocomplete/tab_matcher_desktop.cc",
+      "autocomplete/tab_matcher_desktop.h",
       "autofill_assistant/password_change/apc_client.cc",
       "autofill_assistant/password_change/apc_client.h",
       "autofill_assistant/password_change/apc_client_impl.cc",
@@ -4502,13 +4504,6 @@ static_library("browser") {
     }
   }
 
-  if (!is_android) {
-    sources += [
-      "autocomplete/tab_matcher_desktop.cc",
-      "autocomplete/tab_matcher_desktop.h",
-    ]
-  }
-
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
     sources += [
@@ -5144,13 +5139,6 @@ static_library("browser") {
         "apps/app_service/app_service_proxy_desktop.h",
       ]
     }
-  }
-
-  if (toolkit_views) {
-    sources += [
-      "page_load_metrics/observers/side_search_page_load_metrics_observer.cc",
-      "page_load_metrics/observers/side_search_page_load_metrics_observer.h",
-    ]
   }
 
   if (is_chromeos_ash || enable_extensions || is_android) {
@@ -6134,6 +6122,12 @@ static_library("browser") {
     ]
 
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element" ]
+  } else {
+    #!is_fuchsia
+    sources += [
+      "component_updater/file_type_policies_component_installer.cc",
+      "component_updater/file_type_policies_component_installer.h",
+    ]
   }
 
   if (is_posix) {
@@ -6358,6 +6352,10 @@ static_library("browser") {
   }
 
   if (toolkit_views) {
+    sources += [
+      "page_load_metrics/observers/side_search_page_load_metrics_observer.cc",
+      "page_load_metrics/observers/side_search_page_load_metrics_observer.h",
+    ]
     deps += [ "//ui/views" ]
   }
 
@@ -7459,13 +7457,6 @@ static_library("browser") {
       "//components/safe_browsing/content/browser/download:download_stats",
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
-    ]
-  }
-
-  if (!is_fuchsia) {
-    sources += [
-      "component_updater/file_type_policies_component_installer.cc",
-      "component_updater/file_type_policies_component_installer.h",
     ]
   }
 
