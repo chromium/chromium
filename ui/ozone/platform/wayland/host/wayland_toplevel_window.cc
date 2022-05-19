@@ -89,6 +89,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   }
 
   screen_coordinates_enabled_ &= shell_toplevel_->SupportsScreenCoordinates();
+  // TODO(oshima): Change to use DIP.
   if (screen_coordinates_enabled_)
     SetBoundsInPixels(GetBoundsInPixels());
 
@@ -397,24 +398,20 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
   gfx::Rect bounds_dip(pending_bounds_dip());
   if (width_dip > 1 && height_dip > 1) {
     bounds_dip.SetRect(x, y, width_dip, height_dip);
+    // TODO(crbug.com/3651999): Change SetDecorationInsets to take DIP.
     if (is_normal && frame_insets_px()) {
       bounds_dip.Inset(
           -gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
       bounds_dip.set_origin({x, y});
     }
   } else if (is_normal) {
-    gfx::Size size_in_dip =
-        restored_size_dip().IsEmpty()
-            ? gfx::ScaleToRoundedSize(GetBoundsInPixels().size(),
-                                      1.f / window_scale())
-            : restored_size_dip();
+    gfx::Size size_in_dip = restored_size_dip().IsEmpty()
+                                ? GetBoundsInDIP().size()
+                                : restored_size_dip();
     bounds_dip.set_size(size_in_dip);
   }
 
-  set_pending_bounds_dip(gfx::ScaleToRoundedRect(
-      AdjustBoundsToConstraintsPx(
-          gfx::ScaleToRoundedRect(bounds_dip, window_scale())),
-      1 / window_scale()));
+  set_pending_bounds_dip(AdjustBoundsToConstraintsDIP(bounds_dip));
 
   // Store the restored bounds if current state differs from the normal state.
   // It can be client or compositor side change from normal to something else.
@@ -437,16 +434,12 @@ void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
     WaylandWindow::SetBoundsInPixels(bounds);
     return;
   }
-  gfx::Rect bounds_in_dip =
-      gfx::ScaleToEnclosingRect(bounds, 1.f / window_scale());
+  gfx::Rect bounds_in_dip = delegate()->ConvertRectToDIP(bounds);
   shell_toplevel_->RequestWindowBounds(bounds_in_dip);
 }
 
 void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
-  gfx::Point origin_px =
-      gfx::ScaleToFlooredPoint(origin, window_scale(), window_scale());
-  WaylandWindow::SetBoundsInPixels(
-      gfx::Rect(origin_px, GetBoundsInPixels().size()));
+  WaylandWindow::SetBoundsInDIP(gfx::Rect(origin, GetBoundsInDIP().size()));
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
@@ -862,7 +855,7 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
   if (GetPlatformWindowState() == PlatformWindowState::kNormal) {
     SetRestoredBoundsInDIP({});
   } else if (GetRestoredBoundsInDIP().IsEmpty()) {
-    SetRestoredBoundsInDIP(delegate()->ConvertRectToDIP(GetBoundsInPixels()));
+    SetRestoredBoundsInDIP(GetBoundsInDIP());
   }
 }
 
@@ -940,8 +933,8 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {
-  // TODO(http://crbug.com/1158733): When supporting PlatformWindow::SetShape,
-  // update window region with the given |shape|.
+  // TODO(crbug.com/1299315): Deprecate this and migrate to the rounded corner
+  // API.
   UpdateWindowShape();
   std::vector<gfx::Rect> region{gfx::Rect({}, visual_size_px())};
   root_surface()->SetOpaqueRegion(opaque_region_px_.has_value()

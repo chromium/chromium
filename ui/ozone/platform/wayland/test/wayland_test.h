@@ -17,8 +17,8 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/test/mock_platform_window_delegate.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
 #include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
@@ -71,7 +71,7 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   wl::TestWaylandServerThread server_;
   wl::MockSurface* surface_;
 
-  MockPlatformWindowDelegate delegate_;
+  MockWaylandPlatformWindowDelegate delegate_;
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;
   std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
   std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_gpu_;

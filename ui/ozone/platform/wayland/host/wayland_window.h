@@ -336,9 +336,14 @@ class WaylandWindow : public PlatformWindow,
   // Processes the pending bounds in dip.
   void ProcessPendingBoundsDip(uint32_t serial);
 
-  // If the given |bounds_px| violate size constraints set for this window,
-  // fixes them so they wouldn't.
+  // [Deprecated]
+  // If the given |bounds_px| violates size constraints set for this window,
+  // fixes them so they don't.
   gfx::Rect AdjustBoundsToConstraintsPx(const gfx::Rect& bounds_px);
+
+  // If the given |bounds_dip| violates size constraints set for this window,
+  // fixes them so they don't.
+  gfx::Rect AdjustBoundsToConstraintsDIP(const gfx::Rect& bounds_dip);
 
   // Processes the size information form visual size update and returns true if
   // any pending configure is fulfilled.

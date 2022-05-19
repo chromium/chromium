@@ -270,7 +270,6 @@ source_set("test_support_internal") {
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
-    "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
@@ -324,6 +323,7 @@ static_library("test_support") {
   visibility = [
     ":*",
     "platform/flatland:flatland_unittests",
+    "platform/wayland:test_support",
     "platform/wayland:wayland_unittests",
     "platform/x11:x11_unittests",
   ]
@@ -410,6 +410,7 @@ test("ozone_unittests") {
 
   deps = [
     ":test_support",
+    "//mojo/core/test:run_all_unittests",
     "//ui/ozone/common:unittests",
   ]
 
@@ -429,7 +430,10 @@ if (ozone_platform_x11) {
   test("ozone_x11_unittests") {
     use_xvfb = true
 
-    deps = [ ":test_support" ]
+    deps = [
+      ":test_support",
+      "//mojo/core/test:run_all_unittests",
+    ]
 
     deps += [ "platform/x11:x11_unittests" ]
 

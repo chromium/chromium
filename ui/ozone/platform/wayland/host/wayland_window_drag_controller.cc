@@ -408,6 +408,7 @@ void WaylandWindowDragController::OnToplevelWindowCreated(
     return;
 
   DCHECK(window);
+  // TODO(crbug.com/1306688): This should use DIP.
   auto origin = window->GetBoundsInPixels().origin();
   gfx::Vector2d offset = gfx::ToFlooredPoint(pointer_location_) - origin;
   DVLOG(1) << "Toplevel window created (detached)."
@@ -450,6 +451,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   // surface has no visual effect in ozone/wayland backend. Actual window
   // re-positioning during dragging session is done through the drag icon.
   if (dragged_window_) {
+    // TODO(crbug.com/1306688): This should use DIP.
     gfx::Point new_location = event->location() - drag_offset_;
     gfx::Size size = dragged_window_->GetBoundsInPixels().size();
     dragged_window_->SetBoundsInPixels({new_location, size});

@@ -20,6 +20,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -73,33 +74,6 @@ class TestDisplayObserver : public display::DisplayObserver {
   display::Display removed_display_;
 };
 
-class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
- public:
-  MockWaylandPlatformWindowDelegate() = default;
-  MockWaylandPlatformWindowDelegate(const MockWaylandPlatformWindowDelegate&) =
-      delete;
-  MockWaylandPlatformWindowDelegate operator=(
-      const MockWaylandPlatformWindowDelegate&) = delete;
-  ~MockWaylandPlatformWindowDelegate() override = default;
-
-  gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const override {
-    float scale = wayland_window_ ? wayland_window_->window_scale() : 1.0f;
-    return gfx::ScaleToEnclosingRect(rect_in_dp, scale);
-  }
-
-  gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const override {
-    float scale = wayland_window_ ? wayland_window_->window_scale() : 1.0f;
-    return gfx::ScaleToEnclosedRect(rect_in_pixels, 1.0f / scale);
-  }
-
-  void set_wayland_window(WaylandWindow* wayland_window) {
-    wayland_window_ = wayland_window;
-  }
-
- private:
-  WaylandWindow* wayland_window_ = nullptr;
-};
-
 }  // namespace
 
 class WaylandScreenTest : public WaylandTest {
@@ -134,13 +108,13 @@ class WaylandScreenTest : public WaylandTest {
       const gfx::Rect& bounds,
       PlatformWindowType window_type,
       gfx::AcceleratedWidget parent_widget,
-      MockPlatformWindowDelegate* delegate) {
+      MockWaylandPlatformWindowDelegate* delegate) {
     PlatformWindowInitProperties properties;
     properties.bounds = bounds;
     properties.type = window_type;
     properties.parent_widget = parent_widget;
-    return WaylandWindow::Create(delegate, connection_.get(),
-                                 std::move(properties));
+    return delegate->CreateWaylandWindow(connection_.get(),
+                                         std::move(properties));
   }
 
   void ValidateTheDisplayForWidget(gfx::AcceleratedWidget widget,
@@ -387,7 +361,6 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
       CreateWaylandWindowWithProperties(menu_window_bounds,
                                         PlatformWindowType::kMenu,
                                         window_->GetWidget(), &delegate);
-  delegate.set_wayland_window(menu_window.get());
 
   Sync();
 
@@ -602,7 +575,7 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
 }
 
 TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
-  MockPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate;
   std::unique_ptr<WaylandWindow> second_window =
       CreateWaylandWindowWithProperties(gfx::Rect(0, 0, 1920, 1080),
                                         PlatformWindowType::kWindow,

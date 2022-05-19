@@ -394,6 +394,8 @@ source_set("test_support") {
     "test/mock_pointer.h",
     "test/mock_surface.cc",
     "test/mock_surface.h",
+    "test/mock_wayland_platform_window_delegate.cc",
+    "test/mock_wayland_platform_window_delegate.h",
     "test/mock_wp_presentation.cc",
     "test/mock_wp_presentation.h",
     "test/mock_xdg_shell.cc",
@@ -482,6 +484,7 @@ source_set("test_support") {
     ":wayland",
     "//base:base",
     "//ui/ozone:platform",
+    "//ui/ozone:test_support",
   ]
 
   public_deps = [
