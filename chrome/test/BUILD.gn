@@ -1929,6 +1929,8 @@ if (!is_android) {
       "../browser/prefetch/prefetch_proxy/prefetch_proxy_browsertest.cc",
       "../browser/prefetch/prefetch_proxy/prefetch_proxy_test_utils.cc",
       "../browser/prefetch/prefetch_proxy/prefetch_proxy_test_utils.h",
+      "../browser/prefetch/search_prefetch/search_prefetch_browser_test_base.cc",
+      "../browser/prefetch/search_prefetch/search_prefetch_browser_test_base.h",
       "../browser/prefetch/search_prefetch/search_prefetch_service_browsertest.cc",
       "../browser/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper_browsertest.cc",
       "../browser/prefs/pref_functional_browsertest.cc",
