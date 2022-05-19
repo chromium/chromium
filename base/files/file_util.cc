@@ -14,6 +14,7 @@
 #include <fstream>
 #include <limits>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -25,7 +26,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -34,14 +37,36 @@
 
 namespace base {
 
+namespace {
+
+void RunAndReply(OnceCallback<bool()> action_callback,
+                 OnceCallback<void(bool)> reply_callback) {
+  bool result = std::move(action_callback).Run();
+  if (!reply_callback.is_null())
+    std::move(reply_callback).Run(result);
+}
+
+}  // namespace
+
 #if !BUILDFLAG(IS_WIN)
-OnceClosure GetDeleteFileCallback(const FilePath& path) {
-  return BindOnce(IgnoreResult(&DeleteFile), path);
+OnceClosure GetDeleteFileCallback(const FilePath& path,
+                                  OnceCallback<void(bool)> reply_callback) {
+  return BindOnce(&RunAndReply, BindOnce(&DeleteFile, path),
+                  reply_callback.is_null()
+                      ? std::move(reply_callback)
+                      : BindPostTask(SequencedTaskRunnerHandle::Get(),
+                                     std::move(reply_callback)));
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
-OnceClosure GetDeletePathRecursivelyCallback(const FilePath& path) {
-  return BindOnce(IgnoreResult(&DeletePathRecursively), path);
+OnceClosure GetDeletePathRecursivelyCallback(
+    const FilePath& path,
+    OnceCallback<void(bool)> reply_callback) {
+  return BindOnce(&RunAndReply, BindOnce(&DeletePathRecursively, path),
+                  reply_callback.is_null()
+                      ? std::move(reply_callback)
+                      : BindPostTask(SequencedTaskRunnerHandle::Get(),
+                                     std::move(reply_callback)));
 }
 
 int64_t ComputeDirectorySize(const FilePath& root_path) {
@@ -393,7 +418,7 @@ FilePath GetUniquePath(const FilePath& path) {
   const int uniquifier = GetUniquePathNumber(path);
   if (uniquifier > 0)
     return path.InsertBeforeExtensionASCII(StringPrintf(" (%d)", uniquifier));
-  return uniquifier == 0 ? path : base::FilePath();
+  return uniquifier == 0 ? path : FilePath();
 }
 
 namespace internal {

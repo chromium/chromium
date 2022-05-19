@@ -17,7 +17,7 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -75,14 +75,26 @@ BASE_EXPORT bool DeleteFile(const FilePath& path);
 // WARNING: USING THIS EQUIVALENT TO "rm -rf", SO USE WITH CAUTION.
 BASE_EXPORT bool DeletePathRecursively(const FilePath& path);
 
-// Simplified way to get a callback to do DeleteFile(path) and ignore the
-// DeleteFile() result. On Windows, this will retry the delete via delayed tasks
-// for up to 2 seconds before giving up, to deal with AV S/W locking the file.
-BASE_EXPORT OnceClosure GetDeleteFileCallback(const FilePath& path);
-
-// Simplified way to get a callback to do DeletePathRecursively(path) and ignore
-// the DeletePathRecursively() result.
-BASE_EXPORT OnceClosure GetDeletePathRecursivelyCallback(const FilePath& path);
+// Returns a closure that, when run on any sequence that allows blocking calls,
+// will kick off a potentially asynchronous operation to delete `path`, whose
+// behavior is similar to `DeleteFile()` and `DeletePathRecursively()`
+// respectively.
+//
+// In contrast to `DeleteFile()` and `DeletePathRecursively()`, the thread pool
+// may be used in case retries are needed. On Windows, in particular, retries
+// will be attempted for some time to allow other programs (e.g., anti-virus
+// scanners or malware) to close any open handles to `path` or its contents. If
+// `reply_callback` is not null, it will be posted to the caller's sequence with
+// true if `path` was fully deleted or false otherwise.
+//
+// WARNING: It is NOT safe to use `path` until `reply_callback` is run, as the
+// retry task may still be actively trying to delete it.
+BASE_EXPORT OnceClosure
+GetDeleteFileCallback(const FilePath& path,
+                      OnceCallback<void(bool)> reply_callback = {});
+BASE_EXPORT OnceClosure
+GetDeletePathRecursivelyCallback(const FilePath& path,
+                                 OnceCallback<void(bool)> reply_callback = {});
 
 #if BUILDFLAG(IS_WIN)
 // Schedules to delete the given path, whether it's a file or a directory, until

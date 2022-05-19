@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -38,6 +39,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -316,7 +318,9 @@ void LogFileDeleteRetryCount(int attempt) {
                           kMaxDeleteAttempts);
 }
 
-void DeleteFileWithRetry(int attempt, const FilePath& file_path) {
+void DeleteFileWithRetry(int attempt,
+                         const FilePath& file_path,
+                         OnceCallback<void(bool)> reply_callback) {
   // Retry every 250ms for up to two seconds. These values were pulled out of
   // thin air, and may be adjusted in the future based on the metrics collected.
   static constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
@@ -325,25 +329,41 @@ void DeleteFileWithRetry(int attempt, const FilePath& file_path) {
     // Log how many times we had to retry the RetryDeleteFile operation before
     // it succeeded. This will be from 0 to kMaxDeleteAttempts - 1.
     LogFileDeleteRetryCount(attempt);
+    // Consider introducing further retries until the item has been removed from
+    // the filesystem and its name is ready for reuse; see the comments in
+    // chrome/installer/mini_installer/delete_with_retry.cc for details.
+    if (!reply_callback.is_null())
+      std::move(reply_callback).Run(true);
     return;
   }
+
   ++attempt;
   DCHECK_LE(attempt, kMaxDeleteAttempts);
   if (attempt == kMaxDeleteAttempts) {
     // Log kMaxDeleteAttempts to indicate failure after exhausting all attempts.
     LogFileDeleteRetryCount(attempt);
+    if (!reply_callback.is_null())
+      std::move(reply_callback).Run(false);
     return;
   }
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      BindOnce(&DeleteFileWithRetry, attempt, file_path),
-      kDeleteFileRetryDelay);
+
+  ThreadPool::PostDelayedTask(FROM_HERE,
+                              {TaskPriority::BEST_EFFORT, MayBlock()},
+                              BindOnce(&DeleteFileWithRetry, attempt, file_path,
+                                       std::move(reply_callback)),
+                              kDeleteFileRetryDelay);
 }
 
 }  // namespace
 
-OnceClosure GetDeleteFileCallback(const FilePath& path) {
-  return BindOnce(&DeleteFileWithRetry, 0, path);
+OnceClosure GetDeleteFileCallback(const FilePath& path,
+                                  OnceCallback<void(bool)> reply_callback) {
+  OnceCallback<void(bool)> bound_callback;
+  if (!reply_callback.is_null()) {
+    bound_callback = BindPostTask(SequencedTaskRunnerHandle::Get(),
+                                  std::move(reply_callback));
+  }
+  return BindOnce(&DeleteFileWithRetry, 0, path, std::move(bound_callback));
 }
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {
