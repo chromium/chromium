@@ -10,8 +10,6 @@ load("./args.star", "args")
 load("./nodes.star", "nodes")
 load("./structs.star", "structs")
 
-# TODO(gbeaty) Add support for PROVIDE_TEST_SPEC mirrors
-
 def _enum(**kwargs):
     """Create an enum struct.
 
