@@ -2911,12 +2911,6 @@ if (android_64bit_target_cpu) {
   }
 }
 
-# TODO(agrieve): Remove this once we switch to using bundle targets to
-# generate APK stubs.
-android_resources("trichrome_dummy_resources") {
-  sources = [ "trichrome/res_dummy/values/strings.xml" ]
-}
-
 chrome_public_unit_test_apk_manifest =
     "$root_gen_dir/chrome_public_unit_test_apk_manifest/AndroidManifest.xml"
 chrome_public_test_apk_manifest =
