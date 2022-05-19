@@ -146,6 +146,7 @@ source_set("unit_tests") {
     ":util",
     ":util_swift",
     "//base",
+    "//base/test:test_support",
     "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",

@@ -7,12 +7,16 @@
 #import <UIKit/UIKit.h>
 
 #include "base/mac/foundation_util.h"
+#include "base/test/ios/wait_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Sets up layout guide center.
 class LayoutGuideCenterTest : public PlatformTest {
@@ -63,7 +67,10 @@ TEST_F(LayoutGuideCenterTest, LayoutGuideTracksReferenceView) {
     [window setNeedsLayout];
     [window layoutIfNeeded];
 
-    EXPECT_TRUE(CGRectEqualToRect(layout_guide.layoutFrame, rect));
+    // Wait until the frame is updated.
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+      return CGRectEqualToRect(layout_guide.layoutFrame, rect);
+    }));
   }
 }
 

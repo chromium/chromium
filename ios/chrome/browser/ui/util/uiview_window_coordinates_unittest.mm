@@ -6,12 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/test/ios/wait_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Sets up a window and a view.
 class UIViewWindowCoordinatesTest : public PlatformTest {
@@ -64,7 +68,10 @@ TEST_F(UIViewWindowCoordinatesTest, ChangeFrameAsDirectSubview) {
   [window_ setNeedsLayout];
   [window_ layoutIfNeeded];
 
-  EXPECT_TRUE(callback_called);
+  // Wait until the expected handler is called.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return callback_called;
+  }));
 }
 
 // Checks the callback is called when any parent view's frame changes (even
@@ -86,5 +93,8 @@ TEST_F(UIViewWindowCoordinatesTest, ChangeFrameOfParentView) {
   [window_ setNeedsLayout];
   [window_ layoutIfNeeded];
 
-  EXPECT_TRUE(callback_called);
+  // Wait until the expected handler is called.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return callback_called;
+  }));
 }

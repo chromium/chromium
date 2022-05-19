@@ -80,8 +80,13 @@ extension UIView {
     mirrorViewInWindow.isUserInteractionEnabled = false
     mirrorViewInWindow.translatesAutoresizingMaskIntoConstraints = false
     mirrorViewInWindow.onLayoutChanged = { [weak self] _ in
-      guard let self = self else { return }
-      self.cr_onWindowCoordinatesChanged?(self)
+      // Callback on the next turn of the run loop to wait for AutoLayout to have updated the entire
+      // hierarchy. (It can happen that AutoLayout updates the mirror view before the mirrored
+      // view.)
+      DispatchQueue.main.async {
+        guard let self = self else { return }
+        self.cr_onWindowCoordinatesChanged?(self)
+      }
     }
 
     guard let window = window else { fatalError() }
