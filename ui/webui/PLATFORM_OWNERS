@@ -1,5 +1,5 @@
 # Please use more specific OWNERS when possible.
-antrim@chromium.org  # CET
+antrim@chromium.org  # For Chrome OS changes, CET.
 calamity@chromium.org
 dpapad@chromium.org
 johntlee@chromium.org
