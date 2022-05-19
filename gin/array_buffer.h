@@ -30,6 +30,8 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  private:
   friend class V8Initializer;
 
+  void* AllocateInternal(size_t length, int flags);
+
   // Initialize the PartitionAlloc partition from which instances of this class
   // allocate memory. This is called after initializing V8 since, when enabled,
   // the V8 sandbox must be initialized first.

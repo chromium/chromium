@@ -35,16 +35,33 @@ base::ThreadSafePartitionRoot* ArrayBufferAllocator::partition_ = nullptr;
 void* ArrayBufferAllocator::Allocate(size_t length) {
   int flags = partition_alloc::AllocFlags::kZeroFill |
               partition_alloc::AllocFlags::kReturnNull;
-  return partition_->AllocWithFlags(flags, length, "gin::ArrayBufferAllocator");
+  return AllocateInternal(length, flags);
 }
 
 void* ArrayBufferAllocator::AllocateUninitialized(size_t length) {
   int flags = partition_alloc::AllocFlags::kReturnNull;
+  return AllocateInternal(length, flags);
+}
+
+void* ArrayBufferAllocator::AllocateInternal(size_t length, int flags) {
+#ifdef V8_SANDBOX
+  // The V8 sandbox requires all ArrayBuffer backing stores to be allocated
+  // inside the sandbox address space. This isn't guaranteed if allocation
+  // override hooks (which are e.g. used by GWP-ASan) are enabled or if a
+  // memory tool (e.g. ASan) overrides malloc, so disable both.
+  flags |= partition_alloc::AllocFlags::kNoOverrideHooks;
+  flags |= partition_alloc::AllocFlags::kNoMemoryToolOverride;
+#endif
   return partition_->AllocWithFlags(flags, length, "gin::ArrayBufferAllocator");
 }
 
 void ArrayBufferAllocator::Free(void* data, size_t length) {
-  partition_->Free(data);
+  unsigned int flags = 0;
+#ifdef V8_SANDBOX
+  // See |AllocateInternal|.
+  flags |= partition_alloc::FreeFlags::kNoMemoryToolOverride;
+#endif
+  partition_->FreeWithFlags(flags, data);
 }
 
 // static
