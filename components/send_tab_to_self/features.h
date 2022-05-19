@@ -7,14 +7,14 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-
-class PrefService;
+#include "build/buildflag.h"
 
 namespace send_tab_to_self {
 
 // If this feature is enabled and a signed-out user attempts to share a tab,
 // they will see a promo to sign-in.
-extern const base::Feature kSendTabToSelfSigninPromo;
+inline constexpr base::Feature kSendTabToSelfSigninPromo{
+    "SendTabToSelfSigninPromo", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // If this feature is enabled, show received tabs in a new UI next to the
@@ -22,13 +22,9 @@ extern const base::Feature kSendTabToSelfSigninPromo;
 //
 // V2 is the default on desktop and the V1 code path has been deleted there, so
 // this base::Feature no longer exists on desktop platforms.
-extern const base::Feature kSendTabToSelfV2;
+inline constexpr base::Feature kSendTabToSelfV2{
+    "SendTabToSelfV2", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-// Returns whether the receiving components of the feature is enabled on this
-// device. This doesn't rely on the SendTabToSelfSyncService to be actively up
-// and ready.
-bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs);
 
 }  // namespace send_tab_to_self
 

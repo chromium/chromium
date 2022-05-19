@@ -6,7 +6,6 @@ static_library("send_tab_to_self") {
   sources = [
     "entry_point_display_reason.cc",
     "entry_point_display_reason.h",
-    "features.cc",
     "features.h",
     "metrics_util.cc",
     "metrics_util.h",
@@ -71,7 +70,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "entry_point_display_reason_unittest.cc",
-    "features_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
     "target_device_info_unittest.cc",

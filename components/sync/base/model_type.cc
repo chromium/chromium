@@ -8,13 +8,11 @@
 
 #include <ostream>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 namespace syncer {
@@ -404,17 +402,6 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   // This client version doesn't understand |specifics|.
   DVLOG(1) << "Unknown datatype in sync proto.";
   return UNSPECIFIED;
-}
-
-// TODO(crbug.com/1299833): Once the feature toggle is removed, make this
-// constexpr and inline it in the header again.
-ModelTypeSet AlwaysPreferredUserTypes() {
-  ModelTypeSet types(DEVICE_INFO, USER_CONSENTS, SECURITY_EVENTS,
-                     SUPERVISED_USER_SETTINGS, SHARING_MESSAGE);
-  if (base::FeatureList::IsEnabled(kDecoupleSendTabToSelfAndSyncSettings)) {
-    types.Put(SEND_TAB_TO_SELF);
-  }
-  return types;
 }
 
 ModelTypeSet EncryptableUserTypes() {
