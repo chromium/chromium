@@ -250,7 +250,7 @@ class DISPLAY_EXPORT Display final {
     display_frequency_ = display_frequency;
   }
 
-  // The label of the monitor according to the operating system.
+  // A user-friendly label, determined by the platform.
   const std::string& label() const { return label_; }
   void set_label(const std::string& label) { label_ = label; }
 

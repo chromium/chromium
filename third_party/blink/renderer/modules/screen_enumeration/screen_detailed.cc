@@ -98,12 +98,12 @@ String ScreenDetailed::label() const {
   if (!DomWindow())
     return String();
   if (RuntimeEnabledFeatures::WindowPlacementEnhancedScreenLabelsEnabled()) {
+    // Return a user-friendly label for the screen, determined by the platform.
     const std::string& label = GetScreenInfo().label;
     if (!label.empty())
       return String(label);
   }
-  // If OS provided label is unset, fallback to indexed labels.
-  // Returns a placeholder label, e.g. "Internal Display 1".
+  // Return a placeholder label, e.g. "Internal Display 1".
   // These don't have to be unique, but it's nice to be able to differentiate
   // if a user has two external screens, for example.
   const char* prefix =

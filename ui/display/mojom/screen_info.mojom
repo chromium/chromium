@@ -65,8 +65,7 @@ struct ScreenInfo {
   bool is_internal = false;
 
   // Proposed: https://github.com/w3c/window-placement
-  // Human friendly label for the display. This is an arbitrary string
-  // determined by the operating system and is used to identify the display.
+  // A user-friendly label for the screen, determined by the platform.
   string label;
 
   // Not web-exposed; the display::Display::id(), for internal tracking only.

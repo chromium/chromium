@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/sys_string_conversions.h"
 #include "ui/display/screen.h"
 
 #import <AppKit/AppKit.h>
@@ -19,6 +18,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/mac/sdk_forward_declarations.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/display.h"

@@ -2789,7 +2789,8 @@
       name: "WindowPlacement",
       status: "stable",
     },
-    // Exposes OS/WM display names to sites with window-placement permission.
+    // Exposes user-friendly screen labels, determined by the platform, to sites
+    // with window-placement permission.
     {
       name: "WindowPlacementEnhancedScreenLabels",
     },
