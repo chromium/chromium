@@ -220,7 +220,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<String> ACCOUNT_EMAIL =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableBooleanPropertyKey USE_GMS_CORE_EDIT_DIALOGS =
+    public static final WritableBooleanPropertyKey USE_ALTERNATIVE_EDIT_DIALOGS =
             new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<byte[]> ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN =
@@ -256,7 +256,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
                 PRIVACY_NOTICE_TEXT, INFO_SECTION_TEXT, INFO_SECTION_TEXT_CENTER,
                 GENERIC_USER_INTERFACE_PREPENDED, GENERIC_USER_INTERFACE_APPENDED,
                 CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS,
-                SHOULD_STORE_USER_DATA_CHANGES, USE_GMS_CORE_EDIT_DIALOGS, ACCOUNT_EMAIL,
+                SHOULD_STORE_USER_DATA_CHANGES, USE_ALTERNATIVE_EDIT_DIALOGS, ACCOUNT_EMAIL,
                 ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN, INITIALIZE_ADDRESS_COLLECTION_PARAMS,
                 DATA_ORIGIN_NOTICE_CONFIGURATION, ENABLE_UI_INTERACTIONS, MARK_CONTACTS_LOADING,
                 MARK_PHONE_NUMBERS_LOADING, MARK_SHIPPING_ADDRESSES_LOADING,
@@ -649,8 +649,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setUseGmsCoreEditDialogs(boolean useGmsCoreEditDialogs) {
-        set(USE_GMS_CORE_EDIT_DIALOGS, useGmsCoreEditDialogs);
+    private void setUseAlternativeEditDialogs(boolean useGmsCoreEditDialogs) {
+        set(USE_ALTERNATIVE_EDIT_DIALOGS, useGmsCoreEditDialogs);
     }
 
     @CalledByNative

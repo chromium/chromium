@@ -501,7 +501,7 @@ TEST_F(UiControllerTest, UserDataFormStoreContactChange) {
       change_callback;
   options->selected_user_data_changed_callback = change_callback.Get();
   options->contact_details_name = "CONTACT";
-  options->use_gms_core_edit_dialogs = true;
+  options->use_alternative_edit_dialogs = true;
 
   ui_controller_->SetCollectUserDataOptions(options.get());
 
@@ -526,7 +526,7 @@ TEST_F(UiControllerTest, UserDataFormStorePhoneNumberChange) {
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
       change_callback;
   options->selected_user_data_changed_callback = change_callback.Get();
-  options->use_gms_core_edit_dialogs = true;
+  options->use_alternative_edit_dialogs = true;
 
   ui_controller_->SetCollectUserDataOptions(options.get());
 
@@ -554,7 +554,7 @@ TEST_F(UiControllerTest, UserDataFormReloadFromShippingAddressChange) {
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
       change_callback;
   options->selected_user_data_changed_callback = change_callback.Get();
-  options->use_gms_core_edit_dialogs = true;
+  options->use_alternative_edit_dialogs = true;
 
   ui_controller_->SetCollectUserDataOptions(options.get());
 
@@ -574,7 +574,7 @@ TEST_F(UiControllerTest, UserDataFormReloadFromCreditCardChange) {
       base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>>
       change_callback;
   options->selected_user_data_changed_callback = change_callback.Get();
-  options->use_gms_core_edit_dialogs = true;
+  options->use_alternative_edit_dialogs = true;
 
   ui_controller_->SetCollectUserDataOptions(options.get());
 

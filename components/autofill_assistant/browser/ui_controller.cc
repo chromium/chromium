@@ -78,7 +78,7 @@ bool ShouldShowFeedbackChipForReason(Metrics::DropOutReason reason) {
 
 bool ShouldReloadData(const CollectUserDataOptions& options,
                       UserDataEventType event_type) {
-  if (!options.use_gms_core_edit_dialogs) {
+  if (!options.use_alternative_edit_dialogs) {
     return false;
   }
   switch (event_type) {
@@ -94,7 +94,7 @@ bool ShouldReloadData(const CollectUserDataOptions& options,
 
 bool ShouldStoreTemporaryData(const CollectUserDataOptions& options,
                               UserDataEventType event_type) {
-  if (!options.use_gms_core_edit_dialogs) {
+  if (!options.use_alternative_edit_dialogs) {
     return false;
   }
   switch (event_type) {

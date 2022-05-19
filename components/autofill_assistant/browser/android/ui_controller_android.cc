@@ -1181,8 +1181,8 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
 
   Java_AssistantCollectUserDataModel_setShouldStoreUserDataChanges(
       env, jmodel, collect_user_data_options->should_store_data_changes);
-  Java_AssistantCollectUserDataModel_setUseGmsCoreEditDialogs(
-      env, jmodel, collect_user_data_options->use_gms_core_edit_dialogs);
+  Java_AssistantCollectUserDataModel_setUseAlternativeEditDialogs(
+      env, jmodel, collect_user_data_options->use_alternative_edit_dialogs);
   Java_AssistantCollectUserDataModel_setRequestName(
       env, jmodel, collect_user_data_options->request_payer_name);
   Java_AssistantCollectUserDataModel_setRequestEmail(
@@ -1422,7 +1422,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
       const auto& errors = user_data::GetShippingAddressValidationErrors(
           shipping_address->profile.get(), *collect_user_data_options);
       auto jedit_token =
-          collect_user_data_options->use_gms_core_edit_dialogs
+          collect_user_data_options->use_alternative_edit_dialogs
               ? ToJavaByteArray(
                     env, shipping_address->edit_token.value_or(std::string()))
               : nullptr;
@@ -1531,7 +1531,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
         user_data::GetShippingAddressValidationErrors(
             selected_shipping_address, *collect_user_data_options);
     auto jselected_shipping_address_edit_token =
-        collect_user_data_options->use_gms_core_edit_dialogs
+        collect_user_data_options->use_alternative_edit_dialogs
             ? ToJavaByteArray(env, std::string())
             : nullptr;
     if (selected_shipping_address) {
@@ -1584,7 +1584,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
           instrument->card.get(), instrument->billing_address.get(),
           *collect_user_data_options);
       auto jedit_token =
-          collect_user_data_options->use_gms_core_edit_dialogs
+          collect_user_data_options->use_alternative_edit_dialogs
               ? ToJavaByteArray(env,
                                 instrument->edit_token.value_or(std::string()))
               : nullptr;
@@ -1627,7 +1627,7 @@ void UiControllerAndroid::OnUserDataChanged(const UserData& user_data,
             selected_card, selected_billing_address,
             *collect_user_data_options);
     auto jselected_payment_instrument_edit_token =
-        collect_user_data_options->use_gms_core_edit_dialogs
+        collect_user_data_options->use_alternative_edit_dialogs
             ? ToJavaByteArray(env, std::string())
             : nullptr;
     if (selected_card) {

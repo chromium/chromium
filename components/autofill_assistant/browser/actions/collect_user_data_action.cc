@@ -999,7 +999,7 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
   collect_user_data_options_->should_store_data_changes =
       !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
       !should_use_backend_data;
-  collect_user_data_options_->use_gms_core_edit_dialogs =
+  collect_user_data_options_->use_alternative_edit_dialogs =
       should_use_backend_data;
 
   collect_user_data_options_->request_login_choice =

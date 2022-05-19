@@ -324,7 +324,7 @@ struct CollectUserDataOptions {
   std::vector<RequiredDataPiece> required_billing_address_data_pieces;
 
   bool should_store_data_changes = false;
-  bool use_gms_core_edit_dialogs = false;
+  bool use_alternative_edit_dialogs = false;
 
   absl::optional<std::string> add_payment_instrument_action_token;
   absl::optional<std::string> add_address_token;

@@ -339,7 +339,7 @@ class AssistantCollectUserDataBinder
             view.mDataOriginNotice.setAccountEmail(
                     model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL));
             return true;
-        } else if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+        } else if (model.get(AssistantCollectUserDataModel.USE_ALTERNATIVE_EDIT_DIALOGS)) {
             view.mTermsAsCheckboxSection.useBackgroundlessPrivacyNotice();
             view.mTermsSection.useBackgroundlessPrivacyNotice();
             return true;
@@ -489,7 +489,7 @@ class AssistantCollectUserDataBinder
                 || propertyKey == AssistantCollectUserDataModel.PREPENDED_SECTIONS
                 || propertyKey == AssistantCollectUserDataModel.APPENDED_SECTIONS
                 || propertyKey == AssistantCollectUserDataModel.WEB_CONTENTS
-                || propertyKey == AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
+                || propertyKey == AssistantCollectUserDataModel.USE_ALTERNATIVE_EDIT_DIALOGS
                 || propertyKey == AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN
                 || propertyKey == AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS
                 || propertyKey == AssistantCollectUserDataModel.AVAILABLE_CONTACTS
@@ -619,7 +619,7 @@ class AssistantCollectUserDataBinder
                 && propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE
                 && propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS
                 && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES
-                && propertyKey != AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
+                && propertyKey != AssistantCollectUserDataModel.USE_ALTERNATIVE_EDIT_DIALOGS
                 && propertyKey != AssistantCollectUserDataModel.ACCOUNT_EMAIL
                 && propertyKey != AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN
                 && propertyKey
@@ -648,7 +648,7 @@ class AssistantCollectUserDataBinder
 
     private void updateContactEditor(
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
-        assert !model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)
+        assert !model.get(AssistantCollectUserDataModel.USE_ALTERNATIVE_EDIT_DIALOGS)
                 || !model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
 
         // TODO(b/232484145): Create non-Autofill editors.
@@ -666,7 +666,7 @@ class AssistantCollectUserDataBinder
 
     private void updatePhoneNumberEditor(
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
-        assert !model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)
+        assert !model.get(AssistantCollectUserDataModel.USE_ALTERNATIVE_EDIT_DIALOGS)
                 || !model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
 
         // TODO(b/232484145): Create non-Autofill editors.
@@ -686,7 +686,7 @@ class AssistantCollectUserDataBinder
     private void updateAddressEditor(
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
         AssistantAddressEditor editor = null;
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+        if (model.get(AssistantCollectUserDataModel.USE_ALTERNATIVE_EDIT_DIALOGS)) {
             view.mShippingAddressSection.setRequestReloadOnChange(true);
             byte[] initializeAddressCollectionParams =
                     model.get(AssistantCollectUserDataModel.INITIALIZE_ADDRESS_COLLECTION_PARAMS);
@@ -711,7 +711,7 @@ class AssistantCollectUserDataBinder
     private void updatePaymentEditor(
             AssistantCollectUserDataModel model, ViewHolder view, WebContents webContents) {
         AssistantPaymentInstrumentEditor editor = null;
-        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+        if (model.get(AssistantCollectUserDataModel.USE_ALTERNATIVE_EDIT_DIALOGS)) {
             view.mPaymentMethodSection.setRequestReloadOnChange(true);
             byte[] addInstrumentActionToken =
                     model.get(AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN);
