@@ -117,36 +117,6 @@ class AddressValidator {
       const ::i18n::addressinput::FieldProblemMap* filter,
       ::i18n::addressinput::FieldProblemMap* problems) const;
 
-  // Fills in |suggestions| for the partially typed in |user_input|, assuming
-  // the user is typing in the |focused_field|. If the number of |suggestions|
-  // is over the |suggestion_limit|, then returns no |suggestions| at all.
-  //
-  // If the |solutions| parameter is NULL, the checks whether the validation
-  // rules are available, but does not fill in suggestions.
-  //
-  // Sample user input 1:
-  //   country code = "US"
-  //   postal code = "90066"
-  //   focused field = POSTAL_CODE
-  //   suggestions limit = 1
-  // Suggestion:
-  //   [{administrative_area: "CA"}]
-  //
-  // Sample user input 2:
-  //   country code = "CN"
-  //   dependent locality = "Zongyang"
-  //   focused field = DEPENDENT_LOCALITY
-  //   suggestions limit = 10
-  // Suggestion:
-  //   [{dependent_locality: "Zongyang Xian",
-  //     locality: "Anqing Shi",
-  //     administrative_area: "Anhui Sheng"}]
-  virtual Status GetSuggestions(
-      const ::i18n::addressinput::AddressData& user_input,
-      ::i18n::addressinput::AddressField focused_field,
-      size_t suggestion_limit,
-      std::vector< ::i18n::addressinput::AddressData>* suggestions) const;
-
   // Normalizes the |address_data|. For example, "texas" changes to "TX".
   // Returns true on success, otherwise leaves |address_data| alone and returns
   // false.
@@ -179,9 +149,6 @@ class AddressValidator {
 
   // Loads and stores aggregate rules at COUNTRY level.
   const std::unique_ptr<::i18n::addressinput::PreloadSupplier> supplier_;
-
-  // Suggests addresses based on user input. Initialized lazily.
-  mutable std::unique_ptr<InputSuggester> input_suggester_;
 
   // Normalizes addresses into a canonical form.
   const std::unique_ptr<::i18n::addressinput::AddressNormalizer> normalizer_;

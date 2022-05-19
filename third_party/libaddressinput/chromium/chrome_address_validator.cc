@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/libaddressinput/chromium/addressinput_util.h"
-#include "third_party/libaddressinput/chromium/input_suggester.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_normalizer.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -118,33 +117,6 @@ AddressValidator::Status AddressValidator::ValidateAddress(
                        filter,
                        problems,
                        *validated_);
-
-  return SUCCESS;
-}
-
-AddressValidator::Status AddressValidator::GetSuggestions(
-    const AddressData& user_input,
-    AddressField focused_field,
-    size_t suggestion_limit,
-    std::vector<AddressData>* suggestions) const {
-  if (supplier_->IsPending(user_input.region_code))
-    return RULES_NOT_READY;
-
-  if (!supplier_->IsLoaded(user_input.region_code))
-    return RULES_UNAVAILABLE;
-
-  if (!suggestions)
-    return SUCCESS;
-
-  suggestions->clear();
-
-  if (focused_field == POSTAL_CODE ||
-      (focused_field >= ADMIN_AREA && focused_field <= DEPENDENT_LOCALITY)) {
-    if (!input_suggester_)
-      input_suggester_ = std::make_unique<InputSuggester>(supplier_.get());
-    input_suggester_->GetSuggestions(
-        user_input, focused_field, suggestion_limit, suggestions);
-  }
 
   return SUCCESS;
 }
