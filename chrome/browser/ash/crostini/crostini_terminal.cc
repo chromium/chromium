@@ -62,7 +62,7 @@ namespace crostini {
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 
-const char kTerminalHomePath[] = "html/terminal_home.html";
+const char kTerminalHomePath[] = "html/terminal.html#home";
 
 const char kShortcutKey[] = "shortcut";
 const char kShortcutValueSSH[] = "ssh";

@@ -73,7 +73,6 @@ void ReadFile(const base::FilePath downloads,
         kTestFiles({
             {"html/crosh.html", ""},
             {"html/terminal.html", "<script src='/js/terminal.js'></script>"},
-            {"html/terminal_home.html", ""},
             {"js/terminal.js",
              "chrome.terminalPrivate.openVmshellProcess([], () => {})"},
         });
