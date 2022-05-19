@@ -3039,7 +3039,7 @@ def CheckSecurityOwners(input_api, output_api):
         if input_api.is_committing and input_api.change.issue:
             make_presubmit_message = output_api.PresubmitError
         else:
-            make_presubmit_message = output_api.PresubmitPromptWarning
+            make_presubmit_message = output_api.PresubmitNotifyResult
         results.append(
             make_presubmit_message(
                 'Found missing security reviewers:',

@@ -2350,7 +2350,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
     # TODO(dcheng): This should be 1, but the PRESUBMIT currently opens the
     # OWNERS file in an unmockable way.
     self.assertEqual(2, len(results))
-    self.assertEqual('warning', results[0].type)
+    self.assertEqual('notify', results[0].type)
     self.assertEqual(
         'Found missing security reviewers:', results[0].message)
 
@@ -2448,7 +2448,7 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
           if is_committing:
             self.assertEqual('error', results[0].type)
           else:
-            self.assertEqual('warning', results[0].type)
+            self.assertEqual('notify', results[0].type)
           self.assertEqual(
               'Found missing security reviewers:', results[0].message)
           self.assertEqual('error', results[1].type)
