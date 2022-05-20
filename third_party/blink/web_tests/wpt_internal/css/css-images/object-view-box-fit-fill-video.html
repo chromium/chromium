@@ -8,10 +8,14 @@
 
 <body>
 <style>
+/* The test uses clip-path to avoid comparing edges with minor pixel differences
+   due to differences in scaling on highdpi devices */
+
 .view_box_subset {
   object-view-box: inset(50px 0px 0px 0px);
   object-fit: fill;
   margin: 5px;
+  clip-path: inset(1px 0px 0px 0px);
 }
 
 .view_box_subset_with_position {
@@ -63,6 +67,7 @@
   object-fit: fill;
   margin: 5px;
   background-color: grey;
+  clip-path: inset(0px 0px 1px 0px);
 }
 
 .view_box_no_intersection {
