@@ -176,7 +176,7 @@ bool ShouldSniffContent(const GURL& url,
                                           &content_type_options);
   }
   bool sniffing_blocked =
-      base::LowerCaseEqualsASCII(content_type_options, "nosniff");
+      base::EqualsCaseInsensitiveASCII(content_type_options, "nosniff");
   bool we_would_like_to_sniff =
       net::ShouldSniffMimeType(url, response.mime_type);
 

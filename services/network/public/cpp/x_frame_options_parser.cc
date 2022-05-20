@@ -27,11 +27,11 @@ mojom::XFrameOptionsValue ParseXFrameOptions(
     base::StringPiece trimmed =
         base::TrimWhitespaceASCII(value, base::TRIM_ALL);
 
-    if (base::LowerCaseEqualsASCII(trimmed, "deny"))
+    if (base::EqualsCaseInsensitiveASCII(trimmed, "deny"))
       current = mojom::XFrameOptionsValue::kDeny;
-    else if (base::LowerCaseEqualsASCII(trimmed, "allowall"))
+    else if (base::EqualsCaseInsensitiveASCII(trimmed, "allowall"))
       current = mojom::XFrameOptionsValue::kAllowAll;
-    else if (base::LowerCaseEqualsASCII(trimmed, "sameorigin"))
+    else if (base::EqualsCaseInsensitiveASCII(trimmed, "sameorigin"))
       current = mojom::XFrameOptionsValue::kSameOrigin;
 
     if (result == mojom::XFrameOptionsValue::kNone)
