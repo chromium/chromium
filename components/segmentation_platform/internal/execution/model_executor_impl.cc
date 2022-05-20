@@ -62,6 +62,7 @@ struct ModelExecutorImpl::ExecutionState {
   std::vector<float> input_tensor;
   base::Time total_execution_start_time;
   base::Time model_execution_start_time;
+  base::TimeDelta signal_storage_length;
 };
 
 ModelExecutorImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
@@ -120,6 +121,10 @@ void ModelExecutorImpl::ExecuteModel(const proto::SegmentInfo& segment_info,
   }
 
   state->model_version = segment_info.model_version();
+  const proto::SegmentationModelMetadata& model_metadata =
+      segment_info.model_metadata();
+  state->signal_storage_length = model_metadata.signal_storage_length() *
+                                 metadata_utils::GetTimeUnit(model_metadata);
   feature_list_query_processor_->ProcessFeatureList(
       segment_info.model_metadata(), segment_id, clock_->Now(),
       FeatureListQueryProcessor::ProcessOption::kInputsOnly,
@@ -180,7 +185,8 @@ void ModelExecutorImpl::OnModelExecutionComplete(
             << optimization_guide::proto::OptimizationTarget_Name(
                    state->segment_id);
     stats::RecordModelExecutionResult(state->segment_id, result.value());
-    if (state->model_version) {
+    if (state->model_version && SegmentationUkmHelper::AllowedToUploadData(
+                                    state->signal_storage_length, clock_)) {
       SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
           state->segment_id, state->model_version, state->input_tensor,
           result.value());

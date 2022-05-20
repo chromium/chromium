@@ -235,10 +235,8 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
   base::TimeDelta signal_storage_length =
       model_metadata.signal_storage_length() *
       metadata_utils::GetTimeUnit(model_metadata);
-  if (LocalStateHelper::GetInstance().GetPrefTime(
-          kSegmentationUkmMostRecentAllowedTimeKey) +
-          signal_storage_length >=
-      clock_->Now()) {
+  if (!SegmentationUkmHelper::AllowedToUploadData(signal_storage_length,
+                                                  clock_)) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kPartialDataNotAllowed);

@@ -9,10 +9,15 @@
 #include "base/bit_cast.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -254,6 +259,25 @@ TEST_F(SegmentationUkmHelperTest, OutputsValidation) {
       input_tensors, outputs, output_indexes, GetPredictionResult(),
       absl::nullopt);
   ASSERT_NE(source_id, ukm::kInvalidSourceId);
+}
+
+TEST_F(SegmentationUkmHelperTest, AllowedToUploadData) {
+  TestingPrefServiceSimple prefs;
+  SegmentationPlatformService::RegisterLocalStatePrefs(prefs.registry());
+  LocalStateHelper::GetInstance().Initialize(&prefs);
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  LocalStateHelper::GetInstance().SetPrefTime(
+      kSegmentationUkmMostRecentAllowedTimeKey, clock.Now());
+
+  ASSERT_FALSE(
+      SegmentationUkmHelper::AllowedToUploadData(base::Seconds(1), &clock));
+  clock.Advance(base::Seconds(10));
+  ASSERT_TRUE(
+      SegmentationUkmHelper::AllowedToUploadData(base::Seconds(1), &clock));
+  ASSERT_FALSE(
+      SegmentationUkmHelper::AllowedToUploadData(base::Seconds(11), &clock));
 }
 
 }  // namespace segmentation_platform
