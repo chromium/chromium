@@ -137,7 +137,7 @@
 <translation id="1829244130665387512">পৃষ্ঠাত বিচাৰক</translation>
 <translation id="1834891354138622109">স্তম্ভ</translation>
 <translation id="1845944666972354496">সক্ৰিয় কৰিবলৈ দুবাৰ টিপক</translation>
-<translation id="1846771122725914429">ব্লুটুথ ব্ৰেইলি ডিছপ্লে</translation>
+<translation id="1846771122725914429">ব্লুটুথ ব্ৰেইল ডিছপ্লে</translation>
 <translation id="1852018405765032699">চাৰিটা আঙুলিৰে স্ক্ৰীনখনত টিপিলে ChromeVox মেনু খুলিব আৰু বন্ধ হ’ব। এই মেনুত নিৰ্দেশ আৰু শ্বৰ্টকাটৰ বিষয়ে সহায়ক তথ্য থাকে। মেনু খোলাৰ পাছত আপুনি বস্তুবোৰৰ মাজত নেভিগে’ট কৰিবলৈ এটা আঙুলিৰে ছোৱাইপ কৰিব পাৰে আৰু কোনো বস্তু সক্ৰিয় কৰিবলৈ তাত দুবাৰ টিপিব পাৰে। অব্যাহত ৰাখিবলৈ চাৰিটা আঙুলিৰে স্ক্ৰীনখনত টিপক।</translation>
 <translation id="1865601187525349519">পাঠৰ সমাপ্তি</translation>
 <translation id="1876229593313240038">নথি</translation>
@@ -356,7 +356,7 @@
 <translation id="3283583562490372694">টিক চিহ্ন আঁতৰোৱা হ’ল</translation>
 <translation id="3286372614333682499">প’ৰ্ট্ৰেইট</translation>
 <translation id="3286390186030710347">শ্লাইডাৰ</translation>
-<translation id="3300348286427369683">ৰিচ্চ টেক্সটৰ সহায়তা। বর্তমান ChromeVoxএ ৰিচ্চ টেক্সট ক্ষেত্ৰ সহায় কৰে, য'ত পোনপটীয়াকৈ যোৱাৰ নির্দেশনা, ব্ৰেইলি কাৰ্ছাৰ ৰাউটিং, বাছনি আৰু বহুতো অন্তর্ভুক্ত হয়।</translation>
+<translation id="3300348286427369683">ৰিচ্চ টেক্সটৰ সহায়তা। বর্তমান ChromeVoxএ ৰিচ্চ টেক্সট ক্ষেত্ৰ সহায় কৰে, য'ত পোনপটীয়াকৈ যোৱাৰ নির্দেশনা, ব্ৰেইল কাৰ্ছাৰ ৰাউটিং, বাছনি আৰু বহুতো অন্তর্ভুক্ত হয়।</translation>
 <translation id="3300733168898541351">আনডু কৰক</translation>
 <translation id="3307886118343381874">তালিকাৰ শেষলৈ যাওক</translation>
 <translation id="3312997241656799641">চোৱা পৰৱর্তী লিংক</translation>
@@ -509,7 +509,7 @@
 <translation id="4342180618051828363">{COUNT,plural, =1{বিন্দু}=3{এলিপ্সিছ}one{#টা বিন্দু}other{#টা বিন্দু}}</translation>
 <translation id="4372435075475052704">সৰ্বনিম্ন:<ph name="X" /></translation>
 <translation id="4372705107434148843">কথন বন্ধ কৰক</translation>
-<translation id="4376316291247992553">গ্ৰাফিকক ব্ৰেইলি হিচাপে চাওক</translation>
+<translation id="4376316291247992553">গ্ৰাফিকক ব্ৰেইল হিচাপে চাওক</translation>
 <translation id="437809255587011096">পাঠৰ শৈলী ঘোষণা কৰক</translation>
 <translation id="4378308539633073595">আগলৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="4384583879834880242">প্ৰশ্ন আৰু উত্তৰ</translation>
@@ -645,7 +645,7 @@
 <translation id="5368000168321181111">ইয়েৰক’ন অফ আছে</translation>
 <translation id="5368505757342402527"><ph name="FILE_NAME" />ৰ ডাউনল'ড <ph name="PROGRESS" />% সম্পূর্ণ হৈছে। প্ৰায় <ph name="TIME" /> <ph name="UNITS" /> বাকী আছে।</translation>
 <translation id="5400836586163650660">ধোঁৱাবৰণীয়া</translation>
-<translation id="5402367795255837559">ব্ৰেইলি</translation>
+<translation id="5402367795255837559">ব্ৰেইল</translation>
 <translation id="5402791055281059602">কোনো ম’ডেল সতর্কতা</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{ছেমিকলন}one{#টা ছেমিকলন}other{#টা ছেমিকলন}}</translation>
 <translation id="5420259671171615858">মেনুবোৰ সন্ধান কৰক</translation>
@@ -985,7 +985,7 @@
 <translation id="7842115774595115751">নেভিগেশ্বনৰ নিয়ন্ত্ৰণসমূহ সক্ষম কৰক</translation>
 <translation id="7846634333498149051">কীব'ৰ্ড</translation>
 <translation id="7851816175263618915">কিছুমান যতিচিহ্ন</translation>
-<translation id="7871691770940645922">ভাৰ্চুৱেল ব্যক্তিগত নেটৱৰ্ক ব্ৰেইলি ডিছপ্লে’</translation>
+<translation id="7871691770940645922">ভাৰ্চুৱেল ব্যক্তিগত নেটৱৰ্ক ব্ৰেইল ডিছপ্লে’</translation>
 <translation id="7882421473871500483">মাটীয়া</translation>
 <translation id="78826985582142166">শ্লাইডাৰ</translation>
 <translation id="7913106023953875143">কোনো পৰৱর্তী স্তৰ ২ৰ শিৰোনাম নাই</translation>
@@ -1097,7 +1097,7 @@
 <translation id="8640369214276455272">বগা ধোঁৱা</translation>
 <translation id="8651481478098336970">ভলিউম মিউট কৰক</translation>
 <translation id="8653646212587894517">লিংকৰ সূচী দেখুৱাওক</translation>
-<translation id="8656888282555543604">ব্ৰেইলি লগ ইন সক্ষম কৰক</translation>
+<translation id="8656888282555543604">ব্ৰেইল লগ ইন সক্ষম কৰক</translation>
 <translation id="8659501358298941449">ড্ৰপ ডাউনৰ সূচী</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> সমাপ্ত</translation>
 <translation id="867187640362843212">শিৰোনাম ৫</translation>
