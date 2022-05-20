@@ -85,7 +85,7 @@
 
 #include <algorithm>
 
-#include "base/debug/close_handle_hook_win.h"
+#include "base/debug/handle_hooks_win.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/threading/platform_thread_win.h"
 #include "base/win/atl.h"
@@ -808,8 +808,8 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
     *exit_code = 0;
     return true;  // Got a --version switch; exit with a success error code.
   }
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
+  // TODO(crbug.com/1052397): Revisit the macro expression once build flag
+  // switch of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // This will directly exit if the user asked for help.
   HandleHelpSwitches(command_line);
@@ -823,11 +823,25 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
     return true;
   }
 
-// HandleVerifier detects and reports incorrect handle manipulations. It tracks
-// handle operations on builds that support DCHECK only.
-// TODO(crbug/1104358): Support 64-bit handle hooks.
-#if DCHECK_IS_ON() && !defined(ARCH_CPU_64_BITS)
-  base::debug::InstallHandleHooks();
+  // HandleVerifier detects and reports incorrect handle manipulations. It
+  // tracks handle operations on builds that support DCHECK only.
+#if DCHECK_IS_ON()
+  // This portion of the hook setup is just for child processes. Browser part is
+  // in ChromeBrowserMainPartsWin::PostProfileInit.
+  if (!is_browser) {
+    // Performing EAT interception first is safer in the presence of other
+    // threads attempting to call CloseHandle.
+#if defined(ARCH_CPU_32_BITS)
+    // Patching EAT of kernel32.dll is only supported on 32-bit because RVA can
+    // only hold 32-bit values.
+    base::debug::HandleHooks::AddEATPatch();
+#endif
+    // Patch once. Cannot monitor for further modules in a child process as
+    // monitoring needs ModuleWatcher, but likely no more should really load in
+    // a child process from this point on. If we miss any then we will lose some
+    // detection but still generate no false positive crashes.
+    base::debug::HandleHooks::PatchLoadedModules();
+  }
 #else
   base::win::DisableHandleVerifier();
 #endif
