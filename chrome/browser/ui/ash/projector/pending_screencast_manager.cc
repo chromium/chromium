@@ -13,9 +13,12 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
@@ -35,6 +38,8 @@ namespace {
 constexpr base::FilePath::CharType kMediaExtension[] =
     FILE_PATH_LITERAL(".webm");
 constexpr char kOpenUrlBase[] = "https://drive.google.com/open";
+constexpr char kDriveRequestContentHintsKey[] = "contentHints";
+constexpr char kDriveRequestIndexableTextKey[] = "indexableText";
 
 // The metadata might not be ready as the file gets uploaded. On projector app
 // side, we fetch newly uploaded screencasts with 2s delay, and it works fine,
@@ -129,6 +134,91 @@ void GetDriveFileMetadata(
                                  local_path));
 }
 
+// Reads the screencast metadata file from `metadata_file_local_path`. A sample
+// file content:
+// {
+//   "captionLanguage":"en",
+//   "captions":[
+//     {
+//      "endOffset":1260,
+//      "hypothesisParts:[],
+//      "startOffset":760,
+//      "text":"abcd",
+//     }
+//   ],
+//   "tableOfContent":[]
+// }
+// Returns the indexable text concated by all "text" fields content.
+std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  std::string indexable_text = "";
+
+  // Reads the Json content in `metadata_file_local_path` to `dict_value`:
+  std::string file_content;
+  if (!base::ReadFileToString(metadata_file_local_path, &file_content))
+    return indexable_text;
+
+  absl::optional<base::Value> value(base::JSONReader::Read(file_content));
+  if (!value)
+    return indexable_text;
+
+  const base::Value::Dict* dict_value = value.value().GetIfDict();
+  if (!dict_value)
+    return indexable_text;
+
+  // Concats all captions' text:
+  const auto* captions = dict_value->FindList("captions");
+  if (!captions)
+    return indexable_text;
+
+  for (const auto& caption : *captions) {
+    const base::Value::Dict* caption_dict = caption.GetIfDict();
+    if (!caption_dict)
+      continue;
+    const std::string* text = caption_dict->FindString("text");
+    if (!text->empty()) {
+      base::StrAppend(&indexable_text, {" ", *text});
+    }
+  }
+  return indexable_text;
+}
+
+// Returns the request body, which looks like:
+// {
+//   "contentHints":
+//     {
+//      "indexableText":"abcd",
+//     }
+// }
+const std::string BuildRequestBody(
+    const base::FilePath& metadata_file_local_path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  const std::string indexable_text = GetIndexableText(metadata_file_local_path);
+  if (indexable_text.empty())
+    return std::string();
+
+  // Builds request body:
+  base::DictionaryValue root;
+  base::Value::Dict contentHints;
+  contentHints.Set(kDriveRequestIndexableTextKey, indexable_text);
+  root.SetKey(kDriveRequestContentHintsKey,
+              base::Value(std::move(contentHints)));
+
+  std::string request_body;
+  base::JSONWriter::Write(root, &request_body);
+
+  return request_body;
+}
+
+void OnGetRequestBody(const std::string& file_id,
+                      const std::string& request_body) {
+  // TODO(b/221078840): Send drive patch request to update
+  // indexable text if request_body is not empty.
+  if (request_body.empty()) {
+    LOG(ERROR) << "Failed to parse the reqeust body for file id: " << file_id;
+  }
+}
+
 // Returns a valid pending screencast from `container_absolute_path`.  A valid
 // screencast should have 1 media file and 1 metadata file.
 absl::optional<ash::PendingScreencast> GetPendingScreencast(
@@ -183,18 +273,6 @@ absl::optional<ash::PendingScreencast> GetPendingScreencast(
   pending_screencast.total_size_in_bytes = total_size_in_bytes;
   pending_screencast.upload_failed = upload_failed;
   return pending_screencast;
-}
-
-void OnGetFileId(const base::FilePath& local_file_path,
-                 const std::string& file_id) {
-  // TODO(b/221078840): Extracts indexable text and
-  // build the request body
-  // from `metadata_file_local_path`. Then send
-  // drive patch request to update indexable text on
-  // get file id.
-  if (file_id.empty()) {
-    LOG(ERROR) << "Failed to get file id for path: " << local_file_path;
-  }
 }
 
 // The `pending_webm_or_projector_events` are new uploading ".webm" or
@@ -399,6 +477,10 @@ void PendingScreencastManager::SetOnGetFileIdCallbackForTest(
   on_get_file_id_callback_ = std::move(callback);
 }
 
+void PendingScreencastManager::SetOnGetRequestBodyCallbackForTest(
+    OnGetRequestBodyCallback callback) {
+  on_get_request_body_ = std::move(callback);
+}
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
     const base::TimeTicks task_start_tick,
     const ash::PendingScreencastSet& screencasts) {
@@ -467,9 +549,11 @@ void PendingScreencastManager::OnFileSyncedCompletely(
     // the indexable text and remove it from `syncing_metadata_files_`.
     const auto iter = syncing_metadata_files_.find(event_file);
     if (iter != syncing_metadata_files_.end()) {
-      auto on_get_file_id_callback = on_get_file_id_callback_
-                                         ? std::move(on_get_file_id_callback_)
-                                         : base::BindOnce(&OnGetFileId);
+      auto on_get_file_id_callback =
+          on_get_file_id_callback_
+              ? std::move(on_get_file_id_callback_)
+              : base::BindOnce(&PendingScreencastManager::OnGetFileId,
+                               weak_ptr_factory_.GetWeakPtr());
 
       // Posts a delayed task to get Drive metadata because the metadata might
       // not be polulated as the file get uploaded. This task has a long chain
@@ -483,4 +567,18 @@ void PendingScreencastManager::OnFileSyncedCompletely(
       syncing_metadata_files_.erase(iter);
     }
   }
+}
+
+void PendingScreencastManager::OnGetFileId(
+    const base::FilePath& local_file_path,
+    const std::string& file_id) {
+  if (file_id.empty())
+    return;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&BuildRequestBody, local_file_path),
+      on_get_request_body_
+          ? base::BindOnce(std::move(on_get_request_body_), file_id)
+          : base::BindOnce(&OnGetRequestBody, file_id));
 }

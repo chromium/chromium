@@ -65,6 +65,10 @@ class PendingScreencastManager
       base::OnceCallback<void(const base::FilePath& local_file_path,
                               const std::string& file_id)>;
   void SetOnGetFileIdCallbackForTest(OnGetFileIdCallback callback);
+  using OnGetRequestBodyCallback =
+      base::OnceCallback<void(const std::string& file_id,
+                              const std::string& request_body)>;
+  void SetOnGetRequestBodyCallbackForTest(OnGetRequestBodyCallback callback);
 
  private:
   // Updates `pending_screencast_cache_` and notifies pending screencast change.
@@ -85,6 +89,9 @@ class PendingScreencastManager
   // files from `error_syncing_files_` and `syncing_metadata_files_` cached. If
   // it is a screencast metadata file, post task to update indexable text.
   void OnFileSyncedCompletely(const base::FilePath& event_file);
+
+  void OnGetFileId(const base::FilePath& local_file_path,
+                   const std::string& file_id);
 
   // TODO(b/221902328): Fix the case that user might delete files through file
   // app.
@@ -107,10 +114,6 @@ class PendingScreencastManager
   // A blocking task runner for file IO operations.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
-  // Used to update indexable text on getting Drive server side file id.
-  // Currently only available in test.
-  OnGetFileIdCallback on_get_file_id_callback_;
-
   base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
       drivefs_observation_{this};
   base::ScopedObservation<session_manager::SessionManager,
@@ -129,6 +132,11 @@ class PendingScreencastManager
   // empty screencasts set or no `pending_screencast_change_callback_` invoked
   // in the current ChromeOS session.
   base::TimeTicks last_pending_screencast_change_tick_;
+
+  // Updates indexable text containing a lot of async steps. These callbacks are
+  // used in tests to verify the task quit correctly while error happens.
+  OnGetRequestBodyCallback on_get_request_body_;
+  OnGetFileIdCallback on_get_file_id_callback_;
 
   base::WeakPtrFactory<PendingScreencastManager> weak_ptr_factory_{this};
 };

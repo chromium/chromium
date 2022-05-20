@@ -119,10 +119,18 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
     return &fake_drivefs_helper_->fake_drivefs();
   }
 
+  // Creates file under the Drive relative `file_path` whose size is
+  // `total_bytes`.
   void CreateFileInDriveFsFolder(const std::string& file_path,
                                  int64_t total_bytes) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
+    CreateFileInDriveFsFolder(file_path, std::string(total_bytes, 'a'));
+  }
 
+  // Creates file under the Drive relative `file_path` and write `file_content`
+  // to the file.
+  void CreateFileInDriveFsFolder(const std::string& file_path,
+                                 const std::string& file_content) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath relative_file_path(file_path);
     base::FilePath folder_path =
         GetDriveFsAbsolutePath(relative_file_path.DirName().value());
@@ -133,10 +141,8 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     base::File file(folder_path.Append(relative_file_path.BaseName()),
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    // Create a buffer whose size is `total_bytes`.
-    std::string buffer(total_bytes, 'a');
-    EXPECT_EQ(total_bytes,
-              file.Write(/*offset=*/0, buffer.data(), /*size=*/total_bytes));
+    EXPECT_EQ(file_content.size(), file.Write(/*offset=*/0, file_content.data(),
+                                              /*size=*/file_content.size()));
     EXPECT_TRUE(file.IsValid());
     file.Close();
   }
@@ -209,6 +215,48 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
                          /*total_bytes=*/total_size,
                          /*transferred_bytes=*/total_size);
     pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  }
+
+  void TestGetFileIdFailed() {
+    // Sets get file id callback:
+    base::RunLoop run_loop;
+    pending_screencast_manager()->SetOnGetFileIdCallbackForTest(
+        base::BindLambdaForTesting([&](const base::FilePath& local_file_path,
+                                       const std::string& file_id) {
+          EXPECT_EQ(GetDriveFsAbsolutePath(kDefaultMetadataFilePath),
+                    local_file_path);
+          EXPECT_EQ(std::string(), file_id);
+          run_loop.Quit();
+        }));
+
+    // Mocks a metadata file finishes upload:
+    MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+    run_loop.Run();
+  }
+
+  void ExpectEmptyRequestBodyForProjectorFileContent(
+      const std::string& file_content) {
+    CreateFileInDriveFsFolder(kDefaultMetadataFilePath, file_content);
+    GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
+                                  "text/plain", kTestMetadataFile, false, false,
+                                  {}, {}, "abc123",
+                                  /*alternate_url=*/
+                                  "https://drive.google.com/open?id=fileId");
+
+    // Sets get file id callback:
+    base::RunLoop run_loop;
+    pending_screencast_manager()->SetOnGetRequestBodyCallbackForTest(
+        base::BindLambdaForTesting(
+            [&](const std::string& file_id, const std::string& request_body) {
+              EXPECT_EQ(std::string(), request_body);
+              EXPECT_EQ("fileId", file_id);
+              run_loop.Quit();
+            }));
+
+    // Mocks a metadata file finishes upload:
+    MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+
+    run_loop.Run();
   }
 
   MOCK_METHOD1(PendingScreencastChangeCallback,
@@ -640,26 +688,32 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
       /*count=*/2);
 }
 
-IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, GetFileIdSuccess) {
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, OnGetRequestBody) {
   // Prepares a ".projector" file and it's metadata:
-  drivefs::mojom::SyncingStatus syncing_status;
-  CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
-
-  GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
-                                "text/plain", kTestMetadataFile, false, false,
-                                {}, {}, "abc123",
-                                "https://drive.google.com/open?id=fileId");
+  const std::string kProjectorFileContent =
+      "{\"captionLanguage\":\"en\",\"captions\":[{\"endOffset\":1260,"
+      "\"hypothesisParts\":[],\"startOffset\":760,\"text\":\"metadata "
+      "file.\"},{\"endOffset\":2300,"
+      "\"hypothesisParts\":[],\"startOffset\":2000,\"text\":\"another sentence."
+      "\"}],\"tableOfContent\":[]}";
+  CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kProjectorFileContent);
+  GetFakeDriveFs()->SetMetadata(
+      base::FilePath(kDefaultMetadataFilePath), "text/plain", kTestMetadataFile,
+      false, false, {}, {}, "abc123",
+      /*alternate_url=*/"https://drive.google.com/open?id=fileId");
 
   // Sets get file id callback:
   base::RunLoop run_loop;
-  pending_screencast_manager()->SetOnGetFileIdCallbackForTest(
-      base::BindLambdaForTesting([&](const base::FilePath& local_file_path,
-                                     const std::string& file_id) {
-        EXPECT_EQ(GetDriveFsAbsolutePath(kDefaultMetadataFilePath),
-                  local_file_path);
-        EXPECT_EQ("fileId", file_id);
-        run_loop.Quit();
-      }));
+  pending_screencast_manager()->SetOnGetRequestBodyCallbackForTest(
+      base::BindLambdaForTesting(
+          [&](const std::string& file_id, const std::string& request_body) {
+            EXPECT_EQ(
+                "{\"contentHints\":{\"indexableText\":\" metadata file. "
+                "another sentence.\"}}",
+                request_body);
+            EXPECT_EQ("fileId", file_id);
+            run_loop.Quit();
+          }));
 
   // Mocks a metadata file finishes upload:
   MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
@@ -667,24 +721,63 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, GetFileIdSuccess) {
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, GetFileIdFail) {
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       GetFileIdFailByFileNotExist) {
   // Does not create ".projector", which leads to drive::FILE_ERROR_NOT_FOUND.
 
-  // Sets get file id callback:
-  base::RunLoop run_loop;
-  pending_screencast_manager()->SetOnGetFileIdCallbackForTest(
-      base::BindLambdaForTesting([&](const base::FilePath& local_file_path,
-                                     const std::string& file_id) {
-        EXPECT_EQ(GetDriveFsAbsolutePath(kDefaultMetadataFilePath),
-                  local_file_path);
-        EXPECT_EQ(std::string(), file_id);
-        run_loop.Quit();
-      }));
+  TestGetFileIdFailed();
+}
 
-  // Mocks a metadata file finishes upload:
-  MockSyncFileCompleted(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       GetFileIdFailByEmptyAlternateUrl) {
+  CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+  // Sets empty alternate url in metadata, which could happen when metadata is
+  // not fully populated.
+  GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
+                                "text/plain", kTestMetadataFile, false, false,
+                                {}, {}, "abc123",
+                                /*alternate_url=*/std::string());
 
-  run_loop.Run();
+  TestGetFileIdFailed();
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       GetFileIdFailByInCorrectAlternateUrl) {
+  CreateFileInDriveFsFolder(kDefaultMetadataFilePath, kTestMetadataFileBytes);
+  // Sets incorrect alternate url in metadata.
+  GetFakeDriveFs()->SetMetadata(base::FilePath(kDefaultMetadataFilePath),
+                                "text/plain", kTestMetadataFile, false, false,
+                                {}, {}, "abc123",
+                                /*alternate_url=*/"alternate_url");
+
+  TestGetFileIdFailed();
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       MalformedProjectorFileNoCaption) {
+  // Prepares a ".projector" file with no captions.
+  const std::string kProjectorFileContentNoCaption =
+      "{\"captionLanguage\":\"en\",\"tableOfContent\":[]}";
+  ExpectEmptyRequestBodyForProjectorFileContent(kProjectorFileContentNoCaption);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       MalformedProjectorFileNotJson) {
+  // Prepares a ".projector" file with no captions.
+  const std::string kProjectorFileContentNotJson =
+      "{\"captionLanguage\":\"en\",\"captions\":[{\"endOffset\":1260,"
+      "\"hypothesisParts\":[],\"startOffset\":760,\"text\":\"metadata "
+      "file.\"}],\"tableOfContent\":[]";
+  ExpectEmptyRequestBodyForProjectorFileContent(kProjectorFileContentNotJson);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       ProjectorFileEmptyCaption) {
+  // Prepares a ".projector" file and it's metadata:
+  const std::string kProjectorFileContentEmptyCaption =
+      "{\"captionLanguage\":\"en\",\"captions\":[],\"tableOfContent\":[]}";
+  ExpectEmptyRequestBodyForProjectorFileContent(
+      kProjectorFileContentEmptyCaption);
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {
