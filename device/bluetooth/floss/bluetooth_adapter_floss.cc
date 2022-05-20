@@ -122,7 +122,7 @@ void BluetoothAdapterFloss::RemoveAdapter() {
   if (!FlossDBusManager::Get()->HasActiveAdapter())
     return;
 
-  devices_.clear();
+  ClearAllDevices();
 
   // Remove adapter by switching to an invalid adapter (cleans up DBus clients)
   // and then emitting |AdapterPresentChanged| to observers.
@@ -134,6 +134,19 @@ void BluetoothAdapterFloss::PopulateInitialDevices() {
   FlossDBusManager::Get()->GetAdapterClient()->GetBondedDevices(
       base::BindOnce(&BluetoothAdapterFloss::OnGetBondedDevices,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BluetoothAdapterFloss::ClearAllDevices() {
+  // Move all elements of the original devices list to a new list here,
+  // leaving the original list empty so that when we send DeviceRemoved(),
+  // GetDevices() returns no devices.
+  DevicesMap devices_swapped;
+  devices_swapped.swap(devices_);
+
+  for (auto& iter : devices_swapped) {
+    for (auto& observer : observers_)
+      observer.DeviceRemoved(this, iter.second.get());
+  }
 }
 
 void BluetoothAdapterFloss::Init() {
@@ -511,7 +524,7 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
   if (enabled) {
     PopulateInitialDevices();
   } else {
-    devices_.clear();
+    ClearAllDevices();
   }
 
   NotifyAdapterPoweredChanged(enabled);
