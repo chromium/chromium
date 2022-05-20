@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -84,6 +85,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -917,7 +919,6 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
 
   WebAppRegistrar& app_registrar = provider()->registrar();
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
@@ -1176,7 +1177,6 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplayMinimal(Site site) {
 void WebAppIntegrationTestDriver::ManifestUpdateDisplay(Site site,
                                                         Display display) {
   BeforeStateChangeAction(__FUNCTION__);
-  ASSERT_EQ(Site::kSiteA, site) << "Only site mode of 'SiteA' is supported";
   ASSERT_TRUE(base::Contains(g_site_to_relative_start_url, site));
 
   std::string start_url_path = g_site_to_relative_start_url.find(site)->second;
@@ -1910,6 +1910,8 @@ void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
     Site site,
     IsShown is_shown) {
   BeforeStateChangeAction(__FUNCTION__);
+  if (!app_browser())
+    app_browser_ = GetAppBrowserForSite(site);
   ASSERT_TRUE(app_browser());
   EXPECT_EQ(app_browser()->app_controller()->AppUsesWindowControlsOverlay(),
             is_shown == IsShown::kShown);
@@ -2339,7 +2341,6 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state.has_value()) << static_cast<int>(site);
-  ;
   auto app_id = app_state->id;
   active_app_id_ = app_id;
   app_ids_with_pending_manifest_updates_.insert(app_id);
@@ -2410,7 +2411,10 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
   }
   if (!launch_if_not_open)
     return nullptr;
-  return LaunchWebAppBrowserAndWait(profile(), app_state->id);
+  Browser* browser = LaunchWebAppBrowserAndWait(profile(), app_state->id);
+  provider()->manifest_update_manager().ResetManifestThrottleForTesting(
+      GetAppIdBySiteMode(site));
+  return browser;
 }
 
 bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
@@ -2484,6 +2488,7 @@ void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
       content::NotificationService::AllSources());
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  command_line.AppendSwitchASCII(switches::kTestType, "browser");
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));

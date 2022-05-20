@@ -14,7 +14,9 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -386,6 +388,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
 
   std::unique_ptr<net::EmbeddedTestServer> isolated_app_test_server_ = nullptr;
+  std::unique_ptr<base::RunLoop> window_controls_overlay_callback_for_testing_ =
+      nullptr;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration

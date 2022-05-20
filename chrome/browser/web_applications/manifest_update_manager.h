@@ -81,6 +81,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
     hang_update_checks_for_testing_ = true;
   }
 
+  void ResetManifestThrottleForTesting(const AppId& app_id);
+
  private:
   bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
   absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;

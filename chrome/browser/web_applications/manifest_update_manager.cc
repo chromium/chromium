@@ -183,4 +183,14 @@ void ManifestUpdateManager::NotifyResult(const GURL& url,
     std::move(result_callback_for_testing_).Run(url, result);
 }
 
+void ManifestUpdateManager::ResetManifestThrottleForTesting(
+    const AppId& app_id) {
+  // Erase the throttle info from the map so that corresponding
+  // manifest writes can go through.
+  auto it = last_update_check_.find(app_id);
+  if (it != last_update_check_.end()) {
+    last_update_check_.erase(app_id);
+  }
+}
+
 }  // namespace web_app
