@@ -33,7 +33,7 @@
 
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/performance/largest_contentful_paint_type.mojom-shared.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -119,8 +119,8 @@ class WebPerformance {
   BLINK_EXPORT base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
   BLINK_EXPORT double ExperimentalLargestImagePaint() const;
   BLINK_EXPORT uint64_t ExperimentalLargestImagePaintSize() const;
-  BLINK_EXPORT blink::mojom::LargestContentfulPaintType
-  LargestContentfulPaintType() const;
+  BLINK_EXPORT blink::LargestContentfulPaintType LargestContentfulPaintType()
+      const;
   BLINK_EXPORT double LargestContentfulPaintImageBPP() const;
   BLINK_EXPORT double ExperimentalLargestTextPaint() const;
   BLINK_EXPORT uint64_t ExperimentalLargestTextPaintSize() const;

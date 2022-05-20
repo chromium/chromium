@@ -445,11 +445,12 @@ uint64_t PerformanceTiming::LargestImagePaintSize() const {
   return paint_timing_detector->LargestImagePaintSize();
 }
 
-mojom::blink::LargestContentfulPaintType
+blink::LargestContentfulPaintType
 PerformanceTiming::LargestContentfulPaintType() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  // TODO(iclelland) Add a test for this condition
   if (!paint_timing_detector) {
-    return mojom::blink::LargestContentfulPaintType::kNone;
+    return blink::LargestContentfulPaintType::kNone;
   }
   return paint_timing_detector->LargestContentfulPaintType();
 }

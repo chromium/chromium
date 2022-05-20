@@ -10,7 +10,6 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import
   "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
-import "third_party/blink/public/mojom/performance/largest_contentful_paint_type.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
 
 // TimeDeltas below relative to navigation start.
@@ -39,7 +38,7 @@ struct LargestContentfulPaintTiming {
 
   // These are packed blink::LargestContentfulPaintType enums, indicating
   // the largest LCP candidate's type characteristics.
-  blink.mojom.LargestContentfulPaintType type;
+  uint64 type;
 
   // Computed entropy of the page's largest image, calculated as the image file
   // size, in bits, divided by the image's rendered size, in pixels.

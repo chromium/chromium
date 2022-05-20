@@ -5,9 +5,35 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERFORMANCE_LARGEST_CONTENTFUL_PAINT_TYPE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERFORMANCE_LARGEST_CONTENTFUL_PAINT_TYPE_H_
 
-#include "third_party/blink/public/mojom/performance/largest_contentful_paint_type.mojom-forward.h"
+namespace blink {
 
-namespace blink::mojom {
+// This enum contains the various types a potential LargestContentfulPaint
+// candidate entry may have.
+// These values are set in PaintTimingDetector, packed into
+// page_load_metrics.mojom's LargestContentfulPaintTiming.type and finally
+// reported to UKM through UKMPageLoadMetricsObserver.
+enum class LargestContentfulPaintType {
+  kNone = 0,
+
+  // kImage and KText are not yet supported and will be added later.
+  kImage = 1 << 0,
+  kText = 1 << 1,
+
+  kAnimatedImage = 1 << 2,
+
+  // The enum values below are not yet used and will be added later.
+  kVideo = 1 << 3,
+  kDataURI = 1 << 4,
+  kPNG = 1 << 5,
+  kJPG = 1 << 6,
+  kWebP = 1 << 7,
+  kSVG = 1 << 8,
+  kGIF = 1 << 9,
+  kAVIF = 1 << 10,
+  kFullViewport = 1 << 11,
+
+  kAfterMouseover = 1 << 12,
+};
 
 inline constexpr LargestContentfulPaintType operator&(
     LargestContentfulPaintType a,
@@ -38,6 +64,6 @@ inline constexpr uint64_t LargestContentfulPaintTypeToUKMFlags(
   return static_cast<uint64_t>(type);
 }
 
-}  // namespace blink::mojom
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PERFORMANCE_LARGEST_CONTENTFUL_PAINT_TYPE_H_

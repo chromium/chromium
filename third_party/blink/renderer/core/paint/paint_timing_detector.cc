@@ -267,15 +267,14 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 
-  largest_contentful_paint_type_ =
-      mojom::blink::LargestContentfulPaintType::kNone;
+  largest_contentful_paint_type_ = blink::LargestContentfulPaintType::kNone;
   if (image_record) {
     Node* image_node = DOMNodeIds::NodeForId(image_record->node_id);
     HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
     if (element && !image_node->IsInShadowTree() &&
         element->IsChangedShortlyAfterMouseover()) {
       largest_contentful_paint_type_ |=
-          mojom::blink::LargestContentfulPaintType::kAfterMouseover;
+          blink::LargestContentfulPaintType::kAfterMouseover;
     }
     // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
     // default, we'd be able to use the value of
@@ -284,7 +283,7 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
         image_record->media_timing->IsPaintedFirstFrame()) {
       // Set the animated image flag.
       largest_contentful_paint_type_ |=
-          mojom::blink::LargestContentfulPaintType::kAnimatedImage;
+          blink::LargestContentfulPaintType::kAnimatedImage;
     }
   }
   largest_image_paint_time_ = image_paint_time;

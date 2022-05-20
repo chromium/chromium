@@ -604,7 +604,7 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
             ? base::TimeDelta()
             : ClampDelta(perf.LargestImagePaint(), start);
     timing->paint_timing->largest_contentful_paint->type =
-        perf.LargestContentfulPaintType();
+        LargestContentfulPaintTypeToUKMFlags(perf.LargestContentfulPaintType());
     timing->paint_timing->largest_contentful_paint->image_bpp =
         perf.LargestContentfulPaintImageBPP();
   }
@@ -630,7 +630,7 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
             ? base::TimeDelta()
             : ClampDelta(perf.ExperimentalLargestImagePaint(), start);
     timing->paint_timing->experimental_largest_contentful_paint->type =
-        perf.LargestContentfulPaintType();
+        LargestContentfulPaintTypeToUKMFlags(perf.LargestContentfulPaintType());
   }
   if (perf.ExperimentalLargestTextPaintSize() > 0) {
     // ExperimentalLargestTextPaint and ExperimentalLargestTextPaintSize should
