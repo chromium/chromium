@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
@@ -468,13 +469,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if ([_contentSuggestionPolicyEnabled value]) {
-    [model addItem:self.articlesForYouItem
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
-  } else {
-    [model addItem:self.managedArticlesForYouItem
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+  if (!IsFeedAblationEnabled()) {
+    if ([_contentSuggestionPolicyEnabled value]) {
+      [model addItem:self.articlesForYouItem
+          toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+
+    } else {
+      [model addItem:self.managedArticlesForYouItem
+          toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    }
   }
   [model addItem:[self languageSettingsDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];

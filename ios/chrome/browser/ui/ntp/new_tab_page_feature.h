@@ -36,6 +36,9 @@ extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 // TODO(crbug.com/1262536): Remove this when it is fixed.
 extern const base::Feature kNTPViewHierarchyRepair;
 
+// Feature flag to remove the Feed from the NTP.
+extern const base::Feature kEnableFeedAblation;
+
 // Whether the Discover feed content preview is shown in the context menu.
 bool IsDiscoverFeedPreviewEnabled();
 
@@ -47,5 +50,8 @@ bool IsDiscoverFeedShorterCacheEnabled();
 
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();
+
+// Whether the Discover feed ablation experiment is enabled.
+bool IsFeedAblationEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

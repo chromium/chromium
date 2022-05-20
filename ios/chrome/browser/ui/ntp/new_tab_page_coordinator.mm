@@ -640,7 +640,8 @@ namespace {
 }
 
 - (BOOL)shouldFeedBeVisible {
-  return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
+  return [self isFeedHeaderVisible] && [self.feedExpandedPref value] &&
+         !IsFeedAblationEnabled();
 }
 
 #pragma mark - FeedMenuCommands
@@ -1040,7 +1041,8 @@ namespace {
 // menu, or by an enterprise policy.
 - (BOOL)isFeedHeaderVisible {
   return self.prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
-         self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
+         self.prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
+         !IsFeedAblationEnabled();
 }
 
 // Returns |YES| if the feed is currently visible on the NTP.

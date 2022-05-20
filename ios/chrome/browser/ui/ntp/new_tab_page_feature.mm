@@ -35,6 +35,9 @@ const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
 const base::Feature kNTPViewHierarchyRepair{"NTPViewHierarchyRepair",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kEnableFeedAblation{"FeedAblationEnabled",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
@@ -49,4 +52,8 @@ bool IsDiscoverFeedShorterCacheEnabled() {
 
 bool IsNTPViewHierarchyRepairEnabled() {
   return base::FeatureList::IsEnabled(kNTPViewHierarchyRepair);
+}
+
+bool IsFeedAblationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedAblation);
 }
