@@ -1101,6 +1101,24 @@ void ForwardOpenGraphMetadataIfValid(
     std::move(callback).Run({});
 }
 
+// Creates a JavaScriptExecuteRequestForTestsCallback callback that delegates
+// to the given JavaScriptResultCallback.
+blink::mojom::LocalFrame::JavaScriptExecuteRequestForTestsCallback
+CreateJavaScriptExecuteRequestForTestsCallback(
+    RenderFrameHost::JavaScriptResultCallback callback) {
+  if (!callback)
+    return base::NullCallback();
+  return base::BindOnce(
+      [](RenderFrameHost::JavaScriptResultCallback callback,
+         blink::mojom::JavaScriptExecutionResultType type, base::Value value) {
+        if (type == blink::mojom::JavaScriptExecutionResultType::kSuccess)
+          std::move(callback).Run(value.Clone());
+        else
+          std::move(callback).Run(base::Value());
+      },
+      std::move(callback));
+}
+
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -2483,34 +2501,42 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
     const std::u16string& javascript,
     JavaScriptResultCallback callback,
     int32_t world_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  AssertNonSpeculativeFrame();
-
-  const bool has_user_gesture = false;
-  const bool wants_result = !callback.is_null();
-  GetAssociatedLocalFrame()->JavaScriptExecuteRequestForTests(  // IN-TEST
-      javascript, wants_result, has_user_gesture, world_id,
-      std::move(callback));
+  ExecuteJavaScriptForTests(  // IN-TEST
+      javascript, /*has_user_gesture=*/false,
+      /*resolve_promises=*/false, world_id,
+      CreateJavaScriptExecuteRequestForTestsCallback(std::move(callback)));
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
     const std::u16string& javascript,
     JavaScriptResultCallback callback,
     int32_t world_id) {
+  ExecuteJavaScriptForTests(  // IN-TEST
+      javascript, /*has_user_gesture=*/true,
+      /*resolve_promises=*/false, world_id,
+      CreateJavaScriptExecuteRequestForTestsCallback(std::move(callback)));
+}
+
+void RenderFrameHostImpl::ExecuteJavaScriptForTests(
+    const std::u16string& javascript,
+    bool has_user_gesture,
+    bool resolve_promises,
+    int32_t world_id,
+    JavaScriptResultAndTypeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AssertNonSpeculativeFrame();
 
-  // TODO(mustaq): The render-to-browser state update caused by the below
-  // JavaScriptExecuteRequestsForTests call is redundant with this update. We
-  // should determine if the redundancy can be removed.
-  frame_tree_node()->UpdateUserActivationState(
-      blink::mojom::UserActivationUpdateType::kNotifyActivation,
-      blink::mojom::UserActivationNotificationType::kTest);
+  if (has_user_gesture) {
+    // TODO(mustaq): The render-to-browser state update caused by the below
+    // JavaScriptExecuteRequestsForTests call is redundant with this update. We
+    // should determine if the redundancy can be removed.
+    frame_tree_node()->UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kNotifyActivation,
+        blink::mojom::UserActivationNotificationType::kTest);
+  }
 
-  const bool has_user_gesture = true;
-  const bool wants_result = !callback.is_null();
   GetAssociatedLocalFrame()->JavaScriptExecuteRequestForTests(  // IN-TEST
-      javascript, wants_result, has_user_gesture, world_id,
+      javascript, has_user_gesture, resolve_promises, world_id,
       std::move(callback));
 }
 

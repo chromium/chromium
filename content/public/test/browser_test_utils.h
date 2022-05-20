@@ -1276,6 +1276,9 @@ class DOMMessageQueue : public NotificationObserver,
   // true.  Otherwise (if the queue is empty), returns false.
   [[nodiscard]] bool PopMessage(std::string* message);
 
+  // Returns true if there are currently any messages in the queue.
+  bool HasMessages();
+
   // Overridden NotificationObserver methods.
   void Observe(int type,
                const NotificationSource& source,

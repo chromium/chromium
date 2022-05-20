@@ -143,6 +143,12 @@ enum PluginActionType {
   kRotate90Counterclockwise,
 };
 
+// The result of executing JavaScript within a frame.
+enum JavaScriptExecutionResultType {
+  kSuccess,
+  kException,
+};
+
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
@@ -779,13 +785,14 @@ interface LocalFrame {
 
   // ONLY FOR TESTS: Same as above but this can optionally trigger a fake user
   // activation notification to test functionalities that are gated by user
-  // activation.
+  // activation, and can block until a resulting promise is resolved.
   JavaScriptExecuteRequestForTests(
       mojo_base.mojom.BigString16 javascript,
-      bool wants_result,
       bool has_user_gesture,
+      bool resolve_promises,
       int32 world_id)
-      => (mojo_base.mojom.Value result);
+      => (JavaScriptExecutionResultType result_type,
+          mojo_base.mojom.Value result);
 
   // Same as JavaScriptExecuteRequest above except the script is run in the
   // isolated world specified by the fourth parameter.
