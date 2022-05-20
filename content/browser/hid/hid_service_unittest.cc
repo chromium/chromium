@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "content/browser/hid/hid_test_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_delegate.h"
@@ -24,15 +26,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
 
+namespace content {
+
+namespace {
+
 using ::base::test::RunClosure;
+using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
 using ::testing::Return;
-
-namespace content {
-
-namespace {
 
 const char kTestUrl[] = "https://www.google.com";
 const char kTestGuid[] = "test-guid";
@@ -692,6 +695,59 @@ TEST_F(HidServiceTest, BlockedDeviceChangedToUnblockedDispatchesDeviceChanged) {
       .WillOnce(RunClosure(device_removed_loop.QuitClosure()));
   DisconnectDevice(*updated_device_info);
   device_removed_loop.Run();
+}
+
+TEST_F(HidServiceTest, Forget) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::HidService> service;
+  contents()->GetMainFrame()->GetHidService(
+      service.BindNewPipeAndPassReceiver());
+
+  // For now the device has permission.
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
+
+  // Create a new device.
+  auto device_info = device::mojom::HidDeviceInfo::New();
+  device_info->guid = kTestGuid;
+  ConnectDevice(*device_info);
+  EXPECT_CALL(hid_delegate(), GetDeviceInfo)
+      .WillOnce(Return(device_info.get()));
+
+  // Connect the device.
+  mojo::PendingRemote<device::mojom::HidConnectionClient> hid_connection_client;
+  connection_client()->Bind(
+      hid_connection_client.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+
+  TestFuture<mojo::PendingRemote<device::mojom::HidConnection>>
+      future_connection;
+  service->Connect(kTestGuid, std::move(hid_connection_client),
+                   future_connection.GetCallback());
+  mojo::Remote<device::mojom::HidConnection> connection(
+      future_connection.Take());
+
+  EXPECT_TRUE(contents()->IsConnectedToHidDevice());
+  EXPECT_TRUE(connection.is_connected());
+
+  base::RunLoop disconnect_loop;
+  connection.set_disconnect_handler(disconnect_loop.QuitClosure());
+
+  EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
+  EXPECT_CALL(hid_delegate(), RevokeDevicePermission)
+      .WillOnce([this](content::BrowserContext* browser_context,
+                       const url::Origin& origin,
+                       const device::mojom::HidDeviceInfo& device) {
+        hid_delegate().OnPermissionRevoked(origin);
+      });
+  base::MockCallback<blink::mojom::HidService::ForgetCallback> forget_callback;
+  EXPECT_CALL(forget_callback, Run);
+  service->Forget(std::move(device_info), forget_callback.Get());
+
+  disconnect_loop.Run();
+  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+  EXPECT_FALSE(connection.is_connected());
 }
 
 class HidServiceFidoTest : public HidServiceTest,

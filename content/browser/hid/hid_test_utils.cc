@@ -24,12 +24,12 @@ std::unique_ptr<HidChooser> MockHidDelegate::RunChooser(
   return nullptr;
 }
 
-void MockHidDelegate::AddObserver(RenderFrameHost* frame, Observer* observer) {
+void MockHidDelegate::AddObserver(BrowserContext* browser_context,
+                                  Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void MockHidDelegate::RemoveObserver(RenderFrameHost* frame,
-                                     Observer* observer) {
+void MockHidDelegate::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 

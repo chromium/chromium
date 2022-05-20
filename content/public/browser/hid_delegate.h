@@ -20,6 +20,7 @@ class Origin;
 
 namespace content {
 
+class BrowserContext;
 class RenderFrameHost;
 
 class CONTENT_EXPORT HidDelegate {
@@ -54,47 +55,47 @@ class CONTENT_EXPORT HidDelegate {
       std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
       HidChooser::Callback callback) = 0;
 
-  // Returns whether the main frame of |render_frame_host| has permission to
-  // request access to a device.
-  virtual bool CanRequestDevicePermission(
-      RenderFrameHost* render_frame_host) = 0;
+  // Returns whether `origin` has permission to request access to a device.
+  virtual bool CanRequestDevicePermission(BrowserContext* browser_context,
+                                          const url::Origin& origin) = 0;
 
-  // Returns whether the main frame of |render_frame_host| has permission to
-  // access |device|.
+  // Returns whether `origin` has permission to access `device`.
   virtual bool HasDevicePermission(
-      RenderFrameHost* render_frame_host,
+      BrowserContext* browser_context,
+      const url::Origin& origin,
       const device::mojom::HidDeviceInfo& device) = 0;
 
-  // Revoke `device` access permission to the main frame of `render_frame_host`.
+  // Revoke `device` access permission to `origin`.
   virtual void RevokeDevicePermission(
-      RenderFrameHost* render_frame_host,
+      BrowserContext* browser_context,
+      const url::Origin& origin,
       const device::mojom::HidDeviceInfo& device) = 0;
 
   // Returns an open connection to the HidManager interface owned by the
-  // embedder and being used to serve requests from |render_frame_host|.
+  // embedder and being used to serve requests associated with
+  // `browser_context`.
   //
   // Content and the embedder must use the same connection so that the embedder
   // can process connect/disconnect events for permissions management purposes
   // before they are delivered to content. Otherwise race conditions are
   // possible.
   virtual device::mojom::HidManager* GetHidManager(
-      RenderFrameHost* render_frame_host) = 0;
+      BrowserContext* browser_context) = 0;
 
   // Functions to manage the set of Observer instances registered to this
   // object.
-  virtual void AddObserver(RenderFrameHost* render_frame_host,
+  virtual void AddObserver(BrowserContext* browser_context,
                            Observer* observer) = 0;
-  virtual void RemoveObserver(RenderFrameHost* render_frame_host,
-                              Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns true if |origin| is allowed to bypass the HID blocklist and
   // access reports contained in FIDO collections.
-  virtual bool IsFidoAllowedForOrigin(RenderFrameHost* render_frame_host,
+  virtual bool IsFidoAllowedForOrigin(BrowserContext* browser_context,
                                       const url::Origin& origin) = 0;
 
   // Gets the device info for a particular device, identified by its guid.
   virtual const device::mojom::HidDeviceInfo* GetDeviceInfo(
-      RenderFrameHost* render_frame_host,
+      BrowserContext* browser_context,
       const std::string& guid) = 0;
 };
 

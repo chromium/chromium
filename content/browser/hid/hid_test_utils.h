@@ -37,8 +37,9 @@ class MockHidDelegate : public HidDelegate {
       std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
       HidChooser::Callback callback) override;
 
-  void AddObserver(RenderFrameHost* frame, Observer* observer) override;
-  void RemoveObserver(RenderFrameHost* frame, Observer* observer) override;
+  void AddObserver(BrowserContext* browser_context,
+                   Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
   // MockHidDelegate does not register to receive device connection events. Use
   // these methods to broadcast device connections to all delegate observers.
@@ -49,22 +50,25 @@ class MockHidDelegate : public HidDelegate {
 
   MOCK_METHOD0(RunChooserInternal,
                std::vector<device::mojom::HidDeviceInfoPtr>());
-  MOCK_METHOD1(CanRequestDevicePermission,
-               bool(RenderFrameHost* render_frame_host));
-  MOCK_METHOD2(HasDevicePermission,
-               bool(RenderFrameHost* render_frame_host,
+  MOCK_METHOD2(CanRequestDevicePermission,
+               bool(BrowserContext* browser_context,
+                    const url::Origin& origin));
+  MOCK_METHOD3(HasDevicePermission,
+               bool(BrowserContext* browser_context,
+                    const url::Origin& origin,
                     const device::mojom::HidDeviceInfo& device));
-  MOCK_METHOD2(RevokeDevicePermission,
-               void(RenderFrameHost* render_frame_host,
+  MOCK_METHOD3(RevokeDevicePermission,
+               void(BrowserContext* browser_context,
+                    const url::Origin& origin,
                     const device::mojom::HidDeviceInfo& device));
   MOCK_METHOD1(GetHidManager,
-               device::mojom::HidManager*(RenderFrameHost* render_frame_host));
+               device::mojom::HidManager*(BrowserContext* browser_context));
   MOCK_METHOD2(
       GetDeviceInfo,
-      const device::mojom::HidDeviceInfo*(RenderFrameHost* render_frame_host,
+      const device::mojom::HidDeviceInfo*(BrowserContext* browser_context,
                                           const std::string& guid));
   MOCK_METHOD2(IsFidoAllowedForOrigin,
-               bool(RenderFrameHost* render_frame_host,
+               bool(BrowserContext* browser_context,
                     const url::Origin& origin));
 
  private:
