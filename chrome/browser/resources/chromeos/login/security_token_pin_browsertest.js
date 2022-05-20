@@ -10,6 +10,7 @@ GEN_INCLUDE([
   '//chrome/test/data/webui/polymer_browser_test_base.js',
 ]);
 
+GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
@@ -25,6 +26,11 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
       await cr.ui.Oobe.waitForOobeToLoad();
       console.warn('OOBE has been loaded. Continuing with test.');
     });
+  }
+
+   /** @override */
+   get featureList() {
+    return {disabled: ['ash::features::kEnableOobePolymer3']};
   }
 
   get extraLibraries() {
