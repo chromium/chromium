@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_target_chromeos.h"
@@ -98,6 +99,10 @@ void CrosWindowManagement::WindowsCallback(
     results.push_back(result);
   }
   resolver->Resolve(results);
+}
+
+void CrosWindowManagement::DispatchStartEvent() {
+  DispatchEvent(*Event::Create(event_type_names::kStart));
 }
 
 void CrosWindowManagement::BindWindowManagerStartObserverImpl(

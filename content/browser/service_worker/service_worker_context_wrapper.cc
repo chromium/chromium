@@ -843,6 +843,23 @@ ServiceWorkerContextWrapper::GetRunningServiceWorkerInfos() {
   return running_service_workers_;
 }
 
+service_manager::InterfaceProvider*
+ServiceWorkerContextWrapper::GetRemoteInterfaces(
+    int64_t service_worker_version_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!context())
+    return nullptr;
+
+  auto* version = context()->GetLiveVersion(service_worker_version_id);
+  if (!version)
+    return nullptr;
+
+  CHECK(version->running_status() == EmbeddedWorkerStatus::STARTING ||
+        version->running_status() == EmbeddedWorkerStatus::RUNNING);
+
+  return &version->worker_host()->remote_interfaces();
+}
+
 scoped_refptr<ServiceWorkerRegistration>
 ServiceWorkerContextWrapper::GetLiveRegistration(int64_t registration_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

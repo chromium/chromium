@@ -4,20 +4,31 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/console_message.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -26,6 +37,8 @@
 namespace ash {
 
 namespace {
+
+constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
 
 static constexpr char kEventListenerCode[] = R"(
   self.addEventListener('message', async (event) => {
@@ -57,6 +70,60 @@ static constexpr char kPostTestStart[] = R"(
     startTest();
   }
 )";
+
+// Used to wait for a message to get added to the Service Worker console.
+// Returns the first message added to the console.
+class ServiceWorkerConsoleObserver
+    : public content::ServiceWorkerContextObserver {
+ public:
+  ServiceWorkerConsoleObserver(Profile* profile, const GURL& scope)
+      : profile_(profile), scope_(scope) {
+    auto* worker_context =
+        profile->GetDefaultStoragePartition()->GetServiceWorkerContext();
+    worker_context->AddObserver(this);
+  }
+  ~ServiceWorkerConsoleObserver() override = default;
+
+  // Get the first message added to the console since the observer was
+  // constructed. Will wait if there are no messages yet.
+  const std::u16string& WaitAndGetNextConsoleMessage() {
+    if (!message_.has_value())
+      run_loop_.Run();
+
+    return message_.value();
+  }
+
+  void OnReportConsoleMessage(int64_t version_id,
+                              const GURL& scope,
+                              const content::ConsoleMessage& message) override {
+    if (scope != scope_)
+      return;
+
+    auto* worker_context =
+        profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
+    worker_context->RemoveObserver(this);
+
+    // Shouldn't happen because we unregistered as observers.
+    DCHECK(!message_.has_value());
+
+    message_ = message.message;
+    run_loop_.Quit();
+  }
+
+ private:
+  Profile* const profile_;
+  const GURL scope_;
+
+  absl::optional<std::u16string> message_;
+  base::RunLoop run_loop_;
+};
+
+base::FilePath GetWindowManagerExtensionDir() {
+  base::FilePath test_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
+  return test_dir.Append("system_extensions")
+      .Append("window_manager_extension");
+}
 
 class CrosWindowBrowserTest : public InProcessBrowserTest {
  public:
@@ -124,6 +191,19 @@ class CrosWindowBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<web_app::TestSystemWebAppInstallation> installation_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class CrosWindowExtensionBrowserTest : public InProcessBrowserTest {
+ public:
+  CrosWindowExtensionBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kSystemExtensions,
+         ::features::kEnableServiceWorkersForChromeUntrusted},
+        {});
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -560,6 +640,31 @@ async function cros_test() {
   )";
 
   RunTest(test_code);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
+  auto* provider = SystemExtensionsProvider::Get(browser()->profile());
+  auto& install_manager = provider->install_manager();
+
+  // TODO(b/230811571): Rather than using the console to wait for the
+  // observer to get called, we should add support for running async functions
+  // to content::ServiceWorkerContext::ExecuteScriptForTest.
+  ServiceWorkerConsoleObserver sw_console_observer(
+      browser()->profile(),
+      GURL("chrome-untrusted://system-extension-echo-01020304/"));
+
+  base::RunLoop run_loop;
+  install_manager.InstallUnpackedExtensionFromDir(
+      GetWindowManagerExtensionDir(),
+      base::BindLambdaForTesting([&](InstallStatusOrSystemExtensionId result) {
+        ASSERT_TRUE(result.ok());
+        ASSERT_EQ(kTestSystemExtensionId, result.value());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(u"start event fired",
+            sw_console_observer.WaitAndGetNextConsoleMessage());
 }
 
 }  //  namespace ash

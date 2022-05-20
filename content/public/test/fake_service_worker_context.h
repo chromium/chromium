@@ -80,6 +80,8 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       const blink::StorageKey& key,
       ServiceWorkerContext::StartWorkerCallback info_callback,
       ServiceWorkerContext::StatusCodeCallback failure_callback) override;
+  service_manager::InterfaceProvider* GetRemoteInterfaces(
+      int64_t service_worker_version_id) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
       const blink::StorageKey& key,

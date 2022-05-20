@@ -25,6 +25,10 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
+namespace service_manager {
+class InterfaceProvider;
+}
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -254,6 +258,16 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual const base::flat_map<int64_t /* version_id */,
                                ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() = 0;
+
+  // Returns the InterfaceProvider for the worker specified by
+  // `service_worker_version_id`. The caller can use InterfaceProvider to bind
+  // interfaces exposed by the Service Worker.
+  //
+  // Returns nullptr:
+  //  - if there is no service worker with |service_worker_version_id|
+  //  - during shutdown
+  virtual service_manager::InterfaceProvider* GetRemoteInterfaces(
+      int64_t service_worker_version_id) = 0;
 
  protected:
   ServiceWorkerContext() {}

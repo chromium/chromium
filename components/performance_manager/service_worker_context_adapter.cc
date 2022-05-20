@@ -194,6 +194,13 @@ void ServiceWorkerContextAdapter::StartWorkerForScope(
   NOTIMPLEMENTED();
 }
 
+service_manager::InterfaceProvider*
+ServiceWorkerContextAdapter::GetRemoteInterfaces(
+    int64_t service_worker_version_id) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
     const GURL& scope,
     const blink::StorageKey& key,

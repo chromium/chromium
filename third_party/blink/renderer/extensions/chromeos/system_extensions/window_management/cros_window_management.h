@@ -50,6 +50,9 @@ class CrosWindowManagement
   void WindowsCallback(ScriptPromiseResolver* resolver,
                        WTF::Vector<mojom::blink::CrosWindowInfoPtr> windows);
 
+  // mojom::blink::CrosWindowManagementObserver
+  void DispatchStartEvent() override;
+
  private:
   void BindWindowManagerStartObserverImpl(
       mojo::PendingReceiver<mojom::blink::CrosWindowManagementStartObserver>

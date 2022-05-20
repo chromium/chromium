@@ -94,4 +94,8 @@ interface CrosWindowManagement {
 // Interface used by the browser to send the `start` event to Window Management
 // System Extensions service workers. This is only bound once when the system
 // extension is installed and the event is dispatched.
-interface CrosWindowManagementStartObserver {};
+interface CrosWindowManagementStartObserver {
+  // Notify the renderer that it should dispatch the `start` event. Currently,
+  // start is only dispatched when the System Extension is installed.
+  DispatchStartEvent();
+};

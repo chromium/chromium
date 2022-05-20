@@ -64,6 +64,10 @@ class CONTENT_EXPORT ServiceWorkerHost {
   int worker_process_id() const { return worker_process_id_; }
   ServiceWorkerVersion* version() const { return version_; }
 
+  service_manager::InterfaceProvider& remote_interfaces() {
+    return remote_interfaces_;
+  }
+
   // Completes initialization of this provider host. It is called once a
   // renderer process has been found to host the worker.
   void CompleteStartWorkerPreparation(

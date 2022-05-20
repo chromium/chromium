@@ -101,6 +101,14 @@ void FakeServiceWorkerContext::StartWorkerForScope(
     ServiceWorkerContext::StatusCodeCallback failure_callback) {
   NOTREACHED();
 }
+
+service_manager::InterfaceProvider*
+FakeServiceWorkerContext::GetRemoteInterfaces(
+    int64_t service_worker_version_id) {
+  NOTREACHED();
+  return nullptr;
+}
+
 void FakeServiceWorkerContext::StartServiceWorkerForNavigationHint(
     const GURL& document_url,
     const blink::StorageKey& key,

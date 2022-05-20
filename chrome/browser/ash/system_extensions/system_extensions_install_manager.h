@@ -86,6 +86,10 @@ class SystemExtensionsInstallManager {
   void RegisterServiceWorker(const SystemExtensionId& id);
   void OnRegisterServiceWorker(const SystemExtensionId& id,
                                blink::ServiceWorkerStatusCode status_code);
+  void DispatchWindowManagerStartEvent(const SystemExtensionId& id,
+                                       int64_t version_id,
+                                       int process_id,
+                                       int thread_id);
 
   Profile* profile_;
 
