@@ -143695,6 +143695,100 @@
        {}
       ]
      ],
+     "overflow-clip-margin-mul-column-border-box.html": [
+      "a0a1e895a66fa27a4ec95d115d646c0881e8da31",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-mul-column-border-box-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-clip-margin-mul-column-content-box.html": [
+      "26c081e04c8010dadc972dadcc74284a39e7cf8a",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-mul-column-content-box-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-clip-margin-mul-column-padding-box.html": [
+      "e3b3700608b4e1256481477db436d82bb3bf4528",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-mul-column-padding-box-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-clip-margin-visual-box-and-value-with-border-radius.html": [
+      "06ddb5c1630340d39af7cd2c35146910d5e5bcfc",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-visual-box-and-value-with-border-radius-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            100
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "overflow-clip-margin-visual-box-and-value.html": [
+      "cfef43481446054671348ce5582438aaa10a7f3a",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-visual-box-and-value-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-clip-margin-visual-box.html": [
+      "db2c17fcc39cb057616a137d76b1fd12939d0127",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-visual-box-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-ellipsis-dynamic-001.html": [
       "2a9edba9308bf06009d7b9a27f21f1e0f1a231c7",
       [
@@ -209034,6 +209128,32 @@
      ]
     },
     "css-writing-modes": {
+     "abs-pos-border-offset-001.html": [
+      "f7b7375bdf085c7072e73bee190c7183a7adf701",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/abs-pos-border-offset-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abs-pos-border-offset-002.html": [
+      "a954a567331dcbaaf43c3c61413dd2b113f207f3",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/abs-pos-border-offset-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "abs-pos-non-replaced-icb-vlr-003.xht": [
       "dea0f93355843cb66a111b01a4b0644060132e04",
       [
@@ -212369,6 +212489,32 @@
        [
         [
          "/css/css-writing-modes/abs-pos-replaced-vrl-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abs-pos-vlr-border-001.html": [
+      "795bd972d452ce85d9a62c47ffa2e12133fed582",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/abs-pos-vlr-border-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "abs-pos-vlr-padding-001.html": [
+      "209cce14d2e1065a955f5403e1ff6053a0a7e67f",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/abs-pos-vlr-padding-001-ref.html",
          "=="
         ]
        ],
@@ -277641,6 +277787,30 @@
       "1ec2a5ce0a21c8dd578b3fcfde702307e4e2a9a8",
       []
      ],
+     "overflow-clip-margin-mul-column-border-box-ref.html": [
+      "98de614875ed30e0a99cb9771ee50ed749ade6b8",
+      []
+     ],
+     "overflow-clip-margin-mul-column-content-box-ref.html": [
+      "be5e46e341faa5475253704c3de092656ae4abce",
+      []
+     ],
+     "overflow-clip-margin-mul-column-padding-box-ref.html": [
+      "3cfa1a7eba3f724377530ec032c757029823e5e3",
+      []
+     ],
+     "overflow-clip-margin-visual-box-and-value-ref.html": [
+      "000e12ad1bf1d2ddb291d67adbb0d816c9edb822",
+      []
+     ],
+     "overflow-clip-margin-visual-box-and-value-with-border-radius-ref.html": [
+      "84b845fb5c74453801884661e4899c2666b9e112",
+      []
+     ],
+     "overflow-clip-margin-visual-box-ref.html": [
+      "5a265c7a73978fdf7e84fbfbf72e2593433cd264",
+      []
+     ],
      "overflow-scroll-big-border-small-content-ref.html": [
       "c7ea1807443ef1b2d454edd547e65c89a59cea16",
       []
@@ -289347,6 +289517,14 @@
       "53463b38f4154029f9fadf7c337119f9828f57b4",
       []
      ],
+     "abs-pos-border-offset-001-ref.html": [
+      "18a54a41b8b9b9fae5c8c72359a2f2a1cabf8a48",
+      []
+     ],
+     "abs-pos-border-offset-002-ref.html": [
+      "98ec0d0c708407179339ee48bec3cbae86777699",
+      []
+     ],
      "abs-pos-non-replaced-icb-vrl-004-ref.xht": [
       "8153a72aff210565ae77aaaaa2fc8cfe4dd03029",
       []
@@ -289405,6 +289583,14 @@
      ],
      "abs-pos-replaced-vrl-001-ref.html": [
       "35f8d909c9cdae7e7df11b7ee25e792b212ea502",
+      []
+     ],
+     "abs-pos-vlr-border-001-ref.html": [
+      "e4098f1dd4574c65d3cbdf56e8d4dd1a0a15f448",
+      []
+     ],
+     "abs-pos-vlr-padding-001-ref.html": [
+      "6a941ff6407fc610681f674b67504492e8433e6d",
       []
      ],
      "astral-bidi": {
@@ -300045,10 +300231,6 @@
      []
     ],
     "anonymous-iframe": {
-     "anonymous-window.tentative.https.js": [
-      "14ea26dab5bcf069e8b4d1179b4a3754b0865bf6",
-      []
-     ],
      "require-corp-embed-anonymous-iframe.tentative.https.window.js.headers": [
       "6604450991a122e3e241e40b1b9e0516c525389d",
       []
@@ -370240,6 +370422,13 @@
         {}
        ]
       ],
+      "container-units-svglength.html": [
+       "8bb227c0498941222275c024b2707fd089639624",
+       [
+        null,
+        {}
+       ]
+      ],
       "container-units-typed-om.html": [
        "6da3306fdfa3e88dde176d43c81813c3959a0306",
        [
@@ -379442,6 +379631,20 @@
       ],
       "max-lines-valid.html": [
        "f2fda80c3b3d95137e5e0117467cfb267ce3082b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "overflow-clip-margin-computed.html": [
+       "17f271b37034cdfe6f5b560a37473498bb672272",
+       [
+        null,
+        {}
+       ]
+      ],
+      "overflow-clip-margin.html": [
+       "bfa41285558f2bab20abefc80d535543056daea9",
        [
         null,
         {}
@@ -390262,6 +390465,13 @@
        ],
        "overflow-anchor.html": [
         "f037469fbdc7a61d7a582f270325b7f699b5d947",
+        [
+         null,
+         {}
+        ]
+       ],
+       "overflow-clip-margin.html": [
+        "d11964136450c3db199988d27a97b962c59bb751",
         [
          null,
          {}
@@ -431285,6 +431495,28 @@
        }
       ]
      ],
+     "anonymous-window.tentative.https.window.js": [
+      "a2ff8d8dbfb5988ebb53c2e24f1667315143b8f8",
+      [
+       "html/anonymous-iframe/anonymous-window.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "cache-storage.tentative.https.window.js": [
       "8ce6410290a63bd234f3c8a2dd8a0e19c36c3300",
       [
@@ -431486,7 +431718,7 @@
       ]
      ],
      "initial-empty-document.tentative.https.window.js": [
-      "b4d4d5191a2985a5da4578552b9c04bfc2486234",
+      "4d9d00b55b2caabba4ea7953f855392e6f9304dd",
       [
        "html/anonymous-iframe/initial-empty-document.tentative.https.window.html",
        {
@@ -511585,17 +511817,17 @@
     ]
    },
    "sanitizer-api": {
-    "element-set-sanitized-html.https.tentative.html": [
+    "element-set-sanitized-html.https.html": [
      "560e9cd63523287bacafa1b23a2ab3ea4bd21288",
      [
       null,
       {}
      ]
     ],
-    "idlharness.https.tentative.window.js": [
+    "idlharness.https.window.js": [
      "384317b8e55bd318464c68e20ca737bfb5b2c966",
      [
-      "sanitizer-api/idlharness.https.tentative.window.html",
+      "sanitizer-api/idlharness.https.window.html",
       {
        "script_metadata": [
         [
@@ -511610,21 +511842,21 @@
       }
      ]
     ],
-    "sanitizer-config.https.tentative.html": [
-     "fb29631e33ba184990b4e131e91171ba8a98ec89",
+    "sanitizer-config.https.html": [
+     "4faa156ead3b152f92d102c23e2a575837d293f4",
      [
       null,
       {}
      ]
     ],
-    "sanitizer-names.https.tentative.html": [
+    "sanitizer-names.https.html": [
      "22b913574e83f03f223bd49dff36573f908ab144",
      [
       null,
       {}
      ]
     ],
-    "sanitizer-query-config.https.tenative.html": [
+    "sanitizer-query-config.https.html": [
      "bd7c7ea3f65570e5b3e9e1dda3f098697ad22e8e",
      [
       null,
@@ -523420,7 +523652,7 @@
       ]
      ],
      "readable-stream.html": [
-      "59b57ce6723c10be746e2b3b478dcf81df105db1",
+      "b1ede4695bf4cd73a74fb43d52d471a72534d210",
       [
        null,
        {}
@@ -523447,8 +523679,15 @@
        {}
       ]
      ],
+     "transfer-with-messageport.window.js": [
+      "37f8c9df169607a4565f76d04c7cc56bc408af47",
+      [
+       "streams/transferable/transfer-with-messageport.window.html",
+       {}
+      ]
+     ],
      "transform-stream.html": [
-      "fbfbfe8fc1347ab9211845f439a9a7e105a33539",
+      "355d5d807433d75c02adff23e228d050b7772c0f",
       [
        null,
        {}
@@ -523469,7 +523708,7 @@
       ]
      ],
      "writable-stream.html": [
-      "adc6f457c27e87569be2fd32bfe723d29aef7135",
+      "297131b8a823538116e1a826f65b2ac814c6f65a",
       [
        null,
        {}
