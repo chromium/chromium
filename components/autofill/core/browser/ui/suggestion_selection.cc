@@ -87,7 +87,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
         profile->GetRawInfo(type.GetStorableType()) == raw_field_contents) {
       continue;
     }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
     std::u16string value =
         GetInfoInOneLine(profile, type, comparator.app_locale());
