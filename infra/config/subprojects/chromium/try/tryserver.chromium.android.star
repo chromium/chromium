@@ -225,6 +225,10 @@ try_.orchestrator_builder(
     # TODO(crbug.com/1313712): Re-enable check_for_flakiness when ResultDB RPCs
     # no longer timeout.
     #check_for_flakiness = True,
+    mirrors = [
+        "ci/android-marshmallow-arm64-rel",
+        "ci/Android Release (Nexus 5X)",
+    ],
     compilator = "android-marshmallow-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
