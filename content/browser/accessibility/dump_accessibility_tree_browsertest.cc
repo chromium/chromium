@@ -3283,6 +3283,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AriaHiddenTabindexChange) {
   RunRegressionTest(FILE_PATH_LITERAL("aria-hidden-tabindex-change.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       ClearChildrenWhileComputingName) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("clear-children-while-computing-name.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, HiddenTable) {
   RunRegressionTest(FILE_PATH_LITERAL("hidden-table.html"));
 }
