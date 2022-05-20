@@ -30,7 +30,7 @@ constexpr base::TimeDelta kTaskLatencySampleDuration = base::Seconds(3);
 }
 
 const base::Feature kThreadWrapperUsesMetronome{
-    "ThreadWrapperUsesMetronome", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ThreadWrapperUsesMetronome", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Class intended to conditionally live for the duration of ThreadWrapper
 // that periodically captures task latencies (definition in docs for

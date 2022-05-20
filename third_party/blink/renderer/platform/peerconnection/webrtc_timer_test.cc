@@ -130,6 +130,9 @@ class IsActiveChecker {
 }  // namespace
 
 TEST_F(WebRtcTimerTest, StartOneShotWithoutMetronome) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   CallbackListener listener;
   WebRtcTimer timer(listener.task_runner(),
                     base::BindRepeating(&CallbackListener::Callback,
@@ -203,6 +206,9 @@ TEST_F(WebRtcTimerTest, StartOneShotWithMetronome) {
 }
 
 TEST_F(WebRtcTimerTest, RecursiveStartOneShotWithoutMetronome) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   base::TimeDelta delay = base::Milliseconds(1);
   RecursiveStartOneShotter recursive_shotter(/*repeat_count=*/2, delay);
 
@@ -244,6 +250,9 @@ TEST_F(WebRtcTimerTest, RecursiveStartOneShotWithMetronome) {
 }
 
 TEST_F(WebRtcTimerTest, MoveToNewTaskRunnerWithoutMetronome) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   CallbackListener listener;
   WebRtcTimer timer(listener.task_runner(),
                     base::BindRepeating(&CallbackListener::Callback,
@@ -295,6 +304,9 @@ TEST_F(WebRtcTimerTest, MoveToNewTaskRunnerWithMetronome) {
 }
 
 TEST_F(WebRtcTimerTest, StartRepeatingWithoutMetronome) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   CallbackListener listener;
   WebRtcTimer timer(listener.task_runner(),
                     base::BindRepeating(&CallbackListener::Callback,
@@ -343,6 +355,9 @@ TEST_F(WebRtcTimerTest, StartRepeatingWithMetronome) {
 }
 
 TEST_F(WebRtcTimerTest, StopRepeatingTimer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   CallbackListener listener;
   WebRtcTimer timer(listener.task_runner(),
                     base::BindRepeating(&CallbackListener::Callback,
@@ -375,6 +390,9 @@ TEST_F(WebRtcTimerTest, StopRepeatingTimer) {
 }
 
 TEST_F(WebRtcTimerTest, StopTimerFromInsideCallbackWithoutMetronome) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   // Stops its own timer from inside the callback after 10 ms.
   RecursiveStopper recursive_stopper(base::Milliseconds(10));
   task_environment_.FastForwardBy(base::Milliseconds(10));
@@ -402,6 +420,9 @@ TEST_F(WebRtcTimerTest, StopTimerFromInsideCallbackWithMetronome) {
 // Ensures in-parallel stopping while the task may be running does not
 // deadlock in race condition. Coverage for https://crbug.com/1281399.
 TEST(WebRtcTimerRealThreadsTest, StopTimerWithRaceCondition) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME);
@@ -432,6 +453,9 @@ TEST(WebRtcTimerRealThreadsTest, StopTimerWithRaceCondition) {
 }
 
 TEST_F(WebRtcTimerTest, IsActive) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWebRtcTimerUsesMetronome);
+
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
   IsActiveChecker is_active_checker;
 

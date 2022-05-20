@@ -21,8 +21,8 @@
 
 namespace blink {
 
-const base::Feature kWebRtcMetronomeTaskQueue{
-    "WebRtcMetronomeTaskQueue", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kWebRtcMetronomeTaskQueue{"WebRtcMetronomeTaskQueue",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
  public:

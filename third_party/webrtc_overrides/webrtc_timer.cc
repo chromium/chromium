@@ -9,8 +9,8 @@
 
 namespace blink {
 
-const base::Feature kWebRtcTimerUsesMetronome{
-    "WebRtcTimerUsesMetronome", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kWebRtcTimerUsesMetronome{"WebRtcTimerUsesMetronome",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 WebRtcTimer::SchedulableCallback::SchedulableCallback(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
