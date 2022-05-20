@@ -2120,7 +2120,7 @@ enum WebFeature {
   kNoSysexWebMIDIWithoutPermission = 2770,
   kNoSysexWebMIDIOnInsecureOrigin = 2771,
   kOBSOLETE_ApplicationCacheInstalledButNoManifest = 2772,
-  kCustomCursorIntersectsViewport = 2776,
+  kOBSOLETE_CustomCursorIntersectsViewport = 2776,
   kOBSOLETE_ClientHintsLang = 2777,
   kLinkRelPreloadImageSrcset = 2778,
   kV8HTMLMediaElement_Remote_AttributeGetter = 2779,

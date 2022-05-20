@@ -751,7 +751,6 @@ experimental domain Audits
       CrossOriginWindowAlert
       CrossOriginWindowConfirm
       CSSSelectorInternalMediaControlsOverlayCastButton
-      CustomCursorIntersectsViewport
       DeprecationExample
       DocumentDomainSettingWithoutOriginAgentClusterHeader
       EventPath

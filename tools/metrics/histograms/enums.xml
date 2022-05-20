@@ -38598,7 +38598,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2774"
       label="OBSOLETE_CSSValueAppearanceButtonForNonButtonRendered"/>
   <int value="2775" label="OBSOLETE_CSSValueAppearanceButtonForOthersRendered"/>
-  <int value="2776" label="CustomCursorIntersectsViewport"/>
+  <int value="2776" label="OBSOLETE_CustomCursorIntersectsViewport"/>
   <int value="2777" label="OBSOLETE_ClientHintsLang"/>
   <int value="2778" label="LinkRelPreloadImageSrcset"/>
   <int value="2779" label="V8HTMLMediaElement_Remote_AttributeGetter"/>

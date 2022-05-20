@@ -48,7 +48,6 @@ enum class DeprecationIssueType {
   kCrossOriginWindowAlert,
   kCrossOriginWindowConfirm,
   kCSSSelectorInternalMediaControlsOverlayCastButton,
-  kCustomCursorIntersectsViewport,
   kDeprecationExample,
   kDocumentDomainSettingWithoutOriginAgentClusterHeader,
   kEventPath,

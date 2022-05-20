@@ -92,9 +92,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::
                        kCSSSelectorInternalMediaControlsOverlayCastButton);
-    case WebFeature::kCustomCursorIntersectsViewport:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kCustomCursorIntersectsViewport);
     case WebFeature::kDeprecationExample:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kDeprecationExample);

@@ -456,10 +456,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           CSSSelectorInternalMediaControlsOverlayCastButton;
       break;
-    case DeprecationIssueType::kCustomCursorIntersectsViewport:
-      type = protocol::Audits::DeprecationIssueTypeEnum::
-          CustomCursorIntersectsViewport;
-      break;
     case DeprecationIssueType::kDeprecationExample:
       type = protocol::Audits::DeprecationIssueTypeEnum::DeprecationExample;
       break;

@@ -645,9 +645,6 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
         PhysicalRect cursor_rect(cursor_offset, LayoutSize(size));
         if (!PhysicalRect(page->GetVisualViewport().VisibleContentRect())
                  .Contains(cursor_rect)) {
-          Deprecation::CountDeprecation(
-              node->GetExecutionContext(),
-              WebFeature::kCustomCursorIntersectsViewport);
           continue;
         }
       }
