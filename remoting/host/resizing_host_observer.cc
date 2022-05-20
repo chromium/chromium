@@ -158,9 +158,9 @@ void ResizingHostObserver::SetScreenResolution(
   }
 
   // If the implementation returns any resolutions, pick the best one according
-  // to the algorithm described in CandidateResolution::IsBetterThen.
+  // to the algorithm described in CandidateResolution::IsBetterThan.
   std::list<ScreenResolution> resolutions =
-      desktop_resizer_->GetSupportedResolutions(resolution);
+      desktop_resizer_->GetSupportedResolutions(resolution, absl::nullopt);
   if (resolutions.empty()) {
     LOG(INFO) << "No valid resolutions found.";
     return;
@@ -180,7 +180,7 @@ void ResizingHostObserver::SetScreenResolution(
     }
   }
   ScreenResolution current_resolution =
-      desktop_resizer_->GetCurrentResolution();
+      desktop_resizer_->GetCurrentResolution(absl::nullopt);
 
   if (!best_candidate.resolution().Equals(current_resolution)) {
     if (original_resolution_.IsEmpty())
@@ -188,7 +188,7 @@ void ResizingHostObserver::SetScreenResolution(
     LOG(INFO) << "Resizing to "
               << best_candidate.resolution().dimensions().width() << "x"
               << best_candidate.resolution().dimensions().height();
-    desktop_resizer_->SetResolution(best_candidate.resolution());
+    desktop_resizer_->SetResolution(best_candidate.resolution(), absl::nullopt);
   } else {
     LOG(INFO) << "Not resizing; desktop dimensions already "
               << best_candidate.resolution().dimensions().width() << "x"
@@ -205,7 +205,7 @@ void ResizingHostObserver::SetClockForTesting(const base::TickClock* clock) {
 
 void ResizingHostObserver::RestoreScreenResolution() {
   if (!original_resolution_.IsEmpty()) {
-    desktop_resizer_->RestoreResolution(original_resolution_);
+    desktop_resizer_->RestoreResolution(original_resolution_, absl::nullopt);
     original_resolution_ = ScreenResolution();
   }
 }

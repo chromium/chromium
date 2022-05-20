@@ -9,9 +9,18 @@
 #include <memory>
 
 #include "remoting/host/base/screen_resolution.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
+// Interface for resizing the desktop displays. These methods take an optional
+// |screen_id| parameter to resize an individual monitor. If |screen_id| refers
+// to a monitor that no longer exists, the implementation should do nothing, or
+// return empty data. If |screen_id| is not provided, the implementation should
+// operate on the single monitor if there is only one. If there are several
+// monitors, the implementation should fall back to the legacy (per-platform)
+// behavior.
 class DesktopResizer {
  public:
   virtual ~DesktopResizer() {}
@@ -19,11 +28,13 @@ class DesktopResizer {
   // Create a platform-specific DesktopResizer instance.
   static std::unique_ptr<DesktopResizer> Create();
 
-  // Return the current resolution of the desktop.
-  virtual ScreenResolution GetCurrentResolution() = 0;
+  // Return the current resolution of the monitor.
+  virtual ScreenResolution GetCurrentResolution(
+      absl::optional<webrtc::ScreenId> screen_id) = 0;
 
-  // Get the list of supported resolutions, which should ideally include
-  // |preferred|. Implementations will generally do one of the following:
+  // Get the list of supported resolutions for the monitor, which should ideally
+  // include |preferred|. Implementations will generally do one of the
+  // following:
   //   1. Return the list of resolutions supported by the underlying video
   //      driver, regardless of |preferred|.
   //   2. Return a list containing just |preferred|, perhaps after imposing
@@ -31,19 +42,23 @@ class DesktopResizer {
   //      there are no constraints imposed by the underlying video driver.
   //   3. Return an empty list if resize is not supported.
   virtual std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred) = 0;
+      const ScreenResolution& preferred,
+      absl::optional<webrtc::ScreenId> screen_id) = 0;
 
-  // Set the resolution of the desktop. |resolution| must be one of the
+  // Set the resolution of the monitor. |resolution| must be one of the
   // resolutions previously returned by |GetSupportedResolutions|. Note that
   // implementations should fail gracefully if the specified resolution is no
   // longer supported, since monitor configurations may change on the fly.
-  virtual void SetResolution(const ScreenResolution& resolution) = 0;
+  virtual void SetResolution(const ScreenResolution& resolution,
+                             absl::optional<webrtc::ScreenId> screen_id) = 0;
 
-  // Restore the original desktop resolution. The caller must provide the
-  // original resolution of the desktop, as returned by |GetCurrentResolution|,
+  // Restore the original monitor resolution. The caller must provide the
+  // original resolution of the monitor, as returned by GetCurrentResolution(),
   // as a hint. However, implementations are free to ignore this. For example,
   // virtual hosts will typically ignore it to avoid unnecessary resizes.
-  virtual void RestoreResolution(const ScreenResolution& original) = 0;
+  virtual void RestoreResolution(
+      const ScreenResolution& original,
+      absl::optional<webrtc::ScreenId> screen_id) = 0;
 };
 
 }  // namespace remoting

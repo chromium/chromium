@@ -59,16 +59,18 @@ class FakeDesktopResizer : public DesktopResizer {
 
   ~FakeDesktopResizer() override {
     if (check_final_resolution_) {
-      EXPECT_EQ(initial_resolution_, GetCurrentResolution());
+      EXPECT_EQ(initial_resolution_, GetCurrentResolution(absl::nullopt));
     }
   }
 
   // remoting::DesktopResizer interface
-  ScreenResolution GetCurrentResolution() override {
+  ScreenResolution GetCurrentResolution(
+      absl::optional<webrtc::ScreenId> screen_id) override {
     return *current_resolution_;
   }
   std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred) override {
+      const ScreenResolution& preferred,
+      absl::optional<webrtc::ScreenId> screen_id) override {
     std::list<ScreenResolution> result(supported_resolutions_.begin(),
                                        supported_resolutions_.end());
     if (exact_size_supported_) {
@@ -76,11 +78,13 @@ class FakeDesktopResizer : public DesktopResizer {
     }
     return result;
   }
-  void SetResolution(const ScreenResolution& resolution) override {
+  void SetResolution(const ScreenResolution& resolution,
+                     absl::optional<webrtc::ScreenId> screen_id) override {
     *current_resolution_ = resolution;
     ++call_counts_->set_resolution;
   }
-  void RestoreResolution(const ScreenResolution& resolution) override {
+  void RestoreResolution(const ScreenResolution& resolution,
+                         absl::optional<webrtc::ScreenId> screen_id) override {
     *current_resolution_ = resolution;
     ++call_counts_->restore_resolution;
   }
