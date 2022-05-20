@@ -116,10 +116,6 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
     : SurfacelessEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size()),
       buffer_manager_(buffer_manager),
       widget_(widget),
-      has_implicit_external_sync_(
-          GetGLDisplayEGL()->HasEGLExtension("EGL_ARM_implicit_external_sync")),
-      has_image_flush_external_(
-          GetGLDisplayEGL()->HasEGLExtension("EGL_EXT_image_flush_external")),
       solid_color_buffers_holder_(std::make_unique<SolidColorBufferHolder>()),
       weak_factory_(this) {
   buffer_manager_->RegisterSurface(widget_, this);
@@ -189,14 +185,10 @@ void GbmSurfacelessWayland::SwapBuffersAsync(
     return;
   }
 
-  if (!no_gl_flush_for_tests_ &&
-      ((!has_image_flush_external_ &&
-        !buffer_manager_->supports_acquire_fence()) ||
-       requires_gl_flush_on_swap_buffers_)) {
+  if ((!no_gl_flush_for_tests_ && !buffer_manager_->supports_acquire_fence()) ||
+      requires_gl_flush_on_swap_buffers_) {
     glFlush();
   }
-
-  unsubmitted_frames_.back()->Flush();
 
   PendingFrame* frame = unsubmitted_frames_.back().get();
   frame->completion_callback = std::move(completion_callback);
@@ -347,11 +339,6 @@ void GbmSurfacelessWayland::PendingFrame::ScheduleOverlayPlanes(
 
   schedule_planes_succeeded = true;
   return;
-}
-
-void GbmSurfacelessWayland::PendingFrame::Flush() {
-  for (const auto& overlay : overlays)
-    overlay.Flush();
 }
 
 void GbmSurfacelessWayland::MaybeSubmitFrames() {

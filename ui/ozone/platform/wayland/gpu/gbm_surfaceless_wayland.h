@@ -139,7 +139,6 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
     // Queues overlay configs to |configs|.
     void ScheduleOverlayPlanes(GbmSurfacelessWayland* surfaceless);
-    void Flush();
 
     // Unique identifier of the frame within this AcceleratedWidget.
     uint32_t frame_id;
@@ -185,8 +184,6 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   // PendingFrames that have received OnSubmission(), pending OnPresentation()
   // calls.
   std::vector<std::unique_ptr<PendingFrame>> pending_presentation_frames_;
-  const bool has_implicit_external_sync_;
-  const bool has_image_flush_external_;
   bool last_swap_buffers_result_ = true;
   bool use_egl_fence_sync_ = true;
 
