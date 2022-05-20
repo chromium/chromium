@@ -8,7 +8,7 @@
 #error "This file requires ARC support."
 #endif
 
-NSInteger kSymbolAccessoryPointSize = 17;
+NSInteger kSymbolAccessoryPointSize = 22;
 
 NSString* kExternalLinkSmbol = @"arrow.up.forward.square";
 NSString* kChevronForwardSymbol = @"chevron.forward";
