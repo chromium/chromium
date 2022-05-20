@@ -533,7 +533,23 @@ bool InsecureCredentialsPostMigrationStepCallback(
     sql::Database* db,
     unsigned new_version) {
   if (new_version == 29) {
-    if (!insecure_credentials_builder->CreateTable(db)) {
+    std::string create_table_statement =
+        "CREATE TABLE insecure_credentials ("
+        "parent_id INTEGER REFERENCES logins ON UPDATE CASCADE ON DELETE "
+        "CASCADE DEFERRABLE INITIALLY DEFERRED, "
+        "insecurity_type INTEGER NOT NULL, "
+        "create_time INTEGER NOT NULL, "
+        "is_muted INTEGER NOT NULL DEFAULT 0, "
+        "UNIQUE (parent_id, insecurity_type))";
+    std::string create_index_statement =
+        "CREATE INDEX foreign_key_index ON insecure_credentials "
+        "(parent_id)";
+    sql::Transaction creation_transaction(db);
+    bool table_creation_success = creation_transaction.Begin() &&
+                                  db->Execute(create_table_statement.c_str()) &&
+                                  db->Execute(create_index_statement.c_str()) &&
+                                  creation_transaction.Commit();
+    if (!table_creation_success) {
       LOG(ERROR) << "Failed to create the 'insecure_credentials' table";
       LogDatabaseInitError(INIT_COMPROMISED_CREDENTIALS_ERROR);
       return false;
@@ -568,7 +584,23 @@ bool PasswordNotesPostMigrationStepCallback(
     sql::Database* db,
     unsigned new_version) {
   if (new_version == 33) {
-    if (!password_notes_builder->CreateTable(db)) {
+    std::string create_table_statement =
+        "CREATE TABLE password_notes ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "parent_id INTEGER NOT NULL REFERENCES logins ON UPDATE CASCADE ON "
+        "DELETE CASCADE DEFERRABLE INITIALLY DEFERRED, "
+        "key VARCHAR NOT NULL, "
+        "value BLOB, "
+        "date_created INTEGER NOT NULL, "
+        "confidential INTEGER, "
+        "UNIQUE (parent_id, key))";
+    std::string create_index_statement =
+        "CREATE INDEX foreign_key_index_notes ON password_notes (parent_id)";
+    sql::Transaction transaction(db);
+    bool table_creation_success =
+        transaction.Begin() && db->Execute(create_table_statement.c_str()) &&
+        db->Execute(create_index_statement.c_str()) && transaction.Commit();
+    if (!table_creation_success) {
       LOG(ERROR) << "Failed to create the 'password_notes' table";
       LogDatabaseInitError(INIT_PASSWORD_NOTES_ERROR);
       return false;
