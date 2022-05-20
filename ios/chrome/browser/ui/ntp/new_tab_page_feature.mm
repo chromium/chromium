@@ -24,7 +24,7 @@ const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint{
 
 const base::Feature kEnableDiscoverFeedStaticResourceServing{
     "EnableDiscoverFeedStaticResourceServing",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kEnableDiscoverFeedTopSyncPromo{
     "EnableDiscoverFeedTopSyncPromo", base::FEATURE_DISABLED_BY_DEFAULT};
