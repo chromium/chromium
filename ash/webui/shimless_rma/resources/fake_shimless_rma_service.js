@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/file_path.mojom-lite.js';
+
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -720,6 +722,20 @@ export class FakeShimlessRmaService {
     this.methods_.setResult('getLog', {log: log, error: RmadErrorCode.kOk});
   }
 
+  /**
+   * @return {!Promise<{savePath: !mojoBase.mojom.FilePath, error:
+   *     !RmadErrorCode}>}
+   */
+  saveLog() {
+    return this.methods_.resolveMethod('saveLog');
+  }
+
+  /** @param {!mojoBase.mojom.FilePath} savePath */
+  setSaveLogResult(savePath) {
+    this.methods_.setResult(
+        'saveLog', {savePath: savePath, error: RmadErrorCode.kOk});
+  }
+
   /** @return {!Promise<{powerwashRequired: boolean, error: !RmadErrorCode}>} */
   getPowerwashRequired() {
     return this.methods_.resolveMethod('getPowerwashRequired');
@@ -1211,6 +1227,7 @@ export class FakeShimlessRmaService {
     // undefined by default.
     this.components_ = [];
     this.setGetLogResult('');
+    this.setSaveLogResult({'path': ''});
   }
 
   /**
@@ -1292,6 +1309,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('writeProtectManuallyEnabled');
 
     this.methods_.register('getLog');
+    this.methods_.register('saveLog');
     this.methods_.register('getPowerwashRequired');
     this.methods_.register('endRma');
 

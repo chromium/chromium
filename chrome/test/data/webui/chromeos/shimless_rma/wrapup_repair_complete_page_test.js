@@ -327,6 +327,22 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(logsDialog.open);
   });
 
+  test('SaveLogButtonSavesTheLog', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    let callCount = 0;
+    service.saveLog = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    await clickButton('#saveLogDialogButton');
+    await flushTasks();
+
+    assertEquals(1, callCount);
+  });
+
   test('BatteryCutButtonDisabledByDefault', async () => {
     await initializeRepairCompletePage();
     const button = component.shadowRoot.querySelector('#batteryCutButton');

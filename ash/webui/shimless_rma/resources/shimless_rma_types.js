@@ -7,11 +7,13 @@
  * Type aliases for the mojo API.
  */
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import './file_path.mojom-lite.js';
 import './mojom/shimless_rma.mojom-lite.js';
+
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
 /**
  * Return type from state progression methods.

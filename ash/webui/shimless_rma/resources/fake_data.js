@@ -445,3 +445,6 @@ export const fakeLog =
     'tristique risus nec. Scelerisque eu ultrices vitae auctor eu augue ut ' +
     'lectus. Tellus pellentesque eu tincidunt tortor aliquam. Fermentum leo ' +
     'vel orci porta non pulvinar neque laoreet suspendisse.\n';
+
+/** @type {string} */
+export const fakeLogSavePath = 'fake/save/path';

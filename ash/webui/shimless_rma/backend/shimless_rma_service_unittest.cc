@@ -13,6 +13,7 @@
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -2780,6 +2781,54 @@ TEST_F(ShimlessRmaServiceTest, GetLogWrongStateEmpty) {
   shimless_rma_provider_->GetLog(base::BindLambdaForTesting(
       [&](const std::string& log, rmad::RmadErrorCode error) {
         EXPECT_TRUE(log.empty());
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+      }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(ShimlessRmaServiceTest, SaveLog) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  const std::unique_ptr<base::FilePath> expected_save_path =
+      std::make_unique<base::FilePath>(
+          FILE_PATH_LITERAL("log/save/path/for/testing"));
+
+  fake_rmad_client_()->SetSaveLogReply(expected_save_path->value(),
+                                       rmad::RMAD_ERROR_OK);
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kRepairComplete);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->SaveLog(base::BindLambdaForTesting(
+      [&](const base::FilePath& save_path, rmad::RmadErrorCode error) {
+        EXPECT_EQ(save_path, *expected_save_path.get());
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+}
+
+TEST_F(ShimlessRmaServiceTest, SaveLogWrongStateEmpty) {
+  const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->SaveLog(base::BindLambdaForTesting(
+      [&](const base::FilePath& save_path, rmad::RmadErrorCode error) {
+        EXPECT_TRUE(save_path.empty());
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
       }));
   run_loop.RunUntilIdle();

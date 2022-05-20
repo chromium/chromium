@@ -134,6 +134,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       WriteProtectManuallyEnabledCallback callback) override;
 
   void GetLog(GetLogCallback callback) override;
+  void SaveLog(SaveLogCallback callback) override;
   void GetPowerwashRequired(GetPowerwashRequiredCallback callback) override;
   void LaunchDiagnostics() override;
   void EndRma(rmad::RepairCompleteState::ShutdownMethod shutdown_method,
@@ -206,6 +207,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       EndRmaCallback callback);
   void OnGetLog(GetLogCallback callback,
                 absl::optional<rmad::GetLogReply> response);
+  void OnSaveLog(SaveLogCallback callback,
+                 absl::optional<rmad::SaveLogReply> response);
 
   void OnOsUpdateStatusCallback(update_engine::Operation operation,
                                 double progress,

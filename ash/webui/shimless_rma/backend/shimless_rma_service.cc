@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/rmad/rmad.pb.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
@@ -932,6 +933,19 @@ void ShimlessRmaService::GetLog(GetLogCallback callback) {
                                            std::move(callback)));
 }
 
+void ShimlessRmaService::SaveLog(SaveLogCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
+    LOG(ERROR) << "SaveLog called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(base::FilePath(""),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  RmadClient::Get()->SaveLog(base::BindOnce(&ShimlessRmaService::OnSaveLog,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            std::move(callback)));
+}
+
 void ShimlessRmaService::OnGetLog(GetLogCallback callback,
                                   absl::optional<rmad::GetLogReply> response) {
   if (!response) {
@@ -942,6 +956,20 @@ void ShimlessRmaService::OnGetLog(GetLogCallback callback,
   }
 
   std::move(callback).Run(response->log(), response->error());
+}
+
+void ShimlessRmaService::OnSaveLog(
+    SaveLogCallback callback,
+    absl::optional<rmad::SaveLogReply> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to call rmad::SaveLog";
+    std::move(callback).Run(base::FilePath(""),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+
+  std::move(callback).Run(base::FilePath(response->save_path()),
+                          response->error());
 }
 
 void ShimlessRmaService::GetPowerwashRequired(

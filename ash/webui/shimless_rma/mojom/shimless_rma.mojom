@@ -36,6 +36,7 @@
 
 module ash.shimless_rma.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 
 // RMA states.
@@ -754,6 +755,9 @@ interface ShimlessRmaService {
   // Get the RMA Log.
   // Returns an error indicating success or a failure.
   GetLog() => (string log, RmadErrorCode error);
+  // Save the RMA Log to the USB drive.
+  // Returns an error indicating success or a failure.
+  SaveLog() => (mojo_base.mojom.FilePath save_path, RmadErrorCode error);
   // Get whether need to powerwash at the end of repair.
   GetPowerwashRequired() => (bool powerwash_required);
   // Launch the system diagnostics app.

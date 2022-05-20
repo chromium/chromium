@@ -268,6 +268,11 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   /** @protected */
+  onSaveLogClick_() {
+    this.shimlessRmaService_.saveLog();
+  }
+
+  /** @protected */
   onCutoffCancelClick_() {
     this.cancelBatteryCutoff_();
   }

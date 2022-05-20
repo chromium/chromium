@@ -682,6 +682,16 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
+  test('SaveLog', () => {
+    const states = [{state: State.kRepairComplete, error: RmadErrorCode.kOk}];
+    service.setStates(states);
+    const expectedSavePath = {'path': 'fake/save/path'};
+    service.setSaveLogResult(expectedSavePath);
+    return service.saveLog().then((res) => {
+      assertEquals(expectedSavePath, res.savePath);
+    });
+  });
+
   test('SetGetPowerwashRequiredResultTrueUpdatesResult', () => {
     service.setGetPowerwashRequiredResult(true);
 
