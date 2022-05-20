@@ -39,10 +39,16 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   static get properties() {
     return {
+      isNoLinkLayout: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed:
+            'computeIsNoLinkLayout_(shouldShowWaa_, shouldShowPrivacySandbox_)',
+      },
+
       subheader_: {
         type: String,
-        computed:
-            'computeSubheader_(shouldShowWaa_, shouldShowPrivacySandbox_)',
+        computed: 'computeSubheader_(isNoLinkLayout)',
       },
 
       shouldShowPrivacySandbox_: {
@@ -81,10 +87,14 @@ export class PrivacyGuideCompletionFragmentElement extends
     this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
   }
 
+  private computeIsNoLinkLayout_() {
+    return !this.shouldShowWaa_ && !this.shouldShowPrivacySandbox_;
+  }
+
   private computeSubheader_(): string {
-    return (this.shouldShowWaa_ || this.shouldShowPrivacySandbox_) ?
-        this.i18n('privacyGuideCompletionCardSubHeader') :
-        this.i18n('privacyGuideCompletionCardSubHeaderNoLinks');
+    return this.computeIsNoLinkLayout_() ?
+        this.i18n('privacyGuideCompletionCardSubHeaderNoLinks') :
+        this.i18n('privacyGuideCompletionCardSubHeader');
   }
 
   /**
