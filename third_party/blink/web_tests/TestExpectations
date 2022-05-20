@@ -417,6 +417,8 @@ crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-functio
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-005.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-006.html [ Failure ]
 crbug.com/1295445 external/wpt/css/filter-effects/filter-function/filter-function-007.html [ Failure ]
+crbug.com/903383 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-combined-001.html [ Failure ]
+crbug.com/903383 virtual/scalefactor200/external/wpt/css/filter-effects/css-filters-animation-blur.html [ Failure ]
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-001.html [ Failure ]
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-002.html [ Failure ]
 crbug.com/1295445 virtual/scalefactor200/external/wpt/css/filter-effects/filter-function/filter-function-003.html [ Failure ]
