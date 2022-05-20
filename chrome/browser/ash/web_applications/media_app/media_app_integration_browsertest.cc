@@ -1277,6 +1277,10 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
   content::WebContents* web_ui = PrepareActiveBrowserForTest();
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
 
+  // lastLoadedReceivedFileList is only set when the load IPC is received, so
+  // ensure that has completed before trying to index it.
+  EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
+
   // Rename "image3.jpg" to "x.jpg".
   constexpr int kRenameResultSuccess = 0;
   constexpr char kScript[] =
@@ -1383,6 +1387,19 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
 
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
+
+  // WaitForImageAlt only requires one image to load, but a follow-up IPC is
+  // used to load additional files, which might not be available on
+  // lastLoadedReceivedFileList if it is inspected now. Check the length, and
+  // retry if there are not two files yet. There is enough context switching
+  // here that 0-1 retries are usually sufficient.
+  int received_file_length = 0;
+  do {
+    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+        app,
+        "domAutomationController.send(lastLoadedReceivedFileList().length);",
+        &received_file_length));
+  } while (received_file_length != 2);
 
   bool result;
   constexpr char kScript[] =
