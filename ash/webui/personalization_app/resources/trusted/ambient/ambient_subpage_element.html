@@ -59,6 +59,9 @@
     overflow: hidden;
     width: 100%;
   }
+  .animation-placeholder-list {
+    width: 516px;
+  }
   .animation-placeholder-container {
     box-sizing: border-box;
     overflow: hidden;
@@ -68,21 +71,13 @@
      * parent width. */
     width: calc(100% / 3 - 0.34px);
   }
-  @media(min-width: 720px) {
-    .animation-placeholder-container {
-      /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
-       * ensures all grid items in a row add up to at least 1px smaller than the
-       * parent width. */
-      width: calc(100% / 4 - 0.25px) !important;
-    }
-  }
   .animation-item-placeholder {
     align-items: center;
     border-radius: var(--personalization-app-grid-item-border-radius);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 156px;
+    height: 120px;
     justify-content: center;
     overflow: hidden;
     position: relative;
@@ -144,7 +139,7 @@
             <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeAnimationTitle}
             </h3>
-            <iron-list items="[[getPlaceholders_(3)]]" grid>
+            <iron-list class="animation-placeholder-list" items="[[getPlaceholders_(3)]]" grid>
               <template>
                 <div class="animation-placeholder-container">
                   <div class="animation-item-placeholder placeholder"></div>
