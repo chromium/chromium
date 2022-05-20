@@ -779,16 +779,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "certificate-transparency-2022-policy",
-    "owners": [ "carlosil", "asymmetric", "trusty-transport@chromium.org" ],
-    "expiry_milestone": 102
-  },
-  {
-    "name": "certificate-transparency-2022-policy-all-certs",
-    "owners": [ "carlosil", "asymmetric", "trusty-transport@chromium.org" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "check-offline-capability",
     "owners": [ "asamidoi", "//content/browser/service_worker/OWNERS" ],
     "expiry_milestone": 93
