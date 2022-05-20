@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 
+#include <memory>
+#include <string>
+
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -17,6 +22,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
+#include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/permission_util.h"
@@ -122,7 +128,8 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER)),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_SUBPAGE_HEADER),
+          presenter_->GetSimpleSiteName()),
       std::make_unique<PageInfoSecurityContentView>(
           presenter_, /*is_standalone_page=*/true));
 }
@@ -130,16 +137,28 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
 std::unique_ptr<views::View> PageInfoViewFactory::CreatePermissionPageView(
     ContentSettingsType type) {
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(PageInfoUI::PermissionTypeToUIString(type)),
+      CreateSubpageHeader(PageInfoUI::PermissionTypeToUIString(type),
+                          presenter_->GetSimpleSiteName()),
       std::make_unique<PageInfoPermissionContentView>(presenter_, ui_delegate_,
                                                       type));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
     const page_info::proto::SiteInfo& info) {
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER);
+  std::u16string subtitle;
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo)) {
+    if (info.description().has_name())
+      title = base::UTF8ToUTF16(info.description().name());
+    std::u16string subtitle;
+    if (info.description().has_subtitle())
+      subtitle = base::UTF8ToUTF16(info.description().subtitle());
+  } else {
+    subtitle = presenter_->GetSimpleSiteName();
+  }
   return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER)),
+      CreateSubpageHeader(title, subtitle),
       std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
                                                          ui_delegate_, info));
 }
@@ -148,13 +167,15 @@ std::unique_ptr<views::View>
 PageInfoViewFactory::CreateAdPersonalizationPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER)),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER),
+          presenter_->GetSimpleSiteName()),
       std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
                                                              ui_delegate_));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
-    std::u16string title) {
+    std::u16string title,
+    std::u16string subtitle) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   views::FlexSpecification stretch_specification =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -195,15 +216,18 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
       std::make_unique<views::Label>(title, views::style::CONTEXT_DIALOG_TITLE,
                                      views::style::STYLE_SECONDARY));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  auto* subtitle_label =
-      label_wrapper->AddChildView(std::make_unique<views::Label>(
-          presenter_->GetSimpleSiteName(), views::style::CONTEXT_LABEL,
-          views::style::STYLE_SECONDARY,
-          gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-  subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  subtitle_label->SetAllowCharacterBreak(true);
-  subtitle_label->SetMultiLine(true);
-  subtitle_label->SetProperty(views::kFlexBehaviorKey, stretch_specification);
+
+  if (!subtitle.empty()) {
+    auto* subtitle_label =
+        label_wrapper->AddChildView(std::make_unique<views::Label>(
+            subtitle, views::style::CONTEXT_LABEL,
+            views::style::STYLE_SECONDARY,
+            gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
+    subtitle_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    subtitle_label->SetAllowCharacterBreak(true);
+    subtitle_label->SetMultiLine(true);
+    subtitle_label->SetProperty(views::kFlexBehaviorKey, stretch_specification);
+  }
 
   auto close_button = views::BubbleFrameView::CreateCloseButton(
       base::BindRepeating(&PageInfoNavigationHandler::CloseBubble,
