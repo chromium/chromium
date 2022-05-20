@@ -14,7 +14,7 @@
 #define USE_EIGEN 0
 #endif
 
-namespace ui::v2 {
+namespace ui::internal_onedevice::alpha_model_v2 {
 namespace {
 
 // -----------------------------------------------------------------------------
@@ -15349,7 +15349,7 @@ const union {
 int32_t input_from_feature_columns_input_layer_concat_concat0Shape[2] = {1,
                                                                          173};
 int32_t logits_MatMul_merged_with_dnn_logits_BiasAdd0Shape[2] = {1, 1};
-namespace internal_onedevice {
+
 void Inference(
     const float* __restrict input_from_feature_columns_input_layer_concat_concat0 /* shape: 1,173 */
     ,
@@ -15419,5 +15419,4 @@ void Inference(
   Singleton<PerOpTimings>::get()->WriteTimingsToInfoLog();
 #endif
 }
-}  // namespace internal_onedevice
-}  // namespace ui::v2
+}  // namespace ui::internal_onedevice::alpha_model_v2

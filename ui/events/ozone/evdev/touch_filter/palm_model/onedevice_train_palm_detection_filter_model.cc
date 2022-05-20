@@ -25,6 +25,9 @@
 
 namespace ui {
 
+namespace alpha = internal_onedevice::alpha_model;
+namespace alpha_v2 = internal_onedevice::alpha_model_v2;
+
 float OneDeviceTrainNeuralStylusPalmDetectionFilterModel::Inference(
     const std::vector<float>& features) const {
   DVLOG(1) << "In Inference.";
@@ -41,15 +44,13 @@ float OneDeviceTrainNeuralStylusPalmDetectionFilterModel::Inference(
   }
   float output = 0;
   if (base::FeatureList::IsEnabled(kEnableNeuralPalmRejectionModelV2)) {
-    std::unique_ptr<v2::internal_onedevice::FixedAllocations> fixed_allocations(
-        new v2::internal_onedevice::FixedAllocations());
-    v2::internal_onedevice::Inference(&features[0], &output,
-                                      fixed_allocations.get());
+    std::unique_ptr<alpha_v2::FixedAllocations> fixed_allocations(
+        new alpha_v2::FixedAllocations());
+    alpha_v2::Inference(&features[0], &output, fixed_allocations.get());
   } else {
-    std::unique_ptr<internal_onedevice::FixedAllocations> fixed_allocations(
-        new internal_onedevice::FixedAllocations());
-    internal_onedevice::Inference(&features[0], &output,
-                                  fixed_allocations.get());
+    std::unique_ptr<alpha::FixedAllocations> fixed_allocations(
+        new alpha::FixedAllocations());
+    alpha::Inference(&features[0], &output, fixed_allocations.get());
   }
   return output;
 }
