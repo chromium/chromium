@@ -3999,5 +3999,75 @@ TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
       "Android.AutofillAssistant.PaymentRequest.AutofillChanged", 1u);
 }
 
+TEST_F(CollectUserDataActionTest, MergesTransientDataWithUserDataFromBackend) {
+  auto transient_contact = std::make_unique<autofill::AutofillProfile>();
+  transient_contact->SetRawInfo(autofill::NAME_FULL, u"Jane Doe");
+  user_data_.transient_contacts_.emplace_back(
+      std::make_unique<Contact>(std::move(transient_contact)));
+
+  auto transient_phone_number = std::make_unique<autofill::AutofillProfile>();
+  transient_phone_number->SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
+                                     u"+16505678910");
+  user_data_.transient_phone_numbers_.emplace_back(
+      std::make_unique<PhoneNumber>(std::move(transient_phone_number)));
+
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  auto* profile = user_data_response.add_available_contacts();
+  (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
+  *user_data_response.add_available_phone_numbers()->mutable_value() =
+      MakeAutofillEntry("+1 187-654-3210");
+
+  ON_CALL(mock_action_delegate_, GetPersonalDataManager)
+      .WillByDefault(Return(nullptr));
+  ON_CALL(mock_action_delegate_, MustUseBackendData)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .Times(2)
+      .WillRepeatedly(RunOnceCallback<2>(true, user_data_response));
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        ASSERT_EQ(user_data_.available_contacts_.size(), 2u);
+        EXPECT_EQ(user_data_.available_contacts_[0]->profile->GetRawInfo(
+                      autofill::NAME_FULL),
+                  u"Jane Doe");
+        EXPECT_EQ(user_data_.available_contacts_[1]->profile->GetRawInfo(
+                      autofill::NAME_FULL),
+                  u"John Doe");
+
+        ASSERT_EQ(user_data_.available_phone_numbers_.size(), 2u);
+        EXPECT_EQ(user_data_.available_phone_numbers_[0]->profile->GetRawInfo(
+                      autofill::PHONE_HOME_WHOLE_NUMBER),
+                  u"+16505678910");
+        EXPECT_EQ(user_data_.available_phone_numbers_[1]->profile->GetRawInfo(
+                      autofill::PHONE_HOME_WHOLE_NUMBER),
+                  u"+1 187-654-3210");
+
+        std::move(collect_user_data_options->reload_data_callback)
+            .Run(UserDataEventField::NONE, &user_data_);
+      }))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        EXPECT_EQ(user_data_.available_contacts_.size(), 2u);
+        EXPECT_EQ(user_data_.available_phone_numbers_.size(), 2u);
+
+        // Don't end the action.
+      }));
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->mutable_contact_details()->set_request_payer_name(true);
+  collect_user_data->mutable_contact_details()
+      ->set_separate_phone_number_section(true);
+  collect_user_data->mutable_contact_details()->set_phone_number_section_title(
+      "Phone number");
+  collect_user_data->mutable_contact_details()->set_contact_details_name(
+      kMemoryLocation);
+  collect_user_data->mutable_data_source();
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
 }  // namespace
 }  // namespace autofill_assistant
