@@ -3368,14 +3368,10 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kIpcDumpDirectory,
     switches::kIpcFuzzerTestcase,
 #endif
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    switches::kEnableClearHevcForTesting,
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     switches::kSchedulerBoostUrgent,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    switches::kLacrosEnablePlatformEncryptedHevc,
     switches::kLacrosEnablePlatformHevc,
     switches::kLacrosUseChromeosProtectedMedia,
     switches::kLacrosUseChromeosProtectedAv1,

@@ -573,8 +573,7 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
           case crosapi::mojom::BuildFlag::kUnknown:
             break;
           case crosapi::mojom::BuildFlag::kEnablePlatformEncryptedHevc:
-            base::CommandLine::ForCurrentProcess()->AppendSwitch(
-                switches::kLacrosEnablePlatformEncryptedHevc);
+            // This was deprecated.
             break;
           case crosapi::mojom::BuildFlag::kEnablePlatformHevc:
             base::CommandLine::ForCurrentProcess()->AppendSwitch(

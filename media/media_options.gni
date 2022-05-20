@@ -57,10 +57,6 @@ declare_args() {
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs && (is_chromecast || is_fuchsia || use_fuzzing_engine)
 
-  enable_platform_encrypted_hevc =
-      proprietary_codecs &&
-      (use_chromeos_protected_media || (is_win && is_chrome_branded))
-
   # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
   # decoding must be provided by the platform. Note some Dolby Vision profiles
   # which are encoded using HEVC require |enable_platform_hevc| to be enabled.
@@ -82,24 +78,25 @@ declare_args() {
 
   # Enable HLS manifest parser and demuxer.
   enable_hls_demuxer = false
+
+  # Enable HEVC/H265 decoding with hardware acceleration assist. Enabled by
+  # default for fuzzer builds, ChromeOS builds with protected content support
+  # and Windows.
+  enable_platform_hevc_decoding =
+      proprietary_codecs &&
+      (use_fuzzing_engine || use_chromeos_protected_media || is_win)
 }
 
+# Use another declare_args() to allow dependence on
+# |enable_platform_hevc_decoding|.
 declare_args() {
   enable_av1_decoder = enable_dav1d_decoder || enable_libgav1_decoder
 
   # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
-  # platform. Enabled by default for Chromecast, fuzzer builds and protected
-  # video on ChromeOS and Windows.
+  # platform.
+  # TODO(b/194429120): Enable this for Lacros builds.
   enable_platform_hevc =
-      proprietary_codecs &&
-      (is_chromecast || use_fuzzing_engine || enable_platform_encrypted_hevc)
-
-  # Enable HEVC/H265 decoding with hardware acceleration assist. Enabled by
-  # default for fuzzer builds and protected video on ChromeOS. It is also
-  # enabled for Chromecast by default so the unit tests get run in Chrome CQ.
-  enable_platform_hevc_decoding =
-      proprietary_codecs &&
-      (is_chromecast || use_fuzzing_engine || use_chromeos_protected_media)
+      proprietary_codecs && (is_chromecast || enable_platform_hevc_decoding)
 }
 
 assert(
@@ -114,14 +111,10 @@ assert(!enable_platform_hevc || proprietary_codecs,
        "proprietary_codecs=true is required for enable_platform_hevc=true.")
 
 assert(
-    !enable_platform_encrypted_hevc || enable_platform_hevc,
-    "enable_platform_hevc=true is required for enable_platform_encrypted_hevc=true.")
-
-assert(
     !enable_platform_hevc_decoding || enable_platform_hevc,
     "enable_platform_hevc=true is required for enable_platform_hevc_decoding=true.")
 
-# Use a second declare_args() to pick up possible overrides of |use_cras|.
+# Use another declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
   # Enables runtime selection of PulseAudio library.
   use_pulseaudio = false

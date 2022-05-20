@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
@@ -580,62 +579,8 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // HTMLMediaElement.canPlayType() will return "maybe" or "probably" since it
   // does not make sense for a MediaSource to support a type the
   // HTMLMediaElement knows it cannot play.
-  String codecs = content_type.Parameter("codecs");
-  MIMETypeRegistry::SupportsType get_supports_type_result;
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-  // Here, we special-case when encrypted HEVC is supported.
-  // isTypeSupported(fully qualified type with hevc codec) should say false on
-  // such platform (except if kEnableClearHevcForTesting cmdline switch is used,
-  // enabling GetSupportsType success), but addSourceBuffer(same) and
-  // changeType(same) shouldn't fail just due to having HEVC codec. We use
-  // |enforce_codec_specificity| to understand if we are servicing iTS (if true)
-  // versus aSB (if false). If servicing aSB or cT, we'll remove any detected
-  // hevc codec from the codecs we use in the GetSupportsType() query.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool allow_hevc = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kLacrosEnablePlatformEncryptedHevc);
-#else
-  const bool allow_hevc = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (allow_hevc && !enforce_codec_specificity) {
-    // Remove any detected HEVC codec from the query to GetSupportsType.
-    std::string filtered_codecs;
-    std::vector<std::string> parsed_codec_ids;
-    media::SplitCodecs(codecs.Ascii(), &parsed_codec_ids);
-    bool first = true;
-    for (const auto& codec_id : parsed_codec_ids) {
-      bool is_codec_ambiguous;
-      media::VideoCodec video_codec = media::VideoCodec::kUnknown;
-      media::VideoCodecProfile profile;
-      uint8_t level = 0;
-      media::VideoColorSpace color_space;
-      if (media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
-                                       &is_codec_ambiguous, &video_codec,
-                                       &profile, &level, &color_space) &&
-          !is_codec_ambiguous && video_codec == media::VideoCodec::kHEVC) {
-        continue;
-      }
-      if (first)
-        first = false;
-      else
-        filtered_codecs += ",";
-      filtered_codecs += codec_id;
-    }
-
-    std::string filtered_type =
-        mime_type.Ascii() + "; codecs=\"" + filtered_codecs + "\"";
-    DVLOG(1) << __func__ << " filtered_type=" << filtered_type;
-    get_supports_type_result = HTMLMediaElement::GetSupportsType(
-        ContentType(String::FromUTF8(filtered_type.c_str())));
-  } else {
-    // Even on platforms with HEVC support, don't filter out HEVC codec when
-    // servicing isTypeSupported().
-    get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
-  }
-#else
-  get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
-#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-
+  auto get_supports_type_result =
+      HTMLMediaElement::GetSupportsType(content_type);
   if (get_supports_type_result == MIMETypeRegistry::kIsNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
@@ -660,6 +605,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // specificity is and will be retained for isTypeSupported.
   // TODO(crbug.com/535738): Actually relax the codec-specifity for aSB() and
   // cT() (which is when |enforce_codec_specificity| is false).
+  String codecs = content_type.Parameter("codecs");
   MIMETypeRegistry::SupportsType supported =
       MIMETypeRegistry::SupportsMediaSourceMIMEType(mime_type, codecs);
 

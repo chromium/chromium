@@ -273,14 +273,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     transcryption_ = (VaapiWrapper::GetImplementationType() ==
                       VAImplementation::kMesaGallium);
 #endif
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
-  } else if (config.codec() == VideoCodec::kHEVC &&
-             !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                 switches::kEnableClearHevcForTesting)) {
-    SetErrorState("clear HEVC content is not supported");
-    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
-    return;
-#endif
   }
 
   // Initialize VAAPI wrapper.

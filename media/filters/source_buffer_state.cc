@@ -718,37 +718,6 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << video_config.AsHumanReadableString();
       DCHECK(video_config.IsValidConfig());
 
-      if (video_config.codec() == VideoCodec::kHEVC) {
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kLacrosEnablePlatformEncryptedHevc)) {
-          NOTREACHED() << "MSE parser must not emit HEVC tracks on runtime "
-                          "configurations that do not support HEVC playback "
-                          "via platform.";
-          return false;
-        }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        // HEVC is only supported through EME under this build flag, so
-        // require the config to be for an encrypted track. Even so,
-        // conditionally allow clear HEVC if cmdline has test override.
-        if (video_config.encryption_scheme() ==
-                EncryptionScheme::kUnencrypted &&
-            !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kEnableClearHevcForTesting)) {
-          MEDIA_LOG(ERROR, media_log_)
-              << "MSE playback of HEVC on is only supported via platform "
-                 "decryptor, but the provided HEVC "
-                 "track is not encrypted.";
-          return false;
-        }
-#elif !BUILDFLAG(ENABLE_PLATFORM_HEVC)
-        NOTREACHED()
-            << "MSE parser must not emit HEVC tracks on build configurations "
-               "that do not support HEVC playback via platform.";
-#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-      }
-
       const auto& it = std::find(expected_vcodecs.begin(),
                                  expected_vcodecs.end(), video_config.codec());
       if (it == expected_vcodecs.end()) {

@@ -33,7 +33,6 @@ buildflag_header("media_buildflags") {
     "ENABLE_FFMPEG_VIDEO_DECODERS=$enable_ffmpeg_video_decoders",
     "ENABLE_PLATFORM_HEVC=$enable_platform_hevc",
     "ENABLE_PLATFORM_HEVC_DECODING=$enable_platform_hevc_decoding",
-    "ENABLE_PLATFORM_ENCRYPTED_HEVC=$enable_platform_encrypted_hevc",
     "ENABLE_HLS_SAMPLE_AES=$enable_hls_sample_aes",
     "ENABLE_HLS_DEMUXER=$enable_hls_demuxer",
     "ENABLE_LIBGAV1_DECODER=$enable_libgav1_decoder",

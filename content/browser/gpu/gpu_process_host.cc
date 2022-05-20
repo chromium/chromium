@@ -275,9 +275,6 @@ static const char* const kSwitchNames[] = {
     switches::kVModule,
     switches::kUseAdapterLuid,
     switches::kWebViewDrawFunctorUsesVulkan,
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    switches::kEnableClearHevcForTesting,
-#endif
 #if BUILDFLAG(IS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
     sandbox::policy::switches::kDisableMetalShaderCache,
@@ -310,7 +307,6 @@ static const char* const kSwitchNames[] = {
     switches::kHardwareVideoDecodeFrameRate,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    switches::kLacrosEnablePlatformEncryptedHevc,
     switches::kLacrosEnablePlatformHevc,
     switches::kLacrosUseChromeosProtectedMedia,
     switches::kLacrosUseChromeosProtectedAv1,

@@ -817,7 +817,12 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                     audio_mp4_flac_codecs()));
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+
+  // On Windows platforms, HEVC support is detected through the GPU capabilities
+  // which won't indicate support when running the tests.
+  // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
+  // Windows.
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING) && !BUILDFLAG(IS_WIN)
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
 #else
@@ -933,7 +938,11 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
   // Valid video types.
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
+  // On Windows platforms, HEVC support is detected through the GPU capabilities
+  // which won't indicate support when running the tests.
+  // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
+  // Windows.
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING) && !BUILDFLAG(IS_WIN)
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_hevc_codecs()));
 #else

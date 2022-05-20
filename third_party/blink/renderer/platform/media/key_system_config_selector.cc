@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -147,39 +146,6 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 
   std::vector<std::string> codec_vector;
   media::SplitCodecs(codecs, &codec_vector);
-
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-  // EME HEVC is supported on under this build flag, but it is not supported for
-  // clear playback or when using ClearKey. Remove the HEVC codec strings to
-  // avoid asking IsSupported*MediaFormat() about HEVC. EME support for HEVC
-  // profiles is described via KeySystemProperties::GetSupportedCodecs().
-  // TODO(1156282): Decouple the rest of clear vs EME codec support.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool allow_hevc = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kLacrosEnablePlatformEncryptedHevc);
-#else
-  const bool allow_hevc = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (allow_hevc && !use_aes_decryptor &&
-      base::ToLowerASCII(container_mime_type) == "video/mp4" &&
-      !codec_vector.empty()) {
-    auto it = codec_vector.begin();
-    while (it != codec_vector.end()) {
-      media::VideoCodecProfile profile;
-      uint8_t level_idc;
-      if (ParseHEVCCodecId(*it, &profile, &level_idc))
-        codec_vector.erase(it);
-      else
-        ++it;
-    }
-
-    // Avoid calling IsSupported*MediaFormat() with an empty vector. For
-    // "video/mp4", this will return MaybeSupported, which we would otherwise
-    // consider "false" below.
-    if (codec_vector.empty())
-      return true;
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
 
   // AesDecryptor decrypts the stream in the demuxer before it reaches the
   // decoder so check whether the media format is supported when clear.

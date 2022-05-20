@@ -89,10 +89,15 @@ MEDIA_EXPORT extern const char kOverrideHardwareSecureCodecsForTesting[];
 MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+// TODO(crbug/1311348): Remove this after Chrome clear HEVC lands and Chrome OS
+// is uprev'd to use that version and we then also land changes to tast-tests
+// that drop usage of this flag.
 MEDIA_EXPORT extern const char kEnableClearHevcForTesting[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug/1311348): Remove kLacrosEnablePlatformEncryptedHevc after Chrome
+// clear HEVC lands and Chrome OS is uprev'd to use that version for ash-chrome.
 MEDIA_EXPORT extern const char kLacrosEnablePlatformEncryptedHevc[];
 MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];

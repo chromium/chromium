@@ -417,10 +417,6 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   // Add any BUILDFLAGs we use to pass our per-platform/ build configuration to
   // lacros for runtime handling instead.
   std::vector<crosapi::mojom::BuildFlag> build_flags;
-#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
-  build_flags.emplace_back(
-      crosapi::mojom::BuildFlag::kEnablePlatformEncryptedHevc);
-#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_HEVC)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   build_flags.emplace_back(crosapi::mojom::BuildFlag::kEnablePlatformHevc);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
