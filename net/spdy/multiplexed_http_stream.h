@@ -21,7 +21,7 @@ class NET_EXPORT_PRIVATE MultiplexedHttpStream : public HttpStream {
       std::unique_ptr<MultiplexedSessionHandle> session);
   ~MultiplexedHttpStream() override;
 
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
   void Drain(HttpNetworkSession* session) override;

@@ -19,7 +19,7 @@ MultiplexedHttpStream::MultiplexedHttpStream(
 
 MultiplexedHttpStream::~MultiplexedHttpStream() = default;
 
-bool MultiplexedHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
+int MultiplexedHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
   return session_->GetRemoteEndpoint(endpoint);
 }
 

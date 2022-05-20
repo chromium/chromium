@@ -908,8 +908,17 @@ int HttpNetworkTransaction::DoConnectedCallback() {
   // HttpStream::GetAcceptChViaAlps() needs the HttpRequestInfo to retrieve
   // the ACCEPT_CH frame payload.
   stream_->RegisterRequest(request_);
-  stream_->GetRemoteEndpoint(&remote_endpoint_);
   next_state_ = STATE_CONNECTED_CALLBACK_COMPLETE;
+
+  int result = stream_->GetRemoteEndpoint(&remote_endpoint_);
+  if (result != OK) {
+    // `GetRemoteEndpoint()` fails when the underlying socket is not connected
+    // anymore, even though the peer's address is known. This can happen when
+    // we picked a socket from socket pools while it was still connected, but
+    // the remote side closes it before we get a chance to send our request.
+    // See if we should retry the request based on the error code we got.
+    return HandleIOError(result);
+  }
 
   if (connected_callback_.is_null()) {
     return OK;
@@ -1581,9 +1590,10 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
 }
 
 // This method determines whether it is safe to resend the request after an
-// IO error.  It can only be called in response to request header or body
-// write errors or response header read errors.  It should not be used in
-// other cases, such as a Connect error.
+// IO error. It should only be called in response to errors received before
+// final set of response headers have been successfully parsed, that the
+// transaction may need to be retried on.
+// It should not be used in other cases, such as a Connect error.
 int HttpNetworkTransaction::HandleIOError(int error) {
   // Because the peer may request renegotiation with client authentication at
   // any time, check and handle client authentication errors.
@@ -1730,9 +1740,7 @@ bool HttpNetworkTransaction::ShouldResendRequest() const {
   // NOTE: we resend a request only if we reused a keep-alive connection.
   // This automatically prevents an infinite resend loop because we'll run
   // out of the cached keep-alive connections eventually.
-  if (connection_is_proven && !has_received_headers)
-    return true;
-  return false;
+  return connection_is_proven && !has_received_headers;
 }
 
 bool HttpNetworkTransaction::HasExceededMaxRetries() const {

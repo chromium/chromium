@@ -14,9 +14,9 @@ MultiplexedSessionHandle::MultiplexedSessionHandle(
 
 MultiplexedSessionHandle::~MultiplexedSessionHandle() = default;
 
-bool MultiplexedSessionHandle::GetRemoteEndpoint(IPEndPoint* endpoint) {
+int MultiplexedSessionHandle::GetRemoteEndpoint(IPEndPoint* endpoint) {
   if (!session_)
-    return false;
+    return ERR_SOCKET_NOT_CONNECTED;
 
   return session_->GetRemoteEndpoint(endpoint);
 }

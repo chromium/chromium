@@ -530,7 +530,7 @@ class NET_EXPORT SpdySession
   LoadState GetLoadState() const;
 
   // MultiplexedSession methods:
-  bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
+  int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
   base::StringPiece GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const override;

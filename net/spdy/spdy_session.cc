@@ -1507,8 +1507,8 @@ LoadState SpdySession::GetLoadState() const {
   return LOAD_STATE_IDLE;
 }
 
-bool SpdySession::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  return GetPeerAddress(endpoint) == OK;
+int SpdySession::GetRemoteEndpoint(IPEndPoint* endpoint) {
+  return GetPeerAddress(endpoint);
 }
 
 bool SpdySession::GetSSLInfo(SSLInfo* ssl_info) const {
