@@ -64,6 +64,8 @@ suite('CrostiniPageTests', function() {
     GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
     PolymerTest.clearBody();
     crostiniPage = document.createElement('settings-crostini-page');
+    crostiniPage.showCrostini = true;
+    crostiniPage.allowCrostini = true;
     document.body.appendChild(crostiniPage);
     testing.Test.disableAnimationsAndTransitions();
   });
@@ -125,6 +127,22 @@ suite('CrostiniPageTests', function() {
   suite('MainPage', function() {
     setup(function() {
       setCrostiniPrefs(false);
+    });
+
+    test('NotSupported', function() {
+      crostiniPage.showCrostini = false;
+      crostiniPage.allowCrostini = false;
+      flush();
+      assertTrue(!!crostiniPage.$$('#enable'));
+      assertFalse(!!crostiniPage.$$('cr-policy-indicator'));
+    });
+
+    test('NotAllowed', function() {
+      crostiniPage.showCrostini = true;
+      crostiniPage.allowCrostini = false;
+      flush();
+      assertTrue(!!crostiniPage.$$('#enable'));
+      assertTrue(!!crostiniPage.$$('cr-policy-indicator'));
     });
 
     test('Enable', function() {

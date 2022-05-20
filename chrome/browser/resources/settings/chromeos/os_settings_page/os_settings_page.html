@@ -241,14 +241,13 @@
         <os-settings-printing-page prefs="{{prefs}}">
         </os-settings-printing-page>
       </settings-section>
-      <template is="dom-if" if="[[showCrostini]]" restamp>
-        <settings-section page-title="$i18n{crostiniPageTitle}"
-            section="crostini">
-          <settings-crostini-page prefs="{{prefs}}"
-              allow-crostini="[[allowCrostini_]]">
-          </settings-crostini-page>
-        </settings-section>
-      </template>
+      <settings-section page-title="$i18n{crostiniPageTitle}"
+          section="crostini">
+        <settings-crostini-page prefs="{{prefs}}"
+            allow-crostini="[[allowCrostini_]]"
+            show-crostini="[[showCrostini]]">
+        </settings-crostini-page>
+      </settings-section>
       <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
         <settings-section page-title="$i18n{a11yPageTitle}"
             section="osAccessibility">

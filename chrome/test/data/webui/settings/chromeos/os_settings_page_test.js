@@ -240,7 +240,6 @@ suite('OsSettingsPageTests', function() {
 
   test('Check settings-crostini-page exists', async () => {
     init();
-    settingsPage.showCrostini = true;
     const idleRender =
         settingsPage.shadowRoot.querySelector('settings-idle-load');
     await idleRender.get();

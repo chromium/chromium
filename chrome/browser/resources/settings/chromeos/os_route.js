@@ -218,10 +218,10 @@ function createOSSettingsRoutes() {
   }
 
   // Crostini section.
+  r.CROSTINI =
+      createSection(r.ADVANCED, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
   if (loadTimeData.valueExists('showCrostini') &&
       loadTimeData.getBoolean('showCrostini')) {
-    r.CROSTINI = createSection(
-        r.ADVANCED, mojom.CROSTINI_SECTION_PATH, Section.kCrostini);
     r.CROSTINI_DETAILS = createSubpage(
         r.CROSTINI, mojom.CROSTINI_DETAILS_SUBPAGE_PATH,
         Subpage.kCrostiniDetails);

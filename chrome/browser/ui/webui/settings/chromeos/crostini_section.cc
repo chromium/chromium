@@ -419,6 +419,12 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_CROSTINI_SUBTEXT, ui::GetChromeOSDeviceName(),
           GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL)));
   html_source->AddString(
+      "crostiniSubtextNotSupported",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_CROSTINI_SUBTEXT_NOT_SUPPORTED,
+          ui::GetChromeOSDeviceName(),
+          GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL)));
+  html_source->AddString(
       "crostiniArcAdbPowerwashRequiredSublabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_CROSTINI_ARC_ADB_POWERWASH_REQUIRED_SUBLABEL,
