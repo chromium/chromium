@@ -646,6 +646,19 @@ void Buffer::MaybeRunPerCommitRelease(
     std::move(buffer_release_callback).Run();
   } else {
 #if BUILDFLAG(IS_POSIX)
+    // Watching the release fence's fd results in a context switch to the I/O
+    // thread. That may steal thread time from other applications, which can
+    // do something useful during that time. Moreover, most of the time the
+    // fence can have already been signalled. Thus, only watch the fence is
+    // readable iff it hasn't been signalled yet.
+    base::TimeTicks ticks;
+    auto status = gfx::GpuFence::GetStatusChangeTime(
+        release_fence.owned_fd.get(), &ticks);
+    if (status == gfx::GpuFence::kSignaled) {
+      std::move(buffer_release_callback).Run();
+      return;
+    }
+
     auto controller = base::FileDescriptorWatcher::WatchReadable(
         release_fence.owned_fd.get(),
         base::BindRepeating(&Buffer::FenceSignalled, AsWeakPtr(), commit_id));
