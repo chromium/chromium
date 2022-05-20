@@ -3049,8 +3049,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
       layer_debug_info_enabled_);
 
   PaintArtifactCompositor::ViewportProperties viewport_properties;
-  // TODO(crbug.com/1254770): revisit this for embedded portals.
-  if (GetFrame().IsOutermostMainFrame()) {
+  const auto& viewport = page->GetVisualViewport();
+  if (GetFrame().IsMainFrame() && viewport.IsActiveViewport()) {
     const auto& viewport = page->GetVisualViewport();
     viewport_properties.overscroll_elasticity_effect =
         viewport.GetOverscrollElasticityEffectNode();
@@ -3249,6 +3249,8 @@ void LocalFrameView::UpdateStyleAndLayout() {
                                    visual_viewport.VisibleHeightCSSPx());
       visual_viewport_size_changed =
           (new_viewport_size != visual_viewport_size);
+      DCHECK(!visual_viewport_size_changed ||
+             visual_viewport.IsActiveViewport());
     }
     SetNeedsUpdateGeometries();
     PerformPostLayoutTasks(visual_viewport_size_changed);

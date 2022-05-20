@@ -241,9 +241,9 @@ void DistillabilityAgent::DidMeaningfulLayout(
   }
 
   DCHECK(render_frame());
-  if (!render_frame()->IsMainFrame())
-    return;
   DCHECK(render_frame()->GetWebFrame());
+  if (!render_frame()->GetWebFrame()->IsOutermostMainFrame())
+    return;
   blink::WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
   if (doc.IsNull() || doc.Body().IsNull())
     return;

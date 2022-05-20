@@ -58,10 +58,12 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   if (needs_tree_builder_context_update)
     GeometryMapper::ClearCache();
 
-  if (root_frame_view.GetFrame().IsMainFrame()) {
+  VisualViewport& visual_viewport =
+      root_frame_view.GetPage()->GetVisualViewport();
+  if (visual_viewport.IsActiveViewport() &&
+      root_frame_view.GetFrame().IsMainFrame()) {
     VisualViewportPaintPropertyTreeBuilder::Update(
-        root_frame_view, root_frame_view.GetPage()->GetVisualViewport(),
-        *context.tree_builder_context);
+        root_frame_view, visual_viewport, *context.tree_builder_context);
   }
 
   Walk(root_frame_view, context);
@@ -266,6 +268,7 @@ bool PrePaintTreeWalk::NeedsTreeBuilderContextUpdate(
     const LocalFrameView& frame_view,
     const PrePaintTreeWalkContext& context) {
   if (frame_view.GetFrame().IsMainFrame() &&
+      frame_view.GetPage()->GetVisualViewport().IsActiveViewport() &&
       frame_view.GetPage()->GetVisualViewport().NeedsPaintPropertyUpdate()) {
     return true;
   }

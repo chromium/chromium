@@ -355,7 +355,6 @@ void DevToolsEmulator::EnableMobileEmulation() {
       mojom::blink::ViewportStyle::kMobile);
   web_view_->GetPage()->GetSettings().SetViewportEnabled(true);
   web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(true);
-  web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();
   web_view_->GetPage()->GetSettings().SetShrinksViewportContentToFit(true);
   web_view_->GetPage()->GetSettings().SetTextAutosizingEnabled(true);
   web_view_->GetPage()->GetSettings().SetPreferCompositingToLCDTextEnabled(
@@ -365,6 +364,13 @@ void DevToolsEmulator::EnableMobileEmulation() {
       true);
   web_view_->SetZoomFactorOverride(1);
   web_view_->GetPage()->SetDefaultPageScaleLimits(0.25f, 5);
+
+  // If the viewport is active, refresh the scrollbar layers to reflect the
+  // emulated viewport style. If it's not active, either we're in an embedded
+  // frame and we don't have visual viewport scrollbars or the scrollbars will
+  // initialize as part of their regular lifecycle.
+  if (web_view_->GetPage()->GetVisualViewport().IsActiveViewport())
+    web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();
 
   if (web_view_->MainFrameImpl()) {
     web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(

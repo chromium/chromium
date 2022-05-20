@@ -165,7 +165,10 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
         current_box->StyleRef().GetPosition() == EPosition::kFixed &&
         current_box->Container() == current_box->View();
 
+    VisualViewport& visual_viewport =
+        current_box->GetFrame()->GetPage()->GetVisualViewport();
     if (is_fixed_to_frame && current_box->GetFrame()->IsMainFrame() &&
+        visual_viewport.IsActiveViewport() &&
         params->make_visible_in_visual_viewport) {
       // If we're in a position:fixed element, scrolling the layout viewport
       // won't have any effect and would be wrong so we want to bubble up to

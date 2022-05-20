@@ -914,13 +914,13 @@ void LayoutView::StyleDidChange(StyleDifference diff,
   LayoutBlockFlow::StyleDidChange(diff, old_style);
 
   LocalFrame& frame = GetFrameView()->GetFrame();
-  if (frame.IsMainFrame()) {
+  VisualViewport& visual_viewport = frame.GetPage()->GetVisualViewport();
+  if (frame.IsMainFrame() && visual_viewport.IsActiveViewport()) {
     // |VisualViewport::UsedColorScheme| depends on the LayoutView's used
     // color scheme.
     if (!old_style ||
-        old_style->UsedColorScheme() !=
-            frame.GetPage()->GetVisualViewport().UsedColorScheme()) {
-      frame.GetPage()->GetVisualViewport().UsedColorSchemeChanged();
+        old_style->UsedColorScheme() != visual_viewport.UsedColorScheme()) {
+      visual_viewport.UsedColorSchemeChanged();
     }
   }
 }

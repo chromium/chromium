@@ -653,8 +653,10 @@ void Page::SettingsChanged(ChangeType change_type) {
       }
       break;
     case ChangeType::kViewportPaintProperties:
-      GetVisualViewport().SetNeedsPaintPropertyUpdate();
-      GetVisualViewport().InitializeScrollbars();
+      if (GetVisualViewport().IsActiveViewport()) {
+        GetVisualViewport().SetNeedsPaintPropertyUpdate();
+        GetVisualViewport().InitializeScrollbars();
+      }
       if (auto* local_frame = DynamicTo<LocalFrame>(MainFrame())) {
         if (LocalFrameView* view = local_frame->View())
           view->SetNeedsPaintPropertyUpdate();
