@@ -29,8 +29,8 @@ namespace history {
 // datatype.
 class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
  public:
-  // Must call InitVisitTable() before using to make sure the database is
-  // initialized.
+  // Must call InitTypedURLMetadataTable() before using to make sure the
+  // database is initialized.
   TypedURLSyncMetadataDatabase();
 
   TypedURLSyncMetadataDatabase(const TypedURLSyncMetadataDatabase&) = delete;
@@ -57,6 +57,10 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
   static URLID StorageKeyToURLID(const std::string& storage_key);
 
  protected:
+  // Called by the derived classes on initialization to make sure the tables
+  // and indices are properly set up. Must be called before anything else.
+  bool InitTypedURLMetadataTable();
+
   // Returns the database for the functions in this interface.
   virtual sql::Database& GetDB() = 0;
 
@@ -64,10 +68,6 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
   // Check if GetMetaTable().GetVersionNumber() is greater than 0 to make sure
   // MetaTable is initialed.
   virtual sql::MetaTable& GetMetaTable() = 0;
-
-  // Called by the derived classes on initialization to make sure the tables
-  // and indices are properly set up. Must be called before anything else.
-  bool InitSyncTable();
 
   // Cleans up orphaned metadata for typed URLs, i.e. deletes all metadata
   // entries for rowids not present in `sorted_valid_rowids` (which must be

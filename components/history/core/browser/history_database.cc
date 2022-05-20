@@ -122,8 +122,10 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
     return LogInitFailure(InitStep::META_TABLE_INIT);
   if (!CreateURLTable(false) || !InitVisitTable() ||
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
-      !InitSegmentTables() || !InitSyncTable() || !InitVisitAnnotationsTables())
+      !InitSegmentTables() || !InitTypedURLMetadataTable() ||
+      !InitVisitAnnotationsTables()) {
     return LogInitFailure(InitStep::CREATE_TABLES);
+  }
   CreateMainURLIndex();
 
   // TODO(benjhayden) Remove at some point.

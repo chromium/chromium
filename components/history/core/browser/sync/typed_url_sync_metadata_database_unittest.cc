@@ -55,7 +55,7 @@ class TypedURLSyncMetadataDatabaseTest : public testing::Test,
     EXPECT_TRUE(db_.Open(db_file));
 
     // Initialize the tables for this test.
-    InitSyncTable();
+    InitTypedURLMetadataTable();
 
     GetMetaTable().Init(&db_, 1, 1);
   }

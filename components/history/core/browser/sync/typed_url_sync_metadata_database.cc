@@ -112,7 +112,7 @@ URLID TypedURLSyncMetadataDatabase::StorageKeyToURLID(
   return storage_key_int;
 }
 
-bool TypedURLSyncMetadataDatabase::InitSyncTable() {
+bool TypedURLSyncMetadataDatabase::InitTypedURLMetadataTable() {
   if (!GetDB().DoesTableExist("typed_url_sync_metadata")) {
     if (!GetDB().Execute("CREATE TABLE typed_url_sync_metadata ("
                          "storage_key INTEGER PRIMARY KEY NOT NULL,"
