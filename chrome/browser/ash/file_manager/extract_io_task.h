@@ -21,6 +21,22 @@
 namespace file_manager {
 namespace io_task {
 
+// Histogram name for FileBrowser.ExtractTask.
+inline constexpr char kExtractTaskStatusHistogramName[] =
+    "FileBrowser.ExtractTask.Status";
+
+// Extract archive status. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
+// See enum FileManagerExtractStatus in enums.xml.
+enum class ExtractStatus {
+  kSuccess = 0,
+  kUnknownError = 1,
+  kCancelled = 2,
+  kInsufficientDiskSpace = 3,
+  kPasswordError = 4,
+  kMaxValue = kPasswordError,
+};
+
 class ExtractIOTask : public IOTask {
  public:
   // Create a task to extract any ZIP files in |source_urls|. These

@@ -275,6 +275,13 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks success rate of pinning files in Drive.</summary>
 </histogram>
 
+<histogram name="FileBrowser.ExtractTask.Status"
+    enum="FileManagerExtractStatus" expires_after="M113">
+  <owner>adanilo@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Tracks success/error rate of extracting archive contents.</summary>
+</histogram>
+
 <histogram name="FileBrowser.FileSystemProviderMounted"
     enum="FileSystemProviderMountType" expires_after="2023-04-10">
   <owner>simmonsjosh@google.com</owner>

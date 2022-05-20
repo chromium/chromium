@@ -41681,6 +41681,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Unable to open"/>
 </enum>
 
+<enum name="FileManagerExtractStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Low Disk Space"/>
+  <int value="3" label="Bad Password"/>
+  <int value="4" label="Unknown Error"/>
+</enum>
+
 <enum name="FileManagerFormatFileSystemType">
   <int value="0" label="Unknown"/>
   <int value="1" label="FAT32"/>

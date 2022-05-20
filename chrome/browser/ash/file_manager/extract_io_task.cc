@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -20,6 +21,10 @@
 
 namespace file_manager {
 namespace io_task {
+
+void RecordUmaExtractStatus(ExtractStatus status) {
+  UMA_HISTOGRAM_ENUMERATION(kExtractTaskStatusHistogramName, status);
+}
 
 ExtractIOTask::ExtractIOTask(
     std::vector<storage::FileSystemURL> source_urls,
@@ -52,6 +57,9 @@ void ExtractIOTask::ZipExtractCallback(bool success) {
   progress_.state = success ? State::kSuccess : State::kError;
   DCHECK_GT(extractCount_, 0);
   if (--extractCount_ == 0) {
+    RecordUmaExtractStatus(progress_.state == State::kSuccess
+                               ? ExtractStatus::kSuccess
+                               : ExtractStatus::kUnknownError);
     Complete();
   }
 }
@@ -118,6 +126,7 @@ void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
     progress_.outputs.emplace_back(progress_.destination_folder,
                                    base::File::FILE_ERROR_NO_SPACE);
     progress_.state = State::kError;
+    RecordUmaExtractStatus(ExtractStatus::kInsufficientDiskSpace);
     Complete();
     return;
   }
@@ -175,6 +184,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
   if (!chromeos::FileSystemBackend::CanHandleURL(parent_folder_) ||
       sizingCount_ == 0) {
     progress_.state = State::kError;
+    RecordUmaExtractStatus(ExtractStatus::kUnknownError);
     Complete();
   } else {
     CheckSizeThenExtract();
@@ -183,6 +193,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
 
 void ExtractIOTask::Cancel() {
   progress_.state = State::kCancelled;
+  RecordUmaExtractStatus(ExtractStatus::kCancelled);
   // Any inflight operation will be cancelled when the task is destroyed.
 }
 
