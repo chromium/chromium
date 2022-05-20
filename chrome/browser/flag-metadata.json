@@ -5382,6 +5382,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "shared-highlighting-refined-maxcontextwords",
+    "owners": ["wissemgamra", "jeffreycohen", "chrome-with-friends-robots@google.com" ],
+    "expiry_milestone": 107
+  },
+  {
     "name": "shared-highlighting-v2",
     "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com", "chrome-with-friends-robots@google.com"],
     "expiry_milestone": 99

@@ -27,6 +27,12 @@ extern const base::Feature kIOSSharedHighlightingV2;
 // Feature flag that enables a narrower blocklist.
 extern const base::Feature kSharedHighlightingRefinedBlocklist;
 
+// Feature flag that allows to experiment with different Max Context Words.
+extern const base::Feature kSharedHighlightingRefinedMaxContextWords;
+// Feature name and parameter to capture the different maxContextWords values.
+extern const char kSharedHighlightingRefinedMaxContextWordsName[];
+extern const base::FeatureParam<int> kSharedHighlightingMaxContextWords;
+
 // Returns the pre-emptive link generation timeout length.
 int GetPreemptiveLinkGenTimeoutLengthMs();
 

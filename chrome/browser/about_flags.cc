@@ -1498,6 +1498,26 @@ const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
     {" alternate hover card format", kTabHoverCardImagesAlternateFormat,
      std::size(kTabHoverCardImagesAlternateFormat), nullptr}};
 
+const FeatureEntry::FeatureParam kSharedHighlightingMaxContextWords5[] = {
+    {shared_highlighting::kSharedHighlightingRefinedMaxContextWordsName, "5"}};
+const FeatureEntry::FeatureParam kSharedHighlightingMaxContextWords10[] = {
+    {shared_highlighting::kSharedHighlightingRefinedMaxContextWordsName, "10"}};
+const FeatureEntry::FeatureParam kSharedHighlightingMaxContextWords15[] = {
+    {shared_highlighting::kSharedHighlightingRefinedMaxContextWordsName, "15"}};
+const FeatureEntry::FeatureParam kSharedHighlightingMaxContextWords20[] = {
+    {shared_highlighting::kSharedHighlightingRefinedMaxContextWordsName, "20"}};
+
+const FeatureEntry::FeatureVariation
+    kSharedHighlightingMaxContextWordsVariations[] = {
+        {" - maxContextWords: 5", kSharedHighlightingMaxContextWords5,
+         std::size(kSharedHighlightingMaxContextWords5), nullptr},
+        {" - maxContextWords: 10", kSharedHighlightingMaxContextWords10,
+         std::size(kSharedHighlightingMaxContextWords10), nullptr},
+        {" - maxContextWords: 15", kSharedHighlightingMaxContextWords15,
+         std::size(kSharedHighlightingMaxContextWords15), nullptr},
+        {" - maxContextWords: 20", kSharedHighlightingMaxContextWords20,
+         std::size(kSharedHighlightingMaxContextWords20), nullptr}};
+
 #if !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kNtpChromeCartModuleFakeData[] = {
@@ -6943,6 +6963,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharedHighlightingRefinedBlocklistDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          shared_highlighting::kSharedHighlightingRefinedBlocklist)},
+    {"shared-highlighting-refined-maxcontextwords",
+     flag_descriptions::kSharedHighlightingRefinedMaxContextWordsName,
+     flag_descriptions::kSharedHighlightingRefinedMaxContextWordsDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         shared_highlighting::kSharedHighlightingRefinedMaxContextWords,
+         kSharedHighlightingMaxContextWordsVariations,
+         "SharedHighlightingRefinedMaxContextWords")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"shimless-rma-flow", flag_descriptions::kShimlessRMAFlowName,

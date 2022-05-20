@@ -57803,6 +57803,8 @@ from previous Chrome versions.
   <int value="75747474" label="disable-webview-signin-flow"/>
   <int value="77886794" label="AllowRepeatedUpdates:enabled"/>
   <int value="77946316" label="PrefixWebAppWindowsWithAppName:disabled"/>
+  <int value="78900745"
+      label="SharedHighlightingRefinedMaxContextWords:disabled"/>
   <int value="78998551" label="disable-hosted-app-shim-creation"/>
   <int value="79094339" label="VrLaunchIntents:enabled"/>
   <int value="79503461" label="disable-account-consistency"/>
@@ -59518,6 +59520,8 @@ from previous Chrome versions.
   <int value="1226624874" label="Mus:disabled"/>
   <int value="1226676061" label="PageInfoV2Desktop:enabled"/>
   <int value="1226760549" label="LauncherGameSearch:enabled"/>
+  <int value="1226782541"
+      label="SharedHighlightingRefinedMaxContextWords:enabled"/>
   <int value="1227633129" label="NtpChromeCartModule:disabled"/>
   <int value="1228054141"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:enabled"/>
