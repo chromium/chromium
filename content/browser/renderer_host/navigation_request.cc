@@ -192,6 +192,14 @@ constexpr base::Feature kHistoryNavigationDoNotUseCacheAblationStudy{
 constexpr base::FeatureParam<double> kDoNotUseCacheProbability{
     &kHistoryNavigationDoNotUseCacheAblationStudy, "probability", 0.0};
 
+const char kIsolatedAppCSP[] =
+    "base-uri 'none';"
+    "default-src 'self';"
+    "object-src 'none';"
+    "frame-src 'self' https:;"
+    "connect-src 'self' https:;"
+    "require-trusted-types-for 'script';";
+
 // Corresponds to the "NavigationURLScheme" histogram enumeration type in
 // src/tools/metrics/histograms/enums.xml.
 //
@@ -7304,9 +7312,25 @@ void NavigationRequest::ComputePoliciesToCommit() {
                               GetContentClient()->browser());
   policy_container_builder_->SetIPAddressSpace(response_address_space);
 
-  if (response_head_ && !devtools_instrumentation::ShouldBypassCSP(*this)) {
-    policy_container_builder_->AddContentSecurityPolicies(
-        mojo::Clone(response_head_->parsed_headers->content_security_policy));
+  if (!devtools_instrumentation::ShouldBypassCSP(*this)) {
+    if (response_head_) {
+      policy_container_builder_->AddContentSecurityPolicies(
+          mojo::Clone(response_head_->parsed_headers->content_security_policy));
+    }
+
+    // TODO(https://crbug.com/1311061): Validate CSP rather than injecting it.
+    BrowserContext* browser_context =
+        frame_tree_node()->navigator().controller().GetBrowserContext();
+    if (SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+            browser_context, GetURL())) {
+      // Parsing CSP is allowed in the browser process because it owns the
+      // trusted input.
+      policy_container_builder_->AddContentSecurityPolicies(
+          network::ParseContentSecurityPolicies(
+              kIsolatedAppCSP,
+              network::mojom::ContentSecurityPolicyType::kEnforce,
+              network::mojom::ContentSecurityPolicySource::kHTTP, GetURL()));
+    }
   }
 
   // Use the unchecked / non-sandboxed origin to calculate potential

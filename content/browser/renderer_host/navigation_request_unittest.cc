@@ -12,8 +12,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/test/fenced_frame_test_utils.h"
@@ -745,6 +747,57 @@ TEST_F(NavigationRequestTest,
                 ->GetIsolationInfo()
                 .network_isolation_key()
                 .GetNonce());
+}
+
+class ScopedIsolatedAppBrowserClient : public ContentBrowserClient {
+ public:
+  ScopedIsolatedAppBrowserClient()
+      : old_client_(SetBrowserClientForTesting(this)) {}
+
+  ~ScopedIsolatedAppBrowserClient() override {
+    SetBrowserClientForTesting(old_client_);
+  }
+
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
+    return true;
+  }
+
+ private:
+  raw_ptr<ContentBrowserClient> old_client_;
+};
+
+TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
+  const GURL kUrl = GURL("https://chromium.org");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kIsolatedAppOrigins, kUrl.spec());
+  // Disable flag caching so the --isolated-app-origins value takes effect.
+  SiteIsolationPolicy::DisableFlagCachingForTesting();
+  ScopedIsolatedAppBrowserClient client;
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  navigation->ReadyToCommit();
+
+  // Validate the COOP/COEP headers.
+  const PolicyContainerPolicies& policies =
+      navigation->GetNavigationHandle()->GetPolicyContainerPolicies();
+  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep,
+            policies.cross_origin_opener_policy.value);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+            policies.cross_origin_embedder_policy.value);
+
+  // Validate CSP.
+  EXPECT_EQ(1UL, policies.content_security_policies.size());
+  const auto& csp = policies.content_security_policies[0];
+  EXPECT_EQ(6UL, csp->raw_directives.size());
+  using Directive = network::mojom::CSPDirectiveName;
+  EXPECT_EQ("'none'", csp->raw_directives[Directive::BaseURI]);
+  EXPECT_EQ("'none'", csp->raw_directives[Directive::ObjectSrc]);
+  EXPECT_EQ("'self'", csp->raw_directives[Directive::DefaultSrc]);
+  EXPECT_EQ("'self' https:", csp->raw_directives[Directive::FrameSrc]);
+  EXPECT_EQ("'self' https:", csp->raw_directives[Directive::ConnectSrc]);
+  EXPECT_EQ("'script'", csp->raw_directives[Directive::RequireTrustedTypesFor]);
 }
 
 // Test that the required CSP of every frame is computed/inherited correctly and

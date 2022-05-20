@@ -9,10 +9,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/filename_util.h"
@@ -284,6 +288,173 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, CSPAttributeTooLong) {
 
   EXPECT_EQ(current_frame_host()->child_count(), 1u);
   EXPECT_FALSE(current_frame_host()->child_at(0)->csp_attribute());
+}
+
+class IsolatedAppContentBrowserClient : public ContentBrowserClient {
+ public:
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
+    return true;
+  }
+};
+
+namespace {
+const char kAppHost[] = "app.com";
+const char kNonAppHost[] = "other.com";
+}  // namespace
+
+class ContentSecurityPolicyIsolatedAppBrowserTest
+    : public ContentSecurityPolicyBrowserTest {
+ public:
+  ContentSecurityPolicyIsolatedAppBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentSecurityPolicyBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
+                                    std::string("https://") + kAppHost);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentSecurityPolicyBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+    old_client_ = SetBrowserClientForTesting(&client_);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    SetBrowserClientForTesting(old_client_);
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+    ContentSecurityPolicyBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    ContentSecurityPolicyBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+ protected:
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  net::EmbeddedTestServer https_server_;
+  ContentMockCertVerifier mock_cert_verifier_;
+
+  IsolatedAppContentBrowserClient client_;
+  raw_ptr<ContentBrowserClient> old_client_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Base) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(kAppHost, "/cross-origin-isolated.html")));
+
+  // Base element should be disabled.
+  EXPECT_EQ("violation", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      document.addEventListener('securitypolicyviolation', e => {
+        resolve('violation');
+      });
+
+      let base = document.createElement('base');
+      base.href = '/test';
+      document.body.appendChild(base);
+    })
+  )"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Src) {
+  constexpr auto kHttp = net::EmbeddedTestServer::TYPE_HTTP;
+  constexpr auto kHttps = net::EmbeddedTestServer::TYPE_HTTPS;
+  struct {
+    std::string element_name;
+    net::EmbeddedTestServer::Type scheme;
+    std::string host;
+    std::string path;
+    std::string expectation;
+  } test_cases[] = {
+      // Only same-origin content can be loaded by default.
+      {"img", kHttps, kAppHost, "/single_face.jpg", "allowed"},
+      {"img", kHttps, kNonAppHost, "/single_face.jpg", "violation"},
+      {"audio", kHttps, kAppHost, "/media/bear.flac", "allowed"},
+      {"audio", kHttps, kNonAppHost, "/media/bear.flac", "violation"},
+      {"video", kHttps, kAppHost, "/media/bear.ogv", "allowed"},
+      {"video", kHttps, kNonAppHost, "/media/bear.obv", "violation"},
+      // Plugins are disabled.
+      {"embed", kHttps, kAppHost, "/single_face.jpg", "violation"},
+      // Iframes can contain cross-origin HTTPS content.
+      {"iframe", kHttps, kAppHost, "/cross-origin-isolated.html", "allowed"},
+      {"iframe", kHttps, kNonAppHost, "/simple.html", "allowed"},
+      {"iframe", kHttp, kNonAppHost, "/simple.html", "violation"},
+      // Script tags must be same-origin.
+      {"script", kHttps, kAppHost, "/result_queue.js", "allowed"},
+      {"script", kHttps, kNonAppHost, "/result_queue.js", "violation"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_TRUE(NavigateToURL(
+        shell(),
+        https_server()->GetURL(kAppHost, "/cross-origin-isolated.html")));
+
+    net::EmbeddedTestServer* test_server =
+        test_case.scheme == net::EmbeddedTestServer::TYPE_HTTP
+            ? embedded_test_server()
+            : https_server();
+    GURL src = test_server->GetURL(test_case.host, test_case.path);
+    std::string test_js = JsReplace(R"(
+      const policy = window.trustedTypes.createPolicy('policy', {
+        createScriptURL: url => url,
+      });
+
+      new Promise(resolve => {
+        document.addEventListener('securitypolicyviolation', e => {
+          resolve('violation');
+        });
+
+        let element = document.createElement($1);
+        // Not all elements being tested require Trusted Types, but
+        // passing src through the policy for all elements works.
+        element.src = policy.createScriptURL($2);
+        element.addEventListener('canplay', () => resolve('allowed'));
+        element.addEventListener('load', () => resolve('allowed'));
+        element.addEventListener('error', e => resolve('error'));
+        document.body.appendChild(element);
+      })
+    )",
+                                    test_case.element_name, src);
+    SCOPED_TRACE(testing::Message() << "Running testcase: "
+                                    << test_case.element_name << " " << src);
+    EXPECT_EQ(test_case.expectation, EvalJs(shell(), test_js));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest,
+                       TrustedTypes) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      https_server()->GetURL(kAppHost, "/cross-origin-isolated.html")));
+
+  // Trusted Types should be required for scripts.
+  EXPECT_EQ("exception", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      document.addEventListener('securitypolicyviolation', e => {
+        resolve('violation');
+      });
+
+      try {
+        let element = document.createElement('script');
+        element.src = '/result_queue.js';
+        element.addEventListener('load', () => resolve('allowed'));
+        element.addEventListener('error', e => resolve('error'));
+        document.body.appendChild(element);
+      } catch (e) {
+        resolve('exception');
+      }
+    })
+  )"));
 }
 
 }  // namespace content
