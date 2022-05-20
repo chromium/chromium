@@ -258,6 +258,10 @@ source_set("unit_tests") {
       "//components/chromeos_camera:mjpeg_decode_accelerator_service_unittest",
     ]
   }
+
+  if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
+    sources += [ "stable_video_decoder_service_unittest.cc" ]
+  }
 }
 
 mojolpm_fuzzer_test("webrtc_video_perf_mojolpm_fuzzer") {
