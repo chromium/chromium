@@ -396,6 +396,8 @@ base::Value DemoSession::GetCountryList() {
 void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDemoModeDefaultLocale, std::string());
   registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
+  registry->RegisterStringPref(prefs::kDemoModeRetailerAndStoreIdInput,
+                               std::string());
 }
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {

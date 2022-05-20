@@ -25,17 +25,33 @@
         --oobe-dialog-list-item-border: 1px solid rgb(235,235,235); /*#EBEBEB*/
         --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
       }
+
+      cr-input {
+        --cr-input-width: 240px; /*Same width as country selection dropdown.*/
+      }
+
       #demoPreferencesDialog .language-selection-entry {
         border-top: var(--oobe-dialog-list-item-border);
         min-height: 60px;
-      }
-      #demoPreferencesDialog .language-selection-entry:last-of-type {
-        border-bottom: var(--oobe-dialog-list-item-border);
       }
       #demoPreferencesDialog .language-selection-title {
         color: var(--google-grey-900);
         font-size: 13px;
       }
+      #retailer-id-input-display-text {
+        color: var(--cros-text-color-secondary);
+        display: var(--cr-input-error-display, block);
+        font-size: 10px;
+        height: var(--cr-form-field-label-height);
+        line-height: var(--cr-form-field-label-line-height);
+        margin-inline-start: 55%;
+        visibility: visible;
+        white-space: var(--cr-input-error-white-space);
+      }
+      :host([is_input_invalid_]) #retailer-id-input-display-text {
+        color: var(--cros-textfield-label-color-error);
+      }
+
     </style>
     <oobe-adaptive-dialog id="demoPreferencesDialog" role="dialog"
         aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]">
@@ -54,6 +70,26 @@
               label-for-aria="[[i18nDynamic(locale, 'countryDropdownLabel')]]"
               on-select-item="onCountrySelected_">
           </oobe-i18n-dropdown>
+        </div>
+        <div class="flex layout center horizontal
+            justified language-selection-entry">
+          <div class="language-selection-title layout vertical
+              center-justified">
+            <span>[[i18nDynamic(locale, 'retailerIdInputLabel')]]</span>
+          </div>
+          <cr-input class="language-selection-title layout horizontal
+              center-justified"
+              slot="input" id="retailerIdInput"
+              value="{{retailer_id_input_}}"
+              on-keydown="onKeydownRetailerIdInput_"
+              placeholder=
+                  "[[i18nDynamic(locale, 'retailerIdInputPlaceholder')]]"
+              aria-label=
+                  "[[i18nDynamic(locale, 'retailerIdInputPlaceholder')]]">
+          </cr-input>
+        </div>
+        <div id="retailer-id-input-display-text">
+          [[getRetailerIdInputDisplayText_(locale, is_input_invalid_)]]
         </div>
       </div>
       <div slot="back-navigation">

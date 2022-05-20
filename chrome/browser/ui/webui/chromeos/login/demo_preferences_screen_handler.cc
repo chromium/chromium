@@ -33,6 +33,14 @@ void DemoPreferencesScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_NEXT_BUTTON_LABEL);
   builder->Add("countryDropdownTitle", IDS_COUNTRY_DROPDOWN_TITLE);
   builder->Add("countryDropdownLabel", IDS_COUNTRY_DROPDOWN_LABEL);
+  builder->Add("retailerIdInputLabel",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_LABEL);
+  builder->Add("retailerIdInputPlaceholder",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_PLACEHOLDER);
+  builder->Add("retailerIdInputHelpText",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_HELP_TEXT);
+  builder->Add("retailerIdInputErrorText",
+               IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_ERROR_TEXT);
 }
 
 }  // namespace chromeos

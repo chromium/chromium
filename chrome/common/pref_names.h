@@ -760,6 +760,7 @@ extern const char kSameOriginTabCaptureAllowedByOrigins[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDemoModeConfig[];
 extern const char kDemoModeCountry[];
+extern const char kDemoModeRetailerAndStoreIdInput[];
 extern const char kDemoModeDefaultLocale[];
 extern const char kDeviceSettingsCache[];
 extern const char kHardwareKeyboardLayout[];

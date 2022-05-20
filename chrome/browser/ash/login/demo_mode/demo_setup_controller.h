@@ -198,6 +198,16 @@ class DemoSetupController
     demo_config_ = demo_config;
   }
 
+  std::string& get_retailer_store_id_input() {
+    return retailer_store_id_input_;
+  }
+
+  // Sets demo mode retailer id input by the user. It will be saved as local
+  // prefs when enrollment completes.
+  void set_retailer_store_id_input(const std::string& retailer_store_id_input) {
+    retailer_store_id_input_ = retailer_store_id_input;
+  }
+
   // Initiates enrollment that sets up the device in the demo mode domain. The
   // `enrollment_type_` determines whether online or offline setup will be
   // performed and it should be set with set_enrollment_type() before calling
@@ -259,6 +269,8 @@ class DemoSetupController
   // Keeps track of how many times an operator has been required to retry
   // setup.
   int num_setup_retries_ = 0;
+
+  std::string retailer_store_id_input_;
 
   // Demo mode configuration type that will be setup when Enroll() is called.
   // Should be set explicitly.

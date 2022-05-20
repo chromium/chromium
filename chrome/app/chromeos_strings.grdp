@@ -964,7 +964,19 @@
     Choose your demo preferences
   </message>
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_NEXT_BUTTON_LABEL" desc="The label of the button that is shown on preferences screen and that confirms chosen configuration and shows next demo setup screen.">
-    OK
+    Continue
+  </message>
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_LABEL" desc="Label for retailer id input field on the demo mode setup screen. User should provide the retailer id if assigned.">
+    Retailer-store ID code (optional)
+  </message>
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_PLACEHOLDER" desc="Placeholder for retailer id input field on the demo mode setup screen.">
+    Retailer-store ID code
+  </message>
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_ERROR_TEXT" desc="Help text for retailer id input field on the demo mode setup screen.">
+    Invalid ID. The format you entered is incorrect. Please check the instructions you received to ensure you are entering the ID in the correct format. If you’re unable to resolve this issue, please leave the field blank and continue with installation.
+  </message>
+  <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_RETAILER_ID_INPUT_HELP_TEXT" desc="Help text for retailer id input field on the demo mode setup screen.">
+    Retailer-store ID is ABC-1234 format
   </message>
   <message name="IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE" desc="The title of country not selected option for demo mode preference screen.">
     Please select a country

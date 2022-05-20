@@ -58,6 +58,24 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
         type: Boolean,
         value: false,
       },
+
+      is_input_invalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      retailer_id_input_: {
+        type: String,
+        value: '',
+        observer: 'retailerIdObserver_',
+      },
+
+      retailer_id_input_pattern_: {
+        type: String,
+        value: '[a-zA-Z]{3}-[0-9]{4}$',
+      },
+
     };
   }
 
@@ -191,6 +209,22 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
     }
   }
 
+  getRetailerIdInputDisplayText_() {
+    if (this.is_input_invalid_) {
+      return this.i18n('retailerIdInputErrorText');
+    }
+    return this.i18n('retailerIdInputHelpText');
+  }
+
+  retailerIdObserver_() {
+    if (!this.retailer_id_input_) {
+      this.is_input_invalid_ = false;
+    } else {
+      this.is_input_invalid_ = !RegExp(this.retailer_id_input_pattern_)
+                                    .test(this.retailer_id_input_);
+    }
+  }
+
   /**
    * Handle country selection.
    * @param {!CustomEvent<!OobeTypes.DemoCountryDsc>} event
@@ -200,6 +234,12 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
     this.userActed(['set-demo-mode-country', event.detail.value]);
     this.is_country_selected_ =
         event.detail.value !== this.country_not_selected_id_;
+  }
+
+  onKeydownRetailerIdInput_(e) {
+    if (e.key == 'Enter') {
+      this.onNextClicked_();
+    }
   }
 
   /**
@@ -215,7 +255,7 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
    * @private
    */
   onNextClicked_() {
-    this.userActed('continue-setup');
+    this.userActed(['continue-setup', this.retailer_id_input_]);
   }
 }
 

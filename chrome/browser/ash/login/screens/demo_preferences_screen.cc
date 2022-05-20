@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
@@ -52,6 +53,13 @@ DemoPreferencesScreen::~DemoPreferencesScreen() {
   input_method::InputMethodManager::Get()->RemoveObserver(this);
 }
 
+void DemoPreferencesScreen::SetDemoModeRetailerAndStoreIdInput(
+    const std::string& retailer_store_id_input) {
+  WizardController::default_controller()
+      ->demo_setup_controller()
+      ->set_retailer_store_id_input(retailer_store_id_input);
+}
+
 void DemoPreferencesScreen::ShowImpl() {
   if (view_)
     view_->Show();
@@ -62,11 +70,16 @@ void DemoPreferencesScreen::HideImpl() {}
 void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
+    CHECK_EQ(args.size(), 2);
     std::string country(
         g_browser_process->local_state()->GetString(prefs::kDemoModeCountry));
     if (country == DemoSession::kCountryNotSelectedId) {
       return;
     }
+    // Set retailer store input string regardless of pattern, let server decide
+    // what action take when it is invalid.
+    const std::string& retailer_store_id_input = args[1].GetString();
+    SetDemoModeRetailerAndStoreIdInput(retailer_store_id_input);
     exit_callback_.Run(Result::COMPLETED);
   } else if (action_id == kUserActionClose) {
     exit_callback_.Run(Result::CANCELED);
