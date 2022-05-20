@@ -63,9 +63,6 @@ std::string AXTreeID::ToString() const {
     case ax::mojom::AXTreeIDType::kToken:
       return base::UnguessableTokenToValue(*token_).GetString();
   }
-
-  NOTREACHED();
-  return std::string();
 }
 
 void swap(AXTreeID& first, AXTreeID& second) {

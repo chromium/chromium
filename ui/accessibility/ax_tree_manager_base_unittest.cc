@@ -9,6 +9,7 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
@@ -310,14 +311,19 @@ TEST_F(AXTreeManagerTest, AttachingAndDetachingChildTrees) {
   EXPECT_EQ(nullptr, simple_manager_.GetHostNode());
   EXPECT_EQ(nullptr, complex_manager_.GetRootOfChildTree(kIframeID));
 
-  AXTreeManagerBase child_manager =
+  absl::optional<AXTreeManagerBase> child_manager =
       complex_manager_.AttachChildTree(*iframe, CreateSimpleTreeUpdate());
-  EXPECT_NE(nullptr, child_manager.GetTree());
-  EXPECT_EQ(&child_manager, complex_manager_.DetachChildTree(*iframe));
+  ASSERT_TRUE(child_manager.has_value());
+  EXPECT_NE(nullptr, child_manager->GetTree());
+  EXPECT_EQ(&(child_manager.value()),
+            complex_manager_.DetachChildTree(*iframe));
   child_manager =
       complex_manager_.AttachChildTree(kIframeID, CreateSimpleTreeUpdate());
-  EXPECT_NE(nullptr, child_manager.GetTree());
-  EXPECT_EQ(&child_manager, complex_manager_.DetachChildTree(kIframeID));
+  EXPECT_NE(nullptr, child_manager->GetTree());
+  ASSERT_TRUE(child_manager.has_value());
+  ;
+  EXPECT_EQ(&(child_manager.value()),
+            complex_manager_.DetachChildTree(kIframeID));
 }
 
 TEST_F(AXTreeManagerTest, Observers) {

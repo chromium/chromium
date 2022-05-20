@@ -281,22 +281,22 @@ bool AXTreeManagerBase::AttachChildTree(AXNode& host_node,
   return true;
 }
 
-AXTreeManagerBase AXTreeManagerBase::AttachChildTree(
+absl::optional<AXTreeManagerBase> AXTreeManagerBase::AttachChildTree(
     const AXNodeID& host_node_id,
     const AXTreeUpdate& initial_state) {
   AXNode* host_node = GetNode(host_node_id);
   if (host_node)
     return AttachChildTree(*host_node, initial_state);
-  return AXTreeManagerBase();
+  return absl::nullopt;
 }
 
-AXTreeManagerBase AXTreeManagerBase::AttachChildTree(
+absl::optional<AXTreeManagerBase> AXTreeManagerBase::AttachChildTree(
     AXNode& host_node,
     const AXTreeUpdate& initial_state) {
   AXTreeManagerBase child_manager(initial_state);
   if (AttachChildTree(host_node, child_manager))
     return child_manager;
-  return AXTreeManagerBase();
+  return absl::nullopt;
 }
 
 AXTreeManagerBase* AXTreeManagerBase::DetachChildTree(

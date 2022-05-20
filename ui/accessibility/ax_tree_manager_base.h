@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
@@ -106,12 +107,14 @@ class AX_EXPORT AXTreeManagerBase final {
                        AXTreeManagerBase& child_manager);
   bool AttachChildTree(AXNode& host_node, AXTreeManagerBase& child_manager);
 
-  // Creates a new tree based on `initial_state` and attaches it to the given
-  // host node. Returns the new tree's manager.
-  AXTreeManagerBase AttachChildTree(const AXNodeID& host_node_id,
-                                    const AXTreeUpdate& initial_state);
-  AXTreeManagerBase AttachChildTree(AXNode& host_node,
-                                    const AXTreeUpdate& initial_state);
+  // Creates a child tree based on `initial_state` and attaches it to the given
+  // host node. Returns the child tree's manager if successful.
+  absl::optional<AXTreeManagerBase> AttachChildTree(
+      const AXNodeID& host_node_id,
+      const AXTreeUpdate& initial_state);
+  absl::optional<AXTreeManagerBase> AttachChildTree(
+      AXNode& host_node,
+      const AXTreeUpdate& initial_state);
 
   // Detaches the child tree hosted by the given host node, returning a pointer
   // to its manager.
