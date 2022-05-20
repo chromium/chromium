@@ -125,5 +125,24 @@ window.onload = function() {
         chrome.test.succeed();
       }
     },
+
+    // Request a larger favicon for an unvisted site, but get smaller default.
+    async function defaultResolution() {
+      const pixels = 48;
+      const port = (await chrome.test.getConfig()).testServer.port;
+      const favicon = new Favicon({
+        pageUrl: `http://www.unvisited.com:${
+            port}/extensions/favicon/test_file.html`,
+        size: pixels
+      });
+      const image = new Image();
+      image.src = favicon.getUrl();
+      image.onload = function() {
+        const expected = 16;
+        chrome.test.assertEq(expected, this.height);
+        chrome.test.assertEq(expected, this.width);
+        chrome.test.succeed();
+      }
+    },
   ]);
 }
