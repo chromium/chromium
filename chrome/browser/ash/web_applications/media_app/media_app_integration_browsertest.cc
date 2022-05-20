@@ -45,6 +45,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/entry_info.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -103,6 +104,14 @@ class MediaAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   MediaAppIntegrationTest() {
     feature_list_.InitAndEnableFeature(ash::features::kMediaAppHandlesPdf);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SystemWebAppIntegrationTest::SetUpCommandLine(command_line);
+
+    // Use a fake audio stream. Some tests make noise otherwise, and could fight
+    // with parallel tests for access to the audio device.
+    command_line->AppendSwitch(switches::kDisableAudioOutput);
   }
 
   void MediaAppLaunchWithFile();
@@ -362,9 +371,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   // Launch the App for the first time.
   web_app::SystemAppLaunchParams audio_params;
   audio_params.launch_paths.push_back(TestFile(kFilePng800x600));
-  web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                   ash::SystemWebAppType::MEDIA, audio_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                                   audio_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
   Browser* first_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* app = PrepareActiveBrowserForTest();
 
@@ -373,9 +382,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   // Launch the App for the second time.
   web_app::SystemAppLaunchParams image_params;
   image_params.launch_paths.push_back(TestFile(kFileJpeg640x480));
-  web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                   ash::SystemWebAppType::MEDIA, image_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                                   image_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
   app = PrepareActiveBrowserForTest(3);
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
 
@@ -390,9 +399,9 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   image_params.launch_paths = {TestFile(kFilePng800x600),
                                TestFile(kFileJpeg640x480)};
 
-  web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                   ash::SystemWebAppType::MEDIA, image_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                                   image_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
@@ -409,12 +418,13 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   web_app::SystemAppLaunchParams pdf_params;
   pdf_params.launch_paths = {TestFile(kFilePdfTall), TestFile(kFilePdfImg)};
 
-  web_app::LaunchSystemWebAppAsync(browser()->profile(),
-                                   ash::SystemWebAppType::MEDIA, pdf_params);
-  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  web_app::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                                   pdf_params);
+  web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
+  WaitForBrowserCount(3);  // 1 extra for the browser test browser.
   const BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(3u, browser_list->size());  // 1 extra for the browser test browser.
+  EXPECT_EQ(3u, browser_list->size());
 
   content::TitleWatcher watcher1(
       browser_list->get(1)->tab_strip_model()->GetActiveWebContents(),
@@ -429,8 +439,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
 // Test that the Media App appears as a handler for files in the App Service.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppHandlesIntents) {
   WaitForTestSystemAppInstall();
-  auto* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   const std::string media_app_id =
       *GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::MEDIA);
 
