@@ -71,13 +71,6 @@ uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
          (mailbox.name[2] << 8) + mailbox.name[3];
 }
 
-void ReportSharedImageExists(bool exists) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Display.OverlayProcessorOzone."
-      "SharedImageExists",
-      exists);
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool AllowColorSpaceCombination(
     const gfx::ColorSpace& source_color_space,
@@ -305,11 +298,6 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     bool is_primary) {
   DCHECK(shared_image_interface_);
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "Compositing.Display.OverlayProcessorOzone."
-      "IsCandidateSharedImage",
-      mailbox.IsSharedImage());
-
   if (!mailbox.IsSharedImage())
     return false;
 
@@ -323,10 +311,8 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     // candidate. We will try again next frame.
     DLOG(ERROR) << "Unable to find the NativePixmap corresponding to the "
                    "overlay candidate";
-    ReportSharedImageExists(false);
     return false;
   }
-  ReportSharedImageExists(true);
 
   if (is_primary && (candidate->buffer_size != native_pixmap->GetBufferSize() ||
                      candidate->format != native_pixmap->GetBufferFormat())) {

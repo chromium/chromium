@@ -351,19 +351,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Compositing.Display.OverlayProcessorOzone.IsCandidateSharedImage"
-    enum="Boolean" expires_after="2021-09-19">
-  <owner>samans@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
-  <summary>
-    Indicates whether the OverlayCandidate passed to
-    OverlayCandidateValidatorOzone is backed by a SharedImage (as opposed to a
-    legacy mailbox). Recorded for every candidate in every overlay configuration
-    passed to OverlayProcessorOzone.
-  </summary>
-</histogram>
-
-<histogram
     name="Compositing.Display.OverlayProcessorOzone.MaxOverlaysSupported"
     units="units" expires_after="2022-11-30">
   <owner>khaslett@chromium.org</owner>
@@ -373,16 +360,6 @@ chromium-metrics-reviews@google.com.
     when display configuration may have changed. It records the number of
     overlay planes we have available in addition to the primary plane on this
     device.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Display.OverlayProcessorOzone.SharedImageExists"
-    enum="Boolean" expires_after="2021-09-19">
-  <owner>samans@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
-  <summary>
-    Indicates whether the SharedImage corresponding to the OverlayCandidate was
-    found. Reported for every OverlayCandidate that is backed by a SharedImage.
   </summary>
 </histogram>
 
