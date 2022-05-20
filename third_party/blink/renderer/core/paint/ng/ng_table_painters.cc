@@ -452,6 +452,8 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     return;
   DrawingRecorder recorder(paint_info.context, layout_table, paint_info.phase,
                            visual_rect);
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      fragment_.Style(), DarkModeFilter::ElementRole::kBackground));
 
   PhysicalRect grid_paint_rect = fragment_.TableGridRect();
   grid_paint_rect.offset += paint_offset;
@@ -459,95 +461,95 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
   WritingModeConverter grid_converter(fragment_.Style().GetWritingDirection(),
                                       grid_paint_rect.size);
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      fragment_.Style(), DarkModeFilter::ElementRole::kBackground));
-
   for (NGTableCollapsedEdge edge = NGTableCollapsedEdge(*collapsed_borders, 0);
        edge.Exists(); ++edge) {
     if (!edge.CanPaint())
       continue;
-    LayoutUnit inline_start;
-    LayoutUnit block_start;
-    LayoutUnit inline_size;
-    LayoutUnit block_size;
+    const wtf_size_t table_row = edge.TableRow();
+    const wtf_size_t table_column = edge.TableColumn();
 
-    wtf_size_t table_row = edge.TableRow();
-    wtf_size_t table_column = edge.TableColumn();
-    if (edge.IsInlineAxis()) {
-      // crbug.com/1179369 This crash has been observed, but we have no
-      // reproducible case.
-      if (table_column + 1 >= collapsed_borders_geometry->columns.size()) {
-        NOTREACHED();
-        continue;
-      }
-      inline_start = collapsed_borders_geometry->columns[table_column];
-      inline_size = collapsed_borders_geometry->columns[table_column + 1] -
-                    collapsed_borders_geometry->columns[table_column];
-      block_size = edge.BorderWidth();
-      CHECK_LT(table_row, collapsed_borders_geometry->rows.size());
-      block_start =
-          collapsed_borders_geometry->rows[table_row] - edge.BorderWidth() / 2;
-      LogicalSize start_joint;
-      LogicalSize end_joint;
-      bool start_wins;
-      bool end_wins;
-      ComputeEdgeJoints(*collapsed_borders, edge, start_joint, end_joint,
-                        start_wins, end_wins);
-      if (start_wins) {
-        inline_start -= start_joint.inline_size / 2;
-        inline_size += start_joint.inline_size / 2;
-      } else {
-        inline_start += start_joint.inline_size / 2;
-        inline_size -= start_joint.inline_size / 2;
-      }
-      if (end_wins) {
-        inline_size += end_joint.inline_size / 2;
-      } else {
-        inline_size -= end_joint.inline_size / 2;
-      }
-    } else {  // block_axis
-      CHECK_LT(table_row + 1, collapsed_borders_geometry->rows.size());
-      block_start = collapsed_borders_geometry->rows[table_row];
-      block_size =
-          collapsed_borders_geometry->rows[table_row + 1] - block_start;
-      CHECK_LT(table_column, collapsed_borders_geometry->columns.size());
-      inline_start = collapsed_borders_geometry->columns[table_column] -
-                     edge.BorderWidth() / 2;
-      inline_size = edge.BorderWidth();
-      LogicalSize start_joint;
-      LogicalSize end_joint;
-      bool start_wins;
-      bool end_wins;
-      ComputeEdgeJoints(*collapsed_borders, edge, start_joint, end_joint,
-                        start_wins, end_wins);
-      if (start_wins) {
-        block_start -= start_joint.block_size / 2;
-        block_size += start_joint.block_size / 2;
-      } else {
-        block_start += start_joint.block_size / 2;
-        block_size -= start_joint.block_size / 2;
-      }
-      if (end_wins) {
-        block_size += end_joint.block_size / 2;
-      } else {
-        block_size -= end_joint.block_size / 2;
-      }
-    }
-    const LogicalRect logical_border_rect(inline_start, block_start,
-                                          inline_size, block_size);
-    PhysicalRect physical_border_rect =
-        grid_converter.ToPhysical(logical_border_rect);
-    physical_border_rect.offset += grid_paint_rect.offset;
+    {
+      LayoutUnit inline_start;
+      LayoutUnit block_start;
+      LayoutUnit inline_size;
+      LayoutUnit block_size;
 
-    BoxSide box_side;
-    if (IsHorizontalWritingMode(fragment_.Style().GetWritingMode())) {
-      box_side = edge.IsInlineAxis() ? BoxSide::kTop : BoxSide::kLeft;
-    } else {
-      box_side = edge.IsInlineAxis() ? BoxSide::kLeft : BoxSide::kTop;
+      if (edge.IsInlineAxis()) {
+        // NOTE: This crash has been observed, but we aren't able to find a
+        // reproducible testcase. See: crbug.com/1179369.
+        if (table_column + 1 >= collapsed_borders_geometry->columns.size()) {
+          NOTREACHED();
+          continue;
+        }
+        inline_start = collapsed_borders_geometry->columns[table_column];
+        inline_size = collapsed_borders_geometry->columns[table_column + 1] -
+                      collapsed_borders_geometry->columns[table_column];
+        block_size = edge.BorderWidth();
+        CHECK_LT(table_row, collapsed_borders_geometry->rows.size());
+        block_start = collapsed_borders_geometry->rows[table_row] -
+                      edge.BorderWidth() / 2;
+        LogicalSize start_joint;
+        LogicalSize end_joint;
+        bool start_wins;
+        bool end_wins;
+        ComputeEdgeJoints(*collapsed_borders, edge, start_joint, end_joint,
+                          start_wins, end_wins);
+        if (start_wins) {
+          inline_start -= start_joint.inline_size / 2;
+          inline_size += start_joint.inline_size / 2;
+        } else {
+          inline_start += start_joint.inline_size / 2;
+          inline_size -= start_joint.inline_size / 2;
+        }
+        if (end_wins) {
+          inline_size += end_joint.inline_size / 2;
+        } else {
+          inline_size -= end_joint.inline_size / 2;
+        }
+      } else {  // block_axis
+        CHECK_LT(table_row + 1, collapsed_borders_geometry->rows.size());
+        block_start = collapsed_borders_geometry->rows[table_row];
+        block_size =
+            collapsed_borders_geometry->rows[table_row + 1] - block_start;
+        CHECK_LT(table_column, collapsed_borders_geometry->columns.size());
+        inline_start = collapsed_borders_geometry->columns[table_column] -
+                       edge.BorderWidth() / 2;
+        inline_size = edge.BorderWidth();
+        LogicalSize start_joint;
+        LogicalSize end_joint;
+        bool start_wins;
+        bool end_wins;
+        ComputeEdgeJoints(*collapsed_borders, edge, start_joint, end_joint,
+                          start_wins, end_wins);
+        if (start_wins) {
+          block_start -= start_joint.block_size / 2;
+          block_size += start_joint.block_size / 2;
+        } else {
+          block_start += start_joint.block_size / 2;
+          block_size -= start_joint.block_size / 2;
+        }
+        if (end_wins) {
+          block_size += end_joint.block_size / 2;
+        } else {
+          block_size -= end_joint.block_size / 2;
+        }
+      }
+      const LogicalRect logical_border_rect(inline_start, block_start,
+                                            inline_size, block_size);
+      PhysicalRect physical_border_rect =
+          grid_converter.ToPhysical(logical_border_rect);
+      physical_border_rect.offset += grid_paint_rect.offset;
+
+      BoxSide box_side;
+      if (IsHorizontalWritingMode(fragment_.Style().GetWritingMode())) {
+        box_side = edge.IsInlineAxis() ? BoxSide::kTop : BoxSide::kLeft;
+      } else {
+        box_side = edge.IsInlineAxis() ? BoxSide::kLeft : BoxSide::kTop;
+      }
+      BoxBorderPainter::DrawBoxSide(
+          paint_info.context, ToPixelSnappedRect(physical_border_rect),
+          box_side, edge.BorderColor(), edge.BorderStyle(), auto_dark_mode);
     }
-    BoxBorderPainter::DrawBoxSide(
-        paint_info.context, ToPixelSnappedRect(physical_border_rect), box_side,
-        edge.BorderColor(), edge.BorderStyle(), auto_dark_mode);
   }
 }
 
