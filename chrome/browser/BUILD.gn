@@ -5137,6 +5137,7 @@ static_library("browser") {
       "//components/arc/common:arc_intent_helper_constants",
       "//components/certificate_transparency",
       "//components/desks_storage",
+      "//components/digital_goods/mojom",
       "//components/drive",
       "//components/metrics/structured",
       "//components/metrics/structured:neutrino_logging",

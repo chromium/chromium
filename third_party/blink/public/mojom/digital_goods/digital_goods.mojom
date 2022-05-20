@@ -2,19 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file is versioned solely for the convenience of sharing struct and enum
-// definitions with with an external repository. Do not add any
-// browser <-> renderer specific definitions or any browser <-> external
-// repository specific definitions in this file.
-// Specifically interfaces defined here must not be versioned.
-
-// Next MinVersion: 1
-
 module payments.mojom;
 
-import "components/payments/mojom/payment_request_data.mojom";
-import "mojo/public/mojom/base/time.mojom";
-import "url/mojom/url.mojom";
+import "components/digital_goods/mojom/digital_goods.mojom";
 
 // https://github.com/WICG/digital-goods/blob/main/explainer.md
 
@@ -51,73 +41,4 @@ interface DigitalGoodsFactory {
   CreateDigitalGoods(string payment_method)
     => (CreateDigitalGoodsResponseCode code,
         pending_remote<DigitalGoods>? digital_goods);
-};
-
-[Extensible, Stable]
-enum BillingResponseCode {
-  kOk,
-  kError,
-  kItemAlreadyOwned,
-  kItemNotOwned,
-  kItemUnavailable,
-  kClientAppUnavailable,
-  kClientAppError,
-};
-
-[Extensible, Stable]
-enum ItemType {
-  kUnknown,
-  kProduct,
-  kSubscription,
-};
-
-[Stable]
-struct ItemDetails {
-  string item_id;
-  string title;
-  string description;
-  PaymentCurrencyAmount price;
-  // Periods are specified as ISO 8601 durations.
-  // https://en.wikipedia.org/wiki/ISO_8601#Durations
-  string? subscription_period;
-  string? free_trial_period;
-  PaymentCurrencyAmount? introductory_price;
-  string? introductory_price_period;
-  // Set to 0 for no introductory cycles.
-  [MinVersion=1] uint32 introductory_price_cycles;
-  [MinVersion=1] ItemType type;
-  [MinVersion=1] array<url.mojom.Url>? icon_urls;
-};
-
-[Extensible]
-enum CreateDigitalGoodsResponseCode {
-  kOk,
-  kError,
-  kUnsupportedPaymentMethod,
-  kUnsupportedContext,
-};
-
-[Stable]
-struct PurchaseReference {
-  string item_id;
-  string purchase_token;
-};
-
-// Deprecated, but still used by components/arc/mojom/digital_goods.mojom
-[Stable]
-struct PurchaseDetails {
-  string item_id;
-  string purchase_token;
-  bool acknowledged;
-  PurchaseState purchase_state;
-  // Microseconds since the Unix epoch.
-  mojo_base.mojom.TimeDelta purchase_time;
-  bool will_auto_renew;
-};
-
-[Extensible, Stable]
-enum PurchaseState {
-  kUnknown,
-  kPurchased,
-  kPending,
 };

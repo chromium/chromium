@@ -126,6 +126,7 @@ include_rules = [
   "+components/dbus",
   "+components/device_event_log",
   "+components/digital_asset_links",
+  "+components/digital_goods",
   "+components/domain_reliability",
   "+components/dom_distiller/content/browser",
   "+components/dom_distiller/content/common",

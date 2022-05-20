@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_DIGITAL_GOODS_TYPE_CONVERTERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_GOODS_DIGITAL_GOODS_TYPE_CONVERTERS_H_
 
-#include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink-forward.h"
+#include "components/digital_goods/mojom/digital_goods.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_item_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_purchase_details.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

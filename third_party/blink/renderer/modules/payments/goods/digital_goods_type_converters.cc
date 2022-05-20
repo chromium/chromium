@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "components/digital_goods/mojom/digital_goods.mojom-blink.h"
 #include "components/payments/mojom/payment_request_data.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink.h"
