@@ -248,9 +248,7 @@ ci.builder(
             ],
         },
     },
-    # TODO(crbug.com/1320042): Turn on after it's stable.
-    tree_closing = False,
-    sheriff_rotations = args.ignore_default(None),
+    tree_closing = True,
     goma_backend = None,
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = rbe_instance.DEFAULT,
