@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
-#include <aura-shell-client-protocol.h>
 #include <xdg-output-unstable-v1-client-protocol.h>
 
 #include "base/logging.h"
@@ -12,7 +11,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_output.h"
 #include "ui/ozone/platform/wayland/host/xdg_output.h"
 
 namespace ui {
@@ -68,12 +66,6 @@ void WaylandOutput::InitializeXdgOutput(
       zxdg_output_manager_v1_get_xdg_output(xdg_output_manager, output_.get()));
 }
 
-void WaylandOutput::InitializeZAuraOutput(zaura_shell* aura_shell) {
-  DCHECK(!aura_output_);
-  aura_output_ = std::make_unique<WaylandZAuraOutput>(
-      zaura_shell_get_aura_output(aura_shell, output_.get()));
-}
-
 void WaylandOutput::Initialize(Delegate* delegate) {
   DCHECK(!delegate_);
   delegate_ = delegate;
@@ -92,14 +84,6 @@ float WaylandOutput::GetUIScaleFactor() const {
              : scale_factor();
 }
 
-gfx::Insets WaylandOutput::insets() const {
-  return aura_output_ ? aura_output_->insets() : gfx::Insets();
-}
-
-zaura_output* WaylandOutput::get_zaura_output() const {
-  return aura_output_ ? aura_output_->wl_object() : nullptr;
-}
-
 void WaylandOutput::TriggerDelegateNotifications() {
   if (xdg_output_ && connection_->surface_submission_in_pixel_coordinates()) {
     DCHECK(!rect_in_physical_pixels_.IsEmpty());
@@ -115,7 +99,7 @@ void WaylandOutput::TriggerDelegateNotifications() {
     }
   }
   delegate_->OnOutputHandleMetrics(output_id_, rect_in_physical_pixels_,
-                                   insets(), scale_factor_, transform_);
+                                   scale_factor_, transform_);
 }
 
 // static

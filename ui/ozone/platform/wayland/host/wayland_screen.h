@@ -41,7 +41,6 @@ class WaylandScreen : public PlatformScreen {
 
   void OnOutputAddedOrUpdated(uint32_t output_id,
                               const gfx::Rect& bounds,
-                              const gfx::Insets& insets,
                               float output_scale,
                               int32_t output_transform);
   void OnOutputRemoved(uint32_t output_id);
@@ -74,11 +73,8 @@ class WaylandScreen : public PlatformScreen {
       const gfx::GpuExtraInfo& gpu_extra_info) override;
 
  private:
-  // |bounds| is given in physical pixel coordinates.
-  // |insets| is given in DIP screen coordinates.
   void AddOrUpdateDisplay(uint32_t output_id,
                           const gfx::Rect& bounds,
-                          const gfx::Insets& insets,
                           float scale,
                           int32_t transform);
 

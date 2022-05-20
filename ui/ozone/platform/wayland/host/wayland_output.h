@@ -16,7 +16,6 @@ namespace ui {
 
 class XDGOutput;
 class WaylandConnection;
-class WaylandZAuraOutput;
 
 // WaylandOutput objects keep track of the current output of display
 // that are available to the application.
@@ -34,7 +33,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
    public:
     virtual void OnOutputHandleMetrics(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
-                                       const gfx::Insets& insets,
                                        float scale_factor,
                                        int32_t transform) = 0;
 
@@ -53,7 +51,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
 
   void Initialize(Delegate* delegate);
   void InitializeXdgOutput(struct zxdg_output_manager_v1* manager);
-  void InitializeZAuraOutput(zaura_shell* aura_shell);
   float GetUIScaleFactor() const;
 
   uint32_t output_id() const { return output_id_; }
@@ -61,14 +58,12 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   float scale_factor() const { return scale_factor_; }
   int32_t transform() const { return transform_; }
   gfx::Rect bounds() const { return rect_in_physical_pixels_; }
-  gfx::Insets insets() const;
 
   // Tells if the output has already received physical screen dimensions in the
   // global compositor space.
   bool is_ready() const { return !rect_in_physical_pixels_.IsEmpty(); }
 
-  wl_output* get_output() const { return output_.get(); }
-  zaura_output* get_zaura_output() const;
+  wl_output* get_output() { return output_.get(); }
 
  private:
   static constexpr int32_t kDefaultScaleFactor = 1;
@@ -102,7 +97,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   const uint32_t output_id_ = 0;
   wl::Object<wl_output> output_;
   std::unique_ptr<XDGOutput> xdg_output_;
-  std::unique_ptr<WaylandZAuraOutput> aura_output_;
   float scale_factor_ = kDefaultScaleFactor;
   int32_t transform_ = WL_OUTPUT_TRANSFORM_NORMAL;
   gfx::Rect rect_in_physical_pixels_;

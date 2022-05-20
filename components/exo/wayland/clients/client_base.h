@@ -15,7 +15,6 @@
 #include "linux-dmabuf-unstable-v1-client-protocol.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
@@ -86,7 +85,6 @@ class ClientBase {
     std::unique_ptr<wl_subcompositor> subcompositor;
     std::unique_ptr<wl_touch> touch;
     std::unique_ptr<zaura_shell> aura_shell;
-    std::unique_ptr<zaura_output> aura_output;
     std::unique_ptr<zxdg_shell_v6> xdg_shell_v6;
     std::unique_ptr<xdg_wm_base> xdg_wm_base;
     std::unique_ptr<zwp_fullscreen_shell_v1> fullscreen_shell;
@@ -205,9 +203,6 @@ class ClientBase {
       uint32_t format,
       uint32_t modifier_hi,
       uint32_t modifier_lo);
-
-  // zaura_output_listener
-  virtual void HandleInsets(const gfx::Insets& insets);
 
   gfx::Size size_ = gfx::Size(256, 256);
   int scale_ = 1;
