@@ -362,19 +362,17 @@ void ExtensionActionRunner::ShowBlockedActionBubble(
   if (!extensions_container)
     return;
 
-  // TODO(crbug.com/1319555): Remove the use of
-  // ToolbarActionsBarBubbleDelegate::CloseAction, that is still used in tests.
-  // Previously it was needed to differentiate between callback calls, but now
-  // callback is only called when the page needs to be refreshed
-  // (CLOSE_EXECUTE).
-  if (default_bubble_close_action_for_testing_ &&
-      *default_bubble_close_action_for_testing_ ==
-          ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback)));
-  } else {
-    ShowBlockedActionDialog(browser, extension->id(), std::move(callback));
+  // For testing, simulate the bubble being accepted by directly invoking the
+  // callback, or rejected by skipping the callback.
+  if (accept_bubble_for_testing_.has_value()) {
+    if (*accept_bubble_for_testing_) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback)));
+    }
+    return;
   }
+
+  ShowBlockedActionDialog(browser, extension->id(), std::move(callback));
 }
 
 void ExtensionActionRunner::OnBlockedActionBubbleForRunActionClosed(

@@ -424,9 +424,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
 
   // Wire up the runner to automatically accept the bubble to prompt for page
   // refresh.
-  runner->set_default_bubble_close_action_for_testing(
-      std::make_unique<ToolbarActionsBarBubbleDelegate::CloseAction>(
-          ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE));
+  runner->accept_bubble_for_testing(true);
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
@@ -454,30 +452,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   web_contents->GetController().Reload(content::ReloadType::NORMAL, true);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-  // The extension should again want to run. Automatically dismiss the bubble
-  // that pops up prompting for page refresh.
+  // The extension should again want to run. Don't automatically accept the
+  // bubble that pops up prompting for page refresh.
   EXPECT_TRUE(runner->WantsToRun(extension));
   EXPECT_EQ("undefined", GetValue(web_contents));
   const int next_nav_id =
       web_contents->GetController().GetLastCommittedEntry()->GetUniqueID();
-  runner->set_default_bubble_close_action_for_testing(
-      std::make_unique<ToolbarActionsBarBubbleDelegate::CloseAction>(
-          ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_USER_ACTION));
+  runner->accept_bubble_for_testing(false);
 
   // Try running the extension. Nothing should happen, because the user
   // didn't agree to refresh the page. The extension should still want to run.
-  runner->RunAction(extension, true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ("undefined", GetValue(web_contents));
-  EXPECT_EQ(
-      next_nav_id,
-      web_contents->GetController().GetLastCommittedEntry()->GetUniqueID());
-
-  // Repeat with a dismissal from bubble deactivation - same story.
-  runner->set_default_bubble_close_action_for_testing(
-      std::make_unique<ToolbarActionsBarBubbleDelegate::CloseAction>(
-          ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION));
   runner->RunAction(extension, true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -562,9 +546,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(runner);
 
-  runner->set_default_bubble_close_action_for_testing(
-      std::make_unique<ToolbarActionsBarBubbleDelegate::CloseAction>(
-          ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE));
+  runner->accept_bubble_for_testing(true);
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
