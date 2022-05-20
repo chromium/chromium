@@ -378,8 +378,6 @@
 
     <!-- Overflow Menu Dimensions -->
     <dimen name="overflow_menu_divider_line_padding">5dp</dimen>
-    <!-- top padding(12dp) + icon size(20dp) + bottom padding(12dp) -->
-    <dimen name="overflow_menu_managed_by_min_height">44dp</dimen>
     <dimen name="overflow_menu_update_min_height">40sp</dimen>
     <dimen name="overflow_menu_update_padding">12dp</dimen>
 

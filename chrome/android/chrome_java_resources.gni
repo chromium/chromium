@@ -564,7 +564,6 @@ chrome_java_resources = [
   "java/res/layout/long_screenshots_area_selection_dialog.xml",
   "java/res/layout/manage_space_activity.xml",
   "java/res/layout/manage_sync_settings_bottom_bar.xml",
-  "java/res/layout/managed_by_menu_item.xml",
   "java/res/layout/material_tooltip.xml",
   "java/res/layout/multiline_spinner_item.xml",
   "java/res/layout/mv_tiles_carousel.xml",

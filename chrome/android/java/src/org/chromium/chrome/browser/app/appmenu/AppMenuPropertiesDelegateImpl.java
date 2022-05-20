@@ -233,7 +233,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public @Nullable List<CustomViewBinder> getCustomViewBinders() {
         List<CustomViewBinder> customViewBinders = new ArrayList<>();
         customViewBinders.add(new UpdateMenuItemViewBinder());
-        customViewBinders.add(new ManagedByMenuItemViewBinder());
         customViewBinders.add(new IncognitoMenuItemViewBinder());
         customViewBinders.add(new DividerLineMenuItemViewBinder());
         return customViewBinders;

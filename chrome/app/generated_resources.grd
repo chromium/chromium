@@ -1424,7 +1424,7 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_HELP_MENU" desc="The text label of the Help sub-menu item in the wrench menu">
         H&amp;elp
       </message>
-      <message name="IDS_MANAGED" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users" formatter_data="android_java">
+      <message name="IDS_MANAGED" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users">
         Managed by your organization
       </message>
       <message name="IDS_MANAGED_BY" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users. MANAGER can be a domain or an email address.">
