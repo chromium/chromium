@@ -143,7 +143,7 @@ class CC_EXPORT CompositorTimingHistory {
   double bmf_queue_to_activate_critical_percentile_;
 
   base::TimeDelta begin_main_frame_queue_duration_;
-  base::TimeDelta bmf_start_to_activate_duration_;
+  base::TimeDelta bmf_start_to_ready_to_activate_duration_;
 
   bool begin_main_frame_on_critical_path_;
   base::TimeTicks begin_main_frame_sent_time_;
