@@ -190,6 +190,7 @@ class ASH_EXPORT AmbientController
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
   void OnAnimationThemePrefChanged();
+  void OnAnimationPlaybackSpeedChanged();
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
     return &access_token_controller_;

@@ -177,6 +177,10 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterIntegerPref(
         ambient::prefs::kAmbientAnimationTheme,
         static_cast<int>(kDefaultAmbientAnimationTheme));
+
+    registry->RegisterDoublePref(
+        ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
+        kAnimationPlaybackSpeed);
   }
 }
 
@@ -586,11 +590,17 @@ void AmbientController::OnEnabledPrefChanged() {
         base::BindRepeating(&AmbientController::OnAnimationThemePrefChanged,
                             weak_ptr_factory_.GetWeakPtr()));
 
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
+        base::BindRepeating(&AmbientController::OnAnimationPlaybackSpeedChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+
     // Trigger the callbacks manually the first time to init AmbientUiModel.
     OnLockScreenInactivityTimeoutPrefChanged();
     OnLockScreenBackgroundTimeoutPrefChanged();
     OnPhotoRefreshIntervalPrefChanged();
     OnAnimationThemePrefChanged();
+    OnAnimationPlaybackSpeedChanged();
 
     DCHECK(AmbientClient::Get());
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
@@ -617,7 +627,8 @@ void AmbientController::OnEnabledPrefChanged() {
          {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
           ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
           ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
-          ambient::prefs::kAmbientAnimationTheme}) {
+          ambient::prefs::kAmbientAnimationTheme,
+          ambient::prefs::kAmbientModeAnimationPlaybackSpeed}) {
       if (pref_change_registrar_->IsObserved(pref_name))
         pref_change_registrar_->Remove(pref_name);
     }
@@ -709,6 +720,13 @@ void AmbientController::OnAnimationThemePrefChanged() {
     DVLOG(4) << "AmbientAnimationTheme initialized to "
              << *current_theme_from_pref_;
   }
+}
+
+void AmbientController::OnAnimationPlaybackSpeedChanged() {
+  DCHECK(GetPrimaryUserPrefService());
+  ambient_ui_model_.set_animation_playback_speed(
+      GetPrimaryUserPrefService()->GetDouble(
+          ambient::prefs::kAmbientModeAnimationPlaybackSpeed));
 }
 
 void AmbientController::RequestAccessToken(

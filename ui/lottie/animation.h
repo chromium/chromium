@@ -168,6 +168,14 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // before calling Paint(). The caller may do so as many times as desired.
   cc::SkottieTextPropertyValueMap& text_map() { return text_map_; }
 
+  // Sets the rate at which the animation will be played. A |playback_speed| of
+  // 1 renders exactly in real time, 0.5 is half as fast, 2 is twice as fast,
+  // etc. This may be called at any time, and the |timestamp| passed to Paint()
+  // is automatically adjusted internally to account for the playback speed.
+  //
+  // Defaults to 1 if not called.
+  void SetPlaybackSpeed(float playback_speed);
+
  private:
   friend class AnimationTest;
 
@@ -190,7 +198,8 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
                  const base::TimeDelta& cycle_duration,
                  const base::TimeDelta& total_duration,
                  const base::TimeTicks& start_timestamp,
-                 bool should_reverse);
+                 bool should_reverse,
+                 float playback_speed);
     ~TimerControl() = default;
     TimerControl(const TimerControl&) = delete;
     TimerControl& operator=(const TimerControl&) = delete;
@@ -200,6 +209,8 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
 
     // Resumes the timer.
     void Resume(const base::TimeTicks& timestamp);
+
+    void SetPlaybackSpeed(float playback_speed);
 
     double GetNormalizedCurrentCycleProgress() const;
     double GetNormalizedStartOffset() const;
@@ -237,6 +248,9 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
 
     // The number of times each |cycle_duration_| is covered by the timer.
     int completed_cycles_ = 0;
+
+    // See comments above SetPlaybackSpeed().
+    float playback_speed_ = 1.f;
   };
 
   void InitTimer(const base::TimeTicks& timestamp);
@@ -271,6 +285,8 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   base::flat_map<cc::SkottieResourceIdHash,
                  scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset>>
       image_assets_;
+
+  float playback_speed_ = 1.f;
 };
 
 }  // namespace lottie

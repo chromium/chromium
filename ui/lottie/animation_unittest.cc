@@ -942,6 +942,36 @@ TEST_F(AnimationTest, PaintTest) {
   IsAllSameColor(SK_ColorBLUE, canvas.GetBitmap());
 }
 
+TEST_F(AnimationTest, SetsPlaybackSpeed) {
+  TestAnimationObserver observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->SetPlaybackSpeed(2);
+  animation_->Start(Animation::Style::kLinear);
+
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 0);
+
+  AdvanceClock(kAnimationDuration / 8);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 1.f / 4);
+
+  AdvanceClock(kAnimationDuration / 8);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 1.f / 2);
+
+  animation_->SetPlaybackSpeed(0.5f);
+
+  AdvanceClock(kAnimationDuration / 4);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), (1.f / 2) + (1.f / 8));
+
+  AdvanceClock(kAnimationDuration / 4);
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  EXPECT_FLOAT_EQ(animation_->GetCurrentProgress(), 3.f / 4);
+}
+
 TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
   AdvanceClock(base::Milliseconds(300));
 
