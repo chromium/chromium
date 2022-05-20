@@ -4509,9 +4509,6 @@ crbug.com/1198842 [ Linux ] virtual/scroll-unification/fast/events/selection-aut
 # Passes in threaded mode, fails without it. This is a real bug.
 crbug.com/1112183 fast/scrolling/autoscroll-iframe-no-scrolling.html [ Failure ]
 
-# Temporarily expected to fail to land new syntax error message for Json.parse
-crbug.com/v8/6551 fast/js/JSON-parse.html [ Failure Pass ]
-
 # Sheriff 2018-09-10
 crbug.com/881207 fast/js/regress/splice-to-remove.html [ Pass Timeout ]
 
