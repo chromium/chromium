@@ -6388,7 +6388,7 @@
 <translation id="7282547042039404307">流暢</translation>
 <translation id="7282992757463864530">資訊列</translation>
 <translation id="7283555985781738399">訪客模式</translation>
-<translation id="7284307451964417957">{DAYS,plural, =1{系統會記住這部裝置，在 1 天內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}other{系統會記住這部裝置，在 {DAYS} 天內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}}</translation>
+<translation id="7284307451964417957">{DAYS,plural, =1{系統會記住這部裝置，在 1 天內無需輸入驗證碼即可再次連接。這項設定是由你的系統管理員指定。}other{系統會記住這部裝置，在 {DAYS} 天內無需輸入驗證碼即可再次連接。這項設定是由你的系統管理員指定。}}</translation>
 <translation id="7284411326658527427">每位使用者都可以建立個人專屬的帳戶，並保護資料的私密性。</translation>
 <translation id="7287143125007575591">存取遭拒。</translation>
 <translation id="7287411021188441799">還原預設背景</translation>
