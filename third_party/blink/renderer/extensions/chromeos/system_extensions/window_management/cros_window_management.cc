@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/extensions/chromeos/event_target_chromeos.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.h"
 
 namespace blink {
@@ -53,10 +54,7 @@ void CrosWindowManagement::Trace(Visitor* visitor) const {
 }
 
 const WTF::AtomicString& CrosWindowManagement::InterfaceName() const {
-  // TODO(b/221130654): Move to event_target_names::kCrosWindowManagement.
-  DEFINE_STATIC_LOCAL(const AtomicString, kInterfaceName,
-                      ("CrosWindowManagement"));
-  return kInterfaceName;
+  return event_target_names::kCrosWindowManagement;
 }
 
 ExecutionContext* CrosWindowManagement::GetExecutionContext() const {

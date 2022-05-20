@@ -131,6 +131,13 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
 #endif  // !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_ARM64) &&
         // BUILDFLAG(IS_WIN)
 
+#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
+  // ChromeOSExtensions::Initialize() initializes strings which must be done
+  // before calling CoreInitializer::Initialize() which is called by
+  // GetBlinkInitializer().Initialize() below.
+  ChromeOSExtensions::Initialize();
+#endif
+
   // BlinkInitializer::Initialize() must be called before InitializeMainThread
   GetBlinkInitializer().Initialize();
 
@@ -145,10 +152,6 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   DCHECK(!g_end_of_task_runner);
   g_end_of_task_runner = new EndOfTaskRunner;
   Thread::Current()->AddTaskObserver(g_end_of_task_runner);
-
-#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
-  ChromeOSExtensions::Initialize();
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Initialize CrashMemoryMetricsReporterImpl in order to assure that memory

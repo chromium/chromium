@@ -168,7 +168,8 @@ void ModulesInitializer::Initialize() {
   const unsigned kModulesStaticStringsCount =
       event_interface_names::kModulesNamesCount +
       event_target_names::kModulesNamesCount + indexed_db_names::kNamesCount;
-  StringImpl::ReserveStaticStringsCapacityForSize(kModulesStaticStringsCount);
+  StringImpl::ReserveStaticStringsCapacityForSize(
+      kModulesStaticStringsCount + StringImpl::AllStaticStrings().size());
 
   event_interface_names::InitModules();
   event_target_names::InitModules();
