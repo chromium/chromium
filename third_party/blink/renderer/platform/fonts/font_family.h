@@ -57,6 +57,9 @@ class PLATFORM_EXPORT FontFamily {
   const AtomicString& FamilyName() const { return family_name_; }
   bool FamilyIsGeneric() const { return family_type_ == Type::kGenericFamily; }
 
+  // Returns number of linked `FontFamily` including `this`, so return value is
+  // greater than or equal to 1. When `Next()` is `nullptr`, return value is 1.
+  wtf_size_t CountNames() const;
   const FontFamily* Next() const;
 
   void AppendFamily(scoped_refptr<SharedFontFamily>);
