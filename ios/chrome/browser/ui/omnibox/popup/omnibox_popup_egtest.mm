@@ -469,7 +469,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that on iPhones, when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 // Test with flag kEnableSuggestionsScrollingOnIPad disabled.
-- (void)testScrollingDismissesKeyboardOnPhones {
+// TODO(crbug.com/1327755): Test is flaky
+- (void)DISABLED_testScrollingDismissesKeyboardOnPhones {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{}
                                   disabled:{kEnableSuggestionsScrollingOnIPad}
@@ -520,7 +521,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 // Test with flag kEnableSuggestionsScrollingOnIPad enabled.
-- (void)testScrollingDismissesKeyboard {
+// TODO(crbug.com/1327755): Test is flaky.
+- (void)DISABLED_testScrollingDismissesKeyboard {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{kEnableSuggestionsScrollingOnIPad}
                                   disabled:{}
