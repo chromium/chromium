@@ -4195,6 +4195,8 @@ static_library("ui") {
       "views/collected_cookies_views.h",
       "views/commander_frontend_views.cc",
       "views/commander_frontend_views.h",
+      "views/commerce/ntp_discount_consent_dialog_view.cc",
+      "views/commerce/ntp_discount_consent_dialog_view.h",
       "views/confirm_bubble_views.cc",
       "views/confirm_bubble_views.h",
       "views/constrained_web_dialog_delegate_views.cc",
