@@ -96,7 +96,9 @@ class PaymentRequestShippingAddressUseStatsTest
 
 // Tests that use stats for the shipping address used in a Payment Request are
 // properly updated upon completion.
-IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest, RecordUse) {
+// TODO(crbug.com/1327722): Test is flaky.
+IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest,
+                       DISABLED_RecordUse) {
   NavigateTo("/payment_request_free_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kSomeDate);
