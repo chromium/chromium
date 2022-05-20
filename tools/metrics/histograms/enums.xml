@@ -21103,16 +21103,22 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="0" label="Unknown"/>
   <int value="1" label="ZIP"/>
   <int value="2" label="RAR"/>
-  <int value="3" label="Tar"/>
-  <int value="4" label="Bzip2-compressed Tar"/>
-  <int value="5" label="Gzip-compressed Tar"/>
-  <int value="6" label="Bzip2-compressed Other"/>
-  <int value="7" label="Gzip-compressed Other"/>
-  <int value="8" label="7z"/>
-  <int value="9" label="Crx"/>
-  <int value="10" label="Iso"/>
-  <int value="11" label="Xz-compressed Tar"/>
-  <int value="12" label="Xz-compressed Other"/>
+  <int value="3" label="TAR">Uncompressed TAR</int>
+  <int value="4" label="TAR.BZ2">Bzip2-compressed TAR</int>
+  <int value="5" label="TAR.GZ">Gzip-compressed TAR</int>
+  <int value="6" label="BZ2">Bzip2-compressed File</int>
+  <int value="7" label="GZ">Gzip-compressed File</int>
+  <int value="8" label="7Z">7-Zip</int>
+  <int value="9" label="CRX">Chrome Extension</int>
+  <int value="10" label="ISO">ISO image</int>
+  <int value="11" label="TAR.XZ">XZ-compressed TAR</int>
+  <int value="12" label="XZ">XZ-compressed File</int>
+  <int value="13" label="TAR.LZMA">LZMA-compressed TAR</int>
+  <int value="14" label="LZMA">LZMA-compressed File</int>
+  <int value="15" label="TAR.Z">Z-compressed TAR</int>
+  <int value="16" label="Z">Z-compressed File</int>
+  <int value="17" label="TAR.ZST">Zstandard-compressed TAR</int>
+  <int value="18" label="ZST">Zstandard-compressed File</int>
 </enum>
 
 <enum name="CrosDisksClientFormatError">
