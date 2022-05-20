@@ -385,8 +385,9 @@ public class ToolbarTablet
     }
 
     @Override
-    boolean isReadyForTextureCapture() {
-        return !urlHasFocus();
+    CaptureReadinessResult isReadyForTextureCapture() {
+        // Don't track tablet metrics yet for capturing, just return unknown for now.
+        return CaptureReadinessResult.unknown(!urlHasFocus());
     }
 
     @Override

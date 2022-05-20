@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.TraceEvent;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
@@ -188,7 +190,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         }
     }
 
-    private static class ToolbarViewResourceAdapter extends ViewResourceAdapter {
+    @VisibleForTesting
+    protected static class ToolbarViewResourceAdapter extends ViewResourceAdapter {
         private final int[] mTempPosition = new int[2];
         private final Rect mLocationBarRect = new Rect();
         private final Rect mToolbarRect = new Rect();
@@ -222,7 +225,16 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
         @Override
         public boolean isDirty() {
-            return mToolbar != null && mToolbar.isReadyForTextureCapture() && super.isDirty();
+            if (!super.isDirty()) {
+                CaptureReadinessResult.logBlockCaptureReason(
+                        TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY);
+                return false;
+            }
+
+            CaptureReadinessResult isReadyResult =
+                    mToolbar == null ? null : mToolbar.isReadyForTextureCapture();
+            CaptureReadinessResult.logCaptureReasonFromResult(isReadyResult);
+            return isReadyResult == null ? false : isReadyResult.isReady;
         }
 
         @Override

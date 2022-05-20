@@ -92064,9 +92064,45 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="ToolbarCaptureType">
-  <int value="0" label="unknown"/>
-  <int value="1" label="top"/>
-  <int value="2" label="bottom"/>
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="TOP"/>
+  <int value="2" label="BOTTOM"/>
+</enum>
+
+<enum name="ToolbarSnapshotDifference">
+  <int value="0" label="NONE">
+    This value will not be reported, only other actaul differences will be
+    reported.
+  </int>
+  <int value="1" label="NULL"/>
+  <int value="2" label="TINT"/>
+  <int value="3" label="TAB_COUNT"/>
+  <int value="4" label="OPTIONAL_BUTTON_DATA"/>
+  <int value="5" label="VISUAL_STATE"/>
+  <int value="6" label="SECURITY_ICON"/>
+  <int value="7" label="SHOWING_UPDATE_BADGE"/>
+  <int value="8" label="PAINT_PREVIEW"/>
+  <int value="9" label="PROGRESS"/>
+  <int value="10" label="LOCATION_BAR_WIDTH"/>
+  <int value="11" label="URL_TEXT"/>
+  <int value="12" label="HOME_BUTTON_COLOR"/>
+</enum>
+
+<enum name="TopToolbarAllowCaptureReason">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="FORCE_CAPTURE"/>
+  <int value="2" label="SNAPSHOT_DIFFERENCE"/>
+</enum>
+
+<enum name="TopToolbarBlockCaptureReason">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="TOOLBAR_OR_RESULT_NULL"/>
+  <int value="2" label="SUPER_NOT_DIRTY"/>
+  <int value="3" label="SNAPSHOT_SAME"/>
+  <int value="4" label="URL_BAR_HAS_FOCUS"/>
+  <int value="5" label="URL_BAR_FOCUS_IN_PROGRESS"/>
+  <int value="6" label="OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS"/>
+  <int value="7" label="STATUS_ICON_ANIMATION_IN_PROGRESS"/>
 </enum>
 
 <enum name="TouchActions">

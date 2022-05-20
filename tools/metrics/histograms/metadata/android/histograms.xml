@@ -3473,6 +3473,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TopToolbar.AllowCaptureReason"
+    units="TopToolbarAllowCaptureReason" expires_after="2023-05-16">
+  <owner>skym@chromium.org</owner>
+  <owner>seacow@google.com</owner>
+  <summary>
+    Recorded on #isDirty calls that return true. Because #isDirty() is used to
+    control when bitmap captures happen, this histogram holds the reason that
+    the capture was allowed. Note that there there's an assert that calls into
+    #isDirty() from #getBitmap(), which can cause these to be double counted. If
+    Canary starts running assert code, this will cause this metric to double in
+    report volume.
+  </summary>
+</histogram>
+
+<histogram name="Android.TopToolbar.BlockCaptureReason"
+    units="TopToolbarBlockCaptureReason" expires_after="2023-05-16">
+  <owner>skym@chromium.org</owner>
+  <owner>seacow@google.com</owner>
+  <summary>
+    Recorded on #isDirty calls that return false. Because #isDirty() is used to
+    control when bitmap captures happen, this histogram holds the reason that
+    the capture was not allowed.
+  </summary>
+</histogram>
+
+<histogram name="Android.TopToolbar.SnapshotDifference"
+    units="ToolbarSnapshotDifference" expires_after="2023-05-16">
+  <owner>skym@chromium.org</owner>
+  <owner>seacow@google.com</owner>
+  <summary>
+    When the allow reason for a bitmap capture was that the snapshots were
+    different, then this histogram is recorded with the reason that the
+    snapshots were different. Often there may be multiple differences but one is
+    arbitrarily and consistently picked.
+  </summary>
+</histogram>
+
 <histogram name="Android.View.onDraw.30Seconds" units="count"
     expires_after="2022-10-30">
   <owner>nuskos@chromium.org</owner>

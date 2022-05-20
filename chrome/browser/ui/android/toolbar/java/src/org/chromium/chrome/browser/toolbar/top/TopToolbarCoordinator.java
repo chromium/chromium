@@ -516,7 +516,7 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     @Override
-    public boolean isReadyForTextureCapture() {
+    public CaptureReadinessResult isReadyForTextureCapture() {
         return mToolbarLayout.isReadyForTextureCapture();
     }
 

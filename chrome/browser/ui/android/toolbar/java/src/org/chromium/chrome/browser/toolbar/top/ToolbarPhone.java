@@ -70,6 +70,8 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
+import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -1549,19 +1551,37 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    public boolean isReadyForTextureCapture() {
+    public CaptureReadinessResult isReadyForTextureCapture() {
         if (mForceTextureCapture) {
-            return true;
+            return CaptureReadinessResult.readyForced();
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
-            ToolbarSnapshotState snapshotState = generateToolbarSnapshotState();
-            boolean isReady = !snapshotState.equals(mToolbarSnapshotState);
-            isReady &=
-                    !(urlHasFocus() || mUrlFocusChangeInProgress || mOptionalButtonAnimationRunning
-                            || mLocationBar.getStatusCoordinator().isStatusIconAnimating());
-            return isReady;
+            return getReadinessStateWithSuppression();
         } else {
-            return !(urlHasFocus() || mUrlFocusChangeInProgress);
+            return CaptureReadinessResult.unknown(!(urlHasFocus() || mUrlFocusChangeInProgress));
+        }
+    }
+
+    private CaptureReadinessResult getReadinessStateWithSuppression() {
+        ToolbarSnapshotState newSnapshotState = generateToolbarSnapshotState();
+        @ToolbarSnapshotDifference
+        int snapshotDifference = newSnapshotState.getAnyDifference(mToolbarSnapshotState);
+
+        if (snapshotDifference == ToolbarSnapshotDifference.NONE) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.SNAPSHOT_SAME);
+        } else if (urlHasFocus()) {
+            return CaptureReadinessResult.notReady(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS);
+        } else if (mUrlFocusChangeInProgress) {
+            return CaptureReadinessResult.notReady(
+                    TopToolbarBlockCaptureReason.URL_BAR_FOCUS_IN_PROGRESS);
+        } else if (mOptionalButtonAnimationRunning) {
+            return CaptureReadinessResult.notReady(
+                    TopToolbarBlockCaptureReason.OPTIONAL_BUTTON_ANIMATION_IN_PROGRESS);
+        } else if (mLocationBar.getStatusCoordinator().isStatusIconAnimating()) {
+            return CaptureReadinessResult.notReady(
+                    TopToolbarBlockCaptureReason.STATUS_ICON_ANIMATION_IN_PROGRESS);
+        } else {
+            return CaptureReadinessResult.readyWithSnapshotDifference(snapshotDifference);
         }
     }
 
