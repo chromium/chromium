@@ -7,6 +7,7 @@
 
 #include "api.h"
 #include "ipcz/api_object.h"
+#include "ipcz/box.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link_memory.h"
@@ -219,14 +220,37 @@ IpczResult Box(IpczHandle node_handle,
                uint32_t flags,
                const void* options,
                IpczHandle* handle) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  ipcz::Node* node = ipcz::Node::FromHandle(node_handle);
+  if (!node || driver_handle == IPCZ_INVALID_DRIVER_HANDLE || !handle) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  auto box = ipcz::MakeRefCounted<ipcz::Box>(
+      ipcz::DriverObject(ipcz::WrapRefCounted(node), driver_handle));
+  *handle = ipcz::Box::ReleaseAsHandle(std::move(box));
+  return IPCZ_RESULT_OK;
 }
 
 IpczResult Unbox(IpczHandle handle,
                  IpczUnboxFlags flags,
                  const void* options,
                  IpczDriverHandle* driver_handle) {
-  return IPCZ_RESULT_UNIMPLEMENTED;
+  if (!driver_handle) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  ipcz::Ref<ipcz::Box> box = ipcz::Box::TakeFromHandle(handle);
+  if (!box) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  if (flags & IPCZ_UNBOX_PEEK) {
+    *driver_handle = box->object().handle();
+    std::ignore = box.release();
+  } else {
+    *driver_handle = box->object().release();
+  }
+  return IPCZ_RESULT_OK;
 }
 
 constexpr IpczAPI kCurrentAPI = {

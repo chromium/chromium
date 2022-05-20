@@ -7,6 +7,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ipcz/box.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/portal.h"
@@ -50,10 +51,28 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   accept.params().sublink = sublink_;
   accept.params().sequence_number = parcel.sequence_number();
 
-  // TODO: Support attaching boxes as well as portals.
-  const size_t num_portals = objects.size();
+  size_t num_portals = 0;
+  absl::InlinedVector<DriverObject, 2> driver_objects;
   for (Ref<APIObject>& object : objects) {
-    ABSL_ASSERT(object->object_type() == APIObject::kPortal);
+    switch (object->object_type()) {
+      case APIObject::kPortal:
+        ++num_portals;
+        break;
+
+      case APIObject::kBox: {
+        Box* box = Box::FromObject(object.get());
+        ABSL_ASSERT(box);
+
+        // TODO: Support object relay when direct transmission is impossible.
+        ABSL_ASSERT(box->object().CanTransmitOn(*node_link()->transport()));
+
+        driver_objects.push_back(std::move(box->object()));
+        break;
+      }
+
+      default:
+        break;
+    }
   }
 
   // Allocate all the arrays in the message. Note that each allocation may
@@ -84,18 +103,28 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   for (size_t i = 0; i < objects.size(); ++i) {
     APIObject& object = *objects[i];
 
-    // TODO: Support attaching boxes as well as portals.
-    ABSL_ASSERT(object.object_type() == APIObject::kPortal);
-    handle_types[i] = HandleType::kPortal;
+    switch (object.object_type()) {
+      case APIObject::kPortal: {
+        handle_types[i] = HandleType::kPortal;
 
-    Ref<Router> router = Portal::FromObject(&object)->router();
-    router->SerializeNewRouter(*node_link(), new_routers[i]);
-    routers_to_proxy.push_back(std::move(router));
+        Ref<Router> router = Portal::FromObject(&object)->router();
+        router->SerializeNewRouter(*node_link(), new_routers[i]);
+        routers_to_proxy.push_back(std::move(router));
+        break;
+      }
+
+      case APIObject::kBox:
+        handle_types[i] = HandleType::kBox;
+        break;
+
+      default:
+        DLOG(FATAL) << "Attempted to transmit an invalid object.";
+        break;
+    }
   }
 
-  // TODO: When box attachments are supported, their driver objects will be
-  // appended here.
-  accept.params().driver_objects = {};
+  accept.params().driver_objects =
+      accept.AppendDriverObjects(absl::MakeSpan(driver_objects));
 
   DVLOG(4) << "Transmitting " << parcel.Describe() << " over " << Describe();
 

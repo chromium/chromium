@@ -19,6 +19,11 @@ class Object : public RefCounted {
     kTransport,
     kMemory,
     kMapping,
+
+    // A non-standard driver object type, used to exercise more complex, custom
+    // driver object de/serialization via boxing and unboxing in tests. See the
+    // Blob definition in src/reference_drivers/blob.h.
+    kBlob,
   };
 
   explicit Object(Type type);

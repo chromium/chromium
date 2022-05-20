@@ -34,11 +34,6 @@ TEST_F(APITest, Unimplemented) {
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
             ipcz().EndGet(IPCZ_INVALID_HANDLE, 0, 0, IPCZ_NO_FLAGS, nullptr,
                           nullptr));
-  EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
-            ipcz().Box(IPCZ_INVALID_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
-                       IPCZ_NO_FLAGS, nullptr, nullptr));
-  EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,
-            ipcz().Unbox(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, nullptr));
 }
 
 TEST_F(APITest, CloseInvalid) {
@@ -318,6 +313,70 @@ TEST_F(APITest, TrapInvalid) {
                         nullptr, &status));
 
   CloseAll({a, b, node});
+}
+
+TEST_F(APITest, BoxInvalid) {
+  IpczDriverHandle transport0, transport1;
+  ASSERT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.CreateTransports(
+                IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
+                IPCZ_NO_FLAGS, nullptr, &transport0, &transport1));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.Close(transport1, IPCZ_NO_FLAGS, nullptr));
+
+  IpczHandle node = CreateNode(kDefaultDriver);
+
+  IpczHandle box;
+
+  // Invalid node handle.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Box(IPCZ_INVALID_HANDLE, transport0, IPCZ_NO_FLAGS, nullptr,
+                       &box));
+
+  // Invalid driver handle.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Box(node, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS, nullptr,
+                       &box));
+
+  // Null output handle.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Box(node, transport0, IPCZ_NO_FLAGS, nullptr, nullptr));
+
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.Close(transport0, IPCZ_NO_FLAGS, nullptr));
+
+  Close(node);
+}
+
+TEST_F(APITest, UnboxInvalid) {
+  IpczDriverHandle transport0, transport1;
+  ASSERT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.CreateTransports(
+                IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
+                IPCZ_NO_FLAGS, nullptr, &transport0, &transport1));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            kDefaultDriver.Close(transport1, IPCZ_NO_FLAGS, nullptr));
+
+  IpczHandle node = CreateNode(kDefaultDriver);
+  IpczHandle box;
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            ipcz().Box(node, transport0, IPCZ_NO_FLAGS, nullptr, &box));
+
+  IpczDriverHandle handle;
+
+  // Null box handle.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Unbox(IPCZ_INVALID_HANDLE, IPCZ_NO_FLAGS, nullptr, &handle));
+
+  // Invalid box handle type (node instead of box).
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Unbox(node, IPCZ_NO_FLAGS, nullptr, &handle));
+
+  // Null output handle.
+  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
+            ipcz().Unbox(box, IPCZ_NO_FLAGS, nullptr, nullptr));
+
+  CloseAll({box, node});
 }
 
 }  // namespace

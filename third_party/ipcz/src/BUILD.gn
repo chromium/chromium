@@ -144,10 +144,14 @@ ipcz_source_set("reference_drivers") {
 
   if (enable_ipcz_multiprocess_test_support) {
     public += [
+      "reference_drivers/blob.h",
       "reference_drivers/memory.h",
       "reference_drivers/os_handle.h",
     ]
-    sources += [ "reference_drivers/memory.cc" ]
+    sources += [
+      "reference_drivers/blob.cc",
+      "reference_drivers/memory.cc",
+    ]
 
     if (is_android) {
       sources += [
@@ -217,6 +221,7 @@ ipcz_source_set("impl") {
   public = [
     "ipcz/api_object.h",
     "ipcz/block_allocator.h",
+    "ipcz/box.h",
     "ipcz/buffer_pool.h",
     "ipcz/driver_memory.h",
     "ipcz/driver_memory_mapping.h",
@@ -247,6 +252,7 @@ ipcz_source_set("impl") {
     "ipcz/block_allocator.cc",
     "ipcz/block_allocator_pool.cc",
     "ipcz/block_allocator_pool.h",
+    "ipcz/box.cc",
     "ipcz/buffer_id.h",
     "ipcz/buffer_pool.cc",
     "ipcz/driver_memory.cc",
@@ -351,7 +357,12 @@ ipcz_source_set("ipcz_tests_sources") {
   ]
 
   if (enable_ipcz_multiprocess_test_support) {
-    sources += [ "reference_drivers/memory_test.cc" ]
+    sources += [
+      # Box tests rely on the Blob driver object, which itself requires
+      # multiprocess test support.
+      "box_test.cc",
+      "reference_drivers/memory_test.cc",
+    ]
   }
 
   deps = [

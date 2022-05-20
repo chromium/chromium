@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "ipcz/box.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_type.h"
 #include "ipcz/message.h"
@@ -149,6 +150,7 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
       accept.GetArrayView<HandleType>(accept.params().handle_types);
   absl::Span<const RouterDescriptor> new_routers =
       accept.GetArrayView<RouterDescriptor>(accept.params().new_routers);
+  auto driver_objects = accept.driver_objects();
 
   // Note that on any validation failure below, we defer rejection at least
   // until any deserialized objects are stored in a new Parcel object. This
@@ -174,13 +176,23 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
         break;
       }
 
+      case HandleType::kBox: {
+        if (driver_objects.empty()) {
+          return false;
+        }
+
+        objects[i] = MakeRefCounted<Box>(std::move(driver_objects[0]));
+        driver_objects.remove_prefix(1);
+        break;
+      }
+
       default:
         parcel_valid = false;
         break;
     }
   }
 
-  if (!new_routers.empty()) {
+  if (!new_routers.empty() || !driver_objects.empty()) {
     // There should be no unclaimed routers. If there are, it's a validation
     // failure.
     parcel_valid = false;

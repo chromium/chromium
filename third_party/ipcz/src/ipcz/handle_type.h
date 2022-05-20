@@ -17,7 +17,11 @@ enum class HandleType : uint32_t {
   // parcel. It does not consume any other data, or any OS handles.
   kPortal = 0,
 
-  // TODO: Add enumerations for relayed and non-relayed boxes.
+  // A box handle consumes the next available element in the parcel's
+  // DriverObject array and wraps it as a Box object.
+  kBox = 1,
+
+  // TODO: Add an enumeration for relayed boxes.
 };
 
 }  // namespace ipcz
