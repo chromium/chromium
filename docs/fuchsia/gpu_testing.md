@@ -1,4 +1,6 @@
-# Running GPU integration tests on Fuchsia.
+# Running GPU integration tests on Fuchsia
+
+[TOC]
 
 General instruction on running and debugging GPU integration tests can be
 found [here](../gpu/gpu_testing.md).

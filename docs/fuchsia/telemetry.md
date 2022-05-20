@@ -1,4 +1,6 @@
-# Running Telemetry Benchmarks on Fuchsia.
+# Running Telemetry Benchmarks on Fuchsia
+
+[TOC]
 
 General instruction on running and debugging benchmarks can be found in the
 [`tools/perf/README.md`](../../tools/perf/README.md).
