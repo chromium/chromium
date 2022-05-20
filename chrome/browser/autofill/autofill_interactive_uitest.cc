@@ -2890,6 +2890,47 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
+// TODO(crbug.com/1314360): This test validates current behavior, not desired
+// behavior.
+//
+// Some websites have JavaScript handlers that mess with the input of the user
+// and autofill. A common problem is that the date "09/2999" gets reformatted
+// into "09 / 20" instead of "09 / 99".
+// In these tests, the following steps will happen:
+// 1) Autofill recognizes an expiration date field with maxlength=7, will infer
+//    that it is supposed to fill 09/2999 and will fill that value.
+// 2) The website sees the content 09/2999 and reformats it to 09 / 29 because
+//    this is what websites do sometimes.
+//
+// TODO(crbug.com/1314360): The following two steps don't happen, yet.
+// 3) The AutofillAgent recognizes that it failed to fill 09/2999 and fills
+//    09 / 99 instead.
+// 4) The promise waits to see 09 / 99 and resolved.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestCreditCard,
+                       FillCardOnReformatingForm) {
+  CreateTestCreditCart();
+  GURL url = https_server()->GetURL(
+      "a.com", "/autofill/autofill_creditcard_form_with_date_formatter.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NAME_FULL"), this));
+
+  // TODO(crbug.com/1314360): Once the behavior is fixed, change the substring
+  // "29" to "99" below twice.
+  std::string script = R"(
+    new Promise(function (resolve) {
+      (function waitForCorrectExpirationDate(){
+        const e = document.getElementById('CREDIT_CARD_EXP_DATE');
+        if (e && e.value === '09 / 29') {
+          return resolve(e.value);
+        }
+        setTimeout(waitForCorrectExpirationDate, 30);
+      })();  // <-- This defines and calls waitForCorrectExpirationDate().
+    });
+  )";
+  EXPECT_EQ("09 / 29", content::EvalJs(GetWebContents(), script));
+}
+
 // An extension of the test fixture for tests with site isolation.
 class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
  protected:
