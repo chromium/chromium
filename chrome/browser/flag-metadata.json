@@ -5649,7 +5649,7 @@
   {
     "name": "sync-settings-categorization",
     "owners": [ "bsazonov", "rsorokin", "cros-oac@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 106
   },
   {
     "name": "sync-standalone-invalidations",
