@@ -24,12 +24,17 @@ source_set("extensions") {
     ]
   }
 
+  # Enable the "exit_time_destructors" warning here to avoid accidentally
+  # adding exit time destructors and because the flag is not enabled by default.
+  # TODO(http://crbug.com/101600):  Remove once exit_time_destructors is enabled
+  # by default.
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications:web_app_group",
     "//chrome/common",
     "//components/pref_registry",
     "//components/services/app_service/public/mojom",
@@ -54,7 +59,6 @@ source_set("unit_tests") {
   deps = [
     ":extensions",
     "//build:chromeos_buildflags",
-    "//chrome/browser/web_applications:web_app_test_group",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
