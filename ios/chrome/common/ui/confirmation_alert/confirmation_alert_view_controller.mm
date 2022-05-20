@@ -44,6 +44,29 @@ constexpr CGFloat kStackViewSpacingAfterIllustration = 27;
 constexpr CGFloat kSafeAreaMultiplier = 0.65;
 constexpr CGFloat kContentOptimalWidth = 327;
 
+// The size of the symbol image.
+constexpr NSInteger kSymbolBadgeImagePointSize = 13;
+
+// The name of the checkmark symbol in filled circle.
+NSString* const kCheckmarkSymbol = @"checkmark.circle.fill";
+
+// Properties of the favicon.
+constexpr CGFloat kFaviconCornerRadius = 13;
+constexpr CGFloat kFaviconShadowOffsetX = 0;
+constexpr CGFloat kFaviconShadowOffsetY = 0;
+constexpr CGFloat kFaviconShadowRadius = 6;
+constexpr CGFloat kFaviconShadowOpacity = 0.1;
+
+// Length of each side of the favicon frame (which contains the favicon and the
+// surrounding whitespace).
+constexpr CGFloat kFaviconFrameSideLength = 60;
+
+// Length of each side of the favicon.
+constexpr CGFloat kFaviconSideLength = 30;
+
+// Length of each side of the favicon badge.
+constexpr CGFloat kFaviconBadgeSideLength = 24;
+
 }  // namespace
 
 @interface ConfirmationAlertViewController () <UIToolbarDelegate>
@@ -55,6 +78,7 @@ constexpr CGFloat kContentOptimalWidth = 327;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 @property(nonatomic, strong) UIToolbar* topToolbar;
 @property(nonatomic, strong) UIImageView* imageView;
+@property(nonatomic, strong) UIView* imageContainerView;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @end
 
@@ -82,16 +106,25 @@ constexpr CGFloat kContentOptimalWidth = 327;
     [self.view addSubview:self.topToolbar];
   }
 
-  self.imageView = [self createImageView];
+  if (self.imageEnclosedWithShadowAndBadge) {
+    // The image view is set within the helper method.
+    self.imageContainerView = [self createImageContainerViewWithShadowAndBadge];
+  } else {
+    // The image container and the image view are the same.
+    self.imageView = [self createImageView];
+    self.imageContainerView = self.imageView;
+  }
+
   UILabel* title = [self createTitleLabel];
   UILabel* subtitle = [self createSubtitleLabel];
 
   NSArray* stackSubviews = nil;
   if ([self.secondaryTitleString length] != 0) {
     UILabel* secondaryTitle = [self createSecondaryTitleLabel];
-    stackSubviews = @[ self.imageView, title, secondaryTitle, subtitle ];
+    stackSubviews =
+        @[ self.imageContainerView, title, secondaryTitle, subtitle ];
   } else {
-    stackSubviews = @[ self.imageView, title, subtitle ];
+    stackSubviews = @[ self.imageContainerView, title, subtitle ];
   }
 
   DCHECK(stackSubviews);
@@ -313,6 +346,7 @@ constexpr CGFloat kContentOptimalWidth = 327;
   // is active, the image's width also goes to 0, which causes the stack view
   // width to become 0 too.
   [self.imageView setHidden:isVerticalCompact];
+  [self.imageContainerView setHidden:isVerticalCompact];
   self.imageViewAspectRatioConstraint.active = !isVerticalCompact;
 
   // Allow toolbar to update its height based on new layout.
@@ -430,6 +464,73 @@ constexpr CGFloat kContentOptimalWidth = 327;
 
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
   return imageView;
+}
+
+// Helper to create the image view enclosed in a frame with a shadow and a
+// corner badge with a green checkmark. |self.imageView| is set in this method.
+- (UIView*)createImageContainerViewWithShadowAndBadge {
+  UIImageView* faviconBadgeView = [[UIImageView alloc] init];
+  faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolBadgeImagePointSize
+                          weight:UIImageSymbolWeightMedium
+                           scale:UIImageSymbolScaleMedium];
+  faviconBadgeView.image = [UIImage systemImageNamed:kCheckmarkSymbol
+                                   withConfiguration:configuration];
+  faviconBadgeView.tintColor = [UIColor colorNamed:kGreenColor];
+
+  UIImageView* faviconView = [[UIImageView alloc] initWithImage:self.image];
+  faviconView.translatesAutoresizingMaskIntoConstraints = NO;
+  faviconView.contentMode = UIViewContentModeScaleAspectFit;
+
+  UIView* frameView = [[UIView alloc] init];
+  frameView.translatesAutoresizingMaskIntoConstraints = NO;
+  frameView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  frameView.layer.cornerRadius = kFaviconCornerRadius;
+  frameView.layer.shadowOffset =
+      CGSizeMake(kFaviconShadowOffsetX, kFaviconShadowOffsetY);
+  frameView.layer.shadowRadius = kFaviconShadowRadius;
+  frameView.layer.shadowOpacity = kFaviconShadowOpacity;
+  [frameView addSubview:faviconView];
+
+  UIView* containerView = [[UIView alloc] init];
+  [containerView addSubview:frameView];
+  [containerView addSubview:faviconBadgeView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    // Size constraints.
+    [frameView.widthAnchor constraintEqualToConstant:kFaviconFrameSideLength],
+    [frameView.heightAnchor constraintEqualToConstant:kFaviconFrameSideLength],
+    [faviconView.widthAnchor constraintEqualToConstant:kFaviconSideLength],
+    [faviconView.heightAnchor constraintEqualToConstant:kFaviconSideLength],
+    [faviconBadgeView.widthAnchor
+        constraintEqualToConstant:kFaviconBadgeSideLength],
+    [faviconBadgeView.heightAnchor
+        constraintEqualToConstant:kFaviconBadgeSideLength],
+
+    // Badge is on the upper right corner of the frame.
+    [frameView.topAnchor
+        constraintEqualToAnchor:faviconBadgeView.centerYAnchor],
+    [frameView.trailingAnchor
+        constraintEqualToAnchor:faviconBadgeView.centerXAnchor],
+
+    // Favicon is centered in the frame.
+    [frameView.centerXAnchor constraintEqualToAnchor:faviconView.centerXAnchor],
+    [frameView.centerYAnchor constraintEqualToAnchor:faviconView.centerYAnchor],
+
+    // Frame and badge define the whole view returned by this method.
+    [containerView.leadingAnchor
+        constraintEqualToAnchor:frameView.leadingAnchor
+                       constant:-kFaviconBadgeSideLength / 2],
+    [containerView.bottomAnchor constraintEqualToAnchor:frameView.bottomAnchor],
+    [containerView.topAnchor
+        constraintEqualToAnchor:faviconBadgeView.topAnchor],
+    [containerView.trailingAnchor
+        constraintEqualToAnchor:faviconBadgeView.trailingAnchor],
+  ]];
+
+  self.imageView = faviconView;
+  return containerView;
 }
 
 // Creates a label with subtitle label defaults.

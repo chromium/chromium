@@ -31,8 +31,7 @@ namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 // An example favicon URL given from the Discover backend.
-static NSString* const kExampleFaviconURL =
-    @"https://www.google.com/s2/favicons?domain=the-sun.com&sz=48";
+static NSString* const kExampleFaviconURL = @"https://www.the-sun.com/";
 
 // Specific symbols used to create favicons.
 NSString* kGlobeSymbol = @"globe";
@@ -137,12 +136,13 @@ NSInteger kFaviconSymbolPointSize = 17;
   FollowedWebChannel* ch1 = [[FollowedWebChannel alloc] init];
   ch1.title = @"First Web Channel";
   ch1.available = YES;
-  ch1.faviconURL =
+  ch1.webPageURL =
       [[CrURL alloc] initWithNSURL:[NSURL URLWithString:kExampleFaviconURL]];
 
   firstFollowViewController.followedWebChannel = ch1;
   self.alerter.baseViewController = firstFollowViewController;
   firstFollowViewController.faviconDataSource = self;
+  firstFollowViewController.imageEnclosedWithShadowAndBadge = YES;
 
   if (@available(iOS 15, *)) {
     firstFollowViewController.modalPresentationStyle =

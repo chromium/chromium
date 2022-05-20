@@ -31,6 +31,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
 
 - (void)viewDidLoad {
   self.imageHasFixedSize = YES;
+  self.imageEnclosedWithShadowAndBadge = YES;
   self.showDismissBarButton = NO;
   self.customSpacingBeforeImageIfNoToolbar =
       customSpacingBeforeImageIfNoToolbar;
