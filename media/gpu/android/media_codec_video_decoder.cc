@@ -384,8 +384,10 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // We only support setting CDM at first initialization. Even if the initial
   // config is clear, we'll still try to set CDM since we may switch to an
   // encrypted config later.
+  const int width = decoder_config_.coded_size().width();
   if (first_init && cdm_context && cdm_context->GetMediaCryptoContext()) {
     DCHECK(media_crypto_.is_null());
+    last_width_ = width;
     SetCdm(cdm_context, std::move(init_cb));
     return;
   }
@@ -401,7 +403,6 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Do the rest of the initialization lazily on the first decode.
   BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kOk);
 
-  const int width = decoder_config_.coded_size().width();
   // On re-init, reallocate the codec if the size has changed too much.
   // Restrict this behavior to Q, where the behavior changed.
   if (first_init) {
