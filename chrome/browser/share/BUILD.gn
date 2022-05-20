@@ -12,6 +12,8 @@ source_set("share") {
   sources = [
     "default_ranking.cc",
     "default_ranking.h",
+    "share_attempt.cc",
+    "share_attempt.h",
     "share_history.cc",
     "share_history.h",
     "share_ranking.cc",

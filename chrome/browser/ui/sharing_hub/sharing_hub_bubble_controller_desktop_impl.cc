@@ -104,11 +104,11 @@ void SharingHubBubbleControllerDesktopImpl::HideBubble() {
   }
 }
 
-void SharingHubBubbleControllerDesktopImpl::ShowBubble() {
+void SharingHubBubbleControllerDesktopImpl::ShowBubble(
+    share::ShareAttempt attempt) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
 
-  sharing_hub_bubble_view_ =
-      browser->window()->ShowSharingHubBubble(web_contents());
+  sharing_hub_bubble_view_ = browser->window()->ShowSharingHubBubble(attempt);
 
   if (ShouldUsePreview())
     FetchImageForPreview();

@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/browser/image_decoder",
+  "+chrome/browser/share",
   "-chrome/browser/ui/views",
   "+chrome/updater",
   "+components/browser_ui/client_certificate",

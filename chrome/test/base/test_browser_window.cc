@@ -285,7 +285,7 @@ views::Button* TestBrowserWindow::GetSharingHubIconButton() {
 }
 #else
 sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
-    content::WebContents* contents) {
+    share::ShareAttempt attempt) {
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

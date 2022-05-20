@@ -1317,7 +1317,7 @@ void SharingHubFromPageAction(Browser* browser) {
   sharing_hub::SharingHubBubbleController* controller =
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           web_contents);
-  controller->ShowBubble();
+  controller->ShowBubble(share::ShareAttempt(web_contents));
 }
 
 void ScreenshotCaptureFromPageAction(Browser* browser) {

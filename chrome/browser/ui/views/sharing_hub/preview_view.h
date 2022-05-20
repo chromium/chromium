@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_HUB_PREVIEW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_PREVIEW_VIEW_H_
 
+#include "chrome/browser/share/share_attempt.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
@@ -32,7 +33,7 @@ class PreviewView : public views::View {
   // OnImageChanged() after construction to set the initial image, means that
   // this class always has a valid image to display and does not have a
   // "half-initialized" state to worry about.
-  explicit PreviewView(std::u16string title, GURL url, ui::ImageModel image);
+  explicit PreviewView(share::ShareAttempt attempt, ui::ImageModel image);
   ~PreviewView() override;
 
   // This seemingly-odd method allows for PreviewView to be uncoupled from the

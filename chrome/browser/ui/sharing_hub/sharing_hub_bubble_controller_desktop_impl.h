@@ -53,7 +53,7 @@ class SharingHubBubbleControllerDesktopImpl
 
   // SharingHubBubbleController:
   void HideBubble() override;
-  void ShowBubble() override;
+  void ShowBubble(share::ShareAttempt attempt) override;
   SharingHubBubbleView* sharing_hub_bubble_view() const override;
   bool ShouldOfferOmniboxIcon() override;
 

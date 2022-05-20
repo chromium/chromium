@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
+#include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
@@ -447,7 +448,7 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the Sharing Hub bubble. This must only be called as a direct result
   // of user action.
   virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
-      content::WebContents* contents) = 0;
+      share::ShareAttempt attempt) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Shows the translate bubble.

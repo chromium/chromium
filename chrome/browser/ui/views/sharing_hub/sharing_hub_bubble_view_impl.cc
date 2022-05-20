@@ -37,10 +37,10 @@ constexpr int kActionButtonGroup = 0;
 
 }  // namespace
 
-SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
-    views::View* anchor_view,
-    content::WebContents* web_contents)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents) {
+SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(views::View* anchor_view,
+                                                   share::ShareAttempt attempt)
+    : LocationBarBubbleDelegateView(anchor_view, attempt.web_contents.get()),
+      attempt_(attempt) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -48,7 +48,8 @@ SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
 
   SharingHubBubbleControllerDesktopImpl* controller =
       static_cast<SharingHubBubbleControllerDesktopImpl*>(
-          SharingHubBubbleController::CreateOrGetFromWebContents(web_contents));
+          SharingHubBubbleController::CreateOrGetFromWebContents(
+              attempt.web_contents.get()));
   controller_ = controller->AsWeakPtr();
 }
 
@@ -129,8 +130,7 @@ void SharingHubBubbleViewImpl::Init() {
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
   if (controller_->ShouldUsePreview()) {
     auto* preview = AddChildView(std::make_unique<PreviewView>(
-        controller_->GetPreviewTitle(), controller_->GetPreviewUrl(),
-        controller_->GetPreviewImage()));
+        attempt_, controller_->GetPreviewImage()));
     preview->TakeCallbackSubscription(
         controller_->RegisterPreviewImageChangedCallback(base::BindRepeating(
             &PreviewView::OnImageChanged, base::Unretained(preview))));
