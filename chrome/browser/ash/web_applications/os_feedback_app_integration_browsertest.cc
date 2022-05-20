@@ -13,9 +13,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/notification_types.h"
@@ -31,53 +33,96 @@ class OSFeedbackAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   OSFeedbackAppIntegrationTest() {
     scoped_feature_list_.InitWithFeatures({ash::features::kOsFeedback}, {});
+    feedback_url_ = GURL(ash::kChromeUIOSFeedbackUrl);
   }
 
  protected:
+  // Find the url of the active tab of the browser if any.
+  GURL FindActiveUrl(Browser* browser) {
+    if (browser) {
+      return browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+    }
+    return GURL();
+  }
+
+  Browser* FindFeedbackAppBrowser() {
+    return web_app::FindSystemWebAppBrowser(browser()->profile(),
+                                            ash::SystemWebAppType::OS_FEEDBACK);
+  }
+
+  // Launch the Feedback SWA and wait for launching is completed.
+  // Returns the browser of the Feedback SWA if exists.
+  Browser* LaunchAndWait() {
+    WaitForTestSystemAppInstall();
+
+    content::TestNavigationObserver navigation_observer(feedback_url_);
+    navigation_observer.StartWatchingNewWebContents();
+    ui_test_utils::SendToOmniboxAndSubmit(browser(), feedback_url_.spec());
+    navigation_observer.Wait();
+
+    return FindFeedbackAppBrowser();
+  }
+
+  Browser* ExpectFeedbackAppLaunched(const GURL& old_url) {
+    // browser() tab contents should be unaffected.
+    EXPECT_EQ(1, browser()->tab_strip_model()->count());
+    EXPECT_EQ(old_url, FindActiveUrl(browser()));
+
+    // We now have two browsers, one for the chrome window, one for the Feedback
+    // app.
+    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+    Browser* app_browser = FindFeedbackAppBrowser();
+    EXPECT_TRUE(app_browser);
+    EXPECT_EQ(feedback_url_, FindActiveUrl(app_browser));
+
+    return app_browser;
+  }
+
+  void ExpectNoFeedbackAppLaunched(const GURL& old_url) {
+    // browser() tab contents should be unaffected.
+    EXPECT_EQ(1, browser()->tab_strip_model()->count());
+    EXPECT_EQ(old_url, FindActiveUrl(browser()));
+
+    // We now still have one browser.
+    EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+    EXPECT_EQ(nullptr, FindFeedbackAppBrowser());
+  }
+
+  void SendKeyPressAltShiftI(Browser* browser) {
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        browser, ui::VKEY_I, /* control= */ false, /* shift= */ true,
+        /* alt= */ true, /* command= */ false));
+  }
+
+  GURL feedback_url_;
   base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test that the Feedback App installs and launches correctly by
-// running some spot checks on the manifest.
-IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OSFeedbackAppInLauncher) {
-  const GURL url(ash::kChromeUIOSFeedbackUrl);
-  EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      ash::SystemWebAppType::OS_FEEDBACK, url, "Feedback"));
-
-  histogram_tester_.ExpectBucketCount(
-      "Webapp.InstallResult.System.Apps.OSFeedback",
-      webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
-}
-
 // This test verifies that the Feedback app is opened in a new browser window.
 IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, NavigateToFeedback) {
   WaitForTestSystemAppInstall();
+  GURL old_url = FindActiveUrl(browser());
 
-  GURL main_feedback_url(ash::kChromeUIOSFeedbackUrl);
-  GURL old_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  {
-    content::WindowedNotificationObserver observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    ui_test_utils::SendToOmniboxAndSubmit(browser(), main_feedback_url.spec());
-    observer.Wait();
-  }
+  LaunchAndWait();
+  ExpectFeedbackAppLaunched(old_url);
+}
 
-  // browser() tab contents should be unaffected.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(old_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+// This test verifies that the Feedback app is opened in a new browser window.
+IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OpenFeedbackByHotKey) {
+  WaitForTestSystemAppInstall();
+  GURL old_url = FindActiveUrl(browser());
 
-  // We now have two browsers, one for the chrome window, one for the Feedback
-  // app.
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(main_feedback_url, chrome::FindLastActive()
-                                   ->tab_strip_model()
-                                   ->GetActiveWebContents()
-                                   ->GetVisibleURL());
+  content::TestNavigationObserver navigation_observer(feedback_url_);
+  navigation_observer.StartWatchingNewWebContents();
+  // Try to press keyboard shortcut to open Feedback app.
+  SendKeyPressAltShiftI(browser());
+  navigation_observer.Wait();
+
+  ExpectFeedbackAppLaunched(old_url);
 }
 
 // This test verifies that the Feedback app is not opened when
@@ -87,23 +132,19 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, UserFeedbackNotAllowed) {
 
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                false);
+  GURL old_url = FindActiveUrl(browser());
 
-  GURL main_feedback_url(ash::kChromeUIOSFeedbackUrl);
-  GURL old_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  ui_test_utils::SendToOmniboxAndSubmit(browser(), main_feedback_url.spec());
+  // Try to navigate to the feedback app in the browser.
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), feedback_url_.spec());
   web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
 
-  // browser() tab contents should be unaffected.
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(old_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ExpectNoFeedbackAppLaunched(old_url);
 
-  // We now still have one browser.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(old_url, chrome::FindLastActive()
-                         ->tab_strip_model()
-                         ->GetActiveWebContents()
-                         ->GetVisibleURL());
+  // Try to press keyboard shortcut to open Feedback app.
+  SendKeyPressAltShiftI(browser());
+  web_app::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+
+  ExpectNoFeedbackAppLaunched(old_url);
 }
 
 // Test that the Feedback App has a default bounds of 640(height)x600(width)
@@ -113,9 +154,8 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, DefaultWindowBounds) {
       ash::Shell::Get()->display_manager());
   display_manager_test.UpdateDisplay("1000x2000");
 
-  WaitForTestSystemAppInstall();
-  Browser* browser;
-  LaunchApp(ash::SystemWebAppType::OS_FEEDBACK, &browser);
+  Browser* app_browser = LaunchAndWait();
+  EXPECT_TRUE(app_browser);
 
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
@@ -125,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, DefaultWindowBounds) {
   int x = (work_area.width() - expected_width) / 2;
   int y = (work_area.height() - expected_height) / 2;
   EXPECT_EQ(gfx::Rect(x, y, expected_width, expected_height),
-            browser->window()->GetBounds());
+            app_browser->window()->GetBounds());
 }
 
 // Test that when the policy UserFeedbackAllowed is true, the Feedback App

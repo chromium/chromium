@@ -17,10 +17,6 @@
 
 class Profile;
 
-namespace base {
-class RefCountedMemory;
-}  // namespace base
-
 namespace extensions {
 class FeedbackService;
 }  // namespace extensions
@@ -46,20 +42,14 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   void SendReport(os_feedback_ui::mojom::ReportPtr report,
                   SendReportCallback callback) override;
 
-  void SetPngDataForTesting(scoped_refptr<base::RefCountedMemory> png_data) {
-    screenshot_png_data_ = std::move(png_data);
-  }
-
  private:
   void OnSendFeedbackDone(SendReportCallback callback, bool status);
-  void OnScreenshotTaken(scoped_refptr<base::RefCountedMemory> data);
 
   // TODO(xiangdongkong): make sure the profile_ cannot be destroyed while
   // operations are pending.
   raw_ptr<Profile> profile_;
   scoped_refptr<extensions::FeedbackService> feedback_service_;
   absl::optional<GURL> page_url_;
-  scoped_refptr<base::RefCountedMemory> screenshot_png_data_;
 
   base::WeakPtrFactory<ChromeOsFeedbackDelegate> weak_ptr_factory_{this};
 };

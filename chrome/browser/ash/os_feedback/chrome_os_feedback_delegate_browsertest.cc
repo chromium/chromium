@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
@@ -15,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -90,18 +92,18 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
     auto feedback_delegate_ =
         std::make_unique<ChromeOsFeedbackDelegate>(profile_, std::move(mock));
 
-    scoped_refptr<base::RefCountedMemory> fake_png_data;
-    {
-      const unsigned char kData[] = {12, 11, 99};
-      fake_png_data =
-          base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
-    }
-    feedback_delegate_->SetPngDataForTesting(std::move(fake_png_data));
+    OsFeedbackScreenshotManager::GetInstance()->SetPngDataForTesting(
+        CreateFakePngData());
 
     base::test::TestFuture<SendReportStatus> future;
     feedback_delegate_->SendReport(std::move(report), future.GetCallback());
 
     EXPECT_NE(SendReportStatus::kUnknown, future.Get());
+  }
+
+  scoped_refptr<base::RefCountedMemory> CreateFakePngData() {
+    const unsigned char kData[] = {12, 11, 99};
+    return base::MakeRefCounted<base::RefCountedBytes>(kData, std::size(kData));
   }
 };
 
@@ -192,6 +194,31 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
   // Verify no screenshot is added to feedback data.
   EXPECT_EQ("", feedback_data->image());
+}
+
+// Test GetScreenshot returns correct data when there is a screenshot.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, HasScreenshot) {
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+
+  OsFeedbackScreenshotManager::GetInstance()->SetPngDataForTesting(
+      CreateFakePngData());
+
+  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  feedback_delegate_.GetScreenshotPng(future.GetCallback());
+
+  const std::vector<uint8_t> expected{12, 11, 99};
+  const std::vector<uint8_t> result = future.Get();
+  EXPECT_EQ(expected, result);
+}
+
+// Test GetScreenshot returns empty array when there is not a screenshot.
+IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, NoScreenshot) {
+  ChromeOsFeedbackDelegate feedback_delegate_(browser()->profile());
+  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  feedback_delegate_.GetScreenshotPng(future.GetCallback());
+
+  const std::vector<uint8_t> result = future.Get();
+  EXPECT_EQ(0, result.size());
 }
 
 }  // namespace ash

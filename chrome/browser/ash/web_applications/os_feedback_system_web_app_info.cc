@@ -9,7 +9,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -18,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -65,6 +71,8 @@ OSFeedbackAppDelegate::OSFeedbackAppDelegate(Profile* profile)
                                 GURL(ash::kChromeUIOSFeedbackUrl),
                                 profile) {}
 
+OSFeedbackAppDelegate::~OSFeedbackAppDelegate() = default;
+
 std::unique_ptr<WebAppInstallInfo> OSFeedbackAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForOSFeedbackSystemWebApp();
@@ -105,10 +113,51 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
     const apps::AppLaunchParams& params) const {
   // This check is needed to enforce the policy no matter how and from where the
   // feedback tool is to be launched.
-  if (!IsUserFeedbackAllowed(profile)) {
-    return nullptr;
+  if (IsUserFeedbackAllowed(profile)) {
+    apps::AppLaunchParams app_params(
+        params.app_id, params.container, params.disposition,
+        params.launch_source, params.display_id, params.launch_files,
+        params.intent ? params.intent.Clone() : nullptr);
+    // Take a screenshot and launch the app afterward.
+    ash::OsFeedbackScreenshotManager::GetInstance()->TakeScreenshot(
+        base::BindOnce(&OSFeedbackAppDelegate::OnScreenshotTaken,
+                       weak_ptr_factory_.GetWeakPtr(), profile, provider, url,
+                       std::move(app_params)));
   }
-  // TODO(xiangdongkong): Take a screenshot and launch the app afterward.
-  return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
-                                                             url, params);
+  // Return nullptr to tell the rest of the code SWA aborted the launch so that
+  // the Feedback can use a customized launch process, i.e., take a screenshot
+  // async, then launch afterward.
+  return nullptr;
+}
+
+void OSFeedbackAppDelegate::OnScreenshotTaken(Profile* profile,
+                                              web_app::WebAppProvider* provider,
+                                              GURL url,
+                                              apps::AppLaunchParams params,
+                                              bool status) const {
+  // Exit early if we can't create browser windows (e.g. when browser is
+  // shutting down, or a wrong profile is given).
+  if (Browser::GetCreationStatusForProfile(profile) !=
+      Browser::CreationStatus::kOk) {
+    return;
+  }
+
+  // Place new windows on the specified display.
+  display::ScopedDisplayForNewWindows scoped_display(params.display_id);
+
+  Browser* browser = SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
+      profile, provider, url, params);
+  if (!browser) {
+    return;
+  }
+
+  // LaunchSystemWebAppImpl may be called with a profile associated with an
+  // inactive (background) desktop (e.g. when multiple users are logged in).
+  // Here we move the newly created browser window (or the existing one on the
+  // inactive desktop) to the current active (visible) desktop, so the user
+  // always sees the launched app.
+  multi_user_util::MoveWindowToCurrentDesktop(
+      browser->window()->GetNativeWindow());
+
+  browser->window()->Show();
 }
