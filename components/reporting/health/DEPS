@@ -1,4 +1,0 @@
-include_rules = [
-  "+absl",
-  "+third_party/re2",
-]
