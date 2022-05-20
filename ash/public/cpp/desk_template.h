@@ -113,8 +113,11 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // Sets `desk_index` as the desk to launch on for all windows in the template.
   void SetDeskIndex(int desk_index);
 
-  // Returns `this` in string format. Used for debugging and in feedback logs.
+  // Returns `this` in string format. Used for feedback logs.
   std::string ToString() const;
+
+  // Returns `this` in string format. Used for debugging.
+  std::string ToDebugString() const;
 
  private:
   const base::GUID uuid_;  // We utilize the string based base::GUID to uniquely

@@ -7,6 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
@@ -91,6 +92,43 @@ std::string DeskTemplate::ToString() const {
 
   if (desk_restore_data_)
     result += desk_restore_data_->ToString();
+  return result;
+}
+
+std::string DeskTemplate::ToDebugString() const {
+  std::string result =
+      "Template name: " + base::UTF16ToUTF8(template_name_) + "\n";
+  result += "GUID: " + uuid_.AsLowercaseString() + "\n";
+  result += "Source: ";
+  switch (source_) {
+    case DeskTemplateSource::kUnknownSource:
+      result += "unknown\n";
+      break;
+    case DeskTemplateSource::kUser:
+      result += "user\n";
+      break;
+    case DeskTemplateSource::kPolicy:
+      result += "policy\n";
+      break;
+  }
+  result += "Type: ";
+  switch (type_) {
+    case DeskTemplateType::kTemplate:
+      result += "template\n";
+      break;
+    case DeskTemplateType::kSaveAndRecall:
+      result += "save and recall\n";
+      break;
+  }
+  result += "Time created: " + base::TimeFormatHTTP(created_time_) + "\n";
+  result += "Time updated: " + base::TimeFormatHTTP(updated_time_) + "\n";
+  result += "launch id: " + base::NumberToString(launch_id_) + "\n";
+
+  // Converting to value and printing the debug string may be more
+  // intensive but gives more complete information which increases
+  // the utility of this function.
+  if (desk_restore_data_)
+    result += desk_restore_data_->ConvertToValue().DebugString();
   return result;
 }
 
