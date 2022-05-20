@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -31,7 +32,7 @@ namespace {
 
 [[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeOrCorruptionDetected() {
   PA_NO_CODE_FOLDING();
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 }
 
 }  // namespace

@@ -5,8 +5,8 @@
 #include "base/allocator/partition_allocator/oom.h"
 
 #include "base/allocator/partition_allocator/oom_callback.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/compiler_specific.h"
-#include "base/immediate_crash.h"
 #include "base/process/memory.h"
 
 namespace partition_alloc::internal {
@@ -17,7 +17,7 @@ namespace partition_alloc::internal {
 [[noreturn]] NOINLINE void NOT_TAIL_CALLED OnNoMemory(size_t size) {
   RunPartitionAllocOomCallback();
   base::TerminateBecauseOutOfMemory(size);
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 }
 
 }  // namespace partition_alloc::internal

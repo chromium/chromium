@@ -5,6 +5,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TLS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TLS_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -124,15 +125,15 @@ using PartitionTlsKey = int;
 ALWAYS_INLINE bool PartitionTlsCreate(PartitionTlsKey* key,
                                       void (*destructor)(void*)) {
   // NOTIMPLEMENTED() may allocate, crash instead.
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 }
 
 ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 }
 
 ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 }
 
 #endif  // BUILDFLAG(IS_WIN)

@@ -9,8 +9,8 @@
 #endif
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/base_export.h"
-#include "base/immediate_crash.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -253,7 +253,7 @@ void RawLog(int level, const char* message) {
   }
 
   if (level == LOGGING_FATAL)
-    IMMEDIATE_CRASH();
+    PA_IMMEDIATE_CRASH();
 }
 
 // This was defined at the beginning of this file.

@@ -11,6 +11,7 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/cxx17_backports.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -353,7 +354,7 @@ void ThreadCache::RemoveTombstoneForTesting() {
 // static
 void ThreadCache::Init(PartitionRoot<>* root) {
 #if BUILDFLAG(IS_NACL)
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 #endif
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size ==
            ThreadCache::kLargeSizeThreshold);

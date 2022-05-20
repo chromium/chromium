@@ -27,6 +27,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/ref_counted.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
@@ -48,7 +49,6 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
-#include "base/immediate_crash.h"
 #include "build/build_config.h"
 
 // TODO(bikineev): Temporarily disable inlining in *Scan to get clearer
@@ -65,7 +65,7 @@ namespace partition_alloc::internal {
 
 [[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt() {
   PA_NO_CODE_FOLDING();
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 }
 
 namespace {

@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/spinning_mutex.h"
@@ -48,7 +49,7 @@ class LOCKABLE Lock {
                    current_thread)) {
         // Trying to acquire lock while it's held by this thread: reentrancy
         // issue.
-        IMMEDIATE_CRASH();
+        PA_IMMEDIATE_CRASH();
       }
       lock_.Acquire();
     }

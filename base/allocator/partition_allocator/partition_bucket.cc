@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -42,7 +43,7 @@ template <bool thread_safe>
     size_t size) LOCKS_EXCLUDED(root->lock_) {
   PA_NO_CODE_FOLDING();
   root->OutOfMemory(size);
-  IMMEDIATE_CRASH();  // Not required, kept as documentation.
+  PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
 }
 
 template <bool thread_safe>
@@ -51,7 +52,7 @@ template <bool thread_safe>
     size_t size) LOCKS_EXCLUDED(root->lock_) {
   PA_NO_CODE_FOLDING();
   root->OutOfMemory(size);
-  IMMEDIATE_CRASH();  // Not required, kept as documentation.
+  PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
 }
 
 #if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -1322,7 +1323,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     // See comment in PartitionDirectMap() for unlocking.
     ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};
     root->OutOfMemory(raw_size);
-    IMMEDIATE_CRASH();  // Not required, kept as documentation.
+    PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
   PA_DCHECK(new_bucket != &root->sentinel_bucket);

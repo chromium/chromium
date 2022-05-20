@@ -82,6 +82,7 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc_base/debug/alias.cc",
     "partition_alloc_base/debug/alias.h",
     "partition_alloc_base/gtest_prod_util.h",
+    "partition_alloc_base/immediate_crash.h",
     "partition_alloc_base/logging.cc",
     "partition_alloc_base/logging.h",
     "partition_alloc_base/memory/ref_counted.cc",
