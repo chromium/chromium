@@ -269,33 +269,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   EXPECT_FALSE(intent_picker_view->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTest, DoubleClickOpensApp) {
-  auto app_id = InstallTestWebApp(GetAppUrlHost(), GetAppScopePath());
-
-  const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "IntentPickerBubbleView");
-  GetIntentPickerIcon()->ExecuteForTesting();
-  waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-
-  auto event_generator = ui::test::EventGenerator(
-      views::GetRootWindow(intent_picker_bubble()->GetWidget()));
-  auto* container = intent_picker_bubble()->GetViewByID(
-      IntentPickerBubbleView::ViewId::kItemContainer);
-  ASSERT_GT(container->children().size(), 0ul);
-  event_generator.MoveMouseTo(
-      container->children()[0]->GetBoundsInScreen().CenterPoint());
-  event_generator.DoubleClickLeftButton();
-
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
-}
-
 INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerBubbleViewBrowserTest,

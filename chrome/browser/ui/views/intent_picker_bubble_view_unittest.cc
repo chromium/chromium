@@ -20,11 +20,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -154,16 +156,23 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
         .size();
   }
 
-  // Dummy method to be called upon bubble closing.
-  void OnBubbleClosed(const std::string& selected_app_package,
+  void OnBubbleClosed(const std::string& selected_app_launch_name,
                       apps::PickerEntryType entry_type,
                       apps::IntentPickerCloseReason close_reason,
-                      bool should_persist) {}
+                      bool should_persist) {
+    last_selected_launch_name_ = selected_app_launch_name;
+    last_close_reason_ = close_reason;
+    last_selection_should_persist_ = should_persist;
+  }
 
   raw_ptr<IntentPickerBubbleView> bubble_;
   raw_ptr<views::View> anchor_view_;
   std::vector<AppInfo> app_info_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
+  std::string last_selected_launch_name_;
+  apps::IntentPickerCloseReason last_close_reason_;
+  bool last_selection_should_persist_;
 };
 
 // Verifies that we didn't set up an image for any LabelButton.
@@ -339,4 +348,99 @@ TEST_F(IntentPickerBubbleViewTest, RememberCheckbox) {
   // Other app types can be persisted.
   ClickApp(2);
   ASSERT_TRUE(checkbox->GetEnabled());
+}
+
+TEST_F(IntentPickerBubbleViewTest, AcceptDialog) {
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  ClickApp(1);
+  bubble_->AcceptDialog();
+
+  EXPECT_EQ(last_selected_launch_name_, "web_app_id_2");
+  EXPECT_FALSE(last_selection_should_persist_);
+  EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
+}
+
+TEST_F(IntentPickerBubbleViewTest, AcceptDialogWithRememberSelection) {
+  AddApp(apps::PickerEntryType::kArc, "arc_app_id", "ARC App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  views::Checkbox* checkbox = static_cast<views::Checkbox*>(
+      bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kRememberCheckbox));
+  checkbox->SetChecked(true);
+
+  bubble_->AcceptDialog();
+
+  EXPECT_EQ(last_selected_launch_name_, "arc_app_id");
+  EXPECT_TRUE(last_selection_should_persist_);
+  EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
+}
+
+TEST_F(IntentPickerBubbleViewTest, CancelDialog) {
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  ClickApp(1);
+  bubble_->CancelDialog();
+
+  EXPECT_EQ(last_selected_launch_name_, apps_util::kUseBrowserForLink);
+  EXPECT_FALSE(last_selection_should_persist_);
+  EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::STAY_IN_CHROME);
+}
+
+TEST_F(IntentPickerBubbleViewTest, CloseDialog) {
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  bubble_->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kLostFocus);
+
+  ASSERT_EQ(last_close_reason_,
+            apps::IntentPickerCloseReason::DIALOG_DEACTIVATED);
+}
+
+TEST_F(IntentPickerBubbleViewTest, KeyboardNavigation) {
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  GetButtonAtIndex(0)->RequestFocus();
+
+  event_generator_->PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(bubble_->GetSelectedIndex(), 1u);
+  event_generator_->PressAndReleaseKey(ui::VKEY_LEFT);
+  EXPECT_EQ(bubble_->GetSelectedIndex(), 0u);
+  // Pressing up/left from the first item should wrap around to the last item.
+  event_generator_->PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_EQ(bubble_->GetSelectedIndex(),
+            bubble_->app_info_for_testing().size() - 1);
+  // Pressing down/right from the last item should wrap around to the first
+  // item.
+  event_generator_->PressAndReleaseKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(bubble_->GetSelectedIndex(), 0u);
+}
+
+TEST_F(IntentPickerBubbleViewTest, DoubleClickToAccept) {
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/absl::nullopt);
+
+  event_generator_->MoveMouseTo(
+      GetButtonAtIndex(0)->GetBoundsInScreen().CenterPoint());
+  event_generator_->DoubleClickLeftButton();
+
+  EXPECT_EQ(last_selected_launch_name_, "web_app_id");
+  EXPECT_EQ(last_close_reason_, apps::IntentPickerCloseReason::OPEN_APP);
 }
