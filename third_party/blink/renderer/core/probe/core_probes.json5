@@ -111,6 +111,7 @@
     InspectorEmulationAgent: {
       probes: [
         "ApplyAcceptLanguageOverride",
+        "ApplyHardwareConcurrencyOverride",
         "ApplyUserAgentOverride",
         "ApplyUserAgentMetadataOverride",
         "PrepareRequest",

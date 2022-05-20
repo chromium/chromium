@@ -3808,6 +3808,11 @@ domain Emulation
       # Image types to disable.
       array of DisabledImageType imageTypes
 
+  experimental command setHardwareConcurrencyOverride
+    parameters
+      # Hardware concurrency to report
+      integer hardwareConcurrency
+
   # Allows overriding user agent with the given string.
   command setUserAgentOverride
     parameters

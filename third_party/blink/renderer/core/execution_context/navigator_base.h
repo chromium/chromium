@@ -54,6 +54,8 @@ class CORE_EXPORT NavigatorBase : public ScriptWrappable,
   String platform() const override;
   void Trace(Visitor* visitor) const override;
 
+  unsigned int hardwareConcurrency() const override;
+
  protected:
   ExecutionContext* GetUAExecutionContext() const override;
   UserAgentMetadata GetUserAgentMetadata() const override;

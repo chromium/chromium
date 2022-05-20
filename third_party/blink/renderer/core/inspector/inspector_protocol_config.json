@@ -86,7 +86,7 @@
                 "domain": "Emulation",
                 "include": ["forceViewport", "resetViewport", "resetPageScaleFactor", "setPageScaleFactor", "setScriptExecutionDisabled", "setTouchEmulationEnabled",
                             "setEmulatedMedia", "setEmulatedVisionDeficiency", "setCPUThrottlingRate", "setVirtualTimePolicy", "setTimezoneOverride", "setNavigatorOverrides", "setDefaultBackgroundColorOverride", "setDeviceMetricsOverride", "clearDeviceMetricsOverride",
-                            "setUserAgentOverride", "setScrollbarsHidden", "setDocumentCookieDisabled", "setFocusEmulationEnabled", "setAutoDarkModeOverride", "setLocaleOverride", "setDisabledImageTypes", "setAutomationOverride"],
+                            "setHardwareConcurrencyOverride", "setUserAgentOverride", "setScrollbarsHidden", "setDocumentCookieDisabled", "setFocusEmulationEnabled", "setAutoDarkModeOverride", "setLocaleOverride", "setDisabledImageTypes", "setAutomationOverride"],
                 "include_events": ["virtualTimeBudgetExpired", "virtualTimeAdvanced", "virtualTimePaused"]
             },
             {
