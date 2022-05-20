@@ -1747,7 +1747,7 @@ Your Google account may have other forms of browsing history like searches and a
         No available download locations
       </message>
       <message name="IDS_DOWNLOAD_LOCATION_INCOGNITO_WARNING" desc="Text that indicates to the user that downloaded files in Incognito are still saved on the device and are visible to other users of this device.">
-        Anyone using this device can see files you download in Incognito
+        Anyone using this device can see downloaded files
       </message>
       <message name="IDS_RENAME" desc="Label for the option to rename items.">
         Rename
