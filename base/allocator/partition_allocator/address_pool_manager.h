@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -151,7 +152,7 @@ class BASE_EXPORT AddressPoolManager {
 #endif
   };
 
-  ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
+  PA_ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
     PA_DCHECK(0 < handle && handle <= kNumPools);
     return &pools_[handle - 1];
   }
@@ -169,15 +170,15 @@ class BASE_EXPORT AddressPoolManager {
   friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
 };
 
-ALWAYS_INLINE pool_handle GetRegularPool() {
+PA_ALWAYS_INLINE pool_handle GetRegularPool() {
   return kRegularPoolHandle;
 }
 
-ALWAYS_INLINE pool_handle GetBRPPool() {
+PA_ALWAYS_INLINE pool_handle GetBRPPool() {
   return kBRPPoolHandle;
 }
 
-ALWAYS_INLINE pool_handle GetConfigurablePool() {
+PA_ALWAYS_INLINE pool_handle GetConfigurablePool() {
   PA_DCHECK(IsConfigurablePoolAvailable());
   return kConfigurablePoolHandle;
 }
