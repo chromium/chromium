@@ -2776,10 +2776,10 @@ void RenderFrameImpl::CommitNavigation(
 
   // The MHTML mime type should be same as the one we check in the browser
   // process's download_utils::MustDownload.
-  bool is_mhtml_archive =
-      base::LowerCaseEqualsASCII(response_head->mime_type,
-                                 "multipart/related") ||
-      base::LowerCaseEqualsASCII(response_head->mime_type, "message/rfc822");
+  bool is_mhtml_archive = base::EqualsCaseInsensitiveASCII(
+                              response_head->mime_type, "multipart/related") ||
+                          base::EqualsCaseInsensitiveASCII(
+                              response_head->mime_type, "message/rfc822");
   if (is_mhtml_archive && navigation_params->body_loader) {
     // Load full mhtml archive before committing navigation.
     // We need this to retrieve the document mime type prior to committing.
