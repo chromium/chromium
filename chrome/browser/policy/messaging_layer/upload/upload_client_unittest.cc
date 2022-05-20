@@ -124,18 +124,16 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
 
   std::string serialized_record;
   wrapped_record.SerializeToString(&serialized_record);
-  std::unique_ptr<std::vector<EncryptedRecord>> records =
-      std::make_unique<std::vector<EncryptedRecord>>();
+  std::vector<EncryptedRecord> records;
   for (int64_t i = 0; i < kExpectedCallTimes; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(serialized_record);
-
     SequenceInformation* sequence_information =
         encrypted_record.mutable_sequence_information();
     sequence_information->set_sequencing_id(static_cast<int64_t>(i));
     sequence_information->set_generation_id(kGenerationId);
     sequence_information->set_priority(Priority::IMMEDIATE);
-    records->push_back(encrypted_record);
+    records.push_back(encrypted_record);
   }
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
@@ -196,7 +194,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
 
   // Save last record seq info for verification.
   const SequenceInformation last_record_seq_info =
-      records->back().sequence_information();
+      records.back().sequence_information();
 
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
   UploadClient::Create(client.get(), e.cb());

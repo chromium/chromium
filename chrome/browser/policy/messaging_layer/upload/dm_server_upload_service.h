@@ -80,7 +80,7 @@ class DmServerUploadService {
     // Any errors will result in |upload_complete| being called with a Status.
     virtual void HandleRecords(
         bool need_encryption_key,
-        std::unique_ptr<std::vector<EncryptedRecord>> records,
+        std::vector<EncryptedRecord> records,
         DmServerUploadService::CompletionCallback upload_complete,
         DmServerUploadService::EncryptionKeyAttachedCallback
             encryption_key_attached_cb) = 0;
@@ -100,7 +100,7 @@ class DmServerUploadService {
    public:
     DmServerUploader(
         bool need_encryption_key,
-        std::unique_ptr<std::vector<EncryptedRecord>> records,
+        std::vector<EncryptedRecord> records,
         RecordHandler* handler,
         ReportSuccessfulUploadCallback report_success_upload_cb,
         EncryptionKeyAttachedCallback encryption_key_attached_cb,
@@ -135,7 +135,7 @@ class DmServerUploadService {
                          const int64_t expected_sequencing_id) const;
 
     const bool need_encryption_key_;
-    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
+    std::vector<EncryptedRecord> encrypted_records_;
     const ReportSuccessfulUploadCallback report_success_upload_cb_;
     const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
     raw_ptr<RecordHandler> handler_;
@@ -161,7 +161,7 @@ class DmServerUploadService {
 
   Status EnqueueUpload(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      std::vector<EncryptedRecord> records,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb);
 

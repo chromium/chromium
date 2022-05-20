@@ -49,7 +49,7 @@ class EncryptedReportingUploadProvider {
   // Called to upload records and/or request encryption key.
   void RequestUploadEncryptedRecords(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      std::vector<EncryptedRecord> records,
       base::OnceCallback<void(Status)> result_cb);
 
  private:

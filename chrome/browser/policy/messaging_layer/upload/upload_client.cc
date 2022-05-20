@@ -40,12 +40,10 @@ void UploadClient::Create(
 
 Status UploadClient::EnqueueUpload(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
-  DCHECK(records);
-
-  if (records->empty() && !need_encryption_key) {
+  if (records.empty() && !need_encryption_key) {
     return Status::StatusOK();
   }
 

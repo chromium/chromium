@@ -108,7 +108,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
 
   Status CallRequestUploadEncryptedRecord(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records) {
+      std::vector<EncryptedRecord> records) {
     test::TestEvent<Status> result;
     service_provider_->RequestUploadEncryptedRecords(
         need_encryption_key, std::move(records), result.cb());
@@ -134,8 +134,8 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
               UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
       .WillOnce(MakeUploadEncryptedReportAction());
 
-  auto records = std::make_unique<std::vector<EncryptedRecord>>();
-  records->push_back(record_);
+  std::vector<EncryptedRecord> records;
+  records.push_back(record_);
   const auto status = CallRequestUploadEncryptedRecord(
       /*need_encryption_key=*/false, std::move(records));
   EXPECT_OK(status) << status;

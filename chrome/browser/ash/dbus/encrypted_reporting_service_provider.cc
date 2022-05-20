@@ -172,9 +172,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   }
 
   upload_provider_->RequestUploadEncryptedRecords(
-      request.need_encryption_keys(),
-      std::make_unique<std::vector<reporting::EncryptedRecord>>(
-          std::move(records)),
+      request.need_encryption_keys(), std::move(records),
       base::BindPostTask(
           origin_thread_runner_,
           base::BindOnce(&SendStatusAsResponse, std::move(response),

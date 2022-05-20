@@ -93,11 +93,11 @@ void FakeUploadClient::Create(policy::CloudPolicyClient* cloud_policy_client,
 
 Status FakeUploadClient::EnqueueUpload(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   UploadEncryptedReportingRequestBuilder builder;
-  for (auto record : *records) {
+  for (auto record : records) {
     builder.AddRecord((std::move(record)));
   }
   auto request_result = builder.Build();

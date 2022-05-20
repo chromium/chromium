@@ -43,7 +43,7 @@ class EncryptedReportingUploadProvider::UploadHelper
 
   // Uploads encrypted records (can be invoked on any thread).
   void EnqueueUpload(bool need_encryption_key,
-                     std::unique_ptr<std::vector<EncryptedRecord>> records,
+                     std::vector<EncryptedRecord> records,
                      base::OnceCallback<void(Status)> enqueued_cb) const;
 
  private:
@@ -65,10 +65,9 @@ class EncryptedReportingUploadProvider::UploadHelper
   // Uploads encrypted records on sequenced task runner (and thus capable of
   // detecting whether upload client is ready or not). If not ready,
   // it will wait and then upload.
-  void EnqueueUploadInternal(
-      bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records,
-      base::OnceCallback<void(Status)> enqueued_cb);
+  void EnqueueUploadInternal(bool need_encryption_key,
+                             std::vector<EncryptedRecord> records,
+                             base::OnceCallback<void(Status)> enqueued_cb);
 
   // Sequence task runner and checker used during
   // |PostNewCloudPolicyClientRequest| processing.
@@ -97,8 +96,7 @@ class EncryptedReportingUploadProvider::UploadHelper
   // because it did not yet get a confirmation from server), we will only
   // hold to one set of records.
   // Guarded by sequenced_task_runner_.
-  base::flat_map</*generation_id*/ int64_t,
-                 std::unique_ptr<std::vector<EncryptedRecord>>>
+  base::flat_map</*generation_id*/ int64_t, std::vector<EncryptedRecord>>
       stored_records_;
   bool stored_need_encryption_key_{false};
 
@@ -211,7 +209,7 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
   upload_client_request_in_progress_ = false;
 
   // Upload client is ready, upload all previously stored requests (if any).
-  auto records = std::make_unique<std::vector<EncryptedRecord>>();
+  std::vector<EncryptedRecord> records;
   while (!stored_records_.empty() || stored_need_encryption_key_) {
     if (!stored_records_.empty()) {
       records = std::move(stored_records_.begin()->second);
@@ -230,7 +228,7 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
 
 void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
     base::OnceCallback<void(Status)> enqueued_cb) const {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
@@ -241,16 +239,15 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
 
 void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
     base::OnceCallback<void(Status)> enqueued_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
   if (upload_client_ == nullptr) {
     stored_need_encryption_key_ |= need_encryption_key;
     int64_t generation_id = 0;
-    if (records && !records->empty() &&
-        records->begin()->has_sequence_information() &&
-        records->begin()->sequence_information().has_generation_id()) {
-      generation_id = records->begin()->sequence_information().generation_id();
+    if (!records.empty() && records.begin()->has_sequence_information() &&
+        records.begin()->sequence_information().has_generation_id()) {
+      generation_id = records.begin()->sequence_information().generation_id();
     }
     stored_records_.emplace(generation_id, std::move(records));
     // Report success even though the upload has not been executed.
@@ -285,7 +282,7 @@ EncryptedReportingUploadProvider::~EncryptedReportingUploadProvider() = default;
 
 void EncryptedReportingUploadProvider::RequestUploadEncryptedRecords(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    std::vector<EncryptedRecord> records,
     base::OnceCallback<void(Status)> result_cb) {
   DCHECK(helper_);
   helper_->EnqueueUpload(need_encryption_key, std::move(records),

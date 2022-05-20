@@ -77,8 +77,7 @@ void ReportingClient::CreateLocalStorageModule(
 class ReportingClient::Uploader : public UploaderInterface {
  public:
   using UploadCallback =
-      base::OnceCallback<Status(bool,
-                                std::unique_ptr<std::vector<EncryptedRecord>>)>;
+      base::OnceCallback<Status(bool, std::vector<EncryptedRecord>)>;
 
   static std::unique_ptr<Uploader> Create(bool need_encryption_key,
                                           UploadCallback upload_callback) {
@@ -123,7 +122,7 @@ class ReportingClient::Uploader : public UploaderInterface {
    private:
     bool completed_{false};
     const bool need_encryption_key_;
-    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
+    std::vector<EncryptedRecord> encrypted_records_;
 
     UploadCallback upload_callback_;
   };
@@ -140,7 +139,6 @@ ReportingClient::Uploader::Helper::Helper(
     bool need_encryption_key,
     ReportingClient::Uploader::UploadCallback upload_callback)
     : need_encryption_key_(need_encryption_key),
-      encrypted_records_(std::make_unique<std::vector<EncryptedRecord>>()),
       upload_callback_(std::move(upload_callback)) {}
 
 void ReportingClient::Uploader::Helper::ProcessRecord(
@@ -150,7 +148,7 @@ void ReportingClient::Uploader::Helper::ProcessRecord(
     std::move(processed_cb).Run(false);
     return;
   }
-  encrypted_records_->emplace_back(std::move(data));
+  encrypted_records_.emplace_back(std::move(data));
   std::move(processed_cb).Run(true);
 }
 
@@ -163,8 +161,8 @@ void ReportingClient::Uploader::Helper::ProcessGap(
     return;
   }
   for (uint64_t i = 0; i < count; ++i) {
-    encrypted_records_->emplace_back();
-    *encrypted_records_->rbegin()->mutable_sequence_information() = start;
+    encrypted_records_.emplace_back();
+    *encrypted_records_.rbegin()->mutable_sequence_information() = start;
     start.set_sequencing_id(start.sequencing_id() + 1);
   }
   std::move(processed_cb).Run(true);
@@ -181,8 +179,7 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
     return;
   }
   completed_ = true;
-  DCHECK(encrypted_records_);
-  if (encrypted_records_->empty() && !need_encryption_key_) {
+  if (encrypted_records_.empty() && !need_encryption_key_) {
     return;
   }
   DCHECK(upload_callback_);
@@ -344,7 +341,7 @@ void ReportingClient::DeliverAsyncStartUploader(
                 base::BindOnce(
                     [](EncryptedReportingUploadProvider* upload_provider,
                        bool need_encryption_key,
-                       std::unique_ptr<std::vector<EncryptedRecord>> records) {
+                       std::vector<EncryptedRecord> records) {
                       upload_provider->RequestUploadEncryptedRecords(
                           need_encryption_key, std::move(records),
                           base::DoNothing());

@@ -45,7 +45,7 @@ class UploadClient {
 
   virtual Status EnqueueUpload(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> record,
+      std::vector<EncryptedRecord> record,
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb);
 
