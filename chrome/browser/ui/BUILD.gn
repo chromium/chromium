@@ -4943,6 +4943,8 @@ static_library("ui") {
       "views/web_apps/pwa_confirmation_bubble_view.h",
       "views/web_apps/web_app_confirmation_view.cc",
       "views/web_apps/web_app_confirmation_view.h",
+      "views/web_apps/web_app_detailed_install_dialog.cc",
+      "views/web_apps/web_app_detailed_install_dialog.h",
       "views/web_apps/web_app_identity_update_confirmation_view.cc",
       "views/web_apps/web_app_identity_update_confirmation_view.h",
       "views/web_apps/web_app_info_image_source.cc",

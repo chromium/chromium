@@ -228,6 +228,15 @@ void ShowPWAInstallBubble(
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
+// Shows the Web App detailed install dialog.
+// The dialog shows app's detailed information including screenshots. Users then
+// confirm or cancel install in this dialog.
+void ShowWebAppDetailedInstallDialog(
+    content::WebContents* web_contents,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    AppInstallationAcceptanceCallback callback,
+    PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
+
 // Sets whether |ShowPWAInstallBubble| should accept immediately without any
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
