@@ -246,12 +246,17 @@
 
 - (void)policyWatcherBrowserAgentNotifySignInDisabled:
     (PolicyWatcherBrowserAgent*)policyWatcher {
-  self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                      promptType:EnterprisePromptTypeForceSignOut];
-  self.enterprisePromptCoordinator.delegate = self;
-  [self.enterprisePromptCoordinator start];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^{
+    [weakSelf openEnterprisePromptDialog];
+  };
+  if (!self.advancedSettingsSigninCoordinator) {
+    completion();
+    return;
+  }
+  [self.advancedSettingsSigninCoordinator
+      interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+               completion:completion];
 }
 
 #pragma mark - EnterprisePromptCoordinatorDelegate
@@ -339,6 +344,16 @@
 
   [self.advancedSettingsSigninCoordinator stop];
   self.advancedSettingsSigninCoordinator = nil;
+}
+
+// Opens EnterprisePromptCoordinator.
+- (void)openEnterprisePromptDialog {
+  self.enterprisePromptCoordinator = [[EnterprisePromptCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      promptType:EnterprisePromptTypeForceSignOut];
+  self.enterprisePromptCoordinator.delegate = self;
+  [self.enterprisePromptCoordinator start];
 }
 
 @end
