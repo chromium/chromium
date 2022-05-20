@@ -71,6 +71,10 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
   void RemoveAgent(AnnotationAgentImpl& agent,
                    base::PassKey<AnnotationAgentImpl>);
 
+  // Returns all annotation agents in this container of the given type.
+  HeapHashSet<Member<AnnotationAgentImpl>> GetAgentsOfType(
+      mojom::blink::AnnotationType type);
+
   // Use from within Blink to create an agent in this container.
   AnnotationAgentImpl* CreateUnboundAgent(mojom::blink::AnnotationType type,
                                           AnnotationSelector& selector);

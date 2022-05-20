@@ -32,6 +32,8 @@ void TextAnnotationSelector::FindRange(Document& document,
       break;
   }
 
+  was_unique_.reset();
+
   finder_ = MakeGarbageCollected<TextFragmentFinder>(*this, params_, &document,
                                                      find_buffer_type);
   finished_callback_ = std::move(finished_cb);
@@ -43,6 +45,8 @@ void TextAnnotationSelector::DidFindMatch(const RangeInFlatTree& range,
   DCHECK(finished_callback_);
   std::move(finished_callback_).Run(&range);
 
+  was_unique_ = is_unique;
+
   finder_.Clear();
 }
 
@@ -50,6 +54,11 @@ void TextAnnotationSelector::NoMatchFound() {
   DCHECK(finished_callback_);
   std::move(finished_callback_).Run(nullptr);
   finder_.Clear();
+}
+
+bool TextAnnotationSelector::WasMatchUnique() const {
+  DCHECK(was_unique_.has_value());
+  return *was_unique_;
 }
 
 }  // namespace blink

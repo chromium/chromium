@@ -9,10 +9,13 @@
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
 
+class AnnotationAgentImpl;
+class Document;
 class LocalFrame;
 class TextFragmentAnchor;
 
@@ -36,6 +39,13 @@ class CORE_EXPORT TextFragmentHandler final
   // Called to notify the frame's TextFragmentHandler on context menu open over
   // a selection. Will trigger preemptive generation if needed.
   static void OpenedContextMenuOverSelection(LocalFrame* frame);
+
+  // TODO(crbug.com/1303887): This temporarily takes a Document since
+  // TextFragmentHandler is currently 1:1 with Document. This will change when
+  // we get a SharedHighlightingManager and this method can avoid storing the
+  // agent, instead bind the AnnotationAgent to a host in the browser.
+  static void DidCreateTextFragment(AnnotationAgentImpl& agent,
+                                    Document& owning_document);
 
   // mojom::blink::TextFragmentReceiver interface
   void Cancel() override;
@@ -82,6 +92,8 @@ class CORE_EXPORT TextFragmentHandler final
   TextFragmentAnchor* GetTextFragmentAnchor();
 
   LocalFrame* GetFrame() { return frame_; }
+
+  HeapVector<Member<AnnotationAgentImpl>> annotation_agents_;
 
   // Class responsible for generating text fragment selectors for the current
   // selection.
