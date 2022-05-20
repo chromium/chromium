@@ -10,14 +10,13 @@ from py_utils import cloud_storage
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_TRACE_DIR = os.path.join(_SCRIPT_DIR, 'traces')
 
-HTML_URL_PREFIX = ('https://console.developers.google.com/m/cloudstorage/b/'
-                   'chrome-telemetry-output/o/')
+HTML_URL_PREFIX = ('https://storage.cloud.google.com/chrome-telemetry-output/')
 
 
 def _GetSubpathInBucket(html_url):
   """Returns the path minus the HTML_URL_PREFIX.
 
-  Given https://console.../chrome-telemetry-output/o/foo/bar/trace.html,
+  Given https://storage.../chrome-telemetry-output/foo/bar/trace.html,
   it returns foo/bar/trace.html."""
   if not html_url.startswith(HTML_URL_PREFIX):
     raise Exception('Html trace url must start with %s' % HTML_URL_PREFIX)
@@ -56,7 +55,7 @@ def GetFileExtension(file_path):
 def GetLocalTraceFileName(html_url):
   """Returns a local filename derived from the html trace url.
 
-  Given https://console.../chrome-telemetry-output/o/foo/bar/trace.html, it
+  Given https://storage.../chrome-telemetry-output/foo/bar/trace.html, it
   returns foo_bar_trace as the local filename. The filename does not contain
   extensions. It's up to the caller to add .html or .pb etc."""
   subpath = _GetSubpathInBucket(html_url)
