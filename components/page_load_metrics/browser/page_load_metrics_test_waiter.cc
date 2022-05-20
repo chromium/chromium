@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 
 #include "base/check_op.h"
+#include "base/i18n/number_formatting.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,16 +28,19 @@ bool IsSubset(const Set& set1, const Set& set2) {
 
 // PageLoadMetricsObserver used by the PageLoadMetricsTestWaiter to observe
 // metrics updates.
-class WaiterMetricsObserver : public PageLoadMetricsObserver {
+class WaiterMetricsObserver final : public PageLoadMetricsObserver {
  public:
   using FrameTreeNodeId = PageLoadMetricsObserver::FrameTreeNodeId;
   // We use a WeakPtr to the PageLoadMetricsTestWaiter because |waiter| can be
   // destroyed before this WaiterMetricsObserver.
   explicit WaiterMetricsObserver(
-      base::WeakPtr<PageLoadMetricsTestWaiter> waiter)
-      : waiter_(waiter) {}
+      base::WeakPtr<PageLoadMetricsTestWaiter> waiter,
+      const char* observer_name)
+      : waiter_(waiter), observer_name_(observer_name) {}
 
   ~WaiterMetricsObserver() override = default;
+
+  const char* GetObserverName() const override;
 
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
@@ -75,11 +79,18 @@ class WaiterMetricsObserver : public PageLoadMetricsObserver {
 
  private:
   const base::WeakPtr<PageLoadMetricsTestWaiter> waiter_;
+  const char* observer_name_;
 };
 
 PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
     content::WebContents* web_contents)
-    : MetricsLifecycleObserver(web_contents) {}
+    : MetricsLifecycleObserver(web_contents),
+      observer_name_("WaiterMetricsObserver") {}
+
+PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
+    content::WebContents* web_contents,
+    const char* observer_name_)
+    : MetricsLifecycleObserver(web_contents), observer_name_(observer_name_) {}
 
 PageLoadMetricsTestWaiter::~PageLoadMetricsTestWaiter() {
   CHECK(did_add_observer_);
@@ -407,8 +418,8 @@ void PageLoadMetricsTestWaiter::OnActivate(
 void PageLoadMetricsTestWaiter::AddObserver(
     page_load_metrics::PageLoadTracker* tracker) {
   ASSERT_FALSE(did_add_observer_);
-  tracker->AddObserver(
-      std::make_unique<WaiterMetricsObserver>(weak_factory_.GetWeakPtr()));
+  tracker->AddObserver(std::make_unique<WaiterMetricsObserver>(
+      weak_factory_.GetWeakPtr(), observer_name_));
   did_add_observer_ = true;
 }
 
@@ -505,12 +516,15 @@ void PageLoadMetricsTestWaiter::ResetExpectations() {
   expected_minimum_aggregate_cpu_time_ = base::TimeDelta();
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+const char* WaiterMetricsObserver::GetObserverName() const {
+  return observer_name_;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 WaiterMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return STOP_OBSERVING;
+  return FORWARD_OBSERVING;
 }
 
 void WaiterMetricsObserver::OnTimingUpdate(

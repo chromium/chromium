@@ -45,6 +45,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
       page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
 
   explicit PageLoadMetricsTestWaiter(content::WebContents* web_contents);
+  explicit PageLoadMetricsTestWaiter(content::WebContents* web_contents,
+                                     const char* observer_name_);
 
   ~PageLoadMetricsTestWaiter() override;
 
@@ -132,6 +134,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   virtual void ResetExpectations();
 
  private:
+  const char* observer_name_;
+
   // Manages a bitset of TimingFields.
   class TimingFieldBitSet {
    public:

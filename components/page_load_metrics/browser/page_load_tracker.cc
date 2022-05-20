@@ -641,7 +641,11 @@ void PageLoadTracker::AddObserverInterface(
     std::unique_ptr<PageLoadMetricsObserverInterface> observer) {
   if (observer->GetObserverName()) {
     DCHECK(observers_map_.find(observer->GetObserverName()) ==
-           observers_map_.end());
+           observers_map_.end())
+        << "We expect that observer's class and name is unique in trackers. "
+           "Note that observer's class can be non-unique in test, e.g. "
+           "PageLoadMetricsTestWaiter. In that case, use a unique name in "
+           "the test. See also constructor of PageLoadMetricsTestWaiter.";
     observers_map_.emplace(observer->GetObserverName(), observer.get());
   }
   observers_.push_back(std::move(observer));
