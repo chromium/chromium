@@ -3399,6 +3399,7 @@ void WebContentsImpl::EnterFullscreenMode(
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::EnterFullscreenMode");
   DCHECK(CanEnterFullscreenMode(requesting_frame, options));
   DCHECK(requesting_frame->IsActive());
+  DCHECK(ContainsOrIsFocusedWebContents());
 
   if (delegate_) {
     delegate_->EnterFullscreenModeForTab(requesting_frame, options);

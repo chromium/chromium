@@ -709,9 +709,9 @@ ScriptPromise Fullscreen::RequestFullscreen(Element& pending,
     LocalFrame& frame = *window.GetFrame();
     frame.GetChromeClient().EnterFullscreen(frame, options, request_type);
 
-    // After the first fullscreen request, the user activation should be
-    // consumed, and the following fullscreen requests should receive an error.
     if (!for_cross_process_descendant) {
+      // Consume any transient user activation and delegated fullscreen token.
+      // AllowedToRequestFullscreen() enforces algorithm requirements earlier.
       LocalFrame::ConsumeTransientUserActivation(&frame);
       window.ConsumeFullscreenRequestToken();
     }
