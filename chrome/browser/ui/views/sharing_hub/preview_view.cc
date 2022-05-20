@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
+#include "components/url_formatter/elide_url.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -49,6 +50,36 @@ LayoutVariant LayoutVariant::FromFeatureConfig() {
       return kVariant16;
   }
 }
+
+class UrlLabel : public views::Label {
+ public:
+  UrlLabel(GURL url, int context, int style)
+      : views::Label(base::UTF8ToUTF16(url.spec()), context, style), url_(url) {
+    // Never use the elided URL for the accessible name or tooltip - both of
+    // these are allowed to be of arbitrary length (since they aren't
+    // constrained by the visual layout) and should give the user the full URL.
+    SetAccessibleName(GetText());
+    SetTooltipText(GetText());
+  }
+  ~UrlLabel() override = default;
+
+  void OnBoundsChanged(const gfx::Rect& previous) override {
+    // Danger! Do not repurpose this behavior for your own use!
+    //
+    // It is safe to change the text in response to a layout like this *only*
+    // because the UrlLabel is included in a fixed-width bubble. If the bubble
+    // instead had variable width, or this view's width could otherwise change,
+    // then it would be very easy to get into an infinite loop between setting
+    // the text (thus prompting a relayout) and the layout setting the width
+    // (thus causing the text to be set again). Since the bubble containing the
+    // UrlLabel has a fixed width, this infinite recurrence can't happen.
+    views::Label::OnBoundsChanged(previous);
+    SetText(url_formatter::ElideUrl(url_, font_list(), width()));
+  }
+
+ private:
+  GURL url_;
+};
 
 }  // namespace
 
@@ -93,9 +124,12 @@ PreviewView::PreviewView(share::ShareAttempt attempt, ui::ImageModel image) {
   // here.
   title_ = labels_container->AddChildView(std::make_unique<views::Label>(
       attempt.title, views::style::CONTEXT_DIALOG_TITLE));
-  url_ = labels_container->AddChildView(std::make_unique<views::Label>(
-      base::UTF8ToUTF16(attempt.url.spec()), views::style::CONTEXT_DIALOG_TITLE,
+  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  url_ = labels_container->AddChildView(std::make_unique<UrlLabel>(
+      attempt.url, views::style::CONTEXT_DIALOG_TITLE,
       views::style::STYLE_HINT));
+  url_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
 PreviewView::~PreviewView() = default;

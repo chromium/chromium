@@ -5581,6 +5581,7 @@ static_library("test_support") {
     "//components/permissions",
     "//components/sessions",
     "//components/translate/content/browser",
+    "//components/url_formatter",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
