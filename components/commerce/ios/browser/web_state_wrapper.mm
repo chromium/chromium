@@ -4,7 +4,12 @@
 
 #include "components/commerce/ios/browser/web_state_wrapper.h"
 
+#include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "ios/web/public/browser_state.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frames_manager.h"
 #include "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,6 +33,26 @@ bool WebStateWrapper::IsOffTheRecord() {
     return false;
 
   return web_state_->GetBrowserState()->IsOffTheRecord();
+}
+
+void WebStateWrapper::RunJavascript(
+    const std::u16string& script,
+    base::OnceCallback<void(const base::Value)> callback) {
+  // GetWebFramesManager() never returns null, but the main frame mght be.
+  if (!web_state_ || !web_state_->GetWebFramesManager()->GetMainWebFrame()) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  web_state_->GetWebFramesManager()->GetMainWebFrame()->ExecuteJavaScript(
+      base::UTF16ToUTF8(script),
+      base::BindOnce(
+          [](base::OnceCallback<void(const base::Value)> callback,
+             const base::Value* response) {
+            std::move(callback).Run(response ? response->Clone()
+                                             : base::Value());
+          },
+          std::move(callback)));
 }
 
 void WebStateWrapper::ClearWebStatePointer() {

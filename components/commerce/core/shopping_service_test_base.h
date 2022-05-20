@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/values.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -83,9 +84,19 @@ class MockWebWrapper : public WebWrapper {
 
   bool IsOffTheRecord() override;
 
+  void RunJavascript(
+      const std::u16string& script,
+      base::OnceCallback<void(const base::Value)> callback) override;
+
+  // Set the result of some javascript execution. This object does not take
+  // ownership of the provided pointer.
+  void SetMockJavaScriptResult(base::Value* result);
+
  private:
   GURL last_committed_url_;
   bool is_off_the_record_;
+
+  raw_ptr<base::Value> mock_js_result_;
 };
 
 class ShoppingServiceTestBase : public testing::Test {

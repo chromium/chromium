@@ -100,6 +100,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/accuracy_tips/features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -322,7 +323,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ChromeTranslateClient::CreateForWebContents(web_contents);
   commerce::CommerceTabHelper::CreateForWebContents(
       web_contents, profile->IsOffTheRecord(),
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile));
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DIPSBounceDetector::CreateForWebContents(web_contents);

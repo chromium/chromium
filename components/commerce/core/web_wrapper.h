@@ -5,7 +5,14 @@
 #ifndef COMPONENTS_COMMERCE_CORE_WEB_WRAPPER_H_
 #define COMPONENTS_COMMERCE_CORE_WEB_WRAPPER_H_
 
+#include <string>
+
+#include "base/callback.h"
 #include "url/gurl.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace commerce {
 
@@ -21,6 +28,12 @@ class WebWrapper {
 
   // Whether content is off the record or in incognito mode.
   virtual bool IsOffTheRecord() = 0;
+
+  // Execute the provided |script| and pass the result through |callback|. This
+  // will run in an isolated world if possible.
+  virtual void RunJavascript(
+      const std::u16string& script,
+      base::OnceCallback<void(const base::Value)> callback) = 0;
 };
 
 }  // namespace commerce

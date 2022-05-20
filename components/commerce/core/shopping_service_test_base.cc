@@ -5,7 +5,6 @@
 #include "components/commerce/core/shopping_service_test_base.h"
 
 #include "base/notreached.h"
-#include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -104,6 +103,21 @@ const GURL& MockWebWrapper::GetLastCommittedURL() {
 
 bool MockWebWrapper::IsOffTheRecord() {
   return is_off_the_record_;
+}
+
+void MockWebWrapper::RunJavascript(
+    const std::u16string& script,
+    base::OnceCallback<void(const base::Value)> callback) {
+  if (!mock_js_result_) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  std::move(callback).Run(mock_js_result_->Clone());
+}
+
+void MockWebWrapper::SetMockJavaScriptResult(base::Value* result) {
+  mock_js_result_ = result;
 }
 
 ShoppingServiceTestBase::ShoppingServiceTestBase()

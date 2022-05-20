@@ -12,11 +12,12 @@ namespace commerce {
 
 CommerceTabHelper::CommerceTabHelper(content::WebContents* content,
                                      bool is_off_the_record,
-                                     ShoppingService* shopping_service)
+                                     ShoppingService* shopping_service,
+                                     int32_t js_world_id)
     : content::WebContentsObserver(content),
       content::WebContentsUserData<CommerceTabHelper>(*content),
       is_off_the_record_(is_off_the_record),
-      web_wrapper_(std::make_unique<WebContentsWrapper>(content)),
+      web_wrapper_(std::make_unique<WebContentsWrapper>(content, js_world_id)),
       shopping_service_(shopping_service) {
   if (shopping_service_)
     shopping_service_->WebWrapperCreated(web_wrapper_.get());

@@ -44,7 +44,8 @@ class CommerceTabHelper
 
   CommerceTabHelper(content::WebContents* contents,
                     bool is_off_the_record,
-                    ShoppingService* shopping_service);
+                    ShoppingService* shopping_service,
+                    int32_t js_world_id);
 
   const bool is_off_the_record_;
 

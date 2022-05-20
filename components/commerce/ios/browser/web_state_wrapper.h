@@ -5,11 +5,18 @@
 #ifndef COMPONENTS_COMMERCE_IOS_BROWSER_WEB_STATE_WRAPPER_H_
 #define COMPONENTS_COMMERCE_IOS_BROWSER_WEB_STATE_WRAPPER_H_
 
+#include <string>
+
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "ios/web/public/web_state.h"
 
 class GURL;
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace commerce {
 
@@ -24,6 +31,10 @@ class WebStateWrapper : public WebWrapper {
   const GURL& GetLastCommittedURL() override;
 
   bool IsOffTheRecord() override;
+
+  void RunJavascript(
+      const std::u16string& script,
+      base::OnceCallback<void(const base::Value)> callback) override;
 
   void ClearWebStatePointer();
 
