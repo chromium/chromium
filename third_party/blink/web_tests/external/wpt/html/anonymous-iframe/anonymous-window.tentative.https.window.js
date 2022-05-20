@@ -13,9 +13,7 @@ promise_test_parallel(async t => {
   iframe.contentWindow.modified = true;
   iframe.src = ORIGIN + "/common/blank.html";
   // Wait for navigation to complete.
-  await t.step_wait(() =>
-    iframe.contentWindow.location.href === iframe.src,
-    "Wait for the navigation to complete");
+  await new Promise(resolve => iframe.onload = resolve);
   assert_true(iframe.anonymous);
   assert_true(iframe.contentWindow.isAnonymouslyFramed);
   assert_equals(undefined, iframe.contentWindow.modified);
@@ -30,9 +28,7 @@ promise_test_parallel(async t => {
   iframe.contentWindow.modified = true;
   iframe.src = ORIGIN + "/common/blank.html";
   // Wait for navigation to complete.
-  await t.step_wait(() =>
-    iframe.contentWindow.location.href === iframe.src,
-    "Wait for the navigation to complete");
+  await new Promise(resolve => iframe.onload = resolve);
   assert_false(iframe.anonymous);
   assert_false(iframe.contentWindow.isAnonymouslyFramed);
   assert_equals(undefined, iframe.contentWindow.modified);
@@ -47,9 +43,7 @@ promise_test_parallel(async t => {
   iframe.contentWindow.modified = true;
   iframe.src = ORIGIN + "/common/blank.html";
   // Wait for navigation to complete.
-  await t.step_wait(() =>
-    iframe.contentWindow.location.href === iframe.src,
-    "Wait for the navigation to complete");
+  await new Promise(resolve => iframe.onload = resolve);
   assert_true(iframe.anonymous);
   assert_true(iframe.contentWindow.isAnonymouslyFramed);
   assert_true(iframe.contentWindow.modified);
