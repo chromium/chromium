@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
-import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTabSwitcherDelegate;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -721,35 +720,15 @@ public class RootUiCoordinator
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-            // TODO(crbug.com/1324211, crbug.com/1227656) : Refactor below to remove
-            //  IncognitoReauthTabSwitcherDelegate altogether and directly pass
-            //  OneshotSupplierImpl<TabSwitcherCustomViewManager> instance.
-            OneshotSupplierImpl<IncognitoReauthTabSwitcherDelegate>
-                    incognitoReauthTabSwitcherSupplier = new OneshotSupplierImpl<>();
-            if (mActivityType == ActivityType.TABBED) {
-                mTabSwitcherCustomViewController = new CallbackController();
-                mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier().onAvailable(
-                        mTabSwitcherCustomViewController.makeCancelable(tabSwitcherCustomViewManager
-                                -> incognitoReauthTabSwitcherSupplier.set(
-                                        new IncognitoReauthTabSwitcherDelegate() {
-                                            @Override
-                                            public boolean addReauthScreenInTabSwitcher(
-                                                    @NonNull View customView) {
-                                                return tabSwitcherCustomViewManager.requestView(
-                                                        customView);
-                                            }
-
-                                            @Override
-                                            public boolean removeReauthScreenFromTabSwitcher() {
-                                                return tabSwitcherCustomViewManager.releaseView();
-                                            }
-                                        })));
-            }
-
+            OneshotSupplier<TabSwitcherCustomViewManager> tabSwitcherCustomViewSupplier =
+                    new OneshotSupplierImpl<>();
+            tabSwitcherCustomViewSupplier = (mActivityType == ActivityType.TABBED)
+                    ? mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier()
+                    : tabSwitcherCustomViewSupplier;
             IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
                     new IncognitoReauthCoordinatorFactory(mActivity, tabModelSelector,
                             mModalDialogManagerSupplier.get(), new SettingsLauncherImpl(),
-                            incognitoReauthTabSwitcherSupplier);
+                            tabSwitcherCustomViewSupplier);
             mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
                     mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
                     mProfileSupplier, incognitoReauthCoordinatorFactory);

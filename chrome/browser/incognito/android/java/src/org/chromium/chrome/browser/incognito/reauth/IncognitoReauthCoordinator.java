@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -34,8 +35,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 class IncognitoReauthCoordinator {
     private final @NonNull Context mContext;
     private final @NonNull ModalDialogManager mModalDialogManager;
-    // This can be null if the {link TabSwitcherCustomViewManager} is not yet created.
-    private final @Nullable IncognitoReauthTabSwitcherDelegate mIncognitoReauthTabSwitcherDelegate;
+    // This can be null for cases where tab switcher might not have been created yet.
+    // This happens when user hasn't yet interacted with tab switcher but we create
+    // this coordinator to display a full-screen dialog.
+    private final @Nullable TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
     private final boolean mShowFullScreen;
 
     // Non-null for full screen re-auth dialog.
@@ -59,7 +62,7 @@ class IncognitoReauthCoordinator {
      *         to initiate re-authentication.
      * @param settingsLauncher A {@link SettingsLauncher} that allows to fire {@link
      *         SettingsActivity}.
-     * @param incognitoReauthTabSwitcherDelegate A {@link IncognitoReauthTabSwitcherDelegate} that
+     * @param tabSwitcherCustomViewManager A {@link TabSwitcherCustomViewManager} that
      *         allows to communicate with tab switcher to show the re-auth screen.
      * @param showFullScreen Whether to show a fullscreen / tab based re-auth dialog.
      */
@@ -69,11 +72,11 @@ class IncognitoReauthCoordinator {
             @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull SettingsLauncher settingsLauncher,
-            @Nullable IncognitoReauthTabSwitcherDelegate incognitoReauthTabSwitcherDelegate,
+            @Nullable TabSwitcherCustomViewManager tabSwitcherCustomViewManager,
             boolean showFullScreen) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mIncognitoReauthTabSwitcherDelegate = incognitoReauthTabSwitcherDelegate;
+        mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
         mShowFullScreen = showFullScreen;
         mIncognitoReauthMediator = new IncognitoReauthMediator(
                 tabModelSelector, incognitoReauthCallback, incognitoReauthManager);
@@ -103,10 +106,9 @@ class IncognitoReauthCoordinator {
                     new IncognitoReauthDialog(mModalDialogManager, mIncognitoReauthView);
             mIncognitoReauthDialog.showIncognitoReauthDialog(mShowFullScreen);
         } else {
-            assert mIncognitoReauthTabSwitcherDelegate
-                    != null : "delegate to TabSwitcher can't be null.";
-            boolean success = mIncognitoReauthTabSwitcherDelegate.addReauthScreenInTabSwitcher(
-                    mIncognitoReauthView);
+            assert mTabSwitcherCustomViewManager
+                    != null : "TabSwitcherCustomViewManager can't be null.";
+            boolean success = mTabSwitcherCustomViewManager.requestView(mIncognitoReauthView);
             assert success : "Unable to signal showing the re-auth screen to tab switcher.";
         }
     }
@@ -116,10 +118,9 @@ class IncognitoReauthCoordinator {
             assert mIncognitoReauthDialog != null : "Incognito re-auth dialog doesn't exists.";
             mIncognitoReauthDialog.dismissIncognitoReauthDialog(dismissalCause);
         } else {
-            assert mIncognitoReauthTabSwitcherDelegate
-                    != null : "delegate to TabSwitcher can't be null.";
-            boolean success =
-                    mIncognitoReauthTabSwitcherDelegate.removeReauthScreenFromTabSwitcher();
+            assert mTabSwitcherCustomViewManager
+                    != null : "TabSwitcherCustomViewManager can't be null.";
+            boolean success = mTabSwitcherCustomViewManager.releaseView();
             assert success : "Unable to signal removing the re-auth screen from tab switcher.";
         }
         destroy();

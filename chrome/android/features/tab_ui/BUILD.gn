@@ -175,6 +175,7 @@ android_library("java") {
     "//chrome/android:chrome_java",
     "//chrome/android:ui_locale_string_resources",
     "//chrome/android/features/start_surface:public_java",
+    "//chrome/android/features/tab_ui/public:java",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",
