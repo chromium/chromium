@@ -133,27 +133,21 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   // primary plane informations. It is a "compositor frame" on AcceleratedWidget
   // level. This information gets into browser process and overlays are
   // translated to be attached to WaylandSurfaces of the AcceleratedWidget.
+  // TODO(fangzhoug): This should be changed to support Vulkan.
   struct PendingFrame {
     explicit PendingFrame(uint32_t frame_id);
     ~PendingFrame();
-
-    // Queues overlay configs to |configs|.
-    void ScheduleOverlayPlanes(GbmSurfacelessWayland* surfaceless);
 
     // Unique identifier of the frame within this AcceleratedWidget.
     uint32_t frame_id;
 
     bool ready = false;
 
-    // TODO(fangzhoug): This should be changed to support Vulkan.
-    std::vector<gl::GLSurfaceOverlay> overlays;
-    std::vector<gfx::OverlayPlaneData> non_backed_overlays;
     SwapCompletionCallback completion_callback;
     PresentationCallback presentation_callback;
 
-    // Merged release fence fd. This is taken as the union of all release
-    // fences for a particular OnSubmission.
-    bool schedule_planes_succeeded = false;
+    // Says if scheduling succeeded.
+    bool schedule_planes_succeeded = true;
 
     std::vector<BufferId> in_flight_color_buffers;
     // Contains |buffer_id|s to gl::GLSurfaceOverlay, used for committing
