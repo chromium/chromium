@@ -9,8 +9,8 @@
 #include <cstddef>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 
 namespace partition_alloc {
@@ -77,21 +77,17 @@ using ::partition_alloc::PartitionRoot;
 // Note that it doesn't apply to realloc()-type functions, as they can return
 // the same pointer as the one passed as a parameter, as noted in e.g. stdlib.h
 // on Linux systems.
-#if defined(__has_attribute)
-
-#if __has_attribute(malloc)
+#if PA_HAS_ATTRIBUTE(malloc)
 #define PA_MALLOC_FN __attribute__((malloc))
 #endif
 
 // Allows the compiler to assume that the return value is aligned on a
 // kAlignment boundary. This is useful for e.g. using aligned vector
 // instructions in the constructor for zeroing.
-#if __has_attribute(assume_aligned)
+#if PA_HAS_ATTRIBUTE(assume_aligned)
 #define PA_MALLOC_ALIGNED \
   __attribute__((assume_aligned(::partition_alloc::internal::kAlignment)))
 #endif
-
-#endif  // defined(__has_attribute)
 
 #if !defined(PA_MALLOC_FN)
 #define PA_MALLOC_FN
