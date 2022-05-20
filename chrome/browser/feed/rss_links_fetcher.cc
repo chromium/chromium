@@ -15,7 +15,7 @@ namespace {
 
 mojo::Remote<feed::mojom::RssLinkReader> GetRssLinkReaderRemote(
     content::WebContents* web_contents) {
-  DCHECK(web_contents->GetMainFrame()->IsRenderFrameCreated());
+  DCHECK(web_contents->GetMainFrame()->IsRenderFrameLive());
   mojo::Remote<feed::mojom::RssLinkReader> result;
   // GetRemoteInterfaces() cannot be null if the render frame is created.
   web_contents->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
