@@ -153,49 +153,47 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     }
   });
 
-  test('can be sorted by most visited', function() {
+  test('can be sorted by most visited', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
 
-    return browserProxy.whenCalled('getAllSites').then(() => {
-      // Add additional origins and artificially insert fake engagement scores
-      // to sort.
-      assertEquals(3, testElement.siteGroupMap.size);
-      const fooSiteGroup = testElement.siteGroupMap.get('foo.com')!;
-      fooSiteGroup.origins.push(
-          createOriginInfo('https://login.foo.com', {engagement: 20}));
-      assertEquals(2, fooSiteGroup.origins.length);
-      fooSiteGroup.origins[0]!.engagement = 50.4;
-      const googleSiteGroup = testElement.siteGroupMap.get('google.com')!;
-      assertEquals(1, googleSiteGroup.origins.length);
-      googleSiteGroup.origins[0]!.engagement = 55.1261;
-      const barSiteGroup = testElement.siteGroupMap.get('bar.com')!;
-      assertEquals(1, barSiteGroup.origins.length);
-      barSiteGroup.origins[0]!.engagement = 0.5235;
+    await browserProxy.whenCalled('getAllSites');
 
-      // 'Most visited' is the default sort method, so sort by a different
-      // method first to ensure changing to 'Most visited' works.
-      testElement.$.sortMethod.value = 'name';
-      testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-      flush();
-      let siteEntries =
-          testElement.$.listContainer.querySelectorAll('site-entry');
-      assertEquals('bar.com', siteEntries[0]!.$.displayName.innerText.trim());
-      assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-      assertEquals(
-          'google.com', siteEntries[2]!.$.displayName.innerText.trim());
+    // Add additional origins and artificially insert fake engagement scores
+    // to sort.
+    assertEquals(3, testElement.siteGroupMap.size);
+    const fooSiteGroup = testElement.siteGroupMap.get('foo.com')!;
+    fooSiteGroup.origins.push(
+        createOriginInfo('https://login.foo.com', {engagement: 20}));
+    assertEquals(2, fooSiteGroup.origins.length);
+    fooSiteGroup.origins[0]!.engagement = 50.4;
+    const googleSiteGroup = testElement.siteGroupMap.get('google.com')!;
+    assertEquals(1, googleSiteGroup.origins.length);
+    googleSiteGroup.origins[0]!.engagement = 55.1261;
+    const barSiteGroup = testElement.siteGroupMap.get('bar.com')!;
+    assertEquals(1, barSiteGroup.origins.length);
+    barSiteGroup.origins[0]!.engagement = 0.5235;
 
-      testElement.$.sortMethod.value = 'most-visited';
-      testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-      flush();
-      siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-      // Each site entry is sorted by its maximum engagement, so expect
-      // 'foo.com' to come after 'google.com'.
-      assertEquals(
-          'google.com', siteEntries[0]!.$.displayName.innerText.trim());
-      assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
-      assertEquals('bar.com', siteEntries[2]!.$.displayName.innerText.trim());
-    });
+    // 'Most visited' is the default sort method, so sort by a different
+    // method first to ensure changing to 'Most visited' works.
+    testElement.$.sortMethod.value = 'name';
+    testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
+    flush();
+    let siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals('bar.com', siteEntries[0]!.$.displayName.innerText.trim());
+    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
+    assertEquals('google.com', siteEntries[2]!.$.displayName.innerText.trim());
+
+    testElement.$.sortMethod.value = 'most-visited';
+    testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
+    flush();
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    // Each site entry is sorted by its maximum engagement, so expect
+    // 'foo.com' to come after 'google.com'.
+    assertEquals('google.com', siteEntries[0]!.$.displayName.innerText.trim());
+    assertEquals('foo.com', siteEntries[1]!.$.displayName.innerText.trim());
+    assertEquals('bar.com', siteEntries[2]!.$.displayName.innerText.trim());
   });
 
   test('can be sorted by storage', async function() {
@@ -226,7 +224,6 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     // name.
     testElement.$.sortMethod.value = 'data-stored';
     testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
-
 
     flush();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');

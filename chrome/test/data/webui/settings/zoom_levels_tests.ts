@@ -51,14 +51,13 @@ suite('ZoomLevels', function() {
   });
 
   /** @return {!Promise} */
-  function initPage() {
+  async function initPage() {
     browserProxy.reset();
     document.body.innerHTML = '';
     testElement = document.createElement('zoom-levels');
     document.body.appendChild(testElement);
-    return browserProxy.whenCalled('fetchZoomLevels').then(() => {
-      return waitBeforeNextRender(testElement);
-    });
+    await browserProxy.whenCalled('fetchZoomLevels');
+    await waitBeforeNextRender(testElement);
   }
 
   /**
@@ -80,25 +79,22 @@ suite('ZoomLevels', function() {
     assertFalse(testElement.$.empty.hidden);
   });
 
-  test('non-empty zoom state', function() {
+  test('non-empty zoom state', async function() {
     browserProxy.setZoomList(zoomList);
 
-    return initPage()
-        .then(function() {
-          const list = testElement.$.list;
-          assertTrue(!!list);
-          assertEquals(2, list.items!.length);
-          assertTrue(testElement.$.empty.hidden);
-          assertEquals(
-              2, testElement.shadowRoot!.querySelectorAll('.list-item').length);
+    await initPage();
 
-          const removeButton = getRemoveButton(testElement.$.listContainer, 0);
-          assertTrue(!!removeButton);
-          removeButton.click();
-          return browserProxy.whenCalled('removeZoomLevel');
-        })
-        .then(function(args) {
-          assertEquals('http://www.google.com', args[0]);
-        });
+    const list = testElement.$.list;
+    assertTrue(!!list);
+    assertEquals(2, list.items!.length);
+    assertTrue(testElement.$.empty.hidden);
+    assertEquals(
+        2, testElement.shadowRoot!.querySelectorAll('.list-item').length);
+
+    const removeButton = getRemoveButton(testElement.$.listContainer, 0);
+    assertTrue(!!removeButton);
+    removeButton.click();
+    const args = await browserProxy.whenCalled('removeZoomLevel');
+    assertEquals('http://www.google.com', args[0]);
   });
 });

@@ -249,37 +249,33 @@ suite('AppearanceHandler', function() {
   });
   // </if>
 
-  test('default zoom handling', function() {
+  test('default zoom handling', async function() {
     function getDefaultZoomText() {
       const zoomLevel = appearancePage.$.zoomLevel;
       return zoomLevel.options[zoomLevel.selectedIndex]!.textContent!.trim();
     }
 
-    return appearanceBrowserProxy.whenCalled('getDefaultZoom')
-        .then(function() {
-          assertEquals('100%', getDefaultZoomText());
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
 
-          appearanceBrowserProxy.setDefaultZoom(2 / 3);
-          createAppearancePage();
-          return appearanceBrowserProxy.whenCalled('getDefaultZoom');
-        })
-        .then(function() {
-          assertEquals('67%', getDefaultZoomText());
+    assertEquals('100%', getDefaultZoomText());
 
-          appearanceBrowserProxy.setDefaultZoom(11 / 10);
-          createAppearancePage();
-          return appearanceBrowserProxy.whenCalled('getDefaultZoom');
-        })
-        .then(function() {
-          assertEquals('110%', getDefaultZoomText());
+    appearanceBrowserProxy.setDefaultZoom(2 / 3);
+    createAppearancePage();
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
 
-          appearanceBrowserProxy.setDefaultZoom(1.7499999999999);
-          createAppearancePage();
-          return appearanceBrowserProxy.whenCalled('getDefaultZoom');
-        })
-        .then(function() {
-          assertEquals('175%', getDefaultZoomText());
-        });
+    assertEquals('67%', getDefaultZoomText());
+
+    appearanceBrowserProxy.setDefaultZoom(11 / 10);
+    createAppearancePage();
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
+
+    assertEquals('110%', getDefaultZoomText());
+
+    appearanceBrowserProxy.setDefaultZoom(1.7499999999999);
+    createAppearancePage();
+    await appearanceBrowserProxy.whenCalled('getDefaultZoom');
+
+    assertEquals('175%', getDefaultZoomText());
   });
 
   test('show home button toggling', function() {
@@ -311,7 +307,7 @@ suite('HomeUrlInput', function() {
     flush();
   });
 
-  test('home button urls', function() {
+  test('home button urls', async function() {
     assertFalse(homeUrlInput.invalid);
     assertEquals(homeUrlInput.value, 'test');
 
@@ -319,17 +315,16 @@ suite('HomeUrlInput', function() {
     appearanceBrowserProxy.setValidStartupPageResponse(false);
     homeUrlInput.$.input.fire('input');
 
-    return appearanceBrowserProxy.whenCalled('validateStartupPage')
-        .then(function(url) {
-          assertEquals(homeUrlInput.value, url);
-          flush();
-          assertEquals(homeUrlInput.value, '@@@');  // Value hasn't changed.
-          assertTrue(homeUrlInput.invalid);
+    const url = await appearanceBrowserProxy.whenCalled('validateStartupPage');
 
-          // Should reset to default value on change event.
-          homeUrlInput.$.input.fire('change');
-          flush();
-          assertEquals(homeUrlInput.value, 'test');
-        });
+    assertEquals(homeUrlInput.value, url);
+    flush();
+    assertEquals(homeUrlInput.value, '@@@');  // Value hasn't changed.
+    assertTrue(homeUrlInput.invalid);
+
+    // Should reset to default value on change event.
+    homeUrlInput.$.input.fire('change');
+    flush();
+    assertEquals(homeUrlInput.value, 'test');
   });
 });

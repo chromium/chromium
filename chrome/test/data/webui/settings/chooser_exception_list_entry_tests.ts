@@ -230,7 +230,7 @@ suite('ChooserExceptionListEntry', function() {
 
   test(
       'The reset button calls the resetChooserExceptionForSite method',
-      function() {
+      async function() {
         testElement.exception =
             createChooserException(ChooserType.USB_DEVICES, [
               createSiteException('https://foo.com'),
@@ -252,14 +252,14 @@ suite('ChooserExceptionListEntry', function() {
         assertFalse(resetButton.hidden);
 
         resetButton!.click();
-        return browserProxy.whenCalled('resetChooserExceptionForSite')
-            .then(function(args) {
-              // The args should be the chooserType, origin, embeddingOrigin,
-              // and object.
-              assertEquals(ChooserType.USB_DEVICES, args[0]);
-              assertEquals('https://foo.com', args[1]);
-              assertEquals('https://foo.com', args[2]);
-              assertEquals('object', typeof args[3]);
-            });
+        const args =
+            await browserProxy.whenCalled('resetChooserExceptionForSite');
+
+        // The args should be the chooserType, origin, embeddingOrigin,
+        // and object.
+        assertEquals(ChooserType.USB_DEVICES, args[0]);
+        assertEquals('https://foo.com', args[1]);
+        assertEquals('https://foo.com', args[2]);
+        assertEquals('object', typeof args[3]);
       });
 });

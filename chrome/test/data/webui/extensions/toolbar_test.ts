@@ -100,59 +100,53 @@ suite(extension_toolbar_tests.suiteName, function() {
     assertTrue(toggle.disabled);
   });
 
-  test(assert(extension_toolbar_tests.TestNames.ClickHandlers), function() {
-    toolbar.set('inDevMode', true);
-    flush();
-    const toastManager = getToastManager();
-    toolbar.$.devMode.click();
-    return mockDelegate.whenCalled('setProfileInDevMode')
-        .then(function(arg) {
-          assertFalse(arg);
-          mockDelegate.reset();
-          toolbar.$.devMode.click();
-          return mockDelegate.whenCalled('setProfileInDevMode');
-        })
-        .then(function(arg) {
-          assertTrue(arg);
-          mockDelegate.setLoadUnpackedSuccess(true);
-          toolbar.$.loadUnpacked.click();
-          return mockDelegate.whenCalled('loadUnpacked').then(() => {
-            assertTrue(toastManager.isToastOpen);
-          });
-        })
-        .then(function() {
-          // Hide toast since it is open for 3000ms in previous Promise.
-          toastManager.hide();
-          mockDelegate.setLoadUnpackedSuccess(false);
-          toolbar.$.loadUnpacked.click();
-          return mockDelegate.whenCalled('loadUnpacked').then(() => {
-            assertFalse(toastManager.isToastOpen);
-          });
-        })
-        .then(function() {
-          assertFalse(toastManager.isToastOpen);
-          toolbar.$.updateNow.click();
-          // Simulate user rapidly clicking update button multiple times.
-          toolbar.$.updateNow.click();
-          assertTrue(toastManager.isToastOpen);
-          return mockDelegate.whenCalled('updateAllExtensions');
-        })
-        .then(function() {
-          assertEquals(1, mockDelegate.getCallCount('updateAllExtensions'));
-          assertFalse(
-              !!toolbar.shadowRoot!.querySelector('extensions-pack-dialog'));
-          toolbar.$.packExtensions.click();
-          flush();
-          const dialog =
-              toolbar.shadowRoot!.querySelector('extensions-pack-dialog');
-          assertTrue(!!dialog);
-        });
-  });
+  test(
+      assert(extension_toolbar_tests.TestNames.ClickHandlers),
+      async function() {
+        toolbar.set('inDevMode', true);
+        flush();
+        const toastManager = getToastManager();
+        toolbar.$.devMode.click();
+        let arg = await mockDelegate.whenCalled('setProfileInDevMode');
+        assertFalse(arg);
+
+        mockDelegate.reset();
+        toolbar.$.devMode.click();
+        arg = await mockDelegate.whenCalled('setProfileInDevMode');
+        assertTrue(arg);
+
+        mockDelegate.setLoadUnpackedSuccess(true);
+        toolbar.$.loadUnpacked.click();
+        await mockDelegate.whenCalled('loadUnpacked');
+        assertTrue(toastManager.isToastOpen);
+
+        // Hide toast since it is open for 3000ms in previous Promise.
+        toastManager.hide();
+        mockDelegate.setLoadUnpackedSuccess(false);
+        toolbar.$.loadUnpacked.click();
+        await mockDelegate.whenCalled('loadUnpacked');
+        assertFalse(toastManager.isToastOpen);
+        assertFalse(toastManager.isToastOpen);
+
+        toolbar.$.updateNow.click();
+        // Simulate user rapidly clicking update button multiple times.
+        toolbar.$.updateNow.click();
+        assertTrue(toastManager.isToastOpen);
+        await mockDelegate.whenCalled('updateAllExtensions');
+        assertEquals(1, mockDelegate.getCallCount('updateAllExtensions'));
+        assertFalse(
+            !!toolbar.shadowRoot!.querySelector('extensions-pack-dialog'));
+        toolbar.$.packExtensions.click();
+        flush();
+        const dialog =
+            toolbar.shadowRoot!.querySelector('extensions-pack-dialog');
+        assertTrue(!!dialog);
+      });
 
   /** Tests that the update button properly fires the load-error event. */
   test(
       assert(extension_toolbar_tests.TestNames.FailedUpdateFiresLoadError),
-      function() {
+      async function() {
         const item = document.createElement('extensions-item');
         item.data = createExtensionInfo();
         item.delegate = mockDelegate;
@@ -182,19 +176,14 @@ suite(extension_toolbar_tests.suiteName, function() {
 
         toolbar.$.devMode.click();
         toolbar.$.updateNow.click();
-        return proxyDelegate.whenCalled('updateAllExtensions')
-            .then(function() {
-              return verifyLoadErrorFired(false);
-            })
-            .then(function() {
-              proxyDelegate.resetResolver('updateAllExtensions');
-              proxyDelegate.setForceReloadItemError(true);
-              toolbar.$.updateNow.click();
-              return proxyDelegate.whenCalled('updateAllExtensions');
-            })
-            .then(function() {
-              return verifyLoadErrorFired(true);
-            });
+        await proxyDelegate.whenCalled('updateAllExtensions');
+        await verifyLoadErrorFired(false);
+
+        proxyDelegate.resetResolver('updateAllExtensions');
+        proxyDelegate.setForceReloadItemError(true);
+        toolbar.$.updateNow.click();
+        await proxyDelegate.whenCalled('updateAllExtensions');
+        await verifyLoadErrorFired(true);
       });
 
   // <if expr="chromeos_ash">

@@ -52,17 +52,19 @@ suite(extension_manager_unit_tests.suiteName, function() {
     ]);
   });
 
-  test(assert(extension_manager_unit_tests.TestNames.KioskMode), function() {
-    assertFalse(!!manager.shadowRoot!.querySelector('extensions-kiosk-dialog'));
+  test(
+      assert(extension_manager_unit_tests.TestNames.KioskMode),
+      async function() {
+        assertFalse(
+            !!manager.shadowRoot!.querySelector('extensions-kiosk-dialog'));
 
-    return browserProxy.whenCalled('initializeKioskAppSettings').then(() => {
-      assertTrue(manager.shadowRoot!.querySelector(
-                                        'extensions-toolbar')!.kioskEnabled);
-      manager.shadowRoot!.querySelector('extensions-toolbar')!.dispatchEvent(
-          new CustomEvent('kiosk-tap', {bubbles: true, composed: true}));
-      flush();
-      assertTrue(
-          !!manager.shadowRoot!.querySelector('extensions-kiosk-dialog'));
-    });
-  });
+        await browserProxy.whenCalled('initializeKioskAppSettings');
+        assertTrue(manager.shadowRoot!.querySelector(
+                                          'extensions-toolbar')!.kioskEnabled);
+        manager.shadowRoot!.querySelector('extensions-toolbar')!.dispatchEvent(
+            new CustomEvent('kiosk-tap', {bubbles: true, composed: true}));
+        flush();
+        assertTrue(
+            !!manager.shadowRoot!.querySelector('extensions-kiosk-dialog'));
+      });
 });

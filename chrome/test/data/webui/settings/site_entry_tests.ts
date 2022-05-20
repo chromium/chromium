@@ -195,7 +195,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         assertFalse(testElement.$.originList.get().opened);
       });
 
-  test('cookies show correctly for grouped entries', function() {
+  test('cookies show correctly for grouped entries', async function() {
     testElement.siteGroup = TEST_MULTIPLE_SITE_GROUP;
     flush();
     const cookiesLabel = testElement.$.cookies;
@@ -208,15 +208,13 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.siteGroup = testSiteGroup;
 
     flush();
-    return localDataBrowserProxy.whenCalled('getNumCookiesString')
-        .then((args) => {
-          assertEquals(3, args);
-          assertFalse(cookiesLabel.hidden);
-          assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
-        });
+    const args = await localDataBrowserProxy.whenCalled('getNumCookiesString');
+    assertEquals(3, args);
+    assertFalse(cookiesLabel.hidden);
+    assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
   });
 
-  test('cookies show for ungrouped entries', function() {
+  test('cookies show for ungrouped entries', async function() {
     testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
     flush();
     const cookiesLabel = testElement.$.cookies;
@@ -231,15 +229,13 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.siteGroup = testSiteGroup;
 
     flush();
-    return localDataBrowserProxy.whenCalled('getNumCookiesString')
-        .then((args) => {
-          assertEquals(3, args);
-          assertFalse(cookiesLabel.hidden);
-          assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
-        });
+    const args = await localDataBrowserProxy.whenCalled('getNumCookiesString');
+    assertEquals(3, args);
+    assertFalse(cookiesLabel.hidden);
+    assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
   });
 
-  test('data usage shown correctly for grouped entries', function() {
+  test('data usage shown correctly for grouped entries', async function() {
     // Clone this object to avoid propagating changes made in this test.
     const testSiteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
     const numBytes1 = 74622;
@@ -250,37 +246,35 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testSiteGroup.origins[2].usage = numBytes3;
     testElement.siteGroup = testSiteGroup;
     flush();
-    return browserProxy.whenCalled('getFormattedBytes').then(args => {
-      const sumBytes = numBytes1 + numBytes2 + numBytes3;
-      assertEquals(sumBytes, args);
-      assertEquals(
-          `${sumBytes} B`,
-          testElement.shadowRoot!
-              .querySelector<HTMLElement>(
-                  '#displayName .data-unit')!.textContent!.trim());
-    });
+    const args = await browserProxy.whenCalled('getFormattedBytes');
+    const sumBytes = numBytes1 + numBytes2 + numBytes3;
+    assertEquals(sumBytes, args);
+    assertEquals(
+        `${sumBytes} B`,
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#displayName .data-unit')!.textContent!.trim());
   });
 
-  test('data usage shown correctly for ungrouped entries', function() {
+  test('data usage shown correctly for ungrouped entries', async function() {
     // Clone this object to avoid propagating changes made in this test.
     const testSiteGroup = JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
     const numBytes = 74622;
     testSiteGroup.origins[0].usage = numBytes;
     testElement.siteGroup = testSiteGroup;
     flush();
-    return browserProxy.whenCalled('getFormattedBytes').then(args => {
-      assertEquals(numBytes, args);
-      assertEquals(
-          `${numBytes} B`,
-          testElement.shadowRoot!
-              .querySelector<HTMLElement>(
-                  '#displayName .data-unit')!.textContent!.trim());
-    });
+    const args = await browserProxy.whenCalled('getFormattedBytes');
+    assertEquals(numBytes, args);
+    assertEquals(
+        `${numBytes} B`,
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#displayName .data-unit')!.textContent!.trim());
   });
 
   test(
       'large number data usage shown correctly for grouped entries',
-      function() {
+      async function() {
         // Clone this object to avoid propagating changes made in this test.
         const testSiteGroup =
             JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
@@ -292,15 +286,14 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         testSiteGroup.origins[2].usage = numBytes3;
         testElement.siteGroup = testSiteGroup;
         flush();
-        return browserProxy.whenCalled('getFormattedBytes').then((args) => {
-          const sumBytes = numBytes1 + numBytes2 + numBytes3;
-          assertEquals(sumBytes, args);
-          assertEquals(
-              `${sumBytes} B`,
-              testElement.shadowRoot!
-                  .querySelector<HTMLElement>(
-                      '#displayName .data-unit')!.textContent!.trim());
-        });
+        const args = await browserProxy.whenCalled('getFormattedBytes');
+        const sumBytes = numBytes1 + numBytes2 + numBytes3;
+        assertEquals(sumBytes, args);
+        assertEquals(
+            `${sumBytes} B`,
+            testElement.shadowRoot!
+                .querySelector<HTMLElement>(
+                    '#displayName .data-unit')!.textContent!.trim());
       });
 
   test('favicon with www.etld+1 chosen for site group', function() {

@@ -104,15 +104,14 @@ suite('settings-edit-dictionary-page', function() {
     assertFalse(editDictPage.$.addWord.disabled);
   });
 
-  test('spellcheck edit dictionary page message when empty', function() {
+  test('spellcheck edit dictionary page message when empty', async function() {
     assertTrue(!!editDictPage);
-    return languageSettingsPrivate.whenCalled('getSpellcheckWords')
-        .then(function() {
-          flush();
+    await languageSettingsPrivate.whenCalled('getSpellcheckWords');
 
-          assertFalse(editDictPage.$.noWordsLabel.hidden);
-          assertFalse(!!editDictPage.shadowRoot!.querySelector('iron-list'));
-        });
+    flush();
+
+    assertFalse(editDictPage.$.noWordsLabel.hidden);
+    assertFalse(!!editDictPage.shadowRoot!.querySelector('iron-list'));
   });
 
   test('spellcheck edit dictionary page list has words', function() {

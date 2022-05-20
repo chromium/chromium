@@ -132,17 +132,15 @@ suite(extension_shortcut_tests.suiteName, function() {
     assertEquals('Ctrl+Shift+A', keystrokeToString(e));
   });
 
-  test(extension_shortcut_tests.TestNames.ScopeChange, function() {
+  test(extension_shortcut_tests.TestNames.ScopeChange, async function() {
     const selectElement = keyboardShortcuts.shadowRoot!.querySelector('select');
     assertTrue(!!selectElement);
     selectElement.value = 'GLOBAL';
     selectElement.dispatchEvent(
         new CustomEvent('change', {bubbles: true, composed: true}));
-    return testDelegate.whenCalled('updateExtensionCommandScope')
-        .then(params => {
-          assertEquals(oneCommand.id, params[0]);
-          assertEquals(oneCommand.commands[0]!.name, params[1]);
-          assertEquals(selectElement.value, params[2]);
-        });
+    const params = await testDelegate.whenCalled('updateExtensionCommandScope');
+    assertEquals(oneCommand.id, params[0]);
+    assertEquals(oneCommand.commands[0]!.name, params[1]);
+    assertEquals(selectElement.value, params[2]);
   });
 });

@@ -96,7 +96,7 @@ suite('ImportDataDialog', function() {
   let dialog: SettingsImportDataDialogElement;
   let browserProxy: TestImportDataBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestImportDataBrowserProxy();
     browserProxy.setBrowserProfiles(browserProfiles);
     ImportDataBrowserProxyImpl.setInstance(browserProxy);
@@ -104,10 +104,9 @@ suite('ImportDataDialog', function() {
     dialog = document.createElement('settings-import-data-dialog');
     dialog.set('prefs', prefs);
     document.body.appendChild(dialog);
-    return browserProxy.whenCalled('initializeImportDialog').then(function() {
-      assertTrue(dialog.$.dialog.open);
-      flush();
-    });
+    await browserProxy.whenCalled('initializeImportDialog');
+    assertTrue(dialog.$.dialog.open);
+    flush();
   });
 
   function ensureSettingsCheckboxCheckedStatus(
@@ -193,23 +192,23 @@ suite('ImportDataDialog', function() {
     webUIListenerCallback('import-data-status-changed', status);
   }
 
-  test('ImportFromBookmarksFile', function() {
+  test('ImportFromBookmarksFile', async function() {
     simulateBrowserProfileChange(2);
     dialog.$.import.click();
-    browserProxy.whenCalled('importFromBookmarksFile').then(function() {
-      simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
-      assertInProgressButtons();
+    await browserProxy.whenCalled('importFromBookmarksFile');
+    simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
+    assertInProgressButtons();
 
-      simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
-      assertSucceededButtons();
+    simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
+    assertSucceededButtons();
 
-      assertFalse(dialog.$.successIcon.parentElement!.hidden);
-      assertFalse(dialog.shadowRoot!.querySelector('settings-toggle-button')!
-                      .parentElement!.hidden);
-    });
+    assertFalse(dialog.$.successIcon.parentElement!.hidden);
+    assertFalse(
+        dialog.shadowRoot!.querySelector(
+                              'settings-toggle-button')!.parentElement!.hidden);
   });
 
-  test('ImportFromBrowserProfile', function() {
+  test('ImportFromBrowserProfile', async function() {
     ensureSettingsCheckboxCheckedStatus('import_dialog_bookmarks', false);
     ensureSettingsCheckboxCheckedStatus('import_dialog_search_engine', true);
 
@@ -217,25 +216,25 @@ suite('ImportDataDialog', function() {
     simulateBrowserProfileChange(expectedIndex);
     dialog.$.import.click();
 
-    const importCalled = browserProxy.whenCalled('importData');
-    importCalled.then(([actualIndex, types]) => {
-      assertEquals(expectedIndex, actualIndex);
-      assertFalse(types['import_dialog_bookmarks']);
-      assertTrue(types['import_dialog_search_engine']);
+    const [actualIndex, types] = await browserProxy.whenCalled('importData');
 
-      simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
-      assertInProgressButtons();
+    assertEquals(expectedIndex, actualIndex);
+    assertFalse(types['import_dialog_bookmarks']);
+    assertTrue(types['import_dialog_search_engine']);
 
-      simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
-      assertSucceededButtons();
+    simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
+    assertInProgressButtons();
 
-      assertFalse(dialog.$.successIcon.parentElement!.hidden);
-      assertTrue(dialog.shadowRoot!.querySelector('settings-toggle-button')!
-                     .parentElement!.hidden);
-    });
+    simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
+    assertSucceededButtons();
+
+    assertFalse(dialog.$.successIcon.parentElement!.hidden);
+    assertTrue(
+        dialog.shadowRoot!.querySelector(
+                              'settings-toggle-button')!.parentElement!.hidden);
   });
 
-  test('ImportFromBrowserProfileWithUnsupportedOption', function() {
+  test('ImportFromBrowserProfileWithUnsupportedOption', async function() {
     // Flip all prefs to true.
     Object.keys(prefs).forEach(function(prefName) {
       ensureSettingsCheckboxCheckedStatus(prefName, true);
@@ -245,14 +244,12 @@ suite('ImportDataDialog', function() {
     simulateBrowserProfileChange(expectedIndex);
     dialog.$.import.click();
 
-    const importCalled = browserProxy.whenCalled('importData');
-    importCalled.then(([actualIndex, types]) => {
-      assertEquals(expectedIndex, actualIndex);
+    const [actualIndex, types] = await browserProxy.whenCalled('importData');
+    assertEquals(expectedIndex, actualIndex);
 
-      Object.keys(prefs).forEach(function(prefName) {
-        // import_dialog_history is unsupported and hidden
-        assertEquals(prefName !== 'import_dialog_history', types[prefName]);
-      });
+    Object.keys(prefs).forEach(function(prefName) {
+      // import_dialog_history is unsupported and hidden
+      assertEquals(prefName !== 'import_dialog_history', types[prefName]);
     });
   });
 

@@ -84,7 +84,7 @@ suite('DownloadsHandler', function() {
     return downloadsBrowserProxy.whenCalled('selectDownloadLocation');
   });
 
-  test('openAdvancedDownloadsettings', function() {
+  test('openAdvancedDownloadsettings', async function() {
     let button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
         '#resetAutoOpenFileTypes');
     assertFalse(!!button);
@@ -96,14 +96,13 @@ suite('DownloadsHandler', function() {
     assertTrue(!!button);
 
     button!.click();
-    return downloadsBrowserProxy.whenCalled('resetAutoOpenFileTypes')
-        .then(function() {
-          webUIListenerCallback('auto-open-downloads-changed', false);
-          flush();
-          const button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
-              '#resetAutoOpenFileTypes');
-          assertFalse(!!button);
-        });
+    await downloadsBrowserProxy.whenCalled('resetAutoOpenFileTypes');
+
+    webUIListenerCallback('auto-open-downloads-changed', false);
+    flush();
+    button = downloadsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#resetAutoOpenFileTypes');
+    assertFalse(!!button);
   });
 
   // <if expr="chromeos_ash">
@@ -126,14 +125,13 @@ suite('DownloadsHandler', function() {
     return pathElement!.textContent!.trim();
   }
 
-  test('rewrite default download paths', function() {
+  test('rewrite default download paths', async function() {
     setDefaultDownloadPathPref('downloads-path');
-    return downloadsBrowserProxy.whenCalled('getDownloadLocationText')
-        .then(path => {
-          assertEquals('downloads-path', path);
-          flush();
-          assertEquals('downloads-text', getDefaultDownloadPathString());
-        });
+    const path =
+        await downloadsBrowserProxy.whenCalled('getDownloadLocationText');
+    assertEquals('downloads-path', path);
+    flush();
+    assertEquals('downloads-text', getDefaultDownloadPathString());
   });
   // </if>
 });

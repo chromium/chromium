@@ -179,7 +179,7 @@ suite('HostPermissionsToggleList', function() {
 
   // Tests that clicking the "allow on the following sites" toggle when it is in
   // the "off" state calls the delegate as expected.
-  test('clicking all hosts toggle from off to on', function() {
+  test('clicking all hosts toggle from off to on', async function() {
     const permissions = {
       hostAccess: HostAccess.ON_CLICK,
       hasAllHosts: false,
@@ -195,20 +195,16 @@ suite('HostPermissionsToggleList', function() {
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
-    return delegate.whenCalled('setItemHostAccess')
-        .then(([id, access]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(HostAccess.ON_ALL_SITES, access);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then(metricName => {
-          assertEquals(UserAction.ALL_TOGGLED_ON, metricName);
-        });
+    const [id, access] = await delegate.whenCalled('setItemHostAccess');
+    assertEquals(ITEM_ID, id);
+    assertEquals(HostAccess.ON_ALL_SITES, access);
+    const metricName = await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.ALL_TOGGLED_ON, metricName);
   });
 
   // Tests that clicking the "allow on the following sites" toggle when it is in
   // the "on" state calls the delegate as expected.
-  test('clicking all hosts toggle from on to off', function() {
+  test('clicking all hosts toggle from on to off', async function() {
     const permissions = {
       hostAccess: HostAccess.ON_ALL_SITES,
       hasAllHosts: false,
@@ -224,20 +220,17 @@ suite('HostPermissionsToggleList', function() {
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
-    return delegate.whenCalled('setItemHostAccess')
-        .then(([id, access]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(HostAccess.ON_SPECIFIC_SITES, access);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then((metricName: UserAction) => {
-          assertEquals(UserAction.ALL_TOGGLED_OFF, metricName);
-        });
+    const [id, access] = await delegate.whenCalled('setItemHostAccess');
+    assertEquals(ITEM_ID, id);
+    assertEquals(HostAccess.ON_SPECIFIC_SITES, access);
+    const metricName: UserAction =
+        await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.ALL_TOGGLED_OFF, metricName);
   });
 
   // Tests that toggling a site's enabled state toggles the extension's access
   // to that site properly.
-  test('clicking to toggle a specific site', function() {
+  test('clicking to toggle a specific site', async function() {
     const permissions = {
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
       hasAllHosts: false,
@@ -260,26 +253,19 @@ suite('HostPermissionsToggleList', function() {
     assertEquals(GOOGLE_COM, hostToggles[2]!.innerText!.trim());
 
     hostToggles[0]!.getLabel().click();
-    return delegate.whenCalled('removeRuntimeHostPermission')
-        .then(([id, site]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(CHROMIUM_ORG, site);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then((metricName: UserAction) => {
-          assertEquals(UserAction.SPECIFIC_TOGGLED_OFF, metricName);
-          delegate.resetResolver('recordUserAction');
+    let [id, site] = await delegate.whenCalled('removeRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals(CHROMIUM_ORG, site);
 
-          hostToggles[2]!.getLabel().click();
-          return delegate.whenCalled('addRuntimeHostPermission');
-        })
-        .then(([id, site]) => {
-          assertEquals(ITEM_ID, id);
-          assertEquals(GOOGLE_COM, site);
-          return delegate.whenCalled('recordUserAction');
-        })
-        .then((metricName: UserAction) => {
-          assertEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
-        });
+    let metricName: UserAction = await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.SPECIFIC_TOGGLED_OFF, metricName);
+    delegate.resetResolver('recordUserAction');
+    hostToggles[2]!.getLabel().click();
+
+    [id, site] = await delegate.whenCalled('addRuntimeHostPermission');
+    assertEquals(ITEM_ID, id);
+    assertEquals(GOOGLE_COM, site);
+    metricName = await delegate.whenCalled('recordUserAction');
+    assertEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
   });
 });

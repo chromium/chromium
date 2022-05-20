@@ -485,25 +485,23 @@ suite('PrivacyPageSound', function() {
     });
   });
 
-  test('Click', () => {
+  test('Click', async () => {
     assertTrue(getToggleElement().hasAttribute('disabled'));
     assertFalse(getToggleElement().hasAttribute('checked'));
 
     webUIListenerCallback(
         'onBlockAutoplayStatusChanged', {pref: {value: true}, enabled: true});
 
-    return flushTasks().then(() => {
-      // Check that we are on and enabled.
-      assertFalse(getToggleElement().hasAttribute('disabled'));
-      assertTrue(getToggleElement().hasAttribute('checked'));
+    await flushTasks();
+    // Check that we are on and enabled.
+    assertFalse(getToggleElement().hasAttribute('disabled'));
+    assertTrue(getToggleElement().hasAttribute('checked'));
 
-      // Click on the toggle and wait for the proxy to be called.
-      getToggleElement().click();
-      return testBrowserProxy.whenCalled('setBlockAutoplayEnabled')
-          .then((enabled) => {
-            assertFalse(enabled);
-          });
-    });
+    // Click on the toggle and wait for the proxy to be called.
+    getToggleElement().click();
+    const enabled =
+        await testBrowserProxy.whenCalled('setBlockAutoplayEnabled');
+    assertFalse(enabled);
   });
 });
 

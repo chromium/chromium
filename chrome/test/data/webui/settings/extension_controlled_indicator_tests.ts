@@ -63,13 +63,11 @@ suite('extension controlled indicator', function() {
     assertEquals(labelLink!.textContent, indicator.extensionName);
   });
 
-  test('tapping disable button invokes browser proxy', function() {
+  test('tapping disable button invokes browser proxy', async function() {
     const disableButton = indicator.shadowRoot!.querySelector('cr-button');
     assertTrue(!!disableButton);
     disableButton!.click();
-    return browserProxy.whenCalled('disableExtension')
-        .then(function(extensionId) {
-          assertEquals(extensionId, indicator.extensionId);
-        });
+    const extensionId = await browserProxy.whenCalled('disableExtension');
+    assertEquals(extensionId, indicator.extensionId);
   });
 });

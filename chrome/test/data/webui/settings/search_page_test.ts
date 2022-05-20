@@ -52,83 +52,80 @@ suite('SearchPageTests', function() {
 
   // Tests that the page is querying and displaying search engine info on
   // startup.
-  test('Initialization', function() {
+  test('Initialization', async function() {
     const selectElement = page.shadowRoot!.querySelector('select')!;
 
-    return browserProxy.whenCalled('getSearchEnginesList')
-        .then(function() {
-          flush();
-          assertEquals(0, selectElement.selectedIndex);
+    await browserProxy.whenCalled('getSearchEnginesList');
 
-          // Simulate a user initiated change of the default search engine.
-          selectElement.selectedIndex = 1;
-          selectElement.dispatchEvent(new CustomEvent('change'));
-          return browserProxy.whenCalled('setDefaultSearchEngine');
-        })
-        .then(function() {
-          assertEquals(1, selectElement.selectedIndex);
+    flush();
+    assertEquals(0, selectElement.selectedIndex);
 
-          // Simulate a change that happened in a different tab.
-          const searchEnginesInfo = generateSearchEngineInfo();
-          searchEnginesInfo.defaults[0]!.default = false;
-          searchEnginesInfo.defaults[1]!.default = false;
-          searchEnginesInfo.defaults[2]!.default = true;
+    // Simulate a user initiated change of the default search engine.
+    selectElement.selectedIndex = 1;
+    selectElement.dispatchEvent(new CustomEvent('change'));
+    await browserProxy.whenCalled('setDefaultSearchEngine');
 
-          browserProxy.resetResolver('setDefaultSearchEngine');
-          webUIListenerCallback('search-engines-changed', searchEnginesInfo);
-          flush();
-          assertEquals(2, selectElement.selectedIndex);
+    assertEquals(1, selectElement.selectedIndex);
 
-          browserProxy.whenCalled('setDefaultSearchEngine').then(function() {
-            // Since the change happened in a different tab, there should be
-            // no new call to |setDefaultSearchEngine|.
-            assertNotReached('Should not call setDefaultSearchEngine again');
-          });
-        });
-  });
+    // Simulate a change that happened in a different tab.
+    const searchEnginesInfo = generateSearchEngineInfo();
+    searchEnginesInfo.defaults[0]!.default = false;
+    searchEnginesInfo.defaults[1]!.default = false;
+    searchEnginesInfo.defaults[2]!.default = true;
 
-  test('ControlledByExtension', function() {
-    return browserProxy.whenCalled('getSearchEnginesList').then(function() {
-      const selectElement = page.shadowRoot!.querySelector('select')!;
-      assertFalse(selectElement.disabled);
-      assertFalse(
-          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+    browserProxy.resetResolver('setDefaultSearchEngine');
+    webUIListenerCallback('search-engines-changed', searchEnginesInfo);
+    flush();
+    assertEquals(2, selectElement.selectedIndex);
 
-      page.set('prefs.default_search_provider_data.template_url_data', {
-        controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
-        controlledByName: 'fake extension name',
-        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-        extensionId: 'fake extension id',
-        extensionCanBeDisabled: true,
-        value: {},
-      });
-      flush();
-
-      assertTrue(selectElement.disabled);
-      assertTrue(
-          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
-      assertFalse(!!page.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+    browserProxy.whenCalled('setDefaultSearchEngine').then(function() {
+      // Since the change happened in a different tab, there should be
+      // no new call to |setDefaultSearchEngine|.
+      assertNotReached('Should not call setDefaultSearchEngine again');
     });
   });
 
-  test('ControlledByPolicy', function() {
-    return browserProxy.whenCalled('getSearchEnginesList').then(function() {
-      const selectElement = page.shadowRoot!.querySelector('select')!;
-      assertFalse(selectElement.disabled);
-      assertFalse(
-          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+  test('ControlledByExtension', async function() {
+    await browserProxy.whenCalled('getSearchEnginesList');
 
-      page.set('prefs.default_search_provider_data.template_url_data', {
-        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
-        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-        value: {},
-      });
-      flush();
+    const selectElement = page.shadowRoot!.querySelector('select')!;
+    assertFalse(selectElement.disabled);
+    assertFalse(
+        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
 
-      assertTrue(selectElement.disabled);
-      assertFalse(
-          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
-      assertTrue(!!page.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+    page.set('prefs.default_search_provider_data.template_url_data', {
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      controlledByName: 'fake extension name',
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      extensionId: 'fake extension id',
+      extensionCanBeDisabled: true,
+      value: {},
     });
+    flush();
+
+    assertTrue(selectElement.disabled);
+    assertTrue(
+        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+    assertFalse(!!page.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+  });
+
+  test('ControlledByPolicy', async function() {
+    await browserProxy.whenCalled('getSearchEnginesList');
+    const selectElement = page.shadowRoot!.querySelector('select')!;
+    assertFalse(selectElement.disabled);
+    assertFalse(
+        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+
+    page.set('prefs.default_search_provider_data.template_url_data', {
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      value: {},
+    });
+    flush();
+
+    assertTrue(selectElement.disabled);
+    assertFalse(
+        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+    assertTrue(!!page.shadowRoot!.querySelector('cr-policy-pref-indicator'));
   });
 });

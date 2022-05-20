@@ -208,40 +208,39 @@ suite('CaTrustEditDialogTests', function() {
     dialog.remove();
   });
 
-  test('EditSuccess', function() {
+  test('EditSuccess', async function() {
     dialog.model = createSampleCertificateSubnode();
     document.body.appendChild(dialog);
 
-    return browserProxy.whenCalled('getCaCertificateTrust')
-        .then(function(id) {
-          assertEquals((dialog.model as CertificateSubnode).id, id);
-          assertEquals(caTrustInfo.ssl, dialog.$.ssl.checked);
-          assertEquals(caTrustInfo.email, dialog.$.email.checked);
-          assertEquals(caTrustInfo.objSign, dialog.$.objSign.checked);
+    const id = await browserProxy.whenCalled('getCaCertificateTrust');
 
-          // Simulate toggling all checkboxes.
-          dialog.$.ssl.click();
-          dialog.$.email.click();
-          dialog.$.objSign.click();
+    assertEquals((dialog.model as CertificateSubnode).id, id);
+    assertEquals(caTrustInfo.ssl, dialog.$.ssl.checked);
+    assertEquals(caTrustInfo.email, dialog.$.email.checked);
+    assertEquals(caTrustInfo.objSign, dialog.$.objSign.checked);
 
-          // Simulate clicking 'OK'.
-          dialog.$.ok.click();
+    // Simulate toggling all checkboxes.
+    dialog.$.ssl.click();
+    dialog.$.email.click();
+    dialog.$.objSign.click();
 
-          return browserProxy.whenCalled('editCaCertificateTrust');
-        })
-        .then(function(args) {
-          assertEquals((dialog.model as CertificateSubnode).id, args.id);
-          // Checking that the values sent to C++ are reflecting the
-          // changes made by the user (toggling all checkboxes).
-          assertEquals(caTrustInfo.ssl, !args.ssl);
-          assertEquals(caTrustInfo.email, !args.email);
-          assertEquals(caTrustInfo.objSign, !args.objSign);
-          // Check that the dialog is closed.
-          assertFalse(dialog.$.dialog.open);
-        });
+    // Simulate clicking 'OK'.
+    dialog.$.ok.click();
+
+    const {id: model_id, ssl, email, objSign} =
+        await browserProxy.whenCalled('editCaCertificateTrust');
+
+    assertEquals((dialog.model as CertificateSubnode).id, model_id);
+    // Checking that the values sent to C++ are reflecting the
+    // changes made by the user (toggling all checkboxes).
+    assertEquals(caTrustInfo.ssl, !ssl);
+    assertEquals(caTrustInfo.email, !email);
+    assertEquals(caTrustInfo.objSign, !objSign);
+    // Check that the dialog is closed.
+    assertFalse(dialog.$.dialog.open);
   });
 
-  test('ImportSuccess', function() {
+  test('ImportSuccess', async function() {
     dialog.model = {name: 'Dummy certificate name'};
     document.body.appendChild(dialog);
 
@@ -254,29 +253,27 @@ suite('CaTrustEditDialogTests', function() {
 
     // Simulate clicking 'OK'.
     dialog.$.ok.click();
-    return browserProxy.whenCalled('importCaCertificateTrustSelected')
-        .then(function(args) {
-          assertTrue(args.ssl);
-          assertTrue(args.email);
-          assertFalse(args.objSign);
-        });
+    const {ssl, email, objSign} =
+        await browserProxy.whenCalled('importCaCertificateTrustSelected');
+
+    assertTrue(ssl);
+    assertTrue(email);
+    assertFalse(objSign);
   });
 
-  test('EditError', function() {
+  test('EditError', async function() {
     dialog.model = createSampleCertificateSubnode();
     document.body.appendChild(dialog);
     browserProxy.forceCertificatesError();
 
     const whenErrorEventFired = eventToPromise('certificates-error', dialog);
 
-    return browserProxy.whenCalled('getCaCertificateTrust')
-        .then(function() {
-          dialog.$.ok.click();
-          return browserProxy.whenCalled('editCaCertificateTrust');
-        })
-        .then(function() {
-          return whenErrorEventFired;
-        });
+    await browserProxy.whenCalled('getCaCertificateTrust');
+
+    dialog.$.ok.click();
+    await browserProxy.whenCalled('editCaCertificateTrust');
+
+    await whenErrorEventFired;
   });
 });
 
@@ -300,7 +297,7 @@ suite('CertificateDeleteConfirmationDialogTests', function() {
     dialog.remove();
   });
 
-  test('DeleteSuccess', function() {
+  test('DeleteSuccess', async function() {
     assertTrue(dialog.$.dialog.open);
     // Check that the dialog title includes the certificate name.
     const titleEl = dialog.$.dialog.querySelector('[slot=title]');
@@ -310,24 +307,22 @@ suite('CertificateDeleteConfirmationDialogTests', function() {
     // Simulate clicking 'OK'.
     dialog.$.ok.click();
 
-    return browserProxy.whenCalled('deleteCertificate').then(function(id) {
-      assertEquals(model.id, id);
-      // Check that the dialog is closed.
-      assertFalse(dialog.$.dialog.open);
-    });
+    const id = await browserProxy.whenCalled('deleteCertificate');
+    assertEquals(model.id, id);
+    // Check that the dialog is closed.
+    assertFalse(dialog.$.dialog.open);
   });
 
-  test('DeleteError', function() {
+  test('DeleteError', async function() {
     browserProxy.forceCertificatesError();
     const whenErrorEventFired = eventToPromise('certificates-error', dialog);
 
     // Simulate clicking 'OK'.
     dialog.$.ok.click();
-    return browserProxy.whenCalled('deleteCertificate').then(function(id) {
-      assertEquals(model.id, id);
-      // Ensure that the 'error' event was fired.
-      return whenErrorEventFired;
-    });
+    const id = await browserProxy.whenCalled('deleteCertificate');
+    assertEquals(model.id, id);
+    // Ensure that the 'error' event was fired.
+    await whenErrorEventFired;
   });
 });
 
@@ -349,7 +344,7 @@ suite('CertificatePasswordEncryptionDialogTests', function() {
     dialog.remove();
   });
 
-  test('EncryptSuccess', function() {
+  test('EncryptSuccess', async function() {
     const passwordInputElements = dialog.$.dialog.querySelectorAll('cr-input');
     const passwordInputElement = passwordInputElements[0];
     assertTrue(!!passwordInputElement);
@@ -376,14 +371,13 @@ suite('CertificatePasswordEncryptionDialogTests', function() {
     // Simulate clicking 'OK'.
     dialog.$.ok.click();
 
-    return browserProxy.whenCalled(methodName).then(function(password) {
-      assertEquals(passwordInputElement.value, password);
-      // Check that the dialog is closed.
-      assertFalse(dialog.$.dialog.open);
-    });
+    const password = await browserProxy.whenCalled(methodName);
+    assertEquals(passwordInputElement.value, password);
+    // Check that the dialog is closed.
+    assertFalse(dialog.$.dialog.open);
   });
 
-  test('EncryptError', function() {
+  test('EncryptError', async function() {
     browserProxy.forceCertificatesError();
 
     const passwordInputElements = dialog.$.dialog.querySelectorAll('cr-input');
@@ -399,9 +393,8 @@ suite('CertificatePasswordEncryptionDialogTests', function() {
     const whenErrorEventFired = eventToPromise('certificates-error', dialog);
     dialog.$.ok.click();
 
-    return browserProxy.whenCalled(methodName).then(function() {
-      return whenErrorEventFired;
-    });
+    await browserProxy.whenCalled(methodName);
+    await whenErrorEventFired;
   });
 });
 
@@ -423,7 +416,7 @@ suite('CertificatePasswordDecryptionDialogTests', function() {
     dialog.remove();
   });
 
-  test('DecryptSuccess', function() {
+  test('DecryptSuccess', async function() {
     const passwordInputElement = dialog.$.dialog.querySelector('cr-input');
     assertTrue(!!passwordInputElement);
     assertTrue(dialog.$.dialog.open);
@@ -439,14 +432,13 @@ suite('CertificatePasswordDecryptionDialogTests', function() {
     // Simulate clicking 'OK'.
     dialog.$.ok.click();
 
-    return browserProxy.whenCalled(methodName).then(function(password) {
-      assertEquals(passwordInputElement.value, password);
-      // Check that the dialog is closed.
-      assertFalse(dialog.$.dialog.open);
-    });
+    const password = await browserProxy.whenCalled(methodName);
+    assertEquals(passwordInputElement.value, password);
+    // Check that the dialog is closed.
+    assertFalse(dialog.$.dialog.open);
   });
 
-  test('DecryptError', function() {
+  test('DecryptError', async function() {
     browserProxy.forceCertificatesError();
     // Simulate entering some password.
     const passwordInputElement = dialog.$.dialog.querySelector('cr-input');
@@ -456,9 +448,8 @@ suite('CertificatePasswordDecryptionDialogTests', function() {
 
     const whenErrorEventFired = eventToPromise('certificates-error', dialog);
     dialog.$.ok.click();
-    return browserProxy.whenCalled(methodName).then(function() {
-      return whenErrorEventFired;
-    });
+    await browserProxy.whenCalled(methodName);
+    await whenErrorEventFired;
   });
 });
 
@@ -493,13 +484,12 @@ suite('CertificateSubentryTests', function() {
   });
 
   // Test case where 'View' option is tapped.
-  test('MenuOptions_View', function() {
+  test('MenuOptions_View', async function() {
     const viewButton = subentry.shadowRoot!.querySelector<HTMLElement>('#view');
     assertTrue(!!viewButton);
     viewButton.click();
-    return browserProxy.whenCalled('viewCertificate').then(function(id) {
-      assertEquals(subentry.model.id, id);
-    });
+    const id = await browserProxy.whenCalled('viewCertificate');
+    assertEquals(subentry.model.id, id);
   });
 
   // Test that the 'Edit' option is only shown when appropriate and that
@@ -556,20 +546,19 @@ suite('CertificateSubentryTests', function() {
 
   // Test that the 'Export' option is always shown when the certificate type
   // is not PERSONAL and that once tapped the correct event is fired.
-  test('MenuOptions_Export', function() {
+  test('MenuOptions_Export', async function() {
     subentry.certificateType = CertificateType.SERVER;
     const exportButton =
         subentry.shadowRoot!.querySelector<HTMLElement>('#export');
     assertTrue(!!exportButton);
     assertFalse(exportButton.hidden);
     exportButton.click();
-    return browserProxy.whenCalled('exportCertificate').then(function(id) {
-      assertEquals(subentry.model.id, id);
-    });
+    const id = await browserProxy.whenCalled('exportCertificate');
+    assertEquals(subentry.model.id, id);
   });
 
   // Test case of exporting a PERSONAL certificate.
-  test('MenuOptions_ExportPersonal', function() {
+  test('MenuOptions_ExportPersonal', async function() {
     const exportButton =
         subentry.shadowRoot!.querySelector<HTMLElement>('#export');
     assertTrue(!!exportButton);
@@ -584,20 +573,16 @@ suite('CertificateSubentryTests', function() {
 
     const waitForActionEvent = actionEventToPromise();
     exportButton.click();
-    return browserProxy.whenCalled('exportPersonalCertificate')
-        .then(function(id) {
-          assertEquals(subentry.model.id, id);
+    const id = await browserProxy.whenCalled('exportPersonalCertificate');
 
-          // A promise firing once |CertificateActionEvent| is
-          // fired.
-          return waitForActionEvent;
-        })
-        .then(function(event) {
-          const detail = event.detail;
-          assertEquals(CertificateAction.EXPORT_PERSONAL, detail.action);
-          assertEquals(
-              subentry.model.id, (detail.subnode as CertificateSubnode).id);
-        });
+    assertEquals(subentry.model.id, id);
+
+    // A promise firing once |CertificateActionEvent| is fired.
+    const event = await waitForActionEvent;
+
+    const detail = event.detail;
+    assertEquals(CertificateAction.EXPORT_PERSONAL, detail.action);
+    assertEquals(subentry.model.id, (detail.subnode as CertificateSubnode).id);
   });
 });
 
@@ -628,7 +613,7 @@ suite('CertificateManagerTests', function() {
    * Test that the page requests information from the browser on startup and
    * that it gets populated accordingly.
    */
-  test('Initialization', function() {
+  test('Initialization', async function() {
     // Trigger all category tabs to be added to the DOM.
     const paperTabsElement = page.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!paperTabsElement);
@@ -661,21 +646,20 @@ suite('CertificateManagerTests', function() {
     assertCertificateListLength(CertificateCategoryIndex.CA, 0);
     assertCertificateListLength(CertificateCategoryIndex.OTHER, 0);
 
-    return browserProxy.whenCalled('refreshCertificates').then(function() {
-      // Simulate response for personal and CA certificates.
-      webUIListenerCallback(
-          'certificates-changed', 'personalCerts',
-          [createSampleCertificateOrgGroup()]);
-      webUIListenerCallback('certificates-changed', 'caCerts', [
-        createSampleCertificateOrgGroup(), createSampleCertificateOrgGroup()
-      ]);
-      flush();
+    await browserProxy.whenCalled('refreshCertificates');
+    // Simulate response for personal and CA certificates.
+    webUIListenerCallback(
+        'certificates-changed', 'personalCerts',
+        [createSampleCertificateOrgGroup()]);
+    webUIListenerCallback(
+        'certificates-changed', 'caCerts',
+        [createSampleCertificateOrgGroup(), createSampleCertificateOrgGroup()]);
+    flush();
 
-      assertCertificateListLength(CertificateCategoryIndex.PERSONAL, 1);
-      assertCertificateListLength(CertificateCategoryIndex.SERVER, 0);
-      assertCertificateListLength(CertificateCategoryIndex.CA, 2);
-      assertCertificateListLength(CertificateCategoryIndex.OTHER, 0);
-    });
+    assertCertificateListLength(CertificateCategoryIndex.PERSONAL, 1);
+    assertCertificateListLength(CertificateCategoryIndex.SERVER, 0);
+    assertCertificateListLength(CertificateCategoryIndex.CA, 2);
+    assertCertificateListLength(CertificateCategoryIndex.OTHER, 0);
   });
 
   /**
@@ -765,7 +749,7 @@ suite('CertificateManagerTests', function() {
 
   // Test that ClientCertificateManagementAllowed policy is applied to the
   // UI when management is allowed.
-  test('ImportButton_ClientPolicyAllowed', function() {
+  test('ImportButton_ClientPolicyAllowed', async function() {
     const paperTabsElement = page.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!paperTabsElement);
     paperTabsElement.selected = CertificateCategoryIndex.PERSONAL;
@@ -775,25 +759,24 @@ suite('CertificateManagerTests', function() {
     const certificateLists =
         page.shadowRoot!.querySelectorAll('certificate-list');
 
-    return browserProxy.whenCalled('refreshCertificates').then(function() {
-      webUIListenerCallback(
-          'client-import-allowed-changed', true /* clientImportAllowed */);
-      // Verify that import buttons are shown in the client certificate
-      // tab.
-      const clientImportButton = certificateLists[0]!.$.import;
-      assertFalse(clientImportButton.hidden);
-      const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
-      assertFalse(clientImportAndBindButton.hidden);
-      // Verify that import button is still hidden in the CA certificate
-      // tab.
-      const caImportButton = certificateLists[1]!.$.import;
-      assertTrue(caImportButton.hidden);
-    });
+    await browserProxy.whenCalled('refreshCertificates');
+    webUIListenerCallback(
+        'client-import-allowed-changed', true /* clientImportAllowed */);
+    // Verify that import buttons are shown in the client certificate
+    // tab.
+    const clientImportButton = certificateLists[0]!.$.import;
+    assertFalse(clientImportButton.hidden);
+    const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
+    assertFalse(clientImportAndBindButton.hidden);
+    // Verify that import button is still hidden in the CA certificate
+    // tab.
+    const caImportButton = certificateLists[1]!.$.import;
+    assertTrue(caImportButton.hidden);
   });
 
   // Test that ClientCertificateManagementAllowed policy is applied to the
   // UI when management is not allowed.
-  test('ImportButton_ClientPolicyDisallowed', function() {
+  test('ImportButton_ClientPolicyDisallowed', async function() {
     const paperTabsElement = page.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!paperTabsElement);
     paperTabsElement.selected = CertificateCategoryIndex.PERSONAL;
@@ -803,25 +786,24 @@ suite('CertificateManagerTests', function() {
     const certificateLists =
         page.shadowRoot!.querySelectorAll('certificate-list');
 
-    return browserProxy.whenCalled('refreshCertificates').then(function() {
-      webUIListenerCallback(
-          'client-import-allowed-changed', false /* clientImportAllowed */);
-      // Verify that import buttons are still hidden in the client
-      // certificate tab.
-      const clientImportButton = certificateLists[0]!.$.import;
-      assertTrue(clientImportButton.hidden);
-      const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
-      assertTrue(clientImportAndBindButton.hidden);
-      // Verify that import button is still hidden in the CA certificate
-      // tab.
-      const caImportButton = certificateLists[1]!.$.import;
-      assertTrue(caImportButton.hidden);
-    });
+    await browserProxy.whenCalled('refreshCertificates');
+    webUIListenerCallback(
+        'client-import-allowed-changed', false /* clientImportAllowed */);
+    // Verify that import buttons are still hidden in the client
+    // certificate tab.
+    const clientImportButton = certificateLists[0]!.$.import;
+    assertTrue(clientImportButton.hidden);
+    const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
+    assertTrue(clientImportAndBindButton.hidden);
+    // Verify that import button is still hidden in the CA certificate
+    // tab.
+    const caImportButton = certificateLists[1]!.$.import;
+    assertTrue(caImportButton.hidden);
   });
 
   // Test that CACertificateManagementAllowed policy is applied to the
   // UI when management is allowed.
-  test('ImportButton_CAPolicyAllowed', function() {
+  test('ImportButton_CAPolicyAllowed', async function() {
     const paperTabsElement = page.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!paperTabsElement);
     paperTabsElement.selected = CertificateCategoryIndex.PERSONAL;
@@ -831,24 +813,23 @@ suite('CertificateManagerTests', function() {
     const certificateLists =
         page.shadowRoot!.querySelectorAll('certificate-list');
 
-    return browserProxy.whenCalled('refreshCertificates').then(function() {
-      webUIListenerCallback(
-          'ca-import-allowed-changed', true /* clientImportAllowed */);
-      // Verify that import buttons are still hidden in the client
-      // certificate tab.
-      const clientImportButton = certificateLists[0]!.$.import;
-      assertTrue(clientImportButton.hidden);
-      const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
-      assertTrue(clientImportAndBindButton.hidden);
-      // Verify that import button is shown in the CA certificate tab.
-      const caImportButton = certificateLists[1]!.$.import;
-      assertFalse(caImportButton.hidden);
-    });
+    await browserProxy.whenCalled('refreshCertificates');
+    webUIListenerCallback(
+        'ca-import-allowed-changed', true /* clientImportAllowed */);
+    // Verify that import buttons are still hidden in the client
+    // certificate tab.
+    const clientImportButton = certificateLists[0]!.$.import;
+    assertTrue(clientImportButton.hidden);
+    const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
+    assertTrue(clientImportAndBindButton.hidden);
+    // Verify that import button is shown in the CA certificate tab.
+    const caImportButton = certificateLists[1]!.$.import;
+    assertFalse(caImportButton.hidden);
   });
 
   // Test that CACertificateManagementAllowed policy is applied to the
   // UI when management is not allowed.
-  test('ImportButton_CAPolicyDisallowed', function() {
+  test('ImportButton_CAPolicyDisallowed', async function() {
     const paperTabsElement = page.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!paperTabsElement);
     paperTabsElement.selected = CertificateCategoryIndex.PERSONAL;
@@ -858,20 +839,19 @@ suite('CertificateManagerTests', function() {
     const certificateLists =
         page.shadowRoot!.querySelectorAll('certificate-list');
 
-    return browserProxy.whenCalled('refreshCertificates').then(function() {
-      webUIListenerCallback(
-          'ca-import-allowed-changed', false /* clientImportAllowed */);
-      // Verify that import buttons are still hidden in the client
-      // certificate tab.
-      const clientImportButton = certificateLists[0]!.$.import;
-      assertTrue(clientImportButton.hidden);
-      const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
-      assertTrue(clientImportAndBindButton.hidden);
-      // Verify that import button is still hidden in the CA certificate
-      // tab.
-      const caImportButton = certificateLists[1]!.$.import;
-      assertTrue(caImportButton.hidden);
-    });
+    await browserProxy.whenCalled('refreshCertificates');
+    webUIListenerCallback(
+        'ca-import-allowed-changed', false /* clientImportAllowed */);
+    // Verify that import buttons are still hidden in the client
+    // certificate tab.
+    const clientImportButton = certificateLists[0]!.$.import;
+    assertTrue(clientImportButton.hidden);
+    const clientImportAndBindButton = certificateLists[0]!.$.importAndBind;
+    assertTrue(clientImportAndBindButton.hidden);
+    // Verify that import button is still hidden in the CA certificate
+    // tab.
+    const caImportButton = certificateLists[1]!.$.import;
+    assertTrue(caImportButton.hidden);
   });
   // </if>
 });
@@ -900,7 +880,7 @@ suite('CertificateListTests', function() {
    *     to fire as a result tapping the Import button.
    * @param bindBtn Whether to click on the import and bind btn.
    */
-  function testImportForCertificateType(
+  async function testImportForCertificateType(
       certificateType: CertificateType, proxyMethodName: string,
       actionEventExpected: boolean, bindBtn: boolean) {
     element.certificateType = certificateType;
@@ -916,41 +896,39 @@ suite('CertificateListTests', function() {
         Promise.resolve(null);
 
     importButton.click();
-    return browserProxy.whenCalled(proxyMethodName)
-        .then(function(arg) {
-          if (proxyMethodName === 'importPersonalCertificate') {
-            assertNotEquals(arg, undefined);
-            assertEquals(arg, bindBtn);
-          }
-          return waitForActionEvent;
-        })
-        .then(function(event) {
-          if (actionEventExpected) {
-            assertEquals(CertificateAction.IMPORT, event.detail.action);
-            assertEquals(certificateType, event.detail.certificateType);
-          }
-        });
+    const arg = await browserProxy.whenCalled(proxyMethodName);
+
+    if (proxyMethodName === 'importPersonalCertificate') {
+      assertNotEquals(arg, undefined);
+      assertEquals(arg, bindBtn);
+    }
+    const event = await waitForActionEvent;
+
+    if (actionEventExpected) {
+      assertEquals(CertificateAction.IMPORT, event.detail.action);
+      assertEquals(certificateType, event.detail.certificateType);
+    }
   }
 
-  test('ImportButton_Personal', function() {
-    return testImportForCertificateType(
+  test('ImportButton_Personal', async function() {
+    await testImportForCertificateType(
         CertificateType.PERSONAL, 'importPersonalCertificate', true, false);
   });
 
   // <if expr="chromeos_ash">
-  test('ImportAndBindButton_Personal', function() {
-    return testImportForCertificateType(
+  test('ImportAndBindButton_Personal', async function() {
+    await testImportForCertificateType(
         CertificateType.PERSONAL, 'importPersonalCertificate', true, true);
   });
   // </if>
 
-  test('ImportButton_Server', function() {
-    return testImportForCertificateType(
+  test('ImportButton_Server', async function() {
+    await testImportForCertificateType(
         CertificateType.SERVER, 'importServerCertificate', false, false);
   });
 
-  test('ImportButton_CA', function() {
-    return testImportForCertificateType(
+  test('ImportButton_CA', async function() {
+    await testImportForCertificateType(
         CertificateType.CA, 'importCaCertificate', true, false);
   });
 });

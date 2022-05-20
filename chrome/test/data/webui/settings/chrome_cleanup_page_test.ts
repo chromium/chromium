@@ -88,7 +88,7 @@ function validateHighlightSuffix(
  * @param files The list of files to be cleaned.
  * @param registryKeys The list of registry entries to be cleaned.
  */
-function startCleanupFromInfected(
+async function startCleanupFromInfected(
     files: ChromeCleanupFilePath[], registryKeys: string[]) {
   const scannerResults: ChromeCleanerScannerResults = {files, registryKeys};
 
@@ -130,18 +130,16 @@ function startCleanupFromInfected(
           '#action-button');
   assertTrue(!!actionButton);
   actionButton!.click();
-  return chromeCleanupProxy.whenCalled('startCleanup')
-      .then(function(logsUploadEnabled) {
-        assertFalse(logsUploadEnabled);
-        webUIListenerCallback(
-            'chrome-cleanup-on-cleaning', true /* isPoweredByPartner */,
-            defaultScannerResults);
-        flush();
+  const logsUploadEnabled = await chromeCleanupProxy.whenCalled('startCleanup');
+  assertFalse(logsUploadEnabled);
+  webUIListenerCallback(
+      'chrome-cleanup-on-cleaning', true /* isPoweredByPartner */,
+      defaultScannerResults);
+  flush();
 
-        const spinner =
-            chromeCleanupPage.shadowRoot!.querySelector('paper-spinner-lite')!;
-        assertTrue(spinner.active);
-      });
+  const spinner =
+      chromeCleanupPage.shadowRoot!.querySelector('paper-spinner-lite')!;
+  assertTrue(spinner.active);
 }
 
 /**
@@ -318,7 +316,7 @@ suite('ChromeCleanupHandler', function() {
     assertFalse(!!actionButton);
   });
 
-  test('startScanFromIdle', function() {
+  test('startScanFromIdle', async function() {
     updateReportingEnabledPref(false);
     webUIListenerCallback(
         'chrome-cleanup-on-idle', ChromeCleanupIdleReason.INITIAL);
@@ -329,16 +327,15 @@ suite('ChromeCleanupHandler', function() {
             '#action-button');
     assertTrue(!!actionButton);
     actionButton!.click();
-    return chromeCleanupProxy.whenCalled('startScanning')
-        .then(function(logsUploadEnabled) {
-          assertFalse(logsUploadEnabled);
-          webUIListenerCallback('chrome-cleanup-on-scanning', false);
-          flush();
+    const logsUploadEnabled =
+        await chromeCleanupProxy.whenCalled('startScanning');
+    assertFalse(logsUploadEnabled);
+    webUIListenerCallback('chrome-cleanup-on-scanning', false);
+    flush();
 
-          const spinner = chromeCleanupPage.shadowRoot!.querySelector(
-              'paper-spinner-lite')!;
-          assertTrue(spinner.active);
-        });
+    const spinner =
+        chromeCleanupPage.shadowRoot!.querySelector('paper-spinner-lite')!;
+    assertTrue(spinner.active);
   });
 
   test('scanFoundNothing', function() {
@@ -373,8 +370,8 @@ suite('ChromeCleanupHandler', function() {
       const fileList = fileLists[file_index]!;
       const registryKeysList = registryKeysLists[registry_index]!;
 
-      test(testName, function() {
-        return startCleanupFromInfected(fileList, registryKeysList);
+      test(testName, async function() {
+        await startCleanupFromInfected(fileList, registryKeysList);
       });
     }
   }

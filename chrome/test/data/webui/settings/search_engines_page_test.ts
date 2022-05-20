@@ -61,11 +61,10 @@ suite('AddSearchEngineDialogTests', function() {
 
   // Tests that the dialog calls 'searchEngineEditStarted' and
   // 'searchEngineEditCancelled' when closed from the 'cancel' button.
-  test('DialogOpenAndCancel', function() {
-    return browserProxy.whenCalled('searchEngineEditStarted').then(function() {
-      dialog.$.cancel.click();
-      return browserProxy.whenCalled('searchEngineEditCancelled');
-    });
+  test('DialogOpenAndCancel', async function() {
+    await browserProxy.whenCalled('searchEngineEditStarted');
+    dialog.$.cancel.click();
+    await browserProxy.whenCalled('searchEngineEditCancelled');
   });
 
   // Tests the dialog to add a new search engine. Specifically
@@ -221,7 +220,7 @@ suite('SearchEngineEntryTests', function() {
                              '#url-column-padded')!.hidden);
   });
 
-  test('Remove_Enabled', function() {
+  test('Remove_Enabled', async function() {
     // Open action menu.
     entry.shadowRoot!.querySelector('cr-icon-button')!.click();
     const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
@@ -231,14 +230,12 @@ suite('SearchEngineEntryTests', function() {
     assertTrue(!!deleteButton);
     assertFalse(deleteButton.hidden);
     deleteButton.click();
-    return browserProxy.whenCalled('removeSearchEngine')
-        .then(function(modelIndex) {
-          assertFalse(menu.open);
-          assertEquals(entry.engine.modelIndex, modelIndex);
-        });
+    const modelIndex = await browserProxy.whenCalled('removeSearchEngine');
+    assertFalse(menu.open);
+    assertEquals(entry.engine.modelIndex, modelIndex);
   });
 
-  test('MakeDefault_Enabled', function() {
+  test('MakeDefault_Enabled', async function() {
     // Open action menu.
     entry.shadowRoot!.querySelector('cr-icon-button')!.click();
     const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
@@ -247,11 +244,9 @@ suite('SearchEngineEntryTests', function() {
     const makeDefaultButton = entry.$.makeDefault;
     assertTrue(!!makeDefaultButton);
     makeDefaultButton.click();
-    return browserProxy.whenCalled('setDefaultSearchEngine')
-        .then(function(modelIndex) {
-          assertFalse(menu.open);
-          assertEquals(entry.engine.modelIndex, modelIndex);
-        });
+    const modelIndex = await browserProxy.whenCalled('setDefaultSearchEngine');
+    assertFalse(menu.open);
+    assertEquals(entry.engine.modelIndex, modelIndex);
   });
 
   // Test that clicking the "edit" menu item fires an edit event.
