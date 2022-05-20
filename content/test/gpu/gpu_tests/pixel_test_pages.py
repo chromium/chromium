@@ -149,7 +149,6 @@ class PixelTestPages():
   @staticmethod
   def DefaultPages(base_name: str) -> typing.List[PixelTestPage]:
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
-    browser_swap_args = ['--enable-features=ReportFCPOnlyOnSuccessfulCommit']
     browser_args_DXVA = [cba.DISABLE_FEATURES_D3D11_VIDEO_DECODER]
 
     # The optimizer script spat out pretty similar values for most MP4 tests, so
@@ -213,7 +212,6 @@ class PixelTestPages():
         PixelTestPage(
             'pixel_video_mp4.html?width=240&height=135&use_timer=1',
             base_name + '_Video_MP4',
-            browser_args=browser_swap_args,
             test_rect=[0, 0, 240, 135],
             # Most images are actually very similar, but Pixel 2
             # tends to produce images with all colors shifted by a
@@ -222,13 +220,12 @@ class PixelTestPages():
         # Surprisingly stable, does not appear to require inexact matching.
         PixelTestPage('pixel_video_mp4.html?width=240&height=135&use_timer=1',
                       base_name + '_Video_MP4_DXVA',
-                      browser_args=browser_args_DXVA + browser_swap_args,
+                      browser_args=browser_args_DXVA,
                       test_rect=[0, 0, 240, 135]),
         PixelTestPage(
             'pixel_video_mp4_four_colors_aspect_4x3.html'
             '?width=240&height=135&use_timer=1',
             base_name + '_Video_MP4_FourColors_Aspect_4x3',
-            browser_args=browser_swap_args,
             test_rect=[0, 0, 240, 135],
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=41700,
@@ -239,28 +236,24 @@ class PixelTestPages():
             'pixel_video_mp4_four_colors_rot_90.html'
             '?width=270&height=240&use_timer=1',
             base_name + '_Video_MP4_FourColors_Rot_90',
-            browser_args=browser_swap_args,
             test_rect=[0, 0, 270, 240],
             matching_algorithm=general_mp4_algo),
         PixelTestPage(
             'pixel_video_mp4_four_colors_rot_180.html'
             '?width=240&height=135&use_timer=1',
             base_name + '_Video_MP4_FourColors_Rot_180',
-            browser_args=browser_swap_args,
             test_rect=[0, 0, 240, 135],
             matching_algorithm=general_mp4_algo),
         PixelTestPage(
             'pixel_video_mp4_four_colors_rot_270.htm'
             'l?width=270&height=240&use_timer=1',
             base_name + '_Video_MP4_FourColors_Rot_270',
-            browser_args=browser_swap_args,
             test_rect=[0, 0, 270, 240],
             matching_algorithm=general_mp4_algo),
         PixelTestPage(
             'pixel_video_mp4_rounded_corner.html'
             '?width=240&height=135&use_timer=1',
             base_name + '_Video_MP4_Rounded_Corner',
-            browser_args=browser_swap_args,
             test_rect=[0, 0, 240, 135],
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=30500,
@@ -269,7 +262,6 @@ class PixelTestPages():
                 ignored_border_thickness=1)),
         PixelTestPage('pixel_video_vp9.html?width=240&height=135&use_timer=1',
                       base_name + '_Video_VP9',
-                      browser_args=browser_swap_args,
                       test_rect=[0, 0, 240, 135],
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=114000,
@@ -278,7 +270,7 @@ class PixelTestPages():
                           ignored_border_thickness=1)),
         PixelTestPage('pixel_video_vp9.html?width=240&height=135&use_timer=1',
                       base_name + '_Video_VP9_DXVA',
-                      browser_args=browser_args_DXVA + browser_swap_args,
+                      browser_args=browser_args_DXVA,
                       test_rect=[0, 0, 240, 135],
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=31100,
@@ -325,7 +317,6 @@ class PixelTestPages():
             'pixel_video_backdrop_filter.html?width=240&height=135&use_timer=1',
             base_name + '_Video_BackdropFilter',
             test_rect=[0, 0, 240, 135],
-            browser_args=browser_swap_args,
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=1000,
                 pixel_delta_threshold=20,

@@ -430,12 +430,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if expected.no_overlay:
       return
 
-    # TODO(crbug.com/1278681): Remove this history after no more flaky tests.
-    logging.info(
-        'SwapChain Presentation Mode History %s',
-        TraceIntegrationTest._SwapChainPresentationModeListToStr(
-            presentation_mode_history))
-
     valid_entry_found = False
     for index, mode in enumerate(reversed(presentation_mode_history)):
       # Be more tolerant for the beginning frames in non-overlay mode.
