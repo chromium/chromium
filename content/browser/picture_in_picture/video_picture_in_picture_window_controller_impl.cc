@@ -213,6 +213,7 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
     const gfx::Size& natural_size,
     bool show_play_pause_button,
     mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver> observer,
+    const gfx::Rect& source_bounds,
     mojo::PendingRemote<blink::mojom::PictureInPictureSession>* session_remote,
     gfx::Size* window_size) {
   auto result = GetWebContentsImpl()->EnterPictureInPicture();
@@ -240,6 +241,7 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
 
   // If the window is closed by the system, then the picture in picture session
   // will end. The renderer must call `StartSession()` again.
+  source_bounds_ = source_bounds;
   EmbedSurface(surface_id, natural_size);
   SetShowPlayPauseButton(show_play_pause_button);
   Show();
@@ -430,6 +432,11 @@ void VideoPictureInPictureWindowControllerImpl::CloseInternal(
   GetWebContentsImpl()->SetHasPictureInPictureVideo(false);
   OnLeavingPictureInPicture(should_pause_video);
   surface_id_ = viz::SurfaceId();
+}
+
+const gfx::Rect& VideoPictureInPictureWindowControllerImpl::GetSourceBounds()
+    const {
+  return source_bounds_;
 }
 
 void VideoPictureInPictureWindowControllerImpl::

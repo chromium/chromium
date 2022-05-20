@@ -105,6 +105,7 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
+  MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
 };
 
 const base::FilePath::CharType kPictureInPictureWindowSizePage[] =
@@ -332,6 +333,9 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   ASSERT_TRUE(window_controller()->GetWindowForTesting());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+
+  // The bounds should be nontrivial.
+  EXPECT_NE(window_controller()->GetSourceBounds(), gfx::Rect());
 
   gfx::NativeWindow native_window = GetOverlayWindow()->GetNativeWindow();
   EXPECT_FALSE(platform_util::IsWindowActive(native_window));

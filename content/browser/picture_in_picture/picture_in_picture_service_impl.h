@@ -48,6 +48,7 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
       const gfx::Size& natural_size,
       bool show_play_pause_button,
       mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>,
+      const gfx::Rect& source_bounds,
       StartSessionCallback) final;
 
  private:

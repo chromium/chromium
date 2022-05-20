@@ -78,6 +78,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void ToggleMicrophone() override;
   void ToggleCamera() override;
   void HangUp() override;
+  const gfx::Rect& GetSourceBounds() const override;
 
   // Called by the MediaSessionImpl when the MediaSessionInfo changes.
   void MediaSessionInfoChanged(
@@ -118,6 +119,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
       const gfx::Size& natural_size,
       bool show_play_pause_button,
       mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>,
+      const gfx::Rect& source_bounds,
       mojo::PendingRemote<blink::mojom::PictureInPictureSession>*
           session_remote,
       gfx::Size* window_size);
@@ -190,6 +192,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   // The media position info as last reported to us by MediaSessionImpl.
   absl::optional<media_session::MediaPosition> media_position_;
+
+  // Coordinates of the video element in WebContents coordinates.
+  gfx::Rect source_bounds_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

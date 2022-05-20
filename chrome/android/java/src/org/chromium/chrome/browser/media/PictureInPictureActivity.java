@@ -17,11 +17,13 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.util.Rational;
+import android.util.Size;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -52,6 +54,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private static final String ACTION_PLAY =
             "org.chromium.chrome.browser.media.PictureInPictureActivity.Play";
 
+    // If present, these provide our source rect hint.
+    private static final String SOURCE_X_KEY =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.source.x";
+    private static final String SOURCE_Y_KEY =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.source.y";
+    private static final String SOURCE_WIDTH_KEY =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.source.width";
+    private static final String SOURCE_HEIGHT_KEY =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.source.height";
+
     private static final float MAX_ASPECT_RATIO = 2.39f;
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
 
@@ -67,6 +79,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private CompositorView mCompositorView;
     private MediaSessionObserver mMediaSessionObserver;
     private boolean mIsPlayPauseVisible;
+
+    // If present, this is the video's aspect ratio.
+    private Rational mAspectRatio;
 
     private BroadcastReceiver mMediaSessionReceiver = new BroadcastReceiver() {
         @Override
@@ -177,9 +192,17 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         mMediaSessionObserver = new MediaSessionObserver(mediaSession) {
             @Override
             public void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {
-                setPictureInPictureParams(getPictureInPictureParams());
+                updatePictureInPictureParams();
             }
         };
+
+        // See if there are PiP hints in the extras.
+        final Intent intent = getIntent();
+        Size size = new Size(
+                intent.getIntExtra(SOURCE_WIDTH_KEY, 0), intent.getIntExtra(SOURCE_HEIGHT_KEY, 0));
+        if (size.getWidth() > 0 && size.getHeight() > 0) {
+            clampAndStoreAspectRatio(size.getWidth(), size.getHeight());
+        }
 
         enterPictureInPictureMode(getPictureInPictureParams());
     }
@@ -258,31 +281,47 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     pendingIntent));
         }
 
-        return new PictureInPictureParams.Builder().setActions(actions).build();
+        PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
+        builder.setActions(actions);
+        builder.setAspectRatio(mAspectRatio);
+
+        return builder.build();
+    }
+
+    @SuppressLint("NewApi")
+    private void updatePictureInPictureParams() {
+        setPictureInPictureParams(getPictureInPictureParams());
     }
 
     @CalledByNative
     @SuppressLint("NewApi")
     private void updateVideoSize(int width, int height) {
-        PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
+        clampAndStoreAspectRatio(width, height);
+        updatePictureInPictureParams();
+    }
 
+    private void clampAndStoreAspectRatio(int width, int height) {
         float aspectRatio =
                 MathUtils.clamp(width / (float) height, MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
         width = (int) (height * aspectRatio);
-
-        builder.setAspectRatio(new Rational(width, height));
-        setPictureInPictureParams(builder.build());
+        mAspectRatio = new Rational(width, height);
     }
 
     @CalledByNative
     @SuppressLint("NewAPI")
     private void setPlayPauseButtonVisibility(boolean isVisible) {
         mIsPlayPauseVisible = isVisible;
-        setPictureInPictureParams(getPictureInPictureParams());
+        updatePictureInPictureParams();
+    }
+
+    @VisibleForTesting
+    /* package */ Rational getAspectRatio() {
+        return mAspectRatio;
     }
 
     @CalledByNative
-    public static void createActivity(long nativeOverlayWindowAndroid, Object initiatorTab) {
+    public static void createActivity(long nativeOverlayWindowAndroid, Object initiatorTab,
+            int sourceX, int sourceY, int sourceWidth, int sourceHeight) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, PictureInPictureActivity.class);
 
@@ -299,6 +338,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         sInitiatorTab.addObserver(sTabObserver);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (sourceWidth > 0 && sourceHeight > 0) {
+            // Add the aspect ratio parameters if we have them, so that we can enter pip with them
+            // correctly immediately.  We send these as two sizes since they're directly supported
+            // by `Bundle`.
+            intent.putExtra(SOURCE_X_KEY, sourceX);
+            intent.putExtra(SOURCE_Y_KEY, sourceY);
+            intent.putExtra(SOURCE_WIDTH_KEY, sourceWidth);
+            intent.putExtra(SOURCE_HEIGHT_KEY, sourceHeight);
+        }
+
         context.startActivity(intent);
     }
 

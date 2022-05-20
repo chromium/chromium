@@ -221,10 +221,11 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
   gfx::Size window_size;
 
+  const gfx::Rect source_bounds(1, 2, 3, 4);
   service().StartSession(
       kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), surface_id,
       gfx::Size(42, 42), true /* show_play_pause_button */,
-      std::move(observer_remote),
+      std::move(observer_remote), source_bounds,
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
               const gfx::Size& b) {
@@ -233,9 +234,9 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
             window_size = b;
           }));
 
-  EXPECT_TRUE(controller->active_session_for_testing());
   EXPECT_TRUE(session_remote);
   EXPECT_EQ(gfx::Size(42, 42), window_size);
+  EXPECT_EQ(source_bounds, controller->GetSourceBounds());
 
   // Picture-in-Picture media player id should not be reset when the media is
   // destroyed (e.g. video stops playing). This allows the Picture-in-Picture
@@ -265,11 +266,12 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
   gfx::Size window_size;
+  const gfx::Rect source_bounds(1, 2, 3, 4);
 
   service().StartSession(
       kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), surface_id,
       gfx::Size(42, 42), true /* show_play_pause_button */,
-      std::move(observer_remote),
+      std::move(observer_remote), source_bounds,
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
               const gfx::Size& b) {

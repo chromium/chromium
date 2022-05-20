@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.util.Rational;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
@@ -105,6 +106,11 @@ public class PictureInPictureActivityTest {
     }
 
     private PictureInPictureActivity startPictureInPictureActivity() throws Exception {
+        final int sourceX = 100;
+        final int sourceY = 200;
+        final int width = 300;
+        final int height = 400;
+
         PictureInPictureActivity activity =
                 ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
                         PictureInPictureActivity.class, new Callable<Void>() {
@@ -113,7 +119,8 @@ public class PictureInPictureActivityTest {
                                 TestThreadUtils.runOnUiThreadBlocking(
                                         ()
                                                 -> PictureInPictureActivity.createActivity(
-                                                        NATIVE_OVERLAY, mTab));
+                                                        NATIVE_OVERLAY, mTab, sourceX, sourceY,
+                                                        width, height));
                                 return null;
                             }
                         });
@@ -123,6 +130,9 @@ public class PictureInPictureActivityTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(activity.isInPictureInPictureMode(), Matchers.is(true));
         }, PIP_TIMEOUT_MILLISECONDS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        Rational ratio = activity.getAspectRatio();
+        Criteria.checkThat(ratio, Matchers.is(new Rational(width, height)));
 
         return activity;
     }

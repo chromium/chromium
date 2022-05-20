@@ -79,7 +79,7 @@ class MockPictureInPictureService
  public:
   MockPictureInPictureService() {
     // Setup default implementations.
-    ON_CALL(*this, StartSession(_, _, _, _, _, _, _))
+    ON_CALL(*this, StartSession(_, _, _, _, _, _, _, _))
         .WillByDefault(testing::Invoke(
             this, &MockPictureInPictureService::StartSessionInternal));
   }
@@ -107,6 +107,7 @@ class MockPictureInPictureService
        const gfx::Size&,
        bool,
        mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
+       const gfx::Rect&,
        StartSessionCallback));
 
   MockPictureInPictureSession& Session() { return *session_.get(); }
@@ -118,14 +119,19 @@ class MockPictureInPictureService
       const gfx::Size&,
       bool,
       mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>,
+      const gfx::Rect& source_bounds,
       StartSessionCallback callback) {
+    source_bounds_ = source_bounds;
     std::move(callback).Run(std::move(session_remote_), gfx::Size());
   }
+
+  const gfx::Rect& source_bounds() const { return source_bounds_; }
 
  private:
   mojo::Receiver<mojom::blink::PictureInPictureService> receiver_{this};
   std::unique_ptr<MockPictureInPictureSession> session_;
   mojo::PendingRemote<mojom::blink::PictureInPictureSession> session_remote_;
+  gfx::Rect source_bounds_;
 };
 
 class PictureInPictureControllerFrameClient
@@ -266,7 +272,7 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureFiresEvent) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -305,7 +311,7 @@ TEST_F(PictureInPictureControllerTest, ExitPictureInPictureFiresEvent) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -332,7 +338,7 @@ TEST_F(PictureInPictureControllerTest, StartObserving) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -351,7 +357,7 @@ TEST_F(PictureInPictureControllerTest, StopObserving) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), true, _, _));
+                           player->NaturalSize(), true, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -379,7 +385,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_InfiniteDuration) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), false, _, _));
+                           player->NaturalSize(), false, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -398,7 +404,7 @@ TEST_F(PictureInPictureControllerTest, PlayPauseButton_MediaSource) {
   WebMediaPlayer* player = Video()->GetWebMediaPlayer();
   EXPECT_CALL(Service(),
               StartSession(player->GetDelegateId(), _, TestSurfaceId(),
-                           player->NaturalSize(), false, _, _));
+                           player->NaturalSize(), false, _, _, _));
 
   PictureInPictureControllerImpl::From(GetDocument())
       .EnterPictureInPicture(Video(), /*promise=*/nullptr);
@@ -448,6 +454,28 @@ TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
             dom_exception->code());
+}
+
+TEST_F(PictureInPictureControllerTest,
+       EnterPictureInPictureProvideSourceBounds) {
+  EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .PictureInPictureElement());
+
+  WebMediaPlayer* player = Video()->GetWebMediaPlayer();
+  EXPECT_CALL(Service(),
+              StartSession(player->GetDelegateId(), _, TestSurfaceId(),
+                           player->NaturalSize(), true, _, _, _));
+
+  PictureInPictureControllerImpl::From(GetDocument())
+      .EnterPictureInPicture(Video(), /*promise=*/nullptr);
+
+  MakeGarbageCollected<WaitForEvent>(Video(),
+                                     event_type_names::kEnterpictureinpicture);
+
+  // We expect that the video element has some nontrivial rect, else this won't
+  // really test anything.
+  ASSERT_NE(Video()->BoundsInViewport(), gfx::Rect());
+  EXPECT_EQ(Service().source_bounds(), Video()->BoundsInViewport());
 }
 
 }  // namespace blink

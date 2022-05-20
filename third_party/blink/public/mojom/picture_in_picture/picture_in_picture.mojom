@@ -59,6 +59,10 @@ interface PictureInPictureService {
   // show_play_pause_button: Whether a play/pause control should be offered in
   //                         the Picture-in-Picture window.
   // observer: Observer to be associated with the session.
+  // source_bounds: Rectangle in the main frame's coordinate space where the
+  //                video is displayed in physical pixels. This does not need
+  //                to be exact; it will only be used to help the visual
+  //                transition into picture in picture.
   //
   // TODO: Now that we are passing |player_remote|, it should be possible to get
   // rid of |player_id| once the few remaining uses of it in the browser process
@@ -69,6 +73,7 @@ interface PictureInPictureService {
       viz.mojom.SurfaceId surface_id,
       gfx.mojom.Size natural_size,
       bool show_play_pause_button,
-      pending_remote<PictureInPictureSessionObserver> observer)
+      pending_remote<PictureInPictureSessionObserver> observer,
+      gfx.mojom.Rect source_bounds)
           => (pending_remote<PictureInPictureSession>? session, gfx.mojom.Size size);
 };
