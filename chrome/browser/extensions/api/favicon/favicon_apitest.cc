@@ -51,8 +51,8 @@ IN_PROC_BROWSER_TEST_F(FaviconApiTest, MAYBE_Extension) {
       << message_;
 }
 
+// Fetch favicon when an extension doesn't have the necessary permission.
 IN_PROC_BROWSER_TEST_F(FaviconApiTest, Permission) {
-  // Fetch favicon when an extension doesn't have the necessary permission.
   ASSERT_TRUE(RunExtensionTest("favicon/permission_missing",
                                {.extension_url = "test.html"}))
       << message_;

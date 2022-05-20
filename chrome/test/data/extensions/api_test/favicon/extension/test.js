@@ -28,7 +28,8 @@ class Favicon {
   }
 };
 
-window.onload = function() {
+window.onload =
+    function() {
   chrome.test.runTests([
     // Asynchronously fetch favicon.
     async function all() {
@@ -126,7 +127,7 @@ window.onload = function() {
       }
     },
 
-    // Request a larger favicon for an unvisted site, but get smaller default.
+    // Uncached icon test. Default icons are 16 pixels. 32 or 64 are supported.
     async function defaultResolution() {
       const pixels = 48;
       const port = (await chrome.test.getConfig()).testServer.port;
@@ -144,5 +145,46 @@ window.onload = function() {
         chrome.test.succeed();
       }
     },
+
+    // We can't use the page's favicon file
+    // (chrome/test/data/extensions/favicon/favicon.ico) directly because .ico
+    // files appear to consistently show up as a blank canvas, possibly due to
+    // some of the graphics stack being stubbed out in browser tests. The bmp
+    // here is a direct conversion of the .ico file.
+    async function bmpMatch() {
+      const port = (await chrome.test.getConfig()).testServer.port;
+      const urls = [
+        '_test_resources/favicon/favicon.bmp',
+        new Favicon({
+          pageUrl: `http://www.example.com:${
+              port}/extensions/favicon/test_file.html`,
+          size: 48
+        }).getUrl()
+      ];
+      const promises = [];
+      urls.forEach(url => promises.push(toDataURL(url)));
+      Promise.all(promises).then(values => {
+        // If this test becomes fragile (e.g. due to favicon service changes),
+        // it could be restructured to just compare a single pixel of a
+        // one-color favicon instead of looking for pixel-to-pixel accuracy.
+        chrome.test.assertEq(values[0], values[1]);
+        chrome.test.succeed();
+      });
+    },
   ]);
+}
+
+// Fetches the data from url and encodes the retrieved data into a data URL.
+function toDataURL(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('get', url);
+    xhr.responseType = 'blob';
+    xhr.onload = () => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(this.result);
+      fr.readAsDataURL(xhr.response);
+    };
+    xhr.send();
+  });
 }
