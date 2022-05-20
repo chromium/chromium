@@ -6905,44 +6905,6 @@
       },
     },
 
-    'ios14_beta_simulator_tests': {
-      'ios_common_tests': {
-        'variants': [
-          'SIM_IPHONE_X_14_5',
-        ],
-      },
-      'ios_crash_unittests': {
-        'variants': [
-          'SIM_IPHONE_X_14_5',
-        ],
-      },
-      'ios_eg2_tests': {
-        'mixins': ['xcode_parallelization'],
-        'variants': [
-          'SIM_IPHONE_X_14_5',
-          'SIM_IPHONE_7_14_5',
-          'SIM_IPAD_AIR_3RD_GEN_14_5',
-          'SIM_IPAD_6_GEN_14_5',
-        ]
-      },
-      'ios_eg2_cq_tests': {
-        'mixins': ['xcode_parallelization'],
-        'variants': [
-          'SIM_IPHONE_7_14_5',
-          'SIM_IPHONE_X_14_5',
-          'SIM_IPAD_PRO_2ND_GEN_14_5',
-          'SIM_IPAD_6_GEN_14_5',
-        ]
-      },
-      'ios_screen_size_dependent_tests': {
-        'variants': [
-          'SIM_IPHONE_6S_PLUS_14_5',
-          'SIM_IPHONE_X_14_5',
-          'SIM_IPAD_AIR_2_14_5',
-        ],
-      },
-    },
-
     'ios15_beta_simulator_tests': {
       'ios_common_tests': {
         'variants': [
@@ -7044,6 +7006,44 @@
           'SIM_IPHONE_6S_15_5',
           'SIM_IPHONE_SE_1ST_GEN_15_5',
           'SIM_IPAD_AIR_2_15_5',
+        ],
+      },
+    },
+
+    'ios16_beta_simulator_tests': {
+      'ios_common_tests': {
+        'variants': [
+          'SIM_IPHONE_X_14_5',
+        ],
+      },
+      'ios_crash_unittests': {
+        'variants': [
+          'SIM_IPHONE_X_14_5',
+        ],
+      },
+      'ios_eg2_tests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          'SIM_IPHONE_X_14_5',
+          'SIM_IPHONE_7_14_5',
+          'SIM_IPAD_AIR_3RD_GEN_14_5',
+          'SIM_IPAD_6_GEN_14_5',
+        ]
+      },
+      'ios_eg2_cq_tests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          'SIM_IPHONE_7_14_5',
+          'SIM_IPHONE_X_14_5',
+          'SIM_IPAD_PRO_2ND_GEN_14_5',
+          'SIM_IPAD_6_GEN_14_5',
+        ]
+      },
+      'ios_screen_size_dependent_tests': {
+        'variants': [
+          'SIM_IPHONE_6S_PLUS_14_5',
+          'SIM_IPHONE_X_14_5',
+          'SIM_IPAD_AIR_2_14_5',
         ],
       },
     },

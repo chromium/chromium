@@ -412,32 +412,6 @@
       "use_goma": true
     }
   },
-  "ios14-beta-simulator": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
-  "ios14-sdk-simulator": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_goma": true
-    }
-  },
   "ios15-beta-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
@@ -452,6 +426,32 @@
     }
   },
   "ios15-sdk-simulator": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_environment": "simulator",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "ios16-beta-simulator": {
+    "gn_args": {
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_environment": "simulator",
+      "target_os": "ios",
+      "use_goma": true
+    }
+  },
+  "ios16-sdk-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
       "ios_set_attributes_for_xcode_project_generation": false,

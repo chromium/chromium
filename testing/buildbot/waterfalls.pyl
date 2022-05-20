@@ -3293,39 +3293,6 @@
           'isolated_scripts': 'ios_webkit_tot_tests',
         },
       },
-      # ios14-beta-sim compiles with xcode version n-1, but
-      # runs testers with xcode n during an xcode roll.
-      'ios14-beta-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_11_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_13_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios14_beta_simulator_tests'
-        },
-      },
-      # ios14-sdk-sim compiles with xcode version n, and runs
-      # testers with xcode n during an xcode roll.
-      'ios14-sdk-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_11_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_13_main',
-          'xctest',
-        ],
-      },
       'ios15-beta-simulator': {
         'additional_compile_targets': [
           'all',
@@ -3362,6 +3329,39 @@
         'test_suites': {
           'isolated_scripts': 'ios15_sdk_simulator_tests'
         },
+      },
+      # ios16-beta-sim compiles with xcode version n-1, but
+      # runs testers with xcode n during an xcode roll.
+      'ios16-beta-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios16_beta_simulator_tests'
+        },
+      },
+      # ios16-sdk-sim compiles with xcode version n, and runs
+      # testers with xcode n during an xcode roll.
+      'ios16-sdk-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
       },
       'lacros-amd64-generic-rel (goma cache silo)': {
         'additional_compile_targets': [

@@ -374,16 +374,6 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios14-beta-simulator",
-    os = os.MAC_11,
-)
-
-ios_builder(
-    name = "ios14-sdk-simulator",
-    os = os.MAC_11,
-)
-
-ios_builder(
     name = "ios15-beta-simulator",
 )
 
@@ -391,6 +381,22 @@ ios_builder(
     name = "ios15-sdk-simulator",
     xcode = xcode.x13betabots,
     os = os.MAC_12,
+)
+
+ios_builder(
+    name = "ios16-beta-simulator",
+    os = os.MAC_11,
+    mirrors = [
+        "ci/ios16-beta-simulator",
+    ],
+)
+
+ios_builder(
+    name = "ios16-sdk-simulator",
+    os = os.MAC_11,
+    mirrors = [
+        "ci/ios16-sdk-simulator",
+    ],
 )
 
 try_.gpu.optional_tests_builder(
