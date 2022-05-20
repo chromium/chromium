@@ -96,7 +96,6 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "crbug/1282868")
     public void testRefreshTokenUpdateWhenDefaultAccountSignsinWithoutSync() {
         final CoreAccountInfo account1 =
                 mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL1);
