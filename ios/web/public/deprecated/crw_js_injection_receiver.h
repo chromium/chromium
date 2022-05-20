@@ -17,9 +17,4 @@
 
 @end
 
-@interface CRWJSInjectionReceiver (Testing)
-// Returns a dictionary of instantiated managers keyed by class.
-- (NSDictionary*)managers;
-@end
-
 #endif  // IOS_WEB_PUBLIC_DEPRECATED_CRW_JS_INJECTION_RECEIVER_H_
