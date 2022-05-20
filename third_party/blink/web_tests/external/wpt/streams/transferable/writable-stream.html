@@ -87,9 +87,11 @@ promise_test(async () => {
 }, 'effective queue size of a transferred writable should be 2');
 
 promise_test(async () => {
+  const [writeCalled, resolveWriteCalled] = makePromiseAndResolveFunc();
   let resolveWrite;
   const orig = new WritableStream({
     write() {
+      resolveWriteCalled();
       return new Promise(resolve => {
         resolveWrite = resolve;
       });
@@ -102,17 +104,14 @@ promise_test(async () => {
   const writePromise = writer.write('b').then(() => {
     writeDone = true;
   });
-  await flushAsyncEvents();
+  await writeCalled;
   assert_false(writeDone, 'second write should not have resolved yet');
   resolveWrite();
-  await writePromise; // (makes sure this doesn't cause timeout)
+  await writePromise; // (makes sure this resolves)
 }, 'second write should wait for first underlying write to complete');
 
 async function transferredWritableStreamWithAbortPromise() {
-  let resolveAbortCalled;
-  const abortCalled = new Promise(resolve => {
-    resolveAbortCalled = resolve;
-  });
+  const [abortCalled, resolveAbortCalled] = makePromiseAndResolveFunc();
   const orig = recordingWritableStream({
     abort() {
       resolveAbortCalled();

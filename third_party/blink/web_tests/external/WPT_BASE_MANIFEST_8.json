@@ -157697,6 +157697,19 @@
         {}
        ]
       ],
+      "floats-aspect-ratio-001.html": [
+       "53627d2134aacff311142d5513a5a662264143de",
+       [
+        null,
+        [
+         [
+          "/css/css-sizing/aspect-ratio/floats-aspect-ratio-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-aspect-ratio-001.html": [
        "ce91fe4e4e8b2bb7f610fb230a292f59188ff95b",
        [
@@ -280932,6 +280945,10 @@
        "cc964da974077b062212a7cd4e388f1daa017ec9",
        []
       ],
+      "floats-aspect-ratio-001-ref.html": [
+       "734522a16417a8efaaa0df5c92ff3d8ca9102f9d",
+       []
+      ],
       "reference": {
        "ref-filled-green-100x20-rect.html": [
         "5d8ebce4ec5a42533cb82829b778e1f65029d7e4",
@@ -326926,7 +326943,7 @@
       []
      ],
      "test-utils.js": [
-      "1c932f17074239f9141aeec0ce90fb065a1f11de",
+      "fb34e270ff37189233ad39bb44c59a9b78b8a401",
       []
      ]
     },
@@ -431564,7 +431581,7 @@
       ]
      ],
      "anonymous-window.tentative.https.window.js": [
-      "a2ff8d8dbfb5988ebb53c2e24f1667315143b8f8",
+      "92db4e1abcdc89563a6bb22c8c58ed3aeea014f8",
       [
        "html/anonymous-iframe/anonymous-window.tentative.https.window.html",
        {
@@ -523718,7 +523735,7 @@
       ]
      ],
      "writable-stream.html": [
-      "297131b8a823538116e1a826f65b2ac814c6f65a",
+      "7e25dad94d4cfd8090e8becba0d5a4fe14ce6512",
       [
        null,
        {}
