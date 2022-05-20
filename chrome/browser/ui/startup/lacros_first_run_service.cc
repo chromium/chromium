@@ -56,9 +56,11 @@ class RefreshTokensLoadObserver : public signin::IdentityManager::Observer {
   }
 
   void OnRefreshTokensLoaded() override {
+    // We're using a `OnceCallback`, no need to continue observing.
+    scoped_observation_.Reset();
+
     if (callback_)
       std::move(callback_).Run();
-    scoped_observation_.Reset();
   }
 
  private:
