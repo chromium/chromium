@@ -88,6 +88,9 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
     horizontally_traversable_ = horizontally_traversable;
   }
 
+  // Called when the result selection controller updates its selected result.
+  virtual void OnSelectedResultChanged();
+
   // Batching method that actually performs the update and updates layout.
   void Update();
 

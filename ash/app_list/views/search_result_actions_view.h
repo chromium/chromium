@@ -33,6 +33,9 @@ class ASH_EXPORT SearchResultActionsView : public views::View {
 
   bool IsSearchResultHoveredOrSelected() const;
 
+  // Hides search result actions until they are next updated.
+  void HideActions();
+
   // Updates the button UI upon the SearchResultView's UI state change.
   void UpdateButtonsOnStateChanged();
 

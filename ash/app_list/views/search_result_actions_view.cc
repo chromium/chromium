@@ -164,6 +164,11 @@ bool SearchResultActionsView::IsSearchResultHoveredOrSelected() const {
   return delegate_->IsSearchResultHoveredOrSelected();
 }
 
+void SearchResultActionsView::HideActions() {
+  for (views::View* child : children())
+    child->SetVisible(false);
+}
+
 void SearchResultActionsView::UpdateButtonsOnStateChanged() {
   for (views::View* child : children())
     static_cast<SearchResultActionButton*>(child)->UpdateOnStateChanged();

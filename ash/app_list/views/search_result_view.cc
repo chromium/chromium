@@ -1018,6 +1018,11 @@ void SearchResultView::OnQueryRemovalAccepted(bool accepted) {
   }
 }
 
+void SearchResultView::OnSelectedResultChanged() {
+  if (!selected())
+    actions_view()->HideActions();
+}
+
 const char* SearchResultView::GetClassName() const {
   return kViewClassName;
 }

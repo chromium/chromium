@@ -46,6 +46,8 @@ bool SearchResultContainerView::HasAnimatingChildView() {
   return false;
 }
 
+void SearchResultContainerView::OnSelectedResultChanged() {}
+
 void SearchResultContainerView::Update() {
   update_factory_.InvalidateWeakPtrs();
   num_results_ = DoUpdate();

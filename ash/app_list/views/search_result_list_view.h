@@ -133,6 +133,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   friend class test::SearchResultListViewTest;
 
   // Overridden from SearchResultContainerView:
+  void OnSelectedResultChanged() override;
   int DoUpdate() override;
 
   // Overridden from views::View:
