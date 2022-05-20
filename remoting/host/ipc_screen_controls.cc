@@ -16,7 +16,9 @@ IpcScreenControls::IpcScreenControls(
 IpcScreenControls::~IpcScreenControls() = default;
 
 void IpcScreenControls::SetScreenResolution(
-    const ScreenResolution& resolution) {
+    const ScreenResolution& resolution,
+    absl::optional<webrtc::ScreenId> screen_id) {
+  // TODO(crbug.com/1326339): Pass |screen_id| over IPC.
   desktop_session_proxy_->SetScreenResolution(resolution);
 }
 

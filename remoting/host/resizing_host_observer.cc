@@ -133,7 +133,8 @@ ResizingHostObserver::~ResizingHostObserver() {
 }
 
 void ResizingHostObserver::SetScreenResolution(
-    const ScreenResolution& resolution) {
+    const ScreenResolution& resolution,
+    absl::optional<webrtc::ScreenId> screen_id) {
   // Get the current time. This function is called exactly once for each call
   // to SetScreenResolution to simplify the implementation of unit-tests.
   base::TimeTicks now = clock_->NowTicks();
@@ -152,7 +153,7 @@ void ResizingHostObserver::SetScreenResolution(
     deferred_resize_timer_.Start(
         FROM_HERE, next_allowed_resize - now,
         base::BindOnce(&ResizingHostObserver::SetScreenResolution,
-                       weak_factory_.GetWeakPtr(), resolution));
+                       weak_factory_.GetWeakPtr(), resolution, screen_id));
     return;
   }
 

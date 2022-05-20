@@ -153,8 +153,12 @@ void ClientSession::NotifyClientResolution(
 
   // Try to match the client's resolution.
   // TODO(sergeyu): Pass clients DPI to the resizer.
-  screen_controls_->SetScreenResolution(ScreenResolution(
-      client_size, webrtc::DesktopVector(kDefaultDpi, kDefaultDpi)));
+  ScreenResolution screen_resolution(
+      client_size, webrtc::DesktopVector(kDefaultDpi, kDefaultDpi));
+  absl::optional<webrtc::ScreenId> screen_id;
+  if (resolution.has_screen_id())
+    screen_id = resolution.screen_id();
+  screen_controls_->SetScreenResolution(screen_resolution, screen_id);
 }
 
 void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {

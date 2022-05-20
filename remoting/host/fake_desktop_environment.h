@@ -74,7 +74,8 @@ class FakeScreenControls : public ScreenControls {
   ~FakeScreenControls() override;
 
   // ScreenControls implementation.
-  void SetScreenResolution(const ScreenResolution& resolution) override;
+  void SetScreenResolution(const ScreenResolution& resolution,
+                           absl::optional<webrtc::ScreenId> screen_id) override;
 };
 
 class FakeDesktopEnvironment : public DesktopEnvironment {

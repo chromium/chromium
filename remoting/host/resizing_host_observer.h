@@ -42,7 +42,8 @@ class ResizingHostObserver : public ScreenControls {
   ~ResizingHostObserver() override;
 
   // ScreenControls interface.
-  void SetScreenResolution(const ScreenResolution& resolution) override;
+  void SetScreenResolution(const ScreenResolution& resolution,
+                           absl::optional<webrtc::ScreenId> screen_id) override;
 
   // Provide a replacement for base::TimeTicks::Now so that this class can be
   // unit-tested in a timely manner. This function will be called exactly

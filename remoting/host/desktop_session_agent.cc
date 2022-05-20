@@ -770,7 +770,7 @@ void DesktopSessionAgent::SetScreenResolution(
   CHECK(started_);
 
   if (screen_controls_)
-    screen_controls_->SetScreenResolution(resolution);
+    screen_controls_->SetScreenResolution(resolution, absl::nullopt);
 }
 
 void DesktopSessionAgent::SendToNetwork(std::unique_ptr<IPC::Message> message) {

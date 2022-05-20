@@ -805,9 +805,10 @@ TEST_F(IpcDesktopEnvironmentTest, SetScreenResolution) {
           this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
 
   // Change the desktop resolution.
-  screen_controls_->SetScreenResolution(ScreenResolution(
-      webrtc::DesktopSize(100, 100),
-      webrtc::DesktopVector(96, 96)));
+  screen_controls_->SetScreenResolution(
+      ScreenResolution(webrtc::DesktopSize(100, 100),
+                       webrtc::DesktopVector(96, 96)),
+      absl::nullopt);
 }
 
 TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {

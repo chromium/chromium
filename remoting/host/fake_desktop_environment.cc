@@ -58,8 +58,8 @@ FakeScreenControls::FakeScreenControls() = default;
 FakeScreenControls::~FakeScreenControls() = default;
 
 void FakeScreenControls::SetScreenResolution(
-    const ScreenResolution& resolution) {
-}
+    const ScreenResolution& resolution,
+    absl::optional<webrtc::ScreenId> screen_id) {}
 
 FakeDesktopEnvironment::FakeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> capture_thread,
