@@ -1073,29 +1073,38 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     if (element.GetAutofillState() == WebAutofillState::kAutofilled)
       continue;
 
-    // A text field, with a non-empty value that is entered by the user,
-    // and is NOT the value of the input field's "value" or "placeholder"
-    // attribute, is skipped. Some sites fill the fields with formatting
-    // string. To tell the difference between the values entered by the user
+    const std::u16string current_element_value = element.Value().Utf16();
+
+    // A text field is skipped if it has a non-empty value that is entered by
+    // the user and is NOT the value of the input field's "value" or
+    // "placeholder" attribute. (The "value" attribute in <input value="foo">
+    // indicates the value of the input element at loading time, not its runtime
+    // value after the user entered something into the field.)
+    //
+    // Some sites fill the fields with a formatting string like (___)-___-____.
+    // To tell the difference between the values entered by the user
     // and the site, we'll sanitize the value. If the sanitized value is
     // empty, it means that the site has filled the field, in this case, the
     // field is not skipped. Nevertheless the below condition does not hold
     // for sites set the |kValue| attribute to the user-input value.
+    auto HasAttributeWithValue = [&element](const auto& attribute,
+                                            const auto& value) {
+      return element.HasAttribute(attribute) &&
+             base::i18n::ToLower(element.GetAttribute(attribute).Utf16()) ==
+                 base::i18n::ToLower(value);
+    };
     if ((IsAutofillableInputElement(input_element) ||
          IsTextAreaElement(element)) &&
         element.UserHasEditedTheField() &&
-        !SanitizedFieldIsEmpty(element.Value().Utf16()) &&
-        (!element.HasAttribute(*kValue) ||
-         element.GetAttribute(*kValue) != element.Value()) &&
-        (!element.HasAttribute(*kPlaceholder) ||
-         base::i18n::ToLower(element.GetAttribute(*kPlaceholder).Utf16()) !=
-             base::i18n::ToLower(element.Value().Utf16()))) {
+        !SanitizedFieldIsEmpty(current_element_value) &&
+        !HasAttributeWithValue(*kValue, current_element_value) &&
+        !HasAttributeWithValue(*kPlaceholder, current_element_value)) {
       continue;
     }
 
     // Check if we should autofill/preview/clear a select element or leave it.
     if (IsSelectElement(element) && element.UserHasEditedTheField() &&
-        !SanitizedFieldIsEmpty(element.Value().Utf16())) {
+        !SanitizedFieldIsEmpty(current_element_value)) {
       continue;
     }
 
