@@ -690,7 +690,9 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     auto iter_and_result =
         policies_.insert(std::make_pair(policy.key, std::move(policy)));
-    DCHECK(iter_and_result.second);
+    // TODO(crbug.com/1326282): Change this to a DCHECK when we're sure the bug
+    // is fixed.
+    CHECK(iter_and_result.second);
 
     const NelPolicy& inserted_policy = iter_and_result.first->second;
     MaybeAddWildcardPolicy(inserted_policy.key, &inserted_policy);
@@ -873,7 +875,9 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     // TODO(chlily): Toss any expired policies we encounter.
     for (NelPolicy& policy : loaded_policies) {
-      AddPolicy(std::move(policy));
+      if (policies_.find(policy.key) == policies_.end()) {
+        AddPolicy(std::move(policy));
+      }
     }
     initialized_ = true;
     ExecuteBacklog();

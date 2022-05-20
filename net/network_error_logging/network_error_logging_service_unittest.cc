@@ -1513,6 +1513,25 @@ TEST_P(NetworkErrorLoggingServiceTest, SendsCommandsToStoreSynchronous) {
   EXPECT_TRUE(store()->VerifyCommands(expected_commands));
 }
 
+TEST_P(NetworkErrorLoggingServiceTest, DuplicateEntriesInStore) {
+  if (!store())
+    return;
+
+  NetworkErrorLoggingService::NelPolicy policy1 = MakePolicy(kNik_, kOrigin_);
+  NetworkErrorLoggingService::NelPolicy policy2 = policy1;
+  std::vector<NetworkErrorLoggingService::NelPolicy> prestored_policies = {
+      policy1, policy2};
+  store()->SetPrestoredPolicies(std::move(prestored_policies));
+
+  // The first call to any of the public methods triggers a load.
+  service()->OnHeader(kNik_, kOrigin_, kServerIP_, kHeader_);
+  EXPECT_TRUE(store()->VerifyCommands(
+      {MockPersistentNelStore::Command::Type::LOAD_NEL_POLICIES}));
+  FinishLoading(/*load_success=*/true);
+
+  EXPECT_EQ(service()->GetPolicyKeysForTesting().size(), 1u);
+}
+
 // Same as the above test, except that all the tasks are queued until loading
 // is complete.
 TEST_P(NetworkErrorLoggingServiceTest, SendsCommandsToStoreDeferred) {
