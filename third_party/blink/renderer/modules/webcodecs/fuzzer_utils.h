@@ -25,10 +25,16 @@
 
 #include <string>
 
+namespace base {
+class ScopedClosureRunner;
+}
+
 namespace blink {
 
 class DOMRectInit;
 class PlaneLayout;
+
+base::ScopedClosureRunner MakeScopedGarbageCollectionRequest();
 
 class FakeFunction : public ScriptFunction::Callable {
  public:
