@@ -49,6 +49,7 @@ class Rect;
 namespace ash {
 class AccessibilityExtensionLoader;
 class Dictation;
+class PumpkinInstaller;
 class SelectToSpeakEventHandlerDelegateImpl;
 enum class SelectToSpeakState;
 enum class SelectToSpeakPanelAction;
@@ -384,6 +385,14 @@ class AccessibilityManager
     return accessibility_common_enabled_features_;
   }
   bool IsDisableAutoclickDialogVisibleForTest();
+  bool is_pumpkin_installed_for_testing() {
+    return is_pumpkin_installed_for_testing_;
+  }
+
+  // Triggers a request to install Pumpkin. Runs `callback` with a value of
+  // true if the install was successful. Otherwise, runs `callback` with a
+  // value of false.
+  void InstallPumpkinForDictation(base::OnceCallback<void(bool)> callback);
 
  protected:
   AccessibilityManager();
@@ -500,6 +509,9 @@ class AccessibilityManager
 
   void CreateChromeVoxPanel();
 
+  void OnPumpkinInstalled(bool success);
+  void OnPumpkinError(const std::string& error);
+
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -560,6 +572,8 @@ class AccessibilityManager
 
   std::unique_ptr<AccessibilityExtensionLoader> switch_access_loader_;
 
+  std::unique_ptr<PumpkinInstaller> pumpkin_installer_;
+
   std::map<std::string, std::set<std::string>>
       focus_ring_names_for_extension_id_;
 
@@ -584,6 +598,9 @@ class AccessibilityManager
 
   // Whether the virtual keyboard was enabled before Switch Access loaded.
   bool was_vk_enabled_before_switch_access_ = false;
+
+  base::OnceCallback<void(bool)> install_pumpkin_callback_;
+  bool is_pumpkin_installed_for_testing_ = false;
 
   base::CallbackListSubscription focus_changed_subscription_;
 

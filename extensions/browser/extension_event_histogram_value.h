@@ -513,6 +513,7 @@ enum HistogramValue {
   WEB_AUTHENTICATION_PROXY_ON_REMOTE_SESSION_STATE_CHANGE = 491,
   LOGIN_ON_REQUEST_EXTERNAL_LOGOUT = 492,
   LOGIN_ON_EXTERNAL_LOGOUT_DONE = 493,
+  ACCESSIBILITY_PRIVATE_ON_PUMPKIN_INSTALLED = 494,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

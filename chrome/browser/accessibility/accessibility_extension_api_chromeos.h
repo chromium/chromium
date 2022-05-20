@@ -258,4 +258,15 @@ class AccessibilityPrivateUpdateDictationBubbleFunction
                              ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE)
 };
 
+// API function that initiates a Pumpkin download for Dictation.
+class AccessibilityPrivateInstallPumpkinForDictationFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateInstallPumpkinForDictationFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.installPumpkinForDictation",
+                             ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION)
+ private:
+  void OnPumpkinInstallFinished(bool success);
+};
+
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_

@@ -25,13 +25,7 @@ class PumpkinInstallerTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kExperimentalAccessibilityDictationWithPumpkin);
-    installer_ = std::make_unique<PumpkinInstaller>(
-        base::BindRepeating(&PumpkinInstallerTest::OnInstalled,
-                            base::Unretained(this)),
-        base::BindRepeating(&PumpkinInstallerTest::OnProgress,
-                            base::Unretained(this)),
-        base::BindRepeating(&PumpkinInstallerTest::OnError,
-                            base::Unretained(this)));
+    installer_ = std::make_unique<PumpkinInstaller>();
 
     chromeos::DBusThreadManager::Initialize();
     chromeos::DlcserviceClient::InitializeFake();
@@ -45,14 +39,26 @@ class PumpkinInstallerTest : public testing::Test {
     chromeos::DlcserviceClient::Shutdown();
   }
 
-  void MaybeInstall() { installer_->MaybeInstall(); }
+  void MaybeInstall() {
+    installer_->MaybeInstall(
+        base::BindOnce(&PumpkinInstallerTest::OnInstalled,
+                       base::Unretained(this)),
+        base::BindRepeating(&PumpkinInstallerTest::OnProgress,
+                            base::Unretained(this)),
+        base::BindOnce(&PumpkinInstallerTest::OnError, base::Unretained(this)));
+  }
 
   void MaybeInstallAndWait() {
-    installer_->MaybeInstall();
+    installer_->MaybeInstall(
+        base::BindOnce(&PumpkinInstallerTest::OnInstalled,
+                       base::Unretained(this)),
+        base::BindRepeating(&PumpkinInstallerTest::OnProgress,
+                            base::Unretained(this)),
+        base::BindOnce(&PumpkinInstallerTest::OnError, base::Unretained(this)));
     task_environment_.RunUntilIdle();
   }
 
-  void OnInstalled(const std::string& root_path) { install_succeeded_ = true; }
+  void OnInstalled(bool success) { install_succeeded_ = success; }
   void OnProgress(double progress) {}
   void OnError(const std::string& error) {
     install_failed_ = true;

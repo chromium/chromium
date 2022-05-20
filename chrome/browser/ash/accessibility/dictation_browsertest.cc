@@ -47,6 +47,7 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -1107,6 +1108,51 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterCommandExecuted) {
       /*icon=*/DictationBubbleIconType::kStandby,
       /*text=*/absl::optional<std::u16string>(),
       /*hints=*/std::vector<std::u16string>{kTrySaying, kUndo, kHelp});
+}
+
+// Tests behavior of Dictation and installation of Pumpkin.
+class DictationPumpkinInstallTest : public DictationTest {
+ protected:
+  DictationPumpkinInstallTest() = default;
+  ~DictationPumpkinInstallTest() = default;
+  DictationPumpkinInstallTest(const DictationPumpkinInstallTest&) = delete;
+  DictationPumpkinInstallTest& operator=(const DictationPumpkinInstallTest&) =
+      delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilityDictationWithPumpkin);
+  }
+
+  void WaitForInstallToSucceed() {
+    std::string error_message = "Waiting for Pumpkin installation to succeed";
+    SuccessWaiter(base::BindLambdaForTesting([&]() {
+                    return AccessibilityManager::Get()
+                        ->is_pumpkin_installed_for_testing();
+                  }),
+                  error_message)
+        .Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationPumpkinInstallTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationPumpkinInstallTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinInstallTest, WaitForInstall) {
+  // Dictation will request a Pumpkin install when it starts up. Wait for
+  // the install to succeed.
+  WaitForInstallToSucceed();
 }
 
 // TODO(crbug.com/1264544): Test looking at gn args has pumpkin and does

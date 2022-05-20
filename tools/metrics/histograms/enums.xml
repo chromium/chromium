@@ -32777,6 +32777,7 @@ Called by update_extension_histograms.py.-->
       label="WEB_AUTHENTICATION_PROXY_ON_REMOTE_SESSION_STATE_CHANGE"/>
   <int value="492" label="LOGIN_ON_REQUEST_EXTERNAL_LOGOUT"/>
   <int value="493" label="LOGIN_ON_EXTERNAL_LOGOUT_DONE"/>
+  <int value="494" label="ACCESSIBILITY_PRIVATE_ON_PUMPKIN_INSTALLED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -34510,6 +34511,7 @@ Called by update_extension_histograms.py.-->
   <int value="1653" label="DECLARATIVENETREQUEST_TESTMATCHOUTCOME"/>
   <int value="1654" label="FILEMANAGERPRIVATE_CANCELMOUNTING"/>
   <int value="1655" label="AUTOMATIONINTERNAL_DISABLEDESKTOP"/>
+  <int value="1656" label="ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION"/>
 </enum>
 
 <enum name="ExtensionIconState">

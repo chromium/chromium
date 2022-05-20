@@ -699,6 +699,11 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_DICTATIONPUMPKINPARSING:
+      enabled =
+          ::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
       return RespondNow(Error("Unrecognized feature"));
   }
@@ -856,4 +861,18 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
   ash::AccessibilityController::Get()->UpdateDictationBubble(properties.visible,
                                                              icon, text, hints);
   return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateInstallPumpkinForDictationFunction::Run() {
+  AccessibilityManager::Get()->InstallPumpkinForDictation(
+      base::BindOnce(&AccessibilityPrivateInstallPumpkinForDictationFunction::
+                         OnPumpkinInstallFinished,
+                     base::RetainedRef(this)));
+  return RespondLater();
+}
+
+void AccessibilityPrivateInstallPumpkinForDictationFunction::
+    OnPumpkinInstallFinished(bool success) {
+  Respond(OneArgument(base::Value(success)));
 }

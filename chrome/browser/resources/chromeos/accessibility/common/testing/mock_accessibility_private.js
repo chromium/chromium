@@ -20,6 +20,8 @@ var MockAccessibilityPrivate = {
     SOLID: 'solid',
   },
 
+  AccessibilityFeature: {DICTATION_PUMPKIN_PARSING: 'dictationPumpkinParsing'},
+
   DictationBubbleIconType: {
     HIDDEN: 'hidden',
     STANDBY: 'standby',

@@ -261,6 +261,7 @@ chrome.accessibilityPrivate.AcceleratorAction = {
 chrome.accessibilityPrivate.AccessibilityFeature = {
   ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
   GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
+  DICTATION_PUMPKIN_PARSING: 'dictationPumpkinParsing',
 };
 
 /**
@@ -343,6 +344,13 @@ chrome.accessibilityPrivate.getDisplayNameForLocale = function(localeCodeToTrans
  *     string.
  */
 chrome.accessibilityPrivate.getBatteryDescription = function(callback) {};
+
+/**
+ * Called to request an install of the Pumpkin semantic parser for Dictation.
+ * @param {function(boolean): void} callback Runs when Pumpkin download
+ *     finishes.
+ */
+chrome.accessibilityPrivate.installPumpkinForDictation = function(callback) {};
 
 /**
  * Enables or disables native accessibility support. Once disabled, it is up to

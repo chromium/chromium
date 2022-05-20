@@ -20,23 +20,23 @@ constexpr char kPumpkinInstallingError[] = "Pumpkin already installing.";
 
 namespace ash {
 
-PumpkinInstaller::PumpkinInstaller(const InstalledCallback& on_installed,
-                                   const ProgressCallback& on_progress,
-                                   const ErrorCallback& on_error)
-    : on_installed_(on_installed),
-      on_progress_(on_progress),
-      on_error_(on_error),
-      pending_dlc_request_(false) {
+PumpkinInstaller::PumpkinInstaller() {
   DCHECK(features::IsExperimentalAccessibilityDictationWithPumpkinEnabled());
 }
 
-PumpkinInstaller::~PumpkinInstaller() {}
+PumpkinInstaller::~PumpkinInstaller() = default;
 
-void PumpkinInstaller::MaybeInstall() {
+void PumpkinInstaller::MaybeInstall(InstalledCallback on_installed,
+                                    ProgressCallback on_progress,
+                                    ErrorCallback on_error) {
   if (pending_dlc_request_) {
-    OnError(kPendingDlcRequestError);
+    std::move(on_error).Run(kPendingDlcRequestError);
     return;
   }
+
+  on_installed_ = std::move(on_installed);
+  on_progress_ = std::move(on_progress);
+  on_error_ = std::move(on_error);
 
   pending_dlc_request_ = true;
   chromeos::DlcserviceClient::Get()->GetDlcState(
@@ -58,6 +58,9 @@ void PumpkinInstaller::MaybeInstallHelper(
       OnError(kPumpkinInstallingError);
       return;
     case dlcservice::DlcState_State_INSTALLED:
+      // TODO(akihiroota): If pumpkin is already installed, we should do
+      // `std::move(on_installed_).Run(true) to communicate that Pumpkin files
+      // are available.
       OnError(kPumpkinInstalledError);
       return;
     default:
@@ -84,15 +87,17 @@ void PumpkinInstaller::OnInstalled(
     return;
   }
 
-  on_installed_.Run(install_result.root_path);
+  DCHECK(!on_installed_.is_null());
+  std::move(on_installed_).Run(true);
 }
 
 void PumpkinInstaller::OnProgress(double progress) {
-  on_progress_.Run(progress);
+  std::move(on_progress_).Run(progress);
 }
 
 void PumpkinInstaller::OnError(const std::string& error) {
-  on_error_.Run(error);
+  DCHECK(!on_error_.is_null());
+  std::move(on_error_).Run(error);
 }
 
 base::WeakPtr<PumpkinInstaller> PumpkinInstaller::GetWeakPtr() {

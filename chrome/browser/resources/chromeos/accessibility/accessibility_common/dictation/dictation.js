@@ -62,6 +62,9 @@ export class Dictation {
     /** @private {?MetricsUtils} */
     this.metricsUtils_ = null;
 
+    /** @private {boolean} */
+    this.isPumpkinEnabled_ = false;
+
     this.initialize_();
   }
 
@@ -101,6 +104,22 @@ export class Dictation {
     // Browser process.
     chrome.accessibilityPrivate.onToggleDictation.addListener(
         activated => this.onToggleDictation_(activated));
+
+    this.maybeInstallPumpkin_();
+  }
+
+  /** @private */
+  maybeInstallPumpkin_() {
+    const pumpkinFeature = chrome.accessibilityPrivate.AccessibilityFeature
+                               .DICTATION_PUMPKIN_PARSING;
+    chrome.accessibilityPrivate.isFeatureEnabled(pumpkinFeature, (enabled) => {
+      this.isPumpkinEnabled_ = enabled;
+      if (enabled) {
+        chrome.accessibilityPrivate.installPumpkinForDictation(success => {
+          this.onPumpkinInstalled_(success);
+        });
+      }
+    });
   }
 
   /**
@@ -426,6 +445,19 @@ export class Dictation {
   static removeAsInputMethod() {
     chrome.languageSettingsPrivate.removeInputMethod(
         InputController.IME_ENGINE_ID);
+  }
+
+  /**
+   * @param {boolean} success
+   * @private
+   */
+  onPumpkinInstalled_(success) {
+    if (!this.isPumpkinEnabled_) {
+      return;
+    }
+
+    // TODO(akihiroota): Either instantiate a new Web Worker or sandboxed
+    // iframe to execute Pumpkin code.
   }
 }
 
