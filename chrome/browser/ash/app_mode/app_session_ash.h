@@ -20,7 +20,8 @@ class AppSessionAsh : public chromeos::AppSession {
   // chromeos::AppSession:
   void Init(Profile* profile, const std::string& app_id) override;
   void InitForWebKiosk(Browser* browser) override;
-  void InitForWebKioskWithLacros(Profile* profile) override;
+
+  void InitForWebKioskWithLacros(Profile* profile);
 
  private:
   // Initialize the Kiosk app update service. The external update will be

@@ -157,10 +157,6 @@ class AppSessionMetricsService {
     RecordKioskSessionStarted(KioskSessionState::kWebStarted);
   }
 
-  void RecordKioskSessionWebWithLacrosStarted() {
-    RecordKioskSessionStarted(KioskSessionState::kWebWithLacrosStarted);
-  }
-
   void RecordKioskSessionStopped() {
     if (!IsKioskSessionRunning())
       return;
@@ -469,12 +465,6 @@ void AppSession::InitForWebKiosk(Browser* browser) {
   SetProfile(browser->profile());
   CreateBrowserWindowHandler(browser);
   metrics_service_->RecordKioskSessionWebStarted();
-}
-
-void AppSession::InitForWebKioskWithLacros(Profile* profile) {
-  SetProfile(profile);
-  CreateBrowserWindowHandler(nullptr);
-  metrics_service_->RecordKioskSessionWebWithLacrosStarted();
 }
 
 void AppSession::SetAttemptUserExitForTesting(base::OnceClosure closure) {
