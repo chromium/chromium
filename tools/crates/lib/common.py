@@ -10,11 +10,12 @@ from __future__ import annotations
 
 import os
 import sys
+from typing import Any, List
 
 from lib import consts
 
 
-def _find_chromium_root(cwd: str) -> tuple[list[str], list[str]]:
+def _find_chromium_root(cwd: str) -> list[str]:
     """Finds and returns the path from the root of the Chromium tree."""
     # This file is at tools/crates/lib/common.py, so 4 * '..' will take us up
     # to the root chromium dir.
@@ -25,8 +26,8 @@ def _find_chromium_root(cwd: str) -> tuple[list[str], list[str]]:
     def split_path(p: str) -> list[str]:
         if not p: return []
         head, tail = os.path.split(p)
-        tail = [] if tail == "." else [tail]
-        return split_path(head) + tail
+        tail_l = [] if tail == "." else [tail]
+        return split_path(head) + tail_l
 
     return split_path(path_from_root)
 
@@ -54,7 +55,7 @@ def version_is_complete(version_str: str) -> bool:
     return len(parts) >= 3
 
 
-def _version_to_parts(version_str: str) -> str:
+def _version_to_parts(version_str: str) -> list[str]:
     """Converts a version string into its MAJOR.MINOR.PATCH parts."""
     # TODO(danakj): This does not support pre-release or build versions such as
     # 1.0.0-alpha.1 or 1.0.0+1234 at this time. We only need support it if we
@@ -154,7 +155,7 @@ def crate_view_url(crate: str) -> str:
     return consts.CRATES_IO_VIEW.format(crate=crate)
 
 
-def load_toml(path: str) -> dict:
+def load_toml(path: str) -> dict[str, Any]:
     """Loads a file at the path and parses it as a TOML file.
 
     This is a helper for times when you don't need the raw text content of the
@@ -165,7 +166,7 @@ def load_toml(path: str) -> dict:
     with open(path, "r") as cargo_file:
         toml_string = cargo_file.read()
         import toml
-        return toml.loads(toml_string)
+        return dict(toml.loads(toml_string))
 
 
 def print_same_line(s: str, fill_num_chars: int, done: bool = False) -> int:
