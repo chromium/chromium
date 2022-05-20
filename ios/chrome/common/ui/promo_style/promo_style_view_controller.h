@@ -75,6 +75,10 @@
 // The help button item in the top left of the view. Nil if not available.
 @property(nonatomic, readonly) UIButton* learnMoreButton;
 
+// Whether the bottom of the view controller is reached. This value will always
+// be YES when `self.scrollToEndMandatory` is NO.
+@property(nonatomic, assign, readonly) BOOL didReachBottom;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_H_

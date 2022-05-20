@@ -21,6 +21,10 @@
 // Called when the user taps on "Manage" related to metric reporting.
 - (void)showUMADialog;
 
+// Logs scrollability metric on view appears.
+- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible
+        withUMACheckboxVisible:(BOOL)umaCheckboxVisible;
+
 @end
 
 // View controller of welcome screen.

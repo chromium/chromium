@@ -32,6 +32,7 @@ source_set("sync") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/unified_consent",
     "//ios/public/provider/chrome/browser/signin",

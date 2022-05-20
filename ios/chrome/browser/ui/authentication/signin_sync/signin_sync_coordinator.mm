@@ -273,6 +273,19 @@
   [self.consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
 }
 
+- (void)signinSyncViewController:
+            (SigninSyncViewController*)signinSyncViewController
+          logScrollButtonVisible:(BOOL)scrollButtonVisible
+        withAccountPickerVisible:(BOOL)accountButtonVisible {
+  first_run::FirstRunScreenType screenType =
+      accountButtonVisible
+          ? first_run::FirstRunScreenType::kSyncScreenWithIdentityPicker
+          : first_run::FirstRunScreenType::kSyncScreenWithoutIdentityPicker;
+  RecordFirstRunScrollButtonVisibilityMetrics(screenType, scrollButtonVisible);
+}
+
+#pragma mark - PromoStyleViewControllerDelegate
+
 - (void)didTapPrimaryActionButton {
   if (self.mediator.selectedIdentity) {
     [self startSync];

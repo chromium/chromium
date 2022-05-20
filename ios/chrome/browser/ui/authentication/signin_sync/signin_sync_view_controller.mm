@@ -179,6 +179,13 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   [super viewDidLoad];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self.delegate signinSyncViewController:self
+                   logScrollButtonVisible:!self.didReachBottom
+                 withAccountPickerVisible:!self.identityControl.hidden];
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 

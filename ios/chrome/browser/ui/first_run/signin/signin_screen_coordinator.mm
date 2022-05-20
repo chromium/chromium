@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
@@ -283,6 +284,24 @@
   [self.identityChooserCoordinator start];
   self.identityChooserCoordinator.selectedIdentity =
       self.mediator.selectedIdentity;
+}
+
+- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible
+            withIdentityPicker:(BOOL)identityPickerVisible
+                     andFooter:(BOOL)footerVisible {
+  first_run::FirstRunScreenType screenType;
+  if (identityPickerVisible && footerVisible) {
+    screenType =
+        first_run::FirstRunScreenType::kSignInScreenWithFooterAndIdentityPicker;
+  } else if (identityPickerVisible) {
+    screenType = first_run::FirstRunScreenType::kSignInScreenWithIdentityPicker;
+  } else if (footerVisible) {
+    screenType = first_run::FirstRunScreenType::kSignInScreenWithFooter;
+  } else {
+    screenType = first_run::FirstRunScreenType::
+        kSignInScreenWithoutFooterOrIdentityPicker;
+  }
+  RecordFirstRunScrollButtonVisibilityMetrics(screenType, scrollButtonVisible);
 }
 
 #pragma mark - TOSCommands

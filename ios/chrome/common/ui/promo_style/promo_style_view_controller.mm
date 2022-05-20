@@ -53,7 +53,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
 @property(nonatomic, strong) UIView* separator;
 
-@property(nonatomic, assign) BOOL didReachBottom;
+// Read/Write override.
+@property(nonatomic, assign, readwrite) BOOL didReachBottom;
 
 // YES if the views can be updated on scroll updates (e.g., change the text
 // label string of the primary button) which corresponds to the moment where the

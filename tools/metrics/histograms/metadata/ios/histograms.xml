@@ -520,6 +520,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.FirstRun.ScrollButtonVisible.{FirstRunScreen}"
+    enum="Boolean" expires_after="2022-11-09">
+  <owner>ginnyhuang@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Depending on the text size of the system, the first run screens would either
+    show buttons intended for the purpose of the view, or a &quot;More&quot;
+    button. In the latter scenario, tapping on the button would trigger a scroll
+    down, and would transform into the intended action buttons when the user has
+    scrolled down to the bottom of the view. This histogram counts the frequency
+    for each type of screen of the &quot;More&quot; button showing on the view
+    first appears, instead of the intended action buttons.
+  </summary>
+  <token key="FirstRunScreen">
+    <variant name="DefaultBrowserPromoScreen"
+        summary="The new FRE screen that instructs the user to set default
+                 browser to Chrome."/>
+    <variant name="SignInScreenWithFooter"
+        summary="The screen that asks the user to sign in when no stored
+                 account is detected, with a footer shown at the bottom.
+                 Displayed when MICe is enabled without the welcome screen
+                 (2-steps MICe FRE), or when forced sign-in is enabled."/>
+    <variant name="SignInScreenWithFooterAndIdentityPicker"
+        summary="The screen that asks the user to sign in a stored account,
+                 with a footer shown at the bottom. Displayed when MICe is
+                 enabled without the welcome screen (2-steps MICe FRE), or
+                 when forced sign-in is enabled."/>
+    <variant name="SignInScreenWithIdentityPicker"
+        summary="The screen that asks the user to sign in a stored account,
+                 but with no footer shown at the bottom. Displayed when MICe
+                 is enabled with the welcome screen (3-steps MICe FRE)."/>
+    <variant name="SignInScreenWithoutFooterOrIdentityPicker"
+        summary="The screen that asks the user to sign in when no stored
+                 account is detected, but with no footer shown at the bottom.
+                 Displayed when MICe is enabled with the welcome screen
+                 (3-steps MICe FRE)."/>
+    <variant name="SyncScreenWithIdentityPicker"
+        summary="The screen that asks the user to turn on sync while showing
+                 an account picker. Displayed when MICe is disabled and an
+                 account is detected."/>
+    <variant name="SyncScreenWithoutIdentityPicker"
+        summary="The screen that asks the user to turn on sync while no
+                 account picker is present. Displayed when MICe is enabled or
+                 when no account is detected."/>
+    <variant name="WelcomeScreenWithoutUMACheckbox"
+        summary="Welcome screen without UMA checkbox. Displayed when MICe is
+                 enabled."/>
+    <variant name="WelcomeScreenWithUMACheckbox"
+        summary="Welcome screen with UMA checkbox. Displayed when MICe is
+                 disabled."/>
+  </token>
+</histogram>
+
 <histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
     enum="FormInputAccessoryAction" expires_after="2022-12-11">
   <owner>rohitrao@chromium.org</owner>

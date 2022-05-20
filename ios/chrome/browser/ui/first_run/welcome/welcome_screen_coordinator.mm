@@ -6,9 +6,11 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #include "ios/chrome/browser/ui/commands/tos_commands.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #include "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
 #include "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
@@ -151,6 +153,15 @@
                UMAReportingValue:self.mediator.UMAReportingUserChoice];
   self.UMACoordinator.delegate = self;
   [self.UMACoordinator start];
+}
+
+- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible
+        withUMACheckboxVisible:(BOOL)umaCheckboxVisible {
+  first_run::FirstRunScreenType screenType =
+      umaCheckboxVisible
+          ? first_run::FirstRunScreenType::kWelcomeScreenWithUMACheckbox
+          : first_run::FirstRunScreenType::kWelcomeScreenWithoutUMACheckbox;
+  RecordFirstRunScrollButtonVisibilityMetrics(screenType, scrollButtonVisible);
 }
 
 @end

@@ -22,6 +22,12 @@
             (SigninSyncViewController*)signinSyncViewController
               addConsentStringID:(const int)stringID;
 
+// Logs scrollability metric on view appears.
+- (void)signinSyncViewController:
+            (SigninSyncViewController*)signinSyncViewController
+          logScrollButtonVisible:(BOOL)scrollButtonVisible
+        withAccountPickerVisible:(BOOL)accountButtonVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SYNC_SIGNIN_SYNC_VIEW_CONTROLLER_DELEGATE_H_

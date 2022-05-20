@@ -150,9 +150,12 @@ NSString* const kMetricsConsentCheckboxAccessibilityIdentifier =
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.titleLabel);
+  [self.delegate logScrollButtonVisible:!self.didReachBottom
+                 withUMACheckboxVisible:
+                     fre_field_trial::GetNewMobileIdentityConsistencyFRE() ==
+                     NewMobileIdentityConsistencyFRE::kOld];
 }
 
 #pragma mark - Accessors

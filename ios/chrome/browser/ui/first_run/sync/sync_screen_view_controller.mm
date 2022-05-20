@@ -99,6 +99,11 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
   [super viewDidLoad];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self.delegate logScrollButtonVisible:!self.didReachBottom];
+}
+
 #pragma mark - Properties
 
 - (ActivityOverlayView*)overlay {

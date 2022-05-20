@@ -114,6 +114,42 @@ enum FirstRunStage {
   kMaxValue = kWelcomeAndSigninScreenCompletionWithoutSignIn,
 };
 
+// The different type of screens of the first run experience. This is mapped to
+// the variants of the metric IOS.FirstRun.ScrollButtonVisible.* in of
+// `tools/metrics/histograms/metadata/ios/histograms.xml`.
+enum FirstRunScreenType {
+  // The new FRE screen that instructs the user to set default browser to
+  // Chrome.
+  kDefaultBrowserPromoScreen,
+  // The screen that asks the user to sign in when no stored account is
+  // detected, with a footer shown at the bottom. Displayed when MICe is enabled
+  // without the welcome screen (2-steps MICe FRE), or when forced sign-in is
+  // enabled.
+  kSignInScreenWithFooter,
+  // The screen that asks the user to sign in a stored account, with a footer
+  // shown at the bottom. Displayed when MICe is enabled without the welcome
+  // screen (2-steps MICe FRE), or when forced sign-in is enabled.
+  kSignInScreenWithFooterAndIdentityPicker,
+  // The screen that asks the user to sign in a stored account, but with no
+  // footer shown at the bottom. Displayed when MICe is enabled with the welcome
+  // screen (3-steps MICe FRE).
+  kSignInScreenWithIdentityPicker,
+  // The screen that asks the user to sign in when no stored account is
+  // detected, but with no footer shown at the bottom. Displayed when MICe is
+  // enabled with the welcome screen (3-steps MICe FRE).
+  kSignInScreenWithoutFooterOrIdentityPicker,
+  // The screen that asks the user to turn on sync while no account picker is
+  // present. Displayed when MICe is enabled or when no account is detected.
+  kSyncScreenWithoutIdentityPicker,
+  // The screen that asks the user to turn on sync while showing an account
+  // picker. Displayed when MICe is disabled and an account is detected.
+  kSyncScreenWithIdentityPicker,
+  // Welcome screen without UMA checkbox. Displayed when MICe is enabled.
+  kWelcomeScreenWithoutUMACheckbox,
+  // Welcome screen with UMA checkbox. Displayed when MICe is disabled.
+  kWelcomeScreenWithUMACheckbox,
+};
+
 }  // namespace first_run
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_METRICS_H_

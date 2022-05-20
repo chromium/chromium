@@ -27,8 +27,10 @@ source_set("default_browser_ui") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/first_run/resources:default_browser_screen_banner",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",

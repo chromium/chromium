@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator_delegate.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_view_controller.h"
@@ -212,6 +213,12 @@
 
 - (void)addConsentStringID:(const int)stringID {
   [self.consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
+}
+
+- (void)logScrollButtonVisible:(BOOL)scrollButtonVisible {
+  RecordFirstRunScrollButtonVisibilityMetrics(
+      first_run::FirstRunScreenType::kSyncScreenWithoutIdentityPicker,
+      scrollButtonVisible);
 }
 
 #pragma mark - SyncScreenMediatorDelegate
