@@ -714,7 +714,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     The percentage of CPU time that the Missive daemon has been using. The CPU
     usage is not expected to be high and any usage beyond 100% is considered to
-    be in the overflow bucket. This is reported once every 10 minutes.
+    be in the overflow bucket. This is reported once every 10 minutes and only
+    if the Missive daemon is running.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Missive.MemoryUsage" units="0.1MiB"
+    expires_after="2023-05-03">
+  <owner>xuhong@chromium.org</owner>
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    The amount of memory that the Missive daemon has been using. This is
+    reported once every 10 minutes and only if the Missive daemon is running.
   </summary>
 </histogram>
 
@@ -725,7 +737,8 @@ chromium-metrics-reviews@google.com.
   <owner>cros-reporting-team@google.com</owner>
   <summary>
     The amount of disk storage that the Missive daemon has been using for
-    storing encrypted records. This is reported once every 10 minutes.
+    storing encrypted records. This is reported once every 10 minutes and only
+    if the Missive daemon is running.
   </summary>
 </histogram>
 
