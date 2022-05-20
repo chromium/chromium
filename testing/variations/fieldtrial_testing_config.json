@@ -4299,6 +4299,23 @@
             ]
         }
     ],
+    "IOSTFLiteLanguageDetection": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220429",
+                    "enable_features": [
+                        "OptimizationGuideModelDownloading",
+                        "OptimizationTargetPrediction",
+                        "TFLiteLanguageDetectionEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSThumbstrip": [
         {
             "platforms": [
