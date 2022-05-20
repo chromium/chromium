@@ -426,8 +426,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest, MAYBE_HitTest) {
 // this platform.
 #if !BUILDFLAG(IS_ANDROID)
 
-// crbug.com/1317505: Flaky on Lacros
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// crbug.com/1317505: Flaky on Lacros and Linux Wayland
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HitTestInPopup DISABLED_HitTestInPopup
 #else
 #define MAYBE_HitTestInPopup HitTestInPopup
