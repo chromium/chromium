@@ -418,7 +418,7 @@ void ProxyMain::BeginMainFrame(
                            TRACE_EVENT_FLAG_FLOW_IN);
     TRACE_EVENT_WITH_FLOW0(
         "viz,benchmark", "MainFrame.NotifyReadyToCommitOnMain",
-        TRACE_ID_LOCAL(commit_state->trace_id), TRACE_EVENT_FLAG_FLOW_OUT)
+        TRACE_ID_LOCAL(commit_state->trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
   }
   {
     TRACE_EVENT0("cc,raf_investigation", "ProxyMain::BeginMainFrame::commit");
