@@ -9,55 +9,28 @@
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 
-namespace {
-
-enum class InitializationResult {
-  kOk = 0,
-  kErrorInvalidLibraryFunctions = 1,
-  kErrorInitializationFailed = 2,
-};
-
-}  // namespace
-
 namespace screen_ai {
 
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIService> receiver)
     : library_(GetPreloadedLibraryFilePath()),
-      screen_ai_init_function_(reinterpret_cast<ScreenAIInitFunction>(
-          library_.GetFunctionPointer("InitScreenAI"))),
+      init_function_(
+          reinterpret_cast<InitFunction>(library_.GetFunctionPointer("Init"))),
       annotate_function_(reinterpret_cast<AnnotateFunction>(
           library_.GetFunctionPointer("Annotate"))),
-      screen_2x_init_function_(reinterpret_cast<Screen2xInitFunction>(
-          library_.GetFunctionPointer("InitScreen2x"))),
       extract_main_content_function_(
           reinterpret_cast<ExtractMainContentFunction>(
               library_.GetFunctionPointer("ExtractMainContent"))),
       receiver_(this, std::move(receiver)) {
-  auto init_result = InitializationResult::kOk;
-
-  if (features::IsScreenAIVisualAnnotationsEnabled()) {
-    if (!screen_ai_init_function_ || !annotate_function_)
-      init_result = InitializationResult::kErrorInvalidLibraryFunctions;
-    else if (!screen_ai_init_function_(features::IsScreenAIDebugModeEnabled()))
-      init_result = InitializationResult::kErrorInitializationFailed;
-  }
-
-  if (features::IsReadAnythingWithScreen2xEnabled()) {
-    if (!screen_2x_init_function_ || !extract_main_content_function_)
-      init_result = InitializationResult::kErrorInvalidLibraryFunctions;
-    else if (!screen_2x_init_function_(
-                 features::IsScreenAIDebugModeEnabled())) {
-      init_result = InitializationResult::kErrorInitializationFailed;
-    }
-  }
-
-  if (init_result != InitializationResult::kOk) {
+  DCHECK(init_function_ && annotate_function_ &&
+         extract_main_content_function_);
+  if (!init_function_(features::IsScreenAIVisualAnnotationsEnabled(),
+                      features::IsReadAnythingWithScreen2xEnabled(),
+                      features::IsScreenAIDebugModeEnabled(),
+                      GetPreloadedLibraryFilePath().DirName().MaybeAsASCII())) {
     // TODO(https://crbug.com/1278249): Add UMA metrics to monitor failures.
-    VLOG(1) << "Screen AI library initialization failed: "
-            << static_cast<int>(init_result);
-    base::Process::TerminateCurrentProcessImmediately(
-        static_cast<int>(init_result));
+    VLOG(0) << "Screen AI library initialization failed.";
+    base::Process::TerminateCurrentProcessImmediately(-1);
   }
 }
 

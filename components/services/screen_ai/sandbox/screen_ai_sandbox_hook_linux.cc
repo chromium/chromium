@@ -42,6 +42,13 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       BrokerFilePermission::ReadOnly("/proc/meminfo")};
 
+  // The models are in the same folder as the library, and the library requires
+  // read access for them.
+  if (!library_path.empty()) {
+    permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(
+        library_path.DirName().MaybeAsASCII() + base::FilePath::kSeparators));
+  }
+
   if (features::IsScreenAIDebugModeEnabled()) {
     permissions.push_back(
         BrokerFilePermission::ReadWriteCreateRecursive("/tmp/"));

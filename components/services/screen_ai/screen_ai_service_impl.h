@@ -51,15 +51,15 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
-  typedef bool (*ScreenAIInitFunction)(bool /*debug_mode*/);
-  ScreenAIInitFunction screen_ai_init_function_;
+  typedef bool (*InitFunction)(bool /*init_visual_annotations*/,
+                               bool /*init_main_content_extraction*/,
+                               bool /*debug_mode*/,
+                               const std::string& models_path);
+  InitFunction init_function_;
 
   typedef bool (*AnnotateFunction)(const SkBitmap& /*image*/,
                                    std::string& /*annotation_text*/);
   AnnotateFunction annotate_function_;
-
-  typedef bool (*Screen2xInitFunction)(bool /*debug_mode*/);
-  Screen2xInitFunction screen_2x_init_function_;
 
   typedef bool (*ExtractMainContentFunction)(
       const std::string& /*serialized_snapshot*/,
