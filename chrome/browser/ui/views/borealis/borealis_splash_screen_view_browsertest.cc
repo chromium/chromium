@@ -7,7 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher_impl.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager_mock.h"
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BorealisSplashScreenViewBrowserTest,
 
   CallbackFactory callback_check;
   EXPECT_CALL(callback_check, Call(BorealisAppLauncher::LaunchResult::kError));
-  BorealisAppLauncher launcher(browser()->profile());
+  BorealisAppLauncherImpl launcher(browser()->profile());
   launcher.Launch("foo.desktop", callback_check.BindOnce());
   base::RunLoop().RunUntilIdle();
 

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -40,6 +41,22 @@ class BorealisInstallerMock : public BorealisInstaller {
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), ());
 };
 
+class BorealisLauncherMock : public BorealisAppLauncher {
+ public:
+  BorealisLauncherMock() = default;
+  ~BorealisLauncherMock() = default;
+  MOCK_METHOD(void,
+              Launch,
+              (std::string app_id,
+               const std::vector<std::string>& args,
+               OnLaunchedCallback callback),
+              ());
+  MOCK_METHOD(void,
+              Launch,
+              (std::string app_id, OnLaunchedCallback callback),
+              ());
+};
+
 class BorealisAppUninstallerTest : public testing::Test {
  public:
   BorealisAppUninstallerTest() = default;
@@ -49,37 +66,47 @@ class BorealisAppUninstallerTest : public testing::Test {
     CreateProfile();
     mock_installer_ =
         std::make_unique<testing::StrictMock<BorealisInstallerMock>>();
+    mock_launcher_ =
+        std::make_unique<testing::StrictMock<BorealisLauncherMock>>();
     BorealisServiceFake* fake_service =
         BorealisServiceFake::UseFakeForTesting(profile_.get());
     fake_service->SetInstallerForTesting(mock_installer_.get());
+    fake_service->SetAppLauncherForTesting(mock_launcher_.get());
+    list_ = std::make_unique<vm_tools::apps::ApplicationList>();
+    list_->set_vm_name("borealis");
+    list_->set_container_name("penguin");
+    list_->set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
   }
 
   void TearDown() override {
     profile_.reset();
     mock_installer_.reset();
+    mock_launcher_.reset();
+    list_.reset();
   }
 
-  // Sets up the registry with a single app. Returns its app id.
-  std::string SetDummyApp(const std::string& desktop_file_id,
+  // Sets up the registry with a dummy app. Returns its app id.
+  std::string AddDummyApp(vm_tools::apps::ApplicationList* list,
+                          const std::string& desktop_file_id,
                           std::string exec) {
-    vm_tools::apps::ApplicationList list;
-    list.set_vm_name("test_vm_name");
-    list.set_container_name("test_container_name");
-    vm_tools::apps::App* app = list.add_apps();
+    vm_tools::apps::App* app = list->add_apps();
     app->set_desktop_file_id(desktop_file_id);
+    app->set_exec(exec);
     vm_tools::apps::App::LocaleString::Entry* entry =
         app->mutable_name()->add_values();
     entry->set_locale(std::string());
     entry->set_value(desktop_file_id);
     app->set_no_display(false);
     guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_.get())
-        ->UpdateApplicationList(list);
+        ->UpdateApplicationList(*list);
     return guest_os::GuestOsRegistryService::GenerateAppId(
-        desktop_file_id, list.vm_name(), list.container_name());
+        desktop_file_id, list->vm_name(), list->container_name());
   }
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<testing::StrictMock<BorealisInstallerMock>> mock_installer_;
+  std::unique_ptr<testing::StrictMock<BorealisLauncherMock>> mock_launcher_;
+  std::unique_ptr<vm_tools::apps::ApplicationList> list_;
   content::BrowserTaskEnvironment task_environment_;
 
  private:
@@ -116,6 +143,25 @@ TEST_F(BorealisAppUninstallerTest, BorealisMainAppUninstallsBorealis) {
   uninstaller.Uninstall(kClientAppId, callback_check.BindOnce());
 }
 
+TEST_F(BorealisAppUninstallerTest, BorealisGameUninstalls) {
+  std::string steam_id = AddDummyApp(list_.get(), "steam", "steam");
+  std::string game_id =
+      AddDummyApp(list_.get(), "baz.desktop", "steam://rungameid/1439770");
+  CallbackFactory callback_check;
+  EXPECT_CALL(callback_check,
+              Call(BorealisAppUninstaller::UninstallResult::kSuccess));
+  BorealisAppUninstaller uninstaller = BorealisAppUninstaller(profile_.get());
+  std::vector<std::string> v = {"steam://uninstall/1439770"};
+  EXPECT_CALL(*mock_launcher_, Launch(steam_id, v, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](std::string app_id, const std::vector<std::string>& args,
+              BorealisAppLauncher::OnLaunchedCallback callback) {
+            std::move(callback).Run(
+                BorealisAppLauncher::LaunchResult::kSuccess);
+          }));
+  uninstaller.Uninstall(game_id, callback_check.BindOnce());
+}
+
 TEST_F(BorealisAppUninstallerTest, NonExistentAppFails) {
   CallbackFactory callback_check;
   EXPECT_CALL(callback_check,
@@ -125,7 +171,7 @@ TEST_F(BorealisAppUninstallerTest, NonExistentAppFails) {
 }
 
 TEST_F(BorealisAppUninstallerTest, AppWithEmptyExecFails) {
-  std::string baz_id = SetDummyApp("baz.desktop", "");
+  std::string baz_id = AddDummyApp(list_.get(), "baz.desktop", "");
   CallbackFactory callback_check;
   EXPECT_CALL(callback_check,
               Call(BorealisAppUninstaller::UninstallResult::kError));
@@ -134,14 +180,14 @@ TEST_F(BorealisAppUninstallerTest, AppWithEmptyExecFails) {
 }
 
 TEST_F(BorealisAppUninstallerTest, AppWithInvalidExecFails) {
-  std::string baz_id = SetDummyApp("test.desktop", "desktopname with no id");
+  std::string baz_id =
+      AddDummyApp(list_.get(), "test.desktop", "desktopname with no id");
   CallbackFactory callback_check;
   EXPECT_CALL(callback_check,
               Call(BorealisAppUninstaller::UninstallResult::kError));
   BorealisAppUninstaller uninstaller = BorealisAppUninstaller(profile_.get());
   uninstaller.Uninstall(baz_id, callback_check.BindOnce());
 }
-// TODO(174282035): Add additional tests when strings are changed.
 
 }  // namespace
 }  // namespace borealis

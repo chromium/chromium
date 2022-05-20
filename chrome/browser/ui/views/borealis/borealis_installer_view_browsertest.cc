@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/borealis/borealis_app_launcher.h"
+#include "chrome/browser/ash/borealis/borealis_app_launcher_impl.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager_mock.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -68,7 +68,8 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void SetUpOnMainThread() override {
-    app_launcher_ = std::make_unique<BorealisAppLauncher>(browser()->profile());
+    app_launcher_ =
+        std::make_unique<BorealisAppLauncherImpl>(browser()->profile());
     features_ = std::make_unique<BorealisFeatures>(browser()->profile());
 
     BorealisServiceFake* fake_service =
