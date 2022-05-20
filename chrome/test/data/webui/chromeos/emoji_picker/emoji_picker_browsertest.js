@@ -71,6 +71,23 @@ TEST_F('EmojiPickerExtensionBrowserTest', 'All', function() {
   mocha.run();
 });
 
+var EmojiPickerExtensionSearchTest = class extends PolymerTest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['chromeos::features::kImeSystemEmojiPickerExtension']};
+  }
+
+  /** @override */
+  get browsePreload() {
+    return 'chrome://emoji-picker/test_loader.html?module=' +
+        'chromeos/emoji_picker/emoji_picker_search_test.js';
+  }
+};
+
+TEST_F('EmojiPickerExtensionSearchTest', 'All', function() {
+  mocha.run();
+});
+
 var EmojiPickerTrieTest = class extends PolymerTest {
   /** @override */
   get featureList() {
