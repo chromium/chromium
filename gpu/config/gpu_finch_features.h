@@ -67,6 +67,8 @@ GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
 
 GPU_EXPORT extern const base::Feature kEnableDrDc;
 
+GPU_EXPORT extern const base::Feature kForceGpuMainThreadToNormalPriorityDrDc;
+
 #if BUILDFLAG(IS_ANDROID)
 // This flag is use additionally with kEnableDrDc to enable the feature for
 // vulkan enabled android devices.
@@ -77,6 +79,7 @@ GPU_EXPORT extern const base::Feature kWebGPUService;
 
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
+GPU_EXPORT bool IsGpuMainThreadForcedToNormalPriorityDrDc();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
 

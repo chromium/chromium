@@ -126,6 +126,9 @@ extern const char kWebBluetoothBondOnDemandDescription[];
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 
+extern const char kForceGpuMainThreadToNormalPriorityDrDcName[];
+extern const char kForceGpuMainThreadToNormalPriorityDrDcDescription[];
+
 extern const char kEnableDrDcVulkanName[];
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

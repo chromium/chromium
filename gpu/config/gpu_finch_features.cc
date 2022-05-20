@@ -210,6 +210,10 @@ const base::Feature kVulkan {
 const base::Feature kEnableDrDc{"EnableDrDc",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kForceGpuMainThreadToNormalPriorityDrDc{
+    "ForceGpuMainThreadToNormalPriorityDrDc",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_ANDROID)
 const base::Feature kEnableDrDcVulkan{"EnableDrDcVulkan",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
@@ -351,6 +355,14 @@ bool IsDrDcEnabled() {
 #else
   return false;
 #endif
+}
+
+bool IsGpuMainThreadForcedToNormalPriorityDrDc() {
+  // GPU main thread priority is forced to NORMAL only when DrDc is enabled. In
+  // that case DrDc thread continues to use DISPLAY thread priority and hence
+  // have higher thread priority than GPU main.
+  return IsDrDcEnabled() &&
+         base::FeatureList::IsEnabled(kForceGpuMainThreadToNormalPriorityDrDc);
 }
 
 bool IsUsingThreadSafeMediaForWebView() {

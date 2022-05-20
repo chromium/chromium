@@ -291,11 +291,13 @@ int GpuMain(MainFunctionParams parameters) {
   base::PlatformThread::SetName("CrGpuMain");
 
 #if !BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority)) {
-    // Set thread priority before sandbox initialization.
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::DISPLAY);
+  // Set thread priority before sandbox initialization.
+  base::ThreadPriority thread_priority = base::ThreadPriority::NORMAL;
+  if (base::FeatureList::IsEnabled(features::kGpuUseDisplayThreadPriority) &&
+      !features::IsGpuMainThreadForcedToNormalPriorityDrDc()) {
+    thread_priority = base::ThreadPriority::DISPLAY;
   }
+  base::PlatformThread::SetCurrentThreadPriority(thread_priority);
 #endif
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();

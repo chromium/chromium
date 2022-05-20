@@ -182,6 +182,14 @@ const char kEnableDrDcVulkanName[] =
     " Use this flag along with flag enable-drdc to enable DrDc on Vulkan. "
     " Note that this flag will be a no-op if enable-drdc is disabled. ";
 
+const char kForceGpuMainThreadToNormalPriorityDrDcName[] =
+    "Force GPU main thread priority to normal for DrDc.";
+const char kForceGpuMainThreadToNormalPriorityDrDcDescription[] =
+    "When enabled, force GPU main thread priority to be normal for DrDc mode. "
+    "In that case DrDc thread continues to use DISPLAY thread priority and "
+    "hence have higher thread priority than GPU main. Note that this flag will "
+    "be a no-op when DrDc is disabled.";
+
 const char kU2FPermissionPromptName[] =
     "Enable a permission prompt for the U2F Security Key API";
 const char kU2FPermissionPromptDescription[] =

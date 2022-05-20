@@ -3322,6 +3322,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "force-gpu-main-thread-to-normal-priority-drdc",
+    "owners": [ "vikassoni", "lehoangquyen" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "force-major-version-to-minor",
     "owners": [ "brgoldstein", "potassium-katabolism@google.com" ],
     "expiry_milestone": 110

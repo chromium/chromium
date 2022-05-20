@@ -264,6 +264,8 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
     if (gpu_feature_data.name == "skia_renderer" ||
         gpu_feature_data.name == "raw_draw" ||
         gpu_feature_data.name == "direct_rendering_display_compositor" ||
+        gpu_feature_data.name ==
+            "force_gpu_main_thread_to_normal_priority_drdc" ||
         gpu_feature_data.name == "viz_hit_test_surface_layer") {
       status = (gpu_feature_data.disabled ? "disabled_off_ok" : "enabled_on");
     } else if (gpu_feature_data.disabled || gpu_access_blocked ||
