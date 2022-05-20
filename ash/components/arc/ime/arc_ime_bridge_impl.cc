@@ -79,7 +79,8 @@ void ArcImeBridgeImpl::SendSetCompositionText(
     return;
 
   ime_instance->SetCompositionText(base::UTF16ToUTF8(composition.text),
-                                   ConvertSegments(composition));
+                                   ConvertSegments(composition),
+                                   composition.selection);
 }
 
 void ArcImeBridgeImpl::SendConfirmCompositionText() {
