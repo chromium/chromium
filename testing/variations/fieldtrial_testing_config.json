@@ -6250,7 +6250,8 @@
             "platforms": [
                 "windows",
                 "mac",
-                "linux"
+                "linux",
+                "android"
             ],
             "experiments": [
                 {
