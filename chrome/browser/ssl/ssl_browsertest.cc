@@ -1756,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCertAndClose) {
   // The title will be changed to 'PASS'.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), wss_close_url));
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 
   // Close tabs which contains the test page.
   for (int i = 0; i < 16; ++i)
@@ -1792,7 +1792,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCert) {
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 
 // Data URLs should always be marked as non-secure.
@@ -1904,7 +1904,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, DISABLED_TestWSSClientCert) {
   // Test page runs a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 #endif  // BUILDFLAG(USE_NSS_CERTS)
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -3936,7 +3936,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrors, TestWSS) {
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 
 // Visit a page and establish a WebSocket connection over bad https with
@@ -3963,7 +3963,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIWSS, TestWSSExpired) {
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
   const std::u16string result = watcher.WaitAndGetTitle();
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(result, "pass"));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
