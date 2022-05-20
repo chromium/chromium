@@ -64695,6 +64695,14 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Model File Memory Mapped and Valid"/>
 </enum>
 
+<enum name="ModemfwdCheckForWedgedModemResult">
+  <int value="0" label="Modem present"/>
+  <int value="1" label="Modem present after reboot"/>
+  <int value="2" label="Failed to reboot modem"/>
+  <int value="3" label="Modem wedged"/>
+  <int value="4" label="Modem absent after reboot"/>
+</enum>
+
 <enum name="ModemfwdDlcInstallResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>
@@ -64723,6 +64731,17 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Failed on GetExistingDlcs"/>
   <int value="8" label="Failed on Purge"/>
   <int value="9" label="Unexpected empty variant"/>
+</enum>
+
+<enum name="ModemfwdFWInstallResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Init failure"/>
+  <int value="3" label="Init manifest failure"/>
+  <int value="4" label="Failed to prepare FW file"/>
+  <int value="5" label="Flash failure"/>
+  <int value="6" label="Failure returned by helper"/>
+  <int value="7" label="Init journal failure"/>
 </enum>
 
 <enum name="ModemfwdFWUpdateLocation">

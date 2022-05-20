@@ -742,6 +742,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Modemfwd.CheckForWedgedModemResult"
+    enum="ModemfwdCheckForWedgedModemResult" expires_after="2023-04-15">
+  <owner>andrewlassalle@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Result of the |CheckForWedgedModem| function. The function checks the modem
+    state after modemfwd starts, and tries to recover the modem if the modem is
+    non responsive. This function is only called once after boot, so a single
+    value is emitted per boot.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Modemfwd.DlcInstallResult"
     enum="ModemfwdDlcInstallResult" expires_after="2023-04-15">
   <owner>andrewlassalle@google.com</owner>
@@ -761,6 +773,13 @@ chromium-metrics-reviews@google.com.
     remove any modem DLCs that are not for the device's variant. Each uninstall
     will log a metric.
   </summary>
+</histogram>
+
+<histogram name="Platform.Modemfwd.FWInstallResult"
+    enum="ModemfwdFWInstallResult" expires_after="2023-04-15">
+  <owner>andrewlassalle@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>The result of each modem FW install attempt.</summary>
 </histogram>
 
 <histogram name="Platform.Modemfwd.FWUpdateLocation"
