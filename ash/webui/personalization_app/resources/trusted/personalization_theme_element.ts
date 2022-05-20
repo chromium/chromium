@@ -143,12 +143,11 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
   }
 
   private onClickAutoModeButton_(event: Event) {
-    if (!isSelectionEvent(event)) {
+    if (!isSelectionEvent(event) || this.colorModeAutoScheduleEnabled_) {
       return;
     }
     setColorModeAutoSchedule(
-        !this.colorModeAutoScheduleEnabled_, getThemeProvider(),
-        this.getStore());
+        /*enabled=*/ true, getThemeProvider(), this.getStore());
   }
 }
 

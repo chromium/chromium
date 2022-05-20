@@ -126,5 +126,9 @@ suite('PersonalizationThemeTest', function() {
     assertTrue(action.enabled);
     assertTrue(personalizationStore.data.theme.colorModeAutoScheduleEnabled);
     assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
+
+    // reclicking the button does not disable auto mode.
+    radioButton.click();
+    assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
   });
 });
