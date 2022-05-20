@@ -413,10 +413,10 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
     collection.emplace();
     const base::TimeDelta max_time_to_keep_stats = GetMaxTimeToKeepStats();
 
-    for (auto const& stats_proto : *stats_proto_collection) {
-      if (AreStatsValid(&stats_proto.second)) {
+    for (auto const& [pixel_key, video_stats_entry] : *stats_proto_collection) {
+      if (AreStatsValid(&video_stats_entry)) {
         VideoStatsEntry entry;
-        for (auto const& stats : stats_proto.second.stats()) {
+        for (auto const& stats : video_stats_entry.stats()) {
           if (wall_clock_->Now() - base::Time::FromJsTime(stats.timestamp()) <=
               max_time_to_keep_stats) {
             entry.emplace_back(stats.timestamp(), stats.frames_processed(),
@@ -427,7 +427,7 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
 
         if (!entry.empty()) {
           absl::optional<int> pixels =
-              VideoDescKey::ParsePixelsFromKey(stats_proto.first);
+              VideoDescKey::ParsePixelsFromKey(pixel_key);
           if (pixels) {
             collection->insert({*pixels, std::move(entry)});
           }

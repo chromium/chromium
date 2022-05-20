@@ -93,8 +93,8 @@ struct COMPONENT_EXPORT(MEDIA_LEARNING_SHARED_TYPEMAP_TRAITS)
   static std::vector<media::learning::TargetHistogramPair> pairs(
       const media::learning::TargetHistogram& e) {
     std::vector<media::learning::TargetHistogramPair> pairs;
-    for (auto const& entry : e.counts_) {
-      pairs.push_back({entry.first, entry.second});
+    for (auto const& [target_val, count] : e.counts_) {
+      pairs.emplace_back(target_val, count);
     }
 
     return pairs;

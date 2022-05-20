@@ -313,16 +313,16 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
     // inserted as a placeholder.
     std::vector<absl::optional<bool>> smooth_per_pixel;
     absl::optional<size_t> specific_key_index;
-    for (auto const& stats : *stats_collection) {
-      if (stats.first >= video_key.pixels && !specific_key_index) {
+    for (auto const& [key_index, video_stats_entry] : *stats_collection) {
+      if (key_index >= video_key.pixels && !specific_key_index) {
         specific_key_index = smooth_per_pixel.size();
-        if (stats.first > video_key.pixels) {
+        if (key_index > video_key.pixels) {
           // No exact match found, insert a nullopt.
           smooth_per_pixel.push_back(absl::nullopt);
         }
       }
       smooth_per_pixel.push_back(PredictSmooth(
-          video_key.is_decode_stats, stats.second, frames_per_second));
+          video_key.is_decode_stats, video_stats_entry, frames_per_second));
     }
     if (!specific_key_index) {
       // Pixels for the specific key is higher than any pixels number that
