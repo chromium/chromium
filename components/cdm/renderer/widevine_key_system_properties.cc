@@ -205,13 +205,18 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
   if (robustness >= Robustness::SW_SECURE_DECODE || hw_secure_codecs_required)
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
 #elif BUILDFLAG(IS_WIN)
-  // On Windows, hardware security uses MediaFoundation-based CDM which requires
-  // identifier and persistent state.
-  if (robustness >= Robustness::HW_SECURE_CRYPTO || hw_secure_codecs_required) {
+  if (robustness >= Robustness::HW_SECURE_CRYPTO) {
+    // On Windows, hardware security uses MediaFoundation-based CDM which
+    // requires identifier and persistent state.
     return IsHardwareSecurityEnabledForKeySystem(key_system)
                ? EmeConfigRule::
                      IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED
                : EmeConfigRule::NOT_SUPPORTED;
+  } else if (robustness < Robustness::HW_SECURE_CRYPTO) {
+    // On Windows, when software security is queried, explicitly not allow
+    // hardware secure codecs to prevent robustness level upgrade, for stability
+    // and compatibility reasons. See https://crbug.com/1327043.
+    return EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
   }
 #else
   // On other platforms, require hardware secure codecs for HW_SECURE_CRYPTO and
