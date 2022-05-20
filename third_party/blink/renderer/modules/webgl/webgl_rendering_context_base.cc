@@ -7067,6 +7067,13 @@ void WebGLRenderingContextBase::LoseContextImpl(
   for (wtf_size_t i = 0; i < kWebGLExtensionNameCount; ++i)
     extension_enabled_[i] = false;
 
+  // This resolver is non-null during a makeXRCompatible call, while waiting
+  // for a response from the browser and XR process. If the WebGL context is
+  // lost before we get a response, the resolver has to be rejected to be
+  // be properly disposed of.
+  xr_compatible_ = false;
+  CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kInvalidStateError);
+
   RemoveAllCompressedTextureFormats();
 
   // If the DrawingBuffer is destroyed during a real lost context event it
