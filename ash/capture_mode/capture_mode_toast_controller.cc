@@ -166,7 +166,10 @@ ui::Layer* CaptureModeToastController::MaybeGetToastLayer() {
 
 void CaptureModeToastController::BuildCaptureToastWidget(
     const std::u16string& label) {
-  capture_toast_widget_ = std::make_unique<views::Widget>(
+  // Create the widget before init it to ensure when the window gets added to
+  // the parent container, `capture_toast_widget_` is already available.
+  capture_toast_widget_ = std::make_unique<views::Widget>();
+  capture_toast_widget_->Init(
       CreateWidgetParams(capture_session_->current_root()->GetChildById(
                              kShellWindowId_MenuContainer),
                          CalculateToastWidgetScreenBounds()));

@@ -164,14 +164,6 @@ void SetUpFileDeletionVerifier(base::RunLoop* loop) {
           }));
 }
 
-bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
-  DCHECK_EQ(layer->parent(), sibling->parent());
-  const auto& children = layer->parent()->children();
-  const int sibling_index =
-      std::find(children.begin(), children.end(), sibling) - children.begin();
-  return sibling_index > 0 && children[sibling_index - 1] == layer;
-}
-
 std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
     aura::Window* transient_parent,
     const gfx::Rect& bounds) {

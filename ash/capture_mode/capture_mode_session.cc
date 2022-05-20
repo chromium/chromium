@@ -644,6 +644,7 @@ void CaptureModeSession::Initialize() {
       std::make_unique<ParentContainerObserver>(parent, this);
   parent->layer()->Add(layer());
   layer()->SetBounds(parent->bounds());
+  layer()->SetName("CaptureModeSession");
 
   // The last region selected could have been on a larger display. Ensure that
   // the region is not larger than the current display.
@@ -1696,9 +1697,9 @@ void CaptureModeSession::RefreshStackingOrder() {
 
   auto* parent_container = GetParentContainer(current_root_);
   DCHECK(parent_container);
-  auto* menu_layer = layer();
+  auto* session_layer = layer();
   auto* parent_container_layer = parent_container->layer();
-  parent_container_layer->StackAtTop(menu_layer);
+  parent_container_layer->StackAtTop(session_layer);
 
   std::vector<views::Widget*> widget_in_order;
 
@@ -1718,8 +1719,15 @@ void CaptureModeSession::RefreshStackingOrder() {
     widget_in_order.emplace_back(capture_mode_settings_widget_.get());
 
   for (auto* widget : widget_in_order) {
-    if (widget->GetNativeWindow()->parent() == parent_container)
-      parent_container_layer->StackAtTop(widget->GetLayer());
+    auto* widget_window = widget->GetNativeWindow();
+    // Make sure the order of `widget` layer and the order of `widget` window
+    // match. Also notice we should stack layer later since when stacking
+    // window, it will also stack window's layer which may mess the layer's
+    // order if we stack layer first.
+    if (widget_window->parent() == parent_container) {
+      parent_container->StackChildAtTop(widget_window);
+      parent_container_layer->StackAtTop(widget_window->layer());
+    }
   }
 }
 

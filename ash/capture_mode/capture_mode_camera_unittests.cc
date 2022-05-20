@@ -103,6 +103,14 @@ aura::Window* GetCurrentRoot() {
   return Shell::GetPrimaryRootWindow();
 }
 
+bool IsWindowStackedRightBelow(aura::Window* window, aura::Window* sibling) {
+  DCHECK_EQ(window->parent(), sibling->parent());
+  const auto& children = window->parent()->children();
+  const int sibling_index =
+      std::find(children.begin(), children.end(), sibling) - children.begin();
+  return sibling_index > 0 && children[sibling_index - 1] == window;
+}
+
 // Defines a waiter for the camera devices change notifications.
 class CameraDevicesChangeWaiter : public CaptureModeCameraController::Observer {
  public:
@@ -920,9 +928,9 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInFullscreen) {
   auto* parent = preview_window->parent();
   // Parent of the preview should be the MenuContainer when capture mode
   // session is active with `kFullscreen` type. And the preview window should
-  // be the top-most child of it.
+  // be the bottom-most child of it.
   EXPECT_EQ(parent, menu_container);
-  EXPECT_EQ(menu_container->children().back(), preview_window);
+  EXPECT_EQ(menu_container->children().front(), preview_window);
 
   StartRecordingFromSource(CaptureModeSource::kFullscreen);
   // Parent of the preview should be the MenuContainer when video recording
@@ -2747,6 +2755,44 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnCaptureModeTurnedOn) {
   ASSERT_TRUE(capture_toast_controller->current_toast_type());
   EXPECT_EQ(*(capture_toast_controller->current_toast_type()),
             CaptureToastType::kCameraPreview);
+}
+
+TEST_F(CaptureModeCameraTest, ToastStackingOrderChangeOnCaptureModeTurnedOn) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  // Set capture region small enough to make capture toast shown.
+  const gfx::Rect capture_region = GetTooSmallToFitCameraRegion();
+  SelectCaptureRegion(capture_region);
+
+  // Close capture mode.
+  controller->Stop();
+
+  // Turn on capture mode again through the quick settings, verify that the
+  // stacking order for capture toast relative to other capture UIs is correct.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  auto* capture_session = controller->capture_mode_session();
+  auto* capture_toast_controller = capture_session->capture_toast_controller();
+  auto* capture_toast_widget = capture_toast_controller->capture_toast_widget();
+  auto* capture_toast_window = capture_toast_widget->GetNativeWindow();
+  auto* capture_label_window =
+      capture_session->capture_label_widget()->GetNativeWindow();
+  auto* capture_bar_window =
+      capture_session->capture_mode_bar_widget()->GetNativeWindow();
+  auto* camera_preview_window =
+      camera_controller->camera_preview_widget()->GetNativeWindow();
+
+  EXPECT_TRUE(
+      IsWindowStackedRightBelow(capture_label_window, capture_bar_window));
+  EXPECT_TRUE(
+      IsWindowStackedRightBelow(capture_toast_window, capture_label_window));
+  EXPECT_TRUE(
+      IsWindowStackedRightBelow(camera_preview_window, capture_toast_window));
+  EXPECT_TRUE(IsLayerStackedRightBelow(capture_session->layer(),
+                                       camera_preview_window->layer()));
 }
 
 TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnPerformingCapture) {
