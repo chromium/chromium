@@ -67,6 +67,29 @@ var MediaAppUIWithDarkLightModeGtestBrowserTest =
 
 // js2gtest fixtures require var here (https://crbug.com/1033337).
 // eslint-disable-next-line no-var
+var MediaAppUIWithDarkLightModeDarkGtestBrowserTest =
+    class extends MediaAppUIGtestBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        ...super.featureList.enabled,
+        'chromeos::features::kDarkLightMode',
+      ]
+    };
+  }
+
+  /** @override */
+  get testGenPreamble() {
+    return () => {
+      // Switch to dark mode.
+      GEN('ash::ColorProvider::Get()->SetDarkModeEnabledForTest(true);');
+    };
+  }
+};
+
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
 var MediaAppUIWithoutDarkLightModeGtestBrowserTest =
     class extends MediaAppUIGtestBrowserTest {
   /** @override */
@@ -132,6 +155,9 @@ TEST_F('MediaAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
             MediaAppUIWithDarkLightModeGtestBrowserTest))
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
+            MediaAppUIWithDarkLightModeDarkGtestBrowserTest))
+        .testCaseBodies,
+    ...(/** @type {{testCaseBodies: Object}} */ (
             MediaAppUIWithoutDarkLightModeGtestBrowserTest))
         .testCaseBodies,
   };
@@ -185,6 +211,18 @@ TEST_F('MediaAppUIGtestBrowserTest', 'MultipleSelectionLaunch', () => {
 TEST_F('MediaAppUIGtestBrowserTest', 'NotifyCurrentFile', () => {
   runMediaAppTest('NotifyCurrentFile');
 });
+
+TEST_F(
+    'MediaAppUIWithDarkLightModeDarkGtestBrowserTest', 'NotifyCurrentFileDark',
+    () => {
+      runMediaAppTest('NotifyCurrentFileDark');
+    });
+
+TEST_F(
+    'MediaAppUIWithDarkLightModeDarkGtestBrowserTest',
+    'NotifyCurrentFileAppIconDark', () => {
+      runMediaAppTest('NotifyCurrentFileAppIconDark');
+    });
 
 TEST_F('MediaAppUIGtestBrowserTest', 'LaunchUnopenableFile', () => {
   runMediaAppTest('LaunchUnopenableFile');

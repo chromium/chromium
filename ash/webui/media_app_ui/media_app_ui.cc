@@ -107,14 +107,24 @@ content::WebUIDataSource* CreateHostDataSource() {
   // File-type favicons.
   source->AddResourcePath("system_assets/pdf_icon.svg",
                           IDR_MEDIA_APP_PDF_ICON_SVG);
+  source->AddResourcePath("system_assets/pdf_icon_dark.svg",
+                          IDR_MEDIA_APP_PDF_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/video_icon.svg",
                           IDR_MEDIA_APP_VIDEO_ICON_SVG);
+  source->AddResourcePath("system_assets/video_icon_dark.svg",
+                          IDR_MEDIA_APP_VIDEO_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/image_icon.svg",
                           IDR_MEDIA_APP_IMAGE_ICON_SVG);
+  source->AddResourcePath("system_assets/image_icon_dark.svg",
+                          IDR_MEDIA_APP_IMAGE_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/audio_icon.svg",
                           IDR_MEDIA_APP_AUDIO_ICON_SVG);
+  source->AddResourcePath("system_assets/audio_icon_dark.svg",
+                          IDR_MEDIA_APP_AUDIO_ICON_DARK_SVG);
   source->AddResourcePath("system_assets/file_icon.svg",
                           IDR_MEDIA_APP_FILE_ICON_SVG);
+  source->AddResourcePath("system_assets/file_icon_dark.svg",
+                          IDR_MEDIA_APP_FILE_ICON_DARK_SVG);
   return source;
 }
 
