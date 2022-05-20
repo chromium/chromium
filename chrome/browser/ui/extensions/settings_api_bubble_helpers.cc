@@ -76,7 +76,7 @@ void ShowSettingsApiBubble(SettingsApiOverrideType type,
   settings_api_bubble->SetIsActiveBubble();
   std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
       new ExtensionMessageBubbleBridge(std::move(settings_api_bubble)));
-  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubbleAsync(
+  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
       std::move(bridge));
 }
 #endif

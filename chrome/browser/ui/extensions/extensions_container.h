@@ -70,10 +70,6 @@ class ExtensionsContainer {
   virtual void ShowToolbarActionBubble(
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) = 0;
 
-  // Same as above, but uses PostTask() in all cases.
-  virtual void ShowToolbarActionBubbleAsync(
-      std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) = 0;
-
   // Toggle the Extensions menu (as if the user clicked the puzzle piece icon).
   virtual void ToggleExtensionsMenu() = 0;
 

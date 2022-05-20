@@ -450,11 +450,6 @@ void ExtensionsToolbarContainer::ShowToolbarActionBubble(
   ShowWidgetForExtension(widget, extension_id);
 }
 
-void ExtensionsToolbarContainer::ShowToolbarActionBubbleAsync(
-    std::unique_ptr<ToolbarActionsBarBubbleDelegate> bubble) {
-  ShowToolbarActionBubble(std::move(bubble));
-}
-
 void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
   GetExtensionsButton()->ToggleExtensionsMenu();
 }
