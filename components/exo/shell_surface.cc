@@ -402,11 +402,6 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
       return;
     }
 
-    if (needs_layout_on_show_) {
-      needs_layout_on_show_ = false;
-      return;
-    }
-
     // If size changed then give the client a chance to produce new contents
     // before origin on screen is changed. Retain the old origin by reverting
     // the origin delta until the next configure is acknowledged.

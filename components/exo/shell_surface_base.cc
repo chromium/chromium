@@ -1726,8 +1726,10 @@ void ShellSurfaceBase::CommitWidget() {
 
     // TODO(crbug.com/1291592): Hook this up with the WM's window positioning
     // logic.
-    if (needs_layout_on_show_)
+    if (needs_layout_on_show_) {
       widget_->CenterWindow(GetWidgetBoundsFromVisibleBounds().size());
+      needs_layout_on_show_ = false;
+    }
 
     widget_->Show();
     if (has_grab_)
