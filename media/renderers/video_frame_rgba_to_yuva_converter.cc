@@ -118,8 +118,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
                                  const gfx::ColorSpace& src_color_space,
                                  GrSurfaceOrigin src_surface_origin,
                                  const gpu::MailboxHolder& src_mailbox_holder,
-                                 VideoFrame* dst_video_frame,
-                                 gpu::SyncToken& completion_sync_token) {
+                                 VideoFrame* dst_video_frame) {
   DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
 
   auto* ri = provider->RasterInterface();
@@ -218,12 +217,11 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Set `completion_sync_token` to mark the completion of the copy.
-  ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
-
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying
   // GpuMemoryBuffer and SharedImage resources are returned to the pool.
+  gpu::SyncToken completion_sync_token;
+  ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
   SimpleSyncTokenClient simple_client(completion_sync_token);
   for (size_t plane = 0; plane < num_planes; ++plane)
     dst_video_frame->UpdateMailboxHolderSyncToken(plane, &simple_client);
