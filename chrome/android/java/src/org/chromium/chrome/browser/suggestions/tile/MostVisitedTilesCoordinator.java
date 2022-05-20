@@ -91,10 +91,10 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mModelChangeProcessor = PropertyModelChangeProcessor.create(propertyModel,
                 new MostVisitedTilesViewBinder.ViewHolder(mvTilesContainerLayout, tilesLayout),
                 MostVisitedTilesViewBinder::bind);
-        mRenderer =
-                new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
+        mRenderer = new TileRenderer(
+                mActivity, SuggestionsConfig.getTileStyle(mUiConfig), TITLE_LINES, null);
 
-        mMediator = new MostVisitedTilesMediator(activity.getResources(), tilesLayout,
+        mMediator = new MostVisitedTilesMediator(activity.getResources(), mUiConfig, tilesLayout,
                 mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub), mRenderer,
                 propertyModel, shouldShowSkeletonUIPreNative && isScrollableMVTEnabled,
                 isScrollableMVTEnabled,

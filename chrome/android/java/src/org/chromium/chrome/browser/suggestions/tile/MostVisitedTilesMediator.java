@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -42,6 +43,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private static final int MAX_RESULTS = 12;
 
     private final Resources mResources;
+    private final UiConfig mUiConfig;
     private final ViewGroup mMvTilesLayout;
     private final ViewStub mNoMvPlaceholderStub;
     private final PropertyModel mModel;
@@ -57,12 +59,13 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private TileGroup mTileGroup;
     private boolean mInitializationComplete;
 
-    public MostVisitedTilesMediator(Resources resources, ViewGroup mvTilesLayout,
+    public MostVisitedTilesMediator(Resources resources, UiConfig uiConfig, ViewGroup mvTilesLayout,
             ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
             boolean shouldShowSkeletonUIPreNative, boolean isScrollableMVTEnabled, boolean isTablet,
             @Nullable Runnable snapshotTileGridChangedRunnable,
             @Nullable Runnable tileCountChangedRunnable) {
         mResources = resources;
+        mUiConfig = uiConfig;
         mRenderer = renderer;
         mModel = propertyModel;
         mIsScrollableMVTEnabled = isScrollableMVTEnabled;
@@ -211,12 +214,16 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         if (mIsTablet) {
             mTileViewPortraitIntervalPadding = mTileViewPortraitEdgePadding;
         } else {
+            boolean isSmallDevice = mUiConfig.getCurrentDisplayStyle().isSmall();
             int screenWidth = mResources.getDisplayMetrics().widthPixels;
-            int tileViewWidth = mResources.getDimensionPixelOffset(R.dimen.tile_view_width);
+            int tileViewWidth = mResources.getDimensionPixelOffset(
+                    isSmallDevice ? R.dimen.tile_view_width_condensed : R.dimen.tile_view_width);
             // We want to show four and a half tile view to make users know the MV tiles are
-            // scrollable.
-            mTileViewPortraitIntervalPadding =
-                    (int) ((screenWidth - mTileViewPortraitEdgePadding - tileViewWidth * 4.5) / 4);
+            // scrollable. But the padding should be equal to or larger than tile_view_padding,
+            // otherwise the titles among tiles would be overlapped.
+            mTileViewPortraitIntervalPadding = Integer.max(
+                    -mResources.getDimensionPixelOffset(R.dimen.tile_view_padding),
+                    (int) ((screenWidth - mTileViewPortraitEdgePadding - tileViewWidth * 4.5) / 4));
         }
     }
 
