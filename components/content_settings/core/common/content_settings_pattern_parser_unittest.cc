@@ -370,6 +370,7 @@ TEST(ContentSettingsPatternParserTest, IdempotencyOfCanonicalization) {
       "file://:/path",
       "file://:/:",  // crbug.com/1196591
       "file:///C:/Users/a.txt",
+      "filE:///foo/",  // crbug.com/1323130
   };
 
   for (const std::string& spec : pattern_specs) {
@@ -387,5 +388,7 @@ TEST(ContentSettingsPatternParserTest, IdempotencyOfCanonicalization) {
     std::string canonical2 = pattern2.ToString();
 
     EXPECT_EQ(canonical, canonical2);
+    EXPECT_EQ(pattern.Compare(pattern2),
+              ContentSettingsPattern::Relation::IDENTITY);
   }
 }

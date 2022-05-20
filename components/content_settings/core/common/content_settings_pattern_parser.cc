@@ -180,7 +180,7 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
   } else {
     if (!ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
             scheme_piece) &&
-        scheme_piece != url::kFileScheme)
+        !base::LowerCaseEqualsASCII(scheme_piece, url::kFileScheme))
       builder->WithPortWildcard();
   }
 
