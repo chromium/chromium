@@ -15,7 +15,8 @@ from gpu_tests import gpu_integration_test
 test_harness_script = r"""
   function VerifyHardwareAccelerated(feature) {
     feature += ': '
-    var list = document.querySelector('.feature-status-list');
+    var list = document.querySelector('info-view').shadowRoot.querySelector(
+        '.feature-status-list');
     for (var i=0; i < list.childElementCount; i++) {
       var span_list = list.children[i].getElementsByTagName('span');
       var feature_str = span_list[0].textContent;

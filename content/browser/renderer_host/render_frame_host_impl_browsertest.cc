@@ -4387,7 +4387,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, WebUiReloadAfterCrash) {
   // Execute script in an isolated world to avoid causing a Trusted Types
   // violation due to eval.
   EXPECT_EQ("Graphics Feature Status",
-            EvalJs(main_document, "document.querySelector('h3').textContent",
+            EvalJs(main_document,
+                   "document.querySelector('info-view').shadowRoot"
+                   ".querySelector('h3').textContent",
                    EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
 }
 

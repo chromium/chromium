@@ -74,15 +74,19 @@ WebUIDataSource* CreateGpuHTMLSource() {
   WebUIDataSource* source = WebUIDataSource::Create(kChromeUIGpuHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
+      "script-src chrome://resources 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "trusted-types static-types;");
 
   source->UseStringsJs();
   source->AddResourcePath("browser_bridge.js", IDR_GPU_BROWSER_BRIDGE_JS);
   source->AddResourcePath("gpu_internals.js", IDR_GPU_INTERNALS_JS);
-  source->AddResourcePath("info_view.js", IDR_GPU_INFO_VIEW_JS);
+  source->AddResourcePath("info_view.js", IDR_GPU_INTERNALS_INFO_VIEW_JS);
+  source->AddResourcePath("info_view_table.js",
+                          IDR_GPU_INTERNALS_INFO_VIEW_TABLE_JS);
+  source->AddResourcePath("info_view_table_row.js",
+                          IDR_GPU_INTERNALS_INFO_VIEW_TABLE_ROW_JS);
   source->AddResourcePath("vulkan_info.js", IDR_GPU_VULKAN_INFO_JS);
   source->AddResourcePath("vulkan_info.mojom-webui.js",
                           IDR_VULKAN_INFO_MOJO_JS);

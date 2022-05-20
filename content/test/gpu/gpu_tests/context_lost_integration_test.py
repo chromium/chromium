@@ -57,11 +57,12 @@ harness_script = r"""
 feature_query_script = """
   function GetFeatureStatus(feature_name, for_hardware_gpu) {
     let query_result;
+    const infoView = document.querySelector('info-view');
     if (for_hardware_gpu) {
-      query_result = document.querySelector(
+      query_result = infoView.shadowRoot.querySelector(
           '.feature-status-for-hardware-gpu-list');
     } else {
-      query_result = document.querySelector('.feature-status-list');
+      query_result = infoView.shadowRoot.querySelector('.feature-status-list');
     }
     for (let i = 0; i < query_result.childElementCount; i++) {
       let feature_status = query_result.children[i].textContent.split(': ');
@@ -75,17 +76,20 @@ feature_query_script = """
 vendor_id_query_script = """
   function GetActiveVendorId(for_hardware_gpu) {
     let div;
+    const infoView = document.querySelector('info-view');
     if (for_hardware_gpu) {
-      div = document.querySelector('.basic-info-for-hardware-gpu-div');
+      div = infoView.shadowRoot.querySelector(
+          '.basic-info-for-hardware-gpu-div');
     } else {
-      div = document.querySelector('#basic-info');
+      div = infoView.shadowRoot.querySelector('#basic-info');
     }
-    let trs = div.getElementsByTagName('tr');
+    const table = div.querySelector('info-view-table');
+    let trs = table.shadowRoot.querySelectorAll('info-view-table-row');
     let vendor_id = 0;
     // The first four rows are "Initialization time", "In-process GPU",
     // "Passthrough Command Decoder", and "Sandboxed".
     for (let i = 4; i < trs.length; i++) {
-      let tds = trs[i].getElementsByTagName('td');
+      let tds = trs[i].shadowRoot.querySelectorAll('div');
       let token = tds[0].textContent.trim();
       if (!token.startsWith('GPU'))
         break;
