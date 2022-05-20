@@ -55,17 +55,16 @@ class DevToolsClientImpl : public DevToolsClient {
  public:
   static const char kBrowserwideDevToolsClientId[];
 
-  DevToolsClientImpl(const SyncWebSocketFactory& factory,
+  DevToolsClientImpl(const std::string& id,
+                     const std::string& session_id,
                      const std::string& url,
-                     const std::string& id);
+                     const SyncWebSocketFactory& factory);
 
   typedef base::RepeatingCallback<Status()> FrontendCloserFunc;
-  DevToolsClientImpl(const SyncWebSocketFactory& factory,
-                     const std::string& url,
-                     const std::string& id,
-                     const FrontendCloserFunc& frontend_closer_func);
 
-  DevToolsClientImpl(DevToolsClientImpl* parent, const std::string& session_id);
+  DevToolsClientImpl(const std::string& id,
+                     const std::string& session_id,
+                     DevToolsClientImpl* parent);
 
   typedef base::RepeatingCallback<bool(const std::string&,
                                        int,
@@ -74,11 +73,6 @@ class DevToolsClientImpl : public DevToolsClient {
                                        internal::InspectorEvent*,
                                        internal::InspectorCommandResponse*)>
       ParserFunc;
-  DevToolsClientImpl(const SyncWebSocketFactory& factory,
-                     const std::string& url,
-                     const std::string& id,
-                     const FrontendCloserFunc& frontend_closer_func,
-                     const ParserFunc& parser_func);
 
   DevToolsClientImpl(const DevToolsClientImpl&) = delete;
   DevToolsClientImpl& operator=(const DevToolsClientImpl&) = delete;
@@ -86,6 +80,7 @@ class DevToolsClientImpl : public DevToolsClient {
   ~DevToolsClientImpl() override;
 
   void SetParserFuncForTesting(const ParserFunc& parser_func);
+  void SetFrontendCloserFunc(const FrontendCloserFunc& frontend_closer_func);
 
   // Overridden from DevToolsClient:
   const std::string& GetId() override;

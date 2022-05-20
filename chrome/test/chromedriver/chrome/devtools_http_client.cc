@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -112,10 +113,11 @@ Status DevToolsHttpClient::GetWebViewsInfo(WebViewsInfo* views_info) {
 
 std::unique_ptr<DevToolsClient> DevToolsHttpClient::CreateClient(
     const std::string& id) {
-  return std::unique_ptr<DevToolsClient>(new DevToolsClientImpl(
-      socket_factory_, endpoint_.GetDebuggerUrl(id), id,
-      base::BindRepeating(&DevToolsHttpClient::CloseFrontends,
-                          base::Unretained(this), id)));
+  auto result = std::make_unique<DevToolsClientImpl>(
+      id, "", endpoint_.GetDebuggerUrl(id), socket_factory_);
+  result->SetFrontendCloserFunc(base::BindRepeating(
+      &DevToolsHttpClient::CloseFrontends, base::Unretained(this), id));
+  return result;
 }
 
 Status DevToolsHttpClient::CloseWebView(const std::string& id) {
@@ -197,7 +199,7 @@ Status DevToolsHttpClient::CloseFrontends(const std::string& for_client_id) {
   for (std::list<std::string>::const_iterator it = docked_frontend_ids.begin();
        it != docked_frontend_ids.end(); ++it) {
     std::unique_ptr<DevToolsClient> client(new DevToolsClientImpl(
-        socket_factory_, endpoint_.GetDebuggerUrl(*it), *it));
+        *it, "", endpoint_.GetDebuggerUrl(*it), socket_factory_));
     std::unique_ptr<WebViewImpl> web_view(
         new WebViewImpl(*it, false, nullptr, &browser_info_, std::move(client),
                         nullptr, page_load_strategy_));

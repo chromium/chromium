@@ -259,10 +259,6 @@ bool StubWebView::IsNonBlocking() const {
   return false;
 }
 
-bool StubWebView::IsOOPIF(const std::string& frame_id) {
-  return false;
-}
-
 FrameTracker* StubWebView::GetFrameTracker() const {
   return nullptr;
 }

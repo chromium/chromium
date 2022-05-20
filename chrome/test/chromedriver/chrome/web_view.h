@@ -263,8 +263,6 @@ class WebView {
 
   virtual bool IsNonBlocking() const = 0;
 
-  virtual bool IsOOPIF(const std::string& frame_id) = 0;
-
   virtual FrameTracker* GetFrameTracker() const = 0;
 
   virtual std::unique_ptr<base::Value> GetCastSinks() = 0;

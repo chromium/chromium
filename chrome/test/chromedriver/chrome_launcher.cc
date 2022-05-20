@@ -352,8 +352,9 @@ Status CreateBrowserwideDevToolsClientAndConnect(
   if (url.length() == 0) {
     url = endpoint.GetBrowserDebuggerUrl();
   }
-  std::unique_ptr<DevToolsClient> client(new DevToolsClientImpl(
-      socket_factory, url, DevToolsClientImpl::kBrowserwideDevToolsClientId));
+  std::unique_ptr<DevToolsClient> client(
+      new DevToolsClientImpl(DevToolsClientImpl::kBrowserwideDevToolsClientId,
+                             "", url, socket_factory));
   for (const auto& listener : devtools_event_listeners) {
     // Only add listeners that subscribe to the browser-wide |DevToolsClient|.
     // Otherwise, listeners will think this client is associated with a webview,

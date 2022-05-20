@@ -246,7 +246,7 @@ TEST(CreateChild, MultiLevel) {
       &CreateMockSyncWebSocket, SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
-      std::make_unique<DevToolsClientImpl>(factory, "http://url", "id");
+      std::make_unique<DevToolsClientImpl>("id", "", "http://url", factory);
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl level1(client_ptr->GetId(), true, nullptr, &browser_info,
@@ -267,7 +267,7 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
       &CreateMockSyncWebSocket, SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
-      std::make_unique<DevToolsClientImpl>(factory, "http://url", "id");
+      std::make_unique<DevToolsClientImpl>("id", "", "http://url", factory);
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
@@ -287,7 +287,7 @@ TEST(CreateChild, Load_NoErrors) {
       &CreateMockSyncWebSocket, SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
-      std::make_unique<DevToolsClientImpl>(factory, "http://url", "id");
+      std::make_unique<DevToolsClientImpl>("id", "", "http://url", factory);
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
@@ -305,7 +305,7 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
       &CreateMockSyncWebSocket, SyncWebSocket::StatusCode::kTimeout);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
-      std::make_unique<DevToolsClientImpl>(factory, "http://url", "id");
+      std::make_unique<DevToolsClientImpl>("id", "", "http://url", factory);
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
@@ -325,7 +325,7 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
       &CreateMockSyncWebSocket, SyncWebSocket::StatusCode::kOk);
   // CreateChild relies on client_ being a DevToolsClientImpl, so no mocking
   std::unique_ptr<DevToolsClientImpl> client_uptr =
-      std::make_unique<DevToolsClientImpl>(factory, "http://url", "id");
+      std::make_unique<DevToolsClientImpl>("id", "", "http://url", factory);
   DevToolsClientImpl* client_ptr = client_uptr.get();
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,

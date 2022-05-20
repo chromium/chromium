@@ -389,7 +389,8 @@ WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
   DevToolsClientImpl* root_client =
       static_cast<DevToolsClientImpl*>(client_.get()->GetRootClient());
   std::unique_ptr<DevToolsClient> child_client(
-      std::make_unique<DevToolsClientImpl>(root_client, session_id));
+      std::make_unique<DevToolsClientImpl>(session_id, session_id,
+                                           root_client));
   WebViewImpl* child = new WebViewImpl(
       target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
       nullptr,
@@ -1455,11 +1456,6 @@ bool WebViewImpl::IsNonBlocking() const {
     return navigation_tracker_->IsNonBlocking();
   else
     return parent_->IsNonBlocking();
-}
-
-bool WebViewImpl::IsOOPIF(const std::string& frame_id) {
-  WebView* target = GetTargetForFrame(this, frame_id);
-  return target != nullptr && frame_id == target->GetId();
 }
 
 FrameTracker* WebViewImpl::GetFrameTracker() const {

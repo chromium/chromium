@@ -79,12 +79,14 @@ InspectorCommandResponse::~InspectorCommandResponse() {}
 
 const char DevToolsClientImpl::kBrowserwideDevToolsClientId[] = "browser";
 
-DevToolsClientImpl::DevToolsClientImpl(const SyncWebSocketFactory& factory,
+DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
+                                       const std::string& session_id,
                                        const std::string& url,
-                                       const std::string& id)
+                                       const SyncWebSocketFactory& factory)
     : socket_(factory.Run()),
       url_(url),
       owner_(nullptr),
+      session_id_(session_id),
       parent_(nullptr),
       crashed_(false),
       detached_(false),
@@ -104,75 +106,21 @@ DevToolsClientImpl::DevToolsClientImpl(const SyncWebSocketFactory& factory,
       base::Unretained(this)));
 }
 
-DevToolsClientImpl::DevToolsClientImpl(
-    const SyncWebSocketFactory& factory,
-    const std::string& url,
-    const std::string& id,
-    const FrontendCloserFunc& frontend_closer_func)
-    : socket_(factory.Run()),
-      url_(url),
-      owner_(nullptr),
-      parent_(nullptr),
-      crashed_(false),
-      detached_(false),
-      id_(id),
-      frontend_closer_func_(frontend_closer_func),
-      parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)),
-      unnotified_event_(nullptr),
-      next_id_(1),
-      stack_count_(0) {
-  socket_->SetId(id_);
-  // If error happens during proactive event consumption we ignore it
-  // as there is no active user request where the error might be returned.
-  // Unretained 'this' won't cause any problems as we reset the callback in the
-  // .dtor.
-  socket_->SetNotificationCallback(base::BindRepeating(
-      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
-      base::Unretained(this)));
-}
-
-DevToolsClientImpl::DevToolsClientImpl(DevToolsClientImpl* parent,
-                                       const std::string& session_id)
+DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
+                                       const std::string& session_id,
+                                       DevToolsClientImpl* parent)
     : owner_(nullptr),
       session_id_(session_id),
       parent_(parent),
       crashed_(false),
       detached_(false),
-      id_(session_id),
+      id_(id),
       frontend_closer_func_(base::BindRepeating(&FakeCloseFrontends)),
       parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)),
       unnotified_event_(nullptr),
       next_id_(1),
       stack_count_(0) {
   parent->children_[session_id] = this;
-}
-
-DevToolsClientImpl::DevToolsClientImpl(
-    const SyncWebSocketFactory& factory,
-    const std::string& url,
-    const std::string& id,
-    const FrontendCloserFunc& frontend_closer_func,
-    const ParserFunc& parser_func)
-    : socket_(factory.Run()),
-      url_(url),
-      owner_(nullptr),
-      parent_(nullptr),
-      crashed_(false),
-      detached_(false),
-      id_(id),
-      frontend_closer_func_(frontend_closer_func),
-      parser_func_(parser_func),
-      unnotified_event_(nullptr),
-      next_id_(1),
-      stack_count_(0) {
-  socket_->SetId(id_);
-  // If error happens during proactive event consumption we ignore it
-  // as there is no active user request where the error might be returned.
-  // Unretained 'this' won't cause any problems as we reset the callback in the
-  // .dtor.
-  socket_->SetNotificationCallback(base::BindRepeating(
-      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
-      base::Unretained(this)));
 }
 
 DevToolsClientImpl::~DevToolsClientImpl() {
@@ -189,6 +137,11 @@ DevToolsClientImpl::~DevToolsClientImpl() {
 void DevToolsClientImpl::SetParserFuncForTesting(
     const ParserFunc& parser_func) {
   parser_func_ = parser_func;
+}
+
+void DevToolsClientImpl::SetFrontendCloserFunc(
+    const FrontendCloserFunc& frontend_closer_func) {
+  frontend_closer_func_ = frontend_closer_func;
 }
 
 const std::string& DevToolsClientImpl::GetId() {
@@ -396,7 +349,7 @@ Status DevToolsClientImpl::SendCommandInternal(
   command.SetInteger("id", command_id);
   command.SetString("method", method);
   command.SetKey("params", params.Clone());
-  if (parent_ != nullptr) {
+  if (!session_id_.empty()) {
     command.SetString("sessionId", session_id_);
   }
   std::string message = SerializeValue(&command);
