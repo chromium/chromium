@@ -57,6 +57,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/error_delegate_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -810,10 +811,16 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
 
     for (size_t redirect_index = 0; redirect_index < redirects.size();
          redirect_index++) {
+      constexpr int kRedirectQualifiers = ui::PAGE_TRANSITION_CHAIN_START |
+                                          ui::PAGE_TRANSITION_CHAIN_END |
+                                          ui::PAGE_TRANSITION_IS_REDIRECT_MASK;
+      // Remove any redirect-related qualifiers that `request_transition` may
+      // have (there usually shouldn't be any, except for CLIENT_REDIRECT which
+      // was already handled above), and replace them with the `redirect_info`.
       ui::PageTransition t = ui::PageTransitionFromInt(
-          ui::PageTransitionStripQualifier(request_transition) | redirect_info);
+          (request_transition & ~kRedirectQualifiers) | redirect_info);
 
-      // If this is the last transition, add a CHAIN_END marker
+      // If this is the last transition, add a CHAIN_END marker.
       if (redirect_index == (redirects.size() - 1)) {
         t = ui::PageTransitionFromInt(t | ui::PAGE_TRANSITION_CHAIN_END);
       }

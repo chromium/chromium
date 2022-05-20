@@ -3265,6 +3265,53 @@ TEST_F(HistoryBackendTest, RedirectScoring) {
   EXPECT_EQ(1, url_row.typed_count());
 }
 
+TEST_F(HistoryBackendTest, RedirectWithQualifiers) {
+  // Create a redirect chain with 3 entries, with a page transition that
+  // includes a qualifier.
+  const ui::PageTransition page_transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  const char* redirects[] = {"https://foo.com/page1.html",
+                             "https://foo.com/page2.html",
+                             "https://foo.com/page3.html", nullptr};
+  AddRedirectChainWithTransitionAndTime(redirects, 0, page_transition,
+                                        base::Time::Now());
+
+  URLRow url1;
+  ASSERT_TRUE(backend_->GetURL(GURL("https://foo.com/page1.html"), &url1));
+  URLRow url2;
+  ASSERT_TRUE(backend_->GetURL(GURL("https://foo.com/page2.html"), &url2));
+  URLRow url3;
+  ASSERT_TRUE(backend_->GetURL(GURL("https://foo.com/page3.html"), &url3));
+
+  // Grab the resulting visits.
+  VisitVector visits1;
+  backend_->GetVisitsForURL(url1.id(), &visits1);
+  ASSERT_EQ(visits1.size(), 1u);
+  VisitVector visits2;
+  backend_->GetVisitsForURL(url2.id(), &visits2);
+  ASSERT_EQ(visits2.size(), 1u);
+  VisitVector visits3;
+  backend_->GetVisitsForURL(url3.id(), &visits3);
+  ASSERT_EQ(visits3.size(), 1u);
+
+  // The page transition, including the qualifier, should have been preserved
+  // across all the visits. Additionally, the appropriate redirect qualifiers
+  // should have been set.
+  EXPECT_TRUE(PageTransitionTypeIncludingQualifiersIs(
+      visits1[0].transition,
+      ui::PageTransitionFromInt(page_transition |
+                                ui::PAGE_TRANSITION_CHAIN_START)));
+  EXPECT_TRUE(PageTransitionTypeIncludingQualifiersIs(
+      visits2[0].transition,
+      ui::PageTransitionFromInt(page_transition |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT)));
+  EXPECT_TRUE(PageTransitionTypeIncludingQualifiersIs(
+      visits3[0].transition,
+      ui::PageTransitionFromInt(page_transition |
+                                ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END)));
+}
+
 // Tests that a typed navigation will accrue the typed count even when a client
 // redirect from HTTP to HTTPS occurs.
 TEST_F(HistoryBackendTest, ClientRedirectScoring) {
