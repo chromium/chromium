@@ -78,6 +78,18 @@ std::string GetAuthorizationURL(const AuthorizationServerData& server_data,
   return uri.GetNormalized(false);
 }
 
+// Calls `callback`. Adds a prefix with `context` to an error sent in `data`.
+void PrefixForError(StatusCallback callback,
+                    const std::string& context,
+                    StatusCode status,
+                    const std::string& data) {
+  std::string msg = data;
+  if (status != StatusCode::kOK) {
+    msg = "[" + context + "] " + data;
+  }
+  std::move(callback).Run(status, msg);
+}
+
 }  // namespace
 
 AuthorizationZoneImpl::WaitingAuthorization::WaitingAuthorization(
@@ -104,6 +116,7 @@ AuthorizationZoneImpl::~AuthorizationZoneImpl() = default;
 void AuthorizationZoneImpl::InitAuthorization(const std::string& scope,
                                               StatusCallback callback) {
   DCHECK_LE(waiting_authorizations_.size(), kMaxNumberOfSessions);
+  AddContextToErrorMessage(callback);
 
   // If there are too many callbacks waiting, remove the oldest one.
   if (waiting_authorizations_.size() == kMaxNumberOfSessions) {
@@ -130,6 +143,36 @@ void AuthorizationZoneImpl::InitAuthorization(const std::string& scope,
                          base::Unretained(this)));
     }
   }
+}
+
+void AuthorizationZoneImpl::FinishAuthorization(const GURL& redirect_url,
+                                                StatusCallback callback) {
+  AddContextToErrorMessage(callback);
+  // TODO(pawliczek)
+  // This method is supposed to parse `redirect_url`, then match
+  // PendingAuthorization structure using the `state` field and finalize
+  // the authorization on the server side by obtaining the first access token.
+}
+
+void AuthorizationZoneImpl::GetEndpointAccessToken(
+    const chromeos::Uri& ipp_endpoint,
+    const std::string& scope,
+    StatusCallback callback) {
+  AddContextToErrorMessage(callback);
+  // TODO(pawliczek)
+  // This method is supposed to return endpoint access token for given
+  // `ipp_endpoint`. If the given `ipp_endpoint` is not known yet, this method
+  // will request from the server a new endpoint access token for given
+  // `ipp_endpoint` and `scope`.
+}
+
+void AuthorizationZoneImpl::MarkEndpointAccessTokenAsExpired(
+    const chromeos::Uri& ipp_endpoint,
+    const std::string& endpoint_access_token) {
+  // TODO(pawliczek)
+  // This method removes given `ipp_endpoint` from the list of known ipp
+  // endpoints. It happens only if its endpoint access token equals
+  // `endpoint_access_token`.
 }
 
 void AuthorizationZoneImpl::AuthorizationProcedure() {
@@ -163,6 +206,13 @@ void AuthorizationZoneImpl::OnInitializeCallback(StatusCode status,
     std::move(wa.callback).Run(status, data);
   }
   waiting_authorizations_.clear();
+}
+
+void AuthorizationZoneImpl::AddContextToErrorMessage(StatusCallback& callback) {
+  // Wrap the `callback` with the function PrefixForError(...) defined above.
+  const std::string prefix = server_data_.AuthorizationServerURI().spec();
+  auto new_call = base::BindOnce(&PrefixForError, std::move(callback), prefix);
+  callback = std::move(new_call);
 }
 
 std::unique_ptr<AuthorizationZone> AuthorizationZone::Create(

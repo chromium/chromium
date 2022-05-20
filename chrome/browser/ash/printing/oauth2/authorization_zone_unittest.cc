@@ -128,6 +128,21 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelInitializations) {
   }
 }
 
+TEST_F(PrintingOAuth2AuthorizationZoneTest, PrefixInErrorMessage) {
+  CallbackResult cr;
+  CreateAuthorizationZone("");
+
+  // Respond with error to Metadata Request.
+  authorization_zone_->InitAuthorization("", BindResult(cr));
+  server_.ReceiveGET(metadata_uri_);
+  server_.ResponseWithJSON(net::HttpStatusCode::HTTP_INTERNAL_SERVER_ERROR, {});
+
+  // Check if the error message begins with the URI of the server.
+  EXPECT_EQ(cr.status, printing::oauth2::StatusCode::kServerError);
+  const std::string msg_prefix = "[" + authorization_server_uri_ + "]";
+  EXPECT_EQ(cr.data.substr(0, msg_prefix.length()), msg_prefix);
+}
+
 }  // namespace
 }  // namespace oauth2
 }  // namespace printing

@@ -47,15 +47,15 @@ class AuthorizationZoneImpl : public AuthorizationZone {
                          StatusCallback callback) override;
   // AuthorizationZone interface.
   void FinishAuthorization(const GURL& redirect_url,
-                           StatusCallback callback) override {}
+                           StatusCallback callback) override;
   // AuthorizationZone interface.
   void GetEndpointAccessToken(const chromeos::Uri& ipp_endpoint,
                               const std::string& scope,
-                              StatusCallback callback) override {}
+                              StatusCallback callback) override;
   // AuthorizationZone interface.
   void MarkEndpointAccessTokenAsExpired(
       const chromeos::Uri& ipp_endpoint,
-      const std::string& endpoint_access_token) override {}
+      const std::string& endpoint_access_token) override;
 
  private:
   // This method processes (and removes) all elements from
@@ -64,6 +64,9 @@ class AuthorizationZoneImpl : public AuthorizationZone {
 
   // Callback for AuthorizationServerData::Initialize(...).
   void OnInitializeCallback(StatusCode status, const std::string& data);
+
+  // Adds context info to error messages returned with `callback`.
+  void AddContextToErrorMessage(StatusCallback& callback);
 
   // Represents started authorization procedure waiting for opening
   // communication with the server. This object is created when
