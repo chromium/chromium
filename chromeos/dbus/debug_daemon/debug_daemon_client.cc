@@ -172,6 +172,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void GetRoutes(
       bool numeric,
       bool ipv6,
+      bool all_tables,
       DBusMethodCallback<std::vector<std::string>> callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface, debugd::kGetRoutes);
     dbus::MessageWriter writer(&method_call);
@@ -185,6 +186,10 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     sub_writer.OpenDictEntry(&elem_writer);
     elem_writer.AppendString("v6");
     elem_writer.AppendVariantOfBool(ipv6);
+    sub_writer.CloseContainer(&elem_writer);
+    sub_writer.OpenDictEntry(&elem_writer);
+    elem_writer.AppendString("all");
+    elem_writer.AppendVariantOfBool(all_tables);
     sub_writer.CloseContainer(&elem_writer);
     writer.CloseContainer(&sub_writer);
     debugdaemon_proxy_->CallMethod(

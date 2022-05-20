@@ -10,6 +10,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -89,12 +90,19 @@ void FakeDebugDaemonClient::StopAgentTracing(
 void FakeDebugDaemonClient::SetStopAgentTracingTaskRunner(
     scoped_refptr<base::TaskRunner> task_runner) {}
 
+void FakeDebugDaemonClient::SetRoutesForTesting(
+    std::vector<std::string> routes) {
+  routes_ = std::move(routes);
+}
+
 void FakeDebugDaemonClient::GetRoutes(
     bool numeric,
     bool ipv6,
+    bool all_tables,
     DBusMethodCallback<std::vector<std::string>> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), absl::make_optional(routes_)));
 }
 
 void FakeDebugDaemonClient::GetNetworkStatus(

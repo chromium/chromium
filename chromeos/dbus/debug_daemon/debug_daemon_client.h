@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void GetRoutes(
       bool numeric,
       bool ipv6,
+      bool all_tables,
       DBusMethodCallback<std::vector<std::string> /* routes */> callback) = 0;
 
   // Gets information about network status as json.

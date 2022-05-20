@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void GetRoutes(
       bool numeric,
       bool ipv6,
+      bool all_tables,
       DBusMethodCallback<std::vector<std::string>> callback) override;
   void SetKstaledRatio(uint8_t val, KstaledRatioCallback callback) override;
   void GetNetworkStatus(DBusMethodCallback<std::string> callback) override;
@@ -119,6 +120,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   // pending callbacks if is_available is true.
   void SetServiceIsAvailable(bool is_available);
 
+  // Sets routes that will be returned by GetRoutes() for testing.
+  void SetRoutesForTesting(std::vector<std::string> routes);
+
   const std::string& scheduler_configuration_name() const {
     return scheduler_configuration_name_;
   }
@@ -132,6 +136,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   std::vector<WaitForServiceToBeAvailableCallback>
       pending_wait_for_service_to_be_available_callbacks_;
   std::set<std::string> printers_;
+  std::vector<std::string> routes_;
   std::string scheduler_configuration_name_;
   std::set<std::string> u2f_flags_;
   base::ObserverList<Observer> observers_;

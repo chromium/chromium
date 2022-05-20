@@ -113,11 +113,13 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
 
   client->GetRoutes(true,   // Numeric
                     false,  // No IPv6
+                    false,  // All tables option disabled
                     base::BindOnce(&DebugDaemonLogSource::OnGetRoutes,
                                    weak_ptr_factory_.GetWeakPtr(), false));
   ++num_pending_requests_;
-  client->GetRoutes(true,  // Numeric
-                    true,  // with IPv6
+  client->GetRoutes(true,   // Numeric
+                    true,   // with IPv6
+                    false,  // All tables option disabled
                     base::BindOnce(&DebugDaemonLogSource::OnGetRoutes,
                                    weak_ptr_factory_.GetWeakPtr(), true));
   ++num_pending_requests_;
