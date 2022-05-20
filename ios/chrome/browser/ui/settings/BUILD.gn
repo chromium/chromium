@@ -177,6 +177,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/privacy",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/chrome/browser/ui/settings/safety_check",
+    "//ios/chrome/browser/ui/settings/safety_check:safety_check_ui",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
