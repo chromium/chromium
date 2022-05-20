@@ -9700,6 +9700,7 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'deprecated': True,
       'example_value': True,
       'default': False,
       'id': 903,
