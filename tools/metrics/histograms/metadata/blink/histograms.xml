@@ -490,6 +490,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Clipboard.HasTransientUserActivation" enum="Boolean"
+    expires_after="2022-08-01">
+  <owner>asully@chromium.org</owner>
+  <owner>snianu@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records if a transient user activation is present or not when the web
+    authors execute the async clipboard read/write call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.ColorGamut.Destination" enum="Gamut" expires_after="M85">
   <owner>brianosman@chromium.org</owner>
   <owner>mcasas@google.com</owner>

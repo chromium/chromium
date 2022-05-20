@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/features.h"
@@ -554,8 +555,11 @@ void ClipboardPromise::RequestPermission(
     return;
   }
 
-  if (!custom_format_items_.IsEmpty() &&
-      !LocalFrame::HasTransientUserActivation(GetLocalFrame())) {
+  bool has_transient_user_activation =
+      LocalFrame::HasTransientUserActivation(GetLocalFrame());
+  base::UmaHistogramBoolean("Blink.Clipboard.HasTransientUserActivation",
+                            has_transient_user_activation);
+  if (!custom_format_items_.IsEmpty() && !has_transient_user_activation) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
         "Must be handling a user gesture to use custom clipboard"));
