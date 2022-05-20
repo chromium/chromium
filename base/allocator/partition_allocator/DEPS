@@ -10,7 +10,6 @@ include_rules = [
     "+base/check_op.h",
     "+base/compiler_specific.h",
     "+base/dcheck_is_on.h",
-    "+base/debug/proc_maps_linux.h",
     "+base/immediate_crash.h",
     "+base/logging_buildflags.h",
     "+base/mac/foundation_util.h",
