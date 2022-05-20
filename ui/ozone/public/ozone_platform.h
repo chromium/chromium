@@ -240,6 +240,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   static OzonePlatform* GetInstance();
 
+  static bool IsInitialized();
+
   // Returns the current ozone platform name.
   // Some tests may skip based on the platform name.
   static std::string GetPlatformNameForTest();

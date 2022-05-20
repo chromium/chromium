@@ -14,6 +14,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 #include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"
@@ -26,6 +27,10 @@ class PrefService;
 namespace policy {
 class PolicyService;
 }  // namespace policy
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/screen.h"
 #endif
 
 namespace ui {
@@ -117,6 +122,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
 #endif
 
  protected:
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
+#endif
+
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   HeadlessBrowser::Options options_;
   raw_ptr<HeadlessBrowserMainParts> browser_main_parts_;  // Not owned.

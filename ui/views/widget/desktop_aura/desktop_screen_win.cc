@@ -13,10 +13,13 @@
 
 namespace views {
 
-DesktopScreenWin::DesktopScreenWin() = default;
+DesktopScreenWin::DesktopScreenWin() {
+  DCHECK(!display::Screen::HasScreen());
+  display::Screen::SetScreenInstance(this);
+}
 
 DesktopScreenWin::~DesktopScreenWin() {
-  display::Screen::SetScreenInstance(old_screen_);
+  display::Screen::SetScreenInstance(nullptr);
 }
 
 HWND DesktopScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {

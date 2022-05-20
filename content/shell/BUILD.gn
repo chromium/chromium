@@ -310,6 +310,10 @@ static_library("content_shell_lib") {
     deps += [ "//ui/views/linux_ui:linux_ui_factory" ]
   }
 
+  if (is_mac) {
+    deps += [ "//ui/display:test_support" ]
+  }
+
   if (is_android) {
     deps += [
       "//components/embedder_support/android:view",

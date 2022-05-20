@@ -119,6 +119,10 @@
 #include "ui/events/test/event_generator.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(USE_OZONE)
+#include "ui/views/test/test_desktop_screen_ozone.h"
+#endif
+
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -593,6 +597,22 @@ bool InProcessBrowserTest::AddTabAtIndex(int index,
 
 bool InProcessBrowserTest::SetUpUserDataDirectory() {
   return true;
+}
+
+void InProcessBrowserTest::SetScreenInstance() {
+  // TODO(crbug.com/1317416): On wayland platform, we need to check if the
+  // wayland-ozone platform is initialized at this point due to the async
+  // initialization of the display. Investigate if we can eliminate
+  // IsOzoneInitialized.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!display::Screen::HasScreen() &&
+      views::test::TestDesktopScreenOzone::IsOzoneInitialized()) {
+    // This is necessary for interactive UI tests.
+    // It is enabled in interactive_ui_tests_main.cc
+    // (or through GPUMain)
+    screen_ = views::test::TestDesktopScreenOzone::Create();
+  }
+#endif
 }
 
 #if !BUILDFLAG(IS_MAC)

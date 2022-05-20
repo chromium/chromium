@@ -1621,6 +1621,7 @@ test("content_browsertests") {
     "//ui/base/ime/mojom",
     "//ui/compositor",
     "//ui/display",
+    "//ui/display:test_support",
     "//ui/events:test_support",
     "//ui/events/blink:blink",
     "//ui/gfx",

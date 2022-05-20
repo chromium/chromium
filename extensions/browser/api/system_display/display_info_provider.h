@@ -17,6 +17,7 @@
 
 namespace display {
 class Display;
+class Screen;
 }
 
 namespace extensions {
@@ -118,7 +119,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
                              ErrorCallback callback);
 
  protected:
-  DisplayInfoProvider();
+  explicit DisplayInfoProvider(display::Screen* screen = nullptr);
 
   // Trigger OnDisplayChangedEvent
   void DispatchOnDisplayChangedEvent();
@@ -141,6 +142,8 @@ class DisplayInfoProvider : public display::DisplayObserver {
   void OnDisplayRemoved(const display::Display& old_display) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
+
+  display::Screen* const screen_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };

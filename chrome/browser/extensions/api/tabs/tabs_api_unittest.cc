@@ -33,8 +33,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/display/test/scoped_screen_override.h"
-#include "ui/display/test/test_screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
@@ -47,8 +45,6 @@
 #endif
 
 namespace extensions {
-
-using display::test::ScopedScreenOverride;
 
 namespace {
 
@@ -127,13 +123,15 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AshTestHelper test_helper_;
-#else
-  display::test::TestScreen test_screen_;
-  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 #endif
 };
 
 void TabsApiUnitTest::SetUp() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::AshTestHelper::InitParams ash_params;
+  ash_params.start_session = true;
+  test_helper_.SetUp(std::move(ash_params));
+#endif
   // Force TabManager/TabLifecycleUnitSource creation.
   g_browser_process->GetTabManager();
 
@@ -145,14 +143,6 @@ void TabsApiUnitTest::SetUp() {
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_.reset(Browser::Create(params));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::AshTestHelper::InitParams ash_params;
-  ash_params.start_session = true;
-  test_helper_.SetUp(std::move(ash_params));
-#else
-  scoped_screen_override_ =
-      std::make_unique<ScopedScreenOverride>(&test_screen_);
-#endif
 }
 
 void TabsApiUnitTest::TearDown() {

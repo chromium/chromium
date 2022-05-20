@@ -371,6 +371,7 @@ source_set("web_view_sources") {
     "//services/network:network_service",
     "//third_party/abseil-cpp:absl",
     "//ui/base",
+    "//ui/display",
     "//url",
   ]
 
