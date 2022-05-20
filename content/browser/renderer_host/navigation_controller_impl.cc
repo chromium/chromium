@@ -1280,14 +1280,14 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // TODO(altimin, crbug.com/933147): Remove this logic after we are done with
   // implementing back-forward cache.
   // For primary frame tree navigations, choose an appropriate
-  // BackForwardCacheMetrics to be associated with the NavigationEntry, by
-  // either creating a new object or reusing the previous one depending on
-  // whether it's a main frame navigation or not.
+  // BackForwardCacheMetrics to be associated with the new navigation's
+  // NavigationEntry, by either creating a new object or reusing the previous
+  // entry's one.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics;
   if (navigation_request->frame_tree_node()->frame_tree()->type() ==
       FrameTree::Type::kPrimary) {
-    back_forward_cache_metrics =
-        BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetrics(
+    back_forward_cache_metrics = BackForwardCacheMetrics::
+        CreateOrReuseBackForwardCacheMetricsForNavigation(
             GetLastCommittedEntry(), is_main_frame_navigation,
             params.document_sequence_number);
   }
@@ -1295,7 +1295,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   if (is_main_frame_navigation && !is_same_document_navigation) {
     if (NavigationEntryImpl* navigation_entry = GetLastCommittedEntry()) {
       if (auto* metrics = navigation_entry->back_forward_cache_metrics()) {
-        metrics->MainFrameDidNavigateAwayFromDocument(rfh, navigation_request);
+        metrics->MainFrameDidNavigateAwayFromDocument();
       }
     }
   }

@@ -65,39 +65,40 @@ void BackForwardCacheMetrics::OverrideTimeForTesting(base::TickClock* clock) {
 
 // static
 scoped_refptr<BackForwardCacheMetrics>
-BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetrics(
-    NavigationEntryImpl* currently_committed_entry,
+BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetricsForNavigation(
+    NavigationEntryImpl* previous_entry,
     bool is_main_frame_navigation,
-    int64_t document_sequence_number) {
-  if (!currently_committed_entry) {
-    // In some rare cases it's possible to navigate a subframe
-    // without having a main frame navigation (e.g. extensions
-    // injecting frames into a blank page).
+    int64_t committing_document_sequence_number) {
+  if (!previous_entry) {
+    // There is no previous NavigationEntry, so we must create a new metrics
+    // object.
     return base::WrapRefCounted(new BackForwardCacheMetrics(
-        is_main_frame_navigation ? document_sequence_number : -1));
+        is_main_frame_navigation ? committing_document_sequence_number : -1));
   }
 
-  BackForwardCacheMetrics* currently_committed_metrics =
-      currently_committed_entry->back_forward_cache_metrics();
-  if (!currently_committed_metrics) {
-    // When we restore the session it's possible to end up with an entry without
-    // metrics.
-    // We will have to create a new metrics object for the main document.
+  BackForwardCacheMetrics* previous_entry_metrics =
+      previous_entry->back_forward_cache_metrics();
+  if (!previous_entry_metrics) {
+    // It's possible to encounter a `previous_entry` without metrics, e.g. on
+    // session restore. We will have to create a new metrics object for the main
+    // document.
     return base::WrapRefCounted(new BackForwardCacheMetrics(
         is_main_frame_navigation
-            ? document_sequence_number
-            : currently_committed_entry->root_node()
+            ? committing_document_sequence_number
+            : previous_entry->root_node()
                   ->frame_entry->document_sequence_number()));
   }
 
-  if (!is_main_frame_navigation)
-    return currently_committed_metrics;
-  if (document_sequence_number ==
-      currently_committed_metrics->document_sequence_number_) {
-    return currently_committed_metrics;
+  // Reuse `previous_entry_metrics` on subframe navigations and same-document
+  // navigations.
+  if (!is_main_frame_navigation ||
+      committing_document_sequence_number ==
+          previous_entry_metrics->document_sequence_number_) {
+    return previous_entry_metrics;
   }
+
   return base::WrapRefCounted(
-      new BackForwardCacheMetrics(document_sequence_number));
+      new BackForwardCacheMetrics(committing_document_sequence_number));
 }
 
 BackForwardCacheMetrics::BackForwardCacheMetrics(
@@ -116,17 +117,17 @@ void BackForwardCacheMetrics::MainFrameDidStartNavigationToDocument() {
 void BackForwardCacheMetrics::DidCommitNavigation(
     NavigationRequest* navigation,
     bool back_forward_cache_allowed) {
-  // "Back-forward cache in enabled only for primary frame trees, so we need to
-  // record metrics only for primary main frame navigations".
+  // Back-forward cache in enabled only for primary frame trees, so we need to
+  // record metrics only for primary main frame navigations.
   if (!navigation->IsInPrimaryMainFrame() || navigation->IsSameDocument())
     return;
 
-  {
-    bool is_reload = navigation->GetReloadType() != ReloadType::NONE;
-    RecordHistogramForReloadsAndHistoryNavigations(is_reload,
-                                                   back_forward_cache_allowed);
-  }
+  // Record metrics for reloads after history navigation, if applicable.
+  RecordHistogramForReloadsAfterHistoryNavigations(
+      navigation->GetReloadType() != ReloadType::NONE,
+      back_forward_cache_allowed);
 
+  // Record metrics for history navigation, if applicable.
   if (IsHistoryNavigation(navigation)) {
     UpdateNotRestoredReasonsForNavigation(navigation);
 
@@ -173,17 +174,19 @@ void BackForwardCacheMetrics::DidCommitNavigation(
           std::move(page_store_tree_result_));
     }
   }
-  page_store_result_ =
-      std::make_unique<BackForwardCacheCanStoreDocumentResult>();
-  page_store_tree_result_ = nullptr;
+  // Save the information about the last cross-document main frame navigation
+  // that uses this metrics object.
   previous_navigation_is_served_from_bfcache_ =
       navigation->IsServedFromBackForwardCache();
   previous_navigation_is_history_ = IsHistoryNavigation(navigation);
   last_committed_cross_document_main_frame_navigation_id_ =
       navigation->GetNavigationId();
 
-  // BackForwardCacheMetrics can be reused when reloading. Reset fields for UKM
+  // BackForwardCacheMetrics can be reused in some cases. Reset fields for UKM
   // for the next navigation.
+  page_store_result_ =
+      std::make_unique<BackForwardCacheCanStoreDocumentResult>();
+  page_store_tree_result_ = nullptr;
   navigated_away_from_main_document_timestamp_ = absl::nullopt;
   started_navigation_timestamp_ = absl::nullopt;
   renderer_killed_timestamp_ = absl::nullopt;
@@ -260,9 +263,7 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
   }
 }
 
-void BackForwardCacheMetrics::MainFrameDidNavigateAwayFromDocument(
-    RenderFrameHostImpl* new_main_frame,
-    NavigationRequest* navigation) {
+void BackForwardCacheMetrics::MainFrameDidNavigateAwayFromDocument() {
   // MainFrameDidNavigateAwayFromDocument is called when we commit a navigation
   // to another main frame document and the current document loses its "last
   // committed" status.
@@ -329,10 +330,13 @@ void BackForwardCacheMetrics::SetNotRestoredReasons(
 
 void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
     NavigationRequest* navigation) {
+  DCHECK(IsHistoryNavigation(navigation));
   BackForwardCacheCanStoreDocumentResult new_blocking_reasons;
-  // |last_committed_cross_document_main_frame_navigation_id_| is -1 when
-  // navigation history has never been initialized. This can happen only when
-  // the session history has been restored.
+  // |last_committed_cross_document_main_frame_navigation_id_| is -1 even though
+  // this is a history navigation. This can happen only when the session history
+  // has been restored, as the NavigationEntry will exist and can be navigated
+  // to, but the BackForwardCacheMetrics object is brand new (as it's not
+  // persisted and restored).
   if (last_committed_cross_document_main_frame_navigation_id_ == -1) {
     new_blocking_reasons.No(NotRestoredReason::kSessionRestored);
   }
@@ -486,15 +490,13 @@ void BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
       "BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason", reason);
 }
 
-void BackForwardCacheMetrics::RecordHistogramForReloadsAndHistoryNavigations(
+void BackForwardCacheMetrics::RecordHistogramForReloadsAfterHistoryNavigations(
     bool is_reload,
     bool back_forward_cache_allowed) const {
-  if (!is_reload)
+  if (!is_reload || !previous_navigation_is_history_ ||
+      !back_forward_cache_allowed) {
     return;
-  if (!previous_navigation_is_history_)
-    return;
-  if (!back_forward_cache_allowed)
-    return;
+  }
 
   // Record the total number of reloads after a history navigation.
   UMA_HISTOGRAM_ENUMERATION(
