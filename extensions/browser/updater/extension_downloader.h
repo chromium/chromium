@@ -50,8 +50,17 @@ struct ResourceRequest;
 
 namespace extensions {
 
-using ManifestInvalidFailureDataList = std::vector<
-    std::pair<ExtensionId, ExtensionDownloaderDelegate::FailureData>>;
+struct DownloadFailure {
+  DownloadFailure(ExtensionId id,
+                  ExtensionDownloaderDelegate::Error error,
+                  ExtensionDownloaderDelegate::FailureData failure_data);
+  ~DownloadFailure();
+
+  ExtensionId id;
+  ExtensionDownloaderDelegate::Error error;
+  ExtensionDownloaderDelegate::FailureData failure_data;
+};
+
 struct UpdateDetails {
   UpdateDetails(const std::string& id, const base::Version& version);
   ~UpdateDetails();
@@ -287,8 +296,7 @@ class ExtensionDownloader {
   void DetermineUpdates(const ManifestFetchData& fetch_data,
                         const UpdateManifestResults& possible_updates,
                         std::vector<UpdateManifestResult*>* to_update,
-                        std::set<std::string>* no_updates,
-                        ManifestInvalidFailureDataList* errors);
+                        std::vector<DownloadFailure>* errors);
 
   // Checks whether extension is presented in cache. If yes, return path to its
   // cached CRX, absl::nullopt otherwise. |manifest_fetch_failed| flag indicates
@@ -314,10 +322,6 @@ class ExtensionDownloader {
   void NotifyExtensionManifestUpdateCheckStatus(
       std::vector<UpdateManifestResult> results);
 
-  void NotifyExtensionsManifestInvalidFailure(
-      const ManifestInvalidFailureDataList& errors,
-      const std::set<int>& request_ids);
-
   // Invokes OnExtensionDownloadStageChanged() on the |delegate_| for each
   // extension in the set, with |stage| as the current stage. Make a copy of
   // arguments because there is no guarantee that callback won't indirectly
@@ -341,6 +345,14 @@ class ExtensionDownloader {
       std::set<int> request_ids,
       ExtensionDownloaderDelegate::Error error,
       const ExtensionDownloaderDelegate::FailureData& data);
+
+  // Invokes OnExtensionDownloadFailed() on the |delegate_| for each extension
+  // in the list, which also provides the reason for the failure. Make a copy
+  // of arguments because there is no guarantee that callback won't indirectly
+  // change source of them.
+  void NotifyExtensionsDownloadFailedWithList(
+      std::vector<DownloadFailure> errors,
+      std::set<int> request_ids);
 
   // Send a notification that an update was found for |id| that we'll
   // attempt to download.

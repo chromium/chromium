@@ -668,6 +668,15 @@ class ExtensionUpdaterTest : public testing::Test {
     return ret;
   }
 
+  const DownloadFailure* GetFailureWithId(
+      const std::vector<DownloadFailure>& failures,
+      const ExtensionId& id) {
+    auto it = std::find_if(
+        failures.begin(), failures.end(),
+        [&](const DownloadFailure& failure) { return failure.id == id; });
+    return it == failures.end() ? nullptr : &*it;
+  }
+
   void TestExtensionUpdateCheckRequests(bool pending) {
     // Create an extension with an update_url.
     ExtensionDownloaderTestHelper helper;
@@ -914,13 +923,11 @@ class ExtensionUpdaterTest : public testing::Test {
         CreateManifestFetchData(GURL("http://localhost/foo")));
     UpdateManifestResults updates;
     std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
+    std::vector<DownloadFailure> failures;
     helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
+                                         &failures);
     EXPECT_TRUE(updateable.empty());
-    EXPECT_TRUE(not_updateable.empty());
-    EXPECT_TRUE(errors.empty());
+    EXPECT_TRUE(failures.empty());
 
     // Create two updates - expect that DetermineUpdates will return the first
     // one (v1.0 installed, v1.1 available) but not the second one (both
@@ -944,12 +951,13 @@ class ExtensionUpdaterTest : public testing::Test {
         .WillOnce(DoAll(SetArgPointee<1>("2.0.0.0"), Return(true)));
 
     updateable.clear();
-    not_updateable.clear();
-    errors.clear();
+    failures.clear();
     helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
-    EXPECT_TRUE(errors.empty());
-    EXPECT_THAT(not_updateable, testing::ElementsAre(id2));
+                                         &failures);
+    ASSERT_EQ(1u, failures.size());
+    EXPECT_EQ(id2, failures[0].id);
+    EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
+              failures[0].error);
     ASSERT_EQ(1u, updateable.size());
     EXPECT_EQ("1.1", updateable[0]->version);
   }
@@ -1021,22 +1029,24 @@ class ExtensionUpdaterTest : public testing::Test {
         .WillOnce(DoAll(SetArgPointee<1>("0.0.0.0"), Return(true)));
 
     std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
+    std::vector<DownloadFailure> failures;
     helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
-    EXPECT_THAT(not_updateable, testing::UnorderedElementsAre(id2, id3));
+                                         &failures);
+    std::vector<ExtensionId> ids_not_updateable({id2, id3});
+    for (const auto& id : ids_not_updateable) {
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
+                failure->error);
+    }
     std::vector<ExtensionId> ids_with_error({id4, id5, id6});
     for (const auto& id : ids_with_error) {
-      auto it = std::find_if(
-          errors.begin(), errors.end(),
-          [&](const std::pair<
-              ExtensionId, ExtensionDownloaderDelegate::FailureData>& error) {
-            return error.first == id;
-          });
-      EXPECT_TRUE(it != errors.end());
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::MANIFEST_INVALID,
+                failure->error);
     }
-    EXPECT_EQ(3u, errors.size());
+    EXPECT_EQ(5u, failures.size());
     ASSERT_EQ(1u, updateable.size());
     EXPECT_EQ("1.1", updateable[0]->version);
   }
@@ -1070,14 +1080,12 @@ class ExtensionUpdaterTest : public testing::Test {
     EXPECT_CALL(delegate, IsExtensionPending(_)).WillRepeatedly(Return(true));
 
     std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
+    std::vector<DownloadFailure> failures;
     helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
+                                         &failures);
     // All the apps should be updateable.
     EXPECT_EQ(3u, updateable.size());
-    EXPECT_TRUE(not_updateable.empty());
-    EXPECT_TRUE(errors.empty());
+    EXPECT_TRUE(failures.empty());
   }
 
   void TestDetermineUpdatesDuplicates() {
@@ -1145,22 +1153,24 @@ class ExtensionUpdaterTest : public testing::Test {
         .WillOnce(DoAll(SetArgPointee<1>("1.6.0.0"), Return(true)));
 
     std::vector<UpdateManifestResult*> updateable;
-    std::set<std::string> not_updateable;
-    ManifestInvalidFailureDataList errors;
+    std::vector<DownloadFailure> failures;
     helper.downloader().DetermineUpdates(*fetch_data, updates, &updateable,
-                                         &not_updateable, &errors);
-    EXPECT_THAT(not_updateable, testing::UnorderedElementsAre(id1, id4));
+                                         &failures);
+    std::vector<ExtensionId> ids_not_updateable({id1, id4});
+    for (const auto& id : ids_not_updateable) {
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
+                failure->error);
+    }
     std::vector<ExtensionId> ids_with_error({id2, id5, id7});
     for (const auto& id : ids_with_error) {
-      auto it = std::find_if(
-          errors.begin(), errors.end(),
-          [&](const std::pair<
-              ExtensionId, ExtensionDownloaderDelegate::FailureData>& error) {
-            return error.first == id;
-          });
-      EXPECT_TRUE(it != errors.end());
+      const auto* failure = GetFailureWithId(failures, id);
+      ASSERT_TRUE(failure);
+      EXPECT_EQ(ExtensionDownloaderDelegate::Error::MANIFEST_INVALID,
+                failure->error);
     }
-    EXPECT_EQ(3u, errors.size());
+    EXPECT_EQ(5u, failures.size());
     ASSERT_EQ(2u, updateable.size());
     EXPECT_EQ("1.3.1.0", updateable[0]->version);
     EXPECT_EQ("1.6.1.0", updateable[1]->version);
