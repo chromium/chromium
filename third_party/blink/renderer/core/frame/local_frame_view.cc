@@ -1761,6 +1761,9 @@ void LocalFrameView::SetUseColorAdjustBackground(UseColorAdjustBackground use,
   if (use_color_adjust_background_ == use && !color_scheme_changed)
     return;
 
+  if (!frame_->GetDocument())
+    return;
+
   use_color_adjust_background_ = use;
 
   if (GetFrame().IsMainFrame() && ShouldUseColorAdjustBackground()) {
