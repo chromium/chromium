@@ -278,24 +278,29 @@ bool IsEligibleForLazyEmbeds(KURL url) {
 }
 
 // If kAutomaticLazyFrameLoadingToAds is enabled, calculate the timeout in
-// advance from the field trial param, otherwilse return 0;
-base::TimeDelta GetLazyAdsTimeoutMs() {
-  const base::TimeDelta defaultTimeout = base::Milliseconds(0);
+// advance from the field trial param, otherwise return 0;
+base::TimeDelta CalculateLazyAdsTimeoutMs() {
+  static constexpr base::TimeDelta kDefaultTimeout{base::Milliseconds(0)};
   if (!base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds))
-    return defaultTimeout;
+    return kDefaultTimeout;
 
   const String timeout =
       base::GetFieldTrialParamValueByFeature(
           features::kAutomaticLazyFrameLoadingToAds, "timeout")
           .c_str();
   if (timeout.IsEmpty())
-    return defaultTimeout;
+    return kDefaultTimeout;
 
   bool success;
-  const int timeoutMs = timeout.ToInt(&success);
+  const int timeout_ms = timeout.ToInt(&success);
   DCHECK(success);
 
-  return base::Milliseconds(timeoutMs);
+  return base::Milliseconds(timeout_ms);
+}
+const base::TimeDelta GetLazyAdsTimeoutMs() {
+  DEFINE_STATIC_LOCAL(base::TimeDelta, timeoutMs,
+                      (CalculateLazyAdsTimeoutMs()));
+  return timeoutMs;
 }
 
 }  // namespace
@@ -327,8 +332,7 @@ HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
       content_frame_(nullptr),
       embedded_content_view_(nullptr),
       should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
-      is_swapping_frames_(false),
-      lazy_ads_timeout_ms_(GetLazyAdsTimeoutMs()) {}
+      is_swapping_frames_(false) {}
 
 LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   // HTMLObjectElement and HTMLEmbedElement may return arbitrary layoutObjects
@@ -880,7 +884,7 @@ void HTMLFrameOwnerElement::SetTimeoutToStartAdFrameLoading() {
   // SingleThreadIdleTaskRunner::PostIdleTask. So we call PostIdleTask here
   // through the main thread scheduler.
   ThreadScheduler::Current()->PostDelayedIdleTask(
-      FROM_HERE, lazy_ads_timeout_ms_,
+      FROM_HERE, GetLazyAdsTimeoutMs(),
       WTF::Bind(&HTMLFrameOwnerElement::LoadIfLazyOnIdle,
                 WrapWeakPersistent(this)));
 }
