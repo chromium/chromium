@@ -338,7 +338,6 @@
 #include "chrome/browser/browser_process_platform_part_mac.h"
 #include "chrome/browser/chrome_browser_main_mac.h"
 #include "chrome/browser/mac/auth_session_request.h"
-#include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/params.h"
@@ -1452,10 +1451,6 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
 #else
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsViews>());
 #endif
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsMac>());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

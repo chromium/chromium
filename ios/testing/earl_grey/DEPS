@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "base_earl_grey_test_case.mm": [
-    "+ui/display"
-  ]
-}
