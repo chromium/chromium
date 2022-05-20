@@ -138,6 +138,15 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
                                       'passwordRowMoreActionsButton',
         this.entry.username, this.entry.urls.shown);
   }
+
+  /**
+   * Get the aria label for the password details subpage.
+   */
+  private getSubpageLabel_(): string {
+    return loadTimeData.getStringF(
+        'passwordRowPasswordDetailPageButton', this.entry.username,
+        this.entry.urls.shown);
+  }
 }
 
 declare global {
