@@ -331,6 +331,17 @@ def _construct_build_data_from_3p_crates(args: argparse.Namespace) -> BuildData:
                     "third_party.toml, but '{}' appears more than " \
                     "once.".format(dep)
 
+    if args.crates is not None:
+        crate_set: set[str] = set(args.crates)
+        # This option is for testing. Include only regular dependencies. Filter
+        # out any that are not listed.
+        toml_3p.pop("dev-dependencies", None)
+        toml_3p.pop("build-dependencies", None)
+        dep_keys = set(toml_3p["dependencies"].keys())
+        for dep_key in dep_keys:
+            if dep_key not in crate_set:
+                del toml_3p["dependencies"][dep_key]
+
     # For every crate in third_party, we will generate a patch to redirect
     # crates.io to that directory, so that if we have local changes to the
     # Cargo.toml files, running `cargo tree` will see them. To do this we
