@@ -9,6 +9,9 @@
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
+#include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
+#include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -196,13 +199,18 @@ TextFragmentAnchor::TextFragmentAnchor(
 
   metrics_->DidCreateAnchor(text_directives.size());
 
-  directive_finder_pairs_.ReserveCapacity(text_directives.size());
+  AnnotationAgentContainerImpl* annotation_container =
+      AnnotationAgentContainerImpl::From(*frame_->GetDocument());
+  DCHECK(annotation_container);
+
+  directive_annotation_pairs_.ReserveCapacity(text_directives.size());
   for (Member<TextDirective>& directive : text_directives) {
-    directive_finder_pairs_.push_back(std::make_pair(
-        directive,
-        MakeGarbageCollected<TextFragmentFinder>(
-            *this, directive->GetSelector(), frame_->GetDocument(),
-            TextFragmentFinder::FindBufferRunnerType::kSynchronous)));
+    auto* selector =
+        MakeGarbageCollected<TextAnnotationSelector>(directive->GetSelector());
+    AnnotationAgentImpl* agent = annotation_container->CreateUnboundAgent(
+        mojom::blink::AnnotationType::kSharedHighlight, *selector);
+
+    directive_annotation_pairs_.push_back(std::make_pair(directive, agent));
   }
 }
 
@@ -240,6 +248,13 @@ bool TextFragmentAnchor::InvokeSelector() {
   if (search_finished_)
     return !dismissed_ || needs_perform_pre_raf_actions_;
 
+  // TODO(bokan): This is needed since we re-search the text of the document
+  // each time Invoke is called so after the first Invoke creates text markers
+  // subsequent calls will try to create a marker that overlaps and trips our
+  // "no overlapping text fragment" DCHECKs. A followup CL will change this
+  // class to only perform the text search once since further Invoke calls are
+  // used only to continue after a BeforeMatch event or to ensure previously
+  // found matches aren't shifted out of view by layout.
   frame_->GetDocument()->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::TextFragment());
 
@@ -250,13 +265,16 @@ bool TextFragmentAnchor::InvokeSelector() {
   first_match_needs_scroll_ = should_scroll_ && !user_scrolled_;
 
   {
-    // FindMatch might cause scrolling and set user_scrolled_ so reset it when
-    // it's done.
+    // DidFinishAttach might cause scrolling and set user_scrolled_ so reset it
+    // when it's done.
     base::AutoReset<bool> reset_user_scrolled(&user_scrolled_, user_scrolled_);
 
     metrics_->ResetMatchCount();
-    for (auto& directive_finder_pair : directive_finder_pairs_)
-      directive_finder_pair.second->FindMatch();
+    for (auto& directive_annotation_pair : directive_annotation_pairs_) {
+      AnnotationAgentImpl* annotation = directive_annotation_pair.second;
+      annotation->Attach();
+      DidFinishAttach(*annotation);
+    }
   }
 
   if (beforematch_state_ != kEventQueued)
@@ -294,42 +312,40 @@ void TextFragmentAnchor::PerformPreRafActions() {
 
   // Notify the DOM object exposed to JavaScript that we've completed the
   // search and pass it the range we found.
-  for (DirectiveFinderPair& directive_finder_pair : directive_finder_pairs_) {
-    TextDirective* text_directive = directive_finder_pair.first.Get();
-    TextFragmentFinder* finder = directive_finder_pair.second.Get();
-    text_directive->DidFinishMatching(finder->FirstMatch());
+  for (DirectiveAnnotationPair& directive_annotation_pair :
+       directive_annotation_pairs_) {
+    TextDirective* text_directive = directive_annotation_pair.first.Get();
+    AnnotationAgentImpl* annotation = directive_annotation_pair.second.Get();
+    const RangeInFlatTree* attached_range =
+        annotation->IsAttached() ? &annotation->GetAttachedRange() : nullptr;
+    text_directive->DidFinishMatching(attached_range);
   }
 }
 
 void TextFragmentAnchor::Trace(Visitor* visitor) const {
   visitor->Trace(element_fragment_anchor_);
   visitor->Trace(metrics_);
-  visitor->Trace(directive_finder_pairs_);
+  visitor->Trace(directive_annotation_pairs_);
   SelectorFragmentAnchor::Trace(visitor);
 }
 
-void TextFragmentAnchor::DidFindMatch(const RangeInFlatTree& range,
-                                      bool is_unique) {
-  // TODO(bokan): Can this happen or should this be a DCHECK?
-  if (search_finished_)
+void TextFragmentAnchor::DidFinishAttach(
+    const AnnotationAgentImpl& annotation) {
+  if (!annotation.IsAttached())
     return;
 
-  if (!is_unique)
+  DCHECK(!search_finished_);
+
+  if (!static_cast<const TextAnnotationSelector*>(annotation.GetSelector())
+           ->WasMatchUnique()) {
     metrics_->DidFindAmbiguousMatch();
-
-  // TODO(nburris): Determine what we should do with overlapping text matches.
-  // This implementation drops a match if it overlaps a previous match, since
-  // overlapping ranges are likely unintentional by the URL creator and could
-  // therefore indicate that the page text has changed.
-  if (!frame_->GetDocument()
-           ->Markers()
-           .MarkersIntersectingRange(
-               range.ToEphemeralRange(),
-               DocumentMarker::MarkerTypes::TextFragment())
-           .IsEmpty()) {
-    return;
   }
 
+  const RangeInFlatTree& range = annotation.GetAttachedRange();
+
+  // TODO(bokan): This fires an event and reveals only at the first match - it
+  // seems like something we may want to do for all highlights on a page?
+  // https://crbug.com/1327379.
   if (beforematch_state_ == kNoMatchFound) {
     Element* enclosing_block =
         EnclosingBlock(range.StartPosition(), kCannotCrossEditingBoundary);
@@ -361,27 +377,10 @@ void TextFragmentAnchor::DidFindMatch(const RangeInFlatTree& range,
   if (first_match_needs_scroll_) {
     first_match_needs_scroll_ = false;
 
-    PhysicalRect bounding_box(ComputeTextRect(range.ToEphemeralRange()));
-
-    // Set the bounding box height to zero because we want to center the top of
-    // the text range.
-    bounding_box.SetHeight(LayoutUnit());
-
     DCHECK(range.ToEphemeralRange().Nodes().begin() !=
            range.ToEphemeralRange().Nodes().end());
 
-    DCHECK(first_node.GetLayoutObject());
-
-    // TODO(bokan): Refactor this to use the common
-    // FragmentAnchor::ScrollElementIntoViewWithOptions.
-    mojom::blink::ScrollIntoViewParamsPtr params =
-        ScrollAlignment::CreateScrollIntoViewParams(
-            ScrollAlignment::CenterAlways(), ScrollAlignment::CenterAlways(),
-            mojom::blink::ScrollType::kProgrammatic);
-    params->cross_origin_boundaries = false;
-    scroll_into_view_util::ScrollRectToVisible(*first_node.GetLayoutObject(),
-                                               bounding_box, std::move(params));
-    did_scroll_into_view_ = true;
+    annotation.ScrollIntoView();
 
     if (AXObjectCache* cache = frame_->GetDocument()->ExistingAXObjectCache())
       cache->HandleScrolledToAnchor(&first_node);
@@ -394,12 +393,6 @@ void TextFragmentAnchor::DidFindMatch(const RangeInFlatTree& range,
     frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
         range.StartPosition().NodeAsRangeFirstNode());
   }
-
-  EphemeralRange dom_range =
-      EphemeralRange(ToPositionInDOMTree(range.StartPosition()),
-                     ToPositionInDOMTree(range.EndPosition()));
-
-  frame_->GetDocument()->Markers().AddTextFragmentMarker(dom_range);
 }
 
 void TextFragmentAnchor::DidFinishSearch() {
@@ -434,11 +427,6 @@ bool TextFragmentAnchor::Dismiss() {
 
   if (!did_find_match_ || dismissed_)
     return true;
-
-  DCHECK(!should_scroll_ || did_scroll_into_view_ || user_scrolled_);
-
-  frame_->GetDocument()->Markers().RemoveMarkersOfTypes(
-      DocumentMarker::MarkerTypes::TextFragment());
 
   return SelectorFragmentAnchor::Dismiss();
 }

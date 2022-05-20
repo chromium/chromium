@@ -1803,14 +1803,8 @@ void LocalFrameView::InvokeFragmentAnchor() {
     fragment_anchor_ = nullptr;
 }
 
-void LocalFrameView::DismissFragmentAnchor() {
-  if (!fragment_anchor_)
-    return;
-
-  if (fragment_anchor_->Dismiss()) {
-    FragmentDirectiveUtils::RemoveSelectorsFromUrl(frame_);
-    fragment_anchor_ = nullptr;
-  }
+void LocalFrameView::ClearFragmentAnchor() {
+  fragment_anchor_ = nullptr;
 }
 
 bool LocalFrameView::UpdatePlugins() {
