@@ -23,7 +23,7 @@ import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-s
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {BROWSING_GAP_TIME, UMA_MAX_BUCKET_VALUE, UMA_MAX_SUBSET_BUCKET_VALUE} from './constants.js';
+import {BROWSING_GAP_TIME} from './constants.js';
 import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import {HistoryItemElement, searchResultsTitle} from './history_item.js';
 import {getTemplate} from './history_list.html.js';
@@ -479,16 +479,6 @@ export class HistoryListElement extends HistoryListElementBase {
             item.focusOnMenuButton();
           }
         }, 1);
-      }
-
-      const browserService = BrowserServiceImpl.getInstance();
-      browserService.recordHistogram(
-          'HistoryPage.RemoveEntryPosition',
-          Math.min(index, UMA_MAX_BUCKET_VALUE), UMA_MAX_BUCKET_VALUE);
-      if (index <= UMA_MAX_SUBSET_BUCKET_VALUE) {
-        browserService.recordHistogram(
-            'HistoryPage.RemoveEntryPositionSubset', index,
-            UMA_MAX_SUBSET_BUCKET_VALUE);
       }
     });
     this.closeMenu_();
