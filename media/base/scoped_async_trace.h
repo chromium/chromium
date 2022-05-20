@@ -12,15 +12,11 @@
 #include "media/base/media_export.h"
 
 namespace media {
-
 enum class TraceCategory : uint32_t {
   kMedia,
   kMediaStream,
-  kVideoAndImageCapture,
 };
-
 namespace {
-
 template <TraceCategory category>
 struct Category {};
 
@@ -36,13 +32,6 @@ struct Category<TraceCategory::kMediaStream> {
   }
 };
 
-template <>
-struct Category<TraceCategory::kVideoAndImageCapture> {
-  static constexpr const char* Name() {
-    return TRACE_DISABLED_BY_DEFAULT("video_and_image_capture");
-  }
-};
-
 }  // namespace
 
 // Utility class that starts and stops an async trace event.  The intention is
@@ -53,11 +42,10 @@ struct Category<TraceCategory::kVideoAndImageCapture> {
 template <TraceCategory category>
 class MEDIA_EXPORT TypedScopedAsyncTrace {
  public:
-  // Create a TypedScopedAsyncTrace if tracing for `cateogory` is enabled,
-  // returns nullptr otherwise. `name` will be the trace name.
-  //
-  // IMPORTANT: All string parameters must outlive |this|, since tracing needs
-  // them. Use literal strings only; see trace_event_common.h.
+  // Create a TypedScopedAsyncTrace if tracing for "media" is enabled, else
+  // return nullptr. |name| provided to the trace as the name(!). IMPORTANT:
+  // These strings must outlive |this|, since tracing needs it. In other words,
+  // use literal strings only. See trace_event_common.h.
   static std::unique_ptr<TypedScopedAsyncTrace<category>> CreateIfEnabled(
       const char* name) {
     bool enabled = false;
@@ -65,31 +53,20 @@ class MEDIA_EXPORT TypedScopedAsyncTrace {
     return enabled ? base::WrapUnique(new TypedScopedAsyncTrace(name))
                    : nullptr;
   }
-
   ~TypedScopedAsyncTrace() {
     TRACE_EVENT_NESTABLE_ASYNC_END0(Category<category>::Name(), name_,
-                                    TRACE_ID_LOCAL(id_));
+                                    TRACE_ID_LOCAL(this));
   }
 
-  // Adds a nested step under the current trace.
-  void AddStep(const char* step_name) {
-    step_.reset();  // Ensure previous trace step closes first.
-    step_ = base::WrapUnique(new TypedScopedAsyncTrace(step_name, this));
-  }
+  // TODO(liberato): Add StepInto / StepPast.
 
  private:
-  explicit TypedScopedAsyncTrace(const char* name)
-      : TypedScopedAsyncTrace(name, this) {}
-
-  TypedScopedAsyncTrace(const char* name, const void* id)
-      : name_(name), id_(id) {
+  explicit TypedScopedAsyncTrace(const char* name) : name_(name) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(Category<category>::Name(), name_,
-                                      TRACE_ID_LOCAL(id_));
+                                      TRACE_ID_LOCAL(this));
   }
 
-  const char* name_;
-  const void* id_;
-  std::unique_ptr<TypedScopedAsyncTrace<category>> step_;
+  const char* name_ = nullptr;
 };
 
 using ScopedAsyncTrace = TypedScopedAsyncTrace<TraceCategory::kMedia>;

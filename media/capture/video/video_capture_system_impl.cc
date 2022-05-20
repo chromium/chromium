@@ -8,17 +8,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/base/scoped_async_trace.h"
 #include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video/video_capture_metrics.h"
 
 namespace {
-
-using ScopedCaptureTrace =
-    media::TypedScopedAsyncTrace<media::TraceCategory::kVideoAndImageCapture>;
 
 // Compares two VideoCaptureFormat by checking smallest frame_size area, then
 // by width, and then by _largest_ frame_rate. Used to order a
@@ -66,13 +61,6 @@ void ConsolidateCaptureFormats(media::VideoCaptureFormats* formats) {
   formats->erase(last, formats->end());
 }
 
-void DeviceInfosCallbackTrampoline(
-    media::VideoCaptureSystem::DeviceInfoCallback callback,
-    std::unique_ptr<ScopedCaptureTrace> trace,
-    const std::vector<media::VideoCaptureDeviceInfo>& infos) {
-  std::move(callback).Run(infos);
-}
-
 }  // anonymous namespace
 
 namespace media {
@@ -88,9 +76,8 @@ VideoCaptureSystemImpl::~VideoCaptureSystemImpl() = default;
 void VideoCaptureSystemImpl::GetDeviceInfosAsync(
     DeviceInfoCallback result_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  device_enum_request_queue_.push_back(base::BindOnce(
-      &DeviceInfosCallbackTrampoline, std::move(result_callback),
-      ScopedCaptureTrace::CreateIfEnabled("GetDeviceInfosAsync")));
+
+  device_enum_request_queue_.push_back(std::move(result_callback));
   if (device_enum_request_queue_.size() == 1) {
     // base::Unretained() is safe because |factory_| is owned and it guarantees
     // not to call the callback after destruction.
@@ -101,8 +88,6 @@ void VideoCaptureSystemImpl::GetDeviceInfosAsync(
 
 VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
     const std::string& device_id) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureSystemImpl::CreateDevice");
   DCHECK(thread_checker_.CalledOnValidThread());
   const VideoCaptureDeviceInfo* device_info = LookupDeviceInfoFromId(device_id);
   if (!device_info) {
