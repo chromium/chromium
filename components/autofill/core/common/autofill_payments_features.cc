@@ -80,7 +80,7 @@ const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{
 // preflight call.
 const base::Feature kAutofillEnableSendingBcnInGetUploadDetails{
     "AutofillEnableSendingBcnInGetUploadDetails",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, if the user interacts with the manual fallback bottom sheet
 // on Android, it'll remain sticky until the user dismisses it.
