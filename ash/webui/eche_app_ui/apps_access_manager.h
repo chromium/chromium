@@ -36,7 +36,19 @@ class AppsAccessManager {
     // The permission is granted by user action.
     kUserActionPermissionGranted = 2,
 
-    kMaxValue = kUserActionPermissionGranted
+    // Users explicitly decline the permission request.
+    kUserActionPermissionRejected = 3,
+
+    // The permission request time out after 20 seconds.
+    kUserActionTimeout = 4,
+
+    // The permission request is canceled because the device screen off.
+    kUserActionCanceled = 5,
+
+    // System exceptions thrown out.
+    kSystemError = 6,
+
+    kMaxValue = kSystemError
   };
 
   class Observer : public base::CheckedObserver {

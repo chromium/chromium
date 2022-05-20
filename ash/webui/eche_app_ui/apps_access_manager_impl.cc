@@ -119,6 +119,29 @@ void AppsAccessManagerImpl::OnSendAppsSetupResponseReceived(
           "Eche.Onboarding.UserAction",
           OnboardingUserActionMetric::kUserActionPermissionGranted);
     }
+  } else if (apps_setup_response.result() ==
+             proto::Result::RESULT_ERROR_USER_REJECTED) {
+    base::UmaHistogramEnumeration(
+        "Eche.Onboarding.UserAction",
+        OnboardingUserActionMetric::kUserActionPermissionRejected);
+  } else if (apps_setup_response.result() ==
+             proto::Result::RESULT_ERROR_ACTION_TIMEOUT) {
+    base::UmaHistogramEnumeration(
+        "Eche.Onboarding.UserAction",
+        OnboardingUserActionMetric::kUserActionTimeout);
+  } else if (apps_setup_response.result() ==
+             proto::Result::RESULT_ERROR_ACTION_CANCELED) {
+    base::UmaHistogramEnumeration(
+        "Eche.Onboarding.UserAction",
+        OnboardingUserActionMetric::kUserActionCanceled);
+  } else if (apps_setup_response.result() ==
+             proto::Result::RESULT_ERROR_SYSTEM) {
+    base::UmaHistogramEnumeration("Eche.Onboarding.UserAction",
+                                  OnboardingUserActionMetric::kSystemError);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Eche.Onboarding.UserAction",
+        OnboardingUserActionMetric::kUserActionUnknown);
   }
 }
 

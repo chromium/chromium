@@ -70649,6 +70649,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="2"
       label="The permission that onboarding necessary is granted by user
              action"/>
+  <int value="3" label="The permission request declines"/>
+  <int value="4" label="The permission request time out"/>
+  <int value="5" label="Users turn off the screen"/>
+  <int value="6" label="System exceptions thrown out"/>
 </enum>
 
 <enum name="OnServiceConnectedTimedOutResult">
