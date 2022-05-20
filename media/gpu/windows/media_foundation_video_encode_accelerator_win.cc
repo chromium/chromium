@@ -461,17 +461,12 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   HRESULT hr = MFCreateSample(&input_sample_);
   RETURN_ON_HR_FAILURE(hr, "Failed to create sample", false);
 
-  if (config.input_format == PIXEL_FORMAT_NV12 &&
-      media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
+  if (media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
     dxgi_device_manager_ = DXGIDeviceManager::Create();
     if (!dxgi_device_manager_) {
       MEDIA_LOG(ERROR, media_log.get()) << "Failed to create DXGIDeviceManager";
       return false;
     }
-  }
-
-  // Start the asynchronous processing model
-  if (dxgi_device_manager_) {
     auto mf_dxgi_device_manager =
         dxgi_device_manager_->GetMFDXGIDeviceManager();
     hr = encoder_->ProcessMessage(
@@ -480,6 +475,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     RETURN_ON_HR_FAILURE(
         hr, "Couldn't set ProcessMessage MFT_MESSAGE_SET_D3D_MANAGER", false);
   }
+
+  // Start the asynchronous processing model
   hr = encoder_->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
   RETURN_ON_HR_FAILURE(
       hr, "Couldn't set ProcessMessage MFT_MESSAGE_COMMAND_FLUSH", false);
