@@ -1,40 +1,25 @@
-<style include="internet-shared iron-flex">
-  cr-policy-indicator {
-    margin-inline-end: 24px;
+<style include="settings-shared">
+  #cellularRoamingToggle {
+    display: flex;
+    justify-content: center;
+    min-height: var(--cr-section-two-line-min-height);
   }
 
-  #cellularRoamingToggleContainer:hover {
+  #cellularRoamingToggle:not([disabled]):hover {
     background-color: var(--cr-hover-background-color);
   }
 
-  #cellularRoamingToggleContainer:active {
+  #cellularRoamingToggle:not([disabled]):active {
     background-color: var(--cr-active-background-color);
   }
 </style>
 <template is="dom-if"
     if="[[showPerNetworkAllowRoamingToggle_(isRoamingAllowedForNetwork_)]]">
-  <div id="cellularRoamingToggleContainer"
-      class="settings-box"
-      on-click="onCellularRoamingRowClicked_"
-      actionable$="[[!isPerNetworkToggleDisabled_(disabled, prefs.cros.signed.data_roaming_enabled)]]">
-    <div class="flex" id="labelWrapper">
-      <div id="cellularRoamingToggleLabel" aria-hidden="true" class="label">
-        $i18n{networkAllowDataRoaming}
-      </div>
-      <div id="cellularRoamingToggleSubLabel" aria-hidden="true"
-          class="secondary label">
-        [[getRoamingDetails_(managedProperties, prefs.cros.signed.data_roaming_enabled)]]
-      </div>
-    </div>
-    <template is="dom-if"
-        if="[[isRoamingProhibitedByPolicy_(prefs.cros.signed.data_roaming_enabled)]]">
-      <cr-policy-indicator indicator-type="devicePolicy" on-click="doNothing_">
-      </cr-policy-indicator>
-    </template>
-    <cr-toggle id="control" checked="{{isRoamingAllowedForNetwork_}}"
-        disabled="[[isPerNetworkToggleDisabled_(disabled, prefs.cros.signed.data_roaming_enabled)]]"
-        aria-labelledby="cellularRoamingToggleLabel"
-        aria-describedby="cellularRoamingToggleSubLabel">
-    </cr-toggle>
-  </div>
+    <network-config-toggle id="cellularRoamingToggle" class="settings-box" policy-on-left
+        property="[[managedProperties.typeProperties.cellular.allowRoaming]]"
+        label="$i18n{networkAllowDataRoaming}"
+        sub-label="[[getRoamingDetails_(managedProperties.typeProperties.cellular.allowRoaming.*, prefs.cros.signed.data_roaming_enabled)]]"
+        checked="{{isRoamingAllowedForNetwork_}}"
+        disabled="[[isPerNetworkToggleDisabled_(managedProperties.typeProperties.cellular.allowRoaming.*, disabled, prefs.cros.signed.data_roaming_enabled)]]">
+    </network-config-toggle>
 </template>

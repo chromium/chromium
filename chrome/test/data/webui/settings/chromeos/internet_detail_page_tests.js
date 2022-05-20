@@ -824,9 +824,12 @@ suite('InternetDetailPage', function() {
 
       await flushAsync();
 
-      const deepLinkElement =
+      // Attempting to focus a <network-config-toggle> will result in the focus
+      // being pushed onto the internal <cr-toggle>.
+      const cellularRoamingToggle =
           internetDetailPage.$$('cellular-roaming-toggle-button')
               .getCellularRoamingToggle();
+      const deepLinkElement = cellularRoamingToggle.$$('cr-toggle');
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),

@@ -10,11 +10,12 @@
  */
 
 import '../../prefs/prefs.js';
-import './internet_shared_css.js';
-import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 
+import {CrPolicyNetworkBehaviorMojo} from '//resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {assert} from '//resources/js/assert.m.js';
@@ -38,12 +39,12 @@ Polymer({
     disabled: {
       type: Boolean,
       value: false,
+      reflectToAttribute: true,
     },
 
     /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties: {
       type: Object,
-      observer: 'managedPropertiesChanged_',
     },
 
     prefs: {
@@ -58,8 +59,15 @@ Polymer({
     isRoamingAllowedForNetwork_: {
       type: Boolean,
       observer: 'isRoamingAllowedForNetworkChanged_',
+      notify: true,
     },
   },
+
+  observers: [
+    `managedPropertiesChanged_(
+        prefs.cros.signed.data_roaming_enabled.*,
+        managedProperties.*)`,
+  ],
 
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
@@ -71,19 +79,11 @@ Polymer({
   },
 
   /**
-   * Returns the text sub-label for testing.
-   * @return {string}
-   */
-  getSubLabelForTesting() {
-    return this.$$('#cellularRoamingToggleSubLabel').innerText;
-  },
-
-  /**
    * Returns the child element responsible for controlling cellular roaming.
    * @return {?CrToggleElement}
    */
   getCellularRoamingToggle() {
-    return /** @type {?CrToggleElement} */ (this.$$('#control'));
+    return /** @type {?CrToggleElement} */ (this.$$('#cellularRoamingToggle'));
   },
 
   /** @private */
@@ -142,6 +142,15 @@ Polymer({
         !this.managedProperties.typeProperties.cellular.allowRoaming) {
       return;
     }
+
+    // We override the enforcement of the managed property here so that we can
+    // have the toggle show the policy enforcement icon when the global policy
+    // prohibits roaming.
+    if (this.isRoamingProhibitedByPolicy_()) {
+      this.set(
+          'managedProperties.typeProperties.cellular.allowRoaming.policySource',
+          chromeos.networkConfig.mojom.PolicySource.kDevicePolicyEnforced);
+    }
     this.isRoamingAllowedForNetwork_ = this.getRoamingAllowedForNetwork_();
   },
 
@@ -164,7 +173,9 @@ Polymer({
 
   /** @private */
   isPerNetworkToggleDisabled_() {
-    return this.disabled || this.isRoamingProhibitedByPolicy_();
+    return this.disabled || this.isRoamingProhibitedByPolicy_() ||
+        CrPolicyNetworkBehaviorMojo.isNetworkPolicyEnforced(
+            this.managedProperties.typeProperties.cellular.allowRoaming);
   },
 
   /** @private */
