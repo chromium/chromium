@@ -348,29 +348,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.PageFileSize" units="KB" expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Size of a page file created for blob data by the blob storage system.
-    Recorded before we create the file and write the blob items. We page blob
-    data to files when we get close to our maximum blob memory usage.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.PagingDisabled" enum="PlatformFileError"
-    expires_after="M95">
-  <owner>mek@chromium.org</owner>
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Recorded when we disable paging blobs to file in the blob storage system.
-    This occurs when we experience a filesystem error during writing blob data
-    to disk. We write blob data to files when either we have a new blob that's
-    larger than our memory limit, or we're approaching our in-memory limit for
-    blob storage. The relevant error is recorded here.
-  </summary>
-</histogram>
-
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
     units="ms" expires_after="2023-01-01">
   <owner>asully@chromium.org</owner>

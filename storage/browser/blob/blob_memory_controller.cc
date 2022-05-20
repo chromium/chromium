@@ -203,7 +203,6 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
     std::vector<base::span<const uint8_t>> data,
     size_t total_size_bytes) {
   DCHECK_NE(0u, total_size_bytes);
-  UMA_HISTOGRAM_MEMORY_KB("Storage.Blob.PageFileSize", total_size_bytes / 1024);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -554,8 +553,6 @@ BlobMemoryController::BlobMemoryController(
 BlobMemoryController::~BlobMemoryController() = default;
 
 void BlobMemoryController::DisableFilePaging(base::File::Error reason) {
-  UMA_HISTOGRAM_ENUMERATION("Storage.Blob.PagingDisabled", -reason,
-                            -File::FILE_ERROR_MAX);
   DLOG(ERROR) << "Blob storage paging disabled, reason: " << reason;
   file_paging_enabled_ = false;
   in_flight_memory_used_ = 0;
