@@ -14,15 +14,6 @@ group("web_app_test_group") {
 
 source_set("web_applications") {
   sources = [
-    # TODO(crbug.com/1321984): Move system_web_app_delegate.cc/h and
-    # system_web_app_types.cc/h to /ash/system_web_apps/types/
-    "../ash/system_web_apps/types/system_web_app_background_task_info.cc",
-    "../ash/system_web_apps/types/system_web_app_background_task_info.h",
-    "../ash/system_web_apps/types/system_web_app_delegate.cc",
-    "../ash/system_web_apps/types/system_web_app_delegate.h",
-    "../ash/system_web_apps/types/system_web_app_delegate_map.cc",
-    "../ash/system_web_apps/types/system_web_app_delegate_map.h",
-    "../ash/system_web_apps/types/system_web_app_type.h",
     "app_registrar_observer.h",
     "commands/callback_command.cc",
     "commands/callback_command.h",
@@ -265,6 +256,7 @@ source_set("web_applications") {
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:non_code_constants",
@@ -463,6 +455,7 @@ source_set("web_applications_test_support") {
     "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser",
+    "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//components/crx_file:crx_file",
@@ -577,6 +570,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/extensions:extensions",

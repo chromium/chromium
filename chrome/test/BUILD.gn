@@ -4036,6 +4036,7 @@ if (!is_android) {
         "//chrome/browser/ash/crosapi",
         "//chrome/browser/ash/crosapi:test_support",
         "//chrome/browser/ash/system_extensions:browser_tests",
+        "//chrome/browser/ash/system_web_apps/types:types",
         "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
         "//chrome/browser/chromeos",
         "//chrome/browser/chromeos:arc_test_support",

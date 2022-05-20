@@ -1732,6 +1732,7 @@ static_library("ui") {
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_themes",
       "//chrome/browser:theme_properties",
+      "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/image_editor",
@@ -5248,6 +5249,7 @@ static_library("ui") {
       "//apps",
       "//chrome/browser/apps/platform_apps",  # TODO(loyso): Remove this dep.
       "//chrome/browser/apps/platform_apps/api",
+      "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/extensions",
       "//chrome/browser/web_share_target",
       "//chrome/common/extensions/api",
