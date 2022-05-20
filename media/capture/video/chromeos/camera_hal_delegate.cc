@@ -559,7 +559,11 @@ bool CameraHalDelegate::UpdateBuiltInCameraInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!ipc_task_runner_->BelongsToCurrentThread());
 
-  camera_module_has_been_set_.Wait();
+  if (!camera_module_has_been_set_.TimedWait(kEventWaitTimeoutSecs)) {
+    LOG(ERROR) << "Camera module not set; platform camera service might not be "
+                  "ready yet";
+    return false;
+  }
   if (builtin_camera_info_updated_.IsSignaled()) {
     return true;
   }
