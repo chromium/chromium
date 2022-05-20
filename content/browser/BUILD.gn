@@ -83,7 +83,7 @@ source_set("browser") {
     "//components/payments/mojom",
     "//components/services/screen_ai/buildflags",
 
-    # TODO(698985): Remove `permissions_common`.
+    # TODO(crbug.com/1327384): Remove `permissions_common`.
     "//components/permissions:permissions_common",
     "//components/power_scheduler",
     "//components/services/filesystem:lib",
@@ -1351,7 +1351,7 @@ source_set("browser") {
     "permissions/permission_service_impl.cc",
     "permissions/permission_service_impl.h",
 
-    # TODO(698985): Remove `permission_util.*`.
+    # TODO(crbug.com/1327384): Remove `permission_util.*`.
     "net/cross_origin_embedder_policy_reporter.cc",
     "net/cross_origin_embedder_policy_reporter.h",
     "net/cross_origin_opener_policy_reporter.cc",

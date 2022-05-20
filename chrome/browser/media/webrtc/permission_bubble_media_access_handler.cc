@@ -118,8 +118,9 @@ void UpdatePageSpecificContentSettings(
              : content_settings::PageSpecificContentSettings::CAMERA_BLOCKED);
   }
 
-  // TODO(crbug.com/698985): Use `GetLastCommittedURL` if web_contents represent
-  // NTP.
+  // We should always use `GetLastCommittedURL` if web_contents represent NTP.
+  // Otherwise, the Microphone permission request on NTP will be gated for
+  // incorrect origin.
   GURL embedding_origin;
   if (permissions::PermissionsClient::Get()->DoOriginsMatchNewTabPage(
           request.security_origin,
