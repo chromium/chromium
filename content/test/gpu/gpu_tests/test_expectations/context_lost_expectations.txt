@@ -108,6 +108,10 @@ crbug.com/1305020 [ mac asan intel-0x3e9b ] ContextLost_WebGPUContextLostFromGPU
 crbug.com/1305020 [ mac asan intel-0xd26 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 crbug.com/1305020 [ mac nvidia-0xfe9 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 
+# Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes.
+# This hardware configuration is effectively obsolete; this won't be investigated.
+crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -130,9 +134,9 @@ crbug.com/498149 [ lion debug ] ContextLost_WebGLContextLostFromSelectElement [ 
 crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
 crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 
-# Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes
-crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
-crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
+# Flaky hangs on Mac Debug AMD, stalling the test suite for 60 minutes.
+crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
+crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 
 ###################
 # Failures/Flakes #
@@ -162,8 +166,6 @@ crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAf
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
 
 # GpuCrash_Info* flakes on Mac Debug (AMD, Intel)
-crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
-crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 crbug.com/1297151 [ mac intel debug no-passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 
 # Flaky on Fuchsia
