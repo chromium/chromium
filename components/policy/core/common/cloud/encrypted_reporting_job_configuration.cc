@@ -281,7 +281,8 @@ void EncryptedReportingJobConfiguration::OnURLLoadComplete(
   auto* const state = AccessState(priority_, generation_id_, sequence_id_);
   if (net_error != ::net::OK) {
     // Network error
-  } else if (response_code >= 400 && response_code <= 499) {
+  } else if (response_code >= 400 && response_code <= 499 &&
+             response_code != 409 /* Overlapping seq_id ranges detected */) {
     // Permanent error code returned by server, impose artificial 24h backoff.
     state->backoff_entry->SetCustomReleaseTime(
         state->backoff_entry->GetTimeTicksNow() + base::Days(1));
