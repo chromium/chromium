@@ -51,7 +51,8 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -61,6 +62,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.HashSet;
@@ -75,11 +77,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, PassphraseCreationDialogFragment.Listener,
                    PassphraseTypeDialogFragment.Listener, Preference.OnPreferenceChangeListener,
                    SyncService.SyncStateChangedListener, SettingsActivity.OnBackPressedListener,
-                   SignOutDialogFragment.SignOutDialogListener,
-                   SyncErrorCardPreference.SyncErrorCardPreferenceListener {
+                   Listener, SyncErrorCardPreference.SyncErrorCardPreferenceListener {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
-    private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
 
     @VisibleForTesting
     public static final String FRAGMENT_ENTER_PASSPHRASE = "enter_password";
@@ -579,11 +579,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
-        SignOutDialogFragment signOutFragment =
-                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        signOutFragment.setTargetFragment(this, 0);
-        signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
+        SignOutDialogCoordinator.show(requireContext(),
+                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     private void onTurnOffSyncClicked() {
@@ -592,11 +591,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
-        SignOutDialogFragment signOutFragment =
-                SignOutDialogFragment.create(SignOutDialogFragment.ActionType.REVOKE_SYNC_CONSENT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-        signOutFragment.setTargetFragment(this, 0);
-        signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
+        SignOutDialogCoordinator.show(requireContext(),
+                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                SignOutDialogCoordinator.ActionType.REVOKE_SYNC_CONSENT,
+                GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
     }
 
     private void onSyncEncryptionClicked() {
@@ -714,12 +712,12 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 startActivity(intent);
                 return;
             case SyncError.OTHER_ERRORS:
-                SignOutDialogFragment signOutFragment = SignOutDialogFragment.create(
-                        profile.isChild() ? SignOutDialogFragment.ActionType.REVOKE_SYNC_CONSENT
-                                          : SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                SignOutDialogCoordinator.show(requireContext(),
+                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
+                        profile.isChild()
+                                ? SignOutDialogCoordinator.ActionType.REVOKE_SYNC_CONSENT
+                                : SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
                         GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
-                signOutFragment.setTargetFragment(this, 0);
-                signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
                 return;
             case SyncError.PASSPHRASE_REQUIRED:
                 displayPassphraseDialog();

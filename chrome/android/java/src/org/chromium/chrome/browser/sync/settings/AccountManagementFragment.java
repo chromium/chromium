@@ -34,8 +34,8 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObse
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment.SignOutDialogListener;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -49,6 +49,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 import java.util.List;
 
@@ -62,7 +63,7 @@ import java.util.List;
  * Note: This can be triggered from a web page, e.g. a GAIA sign-in page.
  */
 public class AccountManagementFragment extends PreferenceFragmentCompat
-        implements SignOutDialogListener, SignInStateObserver, ProfileDataCache.Observer {
+        implements Listener, SignInStateObserver, ProfileDataCache.Observer {
     private static final String TAG = "AcctManagementPref";
 
     private static final String SIGN_OUT_DIALOG_TAG = "sign_out_dialog_tag";
@@ -214,11 +215,10 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
                                 .getPrimaryAccountInfo(ConsentLevel.SYNC)
                         != null) {
                     // Only show the sign-out dialog if the user has given sync consent.
-                    SignOutDialogFragment signOutFragment = SignOutDialogFragment.create(
-                            SignOutDialogFragment.ActionType.CLEAR_PRIMARY_ACCOUNT,
+                    SignOutDialogCoordinator.show(requireContext(),
+                            ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                            this, SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
                             mGaiaServiceType);
-                    signOutFragment.setTargetFragment(AccountManagementFragment.this, 0);
-                    signOutFragment.show(getFragmentManager(), SIGN_OUT_DIALOG_TAG);
                 } else {
                     IdentityServicesProvider.get()
                             .getSigninManager(Profile.getLastUsedRegularProfile())

@@ -49,7 +49,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/ConsentTextTracker.java",
     "java/src/org/chromium/chrome/browser/ui/signin/GoogleActivityController.java",
     "java/src/org/chromium/chrome/browser/ui/signin/PersonalizedSigninPromoView.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogFragment.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/SignOutDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninPromoController.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninPromoUtil.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SigninScrollView.java",
