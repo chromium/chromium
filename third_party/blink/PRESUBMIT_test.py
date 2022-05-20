@@ -166,7 +166,6 @@ class CxxDependencyTest(unittest.TestCase):
         'scoped_refptr<base::SingleThreadTaskRunner>',
     ]
     disallow_list = [
-        'GURL',
         'content::RenderFrame',
         'gfx::Canvas',
         'net::IPEndPoint',
