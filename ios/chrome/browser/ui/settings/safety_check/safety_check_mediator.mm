@@ -30,6 +30,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
@@ -66,6 +67,12 @@
 using l10n_util::GetNSString;
 
 namespace {
+
+// The size of  leading symbol icons.
+NSInteger kLeadingSymbolImagePointSize = 22;
+
+// The size of trailing symbol icons.
+NSInteger kTrailingSymbolImagePointSize = 18;
 
 constexpr char kSafetyCheckMetricsUpdates[] =
     "Settings.SafetyCheck.UpdatesResult";
@@ -231,8 +238,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     _updateCheckItem = [[SettingsCheckItem alloc] initWithType:UpdateItemType];
     _updateCheckItem.text =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_TITLE);
-    UIImage* updateCheckIcon = [[UIImage imageNamed:@"settings_info"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* updateCheckIcon =
+        UseSymbols()
+            ? DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                                 kLeadingSymbolImagePointSize)
+            : [[UIImage imageNamed:@"settings_info"]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _updateCheckItem.leadingImage = updateCheckIcon;
     _updateCheckItem.leadingImageTintColor = [UIColor colorNamed:kGrey400Color];
     _updateCheckItem.enabled = YES;
@@ -1008,8 +1019,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       break;
     }
     case UpdateCheckRowStateUpToDate: {
-      UIImage* safeIconImage = [[UIImage imageNamed:@"settings_safe_state"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      UIImage* safeIconImage =
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(
+                    kCheckMarkCircleFillSymbol, kTrailingSymbolImagePointSize)
+              : [[UIImage imageNamed:@"settings_safe_state"]
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.updateCheckItem.trailingImage = safeIconImage;
       self.updateCheckItem.trailingImageTintColor =
           [UIColor colorNamed:kGreenColor];
@@ -1018,8 +1033,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       break;
     }
     case UpdateCheckRowStateOutOfDate: {
-      UIImage* unSafeIconImage = [[UIImage imageNamed:@"settings_unsafe_state"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      UIImage* unSafeIconImage =
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(
+                    kWarningFillSymbol, kTrailingSymbolImagePointSize)
+              : [[UIImage imageNamed:@"settings_unsafe_state"]
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.updateCheckItem.trailingImage = unSafeIconImage;
       self.updateCheckItem.trailingImageTintColor =
           [UIColor colorNamed:kRedColor];
@@ -1097,8 +1116,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     case PasswordCheckRowStateSafe: {
       DCHECK(self.passwordCheckManager->GetUnmutedCompromisedCredentials()
                  .empty());
-      UIImage* safeIconImage = [[UIImage imageNamed:@"settings_safe_state"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      UIImage* safeIconImage =
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(
+                    kCheckMarkCircleFillSymbol, kTrailingSymbolImagePointSize)
+              : [[UIImage imageNamed:@"settings_safe_state"]
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0));
@@ -1113,8 +1136,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
               self.passwordCheckManager->GetUnmutedCompromisedCredentials()
                   .size()));
-      UIImage* unSafeIconImage = [[UIImage imageNamed:@"settings_unsafe_state"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      UIImage* unSafeIconImage =
+          UseSymbols()
+              ? DefaultSymbolTemplateWithPointSize(
+                    kWarningFillSymbol, kTrailingSymbolImagePointSize)
+              : [[UIImage imageNamed:@"settings_unsafe_state"]
+                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.passwordCheckItem.trailingImage = unSafeIconImage;
       self.passwordCheckItem.trailingImageTintColor =
           [UIColor colorNamed:kRedColor];
