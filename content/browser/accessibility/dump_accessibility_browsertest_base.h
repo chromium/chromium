@@ -160,6 +160,20 @@ class DumpAccessibilityTestBase
   // Wait for default action, expected text and then end of test signal.
   void WaitForFinalTreeContents();
 
+  // Creates a new secure test server that can be used in place of the default
+  // HTTP embedded_test_server defined in BrowserTestBase. The new test server
+  // can then be retrieved using the same embedded_test_server() method used
+  // to get the BrowserTestBase HTTP server.
+  void UseHttpsTestServer();
+
+  // This will return either the https test server or the
+  // default one specified in BrowserTestBase, depending on if an https test
+  // server was created by calling UseHttpsTestServer().
+  net::EmbeddedTestServer* embedded_test_server() {
+    return (https_test_server_) ? https_test_server_.get()
+                                : BrowserTestBase::embedded_test_server();
+  }
+
  private:
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
                                           const std::string& name) const;
@@ -181,6 +195,11 @@ class DumpAccessibilityTestBase
   }
 
   bool has_performed_default_actions_ = false;
+
+  // Secure test server, isn't created by default. Needs to be
+  // created using UseHttpsTestServer() and then called with
+  // embedded_test_server().
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
 }  // namespace content

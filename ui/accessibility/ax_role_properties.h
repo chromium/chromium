@@ -40,6 +40,9 @@ AX_BASE_EXPORT bool IsButton(const ax::mojom::Role role);
 // Returns true if the provided role belongs to a cell or a table header.
 AX_BASE_EXPORT bool IsCellOrTableHeader(const ax::mojom::Role role);
 
+// Returns true if the role is expected to be the parent of a child tree.
+AX_BASE_EXPORT bool IsChildTreeOwner(const ax::mojom::Role role);
+
 // Returns true if the provided role belongs to an object on which a click
 // handler is commonly attached, or to an object that carries out an action when
 // clicked, such as activating itself, opening a dialog or closing a menu.

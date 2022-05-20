@@ -103,6 +103,17 @@ bool IsCellOrTableHeader(const ax::mojom::Role role) {
   }
 }
 
+bool IsChildTreeOwner(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kIframe:
+    case ax::mojom::Role::kIframePresentational:
+    case ax::mojom::Role::kPortal:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsClickable(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kButton:
