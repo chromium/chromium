@@ -169,3 +169,13 @@
     }
   },
 };
+
+/** @interface */
+/* #export */ class CrContainerShadowBehaviorInterface {
+  /**
+   * @param {boolean} enable
+   */
+  enableShadowBehavior(enable) {}
+
+  showDropShadows() {}
+}
