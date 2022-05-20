@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method.h"
@@ -73,8 +74,17 @@ class ArcNotificationViewTest : public AshTestBase,
   // views::ViewsTestBase
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
+    if (IsNotificationsRefreshEnabled()) {
+      scoped_feature_list_->InitWithFeatures(
+          /*enabled_features=*/{features::kNotificationsRefresh,
+                                chromeos::features::kDarkLightMode},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_->InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kNotificationsRefresh,
+                                 chromeos::features::kDarkLightMode});
+    }
 
     AshTestBase::SetUp();
 

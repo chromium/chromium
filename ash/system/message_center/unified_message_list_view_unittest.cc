@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/message_center/message_center.h"
@@ -261,8 +262,17 @@ class ParameterizedUnifiedMessageListViewTest
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
+    if (IsNotificationsRefreshEnabled()) {
+      scoped_feature_list_->InitWithFeatures(
+          /*enabled_features=*/{features::kNotificationsRefresh,
+                                chromeos::features::kDarkLightMode},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_->InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kNotificationsRefresh,
+                                 chromeos::features::kDarkLightMode});
+    }
 
     UnifiedMessageListViewTest::SetUp();
   }

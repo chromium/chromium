@@ -3135,6 +3135,7 @@ TEST_P(CaptureModeCameraPreviewTest, DisplayRotation) {
 // when capture session is active and when there's a video recording in
 // progress including drag to snap by mouse and by touch.
 TEST_P(CaptureModeCameraPreviewTest, CameraPreviewDragToSnap) {
+  UpdateDisplay("1600x800");
   StartCaptureSessionWithParam();
   auto* camera_controller = GetCameraController();
   AddDefaultCamera();
