@@ -1355,14 +1355,6 @@ const base::Feature kElementSuperRareData{"ElementSuperRareData",
 const base::Feature kClientHintsPartitionedCookies{
     "ClientHintsPartitionedCookies", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, the memory limit used for tiles is scaled by
-// `kScaleTileMemoryLimitFactor`.
-const base::Feature kScaleTileMemoryLimit{"ScaleTileMemoryLimit",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::FeatureParam<double> kScaleTileMemoryLimitFactor{
-    &kScaleTileMemoryLimit, "Factor", 1.0};
-
 const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

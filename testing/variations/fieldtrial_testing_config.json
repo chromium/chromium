@@ -6803,47 +6803,6 @@
             ]
         }
     ],
-    "ScaleTileMemoryLimit": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Scale 75%_1",
-                    "params": {
-                        "Factor": "0.75"
-                    },
-                    "enable_features": [
-                        "ScaleTileMemoryLimit"
-                    ]
-                },
-                {
-                    "name": "Scale 120%_1",
-                    "params": {
-                        "Factor": "1.25"
-                    },
-                    "enable_features": [
-                        "ScaleTileMemoryLimit"
-                    ]
-                },
-                {
-                    "name": "Scale 50%_1",
-                    "params": {
-                        "Factor": "0.5"
-                    },
-                    "enable_features": [
-                        "ScaleTileMemoryLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScreenTime": [
         {
             "platforms": [
