@@ -17,7 +17,6 @@
 #include "ios/chrome/browser/metrics/metrics_app_interface.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/web/https_only_mode_app_interface.h"
-#import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -313,17 +312,6 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
              @"Timer is still running");
 }
 
-// Performs the steps to clear browsing data. Must be called on the
-// Clear Browsing Data settings screen, after having selected the data types
-// scheduled for removal.
-- (void)clearBrowsingData {
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
-                        chrome_test_util::ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
-}
-
 #pragma mark - Tests
 
 // Disable the feature and navigate to an HTTP URL directly. Since the feature
@@ -540,14 +528,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
              @"Timer is still running");
 
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
-  [ChromeEarlGreyUI
-      tapPrivacyMenuButton:chrome_test_util::ClearBrowsingDataCell()];
-  [self clearBrowsingData];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAllBrowsingData];
 
   // Clearing the browsing data automatically reloads tabs. Check that the
   // interstitial is showing.

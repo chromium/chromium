@@ -279,7 +279,8 @@ void StatefulSSLHostStateDelegate::Clear(
   host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
       ContentSettingsType::SSL_CERT_DECISIONS, base::Time(), base::Time::Max(),
       pattern_filter);
-  https_only_mode_allowlist_.Clear(pattern_filter);
+  https_only_mode_allowlist_.Clear(base::Time(), base::Time::Max(),
+                                   pattern_filter);
 }
 
 content::SSLHostStateDelegate::CertJudgment

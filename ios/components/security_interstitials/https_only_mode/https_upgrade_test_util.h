@@ -18,7 +18,7 @@ class FakeHttpsUpgradeService : public HttpsUpgradeService {
   // HttpsUpgradeService methods:
   bool IsHttpAllowedForHost(const std::string& host) const override;
   void AllowHttpForHost(const std::string& host) override;
-  void ClearAllowlist() override;
+  void ClearAllowlist(base::Time delete_begin, base::Time delete_end) override;
 
  private:
   std::set<std::string> allowed_http_hosts_;

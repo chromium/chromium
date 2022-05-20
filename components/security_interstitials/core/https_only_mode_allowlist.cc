@@ -98,14 +98,18 @@ void HttpsOnlyModeAllowlist::RevokeUserAllowExceptions(
 }
 
 void HttpsOnlyModeAllowlist::Clear(
+    base::Time delete_begin,
+    base::Time delete_end,
     const HostContentSettingsMap::PatternSourcePredicate& pattern_filter) {
   host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::HTTP_ALLOWED, base::Time(), base::Time::Max(),
+      ContentSettingsType::HTTP_ALLOWED, delete_begin, delete_end,
       pattern_filter);
 }
 
-void HttpsOnlyModeAllowlist::ClearAllowlist() {
-  Clear(HostContentSettingsMap::PatternSourcePredicate());
+void HttpsOnlyModeAllowlist::ClearAllowlist(base::Time delete_begin,
+                                            base::Time delete_end) {
+  Clear(delete_begin, delete_end,
+        HostContentSettingsMap::PatternSourcePredicate());
   allowed_http_hosts_for_non_default_storage_partitions_.clear();
 }
 

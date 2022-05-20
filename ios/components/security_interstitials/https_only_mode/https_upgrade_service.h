@@ -6,6 +6,8 @@
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_UPGRADE_SERVICE_H_
 
 #include <string>
+
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // HttpsUpgradeService tracks the allowlist decisions for HTTPS-Only mode.
@@ -18,8 +20,11 @@ class HttpsUpgradeService : public KeyedService {
   // Allows future navigations to |host| over http://.
   virtual void AllowHttpForHost(const std::string& host) = 0;
 
-  // Clears persistent and non-persistent allowlist decisions.
-  virtual void ClearAllowlist() = 0;
+  // Clears the persistent and in-memory allowlist entries. All of in-memory
+  // entries are removed, but only persistent entries between delete_begin and
+  // delete_end are removed.
+  virtual void ClearAllowlist(base::Time delete_begin,
+                              base::Time delete_end) = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_HTTPS_ONLY_MODE_HTTPS_UPGRADE_SERVICE_H_

@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/security_interstitials/core/https_only_mode_allowlist.h"
 #include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
@@ -19,16 +20,13 @@ class ChromeBrowserState;
 // Decisions are scoped to the host.
 class HttpsUpgradeServiceImpl : public HttpsUpgradeService {
  public:
-  HttpsUpgradeServiceImpl(ChromeBrowserState* context);
+  explicit HttpsUpgradeServiceImpl(ChromeBrowserState* context);
   ~HttpsUpgradeServiceImpl() override;
 
-  // Returns whether |host| can be loaded over http://.
+  // HttpsUpgradeService methods:
   bool IsHttpAllowedForHost(const std::string& host) const override;
-
-  // Allows future navigations to |host| over http://.
   void AllowHttpForHost(const std::string& host) override;
-
-  void ClearAllowlist() override;
+  void ClearAllowlist(base::Time delete_begin, base::Time delete_end) override;
 
  private:
   std::unique_ptr<base::Clock> clock_;

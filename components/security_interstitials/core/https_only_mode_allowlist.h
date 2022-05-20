@@ -48,10 +48,14 @@ class HttpsOnlyModeAllowlist {
   // Clears allowlist for the given pattern filter. If the pattern filter is
   // empty, clears allowlist for all hosts.
   void Clear(
+      base::Time delete_begin,
+      base::Time delete_end,
       const HostContentSettingsMap::PatternSourcePredicate& pattern_filter);
 
-  // Clears the persistent and in-memory allowlist entries.
-  void ClearAllowlist();
+  // Clears the persistent and in-memory allowlist entries. All of in-memory
+  // entries are removed, but only persistent entries between delete_begin and
+  // delete_end are removed.
+  void ClearAllowlist(base::Time delete_begin, base::Time delete_end);
 
   // Sets the test clock.
   void SetClockForTesting(base::Clock* clock);

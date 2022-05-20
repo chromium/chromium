@@ -289,11 +289,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     // application. Partial removal based on timePeriod is not required.
     ClearIOSSnapshots(CreatePendingTaskCompletionClosure());
 
-    // Remove all HTTPS-Only Mode allowlist decisions. Partial removal based on
-    // timePeriod is not required.
+    // Remove all HTTPS-Only Mode allowlist decisions.
     HttpsUpgradeService* https_upgrade_service =
         HttpsUpgradeServiceFactory::GetForBrowserState(browser_state_);
-    https_upgrade_service->ClearAllowlist();
+    https_upgrade_service->ClearAllowlist(delete_begin, delete_end);
   }
 
   auto io_thread_task_runner = web::GetIOThreadTaskRunner({});
