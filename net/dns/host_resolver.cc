@@ -254,7 +254,7 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
       base::android::BuildInfo::GetInstance()->sdk_int() >=
           base::android::SDK_VERSION_P;
   if (is_builtin_resolver_supported) {
-    // Pre-existing DnsConfigOverride is currently ignored, consider extending
+    // Pre-existing DnsConfigOverrides is currently ignored, consider extending
     // if a use case arises.
     DCHECK(manager_options.dns_config_overrides == DnsConfigOverrides());
 
@@ -265,20 +265,20 @@ HostResolver::CreateStandaloneNetworkBoundResolver(
     if (android::GetDnsServersForNetwork(&dns_servers, &dns_over_tls_active,
                                          &dns_over_tls_hostname,
                                          &search_suffixes, target_network)) {
-      if (dns_over_tls_active) {
-        // To be safe, disable when DNS over TLS is supported as we currently do
-        // not support it.
-        // TODO(stefanoduo): Also inject DNS over TLS settings and support this
-        // case.
-        is_builtin_resolver_supported = false;
-      } else {
-        DnsConfigOverrides dns_config_overrides =
-            DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
-        dns_config_overrides.nameservers = dns_servers;
-        dns_config_overrides.search = search_suffixes;
+      DnsConfigOverrides dns_config_overrides =
+          DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
+      dns_config_overrides.nameservers = dns_servers;
+      // Android APIs don't specify whether to use DoT or DoH. So, leave the
+      // decision to `DnsConfig::allow_dns_over_https_upgrade` default value.
+      dns_config_overrides.dns_over_tls_active = dns_over_tls_active;
+      dns_config_overrides.dns_over_tls_hostname = dns_over_tls_hostname;
+      dns_config_overrides.search = search_suffixes;
 
-        manager_options.dns_config_overrides = dns_config_overrides;
-      }
+      manager_options.dns_config_overrides = dns_config_overrides;
+      // Regardless of DoH vs DoT, the important contract to respect is not to
+      // perform insecure DNS lookups if `dns_over_tls_active` == true.
+      manager_options.additional_types_via_insecure_dns_enabled =
+          !dns_over_tls_active;
     } else {
       // Disable when android::GetDnsServersForNetwork fails.
       is_builtin_resolver_supported = false;
