@@ -1032,8 +1032,8 @@ def main():
       RmTree(compiler_rt_build_dir)
     os.makedirs(compiler_rt_build_dir)
     os.chdir(compiler_rt_build_dir)
-    if args.bootstrap:
-      # The bootstrap compiler produces 64-bit binaries by default.
+    if 'clang-cl' in cc:
+      # clang-cl produces 64-bit binaries by default.
       cflags += ['-m32']
       cxxflags += ['-m32']
 
