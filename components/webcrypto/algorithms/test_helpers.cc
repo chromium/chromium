@@ -439,7 +439,7 @@ absl::optional<base::DictionaryValue> GetJwkDictionary(
   std::string k_value;
   if (!Base64DecodeUrlSafe(value_string, &k_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(k) failed";
-  if (!base::LowerCaseEqualsASCII(
+  if (!base::EqualsCaseInsensitiveASCII(
           base::HexEncode(k_value.data(), k_value.size()), k_expected_hex)) {
     return ::testing::AssertionFailure() << "Expected 'k' to be "
                                          << k_expected_hex
@@ -470,7 +470,7 @@ absl::optional<base::DictionaryValue> GetJwkDictionary(
     return ::testing::AssertionFailure() << "'n' does not match the expected "
                                             "value";
   }
-  // TODO(padolph): LowerCaseEqualsASCII() does not work for above!
+  // TODO(padolph): EqualsCaseInsensitiveASCII() does not work for above!
 
   // ---- e
   if (!dict.value().GetString("e", &value_string))
@@ -478,7 +478,7 @@ absl::optional<base::DictionaryValue> GetJwkDictionary(
   std::string e_value;
   if (!Base64DecodeUrlSafe(value_string, &e_value))
     return ::testing::AssertionFailure() << "Base64DecodeUrlSafe(e) failed";
-  if (!base::LowerCaseEqualsASCII(
+  if (!base::EqualsCaseInsensitiveASCII(
           base::HexEncode(e_value.data(), e_value.size()), e_expected_hex)) {
     return ::testing::AssertionFailure() << "Expected 'e' to be "
                                          << e_expected_hex
