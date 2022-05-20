@@ -6196,11 +6196,11 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kRootWebArea: {
       DCHECK(GetNode());
       const Document& document = GetNode()->GetDocument();
-      bool is_main_frame =
-          document.GetFrame() && document.GetFrame()->IsMainFrame();
-      bool is_inside_portal =
-          document.GetPage() && document.GetPage()->InsidePortal();
-      return is_inside_portal && is_main_frame;
+      bool is_portal_main_frame =
+          document.GetFrame() && document.GetFrame()->IsMainFrame() &&
+          !document.GetFrame()->IsFencedFrameRoot() && document.GetPage() &&
+          document.GetPage()->InsidePortal();
+      return is_portal_main_frame;
     }
 
     case ax::mojom::blink::Role::kCaret:
