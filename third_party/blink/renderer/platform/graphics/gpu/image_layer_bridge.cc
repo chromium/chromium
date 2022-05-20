@@ -96,7 +96,6 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
 
   image_ = std::move(image);
   if (image_) {
-    LOG(ERROR) << "Image Is texture-backed:" << image_->IsTextureBacked();
     if (opacity_mode_ == kNonOpaque) {
       layer_->SetContentsOpaque(image_->CurrentFrameKnownToBeOpaque());
       layer_->SetBlendBackgroundColor(!image_->CurrentFrameKnownToBeOpaque());
