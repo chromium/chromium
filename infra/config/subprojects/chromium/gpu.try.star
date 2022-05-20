@@ -84,6 +84,9 @@ gpu_android_builder(
 gpu_android_builder(
     name = "gpu-try-android-m-nexus-5x-64",
     pool = "luci.chromium.gpu.android.nexus5x.try",
+    mirrors = [
+        "ci/Android Release (Nexus 5X)",
+    ],
 )
 
 def gpu_chromeos_builder(*, name, **kwargs):
