@@ -455,7 +455,7 @@ struct FileChange {
 };
 
 // Definition of the search request sent to DriveFS.
-// Next MinVersion: 2
+// Next MinVersion: 3
 struct QueryParameters {
   // Where this request should go to.
   enum QuerySource {
@@ -495,7 +495,7 @@ struct QueryParameters {
   // Results must be only from shared with me documents.
   bool shared_with_me = false;
 
-  // Results must be only from available localy on the device. Works only
+  // Results must be only from available locally on the device. Works only
   // with |kLocalOnly|.
   bool available_offline = false;
 
@@ -505,6 +505,11 @@ struct QueryParameters {
 
   // The kind of query to perform.
   [MinVersion=1] QueryKind query_kind = kRegular;
+
+  // Search for documents whose mime types match any of the string in the array.
+  // Note: this field is preferred to "mime_type" field above, when processing
+  // the query, the "mime_type" will be merged into this "mime_types" field.
+  [MinVersion=2] array<string>? mime_types;
 };
 
 // TODO(crbug.com/896777): Put this inside QueryParameters once linked bug is

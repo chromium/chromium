@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/fileapi/recent_drive_source.h"
 
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "ui/file_manager/file_types_data.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -78,6 +80,14 @@ void RecentDriveSource::GetRecentFiles(Params params) {
     case FileType::kVideo:
       query_params->mime_type = kVideoMimeType;
       break;
+    case FileType::kDocument: {
+      std::vector<std::string> doc_mime_types{
+          std::make_move_iterator(file_types_data::kDocumentMIMETypes.begin()),
+          std::make_move_iterator(file_types_data::kDocumentMIMETypes.end()),
+      };
+      query_params->mime_types = std::move(doc_mime_types);
+      break;
+    }
     default:
       // Leave the mime_type null to query all files.
       break;

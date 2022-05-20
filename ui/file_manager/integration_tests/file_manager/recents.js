@@ -525,9 +525,10 @@ testcase.recentDocumentsDownloads = async () => {
 testcase.recentDocumentsDownloadsAndDrive = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT],
-      [RECENTLY_MODIFIED_DOCUMENT]);
+      [RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_VIDEO]);
   // RECENTLY_MODIFIED_DOCUMENT exists in both local and drive folder, the
-  // file will appear twice in the result.
+  // file will appear twice in the result. RECENTLY_MODIFIED_VIDEO won't
+  // be included because it's not a Document.
   await verifyRecentDocuments(
       appId, [RECENTLY_MODIFIED_DOCUMENT, RECENTLY_MODIFIED_DOCUMENT]);
 };
