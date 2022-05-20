@@ -5,12 +5,15 @@
 #include "ui/ozone/platform/wayland/test/mock_zaura_shell.h"
 
 #include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_output.h"
+#include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 
 namespace wl {
 
 namespace {
 
-constexpr uint32_t kZAuraShellVersion = 26;
+constexpr uint32_t kZAuraShellVersion = 32;
+constexpr uint32_t kZAuraOutputVersion = 32;
 
 void GetAuraSurface(wl_client* client,
                     wl_resource* resource,
@@ -20,7 +23,12 @@ void GetAuraSurface(wl_client* client,
 void GetAuraOutput(wl_client* client,
                    wl_resource* resource,
                    uint32_t id,
-                   wl_resource* output_resource) {}
+                   wl_resource* output_resource) {
+  wl_resource* zaura_output_resource = CreateResourceWithImpl<TestZAuraOutput>(
+      client, &zaura_output_interface, kZAuraOutputVersion, nullptr, id);
+  auto* output = GetUserDataAs<TestOutput>(output_resource);
+  output->SetAuraOutput(GetUserDataAs<TestZAuraOutput>(zaura_output_resource));
+}
 
 void SurfaceSubmissionInPixelCoordinates(wl_client* client,
                                          wl_resource* resource) {}

@@ -6,6 +6,7 @@
 
 #include <aura-shell-server-protocol.h>
 
+#include <sys/socket.h>
 #include <memory>
 
 #include "ash/session/session_controller_impl.h"
@@ -400,6 +401,41 @@ TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToImmersive) {
   EXPECT_CALL(delegate, SetUseImmersiveForFullscreen(true));
 
   aura_surface().SetFullscreenMode(ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE);
+}
+
+class MockAuraOutput : public AuraOutput {
+ public:
+  using AuraOutput::AuraOutput;
+
+  MOCK_METHOD(void, SendInsets, (const gfx::Insets&), (override));
+};
+
+using ZAuraOutputTest = test::ExoTestBase;
+
+TEST_F(ZAuraOutputTest, SendInsets) {
+  int fds[2];
+  ASSERT_EQ(
+      socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, /*protocol=*/0, fds), 0);
+  wl_display* wayland_display = wl_display_create();
+  wl_client* client = wl_client_create(wayland_display, fds[0]);
+  wl_resource* resource = wl_resource_create(
+      client, &zaura_output_interface, ZAURA_OUTPUT_INSETS_SINCE_VERSION, 0);
+
+  MockAuraOutput mock_aura_output(resource);
+
+  UpdateDisplay("800x600");
+  display::Display display =
+      display_manager()->GetDisplayForId(display_manager()->first_display_id());
+  const gfx::Rect initial_bounds{800, 600};
+  EXPECT_EQ(display.bounds(), initial_bounds);
+  const gfx::Rect new_work_area{10, 20, 500, 400};
+  EXPECT_NE(display.work_area(), new_work_area);
+  display.set_work_area(new_work_area);
+
+  const gfx::Insets expected_insets = initial_bounds.InsetsFrom(new_work_area);
+  EXPECT_CALL(mock_aura_output, SendInsets(expected_insets)).Times(1);
+  mock_aura_output.SendDisplayMetrics(
+      display, display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
 }
 
 }  // namespace wayland

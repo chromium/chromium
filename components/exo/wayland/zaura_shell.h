@@ -10,6 +10,8 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
+#include "components/exo/wayland/wayland_display_observer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -24,7 +26,7 @@ class ShellSurfaceBase;
 namespace wayland {
 class SerialTracker;
 
-constexpr uint32_t kZAuraShellVersion = 31;
+constexpr uint32_t kZAuraShellVersion = 32;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -146,6 +148,26 @@ class AuraPopup {
 
  private:
   ShellSurfaceBase* shell_surface_;
+};
+
+class AuraOutput : public WaylandDisplayObserver {
+ public:
+  explicit AuraOutput(wl_resource* resource);
+
+  AuraOutput(const AuraOutput&) = delete;
+  AuraOutput& operator=(const AuraOutput&) = delete;
+
+  ~AuraOutput() override;
+
+  // Overridden from WaylandDisplayObserver:
+  bool SendDisplayMetrics(const display::Display& display,
+                          uint32_t changed_metrics) override;
+
+ protected:
+  virtual void SendInsets(const gfx::Insets& insets);
+
+ private:
+  wl_resource* const resource_;
 };
 
 }  // namespace wayland

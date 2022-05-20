@@ -11,6 +11,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
 
@@ -45,6 +46,10 @@ void WaylandOutputManager::AddWaylandOutput(uint32_t output_id,
   wayland_output->Initialize(this);
   if (connection_->xdg_output_manager_v1())
     wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
+  if (connection_->zaura_shell()) {
+    wayland_output->InitializeZAuraOutput(
+        connection_->zaura_shell()->wl_object());
+  }
   DCHECK(!wayland_output->is_ready());
 
   output_list_[output_id] = std::move(wayland_output);
@@ -74,6 +79,14 @@ void WaylandOutputManager::InitializeAllXdgOutputs() {
     output.second->InitializeXdgOutput(connection_->xdg_output_manager_v1());
 }
 
+void WaylandOutputManager::InitializeAllZAuraOutputs() {
+  DCHECK(connection_->zaura_shell());
+  for (const auto& output : output_list_) {
+    output.second->InitializeZAuraOutput(
+        connection_->zaura_shell()->wl_object());
+  }
+}
+
 std::unique_ptr<WaylandScreen> WaylandOutputManager::CreateWaylandScreen() {
   auto wayland_screen = std::make_unique<WaylandScreen>(connection_);
   wayland_screen_ = wayland_screen->GetWeakPtr();
@@ -94,7 +107,8 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
     if (output.second->is_ready()) {
       screen->OnOutputAddedOrUpdated(
           output.second->output_id(), output.second->bounds(),
-          output.second->scale_factor(), output.second->transform());
+          output.second->insets(), output.second->scale_factor(),
+          output.second->transform());
     }
   }
 }
@@ -115,10 +129,11 @@ WaylandOutput* WaylandOutputManager::GetPrimaryOutput() const {
 
 void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Rect& new_bounds,
+                                                 const gfx::Insets& insets,
                                                  float scale_factor,
                                                  int32_t transform) {
   if (wayland_screen_) {
-    wayland_screen_->OnOutputAddedOrUpdated(output_id, new_bounds,
+    wayland_screen_->OnOutputAddedOrUpdated(output_id, new_bounds, insets,
                                             scale_factor, transform);
   }
   auto* wayland_window_manager = connection_->wayland_window_manager();

@@ -155,7 +155,7 @@ void RegistryHandler(void* data,
         wl_registry_bind(registry, id, &wp_presentation_interface, 1)));
   } else if (strcmp(interface, "zaura_shell") == 0) {
     globals->aura_shell.reset(static_cast<zaura_shell*>(
-        wl_registry_bind(registry, id, &zaura_shell_interface, 14)));
+        wl_registry_bind(registry, id, &zaura_shell_interface, 32)));
   } else if (strcmp(interface, "zwp_linux_dmabuf_v1") == 0) {
     globals->linux_dmabuf.reset(static_cast<zwp_linux_dmabuf_v1*>(
         wl_registry_bind(registry, id, &zwp_linux_dmabuf_v1_interface, 2)));
@@ -923,6 +923,14 @@ void ClientBase::HandleDmabufModifier(
     uint32_t modifier_hi,
     uint32_t modifier_lo) {}
 
+////////////////////////////////////////////////////////////////////////////////
+// zaura_output_listener
+
+void ClientBase::HandleInsets(const gfx::Insets& insets) {}
+
+////////////////////////////////////////////////////////////////////////////////
+// helper functions
+
 std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     const gfx::Size& size,
     int32_t drm_format,
@@ -1254,7 +1262,13 @@ void ClientBase::SetupAuraShellIfAvailable() {
       [](void* data, struct zaura_shell* zaura_shell, uint32_t layout_mode) {},
       [](void* data, struct zaura_shell* zaura_shell, uint32_t id) {
         CastToClientBase(data)->bug_fix_ids_.insert(id);
-      }};
+      },
+      [](void* data, struct zaura_shell* zaura_shell,
+         struct wl_array* desk_names) {},
+      [](void* data, struct zaura_shell* zaura_shell,
+         int32_t active_desk_index) {},
+      [](void* data, struct zaura_shell* zaura_shell,
+         struct wl_surface* gained_active, struct wl_surface* lost_active) {}};
   zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
                            this);
 
@@ -1266,6 +1280,23 @@ void ClientBase::SetupAuraShellIfAvailable() {
   }
 
   zaura_surface_set_frame(aura_surface.get(), ZAURA_SURFACE_FRAME_TYPE_NORMAL);
+
+  static zaura_output_listener kAuraOutputListener = {
+      [](void* data, struct zaura_output* zaura_output, uint32_t flags,
+         uint32_t scale) {},
+      [](void* data, struct zaura_output* zaura_output, uint32_t connection) {},
+      [](void* data, struct zaura_output* zaura_output, uint32_t scale) {},
+      [](void* data, struct zaura_output* zaura_output, int32_t top,
+         int32_t left, int32_t bottom, int32_t right) {
+        CastToClientBase(data)->HandleInsets(
+            gfx::Insets::TLBR(top, left, bottom, right));
+      },
+  };
+
+  std::unique_ptr<zaura_output> aura_output(zaura_shell_get_aura_output(
+      globals_.aura_shell.get(), globals_.output.get()));
+  zaura_output_add_listener(aura_output.get(), &kAuraOutputListener, this);
+  globals_.aura_output = std::move(aura_output);
 }
 
 void ClientBase::SetupPointerStylus() {
