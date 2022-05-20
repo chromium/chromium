@@ -11,9 +11,15 @@ source_set("window_management") {
     "window_management_impl.cc",
     "window_management_impl.h",
   ]
+
+  # Enable the "exit_time_destructors" warning here to avoid accidentally
+  # adding exit time destructors and because the flag is not enabled by default.
+  # TODO(http://crbug.com/101600):  Remove once exit_time_destructors is enabled
+  # by default.
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//ash",
-    "//chrome/browser/ash/system_extensions:system_extensions_group",
     "//chrome/browser/profiles:profile",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/services/app_service/public/mojom",

@@ -6,14 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-group("system_extensions_group") {
-  # Enable the "exit_time_destructors" warning here to avoid accidentally
-  # adding exit time destructors and because the flag is not enabled by default.
-  # TODO(http://crbug.com/101600):  Remove once exit_time_destructors is enabled
-  # by default.
-  public_configs = [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
 source_set("system_extensions") {
   sources = [
     "system_extension.cc",
@@ -37,8 +29,14 @@ source_set("system_extensions") {
     "system_extensions_webui_config.cc",
     "system_extensions_webui_config.h",
   ]
+
+  # Enable the "exit_time_destructors" warning here to avoid accidentally
+  # adding exit time destructors and because the flag is not enabled by default.
+  # TODO(http://crbug.com/101600):  Remove once exit_time_destructors is enabled
+  # by default.
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
-    ":system_extensions_group",
     "//ash/constants",
     "//ash/webui/system_extensions_internals_ui/mojom",
     "//base",
