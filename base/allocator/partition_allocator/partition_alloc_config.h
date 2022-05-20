@@ -30,9 +30,11 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_STARSCAN_NEON_SUPPORTED
 #endif
 
-#if 0
+#if BUILDFLAG(IS_IOS)
 // Use dynamically sized GigaCage. This allows to query the size at run-time,
-// before initialization, instead of using a hardcoded constexpr.
+// before initialization, instead of using a hardcoded constexpr. This is needed
+// on iOS because iOS test processes can't handle a large cage (see
+// crbug.com/1250788).
 #define PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE
 #endif
 
