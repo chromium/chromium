@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
@@ -30,12 +31,16 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest,
   PreinstalledWebAppsBrowserTest() {
     PreinstalledWebAppManager::SkipStartupForTesting();
     // Ignore any default app configs on disk.
-    PreinstalledWebAppManager::SetConfigDirForTesting(&empty_path_);
+    SetPreinstalledWebAppConfigDirForTesting(&empty_path_);
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
         [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
           return std::make_unique<FakeOsIntegrationManager>(
               profile, nullptr, nullptr, nullptr, nullptr);
         });
+  }
+
+  ~PreinstalledWebAppsBrowserTest() override {
+    SetPreinstalledWebAppConfigDirForTesting(nullptr);
   }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {

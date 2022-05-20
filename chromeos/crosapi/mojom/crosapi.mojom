@@ -567,8 +567,8 @@ enum MetricsReportingManaged {
 // future compatibility, to avoid assumptions about where on disk the directory
 // is located.
 //
-// Next version: 34
-// Next id: 9
+// Next version: 35
+// Next id: 11
 [Stable]
 struct DefaultPaths {
   // The default (non-configurable) directory for documents. For example,
@@ -606,6 +606,13 @@ struct DefaultPaths {
   // The default (non-configurable) directory for shared files. For example,
   // /home/chronos/u-<hash>/ShareCache.
   [MinVersion=33] mojo_base.mojom.FilePath? share_cache@8;
+
+  // The directory where default web app configs are stored.
+  [MinVersion=34] mojo_base.mojom.FilePath? preinstalled_web_app_config@9;
+
+  // The directory where additional web app configs are stored.
+  [MinVersion=34] mojo_base.mojom.FilePath?
+      preinstalled_web_app_extra_config@10;
 };
 
 // The device specific data needed in Lacros.

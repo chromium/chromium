@@ -117,14 +117,17 @@ void ChromeTestSuite::Initialize() {
   // specific path doesn't matter as long as it exists.
   CHECK(scoped_temp_dir_.CreateUniqueTempDir());
   base::FilePath temp_path = scoped_temp_dir_.GetPath();
-  chrome::SetLacrosDefaultPaths(/*documents_dir=*/temp_path,
-                                /*downloads_dir=*/temp_path,
-                                /*drivefs=*/base::FilePath(),
-                                /*removable_media_dir=*/base::FilePath(),
-                                /*android_files_dir=*/base::FilePath(),
-                                /*linux_files_dir=*/base::FilePath(),
-                                /*ash_resources_dir=*/base::FilePath(),
-                                /*share_cache_dir=*/temp_path);
+  chrome::SetLacrosDefaultPaths(
+      /*documents_dir=*/temp_path,
+      /*downloads_dir=*/temp_path,
+      /*drivefs=*/base::FilePath(),
+      /*removable_media_dir=*/base::FilePath(),
+      /*android_files_dir=*/base::FilePath(),
+      /*linux_files_dir=*/base::FilePath(),
+      /*ash_resources_dir=*/base::FilePath(),
+      /*share_cache_dir=*/temp_path,
+      /*preinstalled_web_app_config_dir=*/base::FilePath(),
+      /*preinstalled_web_app_extra_config_dir=*/base::FilePath());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

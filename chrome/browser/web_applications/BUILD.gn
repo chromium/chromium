@@ -97,6 +97,8 @@ source_set("web_applications") {
     "policy/web_app_settings_policy_handler.h",
     "preinstalled_app_install_features.cc",
     "preinstalled_app_install_features.h",
+    "preinstalled_web_app_config_utils.cc",
+    "preinstalled_web_app_config_utils.h",
     "preinstalled_web_app_manager.cc",
     "preinstalled_web_app_manager.h",
     "preinstalled_web_app_utils.cc",

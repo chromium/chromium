@@ -24,6 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -119,7 +120,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     }
     config_dir =
         config_dir.AppendASCII("web_app_default_apps").AppendASCII(test_dir);
-    PreinstalledWebAppManager::SetConfigDirForTesting(&config_dir);
+    SetPreinstalledWebAppConfigDirForTesting(&config_dir);
 
     auto preinstalled_web_app_manager =
         std::make_unique<PreinstalledWebAppManager>(profile);
@@ -139,7 +140,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
         }));
     run_loop.Run();
 
-    PreinstalledWebAppManager::SetConfigDirForTesting(nullptr);
+    SetPreinstalledWebAppConfigDirForTesting(nullptr);
 
     return result;
   }

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
@@ -218,7 +219,7 @@ class PreinstalledWebAppManagerBrowserTest
       const GURL& install_url,
       base::StringPiece app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
-    PreinstalledWebAppManager::SetConfigDirForTesting(&test_config_dir);
+    SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
 
     base::FilePath source_root_dir;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir));
@@ -255,7 +256,7 @@ class PreinstalledWebAppManagerBrowserTest
             }));
     sync_run_loop.Run();
 
-    PreinstalledWebAppManager::SetConfigDirForTesting(nullptr);
+    SetPreinstalledWebAppConfigDirForTesting(nullptr);
     PreinstalledWebAppManager::SetFileUtilsForTesting(nullptr);
     PreinstalledWebAppManager::SetConfigsForTesting(nullptr);
 
