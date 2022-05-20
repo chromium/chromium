@@ -693,6 +693,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_FOOTER_TITLE" desc="The title of the footer of the sections of Content Suggestions">
         More
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
+        Frequently Visited
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_READING_LIST" desc="The Reading List title on the new tab page [Length: 10em]">
         Reading List
       </message>
@@ -710,6 +713,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SETTING_TITLE" desc="The title of the settings to toggle the articles suggestions on the NTP on/off">
         Article Suggestions
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE" desc="The Shortcuts module title on the new tab page [Length: 10em]">
+        Shortcuts
       </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_SHOW" desc="The label in the header to show/uncollapse Content Suggestions [Length: 10em]">
         Show
