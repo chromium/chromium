@@ -452,6 +452,10 @@ export class CollectionsGrid extends PolymerElement {
         this.isImageTile_(item);
   }
 
+  private getTileAriaDisabled_(item: Tile|null): string {
+    return (!this.isSelectableTile_(item)).toString();
+  }
+
   /**
    * Make the text and background gradient visible again after the image has
    * finished loading. This is called for both on-load and on-error, as either

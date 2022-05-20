@@ -167,7 +167,7 @@
       </template>
       <template is="dom-if" if="[[isEmptyTile_(item)]]">
         <div tabindex$="[[tabIndex]]" role="button"
-            aria-disabled$="[[!isSelectableTile_(item)]]"
+            aria-disabled$="[[getTileAriaDisabled_(item)]]"
             class$="[[getClassForEmptyTile_(item)]]"
             managed$="[[isManagedTile_(item)]]"
             selectable$="[[isSelectableTile_(item)]]"
