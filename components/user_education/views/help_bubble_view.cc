@@ -26,7 +26,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -136,21 +136,21 @@ class MdIPHBubbleButton : public views::MdTextButton {
     // Prominent MD button does not have a border.
     // Override this method to draw a border.
     // Adapted from MdTextButton::UpdateBackgroundColor()
-    const auto* theme_provider = GetThemeProvider();
-    if (!theme_provider)
+    const auto* color_provider = GetColorProvider();
+    if (!color_provider)
       return;
-    SkColor background_color = theme_provider->GetColor(
+    SkColor background_color = color_provider->GetColor(
         is_default_button_
-            ? delegate_->GetHelpBubbleDefaultButtonBackgroundColor()
-            : delegate_->GetHelpBubbleBackgroundColor());
+            ? delegate_->GetHelpBubbleDefaultButtonBackgroundColorId()
+            : delegate_->GetHelpBubbleBackgroundColorId());
     if (GetState() == STATE_PRESSED) {
       background_color =
           GetNativeTheme()->GetSystemButtonPressedColor(background_color);
     }
-    const SkColor stroke_color = theme_provider->GetColor(
+    const SkColor stroke_color = color_provider->GetColor(
         is_default_button_
-            ? delegate_->GetHelpBubbleDefaultButtonBackgroundColor()
-            : delegate_->GetHelpBubbleButtonBorderColor());
+            ? delegate_->GetHelpBubbleDefaultButtonBackgroundColorId()
+            : delegate_->GetHelpBubbleButtonBorderColorId());
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
             background_color, stroke_color, GetCornerRadius())));
@@ -159,15 +159,15 @@ class MdIPHBubbleButton : public views::MdTextButton {
   void OnThemeChanged() override {
     views::MdTextButton::OnThemeChanged();
 
-    const auto* theme_provider = GetThemeProvider();
+    const auto* color_provider = GetColorProvider();
     const SkColor background_color =
-        theme_provider->GetColor(delegate_->GetHelpBubbleBackgroundColor());
+        color_provider->GetColor(delegate_->GetHelpBubbleBackgroundColorId());
     views::FocusRing::Get(this)->SetColor(background_color);
 
-    const SkColor foreground_color = theme_provider->GetColor(
+    const SkColor foreground_color = color_provider->GetColor(
         is_default_button_
-            ? delegate_->GetHelpBubbleDefaultButtonForegroundColor()
-            : delegate_->GetHelpBubbleForegroundColor());
+            ? delegate_->GetHelpBubbleDefaultButtonForegroundColorId()
+            : delegate_->GetHelpBubbleForegroundColorId());
     SetEnabledTextColors(foreground_color);
 
     // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
@@ -199,25 +199,25 @@ class ClosePromoButton : public views::ImageButton {
         this,
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
     SetAccessibleName(accessible_name);
+
+    constexpr int kIconSize = 16;
+    SetImageModel(views::ImageButton::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      views::kIcCloseIcon,
+                      delegate_->GetHelpBubbleForegroundColorId(), kIconSize));
+
+    constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;
+    views::FocusRing::Get(this)->SetHaloThickness(
+        kCloseButtonFocusRingHaloThickness);
   }
 
   void OnThemeChanged() override {
     views::ImageButton::OnThemeChanged();
-
-    constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;
-
-    const auto* theme_provider = GetThemeProvider();
-    SetImage(
-        views::ImageButton::STATE_NORMAL,
-        gfx::CreateVectorIcon(views::kIcCloseIcon, 16,
-                              theme_provider->GetColor(
-                                  delegate_->GetHelpBubbleForegroundColor())));
-    views::InkDrop::Get(this)->SetBaseColor(theme_provider->GetColor(
-        delegate_->GetHelpBubbleCloseButtonInkDropColor()));
+    const auto* color_provider = GetColorProvider();
+    views::InkDrop::Get(this)->SetBaseColor(color_provider->GetColor(
+        delegate_->GetHelpBubbleCloseButtonInkDropColorId()));
     views::FocusRing::Get(this)->SetColor(
-        theme_provider->GetColor(delegate_->GetHelpBubbleForegroundColor()));
-    views::FocusRing::Get(this)->SetHaloThickness(
-        kCloseButtonFocusRingHaloThickness);
+        color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId()));
   }
 
  private:
@@ -253,8 +253,8 @@ class DotView : public views::View {
     const gfx::PointF center_point = local_bounds.CenterPoint();
     const float radius = (size_.width() - kStrokeWidth) / 2.0f;
 
-    const SkColor color =
-        GetThemeProvider()->GetColor(delegate_->GetHelpBubbleForegroundColor());
+    const SkColor color = GetColorProvider()->GetColor(
+        delegate_->GetHelpBubbleForegroundColorId());
     if (should_fill_) {
       cc::PaintFlags fill_flags;
       fill_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -655,13 +655,13 @@ void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
 void HelpBubbleView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
-  const auto* theme_provider = GetThemeProvider();
+  const auto* color_provider = GetColorProvider();
   const SkColor background_color =
-      theme_provider->GetColor(delegate_->GetHelpBubbleBackgroundColor());
+      color_provider->GetColor(delegate_->GetHelpBubbleBackgroundColorId());
   set_color(background_color);
 
   const SkColor foreground_color =
-      theme_provider->GetColor(delegate_->GetHelpBubbleForegroundColor());
+      color_provider->GetColor(delegate_->GetHelpBubbleForegroundColorId());
   if (icon_view_) {
     icon_view_->SetBackground(views::CreateRoundedRectBackground(
         foreground_color, icon_view_->GetPreferredSize().height() / 2));

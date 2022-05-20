@@ -50,13 +50,18 @@ class TestDelegate : public HelpBubbleDelegate {
 
   // These methods return color codes that will be handled by the app's theming
   // system.
-  int GetHelpBubbleBackgroundColor() const override { return 0; }
-  int GetHelpBubbleForegroundColor() const override { return 0; }
-  int GetHelpBubbleDefaultButtonBackgroundColor() const override { return 0; }
-  int GetHelpBubbleDefaultButtonForegroundColor() const override { return 0; }
-  int GetHelpBubbleButtonBorderColor() const override { return 0; }
-  int GetHelpBubbleCloseButtonInkDropColor() const override { return 0; }
   ui::ColorId GetHelpBubbleBackgroundColorId() const override { return 0; }
+  ui::ColorId GetHelpBubbleForegroundColorId() const override { return 0; }
+  ui::ColorId GetHelpBubbleDefaultButtonBackgroundColorId() const override {
+    return 0;
+  }
+  ui::ColorId GetHelpBubbleDefaultButtonForegroundColorId() const override {
+    return 0;
+  }
+  ui::ColorId GetHelpBubbleButtonBorderColorId() const override { return 0; }
+  ui::ColorId GetHelpBubbleCloseButtonInkDropColorId() const override {
+    return 0;
+  }
 };
 
 // Fake theme provider. There's a similar TestThemeProvider in chrome/test but
