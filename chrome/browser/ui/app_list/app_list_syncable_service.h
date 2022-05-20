@@ -70,12 +70,11 @@ class AppListSyncableService : public syncer::SyncableService,
     syncer::StringOrdinal item_pin_ordinal;
     ash::IconColor item_color;
 
-    // Indicates whether the item represents a persistent folder - i.e. a folder
-    // that was not created explicitly by a user, and which should not be
-    // removed if it's left with a single child.
+    // Indicates whether the item represents a system-created folder - i.e. a
+    // folder that was not created explicitly by a user.
     // Unlike other properties, this value is not persisted to local state, nor
     // synced. It reflects the associated ChromeAppListItem state.
-    bool is_persistent_folder = false;
+    bool is_system_folder = false;
 
     // Whether the `item_ordinal` should be fixed after initial sync data is
     // received during a user session.

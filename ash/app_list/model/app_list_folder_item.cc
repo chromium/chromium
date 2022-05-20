@@ -96,16 +96,16 @@ void AppListFolderItem::ItemIsNewInstallChanged() {
   UpdateIsNewInstall();
 }
 
-bool AppListFolderItem::IsPersistent() const {
-  return GetMetadata()->is_persistent;
+bool AppListFolderItem::IsSystemFolder() const {
+  return GetMetadata()->is_system_folder;
 }
 
-void AppListFolderItem::SetIsPersistent(bool is_persistent) {
-  metadata()->is_persistent = is_persistent;
+void AppListFolderItem::SetIsSystemFolder(bool is_system_folder) {
+  metadata()->is_system_folder = is_system_folder;
 }
 
 bool AppListFolderItem::ShouldAutoRemove() const {
-  return ChildItemCount() <= (IsPersistent() ? 0u : 1u);
+  return ChildItemCount() <= (IsSystemFolder() ? 0u : 1u);
 }
 
 std::string AppListFolderItem::GenerateId() {

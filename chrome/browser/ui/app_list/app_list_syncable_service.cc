@@ -245,7 +245,7 @@ bool IsSystemCreatedSyncFolder(
     const AppListSyncableService::SyncItem& folder_item) {
   if (folder_item.item_type != sync_pb::AppListSpecifics::TYPE_FOLDER)
     return false;
-  return folder_item.is_persistent_folder;
+  return folder_item.is_system_folder;
 }
 
 // Updates `target` if `target` is different from a valid new value. Returns
@@ -583,7 +583,7 @@ const AppListSyncableService::SyncItem* AppListSyncableService::GetSyncItem(
   auto iter = sync_items_.find(id);
   if (iter != sync_items_.end())
     return iter->second.get();
-  return NULL;
+  return nullptr;
 }
 
 void AppListSyncableService::AppListSyncableService::AddPageBreakItem(
@@ -808,7 +808,7 @@ AppListSyncableService::SyncItem* AppListSyncableService::FindOrAddSyncItem(
   const std::string& item_id = app_item->id();
   if (item_id.empty()) {
     LOG(ERROR) << "ChromeAppListItem item with empty ID";
-    return NULL;
+    return nullptr;
   }
   SyncItem* sync_item = FindSyncItem(item_id);
   if (sync_item) {
@@ -820,7 +820,7 @@ AppListSyncableService::SyncItem* AppListSyncableService::FindOrAddSyncItem(
     }
 
     if (RemoveDefaultApp(app_item, sync_item))
-      return NULL;
+      return nullptr;
 
     // Fall through. The REMOVE_DEFAULT_APP entry has been deleted, now a new
     // App entry can be added.
@@ -1777,9 +1777,9 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
     changed = true;
   }
 
-  if (sync_item->is_persistent_folder != app_item->is_persistent()) {
-    DCHECK(!sync_item->is_persistent_folder);
-    sync_item->is_persistent_folder = app_item->is_persistent();
+  if (sync_item->is_system_folder != app_item->is_system_folder()) {
+    DCHECK(!sync_item->is_system_folder);
+    sync_item->is_system_folder = app_item->is_system_folder();
     // Do not mark the item as changed - the persistent value is not expected to
     // be persisted to local state, nor synced. Also, it's expected to be set as
     // part of folder item creation flow, so no further processing should be
@@ -1829,7 +1829,7 @@ void AppListSyncableService::EnsureOemFolderExists() {
   auto oem_folder = std::make_unique<ChromeAppListItem>(profile_, folder_id,
                                                         model_updater_.get());
   oem_folder->SetChromeName(oem_folder_name_);
-  oem_folder->SetIsPersistent(true);
+  oem_folder->SetIsSystemFolder(true);
   oem_folder->SetChromeIsFolder(true);
 
   SyncItem* current_sync_data = FindSyncItem(folder_id);
@@ -1865,7 +1865,7 @@ void AppListSyncableService::MaybeAddOrUpdateCrostiniFolderSyncData() {
                                     model_updater_.get());
   crostini_folder.SetChromeName(
       l10n_util::GetStringUTF8(IDS_APP_LIST_CROSTINI_DEFAULT_FOLDER_NAME));
-  crostini_folder.SetIsPersistent(true);
+  crostini_folder.SetIsSystemFolder(true);
   crostini_folder.SetChromeIsFolder(true);
 
   // Calculate the Crostini folder's position.
@@ -1913,7 +1913,7 @@ bool AppListSyncableService::MaybeCreateFolderBeforeAddingItem(
   new_folder_item->SetMetadata(
       app_list::GenerateItemMetadataFromSyncItem(*folder_sync_item));
   if (IsSystemCreatedSyncFolder(*folder_sync_item))
-    new_folder_item->SetIsPersistent(true);
+    new_folder_item->SetIsSystemFolder(true);
   model_updater_->AddItem(std::move(new_folder_item));
   return true;
 }

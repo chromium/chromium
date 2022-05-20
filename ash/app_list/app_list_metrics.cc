@@ -289,7 +289,7 @@ void RecordPeriodicAppListMetrics() {
       // Ignore the OEM folder and the "Linux apps" folder because those folders
       // are automatically created. The following metrics are trying to measure
       // how often users engage with folders that they created themselves.
-      if (folder->IsPersistent())
+      if (folder->IsSystemFolder())
         continue;
       number_of_apps_in_non_system_folders += folder->item_list()->item_count();
       number_of_non_system_folders++;

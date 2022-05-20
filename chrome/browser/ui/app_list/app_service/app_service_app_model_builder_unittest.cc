@@ -115,8 +115,8 @@ MATCHER_P3(IsChromeApp, id, name, folder_id, "") {
 }
 
 // Matches a chrome app item if its persistence field is set to true.
-MATCHER(IsPersistentApp, "") {
-  return arg->is_persistent();
+MATCHER(IsSystemFolder, "") {
+  return arg->is_system_folder();
 }
 
 // Get a set of all apps in |model|.
@@ -921,7 +921,7 @@ TEST_F(CrostiniAppTest, CreatesFolder) {
                   IsChromeApp(_, kDummyApp2Name, ash::kCrostiniFolderId),
                   testing::AllOf(
                       IsChromeApp(ash::kCrostiniFolderId, kRootFolderName, ""),
-                      IsPersistentApp())));
+                      IsSystemFolder())));
 }
 
 // Test that the Terminal app is removed when Crostini is disabled.

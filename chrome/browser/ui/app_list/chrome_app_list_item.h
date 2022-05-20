@@ -63,7 +63,7 @@ class ChromeAppListItem {
   const std::string& name() const { return metadata_->name; }
   ash::AppStatus app_status() const { return metadata_->app_status; }
   bool is_folder() const { return metadata_->is_folder; }
-  bool is_persistent() const { return metadata_->is_persistent; }
+  bool is_system_folder() const { return metadata_->is_system_folder; }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
   const ash::IconColor& icon_color() const { return metadata_->icon_color; }
   bool is_page_break() const { return metadata_->is_page_break; }
@@ -83,7 +83,7 @@ class ChromeAppListItem {
   void SetAppStatus(ash::AppStatus app_status);
   void SetFolderId(const std::string& folder_id);
   void SetIsPageBreak(bool is_page_break);
-  void SetIsPersistent(bool is_persistent);
+  void SetIsSystemFolder(bool is_system_folder);
   void SetIsNewInstall(bool is_new_install);
 
   // The following methods won't make changes to Ash and it should be called

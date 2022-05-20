@@ -411,13 +411,13 @@ void ChromeAppListModelUpdater::SetItemPosition(
   model_.SetItemMetadata(id, std::move(data));
 }
 
-void ChromeAppListModelUpdater::SetItemIsPersistent(const std::string& id,
-                                                    bool is_persistent) {
+void ChromeAppListModelUpdater::SetItemIsSystemFolder(const std::string& id,
+                                                      bool is_system_folder) {
   ash::AppListItem* item = model_.FindItem(id);
   if (!item)
     return;
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
-  data->is_persistent = is_persistent;
+  data->is_system_folder = is_system_folder;
   model_.SetItemMetadata(id, std::move(data));
 }
 

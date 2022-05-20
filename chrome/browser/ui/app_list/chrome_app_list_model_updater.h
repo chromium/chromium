@@ -68,7 +68,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void SetAppStatus(const std::string& id, ash::AppStatus app_status) override;
   void SetItemPosition(const std::string& id,
                        const syncer::StringOrdinal& new_position) override;
-  void SetItemIsPersistent(const std::string& id, bool is_persistent) override;
+  void SetItemIsSystemFolder(const std::string& id,
+                             bool is_system_folder) override;
   void SetIsNewInstall(const std::string& id, bool is_new_install) override;
   void SetItemFolderId(const std::string& id,
                        const std::string& folder_id) override;

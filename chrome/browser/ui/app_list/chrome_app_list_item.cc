@@ -209,11 +209,11 @@ void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {
   metadata_->position = position;
 }
 
-void ChromeAppListItem::SetIsPersistent(bool is_persistent) {
-  metadata_->is_persistent = is_persistent;
+void ChromeAppListItem::SetIsSystemFolder(bool is_system_folder) {
+  metadata_->is_system_folder = is_system_folder;
   AppListModelUpdater* updater = model_updater();
   if (updater)
-    updater->SetItemIsPersistent(id(), is_persistent);
+    updater->SetItemIsSystemFolder(id(), is_system_folder);
 }
 
 void ChromeAppListItem::SetIsPageBreak(bool is_page_break) {

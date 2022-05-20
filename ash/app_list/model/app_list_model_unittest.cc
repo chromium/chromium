@@ -582,12 +582,12 @@ TEST_F(AppListModelFolderTest, UninstallFolderItems) {
   EXPECT_EQ("folder1", GetModelContents());
 }
 
-TEST_F(AppListModelFolderTest, UninstallPersistentFolderItem) {
+TEST_F(AppListModelFolderTest, UninstallSystemFolderItem) {
   AppListItem* item0 = model_->CreateAndAddItem("Item 0");
   AppListItem* item1 = model_->CreateAndAddItem("Item 1");
   AppListFolderItem* folder1 = static_cast<AppListFolderItem*>(
       model_->AddItem(new AppListFolderItem("folder1", model_.get())));
-  folder1->SetIsPersistent(true);
+  folder1->SetIsSystemFolder(true);
   EXPECT_EQ("Item 0,Item 1,folder1", GetModelContents());
 
   // Move all items to folder1.

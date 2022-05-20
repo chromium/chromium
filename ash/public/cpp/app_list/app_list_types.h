@@ -131,8 +131,12 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   std::string folder_id;           // Id of folder where the item resides.
   syncer::StringOrdinal position;  // Position of the item.
   bool is_folder = false;          // Whether this item is a folder.
-  bool is_persistent = false;  // Whether this folder is allowed to contain only
-                               // 1 item.
+
+  // Whether the folder was system created (e.g. the OEM folder or Linux apps
+  // folder). Historically (pre-2022) these folders were the only ones allowed
+  // to contain a single item.
+  bool is_system_folder = false;
+
   gfx::ImageSkia icon;         // The icon of this item.
   bool is_page_break = false;  // Whether this item is a "page break" item.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.

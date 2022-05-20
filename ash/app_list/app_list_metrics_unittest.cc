@@ -900,12 +900,12 @@ TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_OneRegularFolder) {
                    "Apps.AppList.NumberOfAppsInNonSystemFolders", 2));
 }
 
-TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_PersistentFolder) {
+TEST_F(AppListPeriodicMetricsTest, RecordFolderMetrics_SystemFolder) {
   base::HistogramTester histogram;
   AppListFolderItem* folder =
       GetAppListTestHelper()->model()->CreateSingleItemFolder("folder_id",
                                                               "item_id");
-  folder->SetIsPersistent(true);
+  folder->SetIsSystemFolder(true);
 
   RecordPeriodicAppListMetrics();
 
