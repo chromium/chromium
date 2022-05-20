@@ -142,14 +142,6 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Returns true if we are showing views based login screen.
-     * @return {boolean}
-     */
-    get showingViewsLogin() {
-      return this.displayType_ == DISPLAY_TYPE.GAIA_SIGNIN;
-    }
-
-    /**
      * Sets the current height of the shelf area.
      * @param {number} height current shelf height
      */
@@ -429,15 +421,6 @@ cr.define('cr.ui.login', function() {
                 currentScreen.onSetupDemoModeGesture();
               }
             });
-      }
-    }
-
-    /**
-     * Prepares screens to use in login display.
-     */
-    prepareForLoginDisplay_() {
-      if (this.showingViewsLogin) {
-        $('top-header-bar').hidden = true;
       }
     }
 

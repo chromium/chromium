@@ -98,7 +98,6 @@ cr.define('cr.ui', function() {
         document.body.classList.add('oobe-display');
       } else {
         document.body.classList.remove('oobe-display');
-        Oobe.getInstance().prepareForLoginDisplay_();
       }
     }
 

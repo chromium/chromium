@@ -221,7 +221,12 @@ Styles related to the `md-screen-container`
 /* Styles related to the `top_header_bar` */
 
 #top-header-bar {
+  display: none;
   z-index: 1;
+}
+
+.oobe-display #top-header-bar {
+  display: block;
 }
 
 .top-header-bar-strip {
