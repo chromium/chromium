@@ -54,6 +54,8 @@ class WaylandSeat : public wl::GlobalObjectRegistrar<WaylandSeat> {
   static void Capabilities(void* data, wl_seat* seat, uint32_t capabilities);
   static void Name(void* data, wl_seat* seat, const char* name);
 
+  void OnCapabilities(void* data, wl_seat* seat, uint32_t capabilities);
+
   // Wayland object wrapped by this class.
   wl::Object<wl_seat> obj_;
 
