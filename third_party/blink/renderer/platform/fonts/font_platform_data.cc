@@ -49,15 +49,6 @@ FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
 
 FontPlatformData::FontPlatformData() = default;
 
-FontPlatformData::FontPlatformData(float size,
-                                   bool synthetic_bold,
-                                   bool synthetic_italic,
-                                   FontOrientation orientation)
-    : text_size_(size),
-      synthetic_bold_(synthetic_bold),
-      synthetic_italic_(synthetic_italic),
-      orientation_(orientation) {}
-
 FontPlatformData::FontPlatformData(const FontPlatformData& source)
     : typeface_(source.typeface_),
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)

@@ -73,10 +73,6 @@ class PLATFORM_EXPORT FontPlatformData {
   FontPlatformData(WTF::HashTableDeletedValueType);
   FontPlatformData();
   FontPlatformData(const FontPlatformData&);
-  FontPlatformData(float size,
-                   bool synthetic_bold,
-                   bool synthetic_italic,
-                   FontOrientation = FontOrientation::kHorizontal);
   FontPlatformData(const FontPlatformData& src, float text_size);
   FontPlatformData(const sk_sp<SkTypeface>,
                    const std::string& name,
