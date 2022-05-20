@@ -259,7 +259,11 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 7 * time.hour,
-    tree_closing = True,
+    # The 'All' version of this builder below provides the same build coverage
+    # but cycles much faster due to beefier machine resources. So any regression
+    # that this bot would close the tree on would always be caught by the 'All'
+    # bot much faster.
+    tree_closing = False,
 )
 
 # We want to confirm that we can compile everything.
@@ -272,6 +276,8 @@ ci.builder(
 # History: crbug.com/1246468
 ci.builder(
     name = "Android arm64 Builder All Targets (dbg)",
+    builderless = False,
+    cores = None,
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -307,6 +313,8 @@ ci.builder(
 ci.builder(
     name = "Android x64 Builder (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = False,
+    cores = None,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
