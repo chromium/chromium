@@ -87022,6 +87022,45 @@
         {}
        ]
       ],
+      "table-collapsed-borders-paint-htb-ltr.html": [
+       "60e146296b226faf1914715aa837a86ac497ce25",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-collapsed-borders-paint-htb-ltr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-collapsed-borders-paint-vlr-rtl.html": [
+       "d03968ec4d32b37bb86fc0d30c33f2d1afca399a",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-collapsed-borders-paint-vlr-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "table-collapsed-borders-paint-vrl-ltr.html": [
+       "6dff501fec734ff9dd75d725e1e1f014b93dd5b5",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-collapsed-borders-paint-vrl-ltr-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "table-row-paint-htb-ltr.html": [
        "ecc156bd38bcc414b8d66abf84d355c040f0782d",
        [
@@ -161562,6 +161601,19 @@
        [
         [
          "/css/css-tables/border-collapse-dynamic-col-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "border-collapse-dynamic-section.html": [
+      "5f48749fa48f6594cea8947170f4b930bd567608",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -260626,6 +260678,18 @@
        "0fde8bacc51d23a2065246727daf90fef8885f0c",
        []
       ],
+      "table-collapsed-borders-paint-htb-ltr-ref.html": [
+       "1841ff582124124a97bc49046abf9ab6f2377354",
+       []
+      ],
+      "table-collapsed-borders-paint-vlr-rtl-ref.html": [
+       "e17497a2702cc9acc4b43140a71bb271201294ab",
+       []
+      ],
+      "table-collapsed-borders-paint-vrl-ltr-ref.html": [
+       "2721bc0af0b11cddb17087d988990379cc48ebc5",
+       []
+      ],
       "table-row-paint-htb-ltr-ref.html": [
        "74e99b0143aa89b641b06297a282b2d46c868e06",
        []
@@ -298320,7 +298384,7 @@
         []
        ],
        "form-submission.sub.html": [
-        "cbf7b5ca7f3eab3b75180a6e075c16a46055b98b",
+        "4c9c8c50f82ea4e36a1ab187d8b521fc338be621",
         []
        ],
        "header-link.sub.html": [
@@ -396766,28 +396830,28 @@
        ]
       ],
       "has-in-adjacent-position.html": [
-       "d9dc9c7d3670a2d79ce4e77489a998d81c965534",
+       "5c1a1ecf78a86d77fec08f958cfbe652dccefca9",
        [
         null,
         {}
        ]
       ],
       "has-in-ancestor-position.html": [
-       "3d556d34dc7b665be1547a324a4cf3fe00ce2b36",
+       "7662fbde69efbeca48d0413a881782f303113613",
        [
         null,
         {}
        ]
       ],
       "has-in-parent-position.html": [
-       "0a1f8b9299f9f0bb6b1462736fb7a278efaec37c",
+       "4690e6929f5415e1b24f1f1507afd40c1dceb88c",
        [
         null,
         {}
        ]
       ],
       "has-in-sibling-position.html": [
-       "91b1dcf03970fb497eeb8bc6e7d37dc37d8934a3",
+       "8b35940f87c31e908fe4ebcd0c226fa82e173de3",
        [
         null,
         {}
@@ -427590,19 +427654,22 @@
        ]
       ],
       "form-submission.https.sub.html": [
-       "a0f683add1789e094c954a5a326749baef6e7ea3",
+       "988b07c74a948ffe037c9bdf221af9f5a69a7ff3",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
       "form-submission.sub.html": [
-       "c4a5e2fa7ba2089a1a7351dc52b009c4b68777f7",
+       "f862062aebcd3046d179551d349d0c08cc47638c",
        [
         null,
-        {}
+        {
+         "timeout": "long"
+        }
        ]
       ],
       "header-link.https.sub.html": [
@@ -466295,7 +466362,7 @@
         ]
        ],
        "image-loading-lazy-move-into-script-disabled-iframe.html": [
-        "8e22c1fb549cab4852ce2b9c0ff312b0d029f1bc",
+        "10b644e22fd9b04f6eb2796a2f245f813df37721",
         [
          null,
          {}
