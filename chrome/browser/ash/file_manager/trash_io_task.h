@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/files/file_error_or.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -77,6 +78,11 @@ extern const char kInfoFolderName[];
 // Constant representing the "files" folder name inside .Trash.
 extern const char kFilesFolderName[];
 
+// Helper to create a destination path for a file in one of the .Trash folders.
+const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
+                                       const std::string& subdir,
+                                       const std::string& file_name);
+
 // This class represents a trash task. A trash task attempts to trash zero or
 // more files by first moving them to a .Trash/files or .Trash-{UID}/files
 // folder that resides in a parent folder for:
@@ -105,9 +111,9 @@ class TrashIOTask : public IOTask {
 
  private:
   void Complete(State state);
-  void UpdateTrashEntry(size_t idx);
-  void GetFileSize(size_t idx);
-  void GotFileSize(size_t idx,
+  void UpdateTrashEntry(size_t source_idx);
+  void GetFileSize(size_t source_idx);
+  void GotFileSize(size_t source_idx,
                    base::File::Error error,
                    const base::File::Info& file_info);
   const storage::FileSystemURL CreateFileSystemURL(
@@ -116,9 +122,11 @@ class TrashIOTask : public IOTask {
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
   using FreeSpaceMap = std::map<base::FilePath, DirectoryInfo>;
-  void ValidateAndDecrementFreeSpace(size_t idx, FreeSpaceMap::iterator& it);
-  void GetFreeDiskSpace(size_t idx, const base::FilePath& trash_parent_path);
-  void GotFreeDiskSpace(size_t idx,
+  void ValidateAndDecrementFreeSpace(size_t source_idx,
+                                     FreeSpaceMap::iterator& it);
+  void GetFreeDiskSpace(size_t source_idx,
+                        const base::FilePath& trash_parent_path);
+  void GotFreeDiskSpace(size_t source_idx,
                         const base::FilePath& trash_parent_path,
                         int64_t free_space);
 
@@ -131,6 +139,30 @@ class TrashIOTask : public IOTask {
                            const storage::FileSystemURL trash_subdirectory,
                            base::File::Error error);
   base::FilePath MakeRelativeFromBasePath(const base::FilePath& absolute_path);
+
+  // Attempts to generate a unique destination filename when saving to
+  // .Trash/files. Appends an increasing (N) suffix until a unique name is
+  // identified.
+  void GenerateDestinationURL(size_t source_idx, size_t output_idx);
+
+  // Creates a file in .Trash/info that matches the name generated from
+  // `GenerateDestinationURL`. Writes the relative restoration path as well as
+  // the date time of deletion.
+  void WriteMetadata(
+      size_t source_idx,
+      size_t output_idx,
+      const storage::FileSystemURL& files_folder_location,
+      base::FileErrorOr<storage::FileSystemURL> destination_result);
+  void OnWriteMetadata(size_t source_idx,
+                       size_t output_idx,
+                       const storage::FileSystemURL& destination_url,
+                       bool success);
+
+  // Called upon either error of writing metadata or completion of moving the
+  // trashed file. Ensures progress is invoked and the next file is queued.
+  void TrashComplete(size_t source_idx,
+                     size_t output_idx,
+                     base::File::Error error);
 
   raw_ptr<Profile> profile_;
 

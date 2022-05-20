@@ -9,8 +9,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time_override.h"
+#include "base/time/time_to_iso8601.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,8 +32,31 @@ namespace {
 
 using ::base::test::RunClosure;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Return;
+
+// Matcher that only verifies the `url` field from a `std::vector<EntryStatus>`
+// ignoring the `error` field. The supplied `arg` should be a
+// `std::vector<storage::FileSystemURL>` to match against.
+MATCHER_P(EntryStatusUrls, matcher, "") {
+  std::vector<storage::FileSystemURL> urls;
+  for (const auto& status : arg) {
+    urls.push_back(status.url);
+  }
+  return testing::ExplainMatchResult(matcher, urls, result_listener);
+}
+
+// Matcher that only verifies the `error` field from a
+// `std::vector<EntryStatus>` ignoring the `url` field. The supplied `arg`
+// should be a `std::vector<base::File::Error>` to match against.
+MATCHER_P(EntryStatusErrors, matcher, "") {
+  std::vector<absl::optional<base::File::Error>> errors;
+  for (const auto& status : arg) {
+    errors.push_back(status.error);
+  }
+  return testing::ExplainMatchResult(matcher, errors, result_listener);
+}
 
 constexpr size_t kTestFileSize = 32;
 
@@ -76,6 +102,32 @@ class TrashIOTaskTest : public testing::Test {
         base::FilePath::FromUTF8Unsafe(relative_path));
   }
 
+  const base::FilePath GenerateInfoPath(const std::string& file_name) {
+    return GenerateTrashPath(downloads_dir_.Append(kTrashFolderName),
+                             kInfoFolderName, file_name);
+  }
+
+  const std::string CreateTrashInfoContentsFromPath(
+      const base::FilePath& file_path) {
+    std::string relative_restore_path = file_path.value();
+    EXPECT_TRUE(file_manager::util::ReplacePrefix(
+        &relative_restore_path, downloads_dir_.AsEndingWithSeparator().value(),
+        ""));
+    return base::StrCat({"[Trash Info]\nPath=", relative_restore_path,
+                         "\nDeletionDate=", base::TimeToISO8601(base::Time())});
+  }
+
+  bool EnsureTrashDirectorySetup(const base::FilePath& parent_path) {
+    base::FilePath trash_path = parent_path.Append(kTrashFolderName);
+    if (!base::CreateDirectory(trash_path.Append(kInfoFolderName))) {
+      return false;
+    }
+    if (!base::CreateDirectory(trash_path.Append(kFilesFolderName))) {
+      return false;
+    }
+    return true;
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   const blink::StorageKey kTestStorageKey =
@@ -92,6 +144,13 @@ void AssertTrashSetup(const base::FilePath& parent_path) {
   ASSERT_TRUE(base::DirectoryExists(trash_path));
   ASSERT_TRUE(base::DirectoryExists(trash_path.Append(kFilesFolderName)));
   ASSERT_TRUE(base::DirectoryExists(trash_path.Append(kInfoFolderName)));
+}
+
+void ExpectFileContents(const base::FilePath& path,
+                        const std::string& expected) {
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(path, &contents));
+  EXPECT_EQ(expected, contents);
 }
 
 TEST_F(TrashIOTaskTest, FileInUnsupportedDirectoryShouldError) {
@@ -169,7 +228,10 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
   base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
   base::MockOnceCallback<void(ProgressStatus)> complete_callback;
 
-  // TODO(b/231250202): Update this once the Trash logic has been written.
+  // Progress callback should not be called as the verification of disk space
+  // should fail before any file operations occur.
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+
   EXPECT_CALL(complete_callback,
               Run(Field(&ProgressStatus::state, State::kSuccess)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -180,6 +242,131 @@ TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
   run_loop.Run();
 
   AssertTrashSetup(downloads_dir_);
+}
+
+TEST_F(TrashIOTaskTest, OrphanedFilesAreOverwritten) {
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  std::string file_name("foo.txt");
+  const base::FilePath file_path = downloads_dir_.Append(file_name);
+  const std::string file_trashinfo_contents =
+      CreateTrashInfoContentsFromPath(file_path);
+  const size_t total_expected_bytes =
+      kTestFileSize + file_trashinfo_contents.size();
+  ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
+
+  // Ensure the .Trash, info and files directories are setup and create a file
+  // in .Trash/info that has no corresponding file in .Trash/files.
+  ASSERT_TRUE(EnsureTrashDirectorySetup(downloads_dir_));
+  ASSERT_TRUE(base::WriteFile(GenerateInfoPath(file_name),
+                              "these contents should be overwritten"));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(file_path),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  // Completion callback should contain the one metadata file written with the
+  // `total_expected_bytes` containing the size of both the file to trash and
+  // the size of the metadata.
+  // TODO(b/231250202): Once trash has implemented, the `bytes_transferred`
+  // should be updated to the `total_expected_bytes`.
+  EXPECT_CALL(
+      complete_callback,
+      Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
+                Field(&ProgressStatus::bytes_transferred,
+                      file_trashinfo_contents.size()),
+                Field(&ProgressStatus::total_bytes, total_expected_bytes),
+                Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  {
+    // Override the `base::Time::Now()` function to return 0 (i.e. base::Time())
+    // This ensures the DeletionDate is static in tests to verify file contents.
+    base::subtle::ScopedTimeClockOverrides mock_time_now(
+        []() { return base::Time(); }, nullptr, nullptr);
+    TrashIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+    task.Execute(progress_callback.Get(), complete_callback.Get());
+    run_loop.Run();
+  }
+
+  AssertTrashSetup(downloads_dir_);
+  ExpectFileContents(GenerateInfoPath(file_name), file_trashinfo_contents);
+}
+
+TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+  std::string file_name_1("foo.txt");
+  const base::FilePath file_path_1 = downloads_dir_.Append(file_name_1);
+  const std::string file_trashinfo_contents_1 =
+      CreateTrashInfoContentsFromPath(file_path_1);
+  std::string file_name_2("bar.txt");
+  const base::FilePath file_path_2 = downloads_dir_.Append(file_name_2);
+  const std::string file_trashinfo_contents_2 =
+      CreateTrashInfoContentsFromPath(file_path_2);
+  const size_t expected_bytes_transferred =
+      file_trashinfo_contents_1.size() + file_trashinfo_contents_2.size();
+  const size_t expected_total_bytes =
+      (kTestFileSize * 2) + expected_bytes_transferred;
+  ASSERT_TRUE(base::WriteFile(file_path_1, foo_contents));
+  ASSERT_TRUE(base::WriteFile(file_path_2, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(file_path_1),
+      CreateFileSystemURL(file_path_2),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  // Expect that all callback (both completion and progress) contains the set of
+  // source URLs and the `total_bytes` set to `expected_total_bytes`.
+  const auto base_matcher =
+      AllOf(Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+            Field(&ProgressStatus::total_bytes, expected_total_bytes));
+
+  // Expect the `progress_callback` to be invoked after the first metadata file
+  // has been written with the size contents and
+  EXPECT_CALL(
+      progress_callback,
+      Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
+                Field(&ProgressStatus::bytes_transferred,
+                      file_trashinfo_contents_1.size()),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))),
+                base_matcher)))
+      .Times(1);
+
+  // Expect the completion callback to be invoked after the final metadata file
+  // is written out.
+  EXPECT_CALL(complete_callback,
+              Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
+                        Field(&ProgressStatus::bytes_transferred,
+                              expected_bytes_transferred),
+                        Field(&ProgressStatus::outputs,
+                              EntryStatusErrors(ElementsAre(
+                                  base::File::FILE_OK, base::File::FILE_OK))),
+                        base_matcher)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  {
+    base::subtle::ScopedTimeClockOverrides mock_time_now(
+        []() { return base::Time(); }, nullptr, nullptr);
+    TrashIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+    task.Execute(progress_callback.Get(), complete_callback.Get());
+    run_loop.Run();
+  }
+
+  AssertTrashSetup(downloads_dir_);
+  ExpectFileContents(GenerateInfoPath(file_name_1), file_trashinfo_contents_1);
+  ExpectFileContents(GenerateInfoPath(file_name_2), file_trashinfo_contents_2);
 }
 
 }  // namespace
