@@ -373,7 +373,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
             PasswordCheckupClientHelper checkupHelper = null;
-            if (PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
+            if (PasswordManagerHelper.canUseUpmCheckup()) {
+                // At this point it can still happen that the helper cannot be created.
+                // In this case, the helper will be null. Safety Check knows to handle
+                // that correctly.
                 checkupHelper = PasswordCheckupClientHelperFactory.getInstance().createHelper();
             }
             SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,

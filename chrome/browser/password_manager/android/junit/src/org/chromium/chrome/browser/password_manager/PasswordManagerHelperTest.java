@@ -46,6 +46,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.ModelType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -122,6 +123,7 @@ public class PasswordManagerHelperTest {
         ShadowRecordHistogram.reset();
         MockitoAnnotations.initMocks(this);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
+        when(mSyncServiceMock.getAuthError()).thenReturn(GoogleServiceAuthError.State.NONE);
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
         mModalDialogManager = new ModalDialogManager(
