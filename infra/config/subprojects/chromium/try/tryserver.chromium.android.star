@@ -48,6 +48,9 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
     compilator = "android-12-x64-rel-compilator",
+    mirrors = [
+        "ci/android-12-x64-rel",
+    ],
     # TODO(crbug.com/1225851): Enable it on branch after running on CQ
     # branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
