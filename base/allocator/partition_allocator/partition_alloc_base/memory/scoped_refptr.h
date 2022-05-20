@@ -11,8 +11,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 
@@ -170,7 +170,7 @@ scoped_refptr<T> WrapRefCounted(T* t) {
 //   to another component (if a component merely needs to use t on the stack
 //   without keeping a ref: pass t as a raw T*).
 template <class T>
-class TRIVIAL_ABI scoped_refptr {
+class PA_TRIVIAL_ABI scoped_refptr {
  public:
   typedef T element_type;
 

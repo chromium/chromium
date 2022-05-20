@@ -12,10 +12,10 @@
 #include <sstream>
 #include <string>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
@@ -315,8 +315,8 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 // TODO(akalin): Add more VLOG variants, e.g. VPLOG.
 
-#define PA_LOG_ASSERT(condition)                       \
-  PA_LOG_IF(FATAL, !(ANALYZER_ASSUME_TRUE(condition))) \
+#define PA_LOG_ASSERT(condition)                          \
+  PA_LOG_IF(FATAL, !(PA_ANALYZER_ASSUME_TRUE(condition))) \
       << "Assert failed: " #condition ". "
 
 #if BUILDFLAG(IS_WIN)

@@ -11,11 +11,11 @@
 #include <unistd.h>
 #include <sstream>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/files/file_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
@@ -77,7 +77,7 @@ void RandBytes(void* output, size_t output_length) {
   // Return success only on total success. In case errno == ENOSYS (or any other
   // error), we'll fall through to reading from urandom below.
   if (output_length == static_cast<size_t>(r)) {
-    MSAN_UNPOISON(output, output_length);
+    PA_MSAN_UNPOISON(output, output_length);
     return;
   }
 #elif BUILDFLAG(IS_MAC)

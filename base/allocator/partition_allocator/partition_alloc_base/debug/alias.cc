@@ -4,12 +4,12 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 
-#include "base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 
 namespace partition_alloc::internal::base::debug {
 
 // This file/function should be excluded from LTO/LTCG to ensure that the
 // compiler can't see this function's implementation when compiling calls to it.
-NOINLINE void Alias(const void* var) {}
+PA_NOINLINE void Alias(const void* var) {}
 
 }  // namespace partition_alloc::internal::base::debug

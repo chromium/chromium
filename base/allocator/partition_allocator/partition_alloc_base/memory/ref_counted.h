@@ -6,11 +6,11 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_base/atomic_ref_count.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
@@ -66,7 +66,7 @@ class BASE_EXPORT RefCountedThreadSafeBase {
 #endif
   }
 
-  ALWAYS_INLINE void AddRefImpl() const {
+  PA_ALWAYS_INLINE void AddRefImpl() const {
 #if DCHECK_IS_ON()
     DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
@@ -77,7 +77,7 @@ class BASE_EXPORT RefCountedThreadSafeBase {
     ref_count_.Increment();
   }
 
-  ALWAYS_INLINE void AddRefWithCheckImpl() const {
+  PA_ALWAYS_INLINE void AddRefWithCheckImpl() const {
 #if DCHECK_IS_ON()
     DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
@@ -88,7 +88,7 @@ class BASE_EXPORT RefCountedThreadSafeBase {
     CHECK_GT(ref_count_.Increment(), 0);
   }
 
-  ALWAYS_INLINE bool ReleaseImpl() const {
+  PA_ALWAYS_INLINE bool ReleaseImpl() const {
 #if DCHECK_IS_ON()
     DCHECK(!in_dtor_);
     DCHECK(!ref_count_.IsZero());
@@ -159,7 +159,7 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
 
   void Release() const {
     if (subtle::RefCountedThreadSafeBase::Release()) {
-      ANALYZER_SKIP_THIS_PATH();
+      PA_ANALYZER_SKIP_THIS_PATH();
       Traits::Destruct(static_cast<const T*>(this));
     }
   }
