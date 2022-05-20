@@ -27,6 +27,7 @@
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
@@ -68,7 +69,9 @@ class CONTENT_EXPORT ServiceWorkerHost {
   void CompleteStartWorkerPreparation(
       int process_id,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-          broker_receiver);
+          broker_receiver,
+      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+          interface_provider_remote);
 
   void CreateWebTransportConnector(
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
@@ -116,6 +119,9 @@ class CONTENT_EXPORT ServiceWorkerHost {
       &broker_};
 
   std::unique_ptr<ServiceWorkerContainerHost> container_host_;
+
+  service_manager::InterfaceProvider remote_interfaces_{
+      base::ThreadTaskRunnerHandle::Get()};
 
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.

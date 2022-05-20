@@ -558,8 +558,10 @@ void EmbeddedWorkerInstance::SendStartWorker(
 
   // The host must be alive as long as |params->provider_info| is alive.
   owner_version_->worker_host()->CompleteStartWorkerPreparation(
-      process_id(), params->provider_info->browser_interface_broker
-                        .InitWithNewPipeAndPassReceiver());
+      process_id(),
+      params->provider_info->browser_interface_broker
+          .InitWithNewPipeAndPassReceiver(),
+      params->interface_provider.InitWithNewPipeAndPassRemote());
 
   // TODO(bashi): Always pass a valid outside fetch client settings object.
   // See crbug.com/937177.

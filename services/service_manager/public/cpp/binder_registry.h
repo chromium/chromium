@@ -73,6 +73,9 @@ class BinderRegistryWithArgs {
       binders_.erase(it);
   }
 
+  // Removes all the binders from the registry.
+  void clear() { binders_.clear(); }
+
   // Returns true if an InterfaceBinder is registered for |interface_name|.
   bool CanBindInterface(const std::string& interface_name) const {
     auto it = binders_.find(interface_name);

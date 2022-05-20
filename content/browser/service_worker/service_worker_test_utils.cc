@@ -365,9 +365,13 @@ std::unique_ptr<ServiceWorkerHost> CreateServiceWorkerHost(
       provider_info->host_remote.InitWithNewEndpointAndPassReceiver(),
       hosted_version, std::move(context));
 
+  mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+      pending_interface_provider;
+
   host->CompleteStartWorkerPreparation(
       process_id,
-      provider_info->browser_interface_broker.InitWithNewPipeAndPassReceiver());
+      provider_info->browser_interface_broker.InitWithNewPipeAndPassReceiver(),
+      pending_interface_provider.InitWithNewPipeAndPassRemote());
   output_endpoint->BindForServiceWorker(std::move(provider_info));
   return host;
 }

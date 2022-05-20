@@ -102,6 +102,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
         controller_receiver,
     mojo::PendingAssociatedRemote<blink::mojom::EmbeddedWorkerInstanceHost>
         instance_host,
+    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
+        pending_interface_provider_receiver,
     blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr provider_info,
     EmbeddedWorkerInstanceClientImpl* owner,
     blink::mojom::EmbeddedWorkerStartTimingPtr start_timing,
@@ -125,6 +127,8 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
       proxy_(nullptr),
       pending_service_worker_receiver_(std::move(service_worker_receiver)),
       controller_receiver_(std::move(controller_receiver)),
+      pending_interface_provider_receiver_(
+          std::move(pending_interface_provider_receiver)),
       pending_subresource_loader_updater_(
           std::move(subresource_loader_updater)),
       owner_(owner),
@@ -201,6 +205,13 @@ blink::WebEmbeddedWorker& ServiceWorkerContextClient::worker() {
   return *worker_;
 }
 
+void ServiceWorkerContextClient::GetInterface(
+    const std::string& interface_name,
+    mojo::ScopedMessagePipeHandle interface_pipe) {
+  if (registry_.TryBindInterface(interface_name, &interface_pipe))
+    return;
+}
+
 void ServiceWorkerContextClient::WorkerReadyForInspectionOnInitiatorThread(
     blink::CrossVariantMojoRemote<blink::mojom::DevToolsAgentInterfaceBase>
         devtools_agent_remote,
@@ -253,6 +264,10 @@ void ServiceWorkerContextClient::WorkerContextStarted(
 
   DCHECK(controller_receiver_.is_valid());
   proxy_->BindControllerServiceWorker(std::move(controller_receiver_));
+
+  DCHECK(pending_interface_provider_receiver_.is_valid());
+  interface_provider_receiver_.Bind(
+      std::move(pending_interface_provider_receiver_));
 
   GetContentClient()
       ->renderer()
@@ -319,6 +334,14 @@ void ServiceWorkerContextClient::WillInitializeWorkerContext() {
 void ServiceWorkerContextClient::WillDestroyWorkerContext(
     v8::Local<v8::Context> context) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
+
+  // After WillDestroyWorkerContext is called, the ServiceWorkerContext
+  // is destroyed, so destroy InterfaceProvider here and clear the
+  // BinderRegistry to stop any future interface requests. InterfaceProvider is
+  // bound on the worker task runner and therefore, should be destroyed on the
+  // worker task runner.
+  interface_provider_receiver_.reset();
+  registry_.clear();
 
   // At this point WillStopCurrentWorkerThread is already called, so
   // worker_task_runner_->RunsTasksInCurrentSequence() returns false

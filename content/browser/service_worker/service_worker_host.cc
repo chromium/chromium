@@ -65,13 +65,15 @@ ServiceWorkerHost::~ServiceWorkerHost() {
 
 void ServiceWorkerHost::CompleteStartWorkerPreparation(
     int process_id,
-    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-        broker_receiver) {
+    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
+    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+        interface_provider_remote) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(ChildProcessHost::kInvalidUniqueID, worker_process_id_);
   DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id);
   worker_process_id_ = process_id;
   broker_receiver_.Bind(std::move(broker_receiver));
+  remote_interfaces_.Bind(std::move(interface_provider_remote));
 }
 
 void ServiceWorkerHost::CreateWebTransportConnector(
