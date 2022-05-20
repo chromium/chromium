@@ -161,10 +161,10 @@ void InterestGroupPermissionsChecker::OnRequestComplete(
   // `simple_url_loader` is no longer needed after this point.
   active_request->second->simple_url_loader.reset();
 
-  active_request->second->data_decoder.ParseJson(
+  data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
       base::BindOnce(&InterestGroupPermissionsChecker::OnJsonParsed,
-                     base::Unretained(this), active_request));
+                     weak_factory_.GetWeakPtr(), active_request));
 }
 
 void InterestGroupPermissionsChecker::OnJsonParsed(
