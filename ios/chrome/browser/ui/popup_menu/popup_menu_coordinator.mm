@@ -322,7 +322,8 @@ enum class IOSOverflowMenuActionType {
             .triggerFollowUpAction;
     self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
         NO;
-    if (IsWebChannelsEnabled()) {
+    if (IsWebChannelsEnabled() &&
+        !self.browser->GetBrowserState()->IsOffTheRecord()) {
       ios::GetChromeBrowserProvider()
           .GetFollowProvider()
           ->SetFollowEventDelegate(self.browser);
@@ -370,14 +371,13 @@ enum class IOSOverflowMenuActionType {
         self.overflowMenuMediator.browserPolicyConnector =
             GetApplicationContext()->GetBrowserPolicyConnector();
 
-        if (IsWebChannelsEnabled()) {
+        if (IsWebChannelsEnabled() &&
+            DiscoverFeedServiceFactory::GetForBrowserState(
+                self.browser->GetBrowserState())) {
           self.overflowMenuMediator.feedMetricsRecorder =
               DiscoverFeedServiceFactory::GetForBrowserState(
                   self.browser->GetBrowserState())
                   ->GetFeedMetricsRecorder();
-          ios::GetChromeBrowserProvider()
-              .GetFollowProvider()
-              ->SetFollowEventDelegate(self.browser);
         }
 
         self.contentBlockerMediator.consumer = self.overflowMenuMediator;
@@ -454,7 +454,8 @@ enum class IOSOverflowMenuActionType {
   self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
   self.mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  if (IsWebChannelsEnabled()) {
+  if (IsWebChannelsEnabled() && DiscoverFeedServiceFactory::GetForBrowserState(
+                                    self.browser->GetBrowserState())) {
     self.mediator.feedMetricsRecorder =
         DiscoverFeedServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState())
