@@ -167,7 +167,8 @@ class FeatureListQueryProcessorTest : public testing::Test {
           FeatureListQueryProcessor::ProcessOption::kInputsOnly) {
     base::RunLoop loop;
     feature_list_query_processor_->ProcessFeatureList(
-        model_metadata, segment_id_, prediction_time, process_option,
+        model_metadata, /*input_context=*/nullptr, segment_id_, prediction_time,
+        process_option,
         base::BindOnce(
             &FeatureListQueryProcessorTest::OnProcessingFinishedCallback,
             base::Unretained(this), loop.QuitClosure(), expected_error,

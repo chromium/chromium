@@ -38,10 +38,7 @@ class ModelExecutorImpl : public ModelExecutor {
   ModelExecutorImpl& operator=(ModelExecutorImpl&) = delete;
 
   // ModelExecutionManager impl:.
-  void ExecuteModel(const proto::SegmentInfo& segment_info,
-                    ModelProvider* model_provider,
-                    bool record_metrics_for_default,
-                    ModelExecutionCallback callback) override;
+  void ExecuteModel(std::unique_ptr<ExecutionRequest> request) override;
 
  private:
   struct ExecutionState;

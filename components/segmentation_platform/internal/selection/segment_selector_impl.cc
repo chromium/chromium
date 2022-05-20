@@ -169,9 +169,11 @@ SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
 }
 
 void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
+    scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
   DCHECK(config_->on_demand_execution);
-  GetRankForNextSegment(std::make_unique<SegmentRanks>(), std::move(callback));
+  GetRankForNextSegment(std::make_unique<SegmentRanks>(), input_context,
+                        std::move(callback));
 }
 
 void SegmentSelectorImpl::OnModelExecutionCompleted(
@@ -217,12 +219,13 @@ void SegmentSelectorImpl::SelectSegmentAndStoreToPrefs() {
   if (config_->on_demand_execution) {
     return;
   }
-  GetRankForNextSegment(std::make_unique<SegmentRanks>(),
+  GetRankForNextSegment(std::make_unique<SegmentRanks>(), nullptr,
                         SegmentSelectionCallback());
 }
 
 void SegmentSelectorImpl::GetRankForNextSegment(
     std::unique_ptr<SegmentRanks> ranks,
+    scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
   for (OptimizationTarget needed_segment : config_->segment_ids) {
     if (ranks->count(needed_segment) == 0) {
@@ -233,7 +236,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
       options.callback =
           base::BindOnce(&SegmentSelectorImpl::OnGetResultForSegmentSelection,
                          weak_ptr_factory_.GetWeakPtr(), std::move(ranks),
-                         std::move(callback), needed_segment);
+                         input_context, std::move(callback), needed_segment);
 
       segment_result_provider_->GetSegmentResult(std::move(options));
       return;
@@ -256,6 +259,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
 
 void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     std::unique_ptr<SegmentRanks> ranks,
+    scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback,
     OptimizationTarget current_segment_id,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
@@ -266,7 +270,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   }
   ranks->insert(std::make_pair(current_segment_id, *result->rank));
 
-  GetRankForNextSegment(std::move(ranks), std::move(callback));
+  GetRankForNextSegment(std::move(ranks), input_context, std::move(callback));
 }
 
 OptimizationTarget SegmentSelectorImpl::FindBestSegment(

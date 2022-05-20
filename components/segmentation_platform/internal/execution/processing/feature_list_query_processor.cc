@@ -37,6 +37,7 @@ FeatureListQueryProcessor::~FeatureListQueryProcessor() = default;
 
 void FeatureListQueryProcessor::ProcessFeatureList(
     const proto::SegmentationModelMetadata& model_metadata,
+    scoped_refptr<InputContext> input_context,
     OptimizationTarget segment_id,
     base::Time prediction_time,
     ProcessOption process_option,
@@ -72,7 +73,7 @@ void FeatureListQueryProcessor::ProcessFeatureList(
   // Capture all the relevant metadata information into a FeatureProcessorState.
   auto feature_processor_state = std::make_unique<FeatureProcessorState>(
       prediction_time, bucket_duration, segment_id, std::move(features),
-      std::move(callback));
+      input_context, std::move(callback));
 
   ProcessNext(std::move(feature_processor_state));
 }

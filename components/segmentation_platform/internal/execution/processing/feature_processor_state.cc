@@ -39,11 +39,13 @@ FeatureProcessorState::FeatureProcessorState(
     base::TimeDelta bucket_duration,
     OptimizationTarget segment_id,
     std::deque<Data> data,
+    scoped_refptr<InputContext> input_context,
     FeatureListQueryProcessor::FeatureProcessorCallback callback)
     : prediction_time_(prediction_time),
       bucket_duration_(bucket_duration),
       segment_id_(segment_id),
       data_(std::move(data)),
+      input_context_(std::move(input_context)),
       callback_(std::move(callback)) {}
 
 FeatureProcessorState::~FeatureProcessorState() = default;

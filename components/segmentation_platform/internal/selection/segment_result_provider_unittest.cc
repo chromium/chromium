@@ -243,8 +243,8 @@ TEST_F(SegmentResultProviderTest, GetFromModelExecutionFailed) {
   TestModelProvider provider(kTestSegment);
   EXPECT_CALL(*mock_execution_manager_, GetProvider(kTestSegment))
       .WillOnce(Return(&provider));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>{{1, 2}},
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(/*error=*/true, std::vector<float>{{1, 2}},
                                    std::vector<float>()));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/true,
@@ -262,8 +262,8 @@ TEST_F(SegmentResultProviderTest, GetFromModel) {
   TestModelProvider provider(kTestSegment);
   EXPECT_CALL(*mock_execution_manager_, GetProvider(kTestSegment))
       .WillOnce(Return(&provider));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/false, std::vector<float>{{1, 2}},
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(/*error=*/false, std::vector<float>{{1, 2}},
                                    std::vector<float>()));
 
   // Gets the rank from test model instead of database.
@@ -301,8 +301,8 @@ TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
       .WillOnce(Return(true));
 
   // Set error while computing features.
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>{{1, 2}},
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(/*error=*/true, std::vector<float>{{1, 2}},
                                    std::vector<float>()));
   ExpectSegmentResultOnGet(
       kTestSegment,
@@ -320,8 +320,8 @@ TEST_F(SegmentResultProviderTest, GetFromDefault) {
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(true))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/false, std::vector<float>{{1, 2}},
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(/*error=*/false, std::vector<float>{{1, 2}},
                                    std::vector<float>()));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/false,
@@ -344,8 +344,8 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(true))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/false, std::vector<float>{{1, 2}},
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(/*error=*/false, std::vector<float>{{1, 2}},
                                    std::vector<float>()));
   ExpectSegmentResultOnGet(
       kTestSegment, /*ignore_db_scores=*/false,
@@ -354,7 +354,7 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
   // For the second request the database has valid result.
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _))
+  EXPECT_CALL(*mock_query_processor_, ProcessFeatureList(_, _, _, _, _, _))
       .Times(0);
   ExpectSegmentResultOnGet(
       kTestSegment2, /*ignore_db_scores=*/false,

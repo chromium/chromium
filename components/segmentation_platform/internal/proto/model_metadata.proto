@@ -102,6 +102,9 @@ message CustomInput {
     // Additional arg:
     //   `bucket_count`: Required. Number of buckets to include in the result.
     TIME_RANGE_BEFORE_PREDICTION = 2;
+
+    // TODO(ssid): Add comments based on the final implementation of this type.
+    PRICE_TRACKING_HINTS = 3;
   }
 
   // The fill type of the custom input.

@@ -12,7 +12,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
+#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 
 class PrefService;
@@ -64,28 +66,6 @@ class ExecutionService {
 
   // Gets the model provider for execution.
   ModelProvider* GetModelProvider(OptimizationTarget segment_id);
-
-  using ModelExecutionCallback =
-      base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
-
-  struct ExecutionRequest {
-    ExecutionRequest();
-    ~ExecutionRequest();
-
-    // Required: The segment info to use for model execution.
-    const proto::SegmentInfo* segment_info = nullptr;
-    // Required: The model provider used to execute the model.
-    ModelProvider* model_provider = nullptr;
-
-    // Save result of execution to the database.
-    bool save_result_to_db = false;
-    // Record metrics for default model instead of optimization_guide based
-    // models.
-    bool record_metrics_for_default = false;
-    // returns result as by callback, to be used when `save_result_to_db` is
-    // false.
-    ModelExecutionCallback callback;
-  };
 
   void RequestModelExecution(std::unique_ptr<ExecutionRequest> request);
 

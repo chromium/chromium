@@ -20,9 +20,6 @@
 
 namespace segmentation_platform {
 
-ExecutionService::ExecutionRequest::ExecutionRequest() = default;
-ExecutionService::ExecutionRequest::~ExecutionRequest() = default;
-
 ExecutionService::ExecutionService() = default;
 ExecutionService::~ExecutionService() = default;
 
@@ -97,14 +94,14 @@ void ExecutionService::RequestModelExecution(
         << "using custom model provider to save result is not supported";
     DCHECK(request->callback.is_null())
         << "save_result_to_db + callback cannot be set together";
+    DCHECK(!request->input_context)
+        << "saving results keyed on input context is not supported";
     model_execution_scheduler_->RequestModelExecution(*request->segment_info);
     return;
   }
 
   DCHECK(!request->callback.is_null());
-  model_executor_->ExecuteModel(*request->segment_info, request->model_provider,
-                                request->record_metrics_for_default,
-                                std::move(request->callback));
+  model_executor_->ExecuteModel(std::move(request));
 }
 
 void ExecutionService::OverwriteModelExecutionResult(

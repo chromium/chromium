@@ -204,7 +204,8 @@ void TrainingDataCollectorImpl::ReportForSegmentsInfoList(
     // TODO(ssid): Validate immediate output is not included in the input
     // features and update the comment in model_metadata.proto.
     feature_list_query_processor_->ProcessFeatureList(
-        segment_info.model_metadata(), segment_info.segment_id(), clock_->Now(),
+        segment_info.model_metadata(), /*input_context=*/nullptr,
+        segment_info.segment_id(), clock_->Now(),
         include_outputs
             ? FeatureListQueryProcessor::ProcessOption::kInputsAndOutputs
             : FeatureListQueryProcessor::ProcessOption::kInputsOnly,

@@ -122,7 +122,7 @@ void ServiceProxyImpl::OnSegmentInfoFetchedForExecution(
     absl::optional<proto::SegmentInfo> segment_info) {
   if (!segment_info)
     return;
-  auto request = std::make_unique<ExecutionService::ExecutionRequest>();
+  auto request = std::make_unique<ExecutionRequest>();
   request->record_metrics_for_default = false;
   request->save_result_to_db = true;
   request->segment_info = &segment_info.value();

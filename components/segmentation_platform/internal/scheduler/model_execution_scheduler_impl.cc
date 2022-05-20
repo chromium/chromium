@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/platform_options.h"
@@ -74,12 +75,14 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
       segment_id,
       base::BindOnce(&ModelExecutionSchedulerImpl::OnModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), segment_id)));
-  ModelProvider* model =
+  auto request = std::make_unique<ExecutionRequest>();
+  request->model_provider =
       model_execution_manager_->GetProvider(segment_info.segment_id());
-  DCHECK(model);
-  model_executor_->ExecuteModel(segment_info, model,
-                                /*record_metrics_for_default=*/false,
-                                outstanding_requests_[segment_id].callback());
+  DCHECK(request->model_provider);
+  request->segment_info = &segment_info;
+  request->callback = outstanding_requests_[segment_id].callback();
+  request->record_metrics_for_default = false;
+  model_executor_->ExecuteModel(std::move(request));
 }
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(

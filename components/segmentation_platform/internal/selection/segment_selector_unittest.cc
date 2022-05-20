@@ -209,13 +209,15 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
 
   clock_.Advance(base::Days(1));
   base::RunLoop wait_for_selection;
-  segment_selector_->GetSelectedSegmentOnDemand(base::BindOnce(
-      [](base::OnceClosure quit, const SegmentSelectionResult& result) {
-        EXPECT_TRUE(result.is_ready);
-        EXPECT_EQ(kSegmentId2, result.segment);
-        std::move(quit).Run();
-      },
-      wait_for_selection.QuitClosure()));
+  segment_selector_->GetSelectedSegmentOnDemand(
+      /*input_context=*/nullptr,
+      base::BindOnce(
+          [](base::OnceClosure quit, const SegmentSelectionResult& result) {
+            EXPECT_TRUE(result.is_ready);
+            EXPECT_EQ(kSegmentId2, result.segment);
+            std::move(quit).Run();
+          },
+          wait_for_selection.QuitClosure()));
   wait_for_selection.Run();
 }
 

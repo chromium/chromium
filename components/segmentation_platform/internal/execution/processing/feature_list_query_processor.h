@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
+#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
@@ -58,6 +59,7 @@ class FeatureListQueryProcessor {
   // time at which we predict the model execution should happen.
   virtual void ProcessFeatureList(
       const proto::SegmentationModelMetadata& model_metadata,
+      scoped_refptr<InputContext> input_context,
       OptimizationTarget segment_id,
       base::Time prediction_time,
       ProcessOption process_option,

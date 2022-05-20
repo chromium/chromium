@@ -22,6 +22,7 @@
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
@@ -77,10 +78,14 @@ class ModelExecutorTest : public testing::Test {
                     ModelProvider* model,
                     const std::pair<float, ModelExecutionStatus>& expected) {
     base::RunLoop loop;
-    model_executor_->ExecuteModel(
-        info, model, /*record_metrics_for_default=*/false,
+    auto request = std::make_unique<ExecutionRequest>();
+    request->segment_info = &info;
+    request->model_provider = model;
+    request->save_result_to_db = false;
+    request->callback =
         base::BindOnce(&ModelExecutorTest::OnExecutionCallback,
-                       base::Unretained(this), loop.QuitClosure(), expected));
+                       base::Unretained(this), loop.QuitClosure(), expected);
+    model_executor_->ExecuteModel(std::move(request));
     loop.Run();
   }
 
@@ -153,9 +158,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, segment_id, clock_.Now(),
+                  _, _, segment_id, clock_.Now(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>{1, 2, 3},
+      .WillOnce(RunOnceCallback<5>(/*error=*/true, std::vector<float>{1, 2, 3},
                                    std::vector<float>()));
 
   // The input tensor should contain all values flattened to a single vector.
@@ -168,9 +173,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, segment_id, clock_.Now(),
+                  _, _, segment_id, clock_.Now(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/true, std::vector<float>(),
+      .WillOnce(RunOnceCallback<5>(/*error=*/true, std::vector<float>(),
                                    std::vector<float>()));
   ExecuteModel(
       *metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
@@ -189,9 +194,9 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
-                  _, kSegmentId, clock_.Now(),
+                  _, _, kSegmentId, clock_.Now(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<4>(/*error=*/false,
+      .WillOnce(RunOnceCallback<5>(/*error=*/false,
                                    std::vector<float>{1, 2, 3, 4, 5, 6, 7},
                                    std::vector<float>()));
 

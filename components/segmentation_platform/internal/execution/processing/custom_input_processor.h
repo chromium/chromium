@@ -81,6 +81,10 @@ class CustomInputProcessor : public QueryProcessor {
   bool AddTimeRangeBeforePrediction(const proto::CustomInput& custom_input,
                                     std::vector<ProcessedValue>& out_tensor);
 
+  bool AddPriceTrackingHints(const proto::CustomInput& custom_input,
+                             FeatureProcessorState* feature_processor_state,
+                             std::vector<ProcessedValue>& out_tensor);
+
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, proto::CustomInput> custom_inputs_;
 

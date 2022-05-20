@@ -14,6 +14,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
+#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -45,6 +46,7 @@ class FeatureProcessorState {
       base::TimeDelta bucket_duration,
       OptimizationTarget segment_id,
       std::deque<Data> data,
+      scoped_refptr<InputContext> input_context,
       FeatureListQueryProcessor::FeatureProcessorCallback callback);
   virtual ~FeatureProcessorState();
 
@@ -60,6 +62,8 @@ class FeatureProcessorState {
   OptimizationTarget segment_id() const { return segment_id_; }
 
   bool error() const { return error_; }
+
+  scoped_refptr<InputContext> input_context() { return input_context_; }
 
   // Returns and pops the next input feature or output feature, wrapped inside
   // `Data` structure. Return an empty struct if no input and output are
@@ -85,6 +89,7 @@ class FeatureProcessorState {
   const base::TimeDelta bucket_duration_;
   const OptimizationTarget segment_id_;
   std::deque<Data> data_;
+  scoped_refptr<InputContext> input_context_;
 
   // Feature processing results.
   std::vector<float> input_tensor_;

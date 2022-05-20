@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector.h"
@@ -56,7 +57,8 @@ class SegmentSelectorImpl : public SegmentSelector {
   void OnPlatformInitialized(ExecutionService* execution_service) override;
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult() override;
-  void GetSelectedSegmentOnDemand(SegmentSelectionCallback callback) override;
+  void GetSelectedSegmentOnDemand(scoped_refptr<InputContext> input_context,
+                                  SegmentSelectionCallback callback) override;
 
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.
@@ -88,11 +90,13 @@ class SegmentSelectorImpl : public SegmentSelector {
   // Gets ranks for each segment from SegmentResultProvider, and then computes
   // segment selection.
   void GetRankForNextSegment(std::unique_ptr<SegmentRanks> ranks,
+                             scoped_refptr<InputContext> input_context,
                              SegmentSelectionCallback callback);
 
   // Callback used to get result from SegmentResultProvider for each segment.
   void OnGetResultForSegmentSelection(
       std::unique_ptr<SegmentRanks> ranks,
+      scoped_refptr<InputContext> input_context,
       SegmentSelectionCallback callback,
       OptimizationTarget current_segment_id,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);

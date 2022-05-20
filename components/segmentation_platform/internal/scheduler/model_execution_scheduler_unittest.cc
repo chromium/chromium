@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -51,12 +52,7 @@ class MockModelExecutionManager : public ModelExecutionManager {
 class MockModelExecutor : public ModelExecutor {
  public:
   MockModelExecutor() = default;
-  MOCK_METHOD(void,
-              ExecuteModel,
-              (const proto::SegmentInfo&,
-               ModelProvider*,
-               bool,
-               ModelExecutionCallback));
+  MOCK_METHOD(void, ExecuteModel, (std::unique_ptr<ExecutionRequest>));
 };
 
 class ModelExecutionSchedulerTest : public testing::Test {
@@ -89,7 +85,7 @@ class ModelExecutionSchedulerTest : public testing::Test {
 };
 
 MATCHER_P(IsForTarget, segment_id, "") {
-  return arg.segment_id() == segment_id;
+  return arg->segment_info->segment_id() == segment_id;
 }
 
 TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
@@ -103,7 +99,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
 
   // If the metadata DOES NOT meet the signal requirement, we SHOULD NOT try to
   // execute the model.
-  EXPECT_CALL(model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+  EXPECT_CALL(model_executor_, ExecuteModel(_)).Times(0);
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(false));
   model_execution_scheduler_->OnNewModelInfoReady(*segment_info);
@@ -112,9 +108,8 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   // PredictionResult we SHOULD try to execute the model.
   EXPECT_CALL(model_execution_manager_, GetProvider(kTestOptimizationTarget))
       .WillOnce(Return(&provider));
-  EXPECT_CALL(
-      model_executor_,
-      ExecuteModel(IsForTarget(kTestOptimizationTarget), &provider, false, _))
+  EXPECT_CALL(model_executor_,
+              ExecuteModel(IsForTarget(kTestOptimizationTarget)))
       .Times(1);
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillOnce(Return(true));
@@ -125,7 +120,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   prediction_result->set_result(0.9);
   prediction_result->set_timestamp_us(
       clock_.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_CALL(model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+  EXPECT_CALL(model_executor_, ExecuteModel(_)).Times(0);
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(true));  // Ensure this part has positive result.
   model_execution_scheduler_->OnNewModelInfoReady(*segment_info);
@@ -137,7 +132,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
   prediction_result->set_result(0.9);
   prediction_result->set_timestamp_us(
       not_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_CALL(model_executor_, ExecuteModel(_, _, _, _)).Times(0);
+  EXPECT_CALL(model_executor_, ExecuteModel(_)).Times(0);
   model_execution_scheduler_->OnNewModelInfoReady(*segment_info);
 
   // If we have an expired result, we SHOULD try to execute the model.
@@ -148,9 +143,8 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
       just_expired_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_CALL(model_execution_manager_, GetProvider(kTestOptimizationTarget))
       .WillOnce(Return(&provider));
-  EXPECT_CALL(
-      model_executor_,
-      ExecuteModel(IsForTarget(kTestOptimizationTarget), &provider, false, _))
+  EXPECT_CALL(model_executor_,
+              ExecuteModel(IsForTarget(kTestOptimizationTarget)))
       .Times(1);
   model_execution_scheduler_->OnNewModelInfoReady(*segment_info);
 }
@@ -165,14 +159,13 @@ TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
 
   EXPECT_CALL(model_execution_manager_, GetProvider(kTestOptimizationTarget))
       .WillOnce(Return(&provider));
-  EXPECT_CALL(
-      model_executor_,
-      ExecuteModel(IsForTarget(kTestOptimizationTarget), &provider, false, _))
+  EXPECT_CALL(model_executor_,
+              ExecuteModel(IsForTarget(kTestOptimizationTarget)))
       .Times(1);
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(model_executor_,
-              ExecuteModel(IsForTarget(kTestOptimizationTarget2), _, _, _))
+              ExecuteModel(IsForTarget(kTestOptimizationTarget2)))
       .Times(0);
   // TODO(shaktisahu): Add test when the signal collection returns false.
 

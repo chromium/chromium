@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
@@ -194,7 +195,7 @@ void SegmentResultProviderImpl::TryExecuteModelAndGetScore(
   db_segment_info->Swap(segment_info);
   DCHECK(db_segment_info);
 
-  auto request = std::make_unique<ExecutionService::ExecutionRequest>();
+  auto request = std::make_unique<ExecutionRequest>();
   // The pointer is kept alive by the unique_ptr in the callback.
   request->segment_info = db_segment_info.get();
   request->model_provider =
@@ -253,7 +254,7 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
 
   ModelProvider* default_provider = request_state->default_provider;
   DCHECK(default_provider);
-  auto request = std::make_unique<ExecutionService::ExecutionRequest>();
+  auto request = std::make_unique<ExecutionRequest>();
   // The pointer is kept alive by the unique_ptr in the callback.
   request->segment_info = default_segment_info.get();
   request->record_metrics_for_default = true;

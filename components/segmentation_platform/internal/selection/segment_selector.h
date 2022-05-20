@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_SELECTOR_H_
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
@@ -14,6 +15,8 @@
 using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
+
+struct InputContext;
 struct SegmentSelectionResult;
 class ExecutionService;
 
@@ -39,6 +42,7 @@ class SegmentSelector : public ModelExecutionScheduler::Observer {
   // Client API. Runs models and selects a segment on demand. Returns empty
   // result on failure.
   virtual void GetSelectedSegmentOnDemand(
+      scoped_refptr<InputContext> input_context,
       SegmentSelectionCallback callback) = 0;
 
   // Client API. Returns the cached selected segment from the last session

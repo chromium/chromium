@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
@@ -86,10 +87,9 @@ ModelExecutorImpl::ModelExecutorImpl(
 
 ModelExecutorImpl::~ModelExecutorImpl() = default;
 
-void ModelExecutorImpl::ExecuteModel(const proto::SegmentInfo& segment_info,
-                                     ModelProvider* model_provider,
-                                     bool record_metrics_for_default,
-                                     ModelExecutionCallback callback) {
+void ModelExecutorImpl::ExecuteModel(
+    std::unique_ptr<ExecutionRequest> request) {
+  const proto::SegmentInfo& segment_info = *request->segment_info;
   OptimizationTarget segment_id = segment_info.segment_id();
 
   // Create an ExecutionState that will stay with this request until it has been
@@ -97,10 +97,10 @@ void ModelExecutorImpl::ExecuteModel(const proto::SegmentInfo& segment_info,
   auto state = std::make_unique<ExecutionState>();
   state->segment_id = segment_id;
 
-  state->model_provider = model_provider;
-  state->record_metrics_for_default = record_metrics_for_default;
+  state->model_provider = request->model_provider;
+  state->record_metrics_for_default = request->record_metrics_for_default;
 
-  state->callback = std::move(callback);
+  state->callback = std::move(request->callback);
   state->total_execution_start_time = clock_->Now();
 
   ModelExecutionTraceEvent trace_event("ModelExecutorImpl::ExecuteModel",
@@ -126,8 +126,8 @@ void ModelExecutorImpl::ExecuteModel(const proto::SegmentInfo& segment_info,
   state->signal_storage_length = model_metadata.signal_storage_length() *
                                  metadata_utils::GetTimeUnit(model_metadata);
   feature_list_query_processor_->ProcessFeatureList(
-      segment_info.model_metadata(), segment_id, clock_->Now(),
-      FeatureListQueryProcessor::ProcessOption::kInputsOnly,
+      segment_info.model_metadata(), request->input_context, segment_id,
+      clock_->Now(), FeatureListQueryProcessor::ProcessOption::kInputsOnly,
       base::BindOnce(&ModelExecutorImpl::OnProcessingFeatureListComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
 }

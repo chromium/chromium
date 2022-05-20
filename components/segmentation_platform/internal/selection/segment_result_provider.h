@@ -6,8 +6,10 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SEGMENT_RESULT_PROVIDER_H_
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/input_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -90,6 +92,10 @@ class SegmentResultProvider {
 
     // Callback to return the segment result.
     SegmentResultCallback callback;
+
+    // Current context of the browser that is needed by feature processor for
+    // some of the models.
+    scoped_refptr<InputContext> input_context;
   };
 
   // Returns latest available score for the segment.

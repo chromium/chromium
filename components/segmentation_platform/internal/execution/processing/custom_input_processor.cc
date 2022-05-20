@@ -145,6 +145,12 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
              proto::CustomInput::TIME_RANGE_BEFORE_PREDICTION) {
     if (!AddTimeRangeBeforePrediction(custom_input, tensor_result))
       feature_processor_state->SetError();
+  } else if (custom_input.fill_policy() ==
+             proto::CustomInput::PRICE_TRACKING_HINTS) {
+    if (!AddPriceTrackingHints(custom_input, feature_processor_state,
+                               tensor_result)) {
+      feature_processor_state->SetError();
+    }
   }
   return tensor_result;
 }
@@ -179,6 +185,16 @@ bool CustomInputProcessor::AddTimeRangeBeforePrediction(
   }
 
   return true;
+}
+
+bool CustomInputProcessor::AddPriceTrackingHints(
+    const proto::CustomInput& custom_input,
+    FeatureProcessorState* feature_processor_state,
+    std::vector<ProcessedValue>& out_tensor) {
+  // TODO: implement.
+  // This might be moved to a delegate in chrome layer to be implemented if
+  // needed.
+  return false;
 }
 
 }  // namespace segmentation_platform::processing
