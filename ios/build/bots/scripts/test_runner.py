@@ -596,6 +596,11 @@ class TestRunner(object):
           LOGGER.warning('Crashed during %s, resuming...\n',
                          list(result.crashed_tests()))
           test_app.excluded_tests = list(overall_result.all_test_names())
+          # Changing test filter will change selected gtests in this shard.
+          # Thus, sharding env vars have to be cleared to ensure needed tests
+          # are run. This means there might be duplicate same tests across
+          # the shards.
+          test_app.remove_gtest_sharding_env_vars()
           retry_out_dir = os.path.join(
               self.out_dir, 'retry_after_crash_%d' % int(time.time()))
           result = self._run(
@@ -622,6 +627,10 @@ class TestRunner(object):
           for test in tests_to_retry:
             LOGGER.info('Retry #%s for %s.\n', i + 1, test)
             test_app.included_tests = [test]
+            # Changing test filter will change selected gtests in this shard.
+            # Thus, sharding env vars have to be cleared to ensure the test
+            # runs when it's the only test in gtest_filter.
+            test_app.remove_gtest_sharding_env_vars()
             test_retry_sub_dir = '%s_retry_%d' % (test.replace('/', '_'), i)
             retry_out_dir = os.path.join(self.out_dir, test_retry_sub_dir)
             retry_result = self._run(

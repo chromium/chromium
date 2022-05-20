@@ -228,6 +228,27 @@ class GTestsAppTest(test_runner_test.TestCase):
                               '_module']['CommandLineArguments']
     self.assertTrue('--gtest_repeat=2' in cmd_args)
 
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_remove_gtest_sharding_env_vars(self, _1, _2):
+    gtests_app = test_apps.GTestsApp(
+        'app_path', env_vars=['GTEST_SHARD_INDEX=1', 'GTEST_TOTAL_SHARDS=2'])
+    assert all(key in gtests_app.env_vars
+               for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
+    gtests_app.remove_gtest_sharding_env_vars()
+    assert not any(key in gtests_app.env_vars
+                   for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
+
+  @mock.patch('test_apps.get_bundle_id', return_value=_BUNDLE_ID)
+  @mock.patch('os.path.exists', return_value=True)
+  def test_remove_gtest_sharding_env_vars_non_exist(self, _1, _2):
+    gtests_app = test_apps.GTestsApp('app_path')
+    assert not any(key in gtests_app.env_vars
+                   for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
+    gtests_app.remove_gtest_sharding_env_vars()
+    assert not any(key in gtests_app.env_vars
+                   for key in ['GTEST_SHARD_INDEX', 'GTEST_TOTAL_SHARDS'])
+
 
 class EgtestsAppTest(test_runner_test.TestCase):
   """Tests to test methods of EgTestsApp."""
