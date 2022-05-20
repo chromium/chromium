@@ -24,6 +24,11 @@ class OptimizationGuidePageLoadMetricsObserver
   ~OptimizationGuidePageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
+  ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
+                        const GURL& currently_committed_url,
+                        bool started_in_foreground) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
@@ -33,9 +38,6 @@ class OptimizationGuidePageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
-                        const GURL& currently_committed_url,
-                        bool started_in_foreground) override;
 
  private:
   // OptimizationGuideWebContentsObserver to pass any captured page load metrics
