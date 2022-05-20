@@ -465,6 +465,7 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
          manifest_->fetched &&
          (!params.valid_manifest || valid_manifest_->fetched) &&
          (!params.has_worker || worker_->fetched) &&
+         (!params.fetch_screenshots || is_screenshots_fetch_complete_) &&
          (!params.valid_primary_icon ||
           IsIconFetchComplete(IconUsage::kPrimary)) &&
          (!params.valid_splash_icon || IsIconFetchComplete(IconUsage::kSplash));
@@ -499,6 +500,7 @@ void InstallableManager::SetManifestDependentTasksComplete() {
   worker_->fetched = true;
   SetIconFetched(IconUsage::kPrimary);
   SetIconFetched(IconUsage::kSplash);
+  is_screenshots_fetch_complete_ = true;
 }
 
 void InstallableManager::CleanupAndStartNextTask() {
@@ -597,7 +599,8 @@ void InstallableManager::WorkOnTask() {
     CheckAndFetchBestIcon(GetIdealPrimaryIconSizeInPx(),
                           GetMinimumPrimaryIconSizeInPx(), IconPurpose::ANY,
                           IconUsage::kPrimary);
-  } else if (params.fetch_screenshots && !is_screenshots_fetch_complete_) {
+  } else if (params.fetch_screenshots && !screenshots_downloading_ &&
+             !is_screenshots_fetch_complete_) {
     CheckAndFetchScreenshots();
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
@@ -948,8 +951,9 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
         continue;
       }
 
-      auto dimensions = std::minmax(screenshot.width(), screenshot.height());
-      if (dimensions.second > dimensions.first * kMaximumScreenshotRatio)
+      int dimensions_max = std::max(screenshot.width(), screenshot.height());
+      int dimensions_min = std::min(screenshot.width(), screenshot.height());
+      if (dimensions_max > dimensions_min * kMaximumScreenshotRatio)
         continue;
 
       screenshots_.push_back(screenshot);
