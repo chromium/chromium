@@ -18,6 +18,8 @@ namespace installer {
 // to the end. When removing an unused value, retain the deprecated name and
 // value in a comment for posterity's sake, but take the liberty of removing the
 // old doc string.
+// The values in this enum must be kept in sync with the SetupInstallResult enum
+// in enums.xml
 enum InstallStatus {
   FIRST_INSTALL_SUCCESS = 0,      // First install of Chrome succeeded.
   INSTALL_REPAIRED = 1,           // Same version reinstalled for repair.
