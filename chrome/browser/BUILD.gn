@@ -1537,8 +1537,6 @@ static_library("browser") {
     "segmentation_platform/default_model/feed_user_segment.h",
     "segmentation_platform/default_model/low_user_engagement_model.cc",
     "segmentation_platform/default_model/low_user_engagement_model.h",
-    "segmentation_platform/default_model/metadata_writer.cc",
-    "segmentation_platform/default_model/metadata_writer.h",
     "segmentation_platform/default_model/query_tiles_model.cc",
     "segmentation_platform/default_model/query_tiles_model.h",
     "segmentation_platform/model_provider_factory_impl.cc",

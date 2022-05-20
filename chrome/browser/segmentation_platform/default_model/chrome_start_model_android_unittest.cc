@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/segmentation_platform/internal/database/metadata_utils.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {

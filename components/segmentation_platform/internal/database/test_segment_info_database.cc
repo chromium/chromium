@@ -10,37 +10,12 @@
 #include "base/metrics/metrics_hashes.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/constants.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
-#include "components/segmentation_platform/internal/signals/ukm_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::test {
-
-namespace {
-void AddFeature(proto::SegmentInfo* segment_info,
-                proto::SignalType signal_type,
-                const std::string& name,
-                uint64_t bucket_count,
-                uint64_t tensor_length,
-                proto::Aggregation aggregation,
-                const std::vector<int32_t>& accepted_enum_ids) {
-  proto::SegmentationModelMetadata* metadata =
-      segment_info->mutable_model_metadata();
-  proto::InputFeature* input = metadata->add_input_features();
-  proto::UMAFeature* feature = input->mutable_uma_feature();
-  feature->set_type(signal_type);
-  feature->set_name(name);
-  feature->set_name_hash(base::HashMetricName(name));
-  feature->set_bucket_count(bucket_count);
-  feature->set_tensor_length(tensor_length);
-  feature->set_aggregation(aggregation);
-
-  for (int32_t accepted_enum_id : accepted_enum_ids)
-    feature->add_enum_ids(accepted_enum_id);
-}
-}  // namespace
 
 TestSegmentInfoDatabase::TestSegmentInfoDatabase()
     : SegmentInfoDatabase(nullptr) {}
@@ -123,8 +98,16 @@ void TestSegmentInfoDatabase::AddUserActionFeature(
     uint64_t tensor_length,
     proto::Aggregation aggregation) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  AddFeature(info, proto::SignalType::USER_ACTION, name, bucket_count,
-             tensor_length, aggregation, {});
+  MetadataWriter writer(info->mutable_model_metadata());
+  MetadataWriter::UMAFeature feature{
+      .signal_type = proto::SignalType::USER_ACTION,
+      .name = name.c_str(),
+      .bucket_count = bucket_count,
+      .tensor_length = tensor_length,
+      .aggregation = aggregation,
+      .accepted_enum_ids = nullptr};
+  MetadataWriter::UMAFeature features[] = {feature};
+  writer.AddUmaFeatures(features, 1);
 }
 
 void TestSegmentInfoDatabase::AddHistogramValueFeature(
@@ -134,8 +117,16 @@ void TestSegmentInfoDatabase::AddHistogramValueFeature(
     uint64_t tensor_length,
     proto::Aggregation aggregation) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  AddFeature(info, proto::SignalType::HISTOGRAM_VALUE, name, bucket_count,
-             tensor_length, aggregation, {});
+  MetadataWriter writer(info->mutable_model_metadata());
+  MetadataWriter::UMAFeature feature{
+      .signal_type = proto::SignalType::HISTOGRAM_VALUE,
+      .name = name.c_str(),
+      .bucket_count = bucket_count,
+      .tensor_length = tensor_length,
+      .aggregation = aggregation,
+      .accepted_enum_ids = nullptr};
+  MetadataWriter::UMAFeature features[] = {feature};
+  writer.AddUmaFeatures(features, 1);
 }
 
 void TestSegmentInfoDatabase::AddHistogramEnumFeature(
@@ -146,26 +137,26 @@ void TestSegmentInfoDatabase::AddHistogramEnumFeature(
     proto::Aggregation aggregation,
     const std::vector<int32_t>& accepted_enum_ids) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  AddFeature(info, proto::SignalType::HISTOGRAM_ENUM, name, bucket_count,
-             tensor_length, aggregation, accepted_enum_ids);
+  MetadataWriter writer(info->mutable_model_metadata());
+  MetadataWriter::UMAFeature feature{
+      .signal_type = proto::SignalType::HISTOGRAM_ENUM,
+      .name = name.c_str(),
+      .bucket_count = bucket_count,
+      .tensor_length = tensor_length,
+      .aggregation = aggregation,
+      .enum_ids_size = accepted_enum_ids.size(),
+      .accepted_enum_ids = accepted_enum_ids.data()};
+  MetadataWriter::UMAFeature features[] = {feature};
+  writer.AddUmaFeatures(features, 1);
 }
 
-void TestSegmentInfoDatabase::AddSqlFeature(OptimizationTarget segment_id,
-                                            const std::string& sql,
-                                            const UkmConfig& event_config) {
+void TestSegmentInfoDatabase::AddSqlFeature(
+    OptimizationTarget segment_id,
+    const MetadataWriter::SqlFeature& feature) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  auto* metadata = info->mutable_model_metadata();
-  proto::SqlFeature* feature =
-      metadata->add_input_features()->mutable_sql_feature();
-  feature->set_sql(sql);
-  for (const auto& event_it : event_config.metrics_for_event_for_testing()) {
-    auto* ukm_event = feature->mutable_signal_filter()->add_ukm_events();
-    const UkmEventHash event_hash = event_it.first;
-    ukm_event->set_event_hash(event_hash.GetUnsafeValue());
-    const base::flat_set<UkmMetricHash>& metrics = event_it.second;
-    for (const auto& metric : metrics)
-      ukm_event->mutable_metric_hash_filter()->Add(metric.GetUnsafeValue());
-  }
+  MetadataWriter writer(info->mutable_model_metadata());
+  MetadataWriter::SqlFeature features[] = {feature};
+  writer.AddSqlFeatures(features, 1);
 }
 
 void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,

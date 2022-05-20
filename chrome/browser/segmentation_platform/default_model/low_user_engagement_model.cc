@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/segmentation_platform/default_model/metadata_writer.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 
 namespace segmentation_platform {
 

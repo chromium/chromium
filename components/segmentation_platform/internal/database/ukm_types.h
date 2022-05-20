@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 
@@ -20,6 +21,9 @@ constexpr base::TimeDelta kNumDaysToKeepUkm = base::Days(30);
 using UkmEventHash = base::IdTypeU64<class UkmEventHashTag>;
 using UkmMetricHash = base::IdTypeU64<class UkmMetricHashTag>;
 using UrlId = base::IdType64<class UrlIdTag>;
+
+using UkmEventsToMetricsMap =
+    base::flat_map<UkmEventHash, base::flat_set<UkmMetricHash>>;
 
 namespace processing {
 

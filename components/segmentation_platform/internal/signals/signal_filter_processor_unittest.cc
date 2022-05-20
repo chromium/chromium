@@ -35,11 +35,11 @@ using testing::SaveArg;
 namespace segmentation_platform {
 namespace {
 
-UkmEventHash TestEvent(uint64_t val) {
+constexpr UkmEventHash TestEvent(uint64_t val) {
   return UkmEventHash::FromUnsafeValue(val);
 }
 
-UkmMetricHash TestMetric(uint64_t val) {
+constexpr UkmMetricHash TestMetric(uint64_t val) {
   return UkmMetricHash::FromUnsafeValue(val);
 }
 
@@ -197,6 +197,33 @@ TEST_F(SignalFilterProcessorTest, HistogramRegistrationFlow) {
 TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
   const OptimizationTarget kSegmentId =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  const UkmEventHash kEvent1 = TestEvent(10);
+  const UkmEventHash kEvent2 = TestEvent(11);
+  const std::array<UkmMetricHash, 3> kMetrics1_1{
+      TestMetric(100), TestMetric(101), TestMetric(102)};
+  const std::array<UkmMetricHash, 3> kMetrics1_2{
+      TestMetric(100), TestMetric(104), TestMetric(105)};
+  const std::array<UkmMetricHash, 3> kMetrics2{TestMetric(103), TestMetric(104),
+                                               TestMetric(105)};
+  const std::array<MetadataWriter::SqlFeature::EventAndMetrics, 2> kConfig1{
+      MetadataWriter::SqlFeature::EventAndMetrics{
+          .event_hash = kEvent1,
+          .metrics = kMetrics1_1.data(),
+          .metrics_size = kMetrics1_1.size()},
+      MetadataWriter::SqlFeature::EventAndMetrics{
+          .event_hash = kEvent2,
+          .metrics = kMetrics2.data(),
+          .metrics_size = kMetrics2.size()}};
+  const std::array<MetadataWriter::SqlFeature::EventAndMetrics, 1> kConfig2{
+      MetadataWriter::SqlFeature::EventAndMetrics{
+          .event_hash = kEvent1,
+          .metrics = kMetrics1_2.data(),
+          .metrics_size = kMetrics1_2.size()}};
+  MetadataWriter::SqlFeature feature1{
+      .sql = "", .events = kConfig1.data(), .events_size = kConfig1.size()};
+  MetadataWriter::SqlFeature feature2{
+      .sql = "", .events = kConfig2.data(), .events_size = kConfig2.size()};
+
   EXPECT_CALL(*histogram_signal_handler_,
               SetRelevantHistograms(
                   std::set<std::pair<std::string, proto::SignalType>>()))
@@ -214,15 +241,16 @@ TEST_F(SignalFilterProcessorTest, UkmMetricsConfig) {
   signal_filter_processor_->OnSignalListUpdated();
 
   UkmConfig config1;
-  config1.AddEvent(TestEvent(10),
-                   {TestMetric(100), TestMetric(101), TestMetric(102)});
-  config1.AddEvent(TestEvent(11),
-                   {TestMetric(103), TestMetric(104), TestMetric(105)});
-  segment_database_->AddSqlFeature(kSegmentId, "", config1);
+  config1.AddEvent(kEvent1, base::flat_set<UkmMetricHash>(kMetrics1_1.begin(),
+                                                          kMetrics1_1.end()));
+  config1.AddEvent(kEvent2, base::flat_set<UkmMetricHash>(kMetrics2.begin(),
+                                                          kMetrics2.end()));
+  segment_database_->AddSqlFeature(kSegmentId, feature1);
+
   UkmConfig config2;
-  config2.AddEvent(TestEvent(10),
-                   {TestMetric(100), TestMetric(104), TestMetric(105)});
-  segment_database_->AddSqlFeature(kSegmentId, "", config2);
+  config2.AddEvent(kEvent1, base::flat_set<UkmMetricHash>(kMetrics1_2.begin(),
+                                                          kMetrics1_2.end()));
+  segment_database_->AddSqlFeature(kSegmentId, feature2);
 
   config2.Merge(config1);
 

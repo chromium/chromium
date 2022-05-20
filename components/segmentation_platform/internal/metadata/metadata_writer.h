@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_DEFAULT_MODEL_METADATA_WRITER_H_
-#define CHROME_BROWSER_SEGMENTATION_PLATFORM_DEFAULT_MODEL_METADATA_WRITER_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_WRITER_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_WRITER_H_
 
 #include <cinttypes>
 #include <cstddef>
 
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
-
-// TODO(ssid): Move these functions to components/segmentation to be used by all
-// the default models.
 
 // Utility to write metadata proto for default models.
 class MetadataWriter {
@@ -59,8 +57,24 @@ class MetadataWriter {
     }
   };
 
-  // Appends list of UMA features in order.
+  // Defines a feature based on a SQL query.
+  // TODO(ssid): Support custom inputs.
+  struct SqlFeature {
+    const char* const sql{nullptr};
+    struct EventAndMetrics {
+      const UkmEventHash event_hash;
+      const UkmMetricHash* const metrics{nullptr};
+      const size_t metrics_size{0};
+    };
+    const EventAndMetrics* const events{nullptr};
+    const size_t events_size{0};
+  };
+
+  // Appends the list of UMA features in order.
   void AddUmaFeatures(const UMAFeature features[], size_t features_size);
+
+  // Appends the list of SQL features in order.
+  void AddSqlFeatures(const SqlFeature features[], size_t features_size);
 
   // Appends a list of discrete mapping in order.
   void AddDiscreteMappingEntries(const std::string& key,
@@ -80,4 +94,4 @@ class MetadataWriter {
 
 }  // namespace segmentation_platform
 
-#endif  // CHROME_BROWSER_SEGMENTATION_PLATFORM_DEFAULT_MODEL_METADATA_WRITER_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_WRITER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/segmentation_platform/default_model/metadata_writer.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -28,6 +28,25 @@ void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
 
     for (size_t j = 0; j < feature.enum_ids_size; j++) {
       uma_feature->add_enum_ids(feature.accepted_enum_ids[j]);
+    }
+  }
+}
+
+void MetadataWriter::AddSqlFeatures(const SqlFeature features[],
+                                    size_t features_size) {
+  proto::SqlFeature* feature =
+      metadata_->add_input_features()->mutable_sql_feature();
+  for (size_t i = 0; i < features_size; ++i) {
+    const auto& f = features[i];
+    feature->set_sql(f.sql);
+    for (size_t ev = 0; ev < f.events_size; ++ev) {
+      const auto& event = f.events[ev];
+      auto* ukm_event = feature->mutable_signal_filter()->add_ukm_events();
+      ukm_event->set_event_hash(event.event_hash.GetUnsafeValue());
+      for (size_t m = 0; m < event.metrics_size; ++m) {
+        ukm_event->mutable_metric_hash_filter()->Add(
+            event.metrics[m].GetUnsafeValue());
+      }
     }
   }
 }
