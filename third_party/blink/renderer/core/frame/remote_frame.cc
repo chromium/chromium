@@ -205,11 +205,8 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   // The process where this frame actually lives won't have sufficient
   // information to upgrade the url, since it won't have access to the
   // origin context. Do it now.
-  const FetchClientSettingsObject* fetch_client_settings_object = nullptr;
-  if (window) {
-    fetch_client_settings_object =
-        &window->Fetcher()->GetProperties().GetFetchClientSettingsObject();
-  }
+  const FetchClientSettingsObject* fetch_client_settings_object =
+      &window->Fetcher()->GetProperties().GetFetchClientSettingsObject();
   MixedContentChecker::UpgradeInsecureRequest(
       frame_request.GetResourceRequest(), fetch_client_settings_object, window,
       frame_request.GetFrameType(),
