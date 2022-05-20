@@ -22,6 +22,7 @@ namespace sequence_manager {
 class BASE_EXPORT LazyNow {
  public:
   explicit LazyNow(TimeTicks now);
+  explicit LazyNow(absl::optional<TimeTicks> now, const TickClock* tick_clock);
   explicit LazyNow(const TickClock* tick_clock);
   LazyNow(const LazyNow&) = delete;
   LazyNow& operator=(const LazyNow&) = delete;
@@ -34,11 +35,11 @@ class BASE_EXPORT LazyNow {
   bool has_value() const { return !!now_; }
 
  private:
+  absl::optional<TimeTicks> now_;
   // `tick_clock_` is not a raw_ptr<TickClock> as a performance optimization:
   // The pointee doesn't need UaF protection (it has the same lifetime as the
   // theead/sequence).
   RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
-  absl::optional<TimeTicks> now_;
 };
 
 }  // namespace sequence_manager

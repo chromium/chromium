@@ -48,11 +48,12 @@ class SequencedTaskSource {
   // DidRunTask() must be invoked before the next call to SelectNextTask().
   // |option| allows control on which kind of tasks can be selected.
   virtual absl::optional<SelectedTask> SelectNextTask(
+      LazyNow& lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) = 0;
 
   // Notifies this source that the task previously obtained
   // from SelectNextTask() has been completed.
-  virtual void DidRunTask() = 0;
+  virtual void DidRunTask(LazyNow& lazy_now) = 0;
 
   // Removes all canceled delayed tasks from the front of the queue. After
   // calling this, GetPendingWakeUp() is guaranteed to return a ready time for a

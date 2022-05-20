@@ -180,12 +180,13 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   DCHECK(sequence_);
 
   work_deduplicator_.OnWorkStarted();
+  absl::optional<base::TimeTicks> recent_time;
 
   WeakPtr<ThreadControllerImpl> weak_ptr = weak_factory_.GetWeakPtr();
-  // TODO(scheduler-dev): Consider moving to a time based work batch instead.
   for (int i = 0; i < main_sequence_only().work_batch_size_; i++) {
+    LazyNow lazy_now(recent_time, time_source_);
     absl::optional<SequencedTaskSource::SelectedTask> selected_task =
-        sequence_->SelectNextTask();
+        sequence_->SelectNextTask(lazy_now);
     if (!selected_task)
       break;
 
@@ -214,7 +215,18 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
 
       // This processes microtasks, hence all scoped operations above must end
       // after it.
-      sequence_->DidRunTask();
+      LazyNow lazy_now_after_run_task(time_source_);
+      sequence_->DidRunTask(lazy_now_after_run_task);
+
+      // If DidRunTask() read the clock (lazy_now_after_run_task.has_value()),
+      // store it in `recent_time` so it can be reused by SelectNextTask() at
+      // the next loop iteration.
+      if (lazy_now_after_run_task.has_value()) {
+        recent_time =
+            absl::optional<base::TimeTicks>(lazy_now_after_run_task.Now());
+      } else {
+        recent_time.reset();
+      }
     }
     main_sequence_only().run_level_tracker.OnTaskEnded();
 

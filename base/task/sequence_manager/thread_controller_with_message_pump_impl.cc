@@ -39,7 +39,12 @@ TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
   return std::min(next_run_time, lazy_now->Now() + Days(1));
 }
 
+// Feature to run tasks by batches before pumping out messages.
+const Feature kRunTasksByBatches = {"RunThreadControllerTasksByBatches",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 std::atomic_bool g_align_wake_ups = false;
+std::atomic_bool g_run_tasks_by_batches = false;
 std::atomic<TimeDelta> g_task_leeway{WakeUp::kDefaultLeeway};
 
 TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
@@ -57,6 +62,8 @@ TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
 void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
   g_align_wake_ups = FeatureList::IsEnabled(kAlignWakeUps);
   g_task_leeway.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
+  g_run_tasks_by_batches.store(FeatureList::IsEnabled(kRunTasksByBatches),
+                               std::memory_order_relaxed);
 }
 
 // static
@@ -66,6 +73,9 @@ void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
       std::memory_order_relaxed);
   g_task_leeway.store(kTaskLeewayParam.default_value,
                       std::memory_order_relaxed);
+  g_run_tasks_by_batches.store(
+      kRunTasksByBatches.default_state == FEATURE_ENABLED_BY_DEFAULT,
+      std::memory_order_relaxed);
 }
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
@@ -293,9 +303,13 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   // This will inform the MessagePump to schedule a new continuation based on
   // the information below, but even if its immediate let the native sequence
   // have a chance to run.
-  if (!main_thread_only().yield_to_native_after_batch.is_null() &&
-      continuation_lazy_now.Now() <
-          main_thread_only().yield_to_native_after_batch) {
+  // When we have |g_run_tasks_by_batches| active we want to always set the flag
+  // to true to have a similar behavior on Android as on the desktop platforms
+  // for this experiment.
+  if (g_run_tasks_by_batches.load(std::memory_order_relaxed) ||
+      (!main_thread_only().yield_to_native_after_batch.is_null() &&
+       continuation_lazy_now.Now() <
+           main_thread_only().yield_to_native_after_batch)) {
     next_work_info.yield_to_native = true;
   }
   // Schedule a continuation.
@@ -355,19 +369,42 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
 
   DCHECK(main_thread_only().task_source);
 
-  for (int i = 0; i < main_thread_only().work_batch_size; i++) {
-    // Include SelectNextTask() in the scope of the work item. This ensures it's
-    // covered in tracing and hang reports. This is particularly important when
-    // SelectNextTask() finds no work immediately after a wakeup, otherwise the
-    // power-inefficient wakeup is invisible in tracing.
+  // Keep running tasks for up to 8ms before yielding to the pump when
+  // |g_run_tasks_by_batches| is true.
+  const base::TimeDelta batch_duration =
+      g_run_tasks_by_batches.load(std::memory_order_relaxed)
+          ? base::Milliseconds(8)
+          : base::Milliseconds(0);
+
+  const absl::optional<base::TimeTicks> start_time =
+      batch_duration.is_zero()
+          ? absl::nullopt
+          : absl::optional<base::TimeTicks>(time_source_->NowTicks());
+  absl::optional<base::TimeTicks> recent_time = start_time;
+
+  // Loops for |batch_duration|, or |work_batch_size| times if |batch_duration|
+  // is zero.
+  for (int num_tasks_executed = 0;
+       (!batch_duration.is_zero() &&
+        (recent_time.value() - start_time.value()) < batch_duration) ||
+       (batch_duration.is_zero() &&
+        num_tasks_executed < main_thread_only().work_batch_size);
+       ++num_tasks_executed) {
+    // Include SelectNextTask() in the scope of the work item. This ensures
+    // it's covered in tracing and hang reports. This is particularly
+    // important when SelectNextTask() finds no work immediately after a
+    // wakeup, otherwise the power-inefficient wakeup is invisible in
+    // tracing.
     auto work_item_scope = BeginWorkItem();
 
     const SequencedTaskSource::SelectTaskOption select_task_option =
         power_monitor_.IsProcessInPowerSuspendState()
             ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
             : SequencedTaskSource::SelectTaskOption::kDefault;
+    LazyNow lazy_now(recent_time, time_source_);
     absl::optional<SequencedTaskSource::SelectedTask> selected_task =
-        main_thread_only().task_source->SelectNextTask(select_task_option);
+        main_thread_only().task_source->SelectNextTask(lazy_now,
+                                                       select_task_option);
     if (!selected_task)
       break;
 
@@ -389,13 +426,21 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
                                 selected_task->task_execution_trace_logger.Run(
                                     ctx, selected_task->task);
                             });
-
     // This processes microtasks and is intentionally included in
     // |work_item_scope|.
-    main_thread_only().task_source->DidRunTask();
+    LazyNow lazy_now_after_run_task(time_source_);
+    main_thread_only().task_source->DidRunTask(lazy_now_after_run_task);
 
-    // When Quit() is called we must stop running the batch because the caller
-    // expects per-task granularity.
+    // If DidRunTask() read the clock (lazy_now_after_run_task.has_value()) or
+    // if |batch_duration| > 0, store the clock value in `recent_time` so it can
+    // be reused by SelectNextTask() at the next loop iteration.
+    if (lazy_now_after_run_task.has_value() || !batch_duration.is_zero())
+      recent_time = lazy_now_after_run_task.Now();
+    else
+      recent_time.reset();
+
+    // When Quit() is called we must stop running the batch because the
+    // caller expects per-task granularity.
     if (main_thread_only().quit_pending)
       break;
   }

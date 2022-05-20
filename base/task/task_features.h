@@ -84,6 +84,9 @@ extern const BASE_EXPORT base::Feature kAlignWakeUps;
 // based on explicit DelayPolicy rather than based on a threshold.
 extern const BASE_EXPORT base::Feature kExplicitHighResolutionTimerWin;
 
+// Feature to run tasks by batches before pumping out messages.
+extern const BASE_EXPORT base::Feature kRunTasksByBatches;
+
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_

@@ -11,15 +11,19 @@
 namespace base {
 namespace sequence_manager {
 
-LazyNow::LazyNow(TimeTicks now) : tick_clock_(nullptr), now_(now) {}
+LazyNow::LazyNow(TimeTicks now) : now_(now), tick_clock_(nullptr) {}
 
-LazyNow::LazyNow(const TickClock* tick_clock)
-    : tick_clock_(tick_clock), now_() {
+LazyNow::LazyNow(absl::optional<TimeTicks> now, const TickClock* tick_clock)
+    : now_(now), tick_clock_(tick_clock) {
+  DCHECK(tick_clock);
+}
+
+LazyNow::LazyNow(const TickClock* tick_clock) : tick_clock_(tick_clock) {
   DCHECK(tick_clock);
 }
 
 LazyNow::LazyNow(LazyNow&& move_from) noexcept
-    : tick_clock_(move_from.tick_clock_), now_(move_from.now_) {
+    : now_(move_from.now_), tick_clock_(move_from.tick_clock_) {
   move_from.tick_clock_ = nullptr;
   move_from.now_ = absl::nullopt;
 }

@@ -15,8 +15,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_features.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -118,6 +120,7 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
   ~FakeSequencedTaskSource() override = default;
 
   absl::optional<SelectedTask> SelectNextTask(
+      LazyNow& lazy_now,
       SelectTaskOption option) override {
     if (tasks_.empty())
       return absl::nullopt;
@@ -132,7 +135,7 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
     return SelectedTask(running_stack_.back(), TaskExecutionTraceLogger());
   }
 
-  void DidRunTask() override { running_stack_.pop_back(); }
+  void DidRunTask(LazyNow& lazy_now) override { running_stack_.pop_back(); }
 
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override {}
 
@@ -964,6 +967,45 @@ TEST_F(ThreadControllerWithMessagePumpTest,
       }));
 
   RunLoop().Run();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatches) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  scoped_feature_list_.InitAndEnableFeature(kRunTasksByBatches);
+  internal::ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+
+  int task_counter = 0;
+  for (int i = 0; i < 2; i++) {
+    task_source_.AddTask(
+        FROM_HERE, BindLambdaForTesting([&] { task_counter++; }), TimeTicks());
+  }
+  thread_controller_.DoWork();
+
+  EXPECT_EQ(task_counter, 2);
+  internal::ThreadControllerWithMessagePumpImpl::ResetFeatures();
+}
+
+TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  scoped_feature_list_.InitAndEnableFeature(kRunTasksByBatches);
+  internal::ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+
+  int task_counter = 0;
+  clock_.SetNowTicks(Seconds(0));
+
+  for (int i = 0; i < 4; i++) {
+    task_source_.AddTask(FROM_HERE, BindLambdaForTesting([&] {
+                           clock_.Advance(base::Milliseconds(4));
+                           task_counter++;
+                         }),
+                         clock_.NowTicks());
+  }
+  thread_controller_.DoWork();
+
+  EXPECT_EQ(task_counter, 2);
+  internal::ThreadControllerWithMessagePumpImpl::ResetFeatures();
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest,

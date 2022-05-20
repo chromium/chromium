@@ -568,9 +568,9 @@ TEST_P(SequenceManagerTest,
   queues[2]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   RunLoop().RunUntilIdle();
-  // Now is called when each task starts running and when its completed.
-  // 6 * 2 = 12 calls.
-  EXPECT_EQ(12, GetNowTicksCallCount());
+  // Now is called when we start work and then for each task when it's
+  // completed. 1 + 6  = 7 calls.
+  EXPECT_EQ(7, GetNowTicksCallCount());
 }
 
 TEST_P(SequenceManagerTest,
@@ -594,8 +594,8 @@ TEST_P(SequenceManagerTest,
 
   RunLoop().RunUntilIdle();
   // Now is called each time a task is queued, when first task is started
-  // running, and when a task is completed. 6 * 3 = 18 calls.
-  EXPECT_EQ(18, GetNowTicksCallCount());
+  // running, and when a task is completed. 1 + 6 * 2 = 13 calls.
+  EXPECT_EQ(13, GetNowTicksCallCount());
 }
 
 void NullTask() {}
@@ -2494,10 +2494,11 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_ImmediateTask) {
   Mock::VerifyAndClearExpectations(&throttler);
 
   // Unless the immediate work queue is emptied.
-  sequence_manager()->SelectNextTask();
-  sequence_manager()->DidRunTask();
-  sequence_manager()->SelectNextTask();
-  sequence_manager()->DidRunTask();
+  LazyNow lazy_now(mock_tick_clock());
+  sequence_manager()->SelectNextTask(lazy_now);
+  sequence_manager()->DidRunTask(lazy_now);
+  sequence_manager()->SelectNextTask(lazy_now);
+  sequence_manager()->DidRunTask(lazy_now);
   EXPECT_CALL(throttler, OnHasImmediateTask());
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
   sequence_manager()->ReloadEmptyWorkQueues();
@@ -3505,9 +3506,9 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
 
   // No task should be ready to execute.
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kDefault));
+      lazy_now, SequencedTaskSource::SelectTaskOption::kDefault));
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
+      lazy_now, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   EXPECT_EQ((WakeUp{lazy_now.Now() + kDelay, kLeeway}),
             sequence_manager()->GetPendingWakeUp(&lazy_now));
@@ -3522,7 +3523,7 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
   // Delayed task is ready to be executed. Consider it only if not in power
   // suspend state.
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
       absl::nullopt,
       sequence_manager()->GetPendingWakeUp(
@@ -3530,8 +3531,8 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelected) {
 
   // Execute the delayed task.
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kDefault));
-  sequence_manager()->DidRunTask();
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kDefault));
+  sequence_manager()->DidRunTask(lazy_now2);
   EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 
   // Tidy up.
@@ -3570,8 +3571,8 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
 
   // Immediate task should be ready to execute, execute it.
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
-  sequence_manager()->DidRunTask();
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
+  sequence_manager()->DidRunTask(lazy_now);
 
   // Delayed task is ready to be executed. Consider it only if not in power
   // suspend state. This test differs from
@@ -3579,7 +3580,7 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
   // tasks are ignored even if they're already in the ready queue (per having
   // performed task selection already before running the immediate task above).
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
       absl::nullopt,
       sequence_manager()->GetPendingWakeUp(
@@ -3587,12 +3588,12 @@ TEST_P(SequenceManagerTest, DelayedTasksNotSelectedWithImmediateTask) {
 
   // Execute the delayed task.
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kDefault));
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kDefault));
   EXPECT_EQ(
       absl::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
-  sequence_manager()->DidRunTask();
+  sequence_manager()->DidRunTask(lazy_now2);
 
   // Tidy up.
   queue->ShutdownTaskQueue();
@@ -3634,28 +3635,28 @@ TEST_P(SequenceManagerTest,
 
   // Immediate tasks should be ready to execute, execute them.
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
-  sequence_manager()->DidRunTask();
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
+  sequence_manager()->DidRunTask(lazy_now2);
   EXPECT_TRUE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
-  sequence_manager()->DidRunTask();
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
+  sequence_manager()->DidRunTask(lazy_now2);
 
   // No immediate tasks can be executed anymore.
   EXPECT_FALSE(sequence_manager()->SelectNextTask(
-      SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
+      lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
   EXPECT_EQ(
       absl::nullopt,
       sequence_manager()->GetPendingWakeUp(
           &lazy_now2, SequencedTaskSource::SelectTaskOption::kSkipDelayedTask));
 
   // Execute delayed tasks.
-  EXPECT_TRUE(sequence_manager()->SelectNextTask());
-  sequence_manager()->DidRunTask();
-  EXPECT_TRUE(sequence_manager()->SelectNextTask());
-  sequence_manager()->DidRunTask();
+  EXPECT_TRUE(sequence_manager()->SelectNextTask(lazy_now2));
+  sequence_manager()->DidRunTask(lazy_now2);
+  EXPECT_TRUE(sequence_manager()->SelectNextTask(lazy_now2));
+  sequence_manager()->DidRunTask(lazy_now2);
 
   // No delayed tasks can be executed anymore.
-  EXPECT_FALSE(sequence_manager()->SelectNextTask());
+  EXPECT_FALSE(sequence_manager()->SelectNextTask(lazy_now2));
   EXPECT_EQ(absl::nullopt, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 
   // Tidy up.
