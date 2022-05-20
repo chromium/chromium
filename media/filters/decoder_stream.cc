@@ -453,22 +453,35 @@ void DecoderStream<StreamType>::Decode(scoped_refptr<DecoderBuffer> buffer) {
 
   // We don't know if the decoder will error out on first decode yet. Save the
   // buffer to feed it to the fallback decoder later if needed.
-  if (!decoder_produced_a_frame_)
+  if (!decoder_produced_a_frame_) {
     pending_buffers_.push_back(buffer);
+  }
 
   // It's possible for a buffer to arrive from the demuxer right after the
   // fallback decoder successfully completed its initialization. At this point
   // |pending_buffers_| has already been copied to |fallback_buffers_| and we
   // need to append it ourselves.
-  if (!fallback_buffers_.empty()) {
-    fallback_buffers_.push_back(buffer);
+  if (!fallback_buffers_.empty() || fallback_buffers_being_decoded_ > 0) {
+    fallback_buffers_.push_back(std::exchange(buffer, nullptr));
 
-    scoped_refptr<DecoderBuffer> temp = std::move(fallback_buffers_.front());
-    fallback_buffers_.pop_front();
-    DecodeInternal(std::move(temp));
-  } else {
-    DecodeInternal(std::move(buffer));
+    // There may already be a pending buffer being decoded after decoder
+    // change. Since decoders can have different max decode requests, we need to
+    // make sure we can actually decode more buffers here.
+    if (!CanDecodeMore()) {
+      return;
+    }
   }
+
+  // TODO(https://crbug.com/1324732): We should DCHECK(CanDecodeMore()) here,
+  // but this breaks a number of tests.
+
+  if (!fallback_buffers_.empty()) {
+    buffer = std::move(fallback_buffers_.front());
+    fallback_buffers_.pop_front();
+    ++fallback_buffers_being_decoded_;
+  }
+
+  DecodeInternal(std::move(buffer));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -561,6 +574,10 @@ void DecoderStream<StreamType>::OnDecodeDone(
       // Any successful decode counts!
       if (buffer_size > 0)
         traits_->ReportStatistics(statistics_cb_, buffer_size);
+
+      if (fallback_buffers_being_decoded_ > 0) {
+        --fallback_buffers_being_decoded_;
+      }
 
       if (state_ == STATE_NORMAL) {
         if (end_of_stream) {
@@ -671,6 +688,7 @@ void DecoderStream<StreamType>::ReadFromDemuxerStream() {
   if (!fallback_buffers_.empty()) {
     scoped_refptr<DecoderBuffer> buffer = std::move(fallback_buffers_.front());
     fallback_buffers_.pop_front();
+    ++fallback_buffers_being_decoded_;
 
     // Decode the buffer without re-appending it to |pending_buffers_|.
     DecodeInternal(std::move(buffer));
@@ -714,7 +732,7 @@ void DecoderStream<StreamType>::OnBufferReady(
     switch (status) {
       case DemuxerStream::kOk:
         // Save valid buffers to be consumed by the new decoder.
-        // |pending_buffers_| is copied to |fallback_buffers| in
+        // |pending_buffers_| is copied to |fallback_buffers_| in
         // OnDecoderSelected().
         pending_buffers_.push_back(std::move(buffer));
         break;
@@ -918,6 +936,7 @@ void DecoderStream<StreamType>::OnDecoderReset() {
   // Make sure we read directly from the demuxer after a reset.
   fallback_buffers_.clear();
   pending_buffers_.clear();
+  fallback_buffers_being_decoded_ = 0;
 
   if (state_ != STATE_FLUSHING_DECODER) {
     state_ = STATE_NORMAL;
