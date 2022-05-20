@@ -46,6 +46,7 @@
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -251,11 +252,11 @@ void AssistantManagerServiceImpl::Start(const absl::optional<UserInfo>& user,
   // rootfs if installabtion failed. No error handling needed.
   auto* client = chromeos::DlcserviceClient::Get();
   if (!client) {
-    InitAssistant(user, /*dlc_path=*/std::string());
+    InitAssistant(user);
     return;
   }
 
-  DVLOG(1) << "Install libassistant.so from DLC";
+  DVLOG(1) << "Installing libassistant.so from DLC";
   dlcservice::InstallRequest install_request;
   install_request.set_id(kLibassistantDlcId);
   client->Install(
@@ -470,10 +471,12 @@ void AssistantManagerServiceImpl::OnStateChanged(
 void AssistantManagerServiceImpl::OnInstallDlcComplete(
     const absl::optional<UserInfo>& user,
     const chromeos::DlcserviceClient::InstallResult& result) {
-  DVLOG(1) << "Installed libassistant.so from DLC";
-  std::string dlc_path;
+  absl::optional<std::string> dlc_path;
   if (result.error == dlcservice::kErrorNone) {
+    DVLOG(3) << "Installed libassistant.so from DLC";
     dlc_path = result.root_path;
+  } else {
+    DVLOG(1) << "Failed to install libassistant.so from DLC: " << result.error;
   }
 
   InitAssistant(user, dlc_path);
@@ -481,7 +484,7 @@ void AssistantManagerServiceImpl::OnInstallDlcComplete(
 
 void AssistantManagerServiceImpl::InitAssistant(
     const absl::optional<UserInfo>& user,
-    const std::string& dlc_path) {
+    const absl::optional<std::string>& dlc_path) {
   DCHECK(!IsServiceStarted());
 
   auto bootup_config = bootup_config_.Clone();
