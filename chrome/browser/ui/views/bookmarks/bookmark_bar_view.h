@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -171,7 +172,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnThemeChanged() override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
+  void ChildPreferredSizeChanged(views::View* child) override;
 
   // AccessiblePaneView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -319,7 +321,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   // Returns the node corresponding to |sender|, which is one of the
   // |bookmark_buttons_|.
-  const bookmarks::BookmarkNode* GetNodeForSender(View* sender) const;
+  const bookmarks::BookmarkNode* GetNodeForSender(views::View* sender) const;
 
   // Writes a BookmarkNodeData for node to data.
   void WriteBookmarkDragData(const bookmarks::BookmarkNode* node,

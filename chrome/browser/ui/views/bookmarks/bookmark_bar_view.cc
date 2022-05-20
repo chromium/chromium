@@ -1079,6 +1079,14 @@ void BookmarkBarView::VisibilityChanged(View* starting_from, bool is_visible) {
   }
 }
 
+void BookmarkBarView::ChildPreferredSizeChanged(views::View* child) {
+  // only rerender
+  if (child != saved_tab_group_bar_)
+    return;
+
+  InvalidateDrop();
+}
+
 void BookmarkBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARKS));
