@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

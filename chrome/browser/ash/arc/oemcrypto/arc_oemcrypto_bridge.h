@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
-#include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
