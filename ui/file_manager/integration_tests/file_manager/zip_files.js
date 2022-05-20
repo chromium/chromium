@@ -15,6 +15,12 @@ import {BASIC_ZIP_ENTRY_SET} from './test_data.js';
 const ZipCreationTimeHistogramName = 'FileBrowser.ZipTask.Time';
 
 /**
+ * The name of the UMA to track extract archive status.
+ * @const {string}
+ */
+const ExtractArchiveStatusHistogramName = 'FileBrowser.ExtractTask.Status';
+
+/**
  * Returns the expected file list row entries after opening (mounting) the
  * ENTRIES.zipArchive file list entry.
  */
@@ -349,6 +355,9 @@ testcase.zipExtractShowPanel = async () => {
         caller,
         `Expected feedback panel msg: "${expectedMsg}", got "${actualMsg}"`);
   });
+
+  // Check: a extract archive status histogram value should have been recorded.
+  await expectHistogramTotalCount(ExtractArchiveStatusHistogramName, 1);
 };
 
 /**
@@ -507,6 +516,9 @@ testcase.zipExtractCheckContent = async () => {
   await remoteCall.waitForElement(appId, '#file-list [file-name="folder"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="text.txt"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="image.png"]');
+
+  // Check: a extract archive status histogram value should have been recorded.
+  await expectHistogramTotalCount(ExtractArchiveStatusHistogramName, 1);
 };
 
 /**
@@ -570,6 +582,9 @@ testcase.zipExtractCheckDuplicates = async () => {
   await remoteCall.waitForElement(appId, '#file-list [file-name="folder"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="text.txt"]');
   await remoteCall.waitForElement(appId, '#file-list [file-name="image.png"]');
+
+  // Check: 2 extract archive status histogram value should have been recorded.
+  await expectHistogramTotalCount(ExtractArchiveStatusHistogramName, 2);
 };
 
 /**
@@ -614,6 +629,9 @@ testcase.zipExtractCheckEncodings = async () => {
   // Check: File content in the ZIP with decoded name should appear.
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="新しいフォルダ"]');
+
+  // Check: a extract archive status histogram value should have been recorded.
+  await expectHistogramTotalCount(ExtractArchiveStatusHistogramName, 1);
 };
 
 /**
@@ -689,4 +707,7 @@ testcase.zipExtractNotEnoughSpace = async () => {
         caller,
         `Expected feedback panel msg: "${expectedMsg}", got "${actualMsg}"`);
   });
+
+  // Check: a extract archive status histogram value should have been recorded.
+  await expectHistogramTotalCount(ExtractArchiveStatusHistogramName, 1);
 };
