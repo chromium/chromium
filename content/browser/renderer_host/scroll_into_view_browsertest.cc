@@ -883,10 +883,30 @@ IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
   RunTest();
 }
 
-// TODO(https://crbug.com/1325556): Re-enable when flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(ScrollIntoViewFencedFrameBrowserTest,
-                       DISABLED_RemoteFrameInFencedFrame) {
+                       RemoteFrameInFencedFrame) {
   ASSERT_TRUE(SetupTest("siteA{FencedFrame}(siteB(siteC))"));
+
+  // TODO(bokan): This is required due to a race in how page-level focus is
+  // transferred. If the race is won by the page level focus notification then
+  // it'll clobber the <input> focus and reset it to the main frame. In this
+  // case, trying again will work because the fenced frame tree already has
+  // page focus now so focusing it doesn't change page focus. See
+  // https://crbug.com/1327439.
+  {
+    VisualViewport viewport = GetVisualViewport();
+    double page_scale_factor_before = viewport.scale;
+
+    EXPECT_TRUE(ExecJs(InnerMostFrameTreeNode(), R"JS(
+      document.querySelector('input').focus({preventScroll: true});
+    )JS"));
+
+    // The test should start with fresh scroll and scale.
+    ASSERT_EQ(viewport.scale, page_scale_factor_before);
+    ASSERT_EQ(viewport.page_left, 0);
+    ASSERT_EQ(viewport.page_top, 0);
+  }
+
   RunTest();
 }
 
