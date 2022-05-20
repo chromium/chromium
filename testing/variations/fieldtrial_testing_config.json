@@ -1380,6 +1380,17 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_All_20220418",
+                    "params": {
+                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed"
+                    },
+                    "enable_features": [
+                        "AutomaticLazyFrameLoadingToAds",
+                        "AutomaticLazyFrameLoadingToEmbedUrls",
+                        "AutomaticLazyFrameLoadingToEmbeds"
+                    ]
+                },
+                {
                     "name": "Enabled_LazyEmbeds_20220418",
                     "params": {
                         "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed"
@@ -1390,6 +1401,29 @@
                     ],
                     "disable_features": [
                         "AutomaticLazyFrameLoadingToAds"
+                    ]
+                },
+                {
+                    "name": "Enabled_LazyAds_20220418",
+                    "enable_features": [
+                        "AutomaticLazyFrameLoadingToAds"
+                    ],
+                    "disable_features": [
+                        "AutomaticLazyFrameLoadingToEmbedUrls",
+                        "AutomaticLazyFrameLoadingToEmbeds"
+                    ]
+                },
+                {
+                    "name": "Control_20220418",
+                    "params": {
+                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed"
+                    },
+                    "enable_features": [
+                        "AutomaticLazyFrameLoadingToEmbedUrls"
+                    ],
+                    "disable_features": [
+                        "AutomaticLazyFrameLoadingToAds",
+                        "AutomaticLazyFrameLoadingToEmbeds"
                     ]
                 }
             ]

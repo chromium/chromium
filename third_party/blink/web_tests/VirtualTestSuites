@@ -1096,7 +1096,7 @@
     "prefix": "automatic-lazy-frame-loading-ads",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--enable-features=AutomaticLazyFrameLoadingToAds"]
+    "args": ["--enable-features=AutomaticLazyFrameLoadingToAds:timeout/1000"]
   },
   {
     "prefix": "initially-invisible-images-lcp",

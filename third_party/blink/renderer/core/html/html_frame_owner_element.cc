@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -276,6 +277,27 @@ bool IsEligibleForLazyEmbeds(KURL url) {
   return false;
 }
 
+// If kAutomaticLazyFrameLoadingToAds is enabled, calculate the timeout in
+// advance from the field trial param, otherwilse return 0;
+base::TimeDelta GetLazyAdsTimeoutMs() {
+  const base::TimeDelta defaultTimeout = base::Milliseconds(0);
+  if (!base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds))
+    return defaultTimeout;
+
+  const String timeout =
+      base::GetFieldTrialParamValueByFeature(
+          features::kAutomaticLazyFrameLoadingToAds, "timeout")
+          .c_str();
+  if (timeout.IsEmpty())
+    return defaultTimeout;
+
+  bool success;
+  const int timeoutMs = timeout.ToInt(&success);
+  DCHECK(success);
+
+  return base::Milliseconds(timeoutMs);
+}
+
 }  // namespace
 
 SubframeLoadingDisabler::SubtreeRootSet&
@@ -305,7 +327,8 @@ HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
       content_frame_(nullptr),
       embedded_content_view_(nullptr),
       should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
-      is_swapping_frames_(false) {}
+      is_swapping_frames_(false),
+      lazy_ads_timeout_ms_(GetLazyAdsTimeoutMs()) {}
 
 LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   // HTMLObjectElement and HTMLEmbedElement may return arbitrary layoutObjects
@@ -642,6 +665,10 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
           /*record_uma=*/true)) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
+    if (IsAdRelated()) {
+      SetTimeoutToStartAdFrameLoading();
+    }
+
     return true;
   }
   return false;
@@ -836,6 +863,26 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
     return false;
 
   return content_frame_->IsAdSubframe();
+}
+
+void HTMLFrameOwnerElement::LoadIfLazyOnIdle(base::TimeTicks deadline) {
+  LoadImmediatelyIfLazy();
+}
+
+void HTMLFrameOwnerElement::SetTimeoutToStartAdFrameLoading() {
+  if (!IsAdRelated() || !base::FeatureList::IsEnabled(
+                            features::kAutomaticLazyFrameLoadingToAds)) {
+    return;
+  }
+
+  // TODO(sisidovski) FrameScheduler should have the attribution of this task,
+  // but FrameScheduler doesn't expose
+  // SingleThreadIdleTaskRunner::PostIdleTask. So we call PostIdleTask here
+  // through the main thread scheduler.
+  ThreadScheduler::Current()->PostDelayedIdleTask(
+      FROM_HERE, lazy_ads_timeout_ms_,
+      WTF::Bind(&HTMLFrameOwnerElement::LoadIfLazyOnIdle,
+                WrapWeakPersistent(this)));
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
