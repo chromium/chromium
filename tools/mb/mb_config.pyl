@@ -354,6 +354,7 @@
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64_reclient',
       'VR Linux': 'vr_release_bot_reclient',
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
+      'Win x64 Builder (py2 less)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)(cross)': 'gpu_tests_release_bot_minimal_symbols_reclient_win_cross',
