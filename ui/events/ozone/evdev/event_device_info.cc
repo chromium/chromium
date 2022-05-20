@@ -392,18 +392,17 @@ bool IsDenylistedAbsoluteMouseDevice(const input_id& id) {
 
 }  // namespace
 
-EventDeviceInfo::EventDeviceInfo() {
-  memset(ev_bits_.data(), 0, sizeof(ev_bits_));
-  memset(key_bits_.data(), 0, sizeof(key_bits_));
-  memset(rel_bits_.data(), 0, sizeof(rel_bits_));
-  memset(abs_bits_.data(), 0, sizeof(abs_bits_));
-  memset(msc_bits_.data(), 0, sizeof(msc_bits_));
-  memset(sw_bits_.data(), 0, sizeof(sw_bits_));
-  memset(led_bits_.data(), 0, sizeof(led_bits_));
-  memset(ff_bits_.data(), 0, sizeof(ff_bits_));
-  memset(prop_bits_.data(), 0, sizeof(prop_bits_));
-  memset(abs_info_.data(), 0, sizeof(abs_info_));
-}
+EventDeviceInfo::EventDeviceInfo()
+    : ev_bits_{},
+      key_bits_{},
+      rel_bits_{},
+      abs_bits_{},
+      msc_bits_{},
+      sw_bits_{},
+      led_bits_{},
+      prop_bits_{},
+      ff_bits_{},
+      abs_info_{} {}
 
 EventDeviceInfo::~EventDeviceInfo() {}
 
