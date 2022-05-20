@@ -114,11 +114,9 @@ export interface ManageProfilesBrowserProxy {
   removeProfile(profilePath: string): void;
 
   /**
-   * Loads Google sign in page (and silently creates a profile with the
-   * specified color and account, if specified).
+   * Select an account to be added in Chrome.
    */
-  loadSignInProfileCreationFlow(profileColor: number|null, gaiaId: string):
-      void;
+  selectAccountLacros(profileColor: number|null, gaiaId: string): void;
 
   /**
    * Retrieves custom avatar list for the select avatar dialog.
@@ -205,8 +203,8 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send('getProfileStatistics', [profilePath]);
   }
 
-  loadSignInProfileCreationFlow(profileColor: number|null, gaiaId: string) {
-    chrome.send('loadSignInProfileCreationFlow', [profileColor, gaiaId]);
+  selectAccountLacros(profileColor: number|null, gaiaId: string) {
+    chrome.send('selectAccountLacros', [profileColor, gaiaId]);
   }
 
   getAvailableIcons() {

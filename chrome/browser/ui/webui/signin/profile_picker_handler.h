@@ -83,7 +83,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleSetProfileName(const base::ListValue* args);
 
   // TODO(crbug.com/1115056): Move to new handler for profile creation.
-  void HandleLoadSignInProfileCreationFlow(const base::ListValue* args);
+  void HandleSelectAccountLacros(const base::ListValue* args);
   void HandleGetNewProfileSuggestedThemeInfo(const base::ListValue* args);
   void HandleGetProfileThemeInfo(const base::ListValue* args);
   void HandleGetAvailableIcons(const base::ListValue* args);

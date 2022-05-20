@@ -143,7 +143,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
     // Explicitly record the page visit as this step is not pushed to the
     // history stack.
     recordPageVisited(ProfileCreationSteps.LOAD_SIGNIN);
-    this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(
+    this.manageProfilesBrowserProxy_.selectAccountLacros(
         this.profileThemeInfo.color, '');
   }
 

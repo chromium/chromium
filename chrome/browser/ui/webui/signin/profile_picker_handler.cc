@@ -410,10 +410,9 @@ void ProfilePickerHandler::RegisterMessages() {
       base::BindRepeating(&ProfilePickerHandler::HandleGetProfileStatistics,
                           base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
-      "loadSignInProfileCreationFlow",
-      base::BindRepeating(
-          &ProfilePickerHandler::HandleLoadSignInProfileCreationFlow,
-          base::Unretained(this)));
+      "selectAccountLacros",
+      base::BindRepeating(&ProfilePickerHandler::HandleSelectAccountLacros,
+                          base::Unretained(this)));
   // TODO(crbug.com/1115056): Consider renaming this message to
   // 'createLocalProfile' as this is only used for local profiles.
   web_ui()->RegisterDeprecatedMessageCallback(
@@ -892,7 +891,7 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
   FireWebUIListener("profile-statistics-received", std::move(dict));
 }
 
-void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
+void ProfilePickerHandler::HandleSelectAccountLacros(
     const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(2U, args->GetListDeprecated().size());

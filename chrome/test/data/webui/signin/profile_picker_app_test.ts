@@ -129,7 +129,7 @@ suite('ProfilePickerAppTest', function() {
     webUIListenerCallback('available-accounts-changed', []);
     flushTasks();
     choice!.$.signInButton.click();
-    return browserProxy.whenCalled('loadSignInProfileCreationFlow');
+    return browserProxy.whenCalled('selectAccountLacros');
   });
   // </if>
 
@@ -142,7 +142,7 @@ suite('ProfilePickerAppTest', function() {
     assertTrue(choice!.$.signInButton.disabled);
     assertTrue(choice!.$.notNowButton.disabled);
     assertTrue(choice!.$.backButton.disabled);
-    return browserProxy.whenCalled('loadSignInProfileCreationFlow');
+    return browserProxy.whenCalled('selectAccountLacros');
   });
 
   test('ThemeColorConsistentInProfileCreationViews', async function() {
@@ -216,6 +216,6 @@ suite('ProfilePickerAppTest', function() {
     const mainView =
         testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
     await whenCheck(mainView, () => mainView.classList.contains('active'));
-    await browserProxy.whenCalled('loadSignInProfileCreationFlow');
+    await browserProxy.whenCalled('selectAccountLacros');
   });
 });

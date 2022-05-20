@@ -438,7 +438,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
     args.Append(/*color=*/static_cast<int>(kProfileColor));
     args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
     web_contents()->GetWebUI()->ProcessWebUIMessage(
-        kNewProfileUrl, "loadSignInProfileCreationFlow", args);
+        kNewProfileUrl, "selectAccountLacros", args);
 
     // Wait for the Ash UI to show up.
     FakeAccountManagerUI* fake_ui = GetFakeAccountManagerUI();
