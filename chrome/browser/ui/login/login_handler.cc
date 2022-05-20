@@ -399,10 +399,11 @@ PasswordForm LoginHandler::MakeInputForPasswordManager(
     const GURL& request_url,
     const net::AuthChallengeInfo& auth_info) {
   PasswordForm dialog_form;
-  if (base::LowerCaseEqualsASCII(auth_info.scheme, net::kBasicAuthScheme)) {
+  if (base::EqualsCaseInsensitiveASCII(auth_info.scheme,
+                                       net::kBasicAuthScheme)) {
     dialog_form.scheme = PasswordForm::Scheme::kBasic;
-  } else if (base::LowerCaseEqualsASCII(auth_info.scheme,
-                                        net::kDigestAuthScheme)) {
+  } else if (base::EqualsCaseInsensitiveASCII(auth_info.scheme,
+                                              net::kDigestAuthScheme)) {
     dialog_form.scheme = PasswordForm::Scheme::kDigest;
   } else {
     dialog_form.scheme = PasswordForm::Scheme::kOther;
