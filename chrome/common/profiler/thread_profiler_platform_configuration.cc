@@ -201,38 +201,29 @@ void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
 
 double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
-  DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
+  // Profile all processes in browser test mode since they're disabled
+  // otherwise.
+  if (browser_test_mode_enabled())
+    return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
 
-  // Profile all supported processes in browser test mode.
-  if (browser_test_mode_enabled()) {
-    return 1.0;
-  }
+  if (process == metrics::CallStackProfileParams::Process::kRenderer)
+    return 0.4;
 
-  // TODO(https://crbug.com/1326430): Enable for all the default processes.
-  switch (process) {
-    case metrics::CallStackProfileParams::Process::kRenderer:
-      // There are empirically, on average, 1.3 renderer processes per browser
-      // process. This samples the renderer process at roughly the same
-      // frequency overall as the browser process.
-      // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
-      return 0.75;
-
-    default:
-      return 0.0;
-  }
+  // TODO(https://crbug.com/1004855): Enable for all the default processes.
+  return 0.0;
 }
 
 bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread) const {
-  // TODO(https://crbug.com/1326430): Enable for all the default processes.
-  switch (process) {
-    case metrics::CallStackProfileParams::Process::kRenderer:
-      return thread == metrics::CallStackProfileParams::Thread::kMain;
-
-    default:
-      return false;
+  // Enable on renderer process main thread in production, for now.
+  if (process == metrics::CallStackProfileParams::Process::kRenderer &&
+      thread == metrics::CallStackProfileParams::Thread::kMain) {
+    return true;
   }
+
+  // Otherwise enable in dedicated ThreadProfiler browser tests.
+  return browser_test_mode_enabled();
 }
 
 bool AndroidPlatformConfiguration::IsSupportedForChannel(
