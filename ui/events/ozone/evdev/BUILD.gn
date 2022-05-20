@@ -142,6 +142,8 @@ component("evdev") {
 
   if (is_chromeos_ash) {
     sources += [
+      "fake_keyboard_heuristic_metrics.cc",
+      "fake_keyboard_heuristic_metrics.h",
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]

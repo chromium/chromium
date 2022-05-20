@@ -42,6 +42,10 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>cros-connectivity@google.com</owner>
     <owner>hsuregan@chromium.org</owner>
   </variant>
+  <variant name="FakeKeyboardHeuristic" summary="Fake Keyboard Heuristic">
+    <owner>wmahon@chromium.org</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
   <variant name="FastPair" summary="Fast Pair">
     <owner>shanefitz@google.com</owner>
     <owner>julietlevesque@google.com</owner>

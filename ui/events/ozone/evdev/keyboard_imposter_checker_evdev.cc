@@ -44,6 +44,9 @@ bool KeyboardImposterCheckerEvdev::FlagIfImposter(
   }
 
   converter->SetSuspectedImposter(true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  fake_keyboard_heuristic_metrics_.RecordUsage(true);
+#endif
   return true;
 }
 
