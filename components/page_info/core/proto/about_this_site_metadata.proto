@@ -36,7 +36,18 @@ enum DurationPrecision {
 }
 
 message SiteDescription {
+  // The name of the site, e.g. "The New York Times".
+  // May not be present.
   optional string name = 1;
+
+  // The subtitle for the site.
+  // May not be present.
+  // If title is missing, subtitle will not be present either, but even for
+  // cases where there is a title there may not be a subtitle.
+  optional string subtitle = 5;
+
+  // The description of the site, e.g. "The New York Times is an American daily
+  // newspaper based in New York City..."
   optional string description = 2;
 
   // Information about the source of the description. Note that if your product
