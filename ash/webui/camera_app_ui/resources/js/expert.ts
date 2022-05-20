@@ -20,6 +20,8 @@ export function setExpertMode(enable: boolean): void {
  * Toggles expert mode.
  */
 export function toggleExpertMode(): void {
+  // TODO(b/231535710): When toggle expert mode, also check the state of all
+  // options under expert mode
   const newState = !state.get(state.State.EXPERT);
   setExpertMode(newState);
 }

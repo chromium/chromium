@@ -273,9 +273,9 @@ export class Camera extends View implements CameraViewUI {
     state.addObserver(state.State.ENABLE_MULTISTREAM_RECORDING, () => {
       this.cameraManager.reconfigure();
     });
-    for (const s of [state.State.EXPERT, state.State.ENABLE_PTZ_FOR_BUILTIN]) {
-      state.addObserver(s, () => this.cameraManager.reconfigure());
-    }
+    state.addObserver(state.State.ENABLE_PTZ_FOR_BUILTIN, () => {
+      this.cameraManager.reconfigure();
+    });
 
     this.initVideoEncoderOptions();
     await this.initScanMode();
