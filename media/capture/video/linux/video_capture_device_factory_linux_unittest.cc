@@ -35,6 +35,8 @@ class VideoCaptureDeviceFactoryLinuxTest
                                            std::move(fake_device_provider));
   }
 
+  void TearDown() override { task_environment_.RunUntilIdle(); }
+
   base::test::TaskEnvironment task_environment_;
   FakeV4L2Impl* fake_v4l2_;
   FakeDeviceProvider* fake_device_provider_;

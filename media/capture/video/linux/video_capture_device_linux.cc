@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "media/capture/video/linux/v4l2_capture_delegate.h"
 
@@ -56,15 +57,16 @@ VideoCaptureDeviceLinux::VideoCaptureDeviceLinux(
     const VideoCaptureDeviceDescriptor& device_descriptor)
     : device_descriptor_(device_descriptor),
       v4l2_(std::move(v4l2)),
-      v4l2_thread_("V4L2CaptureThread"),
+      task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
+           base::WithBaseSyncPrimitives()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
       rotation_(0) {}
 
 VideoCaptureDeviceLinux::~VideoCaptureDeviceLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Check if the thread is running.
-  // This means that the device has not been StopAndDeAllocate()d properly.
-  DCHECK(!v4l2_thread_.IsRunning());
-  v4l2_thread_.Stop();
+  DCHECK(!capture_impl_)
+      << "StopAndDeAllocate() must be called before destruction.";
 }
 
 void VideoCaptureDeviceLinux::AllocateAndStart(
@@ -72,97 +74,74 @@ void VideoCaptureDeviceLinux::AllocateAndStart(
     std::unique_ptr<VideoCaptureDevice::Client> client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!capture_impl_);
-  if (v4l2_thread_.IsRunning())
-    return;  // Wrong state.
-  v4l2_thread_.Start();
 
   const int line_frequency =
       TranslatePowerLineFrequencyToV4L2(GetPowerLineFrequency(params));
   capture_impl_ = std::make_unique<V4L2CaptureDelegate>(
-      v4l2_.get(), device_descriptor_, v4l2_thread_.task_runner(),
-      line_frequency, rotation_);
+      v4l2_.get(), device_descriptor_, task_runner_, line_frequency, rotation_);
   if (!capture_impl_) {
     client->OnError(VideoCaptureError::
                         kDeviceCaptureLinuxFailedToCreateVideoCaptureDelegate,
                     FROM_HERE, "Failed to create VideoCaptureDelegate");
     return;
   }
-  v4l2_thread_.task_runner()->PostTask(
+  task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&V4L2CaptureDelegate::AllocateAndStart,
                      capture_impl_->GetWeakPtr(),
                      params.requested_format.frame_size.width(),
                      params.requested_format.frame_size.height(),
                      params.requested_format.frame_rate, std::move(client)));
-
-  for (auto& request : photo_requests_queue_)
-    v4l2_thread_.task_runner()->PostTask(FROM_HERE, std::move(request));
-  photo_requests_queue_.clear();
 }
 
 void VideoCaptureDeviceLinux::StopAndDeAllocate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!v4l2_thread_.IsRunning())
+  if (!capture_impl_)
     return;  // Wrong state.
-  v4l2_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&V4L2CaptureDelegate::StopAndDeAllocate,
-                                capture_impl_->GetWeakPtr()));
-  v4l2_thread_.task_runner()->DeleteSoon(FROM_HERE, capture_impl_.release());
-  v4l2_thread_.Stop();
 
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&V4L2CaptureDelegate::StopAndDeAllocate,
+                                        capture_impl_->GetWeakPtr()));
+  task_runner_->DeleteSoon(FROM_HERE, std::move(capture_impl_));
   capture_impl_ = nullptr;
 }
 
 void VideoCaptureDeviceLinux::TakePhoto(TakePhotoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(capture_impl_);
-  auto functor =
+  task_runner_->PostTask(
+      FROM_HERE,
       base::BindOnce(&V4L2CaptureDelegate::TakePhoto,
-                     capture_impl_->GetWeakPtr(), std::move(callback));
-  if (!v4l2_thread_.IsRunning()) {
-    // We have to wait until we get the device AllocateAndStart()ed.
-    photo_requests_queue_.push_back(std::move(functor));
-    return;
-  }
-  v4l2_thread_.task_runner()->PostTask(FROM_HERE, std::move(functor));
+                     capture_impl_->GetWeakPtr(), std::move(callback)));
 }
 
 void VideoCaptureDeviceLinux::GetPhotoState(GetPhotoStateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto functor =
+  DCHECK(capture_impl_);
+  task_runner_->PostTask(
+      FROM_HERE,
       base::BindOnce(&V4L2CaptureDelegate::GetPhotoState,
-                     capture_impl_->GetWeakPtr(), std::move(callback));
-  if (!v4l2_thread_.IsRunning()) {
-    // We have to wait until we get the device AllocateAndStart()ed.
-    photo_requests_queue_.push_back(std::move(functor));
-    return;
-  }
-  v4l2_thread_.task_runner()->PostTask(FROM_HERE, std::move(functor));
+                     capture_impl_->GetWeakPtr(), std::move(callback)));
 }
 
 void VideoCaptureDeviceLinux::SetPhotoOptions(
     mojom::PhotoSettingsPtr settings,
     SetPhotoOptionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto functor = base::BindOnce(&V4L2CaptureDelegate::SetPhotoOptions,
+  DCHECK(capture_impl_);
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&V4L2CaptureDelegate::SetPhotoOptions,
                                 capture_impl_->GetWeakPtr(),
-                                std::move(settings), std::move(callback));
-  if (!v4l2_thread_.IsRunning()) {
-    // We have to wait until we get the device AllocateAndStart()ed.
-    photo_requests_queue_.push_back(std::move(functor));
-    return;
-  }
-  v4l2_thread_.task_runner()->PostTask(FROM_HERE, std::move(functor));
+                                std::move(settings), std::move(callback)));
 }
 
 void VideoCaptureDeviceLinux::SetRotation(int rotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(capture_impl_);
   rotation_ = rotation;
-  if (v4l2_thread_.IsRunning()) {
-    v4l2_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&V4L2CaptureDelegate::SetRotation,
-                                  capture_impl_->GetWeakPtr(), rotation));
-  }
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&V4L2CaptureDelegate::SetRotation,
+                                        capture_impl_->GetWeakPtr(), rotation));
 }
 
 }  // namespace media
