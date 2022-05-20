@@ -218,8 +218,7 @@ bool* GetAzureADJoinStateStorage() {
     DSREG_JOIN_INFO* join_info = nullptr;
     HRESULT hr = net_get_aad_join_information_function(/*pcszTenantId=*/nullptr,
                                                        &join_info);
-    const bool is_aad_joined =
-        SUCCEEDED(hr) && join_info && join_info->joinType != DSREG_UNKNOWN_JOIN;
+    const bool is_aad_joined = SUCCEEDED(hr) && join_info;
     if (join_info) {
       net_free_aad_join_information_function(join_info);
     }
