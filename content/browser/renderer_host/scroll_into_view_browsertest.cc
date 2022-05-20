@@ -675,27 +675,27 @@ class InsetScrollIntoViewBrowserTest
 
 // Ensure that insetting the viewport causes the visual viewport to be resized
 // and focused editable scrolled into view. (https://crbug.com/927483)
-//
-// TODO(https://crbug.com/1323876): Failing flakily on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InsetsCauseScrollToFocusedEditable \
-  DISABLED_InsetsCauseScrollToFocusedEditable
-#else
-#define MAYBE_InsetsCauseScrollToFocusedEditable \
-  InsetsCauseScrollToFocusedEditable
-#endif
 IN_PROC_BROWSER_TEST_P(InsetScrollIntoViewBrowserTest,
-                       MAYBE_InsetsCauseScrollToFocusedEditable) {
+                       InsetsCauseScrollToFocusedEditable) {
   ASSERT_TRUE(SetupTest("siteA(siteB(siteC))"));
+
+  int contents_height = web_contents()->GetViewBounds().height();
+
+  // Ensure the window height is large enough to accommodate the inset and leave
+  // some space for a caret. Note: we can't just assume 800x600 because some
+  // Windows 7 bots have less than 600px of workspace area available which
+  // results in a smaller window.
+  ASSERT_GT(contents_height, 450);
 
   int visual_viewport_height_before = GetVisualViewport().height;
   int layout_viewport_height_before = GetLayoutViewportRect().height();
 
-  // We expect the window to be 800x600px but allow some fuzziness due to
-  // differing scrollbars and window decorations on different platforms.
+  // We expect the viewport height to match the WebContents but allow some
+  // fuzziness due to differing scrollbars and window decorations on different
+  // platforms.
   const int kEpsilon = 30;
-  EXPECT_NEAR(visual_viewport_height_before, 600, kEpsilon);
-  EXPECT_NEAR(layout_viewport_height_before, 600, kEpsilon);
+  EXPECT_NEAR(visual_viewport_height_before, contents_height, kEpsilon);
+  EXPECT_NEAR(layout_viewport_height_before, contents_height, kEpsilon);
   EXPECT_EQ(1.f, GetVisualViewport().scale);
 
   RunTest();
