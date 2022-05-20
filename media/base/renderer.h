@@ -92,6 +92,17 @@ class MEDIA_EXPORT Renderer {
   virtual void OnEnabledAudioTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb);
+
+  // Signal to the renderer that there has been a client request to access a
+  // VideoFrame. This signal may be used by the renderer to ensure it is
+  // operating in a mode which produces a VideoFrame usable by the client.
+  // E.g., the MediaFoundationRendererClient on Windows has two modes
+  // of operation: Frame Server & Direct Composition. Direct Composition mode
+  // does not produce a VideoFrame with an accessible 'data' buffer, so clients
+  // cannot access the underlying image data. In order for
+  // MediaFoundationRendererClient to produce a VideoFrame with 'data'
+  // accessible by the client it must switch to operate in Frame Server mode.
+  virtual void OnExternalVideoFrameRequest();
 };
 
 }  // namespace media

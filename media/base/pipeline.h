@@ -151,6 +151,10 @@ class MEDIA_EXPORT Pipeline {
       absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) = 0;
 
+  // Signal to the pipeline that there has been a client request to access
+  // video frame data.
+  virtual void OnExternalVideoFrameRequest() = 0;
+
   // Stops the pipeline. This is a blocking function.
   // If the pipeline is started, it must be stopped before destroying it.
   // It it permissible to call Stop() at any point during the lifetime of the

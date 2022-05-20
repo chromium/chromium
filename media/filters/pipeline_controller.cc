@@ -443,6 +443,11 @@ void PipelineController::OnSelectedVideoTrackChanged(
   Dispatch();
 }
 
+void PipelineController::OnExternalVideoFrameRequest() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  pipeline_->OnExternalVideoFrameRequest();
+}
+
 void PipelineController::FireOnTrackChangeCompleteForTesting(State set_to) {
   previous_track_change_state_ = set_to;
   OnTrackChangeComplete();

@@ -1461,6 +1461,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
       GetCurrentFrameFromCompositor();
   last_frame_request_time_ = tick_clock_->NowTicks();
   video_frame_readback_count_++;
+  pipeline_controller_->OnExternalVideoFrameRequest();
 
   video_renderer_.Paint(
       video_frame, canvas, gfx::RectF(rect), flags,
@@ -1471,6 +1472,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
 scoped_refptr<media::VideoFrame> WebMediaPlayerImpl::GetCurrentFrame() {
   last_frame_request_time_ = tick_clock_->NowTicks();
   video_frame_readback_count_++;
+  pipeline_controller_->OnExternalVideoFrameRequest();
   return GetCurrentFrameFromCompositor();
 }
 

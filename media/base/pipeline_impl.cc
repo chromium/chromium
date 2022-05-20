@@ -100,6 +100,8 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
       absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb);
 
+  void OnExternalVideoFrameRequest();
+
  private:
   // Contains state shared between main and media thread. On the media thread
   // each member can be read without locking, but writing requires locking. On
@@ -756,6 +758,27 @@ void PipelineImpl::RendererWrapper::OnSelectedVideoTrackChanged(
                      std::move(change_completed_cb)));
 }
 
+void PipelineImpl::OnExternalVideoFrameRequest() {
+  // This function is currently a no-op unless we're on a Windows build with
+  // Media Foundation for Clear running.
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!external_video_frame_request_signaled_) {
+    external_video_frame_request_signaled_ = true;
+    media_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&RendererWrapper::OnExternalVideoFrameRequest,
+                                  base::Unretained(renderer_wrapper_.get())));
+  }
+}
+
+void PipelineImpl::RendererWrapper::OnExternalVideoFrameRequest() {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  if (!shared_state_.renderer) {
+    return;
+  }
+
+  shared_state_.renderer->OnExternalVideoFrameRequest();
+}
+
 void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
     base::OnceClosure change_completed_cb,
     DemuxerStream::Type stream_type,
@@ -1242,6 +1265,7 @@ void PipelineImpl::Start(StartType start_type,
   seek_cb_ = std::move(seek_cb);
   last_media_time_ = base::TimeDelta();
   seek_time_ = kNoTimestamp;
+  external_video_frame_request_signaled_ = false;
 
   // By default, create a default renderer to avoid additional start-to-play
   // latency caused by asynchronous Renderer creation. When |start_type| is
@@ -1335,6 +1359,7 @@ void PipelineImpl::Resume(base::TimeDelta time,
   seek_cb_ = std::move(seek_cb);
   seek_time_ = time;
   last_media_time_ = base::TimeDelta();
+  external_video_frame_request_signaled_ = false;
 
   // Always create a default renderer for Resume().
   auto default_renderer = create_renderer_cb_.Run(absl::nullopt);

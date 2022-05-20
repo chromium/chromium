@@ -108,6 +108,7 @@ class MockPipeline : public Pipeline {
                void(const std::vector<MediaTrack::Id>&, base::OnceClosure));
   MOCK_METHOD2(OnSelectedVideoTrackChanged,
                void(absl::optional<MediaTrack::Id>, base::OnceClosure));
+  MOCK_METHOD0(OnExternalVideoFrameRequest, void());
 
   // TODO(sandersd): This should automatically return true between Start() and
   // Stop(). (Or better, remove it from the interface entirely.)
