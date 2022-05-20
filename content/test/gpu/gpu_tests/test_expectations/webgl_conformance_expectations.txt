@@ -423,7 +423,8 @@ crbug.com/1145861 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] confor
 # Intel OpenGL driver issue, fixed in 27.20.100.9126
 crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
-# Note that the following test seems to pass, but it may still be flaky.
+# Consistent failures in functions.control_flow.return_in_nested_loop_vertex and functions.control_flow.return_in_nested_loop_fragment
+# Possible HLSL compiler bug.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
 # Win / AMD D3D11 (default) failures
