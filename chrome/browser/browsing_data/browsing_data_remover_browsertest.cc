@@ -51,6 +51,7 @@
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "media/mojo/services/webrtc_video_perf_history.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -537,6 +538,72 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
   }
   EXPECT_TRUE(is_smooth);
   EXPECT_TRUE(is_power_efficient);
+}
+
+// Verify WebrtcVideoPerfHistory is cleared when deleting all history from
+// beginning of time.
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, WebrtcVideoPerfHistory) {
+  media::WebrtcVideoPerfHistory* webrtc_video_perf_history =
+      GetBrowser()->profile()->GetWebrtcVideoPerfHistory();
+
+  // Save a video decode record. Note: we avoid using a web page to generate the
+  // stats as this takes at least 5 seconds and even then is not a guarantee
+  // depending on scheduler. Manual injection is quick and non-flaky.
+  const media::VideoCodecProfile kProfile = media::VP9PROFILE_PROFILE0;
+  const int kVideoPixels = 1920 * 1080;
+  const int kFrameRate = 30;
+
+  const int kFramesProcessed = 1000;
+  const int kKeyFramesProcessed = 11;
+  const float kP99ProcessingTimeMs = 100.0;
+
+  media::mojom::WebrtcPredictionFeatures features;
+  features.is_decode_stats = true;
+  features.profile = kProfile;
+  features.video_pixels = kVideoPixels;
+  features.hardware_accelerated = false;
+
+  media::mojom::WebrtcVideoStats video_stats;
+  video_stats.frames_processed = kFramesProcessed;
+  video_stats.key_frames_processed = kKeyFramesProcessed;
+  video_stats.p99_processing_time_ms = kP99ProcessingTimeMs;
+
+  {
+    base::RunLoop run_loop;
+    webrtc_video_perf_history->GetSaveCallback().Run(features, video_stats,
+                                                     run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Verify history exists.
+  // Expect |is_smooth| = false given that the 99th percentile processing time
+  // is 100 ms.
+  {
+    base::RunLoop run_loop;
+    webrtc_video_perf_history->GetPerfInfo(
+        media::mojom::WebrtcPredictionFeatures::New(features), kFrameRate,
+        base::BindLambdaForTesting([&](bool smooth) {
+          EXPECT_FALSE(smooth);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  // Clear history.
+  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_HISTORY);
+
+  // Verify history no longer exists. |is_smooth| should now report true because
+  // the WebrtcVideoPerfHistory optimistically returns true when it has no data.
+  {
+    base::RunLoop run_loop;
+    webrtc_video_perf_history->GetPerfInfo(
+        media::mojom::WebrtcPredictionFeatures::New(features), kFrameRate,
+        base::BindLambdaForTesting([&](bool smooth) {
+          EXPECT_TRUE(smooth);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }
 
 // Verify can modify database after deleting it.

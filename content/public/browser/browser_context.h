@@ -44,6 +44,7 @@ class ExternalMountPoints;
 
 namespace media {
 class VideoDecodePerfHistory;
+class WebrtcVideoPerfHistory;
 namespace learning {
 class LearningSession;
 }
@@ -268,6 +269,12 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // have similar decode performance and stats are not exposed to the web
   // directly, so privacy is not compromised.
   media::VideoDecodePerfHistory* GetVideoDecodePerfHistory();
+
+  // Gets media service for storing/retrieving WebRTC video performance stats.
+  // Exposed here rather than StoragePartition because all SiteInstances should
+  // have similar encode/decode performance and stats are not exposed to the web
+  // directly, so privacy is not compromised.
+  media::WebrtcVideoPerfHistory* GetWebrtcVideoPerfHistory();
 
   // Returns a LearningSession associated with |this|. Used as the central
   // source from which to retrieve LearningTaskControllers for media machine

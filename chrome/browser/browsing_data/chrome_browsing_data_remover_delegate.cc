@@ -134,6 +134,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "media/mojo/services/webrtc_video_perf_history.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -555,10 +556,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
               : filter_builder->BuildPluginFilter());
     }
 
-    // Clear VideoDecodePerfHistory only if asked to clear from the beginning of
-    // time. The perf history is a simple summing of decode statistics with no
-    // record of when the stats were written nor what site the video was played
-    // on.
+    // Clear VideoDecodePerfHistory and WebrtcVideoPerfHistory only if asked to
+    // clear from the beginning of time. The perf history is a simple summing of
+    // decode/encode statistics with no record of when the stats were written
+    // nor what site the video was played on.
     if (IsForAllTime()) {
       // TODO(chcunningham): Add UMA to track how often this gets deleted.
       media::VideoDecodePerfHistory* video_decode_perf_history =
@@ -566,6 +567,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (video_decode_perf_history) {
         video_decode_perf_history->ClearHistory(
             CreateTaskCompletionClosure(TracingDataType::kVideoDecodeHistory));
+      }
+
+      media::WebrtcVideoPerfHistory* webrtc_video_perf_history =
+          profile_->GetWebrtcVideoPerfHistory();
+      if (webrtc_video_perf_history) {
+        webrtc_video_perf_history->ClearHistory(CreateTaskCompletionClosure(
+            TracingDataType::kWebrtcVideoPerfHistory));
       }
     }
 
@@ -1363,6 +1371,8 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "WebAppHistory";
     case TracingDataType::kWebAuthnCredentials:
       return "WebAuthnCredentials";
+    case TracingDataType::kWebrtcVideoPerfHistory:
+      return "WebrtcVideoPerfHistory";
   }
 }
 

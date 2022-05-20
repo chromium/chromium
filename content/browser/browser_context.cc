@@ -54,6 +54,7 @@
 #include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
 #include "media/capabilities/video_decode_stats_db_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "media/mojo/services/webrtc_video_perf_history.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -301,6 +302,10 @@ const std::string& BrowserContext::UniqueId() {
 
 media::VideoDecodePerfHistory* BrowserContext::GetVideoDecodePerfHistory() {
   return impl()->GetVideoDecodePerfHistory();
+}
+
+media::WebrtcVideoPerfHistory* BrowserContext::GetWebrtcVideoPerfHistory() {
+  return impl()->GetWebrtcVideoPerfHistory();
 }
 
 media::learning::LearningSession* BrowserContext::GetLearningSession() {
