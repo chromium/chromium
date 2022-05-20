@@ -1094,9 +1094,6 @@ base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
   std::unique_ptr<base::DictionaryValue> device_status(
       new base::DictionaryValue);
   device_status_provider_->GetStatus(device_status.get());
-  if (!device_domain_.empty())
-    device_status->SetStringKey("domain", device_domain_);
-  std::string domain = device_domain_;
   std::unique_ptr<base::DictionaryValue> user_status(new base::DictionaryValue);
   user_status_provider_->GetStatus(user_status.get());
   const std::string* username = user_status->FindStringKey("username");

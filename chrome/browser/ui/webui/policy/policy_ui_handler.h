@@ -134,8 +134,6 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void OnGotDevicePolicy(base::Value device_policy, base::Value legend_data);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  std::string device_domain_;
-
   scoped_refptr<ui::SelectFileDialog> export_policies_select_file_dialog_;
 
   // Providers that supply status dictionaries for user and device policy,
