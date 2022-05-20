@@ -327,20 +327,22 @@ class AudioLevelRmsCalculator {
   }
 }
 
-// Calculates "metricA - metricB", only looking at the current report.
+// Calculates "metricA - SUM(otherMetrics)", only looking at the current report.
 class DifferenceCalculator {
-  constructor(metricA, metricB) {
+  constructor(metricA, ...otherMetrics) {
     this.metricA = metricA;
-    this.metricB = metricB;
+    this.otherMetrics = otherMetrics;
   }
 
   getCalculatedMetricName() {
-    return '[' + this.metricA + '-' + this.metricB + ']';
+    return '[' + this.metricA + '-' + this.otherMetrics.join('-') + ']';
   }
 
   calculate(id, previousReport, currentReport) {
     const currentStats = currentReport.get(id);
-    return currentStats[this.metricA] - currentStats[this.metricB];
+    return parseInt(currentStats[this.metricA], 10)
+        - this.otherMetrics.map(metric => parseInt(currentStats[metric], 10))
+            .reduce((a, b) => a + b, 0);
   }
 }
 
@@ -451,7 +453,8 @@ export class StatsRatesCalculator {
           framesSent: new RateCalculator('framesSent', 'timestamp'),
           framesReceived: [
             new RateCalculator('framesReceived', 'timestamp'),
-            new DifferenceCalculator('framesReceived', 'framesDecoded'),
+            new DifferenceCalculator('framesReceived',
+                'framesDecoded', 'framesDropped'),
           ],
           totalAudioEnergy: new AudioLevelRmsCalculator(),
           jitterBufferDelay: new RateCalculator(
@@ -498,7 +501,8 @@ export class StatsRatesCalculator {
           packetsReceived: new RateCalculator('packetsReceived', 'timestamp'),
           framesReceived: [
             new RateCalculator('framesReceived', 'timestamp'),
-            new DifferenceCalculator('framesReceived', 'framesDecoded'),
+            new DifferenceCalculator('framesReceived',
+                'framesDecoded', 'framesDropped'),
           ],
           framesDecoded: new RateCalculator('framesDecoded', 'timestamp'),
           keyFramesDecoded: new RateCalculator('keyFramesDecoded', 'timestamp'),
