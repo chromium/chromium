@@ -714,6 +714,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     @Override
+    public void notifyHidingWithBack() {
+        FeedReliabilityLogger feedReliabilityLogger = mFeedSurfaceProvider.getReliabilityLogger();
+        if (feedReliabilityLogger != null) {
+            feedReliabilityLogger.onNavigateBack();
+        }
+    }
+
+    @Override
     public void onVoiceAvailabilityImpacted() {
         mNewTabPageLayout.updateActionButtonVisibility();
     }

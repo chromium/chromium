@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -90,6 +91,11 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
 
         Tab tab = mTabSupplier.get();
         if (tab != null && tab.canGoBack()) {
+            NativePage nativePage = tab.getNativePage();
+            if (nativePage != null) {
+                nativePage.notifyHidingWithBack();
+            }
+
             tab.goBack();
             mOnSuccessRunnable.run();
             return true;

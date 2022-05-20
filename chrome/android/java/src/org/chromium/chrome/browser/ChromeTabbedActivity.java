@@ -179,6 +179,7 @@ import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -2228,6 +2229,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (type == TabLaunchType.FROM_READING_LIST) {
             assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
             ReadingListUtils.showReadingList(currentTab.isIncognito());
+        }
+
+        // At this point we know either the tab will close or the app will minimize.
+        NativePage nativePage = currentTab.getNativePage();
+        if (nativePage != null) {
+            nativePage.notifyHidingWithBack();
         }
 
         final boolean shouldCloseTab = backShouldCloseTab(currentTab);
