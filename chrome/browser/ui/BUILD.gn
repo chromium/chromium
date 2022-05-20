@@ -513,6 +513,7 @@ static_library("ui") {
     "//components/lens",
     "//components/live_caption:constants",
     "//components/live_caption:utils",
+    "//components/local_state",
     "//components/lookalikes/core",
     "//components/metrics:content",
     "//components/metrics_services_manager",

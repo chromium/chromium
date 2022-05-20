@@ -66,6 +66,8 @@ grit("dev_ui_components_resources") {
     "grit/dev_ui_components_resources.h",
     "dev_ui_components_resources.pak",
   ]
+
+  deps = [ "//components/local_state:build" ]
   output_dir = "$root_gen_dir/components"
 }
 

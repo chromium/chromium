@@ -1,0 +1,20 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("local_state") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "local_state_ui.h",
+    "local_state_ui.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/local_state",
+    "//components/prefs",
+    "//components/resources",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/web/public/webui",
+  ]
+}

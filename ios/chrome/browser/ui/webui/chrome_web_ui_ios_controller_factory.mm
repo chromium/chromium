@@ -20,6 +20,7 @@
 #include "ios/chrome/browser/ui/webui/gcm/gcm_internals_ui.h"
 #include "ios/chrome/browser/ui/webui/inspect/inspect_ui.h"
 #include "ios/chrome/browser/ui/webui/interstitials/interstitial_ui.h"
+#include "ios/chrome/browser/ui/webui/local_state/local_state_ui.h"
 #include "ios/chrome/browser/ui/webui/management/management_ui.h"
 #include "ios/chrome/browser/ui/webui/net_export/net_export_ui.h"
 #include "ios/chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
@@ -85,6 +86,8 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<InspectUI>;
   if (url_host == kChromeUIIntersitialsHost)
     return &NewWebUIIOS<InterstitialUI>;
+  if (url_host == kChromeUILocalStateHost)
+    return &NewWebUIIOS<LocalStateUI>;
   if (url_host == kChromeUIManagementHost)
     return &NewWebUIIOS<ManagementUI>;
   if (url_host == kChromeUINetExportHost)

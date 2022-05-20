@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/local_state/local_state_ui.h"
+#include "components/local_state/local_state_utils.h"
 
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(LocalStateUiTest, FilterPrefs) {
+TEST(LocalStateUtilsTest, FilterPrefs) {
   std::vector<std::string> prefixes = {"foo", "bar", "baz"};
 
   std::vector<std::string> invalid_pref_paths = {"fo", "ar", "afoo"};

@@ -41,6 +41,7 @@ const char kChromeUIHistogramHost[] = "histograms";
 const char kChromeUIHistoryHost[] = "history";
 const char kChromeUIInspectHost[] = "inspect";
 const char kChromeUIIntersitialsHost[] = "interstitials";
+const char kChromeUILocalStateHost[] = "local-state";
 const char kChromeUIManagementHost[] = "management";
 const char kChromeUINetExportHost[] = "net-export";
 const char kChromeUINewTabHost[] = "newtab";

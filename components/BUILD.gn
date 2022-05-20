@@ -155,6 +155,7 @@ test("components_unittests") {
     "//components/language/core/language_model:unit_tests",
     "//components/lens:unit_tests",
     "//components/leveldb_proto:unit_tests",
+    "//components/local_state:unit_tests",
     "//components/lookalikes/core:unit_tests",
     "//components/memory_pressure:unit_tests",
     "//components/metrics:unit_tests",

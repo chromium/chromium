@@ -1,29 +1,31 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/local_state/local_state_ui.h"
+#include "ios/chrome/browser/ui/webui/local_state/local_state_ui.h"
 
 #include <memory>
-#include <string>
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/local_state/local_state_utils.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_ui.h"
-#include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/web_ui_data_source.h"
-#include "content/public/browser/web_ui_message_handler.h"
+#include "ios/chrome/browser/application_context.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/web/public/webui/web_ui_ios.h"
+#include "ios/web/public/webui/web_ui_ios_data_source.h"
+#include "ios/web/public/webui/web_ui_ios_message_handler.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
 // UI Handler for chrome://local-state. Displays the Local State file as JSON.
-class LocalStateUIHandler : public content::WebUIMessageHandler {
+class LocalStateUIHandler : public web::WebUIIOSMessageHandler {
  public:
   LocalStateUIHandler() = default;
 
@@ -32,7 +34,7 @@ class LocalStateUIHandler : public content::WebUIMessageHandler {
 
   ~LocalStateUIHandler() override = default;
 
-  // content::WebUIMessageHandler:
+  // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
  private:
@@ -49,26 +51,26 @@ void LocalStateUIHandler::RegisterMessages() {
 }
 
 void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
-  AllowJavascript();
   std::string json;
-  if (!GetPrefsAsJson(g_browser_process->local_state(), &json))
+  if (!GetPrefsAsJson(GetApplicationContext()->GetLocalState(), &json))
     json = "Error loading Local State file.";
 
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, base::Value(json));
+  web_ui()->ResolveJavascriptCallback(callback_id, base::Value(json));
 }
 
 }  // namespace
 
-LocalStateUI::LocalStateUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+LocalStateUI::LocalStateUI(web::WebUIIOS* web_ui, const std::string& host)
+    : web::WebUIIOSController(web_ui, host) {
   // Set up the chrome://local-state source.
-  content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chrome::kChromeUILocalStateHost);
+  web::WebUIIOSDataSource* html_source =
+      web::WebUIIOSDataSource::Create(kChromeUILocalStateHost);
   html_source->SetDefaultResource(IDR_LOCAL_STATE_HTML);
   html_source->AddResourcePath("local_state.js", IDR_LOCAL_STATE_JS);
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
+  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+                               html_source);
   web_ui->AddMessageHandler(std::make_unique<LocalStateUIHandler>());
 }
 
-LocalStateUI::~LocalStateUI() {
-}
+LocalStateUI::~LocalStateUI() {}
