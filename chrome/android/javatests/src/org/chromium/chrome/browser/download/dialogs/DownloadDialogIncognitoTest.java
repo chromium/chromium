@@ -92,6 +92,7 @@ public class DownloadDialogIncognitoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1317700")
     public void testDuplicateDownloadForRegularProfile() throws Exception {
         // Showing a duplicate download dialog with a regular profile.
         OTRProfileID regularProfileID = null;
