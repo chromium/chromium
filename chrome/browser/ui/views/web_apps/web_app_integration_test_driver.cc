@@ -1002,6 +1002,40 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
 #endif
 }
 
+void WebAppIntegrationTestDriver::CreateShortcutFromChromeApps(Site site) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  BeforeStateChangeAction(__FUNCTION__);
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  DCHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
+                                 &test_web_ui);
+  base::ListValue web_app_ids;
+  web_app_ids.Append(app_id);
+#if BUILDFLAG(IS_MAC)
+  base::RunLoop loop;
+  handler.HandleCreateAppShortcut(loop.QuitClosure(), &web_app_ids);
+  loop.Run();
+#else
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "CreateChromeApplicationShortcutView");
+  handler.HandleCreateAppShortcut(base::DoNothing(), &web_app_ids);
+  FlushShortcutTasks();
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget != nullptr);
+  views::test::AcceptDialog(widget);
+#endif
+  AfterStateChangeAction();
+#else
+  NOTREACHED() << "Not implemented on Chrome OS.";
+#endif
+}
+
 void WebAppIntegrationTestDriver::DeletePlatformShortcut(Site site) {
   if (!before_state_change_action_state_ && !after_state_change_action_state_)
     return;

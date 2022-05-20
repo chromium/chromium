@@ -148,7 +148,8 @@ class AppLauncherHandler
 
   // Handles the "createAppShortcut" message with |args| containing
   // [extension_id].
-  void HandleCreateAppShortcut(const base::ListValue* args);
+  void HandleCreateAppShortcut(base::OnceClosure done,
+                               const base::ListValue* args);
 
   // Handles the "installAppLocally" message with |args| containing
   // [extension_id].

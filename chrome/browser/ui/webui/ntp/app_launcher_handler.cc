@@ -463,7 +463,7 @@ void AppLauncherHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
       "createAppShortcut",
       base::BindRepeating(&AppLauncherHandler::HandleCreateAppShortcut,
-                          base::Unretained(this)));
+                          base::Unretained(this), base::DoNothing()));
   web_ui()->RegisterDeprecatedMessageCallback(
       "installAppLocally",
       base::BindRepeating(&AppLauncherHandler::HandleInstallAppLocally,
@@ -1013,22 +1013,24 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
   }
 }
 
-void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
+void AppLauncherHandler::HandleCreateAppShortcut(base::OnceClosure done,
+                                                 const base::ListValue* args) {
   const std::string& app_id = args->GetListDeprecated()[0].GetString();
-
   if (web_app_provider_->registrar().IsInstalled(app_id) &&
       !IsYoutubeExtension(app_id)) {
     Browser* browser =
         chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
     chrome::ShowCreateChromeAppShortcutsDialog(
         browser->window()->GetNativeWindow(), browser->profile(), app_id,
-        base::BindOnce([](bool success) {
-          base::UmaHistogramBoolean(
-              "Apps.AppInfoDialog.CreateWebAppShortcutSuccess", success);
-        }));
+        base::BindOnce(
+            [](base::OnceClosure done, bool success) {
+              base::UmaHistogramBoolean(
+                  "Apps.AppInfoDialog.CreateWebAppShortcutSuccess", success);
+              std::move(done).Run();
+            },
+            std::move(done)));
     return;
   }
-
   const Extension* extension =
       extensions::ExtensionRegistry::Get(extension_service_->profile())
           ->GetExtensionById(app_id,
@@ -1042,10 +1044,13 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
-      base::BindOnce([](bool success) {
-        base::UmaHistogramBoolean(
-            "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
-      }));
+      base::BindOnce(
+          [](base::OnceClosure done, bool success) {
+            base::UmaHistogramBoolean(
+                "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
+            std::move(done).Run();
+          },
+          std::move(done)));
 }
 
 void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
