@@ -113,12 +113,16 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
      */
     void show(@NonNull String[] usernames, int selectedUsernameIndex, @NonNull String password,
             @NonNull String origin, @Nullable String account) {
+        // It's important to setup the modal dialog first,
+        // because the dialog's button state depends on whether dialog's view model has errors.
+        // So to handle dialog's view model errors, the dialog model should be prepared
+        // to avoid null reference exception or incorrect state.
+        createModelDialogModel();
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+
         createDialogViewModel(usernames, selectedUsernameIndex, password, account);
         PropertyModelChangeProcessor.create(
                 mDialogViewModel, mDialogView, PasswordEditDialogViewBinder::bind);
-
-        createModelDialogModel();
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
     private void createDialogViewModel(
@@ -186,7 +190,12 @@ class PasswordEditDialogCoordinator implements ModalDialogProperties.Controller 
 
     private void handlePasswordChanged(String password) {
         mDialogViewModel.set(PasswordEditDialogProperties.PASSWORD, password);
-        mDialogViewModel.set(PasswordEditDialogProperties.EMPTY_PASSWORD_ERROR, password.isEmpty());
+        boolean isPasswordInvalid = password.isEmpty();
+        mDialogViewModel.set(PasswordEditDialogProperties.PASSWORD_ERROR,
+                isPasswordInvalid
+                        ? mContext.getString(R.string.password_entry_edit_empty_password_error)
+                        : null);
+        mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, isPasswordInvalid);
     }
 
     // ModalDialogProperties.Controller implementation.

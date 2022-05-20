@@ -26,7 +26,8 @@ import java.util.List;
  */
 public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
     private AutoCompleteTextView mUsernameView;
-    private TextInputEditText mPasswordView;
+    private TextInputEditText mPasswordField;
+    private TextInputLayout mPasswordInputLayout;
     private Callback<String> mUsernameChangedCallback;
     private Callback<String> mPasswordChangedCallback;
 
@@ -57,10 +58,10 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
         TextInputLayout usernameInput = findViewById(R.id.username_input_layout);
         usernameInput.setEndIconOnClickListener(view -> mUsernameView.showDropDown());
 
-        mPasswordView = findViewById(R.id.password);
-        mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT
+        mPasswordField = findViewById(R.id.password);
+        mPasswordField.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        mPasswordView.addTextChangedListener(new TextWatcher() {
+        mPasswordField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
@@ -73,6 +74,7 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
             @Override
             public void afterTextChanged(Editable editable) {}
         });
+        mPasswordInputLayout = findViewById(R.id.password_text_input_layout);
     }
 
     @Override
@@ -91,12 +93,17 @@ public class PasswordEditDialogWithDetailsView extends PasswordEditDialogView {
 
     @Override
     public void setPassword(String password) {
-        if (mPasswordView.getText().toString().equals(password)) return;
-        mPasswordView.setText(password);
+        if (mPasswordField.getText().toString().equals(password)) return;
+        mPasswordField.setText(password);
     }
 
     @Override
     public void setPasswordChangedCallback(Callback<String> callback) {
         mPasswordChangedCallback = callback;
+    }
+
+    @Override
+    public void setPasswordError(String error) {
+        mPasswordInputLayout.setError(error);
     }
 }

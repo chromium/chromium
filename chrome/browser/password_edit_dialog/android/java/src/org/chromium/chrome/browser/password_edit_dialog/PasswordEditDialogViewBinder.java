@@ -35,8 +35,8 @@ class PasswordEditDialogViewBinder {
                     model.get(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK));
         } else if (propertyKey == PasswordEditDialogProperties.PASSWORD) {
             dialogView.setPassword(model.get(PasswordEditDialogProperties.PASSWORD));
-        } else if (propertyKey == PasswordEditDialogProperties.EMPTY_PASSWORD_ERROR) {
-            // TODO(crbug.com/1315916): Handle displaying empty password error in the following CLs
+        } else if (propertyKey == PasswordEditDialogProperties.PASSWORD_ERROR) {
+            dialogView.setPasswordError(model.get(PasswordEditDialogProperties.PASSWORD_ERROR));
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

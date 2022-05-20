@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.test.filters.MediumTest;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +40,7 @@ public class PasswordEditDialogWithDetailsViewTest {
     private static final String INITIAL_PASSWORD = "password";
     private static final String CHANGED_PASSWORD = "passwordChanged";
     private static final String FOOTER = "Footer";
+    private static final String PASSWORD_ERROR = "Enter password";
 
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -49,6 +51,7 @@ public class PasswordEditDialogWithDetailsViewTest {
     PasswordEditDialogWithDetailsView mDialogView;
     AutoCompleteTextView mUsernamesView;
     TextInputEditText mPasswordView;
+    TextInputLayout mPasswordInputLayout;
     TextView mFooterView;
     String mUsername;
     String mCurrentPassword;
@@ -69,6 +72,8 @@ public class PasswordEditDialogWithDetailsViewTest {
             mFooterView = (TextView) mDialogView.findViewById(R.id.footer);
             sActivity.setContentView(mDialogView);
             mPasswordView = (TextInputEditText) mDialogView.findViewById(R.id.password);
+            mPasswordInputLayout =
+                    (TextInputLayout) mDialogView.findViewById(R.id.password_text_input_layout);
         });
     }
 
@@ -162,5 +167,31 @@ public class PasswordEditDialogWithDetailsViewTest {
         CriteriaHelper.pollUiThread(() -> mUsername.equals(CHANGED_USERNAME));
         TestThreadUtils.runOnUiThreadBlocking(() -> { mUsernamesView.setText(INITIAL_USERNAME); });
         CriteriaHelper.pollUiThread(() -> mUsername.equals(INITIAL_USERNAME));
+    }
+
+    /** Tests if the password error is displayed */
+    @Test
+    @MediumTest
+    public void testPasswordError() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model =
+                    populateDialogPropertiesBuilder()
+                            .with(PasswordEditDialogProperties.PASSWORD_ERROR, PASSWORD_ERROR)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    model, mDialogView, PasswordEditDialogViewBinder::bind);
+        });
+        Assert.assertEquals("Should display password error",
+                mPasswordInputLayout.getError().toString(), PASSWORD_ERROR);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel model = populateDialogPropertiesBuilder()
+                                          .with(PasswordEditDialogProperties.PASSWORD_ERROR, null)
+                                          .build();
+            PropertyModelChangeProcessor.create(
+                    model, mDialogView, PasswordEditDialogViewBinder::bind);
+        });
+        Assert.assertTrue(
+                "Password error should be reset now", mPasswordInputLayout.getError() == null);
     }
 }
