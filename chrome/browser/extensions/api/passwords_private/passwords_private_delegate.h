@@ -79,6 +79,7 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual bool AddPassword(const std::string& url,
                            const std::u16string& username,
                            const std::u16string& password,
+                           const std::u16string& note,
                            bool use_account_store,
                            content::WebContents* web_contents) = 0;
 

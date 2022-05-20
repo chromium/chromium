@@ -480,6 +480,7 @@ ResponseAction PasswordsPrivateAddPasswordFunction::Run() {
            ->AddPassword(parameters->options.url,
                          base::UTF8ToUTF16(parameters->options.username),
                          base::UTF8ToUTF16(parameters->options.password),
+                         base::UTF8ToUTF16(parameters->options.note),
                          parameters->options.use_account_store,
                          GetSenderWebContents())) {
     return RespondNow(Error(

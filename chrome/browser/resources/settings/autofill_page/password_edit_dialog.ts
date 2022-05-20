@@ -382,11 +382,13 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private shouldShowNote_(): boolean {
     return this.isPasswordNotesEnabled_ &&
         (this.dialogMode === PasswordDialogMode.PASSWORD_VIEW ||
-         this.dialogMode === PasswordDialogMode.EDIT);
+         this.dialogMode === PasswordDialogMode.EDIT ||
+         this.dialogMode === PasswordDialogMode.ADD);
   }
 
   private isNoteLongerThanOrEqualTo_(characterCount: number): boolean {
-    return this.dialogMode === PasswordDialogMode.EDIT &&
+    return (this.dialogMode === PasswordDialogMode.EDIT ||
+            this.dialogMode === PasswordDialogMode.ADD) &&
         this.note_.length >= characterCount;
   }
 
@@ -548,6 +550,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           url: this.$.websiteInput.value,
           username: this.username_,
           password: this.password_,
+          note: this.note_,
           useAccountStore: useAccountStore
         })
         .finally(() => {

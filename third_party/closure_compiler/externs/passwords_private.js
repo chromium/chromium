@@ -137,6 +137,7 @@ chrome.passwordsPrivate.PasswordCheckStatus;
  *   url: string,
  *   username: string,
  *   password: string,
+ *   note: string,
  *   useAccountStore: boolean
  * }}
  */
@@ -352,9 +353,9 @@ chrome.passwordsPrivate.unmuteInsecureCredential = function(credential, callback
  * @param {!chrome.passwordsPrivate.InsecureCredential} credential The
  *     credential for which the flow was triggered.
  * @param {boolean} isManualFlow
+ * @param {function(): void=} callback
  */
-chrome.passwordsPrivate.recordChangePasswordFlowStarted = function(
-    credential, isManualFlow) {};
+chrome.passwordsPrivate.recordChangePasswordFlowStarted = function(credential, isManualFlow, callback) {};
 
 /**
  * Starts a check for insecure passwords. Invokes |callback| on completion.

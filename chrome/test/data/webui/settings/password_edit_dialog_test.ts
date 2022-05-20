@@ -12,7 +12,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PasswordDialogMode, PasswordEditDialogElement, SettingsTextareaElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createMultiStorePasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -424,6 +424,21 @@ suite('PasswordEditDialog', function() {
     assertEquals(
         addDialog.i18n('addPasswordFootnote'),
         addDialog.$.footnote.innerText.trim());
+    assertFalse(!!addDialog.shadowRoot!.querySelector('settings-textarea'));
+  });
+
+  test('hasCorrectInitialStateWhenAddPasswordWithNotes', function() {
+    loadTimeData.overrideValues({enablePasswordNotes: true});
+    const addDialog = elementFactory.createPasswordEditDialog();
+    assertAddDialogParts(addDialog);
+    assertEquals(true, addDialog.$.websiteInput.autofocus);
+    assertEquals('', addDialog.$.websiteInput.value);
+    assertEquals('', addDialog.$.usernameInput.value);
+    assertEquals('', addDialog.$.passwordInput.value);
+    assertEquals('password', addDialog.$.passwordInput.type);
+    assertTrue(isVisible(addDialog.$.footnote));
+    assertEquals(
+        '', addDialog.shadowRoot!.querySelector('settings-textarea')!.value);
   });
 
   test('showsStorePickerForAccountStoreUserWhenAddPassword', function() {
@@ -737,16 +752,6 @@ suite('PasswordEditDialog', function() {
     assertFalse(
         !!passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
             '#note'));
-  });
-
-  test('addDialogDoesntHaveNotes', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
-    const existingEntry = createMultiStorePasswordEntry(
-        {url: 'website.com', username: 'username', accountId: 0});
-    const addDialog =
-        elementFactory.createPasswordEditDialog(null, [existingEntry]);
-    assertAddDialogParts(addDialog);
-    assertFalse(!!addDialog.shadowRoot!.querySelector('#note'));
   });
 
   test('showNoteWarningInEditModeWhen900Characters', async function() {

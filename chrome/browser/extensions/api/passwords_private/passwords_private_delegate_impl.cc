@@ -234,6 +234,7 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
     const std::string& url,
     const std::u16string& username,
     const std::u16string& password,
+    const std::u16string& note,
     bool use_account_store,
     content::WebContents* web_contents) {
   password_manager::PasswordForm form;
@@ -242,6 +243,8 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   form.signon_realm = password_manager::GetSignonRealm(form.url);
   form.username_value = username;
   form.password_value = password;
+  form.note.value = note;
+  form.note.date_created = base::Time::Now();
   form.in_store = use_account_store
                       ? password_manager::PasswordForm::Store::kAccountStore
                       : password_manager::PasswordForm::Store::kProfileStore;

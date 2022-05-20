@@ -56,6 +56,7 @@ var availableTests = [
           url: 'https://example.com',
           username: 'username',
           password: 'password',
+          note: '',
           useAccountStore: false
         },
         () => {
@@ -71,6 +72,7 @@ var availableTests = [
           url: 'https://example.com',
           username: 'username',
           password: '',
+          note: '',
           useAccountStore: true
         },
         () => {

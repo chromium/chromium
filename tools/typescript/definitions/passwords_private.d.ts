@@ -99,6 +99,7 @@ declare global {
         url: string;
         username: string;
         password: string;
+        note: string;
         useAccountStore: boolean;
       }
 

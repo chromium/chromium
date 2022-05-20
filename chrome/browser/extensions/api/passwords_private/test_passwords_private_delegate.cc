@@ -82,6 +82,7 @@ bool TestPasswordsPrivateDelegate::AddPassword(
     const std::string& url,
     const std::u16string& username,
     const std::u16string& password,
+    const std::u16string& note,
     bool use_account_store,
     content::WebContents* web_contents) {
   return !url.empty() && !password.empty();

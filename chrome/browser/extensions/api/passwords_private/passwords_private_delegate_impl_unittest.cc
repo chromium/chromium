@@ -173,6 +173,7 @@ password_manager::PasswordForm CreateSampleForm() {
 MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
   return testing::Value(expected.get().urls.link, arg.urls.link) &&
          testing::Value(expected.get().username, arg.username) &&
+         testing::Value(expected.get().password_note, arg.password_note) &&
          testing::Value(expected.get().from_account_store,
                         arg.from_account_store);
 }
@@ -359,13 +360,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   EXPECT_CALL(callback, Run(SizeIs(0)));
   delegate.GetSavedPasswordsList(callback.Get());
 
-  EXPECT_TRUE(delegate.AddPassword("example1.com", u"username1", u"password1",
-                                   /*use_account_store=*/true,
-                                   web_contents.get()));
-  EXPECT_TRUE(delegate.AddPassword("http://example2.com/login?param=value",
-                                   /*username=*/u"", u"password2",
-                                   /*use_account_store=*/false,
-                                   web_contents.get()));
+  EXPECT_TRUE(
+      delegate.AddPassword(/*url=*/"example1.com", /*username=*/u"username1",
+                           /*password=*/u"password1", /*note=*/u"",
+                           /*use_account_store=*/true, web_contents.get()));
+  EXPECT_TRUE(delegate.AddPassword(
+      /*url=*/"http://example2.com/login?param=value",
+      /*username=*/u"", /*password=*/u"password2", /*note=*/u"note",
+      /*use_account_store=*/false, web_contents.get()));
   // Spin the loop to allow PasswordStore tasks posted when adding the
   // password to be completed.
   base::RunLoop().RunUntilIdle();
@@ -374,10 +376,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   api::passwords_private::PasswordUiEntry expected_entry1;
   expected_entry1.urls.link = "https://example1.com/";
   expected_entry1.username = "username1";
+  expected_entry1.password_note = "";
   expected_entry1.from_account_store = true;
   api::passwords_private::PasswordUiEntry expected_entry2;
   expected_entry2.urls.link = "http://example2.com/login";
   expected_entry2.username = "";
+  expected_entry2.password_note = "note";
   expected_entry2.from_account_store = false;
   EXPECT_CALL(callback,
               Run(testing::UnorderedElementsAre(
@@ -400,9 +404,9 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
       .WillByDefault(Return(false));
   EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
       .Times(0);
-  EXPECT_TRUE(delegate.AddPassword("example1.com", u"username1", u"password1",
-                                   /*use_account_store=*/false,
-                                   web_contents.get()));
+  EXPECT_TRUE(
+      delegate.AddPassword("example1.com", u"username1", u"password1", u"",
+                           /*use_account_store=*/false, web_contents.get()));
 
   // Updates the default store if opted-in and operation succeeded.
   ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
@@ -410,14 +414,14 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPasswordUpdatesDefaultStore) {
   EXPECT_CALL(*(client->GetPasswordFeatureManager()),
               SetDefaultPasswordStore(
                   password_manager::PasswordForm::Store::kAccountStore));
-  EXPECT_TRUE(delegate.AddPassword("example2.com", u"username2", u"password2",
-                                   /*use_account_store=*/true,
-                                   web_contents.get()));
+  EXPECT_TRUE(
+      delegate.AddPassword("example2.com", u"username2", u"password2", u"",
+                           /*use_account_store=*/true, web_contents.get()));
 
   // NOT update default store if opted-in, but operation failed.
   EXPECT_CALL(*(client->GetPasswordFeatureManager()), SetDefaultPasswordStore)
       .Times(0);
-  EXPECT_FALSE(delegate.AddPassword("", u"", u"",
+  EXPECT_FALSE(delegate.AddPassword("", u"", u"", u"",
                                     /*use_account_store=*/false,
                                     web_contents.get()));
 }
