@@ -205,13 +205,13 @@ int ThemeProperties::StringToAlignment(const std::string& alignment) {
   for (const std::string& component : base::SplitString(
            alignment, base::kWhitespaceASCII,
            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    if (base::LowerCaseEqualsASCII(component, kAlignmentTop))
+    if (base::EqualsCaseInsensitiveASCII(component, kAlignmentTop))
       alignment_mask |= ALIGN_TOP;
-    else if (base::LowerCaseEqualsASCII(component, kAlignmentBottom))
+    else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentBottom))
       alignment_mask |= ALIGN_BOTTOM;
-    else if (base::LowerCaseEqualsASCII(component, kAlignmentLeft))
+    else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentLeft))
       alignment_mask |= ALIGN_LEFT;
-    else if (base::LowerCaseEqualsASCII(component, kAlignmentRight))
+    else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentRight))
       alignment_mask |= ALIGN_RIGHT;
   }
   return alignment_mask;
@@ -219,11 +219,11 @@ int ThemeProperties::StringToAlignment(const std::string& alignment) {
 
 // static
 int ThemeProperties::StringToTiling(const std::string& tiling) {
-  if (base::LowerCaseEqualsASCII(tiling, kTilingRepeatX))
+  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeatX))
     return REPEAT_X;
-  if (base::LowerCaseEqualsASCII(tiling, kTilingRepeatY))
+  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeatY))
     return REPEAT_Y;
-  if (base::LowerCaseEqualsASCII(tiling, kTilingRepeat))
+  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeat))
     return REPEAT;
   // NO_REPEAT is the default choice.
   return NO_REPEAT;

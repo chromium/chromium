@@ -159,10 +159,11 @@ constexpr PersistingImagesTable kPersistingImages[] = {
 };
 
 BrowserThemePack::PersistentID GetPersistentIDByName(const std::string& key) {
-  auto* it = std::find_if(std::begin(kPersistingImages),
-                          std::end(kPersistingImages), [&](const auto& image) {
-                            return base::LowerCaseEqualsASCII(key, image.key);
-                          });
+  auto* it =
+      std::find_if(std::begin(kPersistingImages), std::end(kPersistingImages),
+                   [&](const auto& image) {
+                     return base::EqualsCaseInsensitiveASCII(key, image.key);
+                   });
   return it == std::end(kPersistingImages) ? PRS::kInvalid : it->persistent_id;
 }
 
@@ -299,7 +300,7 @@ int GetIntForString(const std::string& key,
                     const StringToIntTable* table,
                     size_t table_length) {
   for (size_t i = 0; i < table_length; ++i) {
-    if (base::LowerCaseEqualsASCII(key, table[i].key)) {
+    if (base::EqualsCaseInsensitiveASCII(key, table[i].key)) {
       return table[i].id;
     }
   }
