@@ -4,6 +4,8 @@
 
 #include "chrome/browser/segmentation_platform/default_model/feed_user_segment.h"
 
+#include <array>
+
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -47,66 +49,23 @@ static constexpr std::array<std::pair<float, /*FeedUserSubsegment*/ int>, 8>
     }};
 
 // InputFeatures.
-constexpr MetadataWriter::UMAFeature kFeedUserUMAFeatures[] = {
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::USER_ACTION,
-        .name = "ContentSuggestions.Feed.CardAction.Open",
-        .bucket_count = 14,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT,
-        .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::USER_ACTION,
-        .name = "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab",
-        .bucket_count = 14,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT,
-        .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::USER_ACTION,
-        .name = "ContentSuggestions.Feed.CardAction.OpenInNewTab",
-        .bucket_count = 14,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT,
-        .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileNTPMostVisited",
-                               .bucket_count = 14,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileNewTabOpened",
-                               .bucket_count = 14,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "Home",
-                               .bucket_count = 14,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileMenuRecentTabs",
-                               .bucket_count = 14,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileMenuHistory",
-                               .bucket_count = 14,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileTabReturnedToCurrentTab",
-                               .bucket_count = 14,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0}};
-
-#define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
+constexpr std::array<MetadataWriter::UMAFeature, 9> kFeedUserUMAFeatures = {
+    MetadataWriter::UMAFeature::FromUserAction(
+        "ContentSuggestions.Feed.CardAction.Open",
+        14),
+    MetadataWriter::UMAFeature::FromUserAction(
+        "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab",
+        14),
+    MetadataWriter::UMAFeature::FromUserAction(
+        "ContentSuggestions.Feed.CardAction.OpenInNewTab",
+        14),
+    MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 14),
+    MetadataWriter::UMAFeature::FromUserAction("MobileNewTabOpened", 14),
+    MetadataWriter::UMAFeature::FromUserAction("Home", 14),
+    MetadataWriter::UMAFeature::FromUserAction("MobileMenuRecentTabs", 14),
+    MetadataWriter::UMAFeature::FromUserAction("MobileMenuHistory", 14),
+    MetadataWriter::UMAFeature::FromUserAction("MobileTabReturnedToCurrentTab",
+                                               14)};
 
 float GetScoreForSubsegment(FeedUserSubsegment subgroup) {
   for (const auto& score_and_type : kFeedUserScoreToSubGroup) {
@@ -174,7 +133,8 @@ void FeedUserSegment::InitAndFetchModel(
       kFeedUserScoreToSubGroup.data(), kFeedUserScoreToSubGroup.size());
 
   // Set features.
-  writer.AddUmaFeatures(kFeedUserUMAFeatures, ARRAY_SIZE(kFeedUserUMAFeatures));
+  writer.AddUmaFeatures(kFeedUserUMAFeatures.data(),
+                        kFeedUserUMAFeatures.size());
 
   constexpr int kModelVersion = 1;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -186,7 +146,7 @@ void FeedUserSegment::InitAndFetchModel(
 void FeedUserSegment::ExecuteModelWithInput(const std::vector<float>& inputs,
                                             ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != ARRAY_SIZE(kFeedUserUMAFeatures)) {
+  if (inputs.size() != kFeedUserUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;

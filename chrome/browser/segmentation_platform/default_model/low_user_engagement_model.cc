@@ -4,6 +4,8 @@
 
 #include "chrome/browser/segmentation_platform/default_model/low_user_engagement_model.h"
 
+#include <array>
+
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -33,7 +35,7 @@ constexpr std::pair<float, int> kDiscreteMappings[] = {
     {kChromeStartDiscreteMappingMinResult, kChromeStartDiscreteMappingRank}};
 
 // InputFeatures.
-constexpr MetadataWriter::UMAFeature kChromeStartUMAFeatures[] = {
+constexpr std::array<MetadataWriter::UMAFeature, 1> kChromeStartUMAFeatures = {
     MetadataWriter::UMAFeature{
         .signal_type = proto::SignalType::HISTOGRAM_VALUE,
         .name = "Session.TotalDuration",
@@ -41,8 +43,6 @@ constexpr MetadataWriter::UMAFeature kChromeStartUMAFeatures[] = {
         .tensor_length = 28,
         .aggregation = proto::Aggregation::BUCKETED_COUNT,
         .enum_ids_size = 0}};
-
-#define ARRAY_SIZE(ar) (sizeof(ar) / sizeof(ar[0]))
 
 }  // namespace
 
@@ -63,8 +63,8 @@ void LowUserEngagementModel::InitAndFetchModel(
                                    kDiscreteMappings, 1);
 
   // Set features.
-  writer.AddUmaFeatures(kChromeStartUMAFeatures,
-                        ARRAY_SIZE(kChromeStartUMAFeatures));
+  writer.AddUmaFeatures(kChromeStartUMAFeatures.data(),
+                        kChromeStartUMAFeatures.size());
 
   constexpr int kModelVersion = 1;
   base::SequencedTaskRunnerHandle::Get()->PostTask(

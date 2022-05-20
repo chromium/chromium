@@ -33,6 +33,30 @@ class MetadataWriter {
     const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
     const size_t enum_ids_size{0};
     const int32_t* const accepted_enum_ids = nullptr;
+
+    static constexpr UMAFeature FromUserAction(const char* name,
+                                               uint64_t bucket_count) {
+      return MetadataWriter::UMAFeature{
+          .signal_type = proto::SignalType::USER_ACTION,
+          .name = name,
+          .bucket_count = bucket_count,
+          .tensor_length = 1,
+          .aggregation = proto::Aggregation::COUNT,
+          .enum_ids_size = 0};
+    }
+    static constexpr UMAFeature FromEnumHistogram(const char* name,
+                                                  uint64_t bucket_count,
+                                                  const int32_t* const enum_ids,
+                                                  size_t enum_ids_size) {
+      return MetadataWriter::UMAFeature{
+          .signal_type = proto::SignalType::HISTOGRAM_ENUM,
+          .name = name,
+          .bucket_count = bucket_count,
+          .tensor_length = 1,
+          .aggregation = proto::Aggregation::COUNT,
+          .enum_ids_size = enum_ids_size,
+          .accepted_enum_ids = enum_ids};
+    }
   };
 
   // Appends list of UMA features in order.

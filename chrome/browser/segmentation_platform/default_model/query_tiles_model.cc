@@ -4,6 +4,8 @@
 
 #include "chrome/browser/segmentation_platform/default_model/query_tiles_model.h"
 
+#include <array>
+
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/segmentation_platform/default_model/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -32,19 +34,11 @@ constexpr std::pair<float, int> kDiscreteMappings[] = {
     {kQueryTilesDiscreteMappingMinResult, kQueryTilesDiscreteMappingRank}};
 
 // InputFeatures.
-constexpr MetadataWriter::UMAFeature kQueryTilesUMAFeatures[2] = {
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "MobileNTPMostVisited",
-                               .bucket_count = 7,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0},
-    MetadataWriter::UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
-                               .name = "Search.QueryTiles.NTP.Tile.Clicked",
-                               .bucket_count = 7,
-                               .tensor_length = 1,
-                               .aggregation = proto::Aggregation::COUNT,
-                               .enum_ids_size = 0}};
+constexpr std::array<MetadataWriter::UMAFeature, 2> kQueryTilesUMAFeatures = {
+    MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 7),
+    MetadataWriter::UMAFeature::FromUserAction(
+        "Search.QueryTiles.NTP.Tile.Clicked",
+        7)};
 
 }  // namespace
 
@@ -65,9 +59,8 @@ void QueryTilesModel::InitAndFetchModel(
                                    kDiscreteMappings, 1);
 
   // Set features.
-  writer.AddUmaFeatures(
-      kQueryTilesUMAFeatures,
-      sizeof(kQueryTilesUMAFeatures) / sizeof(kQueryTilesUMAFeatures[0]));
+  writer.AddUmaFeatures(kQueryTilesUMAFeatures.data(),
+                        kQueryTilesUMAFeatures.size());
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -78,7 +71,7 @@ void QueryTilesModel::InitAndFetchModel(
 void QueryTilesModel::ExecuteModelWithInput(const std::vector<float>& inputs,
                                             ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != 2) {
+  if (inputs.size() != kQueryTilesUMAFeatures.size()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
