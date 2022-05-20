@@ -313,22 +313,24 @@ bool DeleteFileOrSetLastError(const FilePath& path, bool recursive) {
 
 constexpr int kMaxDeleteAttempts = 9;
 
-void LogFileDeleteRetryCount(int attempt) {
-  UmaHistogramExactLinear("Windows.FileDeleteRetryCount", attempt,
-                          kMaxDeleteAttempts);
+void LogFileDeleteRetryCount(bool recursive, int attempt) {
+  UmaHistogramExactLinear(recursive ? "Windows.PathRecursivelyDeleteRetryCount"
+                                    : "Windows.FileDeleteRetryCount",
+                          attempt, kMaxDeleteAttempts);
 }
 
-void DeleteFileWithRetry(int attempt,
-                         const FilePath& file_path,
+void DeleteFileWithRetry(const FilePath& path,
+                         bool recursive,
+                         int attempt,
                          OnceCallback<void(bool)> reply_callback) {
   // Retry every 250ms for up to two seconds. These values were pulled out of
   // thin air, and may be adjusted in the future based on the metrics collected.
   static constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
 
-  if (DeleteFile(file_path)) {
+  if (DeleteFileOrSetLastError(path, recursive)) {
     // Log how many times we had to retry the RetryDeleteFile operation before
     // it succeeded. This will be from 0 to kMaxDeleteAttempts - 1.
-    LogFileDeleteRetryCount(attempt);
+    LogFileDeleteRetryCount(recursive, attempt);
     // Consider introducing further retries until the item has been removed from
     // the filesystem and its name is ready for reuse; see the comments in
     // chrome/installer/mini_installer/delete_with_retry.cc for details.
@@ -341,7 +343,7 @@ void DeleteFileWithRetry(int attempt,
   DCHECK_LE(attempt, kMaxDeleteAttempts);
   if (attempt == kMaxDeleteAttempts) {
     // Log kMaxDeleteAttempts to indicate failure after exhausting all attempts.
-    LogFileDeleteRetryCount(attempt);
+    LogFileDeleteRetryCount(recursive, attempt);
     if (!reply_callback.is_null())
       std::move(reply_callback).Run(false);
     return;
@@ -349,21 +351,37 @@ void DeleteFileWithRetry(int attempt,
 
   ThreadPool::PostDelayedTask(FROM_HERE,
                               {TaskPriority::BEST_EFFORT, MayBlock()},
-                              BindOnce(&DeleteFileWithRetry, attempt, file_path,
-                                       std::move(reply_callback)),
+                              BindOnce(&DeleteFileWithRetry, path, recursive,
+                                       attempt, std::move(reply_callback)),
                               kDeleteFileRetryDelay);
+}
+
+OnceClosure GetDeleteFileCallbackInternal(
+    const FilePath& path,
+    bool recursive,
+    OnceCallback<void(bool)> reply_callback) {
+  OnceCallback<void(bool)> bound_callback;
+  if (!reply_callback.is_null()) {
+    bound_callback = BindPostTask(SequencedTaskRunnerHandle::Get(),
+                                  std::move(reply_callback));
+  }
+  return BindOnce(&DeleteFileWithRetry, path, recursive, /*attempt=*/0,
+                  std::move(bound_callback));
 }
 
 }  // namespace
 
 OnceClosure GetDeleteFileCallback(const FilePath& path,
                                   OnceCallback<void(bool)> reply_callback) {
-  OnceCallback<void(bool)> bound_callback;
-  if (!reply_callback.is_null()) {
-    bound_callback = BindPostTask(SequencedTaskRunnerHandle::Get(),
-                                  std::move(reply_callback));
-  }
-  return BindOnce(&DeleteFileWithRetry, 0, path, std::move(bound_callback));
+  return GetDeleteFileCallbackInternal(path, /*recursive=*/false,
+                                       std::move(reply_callback));
+}
+
+OnceClosure GetDeletePathRecursivelyCallback(
+    const FilePath& path,
+    OnceCallback<void(bool)> reply_callback) {
+  return GetDeleteFileCallbackInternal(path, /*recursive=*/true,
+                                       std::move(reply_callback));
 }
 
 FilePath MakeAbsoluteFilePath(const FilePath& input) {

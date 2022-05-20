@@ -37,6 +37,8 @@
 
 namespace base {
 
+#if !BUILDFLAG(IS_WIN)
+
 namespace {
 
 void RunAndReply(OnceCallback<bool()> action_callback,
@@ -48,7 +50,6 @@ void RunAndReply(OnceCallback<bool()> action_callback,
 
 }  // namespace
 
-#if !BUILDFLAG(IS_WIN)
 OnceClosure GetDeleteFileCallback(const FilePath& path,
                                   OnceCallback<void(bool)> reply_callback) {
   return BindOnce(&RunAndReply, BindOnce(&DeleteFile, path),
@@ -57,7 +58,6 @@ OnceClosure GetDeleteFileCallback(const FilePath& path,
                       : BindPostTask(SequencedTaskRunnerHandle::Get(),
                                      std::move(reply_callback)));
 }
-#endif  // !BUILDFLAG(IS_WIN)
 
 OnceClosure GetDeletePathRecursivelyCallback(
     const FilePath& path,
@@ -68,6 +68,8 @@ OnceClosure GetDeletePathRecursivelyCallback(
                       : BindPostTask(SequencedTaskRunnerHandle::Get(),
                                      std::move(reply_callback)));
 }
+
+#endif  // !BUILDFLAG(IS_WIN)
 
 int64_t ComputeDirectorySize(const FilePath& root_path) {
   int64_t running_size = 0;

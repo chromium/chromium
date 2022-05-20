@@ -287,6 +287,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.PathRecursivelyDeleteRetryCount" units="attempts"
+    expires_after="2022-10-16">
+  <owner>grt@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    The number of retries needed to fully delete a path recursively from
+    GetDeletePathRecursivelyCallback. 0 means it succeeded the first time, 9
+    means it never succeeded to fully delete the path and all of its contents
+    (if the path named a directory).
+  </summary>
+</histogram>
+
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
     expires_after="2022-09-11">
   <owner>rkc@chromium.org</owner>
