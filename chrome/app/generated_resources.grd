@@ -13064,6 +13064,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_BETA" desc="Label marking the feature as 'Beta', this has to be removed after the feature is fully approved.">
         Beta
       </message>
+      <message name="IDS_INPUT_OVERLAY_SETTINGS_NUDGE" desc="Label displayed next to the Settings UI's entry point so the user is aware.">
+        Click here to customize controls
+      </message>
     </if>
 
     <!-- Privacy Sandbox Dialog strings -->

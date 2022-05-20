@@ -22,6 +22,10 @@ namespace views {
 class Widget;
 }  // namespace views
 
+namespace ash {
+class PillButton;
+}  // namespace ash
+
 namespace arc {
 class ArcInputOverlayManagerTest;
 namespace input_overlay {
@@ -85,6 +89,12 @@ class DisplayOverlayController : public ui::EventHandler {
   void AddOverlay(DisplayMode display_mode);
   void RemoveOverlayIfAny();
 
+  // On charge of Add/Remove nudge view.
+  void AddNudgeView(views::Widget* overlay_widget);
+  void RemoveNudgeView();
+  void OnNudgeDismissed();
+  gfx::Point CalculateNudgePosition(int nudge_width);
+
   void AddMenuEntryView(views::Widget* overlay_widget);
   void RemoveMenuEntryView();
   void OnMenuEntryPressed();
@@ -133,6 +143,7 @@ class DisplayOverlayController : public ui::EventHandler {
   raw_ptr<EditModeExitView> edit_mode_view_ = nullptr;
   raw_ptr<ErrorView> error_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
+  raw_ptr<ash::PillButton> nudge_view_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 };

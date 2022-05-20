@@ -6,9 +6,14 @@
 
 #include <memory>
 
+#include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/pill_button.h"
 #include "base/bind.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_mode_exit_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/educational_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
@@ -35,6 +40,8 @@ constexpr int kEditModeExitWidth = 140;
 constexpr int kEditModeExitHeight = 184;
 constexpr SkColor kMenuEntryBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
 constexpr int kCornerRadius = 8;
+constexpr int kNudgeVerticalAlign = 8;
+constexpr int kNudgeHeight = 40;
 
 }  // namespace
 
@@ -93,6 +100,51 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
     RemoveInputMenuView();
     shell_surface_base->RemoveOverlay();
   }
+}
+
+void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
+  if (nudge_view_)
+    return;
+  DCHECK(overlay_widget);
+  auto nudge_view = std::make_unique<ash::PillButton>(
+      base::BindRepeating(&DisplayOverlayController::OnNudgeDismissed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_SETTINGS_NUDGE),
+      ash::PillButton::Type::kIcon, &kTipIcon);
+  nudge_view->SetSize(
+      gfx::Size(nudge_view->GetPreferredSize().width(), kNudgeHeight));
+  nudge_view->SetButtonTextColor(GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
+  auto* color_provider = ash::AshColorProvider::Get();
+  DCHECK(color_provider);
+  // TODO(djacobo|cuicuiruan): Retrieve colors via a single provider.
+  nudge_view->SetBackgroundColor(color_provider->GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
+  nudge_view->SetIconColor(GetContentLayerColor(
+      ash::AshColorProvider::ContentLayerType::kIconColorPrimary));
+  nudge_view->SetPosition(CalculateNudgePosition(nudge_view->width()));
+
+  auto* parent = overlay_widget->GetContentsView();
+  DCHECK(parent);
+  nudge_view_ = parent->AddChildView(std::move(nudge_view));
+}
+
+void DisplayOverlayController::RemoveNudgeView() {
+  if (!nudge_view_)
+    return;
+  nudge_view_->parent()->RemoveChildViewT(nudge_view_);
+  nudge_view_ = nullptr;
+}
+
+void DisplayOverlayController::OnNudgeDismissed() {
+  touch_injector_->set_first_launch(false);
+  RemoveNudgeView();
+}
+
+gfx::Point DisplayOverlayController::CalculateNudgePosition(int nudge_width) {
+  gfx::Point nudge_position = CalculateMenuEntryPosition();
+  return gfx::Point(nudge_position.x() - nudge_width - kMenuEntrySideMargin,
+                    nudge_position.y() + kNudgeVerticalAlign);
 }
 
 void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
@@ -213,7 +265,6 @@ void DisplayOverlayController::RemoveEducationalView() {
 }
 
 void DisplayOverlayController::OnEducationalViewDismissed() {
-  touch_injector_->set_first_launch(false);
   SetDisplayMode(DisplayMode::kView);
 }
 
@@ -274,6 +325,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveMenuEntryView();
       RemoveInputMappingView();
       RemoveEditModeExitView();
+      RemoveNudgeView();
       break;
     case DisplayMode::kEducation:
       AddEducationalView();
@@ -284,8 +336,11 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveInputMenuView();
       RemoveEditModeExitView();
       RemoveEducationalView();
+      RemoveNudgeView();
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
+      if (touch_injector_->first_launch())
+        AddNudgeView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kNone);
       break;
@@ -293,6 +348,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveInputMenuView();
       RemoveMenuEntryView();
       RemoveEducationalView();
+      RemoveNudgeView();
       AddEditModeExitView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
@@ -445,7 +501,7 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  if (!action_edit_menu_ && !error_ && !input_menu_view_)
+  if (!action_edit_menu_ && !error_ && !input_menu_view_ && !nudge_view_)
     return;
 
   auto root_location = event.root_location();
@@ -467,6 +523,10 @@ void DisplayOverlayController::ProcessPressedEvent(
     if (!bounds.Contains(root_location))
       SetDisplayMode(DisplayMode::kView);
   }
+
+  // Dismiss the nudge, regardless where the click was.
+  if (nudge_view_)
+    OnNudgeDismissed();
 }
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {
