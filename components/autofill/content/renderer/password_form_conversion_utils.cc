@@ -11,7 +11,7 @@
 #include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -64,13 +64,6 @@ std::vector<FieldRendererId> GetUsernamePredictions(
       control_elements, form_data, username_detector_cache, form);
 }
 
-bool HasGaiaSchemeAndHost(const WebFormElement& form) {
-  GURL form_url = form.GetDocument().Url();
-  GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
-  return form_url.scheme() == gaia_url.scheme() &&
-         form_url.host() == gaia_url.host();
-}
-
 }  // namespace
 
 re2::RE2* CreateMatcher(void* instance, const char* pattern) {
@@ -84,7 +77,7 @@ re2::RE2* CreateMatcher(void* instance, const char* pattern) {
 }
 
 bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
-  if (!HasGaiaSchemeAndHost(form))
+  if (!gaia::HasGaiaSchemeHostPort(form.GetDocument().Url()))
     return false;
 
   bool has_rart_field = false;
@@ -113,7 +106,7 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
 }
 
 bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form) {
-  if (!HasGaiaSchemeAndHost(form))
+  if (!gaia::HasGaiaSchemeHostPort(form.GetDocument().Url()))
     return false;
 
   GURL url(form.GetDocument().Url());

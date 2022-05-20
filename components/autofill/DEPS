@@ -2,7 +2,7 @@ include_rules = [
   "+components/autofill/android/jni_headers",
   "+components/prefs",
   "+components/strings/grit/components_strings.h",
-  "+google_apis/gaia/gaia_urls.h",
+  "+google_apis/gaia",
   "+net",
   "+mojo/public",
   "+third_party/protobuf",

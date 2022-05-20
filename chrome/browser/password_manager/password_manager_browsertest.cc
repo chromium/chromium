@@ -83,6 +83,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_switches.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -120,6 +121,15 @@ class PasswordManagerBrowserTest : public PasswordManagerBrowserTestBase {
     // in PasswordFormManager unit tests.
     password_manager::PasswordFormManager::
         set_wait_for_server_predictions_for_filling(false);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PasswordManagerBrowserTestBase::SetUpCommandLine(command_line);
+
+    // For the password form to be treated as the Gaia signin page.
+    command_line->AppendSwitchASCII(
+        switches::kGaiaUrl,
+        https_test_server().GetURL("accounts.google.com", "/").spec());
   }
 
   ~PasswordManagerBrowserTest() override = default;
