@@ -73,11 +73,13 @@ SharingHubAction& SharingHubAction::operator=(SharingHubAction&& src) = default;
 
 SharingHubModel::SharingHubModel(content::BrowserContext* context)
     : context_(context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PopulateFirstPartyActions();
   sharing::ShareTargets::GetInstance()->AddObserver(this);
 }
 
 SharingHubModel::~SharingHubModel() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   sharing::ShareTargets::GetInstance()->RemoveObserver(this);
 }
 
@@ -117,6 +119,7 @@ void SharingHubModel::GetFirstPartyActionList(
 
 void SharingHubModel::GetThirdPartyActionList(
     std::vector<SharingHubAction>* list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& action : third_party_action_list_) {
     list->push_back(action);
   }
@@ -126,6 +129,8 @@ void SharingHubModel::ExecuteThirdPartyAction(Profile* profile,
                                               const GURL& gurl,
                                               const std::u16string& title,
                                               int id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const std::string url = gurl.spec();
   auto url_it = third_party_action_urls_.find(id);
   if (url_it == third_party_action_urls_.end())
@@ -168,37 +173,38 @@ void SharingHubModel::ExecuteThirdPartyAction(content::WebContents* contents,
 }
 
 void SharingHubModel::PopulateFirstPartyActions() {
-  first_party_action_list_.push_back(
-      {IDC_COPY_URL, l10n_util::GetStringUTF16(IDS_SHARING_HUB_COPY_LINK_LABEL),
-       &kCopyIcon, true, gfx::ImageSkia(),
-       "SharingHubDesktop.CopyURLSelected"});
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  first_party_action_list_.emplace_back(
+      IDC_COPY_URL, l10n_util::GetStringUTF16(IDS_SHARING_HUB_COPY_LINK_LABEL),
+      &kCopyIcon, true, gfx::ImageSkia(), "SharingHubDesktop.CopyURLSelected");
 
   if (DesktopScreenshotsFeatureEnabled(context_)) {
-    first_party_action_list_.push_back(
-        {IDC_SHARING_HUB_SCREENSHOT,
-         l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL),
-         &kSharingHubScreenshotIcon, true, gfx::ImageSkia(),
-         "SharingHubDesktop.ScreenshotSelected"});
+    first_party_action_list_.emplace_back(
+        IDC_SHARING_HUB_SCREENSHOT,
+        l10n_util::GetStringUTF16(IDS_SHARING_HUB_SCREENSHOT_LABEL),
+        &kSharingHubScreenshotIcon, true, gfx::ImageSkia(),
+        "SharingHubDesktop.ScreenshotSelected");
   }
 
-  first_party_action_list_.push_back(
-      {IDC_SEND_TAB_TO_SELF,
-       l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-       &kSendTabToSelfIcon, true, gfx::ImageSkia(),
-       "SharingHubDesktop.SendTabToSelfSelected"});
+  first_party_action_list_.emplace_back(
+      IDC_SEND_TAB_TO_SELF,
+      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
+      &kSendTabToSelfIcon, true, gfx::ImageSkia(),
+      "SharingHubDesktop.SendTabToSelfSelected");
 
-  first_party_action_list_.push_back(
-      {IDC_QRCODE_GENERATOR,
-       l10n_util::GetStringUTF16(IDS_SHARING_HUB_GENERATE_QR_CODE_LABEL),
-       &kQrcodeGeneratorIcon, true, gfx::ImageSkia(),
-       "SharingHubDesktop.QRCodeSelected"});
+  first_party_action_list_.emplace_back(
+      IDC_QRCODE_GENERATOR,
+      l10n_util::GetStringUTF16(IDS_SHARING_HUB_GENERATE_QR_CODE_LABEL),
+      &kQrcodeGeneratorIcon, true, gfx::ImageSkia(),
+      "SharingHubDesktop.QRCodeSelected");
 
   if (media_router::MediaRouterEnabled(context_)) {
-    first_party_action_list_.push_back(
-        {IDC_ROUTE_MEDIA,
-         l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
-         &vector_icons::kMediaRouterIdleIcon, true, gfx::ImageSkia(),
-         "SharingHubDesktop.CastSelected"});
+    first_party_action_list_.emplace_back(
+        IDC_ROUTE_MEDIA,
+        l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
+        &vector_icons::kMediaRouterIdleIcon, true, gfx::ImageSkia(),
+        "SharingHubDesktop.CastSelected");
   }
 
   if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
@@ -212,14 +218,15 @@ void SharingHubModel::PopulateFirstPartyActions() {
         "SharingHubDesktop.UnfollowSelected");
   }
 
-  first_party_action_list_.push_back(
-      {IDC_SAVE_PAGE,
-       l10n_util::GetStringUTF16(IDS_SHARING_HUB_SAVE_PAGE_LABEL),
-       &kSavePageIcon, true, gfx::ImageSkia(),
-       "SharingHubDesktop.SavePageSelected"});
+  first_party_action_list_.emplace_back(
+      IDC_SAVE_PAGE, l10n_util::GetStringUTF16(IDS_SHARING_HUB_SAVE_PAGE_LABEL),
+      &kSavePageIcon, true, gfx::ImageSkia(),
+      "SharingHubDesktop.SavePageSelected");
 }
 
 void SharingHubModel::PopulateThirdPartyActions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Clear the action list in the case where the action list is repopulated.
   if (third_party_action_list_.size()) {
     third_party_action_list_.clear();
@@ -248,15 +255,15 @@ void SharingHubModel::PopulateThirdPartyActions() {
         }
 
         icon_skia.MakeThreadSafe();
-        third_party_action_list_.push_back(
-            {id, base::ASCIIToUTF16(target.nickname()),
-             &vector_icons::kEmailIcon, false, std::move(icon_skia),
-             "SharingHubDesktop.ThirdPartyAppSelected"});
+        third_party_action_list_.emplace_back(
+            id, base::ASCIIToUTF16(target.nickname()),
+            &vector_icons::kEmailIcon, false, std::move(icon_skia),
+            "SharingHubDesktop.ThirdPartyAppSelected");
       } else {
-        third_party_action_list_.push_back(
-            {id, base::ASCIIToUTF16(target.nickname()),
-             &vector_icons::kEmailIcon, false, gfx::ImageSkia(),
-             "SharingHubDesktop.ThirdPartyAppSelected"});
+        third_party_action_list_.emplace_back(
+            id, base::ASCIIToUTF16(target.nickname()),
+            &vector_icons::kEmailIcon, false, gfx::ImageSkia(),
+            "SharingHubDesktop.ThirdPartyAppSelected");
       }
 
       third_party_action_urls_[id] = GURL(target.url());

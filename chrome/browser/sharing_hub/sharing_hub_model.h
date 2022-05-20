@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -105,6 +106,8 @@ class SharingHubModel : public sharing::ShareTargetsObserver {
   raw_ptr<content::BrowserContext> context_;
 
   std::unique_ptr<sharing::mojom::ShareTargets> third_party_targets_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace sharing_hub
