@@ -13,6 +13,7 @@
 #include <limits>
 #include <memory>
 #include <random>
+#include <set>
 #include <tuple>
 #include <vector>
 
@@ -29,6 +30,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -265,6 +267,7 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
   ~PartitionAllocTest() override = default;
 
   void SetUp() override {
+    PartitionRoot<ThreadSafe>::EnableSortActiveSlotSpans();
     PartitionAllocGlobalInit(HandleOOM);
     allocator.init({
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -4707,6 +4710,74 @@ TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
     if (slot_size <= MaxRegularSlotSpanSize())
       EXPECT_LE(small_system_page_count, MaxSystemPagesPerRegularSlotSpan());
   }
+}
+
+TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
+  auto run_test = [](size_t count) {
+    PartitionBucket<ThreadSafe> bucket;
+    bucket.Init(16);
+    bucket.active_slot_spans_head = nullptr;
+
+    std::vector<SlotSpanMetadata<ThreadSafe>> slot_spans;
+    slot_spans.reserve(count);
+
+    // Add slot spans with random freelist length.
+    for (size_t i = 0; i < count; i++) {
+      slot_spans.emplace_back(&bucket);
+      auto& slot_span = slot_spans.back();
+      slot_span.num_unprovisioned_slots =
+          partition_alloc::internal::base::RandGenerator(
+              bucket.get_slots_per_span() / 2);
+      slot_span.num_allocated_slots =
+          partition_alloc::internal::base::RandGenerator(
+              bucket.get_slots_per_span() - slot_span.num_unprovisioned_slots);
+      slot_span.next_slot_span = bucket.active_slot_spans_head;
+      bucket.active_slot_spans_head = &slot_span;
+    }
+
+    bucket.SortActiveSlotSpans();
+
+    std::set<SlotSpanMetadata<ThreadSafe>*> seen_slot_spans;
+    std::vector<SlotSpanMetadata<ThreadSafe>*> sorted_slot_spans;
+    for (auto* slot_span = bucket.active_slot_spans_head; slot_span;
+         slot_span = slot_span->next_slot_span) {
+      sorted_slot_spans.push_back(slot_span);
+      seen_slot_spans.insert(slot_span);
+    }
+
+    // None repeated, none missing.
+    EXPECT_EQ(seen_slot_spans.size(), sorted_slot_spans.size());
+    EXPECT_EQ(seen_slot_spans.size(), slot_spans.size());
+
+    // The first slot spans are sorted.
+    size_t sorted_spans_count =
+        std::min(PartitionBucket<ThreadSafe>::kMaxSlotSpansToSort, count);
+    EXPECT_TRUE(std::is_sorted(sorted_slot_spans.begin(),
+                               sorted_slot_spans.begin() + sorted_spans_count,
+                               partition_alloc::internal::CompareSlotSpans));
+
+    // Slot spans with no freelist entries are at the end of the sorted run.
+    auto has_empty_freelist = [](SlotSpanMetadata<ThreadSafe>* a) {
+      return a->GetFreelistLength() == 0;
+    };
+    auto it = std::find_if(sorted_slot_spans.begin(),
+                           sorted_slot_spans.begin() + sorted_spans_count,
+                           has_empty_freelist);
+    if (it != sorted_slot_spans.end()) {
+      EXPECT_TRUE(std::all_of(it,
+                              sorted_slot_spans.begin() + sorted_spans_count,
+                              has_empty_freelist));
+    }
+  };
+
+  // Everything is sorted.
+  run_test(PartitionBucket<ThreadSafe>::kMaxSlotSpansToSort / 2);
+  // Only the first slot spans are sorted.
+  run_test(PartitionBucket<ThreadSafe>::kMaxSlotSpansToSort * 2);
+
+  // Corner cases.
+  run_test(0);
+  run_test(1);
 }
 
 }  // namespace partition_alloc::internal

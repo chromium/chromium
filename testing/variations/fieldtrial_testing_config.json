@@ -5827,6 +5827,22 @@
             ]
         }
     ],
+    "PartitionAllocSortActiveSlotSpans": [
+        {
+            "platforms": [
+                "android",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocSortActiveSlotSpans"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionNetworkStateByDoubleKey": [
         {
             "platforms": [

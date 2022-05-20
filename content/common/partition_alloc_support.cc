@@ -417,6 +417,12 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::StartMemoryReclaimer(base::ThreadTaskRunnerHandle::Get());
 #endif
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSortActiveSlotSpans)) {
+    base::PartitionRoot<
+        partition_alloc::internal::ThreadSafe>::EnableSortActiveSlotSpans();
+  }
 }
 
 void PartitionAllocSupport::OnForegrounded() {

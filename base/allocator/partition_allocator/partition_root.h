@@ -744,7 +744,12 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   }
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
+  // Enables the sorting of active slot spans in PurgeMemory().
+  static void EnableSortActiveSlotSpans();
+
  private:
+  static inline bool sort_active_slot_spans_ = false;
+
   // |buckets| has `kNumBuckets` elements, but we sometimes access it at index
   // `kNumBuckets`, which is occupied by the sentinel bucket. The correct layout
   // is enforced by a static_assert() in partition_root.cc, so this is

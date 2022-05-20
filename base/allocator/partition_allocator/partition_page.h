@@ -173,7 +173,7 @@ struct SlotSpanMetadata {
   // in PartitionPage which has 2B worth of fields and must fit in 32B.
 
  public:
-  explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
+  BASE_EXPORT explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
@@ -269,6 +269,13 @@ struct SlotSpanMetadata {
     return provisioned_size;
   }
 
+  // Return the number of entries in the freelist.
+  size_t GetFreelistLength() const {
+    size_t num_provisioned_slots =
+        bucket->get_slots_per_span() - num_unprovisioned_slots;
+    return num_provisioned_slots - num_allocated_slots;
+  }
+
   ALWAYS_INLINE void Reset();
 
   // TODO(ajwong): Can this be made private?  https://crbug.com/787153
@@ -290,7 +297,7 @@ struct SlotSpanMetadata {
   //
   // Note, this declaration is kept in the header as opposed to an anonymous
   // namespace so the getter can be fully inlined.
-  static SlotSpanMetadata sentinel_slot_span_;
+  static inline SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
       : marked_full(0),

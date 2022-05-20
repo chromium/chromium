@@ -1091,6 +1091,9 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
         // Do it at the end, as the actions above change the status of slot
         // spans (e.g. empty -> decommitted).
         bucket.MaintainActiveList();
+
+        if (sort_active_slot_spans_)
+          bucket.SortActiveSlotSpans();
       }
     }
   }
@@ -1302,6 +1305,11 @@ uintptr_t PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
   // may be useful, and we are already in a slow path anyway (first small
   // allocation of this thread).
   return tcache->GetFromCache(bucket_index, slot_size);
+}
+
+template <>
+void PartitionRoot<internal::ThreadSafe>::EnableSortActiveSlotSpans() {
+  sort_active_slot_spans_ = true;
 }
 
 template struct BASE_EXPORT PartitionRoot<internal::ThreadSafe>;

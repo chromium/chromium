@@ -23,6 +23,10 @@ constexpr inline int kPartitionNumSystemPagesPerSlotSpanBits = 8;
 BASE_EXPORT uint8_t
 ComputeSystemPagesPerSlotSpan(size_t slot_size, bool prefer_smaller_slot_spans);
 
+// Visible for testing.
+BASE_EXPORT bool CompareSlotSpans(SlotSpanMetadata<ThreadSafe>* a,
+                                  SlotSpanMetadata<ThreadSafe>* b);
+
 template <bool thread_safe>
 struct PartitionBucket {
   // Accessed most in hot path => goes first. Only nullptr for invalid buckets,
@@ -54,8 +58,10 @@ struct PartitionBucket {
       "GetSlotOffset may produce an incorrect result when kMaxBucketed is too "
       "large.");
 
+  static constexpr size_t kMaxSlotSpansToSort = 200;
+
   // Public API.
-  void Init(uint32_t new_slot_size);
+  BASE_EXPORT void Init(uint32_t new_slot_size);
 
   // Sets |is_already_zeroed| to true if the allocation was satisfied by
   // requesting (a) new page(s) from the operating system, or false otherwise.
@@ -148,6 +154,8 @@ struct PartitionBucket {
 
   // Sort the freelists of all slot spans.
   void SortSlotSpanFreelists();
+  // Sort the active slot span list in ascending freelist length.
+  BASE_EXPORT void SortActiveSlotSpans();
 
  private:
   // Allocates a new slot span with size |num_partition_pages| from the

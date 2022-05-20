@@ -123,5 +123,9 @@ const Feature kPartitionAllocPCScanStackScanning {
 const Feature kPartitionAllocDCScan{"PartitionAllocDCScan",
                                     FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether to sort the active slot spans in PurgeMemory().
+extern const Feature kPartitionAllocSortActiveSlotSpans{
+    "PartitionAllocSortActiveSlotSpans", FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace base

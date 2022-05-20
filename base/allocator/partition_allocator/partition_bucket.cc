@@ -4,7 +4,9 @@
 
 #include "base/allocator/partition_allocator/partition_bucket.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <tuple>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
@@ -18,6 +20,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
@@ -1100,6 +1103,88 @@ void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
     // spans, which may required paging.
     if (slot_span->num_allocated_slots > 0 && !slot_span->freelist_is_sorted())
       slot_span->SortFreelist();
+  }
+}
+
+BASE_EXPORT bool CompareSlotSpans(SlotSpanMetadata<ThreadSafe>* a,
+                                  SlotSpanMetadata<ThreadSafe>* b) {
+  auto criteria_tuple = [](SlotSpanMetadata<ThreadSafe> const* a) {
+    size_t freelist_length = a->GetFreelistLength();
+    // The criteria are, in order (hence the lexicographic comparison below):
+    // 1. Prefer slot spans with freelist entries. The ones without freelist
+    //    entries would be skipped in SetNewActiveSlotSpan() anyway.
+    // 2. Then the ones with the fewest freelist entries. They are either close
+    //    to being full (for the provisioned memory), or close to being pushed
+    //    at the end of the list (since they would not have freelist entries
+    //    anymore, and would either fall into the first case, or be skipped by
+    //    SetNewActiveSlotSpan()).
+    // 3. The ones with the fewer unprovisioned slots, meaning that they are
+    //    close to being completely full.
+    //
+    // Note that this sorting order is not necessarily the best one when slot
+    // spans are partially provisioned. From local testing, in steady-state,
+    // most slot spans are entirely provisioned (or decommitted), which may be a
+    // consequence of the lack of partial slot span decommit, or of fairly
+    // effective fragmentation avoidance heuristics. Make sure to evaluate
+    // whether an alternative sorting order (sorting according to freelist size
+    // + unprovisioned slots) makes more sense.
+    return std::tuple<bool, size_t, size_t>{
+        freelist_length == 0, freelist_length, a->num_unprovisioned_slots};
+  };
+
+  return criteria_tuple(a) < criteria_tuple(b);
+}
+
+template <bool thread_safe>
+void PartitionBucket<thread_safe>::SortActiveSlotSpans() {
+  // Sorting up to |kMaxSlotSpansToSort| slot spans. This is capped for two
+  // reasons:
+  // - Limiting execution time
+  // - Current code cannot allocate.
+  //
+  // In practice though, it's rare to have that many active slot spans.
+  SlotSpanMetadata<thread_safe>* active_spans_array[kMaxSlotSpansToSort];
+  size_t index = 0;
+  SlotSpanMetadata<thread_safe>* overflow_spans_start = nullptr;
+
+  for (auto* slot_span = active_slot_spans_head; slot_span;
+       slot_span = slot_span->next_slot_span) {
+    if (index < kMaxSlotSpansToSort) {
+      active_spans_array[index++] = slot_span;
+    } else {
+      // Starting from this one, not sorting the slot spans.
+      overflow_spans_start = slot_span;
+      break;
+    }
+  }
+
+  // We sort the active slot spans so that allocations are preferably serviced
+  // from the fullest ones. This way we hope to reduce fragmentation by keeping
+  // as few slot spans as full as possible.
+  //
+  // With perfect information on allocation lifespan, we would be able to pack
+  // allocations and get almost no fragmentation. This is obviously not the
+  // case, so we have partially full SlotSpans. Nevertheless, as a heuristic we
+  // want to:
+  // - Keep almost-empty slot spans as empty as possible
+  // - Keep mostly-full slot spans as full as possible
+  //
+  // The first part is done in the hope that future free()s will make these
+  // slot spans completely empty, allowing us to reclaim them. To that end, sort
+  // SlotSpans periodically so that the fullest ones are preferred.
+  //
+  // std::sort() is not completely guaranteed to never allocate memory. However,
+  // it may not throw std::bad_alloc, which constrains the implementation. In
+  // addition, this is protected by the reentrancy guard, so we would detect
+  // such an allocation.
+  std::sort(active_spans_array, active_spans_array + index, CompareSlotSpans);
+
+  active_slot_spans_head = overflow_spans_start;
+
+  // Reverse order, since we insert at the head of the list.
+  for (int i = index - 1; i >= 0; i--) {
+    active_spans_array[i]->next_slot_span = active_slot_spans_head;
+    active_slot_spans_head = active_spans_array[i];
   }
 }
 

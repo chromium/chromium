@@ -138,11 +138,6 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
 
 // static
 template <bool thread_safe>
-SlotSpanMetadata<thread_safe>
-    SlotSpanMetadata<thread_safe>::sentinel_slot_span_;
-
-// static
-template <bool thread_safe>
 SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() {
   return &sentinel_slot_span_;
@@ -274,6 +269,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     PA_DCHECK(slot_number < num_provisioned_slots);
     free_slots[slot_number] = true;
   }
+  PA_DCHECK(num_free_slots == GetFreelistLength());
 
   // Empty or single-element list is always sorted.
   if (num_free_slots > 1) {
