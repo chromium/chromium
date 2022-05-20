@@ -219,8 +219,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, DeleteAppInFolder) {
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener listener("Remote app added",
-                                        /*will_reply=*/false);
+  ExtensionTestMessageListener listener("Remote app added");
   listener.set_extension_id(kExtensionId);
   LoadExtensionAndRunTest("OnRemoteAppLaunched");
   ASSERT_TRUE(listener.WaitUntilSatisfied());

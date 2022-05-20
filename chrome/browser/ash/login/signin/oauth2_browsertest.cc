@@ -1045,7 +1045,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, Throttle) {
   extensions::ResultCatcher catcher;
 
   std::unique_ptr<ExtensionTestMessageListener> non_google_xhr_listener(
-      new ExtensionTestMessageListener("non-google-xhr-received", false));
+      new ExtensionTestMessageListener("non-google-xhr-received"));
 
   // Load extension with a background page. The background page will
   // attempt to load `fake_google_page_url_` via XHR.
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, Throttle) {
                                     non_google_page_url_.spec().c_str(),
                                     BoolToString(do_async_xhr()),
                                     BoolToString(/*should_throttle=*/true)));
-  ExtensionTestMessageListener listener("Both XHR's Opened", false);
+  ExtensionTestMessageListener listener("Both XHR's Opened");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   // Verify that we've sent XHR request from the extension side (async)...
@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, MAYBE_XHRNotThrottled) {
   extensions::ResultCatcher catcher;
 
   std::unique_ptr<ExtensionTestMessageListener> non_google_xhr_listener(
-      new ExtensionTestMessageListener("non-google-xhr-received", false));
+      new ExtensionTestMessageListener("non-google-xhr-received"));
 
   // Load extension with a background page. The background page will
   // attempt to load `fake_google_page_url_` via XHR.
@@ -1187,7 +1187,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTimeoutTest, XHRMergeTimeout) {
   extensions::ResultCatcher catcher;
 
   std::unique_ptr<ExtensionTestMessageListener> non_google_xhr_listener(
-      new ExtensionTestMessageListener("non-google-xhr-received", false));
+      new ExtensionTestMessageListener("non-google-xhr-received"));
 
   // Load extension with a background page. The background page will
   // attempt to load `fake_google_page_url_` via XHR.

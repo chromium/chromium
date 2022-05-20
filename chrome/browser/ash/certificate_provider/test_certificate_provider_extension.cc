@@ -194,7 +194,7 @@ TestCertificateProviderExtension::TestCertificateProviderExtension(
       certificate_(GetCertificate()),
       private_key_(LoadPrivateKeyFromFile(net::GetTestCertsDirectory().Append(
           FILE_PATH_LITERAL("client_1.pk8")))),
-      message_listener_(/*will_reply=*/true) {
+      message_listener_(ReplyBehavior::kWillReply) {
   DCHECK(browser_context_);
   CHECK(certificate_);
   CHECK(private_key_);

@@ -144,7 +144,7 @@ class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
     // The test should reply to this message in order for the app window to
     // close itself.
     ExtensionTestMessageListener ready_to_close("readyToClose",
-                                                true /* will_reply */);
+                                                ReplyBehavior::kWillReply);
 
     lock_screen_apps::StateController::Get()->RequestNewLockScreenNote(
         ash::mojom::LockScreenNoteOrigin::kLockScreenButtonTap);
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenNoteTakingTest, AppLaunchActionDataParams) {
             lock_screen_apps::StateController::Get()->GetLockScreenNoteState());
 
   ExtensionTestMessageListener expected_action_data("getExpectedActionData",
-                                                    true /* will_reply */);
+                                                    ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(expected_action_data.WaitUntilSatisfied());
   expected_action_data.Reply(R"({"actionType": "new_note",

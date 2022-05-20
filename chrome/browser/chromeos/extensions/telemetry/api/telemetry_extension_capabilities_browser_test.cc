@@ -52,7 +52,7 @@ class TelemetryExtensionCapabilitiesBrowserTest
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
                        CanReceiveMessageExternal) {
   // Start listening on the extension.
-  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  ExtensionTestMessageListener listener;
 
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir_receiver;
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
                        CanNavigateToOptionsPage) {
   // Start listening on the extension.
-  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  ExtensionTestMessageListener listener;
 
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesWithCmdBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kPwaPageUrl)));
 
   // Start listening on the extension.
-  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  ExtensionTestMessageListener listener;
 
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir_receiver;

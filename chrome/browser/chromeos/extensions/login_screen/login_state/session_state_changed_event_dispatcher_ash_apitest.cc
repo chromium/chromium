@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(SessionStateChangedEventDispatcherApitest,
   };
 
   for (const auto& test : kTestCases) {
-    ExtensionTestMessageListener listener(test.expected, /*will_reply=*/false);
+    ExtensionTestMessageListener listener(test.expected);
     session_manager->SetSessionState(test.session_state);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }

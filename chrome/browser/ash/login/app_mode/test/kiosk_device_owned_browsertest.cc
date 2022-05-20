@@ -139,8 +139,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
 
 // This test case is to cover crbug.com/1235334.
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, WindowViewsBounds) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded",
-                                                          false);
+  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
 
   // Start app launch with network portal state.
   StartAppLaunchFromLoginScreen(
@@ -191,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded",
-                                                          false);
+  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
@@ -225,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, ZoomSupport) {
-  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded",
-                                                          false);
+  ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());

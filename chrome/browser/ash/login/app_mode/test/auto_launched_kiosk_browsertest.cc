@@ -191,8 +191,7 @@ class AutoLaunchedKioskTestBase : public OobeBaseTest {
     // Listeners created in IN_PROC_BROWSER_TEST might miss the messages sent
     // from the kiosk app.
     app_window_loaded_listener_ =
-        std::make_unique<ExtensionTestMessageListener>("appWindowLoaded",
-                                                       false);
+        std::make_unique<ExtensionTestMessageListener>("appWindowLoaded");
     termination_observer_ = std::make_unique<TerminationObserver>();
     InProcessBrowserTest::PreRunTestOnMainThread();
   }
@@ -388,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
 
   EXPECT_TRUE(IsKioskAppAutoLaunched(kTestNonKioskEnabledApp));
 
-  ExtensionTestMessageListener listener("launchRequested", false);
+  ExtensionTestMessageListener listener("launchRequested");
 
   content::WindowedNotificationObserver termination_waiter(
       chrome::NOTIFICATION_APP_TERMINATING,

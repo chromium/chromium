@@ -35,9 +35,8 @@ LoginScreenApitestBase::~LoginScreenApitestBase() {
 
 void LoginScreenApitestBase::SetUpTestListeners() {
   catcher_ = std::make_unique<extensions::ResultCatcher>();
-  listener_ =
-      std::make_unique<ExtensionTestMessageListener>(listener_message_,
-                                                     /*will_reply=*/true);
+  listener_ = std::make_unique<ExtensionTestMessageListener>(
+      listener_message_, ReplyBehavior::kWillReply);
 }
 
 void LoginScreenApitestBase::ClearTestListeners() {

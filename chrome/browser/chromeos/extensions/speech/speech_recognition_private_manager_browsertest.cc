@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
                     {kCorrectExtensionIdAndClientId, kProcessingEvent}};
 
   for (const auto& test : kTestCases) {
-    ExtensionTestMessageListener listener(test.expected, false);
+    ExtensionTestMessageListener listener(test.expected);
     DispatchOnStopEvent(test.key);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
@@ -216,10 +216,9 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
   for (const auto& test : kTestCases) {
     // For each onResult event, verify that it was successfully handled in one
     // listener and dropped in the other (there are only two listeners).
-    ExtensionTestMessageListener success_listener(test.expected_success_message,
-                                                  false);
-    ExtensionTestMessageListener skip_listener(test.expected_skip_message,
-                                               false);
+    ExtensionTestMessageListener success_listener(
+        test.expected_success_message);
+    ExtensionTestMessageListener skip_listener(test.expected_skip_message);
     DispatchOnResultEvent(test.key, test.transcript, test.is_final);
     ASSERT_TRUE(success_listener.WaitUntilSatisfied());
     ASSERT_TRUE(skip_listener.WaitUntilSatisfied());
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest,
                        DispatchOnErrorEvent) {
   ResultCatcher result_catcher;
-  ExtensionTestMessageListener listener("Proceed", false);
+  ExtensionTestMessageListener listener("Proceed");
 
   const Extension* extension = LoadExtensionAsComponent("onerror_event");
   ASSERT_TRUE(extension);

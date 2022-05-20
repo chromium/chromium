@@ -16,7 +16,7 @@ using ActionHandlersBrowserTest = extensions::ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ActionHandlersBrowserTest, LaunchAppWithNewNote) {
   // Load the app. Make sure to wait until it is done loading.
-  ExtensionTestMessageListener loader("loaded", false);
+  ExtensionTestMessageListener loader("loaded");
   base::FilePath path =
       test_data_dir_.AppendASCII("action_handlers").AppendASCII("new_note");
   const extensions::Extension* app = LoadExtension(path);
@@ -26,7 +26,7 @@ IN_PROC_BROWSER_TEST_F(ActionHandlersBrowserTest, LaunchAppWithNewNote) {
   EXPECT_TRUE(loader.WaitUntilSatisfied());
 
   // Fire a "new_note" action type, assert that app has received it.
-  ExtensionTestMessageListener new_note("hasNewNote = true", false);
+  ExtensionTestMessageListener new_note("hasNewNote = true");
   auto action_data = std::make_unique<app_runtime::ActionData>();
   action_data->action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
   apps::LaunchPlatformAppWithAction(profile(), app, std::move(action_data));

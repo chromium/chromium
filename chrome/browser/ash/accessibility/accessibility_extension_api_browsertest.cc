@@ -218,13 +218,15 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateDictationBubble) {
 
   // This test requires some back and forth communication between C++ and JS.
   // Use message listeners to force the synchronicity of this test.
-  ExtensionTestMessageListener standby_listener("Standby", /*will_reply=*/true);
+  ExtensionTestMessageListener standby_listener("Standby",
+                                                ReplyBehavior::kWillReply);
   ExtensionTestMessageListener show_text_listener("Show text",
-                                                  /*will_reply=*/true);
-  ExtensionTestMessageListener macro_success_listener("Show macro success",
-                                                      /*will_reply=*/true);
-  ExtensionTestMessageListener reset_listener("Reset", /*will_reply=*/true);
-  ExtensionTestMessageListener hide_listener("Hide", /*will_reply=*/false);
+                                                  ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener macro_success_listener(
+      "Show macro success", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener reset_listener("Reset",
+                                              ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener hide_listener("Hide");
 
   extensions::ResultCatcher result_catcher;
   ASSERT_TRUE(RunSubtest("testUpdateDictationBubble")) << message_;
@@ -269,9 +271,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateDictationBubble) {
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
                        UpdateDictationBubbleWithHints) {
   Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
-  ExtensionTestMessageListener show_listener("Some hints", /*will_reply=*/true);
-  ExtensionTestMessageListener no_hints_listener("No hints",
-                                                 /*will_reply=*/false);
+  ExtensionTestMessageListener show_listener("Some hints",
+                                             ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener no_hints_listener("No hints");
   extensions::ResultCatcher result_catcher;
   ASSERT_TRUE(RunSubtest("testUpdateDictationBubbleWithHints")) << message_;
 

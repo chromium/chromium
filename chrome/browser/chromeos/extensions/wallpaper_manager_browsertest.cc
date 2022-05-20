@@ -52,8 +52,8 @@ void WallpaperManagerBrowserTest::LoadAndLaunchWallpaperManager() {
 
 void WallpaperManagerBrowserTest::VerifyWallpaperManagerLoaded() {
   ExtensionTestMessageListener window_created_listener(
-      "wallpaper-window-created", false);
-  ExtensionTestMessageListener launched_listener("launched", false);
+      "wallpaper-window-created");
+  ExtensionTestMessageListener launched_listener("launched");
   LoadAndLaunchWallpaperManager();
   EXPECT_TRUE(window_created_listener.WaitUntilSatisfied())
       << "Wallpaper picker window was not created.";

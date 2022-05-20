@@ -54,7 +54,7 @@ class DlpContentTabHelperBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
 
   // Install Platform App
   content::WindowedNotificationObserver app_loaded_observer(
