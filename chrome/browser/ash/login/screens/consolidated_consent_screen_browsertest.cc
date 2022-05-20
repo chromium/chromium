@@ -104,21 +104,22 @@ const test::UIPath kReadMoreButton = {kConsolidatedConsentId, "loadedDialog",
 // Google EUlA Dialog
 const test::UIPath kGoogleEulaDialog = {kConsolidatedConsentId,
                                         "googleEulaDialog"};
-const test::UIPath kGoogleEulaWebview = {kConsolidatedConsentId,
-                                         "googleEulaWebview"};
+const test::UIPath kGoogleEulaWebview = {
+    kConsolidatedConsentId, "consolidatedConsentGoogleEulaWebview"};
 const test::UIPath kGoogleEulaOkButton = {kConsolidatedConsentId,
                                           "googleEulaOkButton"};
 
 // CROS EULA Dialog
 const test::UIPath kCrosEulaDialog = {kConsolidatedConsentId, "crosEulaDialog"};
 const test::UIPath kCrosEulaWebview = {kConsolidatedConsentId,
-                                       "crosEulaWebview"};
+                                       "consolidatedConsentCrosEulaWebview"};
 const test::UIPath kCrosEulaOkButton = {kConsolidatedConsentId,
                                         "crosEulaOkButton"};
 
 // ARC ToS Dialog
 const test::UIPath kArcTosDialog = {kConsolidatedConsentId, "arcTosDialog"};
-const test::UIPath kArcTosWebview = {kConsolidatedConsentId, "arcTosWebview"};
+const test::UIPath kArcTosWebview = {kConsolidatedConsentId,
+                                     "consolidatedConsentArcTosWebview"};
 const test::UIPath kArcTosOkButton = {kConsolidatedConsentId, "arcTosOkButton"};
 
 // Privacy Policy Dialog

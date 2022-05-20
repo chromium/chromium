@@ -85,9 +85,10 @@ class GuestTos extends GuestTosScreenElementBase {
     const crosEulaUrl = data['crosEulaUrl'];
 
     this.loadEulaWebview_(
-        this.$.googleEulaWebview, googleEulaUrl, false /* clear_anchors */);
+        this.$.guestTosGoogleEulaWebview, googleEulaUrl,
+        false /* clear_anchors */);
     this.loadEulaWebview_(
-        this.$.crosEulaWebview, crosEulaUrl, true /* clear_anchors */);
+        this.$.guestTosCrosEulaWebview, crosEulaUrl, true /* clear_anchors */);
   }
 
   /** Initial UI State for screen */

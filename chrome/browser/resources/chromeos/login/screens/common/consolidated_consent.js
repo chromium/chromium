@@ -256,7 +256,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     }
 
     this.isArcTosInitialized_ = true;
-    const webview = this.$.arcTosWebview;
+    const webview = this.$.consolidatedConsentArcTosWebview;
     webview.removeContentScripts(['preProcess']);
 
     var language = this.getCurrentLanguage_();
@@ -299,10 +299,11 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       this.googleEulaLoading_ = true;
       this.crosEulaLoading_ = true;
       this.loadEulaWebview_(
-          this.$.googleEulaWebview, this.googleEulaUrl_,
+          this.$.consolidatedConsentGoogleEulaWebview, this.googleEulaUrl_,
           false /* clear_anchors */);
       this.loadEulaWebview_(
-          this.$.crosEulaWebview, this.crosEulaUrl_, true /* clear_anchors */);
+          this.$.consolidatedConsentCrosEulaWebview, this.crosEulaUrl_,
+          true /* clear_anchors */);
     }
 
     if (this.shouldShowArcTos_(isTosHidden, isArcEnabled)) {
@@ -326,7 +327,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   loadArcTosWebview_(online_tos_url) {
-    const webview = this.$.arcTosWebview;
+    const webview = this.$.consolidatedConsentArcTosWebview;
 
     var loadFailureCallback = () => {
       this.setUIStep(ConsolidatedConsentScreenState.ERROR);
@@ -406,7 +407,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   }
 
   onArcTosContentLoad_() {
-    const webview = this.$.arcTosWebview;
+    const webview = this.$.consolidatedConsentArcTosWebview;
     webview.executeScript({code: 'getPrivacyPolicyLink();'}, (results) => {
       if (results && results.length == 1 && typeof results[0] == 'string') {
         this.loadPrivacyPolicyWebview_(results[0]);
@@ -721,7 +722,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
 
     // Enable loading content script 'playstore.js' when fetching ToS from
     // the test server.
-    var termsView = this.$.arcTosWebview;
+    var termsView = this.$.consolidatedConsentArcTosWebview;
     termsView.removeContentScripts(['postProcess']);
     termsView.addContentScripts([{
       name: 'postProcess',
