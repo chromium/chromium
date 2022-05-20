@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 namespace blink {
 
@@ -131,7 +132,7 @@ void WebTestWebFrameWidgetImpl::DisableEndDocumentTransition() {
 void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   // When using threaded compositing, have the WeFrameWidgetImpl normally
   // schedule a request for a frame, as we use the compositor's scheduler.
-  if (scheduler::WebThreadScheduler::CompositorThreadScheduler()) {
+  if (Thread::CompositorThread()) {
     WebFrameWidgetImpl::ScheduleAnimation();
     return;
   }

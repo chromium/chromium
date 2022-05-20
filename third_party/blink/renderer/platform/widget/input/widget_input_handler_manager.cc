@@ -27,6 +27,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_widget_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
@@ -185,14 +187,14 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
     bool never_composited,
-    scheduler::WebThreadScheduler* compositor_thread_scheduler,
-    scheduler::WebThreadScheduler* main_thread_scheduler,
+    ThreadScheduler* compositor_thread_scheduler,
+    AgentGroupScheduler& agent_group_scheduler,
     bool uses_input_handler,
     bool allow_scroll_resampling) {
   scoped_refptr<WidgetInputHandlerManager> manager =
       new WidgetInputHandlerManager(
           std::move(widget), std::move(frame_widget_input_handler),
-          never_composited, compositor_thread_scheduler, main_thread_scheduler,
+          never_composited, compositor_thread_scheduler, agent_group_scheduler,
           allow_scroll_resampling);
   if (uses_input_handler)
     manager->InitInputHandler();
@@ -213,23 +215,25 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
     bool never_composited,
-    scheduler::WebThreadScheduler* compositor_thread_scheduler,
-    scheduler::WebThreadScheduler* main_thread_scheduler,
+    ThreadScheduler* compositor_thread_scheduler,
+    AgentGroupScheduler& agent_group_thread_scheduler,
     bool allow_scroll_resampling)
     : widget_(std::move(widget)),
       frame_widget_input_handler_(std::move(frame_widget_input_handler)),
 
-      widget_scheduler_(main_thread_scheduler->CreateWidgetScheduler()),
-      main_thread_scheduler_(main_thread_scheduler),
+      widget_scheduler_(agent_group_thread_scheduler.GetMainThreadScheduler()
+                            .CreateWidgetScheduler()),
+      main_thread_scheduler_(
+          &agent_group_thread_scheduler.GetMainThreadScheduler()),
       input_event_queue_(base::MakeRefCounted<MainThreadEventQueue>(
           this,
           widget_scheduler_->InputTaskRunner(),
-          main_thread_scheduler,
+          main_thread_scheduler_,
           /*allow_raf_aligned_input=*/!never_composited)),
       main_thread_task_runner_(widget_scheduler_->InputTaskRunner()),
       compositor_thread_default_task_runner_(
           compositor_thread_scheduler
-              ? compositor_thread_scheduler->DefaultTaskRunner()
+              ? compositor_thread_scheduler->CompositorTaskRunner()
               : nullptr),
       compositor_thread_input_blocking_task_runner_(
           compositor_thread_scheduler

@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_settings.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view.h"
 #include "third_party/blink/renderer/platform/widget/compositing/render_frame_metadata_observer_impl.h"
@@ -189,7 +190,7 @@ void WidgetBase::InitializeCompositing(
       agent_group_scheduler.CompositorTaskRunner();
 
   auto* compositing_thread_scheduler =
-      scheduler::WebThreadScheduler::CompositorThreadScheduler();
+      ThreadScheduler::CompositorThreadScheduler();
   layer_tree_view_ =
       std::make_unique<LayerTreeView>(this, main_thread_scheduler);
 
@@ -206,17 +207,16 @@ void WidgetBase::InitializeCompositing(
   layer_tree_view_->Initialize(
       *settings, main_thread_compositor_task_runner_,
       compositing_thread_scheduler
-          ? compositing_thread_scheduler->DefaultTaskRunner()
+          ? compositing_thread_scheduler->CompositorTaskRunner()
           : nullptr,
       platform->GetTaskGraphRunner());
 
   FrameWidget* frame_widget = client_->FrameWidget();
 
-  // |compositor_thread_scheduler| will be null for a popup (since it has no
-  // FrameWidget) or in tests without a compositor thread.
-  scheduler::WebThreadScheduler* compositor_thread_scheduler =
-      frame_widget ? scheduler::WebThreadScheduler::CompositorThreadScheduler()
-                   : nullptr;
+  // Even if we have a |compositing_thread_scheduler| we do not process input
+  // on the compositor thread for widgets that are not frames. (ie. popups).
+  auto* widget_compositing_thread_scheduler =
+      frame_widget ? compositing_thread_scheduler : nullptr;
 
   // We only use an external input handler for frame widgets because only
   // frames use the compositor for input handling. Other kinds of widgets
@@ -225,8 +225,9 @@ void WidgetBase::InitializeCompositing(
   bool uses_input_handler = frame_widget;
   widget_input_handler_manager_ = WidgetInputHandlerManager::Create(
       weak_ptr_factory_.GetWeakPtr(), std::move(frame_widget_input_handler),
-      never_composited_, compositor_thread_scheduler, main_thread_scheduler,
-      uses_input_handler, client_->AllowsScrollResampling());
+      never_composited_, widget_compositing_thread_scheduler,
+      agent_group_scheduler.AsAgentGroupScheduler(), uses_input_handler,
+      client_->AllowsScrollResampling());
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

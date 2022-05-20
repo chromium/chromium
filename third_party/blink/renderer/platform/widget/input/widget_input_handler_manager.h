@@ -35,8 +35,10 @@ class WebWidgetScheduler;
 class WebThreadScheduler;
 }  // namespace scheduler
 
+class AgentGroupScheduler;
 class SynchronousCompositorRegistry;
 class SynchronousCompositorProxyRegistry;
+class ThreadScheduler;
 class WebInputEventAttribution;
 class WidgetBase;
 
@@ -77,8 +79,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       bool never_composited,
-      scheduler::WebThreadScheduler* compositor_thread_scheduler,
-      scheduler::WebThreadScheduler* main_thread_scheduler,
+      ThreadScheduler* compositor_thread_scheduler,
+      AgentGroupScheduler& agent_group_scheduler,
       bool needs_input_handler,
       bool allow_scroll_resampling);
 
@@ -180,14 +182,13 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   ~WidgetInputHandlerManager() override;
 
  private:
-  WidgetInputHandlerManager(
-      base::WeakPtr<WidgetBase> widget,
-      base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-          frame_widget_input_handler,
-      bool never_composited,
-      scheduler::WebThreadScheduler* compositor_thread_scheduler,
-      scheduler::WebThreadScheduler* main_thread_scheduler,
-      bool allow_scroll_resampling);
+  WidgetInputHandlerManager(base::WeakPtr<WidgetBase> widget,
+                            base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
+                                frame_widget_input_handler,
+                            bool never_composited,
+                            ThreadScheduler* compositor_thread_scheduler,
+                            AgentGroupScheduler& agent_group_scheduler,
+                            bool allow_scroll_resampling);
   void InitInputHandler();
   void InitOnInputHandlingThread(
       const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,
