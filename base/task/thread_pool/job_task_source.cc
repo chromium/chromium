@@ -213,6 +213,11 @@ TaskSource::RunStatus JobTaskSource::WillRunTask() {
 
   const size_t max_concurrency =
       GetMaxConcurrency(state_before_add.worker_count());
+
+  // https://github.com/RecordReplay/backend/issues/5661
+  recordreplay::Assert("JobTaskSource::WillRunTask #1 %lu %lu",
+                       max_concurrency, state_before_add.worker_count());
+
   if (state_before_add.worker_count() < max_concurrency)
     state_before_add = state_.IncrementWorkerCount();
   const size_t worker_count_before_add = state_before_add.worker_count();
