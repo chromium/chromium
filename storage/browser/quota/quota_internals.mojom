@@ -14,6 +14,7 @@ struct BucketTableEntry {
     string host;
     string type;
     string name;
+    int64 usage;
     int64 use_count;
     mojo_base.mojom.Time last_accessed;
     mojo_base.mojom.Time last_modified;

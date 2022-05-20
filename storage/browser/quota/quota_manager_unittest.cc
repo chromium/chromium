@@ -3031,8 +3031,8 @@ TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
   const base::Time kAccessTime = base::Time::Now();
 
   static const ClientBucketData kData[] = {
-      {"http://example.com/", kDefaultBucketName, kTemp, 0},
-      {"http://example.com/", kDefaultBucketName, kPerm, 0},
+      {"http://example.com/", kDefaultBucketName, kTemp, 123},
+      {"http://example.com/", kDefaultBucketName, kPerm, 456},
   };
 
   MockQuotaClient* client =
@@ -3069,6 +3069,7 @@ TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
   EXPECT_EQ(temp_entry->last_accessed, kAccessTime);
   EXPECT_GE(temp_entry->last_modified, time2);
   EXPECT_LE(temp_entry->last_modified, time3);
+  EXPECT_EQ(temp_entry->usage, 143);
 
   auto* perm_entry =
       FindBucketTableEntry(bucket_table_entries, perm_bucket->id);
@@ -3081,6 +3082,7 @@ TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
   EXPECT_EQ(perm_entry->last_accessed, kAccessTime);
   EXPECT_GE(perm_entry->last_modified, time1);
   EXPECT_LE(perm_entry->last_modified, time2);
+  EXPECT_EQ(perm_entry->usage, 466);
 }
 
 TEST_F(QuotaManagerImplTest, QuotaForEmptyHost) {

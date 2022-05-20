@@ -2084,27 +2084,6 @@ void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
                      base::Owned(helper), weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
-void QuotaManagerImpl::DidRetrieveBucketsTable(
-    RetrieveBucketsTableCallback callback,
-    const BucketTableEntries& entries) {
-  std::vector<storage::mojom::BucketTableEntryPtr> mojo_entries;
-
-  for (auto& n : entries) {
-    DCHECK(IsSupportedType(n.type));
-    storage::mojom::BucketTableEntryPtr entry =
-        storage::mojom::BucketTableEntry::New();
-    entry->bucket_id = n.bucket_id.value();
-    entry->storage_key = n.storage_key.Serialize();
-    entry->host = n.storage_key.origin().host();
-    entry->type = StorageTypeEnumToString(n.type);
-    entry->name = n.name;
-    entry->use_count = n.use_count;
-    entry->last_accessed = n.last_accessed;
-    entry->last_modified = n.last_modified;
-    mojo_entries.push_back(std::move(entry));
-  }
-  std::move(callback).Run(std::move(mojo_entries));
-}
 
 void QuotaManagerImpl::RetrieveBucketsTable(
     RetrieveBucketsTableCallback callback) {
@@ -2116,9 +2095,59 @@ void QuotaManagerImpl::RetrieveBucketsTable(
     return;
   }
 
-  DumpBucketTable(base::BindOnce(&QuotaManagerImpl::DidRetrieveBucketsTable,
-                                 weak_factory_.GetWeakPtr(),
-                                 std::move(callback)));
+  DumpBucketTable(
+      base::BindOnce(&QuotaManagerImpl::RetrieveBucketUsageForBucketTable,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::RetrieveBucketUsageForBucketTable(
+    RetrieveBucketsTableCallback callback,
+    const BucketTableEntries& entries) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto* buckets = new std::vector<storage::mojom::BucketTableEntryPtr>;
+
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      entries.size(),
+      base::BindOnce(
+          [](RetrieveBucketsTableCallback callback,
+             std::vector<storage::mojom::BucketTableEntryPtr>* buckets) {
+            std::move(callback).Run(std::move(*buckets));
+          },
+          std::move(callback), base::Owned(buckets)));
+
+  for (auto& entry : entries) {
+    DCHECK(IsSupportedType(entry.type));
+
+    GetBucketUsageWithBreakdown(
+        entry.ToBucketLocator(),
+        base::BindOnce(&QuotaManagerImpl::AddBucketTableEntry,
+                       weak_factory_.GetWeakPtr(), entry, barrier, buckets));
+  }
+}
+
+void QuotaManagerImpl::AddBucketTableEntry(
+    const BucketTableEntry& entry,
+    base::OnceClosure barrier_callback,
+    std::vector<storage::mojom::BucketTableEntryPtr>* buckets,
+    int64_t usage,
+    blink::mojom::UsageBreakdownPtr bucketUsageBreakdown) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  storage::mojom::BucketTableEntryPtr mojo_entry =
+      storage::mojom::BucketTableEntry::New();
+  mojo_entry->bucket_id = entry.bucket_id.value();
+  mojo_entry->storage_key = entry.storage_key.Serialize();
+  mojo_entry->host = entry.storage_key.origin().host();
+  mojo_entry->type = StorageTypeEnumToString(entry.type);
+  mojo_entry->name = entry.name;
+  mojo_entry->use_count = entry.use_count;
+  mojo_entry->last_accessed = entry.last_accessed;
+  mojo_entry->last_modified = entry.last_modified;
+  mojo_entry->usage = usage;
+
+  buckets->emplace_back(std::move(mojo_entry));
+  std::move(barrier_callback).Run();
 }
 
 void QuotaManagerImpl::StartEviction() {

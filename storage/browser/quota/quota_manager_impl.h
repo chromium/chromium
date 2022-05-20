@@ -573,8 +573,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   UsageTracker* GetUsageTracker(blink::mojom::StorageType type) const;
 
   void DumpBucketTable(DumpBucketTableCallback callback);
-  void DidRetrieveBucketsTable(RetrieveBucketsTableCallback callback,
-                               const BucketTableEntries& entries);
   void OnGetHostUsageForInternals(
       GetHostUsageForInternalsCallback callback,
       int64_t usage,
@@ -589,6 +587,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void FinallySendDiskAvailabilityAndTempPoolSize(
       GetDiskAvailabilityAndTempPoolSizeCallback callback,
       std::unique_ptr<AccumulateQuotaInternalsInfo> info);
+  void RetrieveBucketUsageForBucketTable(RetrieveBucketsTableCallback callback,
+                                         const BucketTableEntries& entries);
+  void AddBucketTableEntry(
+      const BucketTableEntry& entry,
+      base::OnceClosure barrier_callback,
+      std::vector<storage::mojom::BucketTableEntryPtr>* buckets,
+      int64_t usage,
+      blink::mojom::UsageBreakdownPtr bucketUsageBreakdown);
 
   // Runs BucketDataDeleter which calls QuotaClients to clear data for the
   // bucket. Once the task is complete, calls the QuotaDatabase to delete the
