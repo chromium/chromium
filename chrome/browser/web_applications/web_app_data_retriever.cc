@@ -175,6 +175,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
 
   fallback_install_info_.reset();
 
+  DCHECK(!get_web_app_info_callback_.is_null());
   std::move(get_web_app_info_callback_).Run(std::move(info));
 }
 
@@ -191,6 +192,7 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   if (!blink::IsEmptyManifest(data.manifest))
     opt_manifest = data.manifest.Clone();
 
+  DCHECK(!check_installability_callback_.is_null());
   std::move(check_installability_callback_)
       .Run(std::move(opt_manifest), data.manifest_url, data.valid_manifest,
            is_installable);
@@ -206,6 +208,7 @@ void WebAppDataRetriever::OnIconsDownloaded(
   Observe(nullptr);
   icon_downloader_.reset();
 
+  DCHECK(!get_icons_callback_.is_null());
   std::move(get_icons_callback_)
       .Run(result, std::move(icons_map), std::move(icons_http_results));
 }
@@ -215,6 +218,7 @@ void WebAppDataRetriever::CallCallbackOnError() {
   DCHECK(ShouldStopRetrieval());
   icon_downloader_.reset();
   fallback_install_info_.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Call a callback as a tail call. The callback may destroy |this|.
   if (get_web_app_info_callback_) {
