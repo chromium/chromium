@@ -1207,7 +1207,8 @@ namespace {
     // Only show the dot if the user follows available publishers.
     BOOL followingSegmentDotVisible =
         [self doesFollowingFeedHaveContent] &&
-        self.discoverFeedService->GetFollowingFeedHasUnseenContent();
+        self.discoverFeedService->GetFollowingFeedHasUnseenContent() &&
+        self.selectedFeed != FeedTypeFollowing;
     _feedHeaderViewController = [[FeedHeaderViewController alloc]
         initWithFollowingFeedSortType:(FollowingFeedSortType)
                                           self.prefService->GetInteger(
