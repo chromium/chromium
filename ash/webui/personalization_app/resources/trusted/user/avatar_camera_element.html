@@ -52,7 +52,7 @@
     padding: 6px 16px;
   }
 
-  paper-spinner-lite {
+  #cameraFeedSpinner {
     bottom: 50%;
     left: 50%;
     position: absolute;
@@ -79,11 +79,23 @@
     gap: 8px;
     justify-content: center;
   }
+
+  #loadingButton {
+    /* This button is disabled for aria purposes but should look like a regular
+       primary button. */
+    --disabled-text-color: var(--cros-button-label-color-primary);
+  }
+
+  #loadingButtonSpinner {
+    --paper-spinner-color: var(--cros-button-label-color-primary);
+    height: 14px;
+    width: 14px;
+  }
 </style>
 <cr-dialog id="dialog" show-close-button show-on-attach>
   <div slot="body">
     <template is="dom-if" if="[[showLoading_(cameraStream_, previewBlobUrl_)]]">
-      <paper-spinner-lite active></paper-spinner-lite>
+      <paper-spinner-lite id="cameraFeedSpinner" active></paper-spinner-lite>
     </template>
     <template is="dom-if" if="[[showSvgMask_(cameraStream_, previewBlobUrl_)]]">
       <svg viewbox="0 0 100 100" id="svg" hidden="">
@@ -108,10 +120,16 @@
   <template is="dom-if" if="[[showFooter_(cameraStream_, previewBlobUrl_)]]">
     <div slot="footer">
       <template is="dom-if"
-          if="[[showCameraFeed_(cameraStream_, previewBlobUrl_)]]">
+          if="[[showTakePhotoButton_(cameraStream_, previewBlobUrl_, captureInProgress_)]]">
         <cr-button id="takePhoto" on-click="takePhoto_" class="primary">
           <iron-icon icon="[[getTakePhotoIcon_(mode)]]"></iron-icon>
           <span>[[getTakePhotoText_(mode)]]</span>
+        </cr-button>
+      </template>
+      <template is="dom-if" if="[[showLoadingSpinnerButton_(mode, cameraStream_, previewBlobUrl_, captureInProgress_)]]">
+        <cr-button id="loadingButton" class="primary" disabled>
+          <paper-spinner-lite id="loadingButtonSpinner" active></paper-spinner-lite>
+          <span>$i18n{webcamCaptureInProgress}</span>
         </cr-button>
       </template>
       <template is="dom-if" if="[[previewBlobUrl_]]">

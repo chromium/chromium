@@ -170,6 +170,30 @@ suite('AvatarCameraTest', function() {
     assertEquals(2, numFrames, '2 frames requested for video');
   });
 
+  test('displays a loading spinner button while capturing frames', async () => {
+    avatarCameraElement =
+        initElement(AvatarCamera, {mode: AvatarCameraMode.VIDEO});
+    await waitAfterNextRender(avatarCameraElement);
+
+    assertEquals(
+        null, avatarCameraElement.shadowRoot?.getElementById('loadingButton'),
+        'no loading button shown yet');
+
+    avatarCameraElement?.shadowRoot?.getElementById('takePhoto')?.click();
+    await mockWebcamUtils.whenCalled('captureFrames');
+
+    const loadingButton = avatarCameraElement.shadowRoot?.getElementById(
+                              'loadingButton') as HTMLButtonElement;
+    assertTrue(!!loadingButton, 'loading button is shown');
+    assertTrue(loadingButton.disabled, 'loading button is disabled');
+
+    await waitAfterNextRender(avatarCameraElement);
+
+    assertEquals(
+        null, avatarCameraElement.shadowRoot?.getElementById('loadingButton'),
+        'loading button hidden again');
+  });
+
   test('calls saveCameraImage with data on confirmPhoto click', async () => {
     avatarCameraElement =
         initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});

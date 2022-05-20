@@ -2202,6 +2202,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO" desc="Label for the button to confirm webcam video">
         Use this video
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_CAPTURE_IN_PROGRESS" desc="Label to indicate a webcam video capture is in progress">
+        Taking video
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO" desc="Label for the button to reject webcam photo or video">
         Retake
       </message>

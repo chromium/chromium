@@ -219,6 +219,15 @@ export class AvatarCamera extends WithPersonalizationStore {
     return !!this.cameraStream_ && !this.previewBlobUrl_;
   }
 
+  private showTakePhotoButton_(): boolean {
+    return this.showCameraFeed_() && !this.captureInProgress_;
+  }
+
+  private showLoadingSpinnerButton_(): boolean {
+    return this.mode === AvatarCameraMode.VIDEO && this.showCameraFeed_() &&
+        this.captureInProgress_;
+  }
+
   private showFooter_(): boolean {
     return this.showCameraFeed_() || !!this.previewBlobUrl_;
   }
