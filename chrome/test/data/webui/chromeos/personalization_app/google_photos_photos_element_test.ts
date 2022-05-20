@@ -201,7 +201,7 @@ suite('GooglePhotosPhotosTest', function() {
         'wallpaper-grid-item:not([hidden]).photo:not([placeholder])';
     const photoEls = querySelectorAll(photoSelector);
     assertEquals(photoEls?.length, 4);
-    (photoEls?.[0] as HTMLElement).focus();
+    ((photoEls?.[0] as HTMLElement).closest('.row') as HTMLElement).focus();
     await waitForActiveElement(photoEls?.[0]!);
 
     // Use the right arrow key to traverse to the last photo. Focus should pass

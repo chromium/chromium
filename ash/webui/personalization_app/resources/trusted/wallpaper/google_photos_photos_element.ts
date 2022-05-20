@@ -87,9 +87,10 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
       currentSelected_: Object,
 
-      focusedColIndex_: {
+      focusedPhotoIndex_: {
         type: Number,
-        value: 0,
+        value: -1,
+        observer: 'onFocusedPhotoIndexChanged_',
       },
 
       pendingSelected_: Object,
@@ -129,8 +130,8 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** The currently selected wallpaper. */
   private currentSelected_: CurrentWallpaper|null;
 
-  /** The index of the currently focused column. */
-  private focusedColIndex_: number;
+  /** The index of the currently focused photo. */
+  private focusedPhotoIndex_: number;
 
   /** The pending selected wallpaper. */
   private pendingSelected_: DisplayableImage|null;
@@ -183,6 +184,31 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     this.updateFromStore();
   }
 
+  /** Invoked on changes to |focusedPhotoIndex_|. */
+  private onFocusedPhotoIndexChanged_(
+      focusedPhotoIndex: GooglePhotosPhotos['focusedPhotoIndex_']) {
+    // Attempt to focus the |element| at the focused index. Note that the
+    // |element| may not be rendered as it could exist outside of the viewport.
+    const selector = `.photo[photoindex="${focusedPhotoIndex}"]`;
+    const element = this.$.grid.querySelector(selector) as HTMLElement;
+    if (element) {
+      element.focus();
+      return;
+    }
+
+    // If the |element| was not rendered, it exists outside of the viewport. To
+    // force it to render, focus the grid row which contains the |element| at
+    // the focused index. Note that this will automatically trigger another call
+    // to |onFocusedPhotoIndexChanged()|.
+    this.photosByRow_.some((row, rowIndex) => {
+      if (row.some(photo => photo.index === focusedPhotoIndex)) {
+        this.$.grid.focusItem(rowIndex);
+        return true;
+      }
+      return false;
+    });
+  }
+
   /** Invoked on grid scroll threshold reached. */
   private onGridScrollThresholdReached_() {
     // Ignore this event if fired during initialization.
@@ -202,80 +228,90 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked on focus of a grid row. */
-  private onGridRowFocused_(e: Event) {
-    // When a grid row is focused, forward the focus event on to the grid item
-    // at the focused column index.
-    const currentTarget = e.currentTarget as HTMLElement;
-    const selector = `.photo[colindex="${this.focusedColIndex_}"]`;
-    const element = currentTarget.querySelector(selector) as HTMLElement;
-    if (element) {
-      element.focus();
+  private onGridRowFocused_() {
+    // If |focusedPhotoIndex_| is -1, this is the first time focus has entered
+    // the grid. In this case advance focus to the first photo.
+    if (this.focusedPhotoIndex_ === -1) {
+      this.focusedPhotoIndex_ = 0;
+      return;
     }
+    // When a grid row is focused, forward the focus event on to the photo at
+    // the focused index.
+    this.onFocusedPhotoIndexChanged_(this.focusedPhotoIndex_);
   }
 
   /** Invoked on key down of a grid row. */
   private onGridRowKeyDown_(e: KeyboardEvent&{
-    model: {index: number, row: GooglePhotosPhoto[]},
+    model: {index: number, row: GooglePhotosPhotosRow},
   }) {
+    let handled = false;
+
     switch (normalizeKeyForRTL(e.key, this.i18n('textdirection') === 'rtl')) {
       case 'ArrowDown':
-        if (e.model.index < this.photosByRow_!.length - 1) {
-          // To be consistent with default iron-list grid behavior, the down
-          // arrow should only advance focus to the succeeding grid row if an
-          // item at the same column index as is currently focused exists.
-          const nextGridRow = this.photosByRow_[e.model.index + 1];
-          if (this.focusedColIndex_ >= nextGridRow.length) {
-            e.preventDefault();
-            e.stopPropagation();
+        // To be consistent with default iron-list grid behavior, the down arrow
+        // should only advance focus to the next grid row if a photo at the same
+        // column index as is currently focused exists.
+        if (e.model.index < this.photosByRow_.length - 1) {
+          let colIndex = -1;
+          e.model.row.some((photo, i) => {
+            if (photo.index === this.focusedPhotoIndex_) {
+              colIndex = i;
+              return true;
+            }
+            return false;
+          });
+          assert(colIndex !== -1);
+          const nextRow = this.photosByRow_[e.model.index + 1];
+          if (colIndex < nextRow.length) {
+            this.focusedPhotoIndex_ = nextRow[colIndex].index;
           }
         }
-        return;
+        handled = true;
+        break;
       case 'ArrowLeft':
-        if (this.focusedColIndex_ > 0) {
-          // Left arrow moves focus to the preceding grid item.
-          this.focusedColIndex_ -= 1;
-          this.$.grid.focusItem(e.model.index);
-        } else if (e.model.index > 0) {
-          // Left arrow moves focus to the preceding grid item, wrapping to the
-          // preceding grid row.
-          const previousGridRow = this.photosByRow_[e.model.index - 1];
-          this.focusedColIndex_ = previousGridRow.length - 1;
-          this.$.grid.focusItem(e.model.index - 1);
-        }
-        return;
+        this.focusedPhotoIndex_ = Math.max(this.focusedPhotoIndex_ - 1, 0);
+        handled = true;
+        break;
       case 'ArrowRight':
-        if (this.focusedColIndex_ < e.model.row.length - 1) {
-          // Right arrow moves focus to the succeeding grid item.
-          this.focusedColIndex_ += 1;
-          this.$.grid.focusItem(e.model.index);
-        } else if (e.model.index < this.photosByRow_!.length - 1) {
-          // Right arrow moves focus to the succeeding grid item, wrapping to
-          // the succeeding grid row.
-          this.focusedColIndex_ = 0;
-          this.$.grid.focusItem(e.model.index + 1);
-        }
-        return;
+        this.focusedPhotoIndex_ =
+            Math.min(this.focusedPhotoIndex_ + 1, this.photos_!.length - 1);
+        handled = true;
+        break;
       case 'ArrowUp':
+        // To be consistent with default iron-list grid behavior, the up arrow
+        // should only advance focus to the previous grid row if a photo at the
+        // the same column index as is currently focused exists.
         if (e.model.index > 0) {
-          // To be consistent with default iron-list grid behavior, the up arrow
-          // should only advance focus to the preceding grid row if an item at
-          // the same column index as is currently focused exists.
-          const previousGridRow = this.photosByRow_[e.model.index - 1];
-          if (this.focusedColIndex_ >= previousGridRow.length) {
-            e.preventDefault();
-            e.stopPropagation();
+          let colIndex = -1;
+          e.model.row.some((photo, i) => {
+            if (photo.index === this.focusedPhotoIndex_) {
+              colIndex = i;
+              return true;
+            }
+            return false;
+          });
+          assert(colIndex !== -1);
+          const previousRow = this.photosByRow_[e.model.index - 1];
+          if (colIndex < previousRow.length) {
+            this.focusedPhotoIndex_ = previousRow[colIndex].index;
           }
         }
-        return;
+        handled = true;
+        break;
       case 'Tab':
         // The grid contains a single |focusable| row which becomes a focus trap
-        // due to the synthetic redirect of focus events to grid items. To
-        // escape the trap, make the |focusable| row unfocusable until has
+        // due to the synthetic redirect of focus events to photos. To escape
+        // the trap, make the |focusable| row unfocusable until focus has
         // advanced to the next candidate.
         const focusable = this.$.grid.querySelector('[tabindex="0"]')!;
         focusable.setAttribute('tabindex', '-1');
         afterNextRender(this, () => focusable.setAttribute('tabindex', '0'));
-        return;
+        break;
+    }
+
+    if (handled) {
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
