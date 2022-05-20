@@ -61,7 +61,8 @@ TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
 # Some tests don't directly include gtest.h and instead include it via gmock.h
 # or a test_utils.h file, so make sure these cases are captured. Also include
 # files that use <...> for #includes instead of quotes.
-GTEST_INCLUDE_REGEX = re.compile(r'#include.*(gtest|gmock|_test_utils)\.h("|>)')
+GTEST_INCLUDE_REGEX = re.compile(
+    r'#include.*(gtest|gmock|_test_utils|browser_test)\.h("|>)')
 
 
 def ExitWithMessage(*args):
