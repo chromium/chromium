@@ -28,25 +28,25 @@
 
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
-// Tells the delegate that the item with |itemID| was selected in
-// |gridViewController|.
+// Tells the delegate that the item with `itemID` was selected in
+// `gridViewController`.
 - (void)gridViewController:(GridViewController*)gridViewController
        didSelectItemWithID:(NSString*)itemID;
-// Tells the delegate that the item with |itemID| was closed in
-// |gridViewController|.
+// Tells the delegate that the item with `itemID` was closed in
+// `gridViewController`.
 - (void)gridViewController:(GridViewController*)gridViewController
         didCloseItemWithID:(NSString*)itemID;
-// Tells the delegate that the plus sign was tapped in |gridViewController|,
+// Tells the delegate that the plus sign was tapped in `gridViewController`,
 // i.e., there was an intention to create a new item.
 - (void)didTapPlusSignInGridViewController:
     (GridViewController*)gridViewController;
-// Tells the delegate that the item at |sourceIndex| was moved to
-// |destinationIndex|.
+// Tells the delegate that the item at `sourceIndex` was moved to
+// `destinationIndex`.
 - (void)gridViewController:(GridViewController*)gridViewController
          didMoveItemWithID:(NSString*)itemID
                    toIndex:(NSUInteger)destinationIndex;
-// Tells the delegate that the the number of items in |gridViewController|
-// changed to |count|.
+// Tells the delegate that the the number of items in `gridViewController`
+// changed to `count`.
 - (void)gridViewController:(GridViewController*)gridViewController
         didChangeItemCount:(NSUInteger)count;
 
@@ -130,7 +130,7 @@
 @property(nonatomic, readonly)
     NSArray<NSString*>* selectedShareableItemIDsForEditing;
 
-// Whether or not all items are selected. NO if |mode| is not
+// Whether or not all items are selected. NO if `mode` is not
 // TabGridModeSelection.
 @property(nonatomic, readonly) BOOL allItemsSelectedForEditing;
 
@@ -147,11 +147,11 @@
 // Notifies the grid that it is about to be dismissed.
 - (void)prepareForDismissal;
 
-// Selects all items in the grid for editing. No-op if |mode| is not
+// Selects all items in the grid for editing. No-op if `mode` is not
 // TabGridModeSelection.
 - (void)selectAllItemsForEditing;
 
-// Deselects all items in the grid for editing. No-op if |mode| is not
+// Deselects all items in the grid for editing. No-op if `mode` is not
 // TabGridModeSelection.
 - (void)deselectAllItemsForEditing;
 

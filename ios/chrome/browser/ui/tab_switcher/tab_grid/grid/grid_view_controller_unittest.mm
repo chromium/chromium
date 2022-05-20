@@ -213,7 +213,7 @@ TEST_F(GridViewControllerTest, MoveUnselectedItem) {
   EXPECT_EQ(2U, delegate_.itemCount);
 }
 
-// Tests that |-replaceItemID:withItem:| does not crash when updating an item
+// Tests that `-replaceItemID:withItem:` does not crash when updating an item
 // that is scrolled offscreen.
 // TODO(crbug.com/1104872): On iOS 14 iPhone X, visibleCellsCount is always
 // equal to the total number of cells, so the while loop below never

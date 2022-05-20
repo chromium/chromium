@@ -20,7 +20,7 @@
 
 @implementation PlusSignCell
 
-// |-dequeueReusableCellWithReuseIdentifier:forIndexPath:| calls this method to
+// `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
 // initialize a cell.
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];

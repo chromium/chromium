@@ -62,14 +62,14 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 // A GridCell for use in animated transitions that only shows selection state
 // (that is, its content view is hidden).
 @interface GridTransitionSelectionCell : GridCell
-// Returns a transition selection cell with the same theme and frame as |cell|,
+// Returns a transition selection cell with the same theme and frame as `cell`,
 // but with no visible content view, no delegate, and no identifier.
 + (instancetype)transitionCellFromCell:(GridCell*)cell;
 @end
 
 @interface GridTransitionCell : GridCell <GridToTabTransitionView>
 // Returns a cell with the same theme, icon, snapshot, title, and frame as
-// |cell| (but no delegate or identifier) for use in animated transitions.
+// `cell` (but no delegate or identifier) for use in animated transitions.
 + (instancetype)transitionCellFromCell:(GridCell*)cell;
 @end
 

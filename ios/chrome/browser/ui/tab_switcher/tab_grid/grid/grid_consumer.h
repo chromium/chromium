@@ -12,40 +12,40 @@
 // Supports idempotent insert/delete/updates to a grid.
 @protocol GridConsumer
 
-// Many of the following methods pass a |selectedItemID| as a parameter,
+// Many of the following methods pass a `selectedItemID` as a parameter,
 // indicating the identifier of the item that should be in the selected state
-// after the method is called. In every such case, a nil |selectedItemID|
+// after the method is called. In every such case, a nil `selectedItemID`
 // indicates that no item should be selected (typically because there are no
 // items). It is up to the consumer to determine how to handle a
-// |selectedItemID| that is not the identifier of any current items.
+// `selectedItemID` that is not the identifier of any current items.
 
-// Tells the consumer to replace its current set of items with |items| and
-// update the selected item ID to be |selectedItemID|. It's an error to pass
-// an |items| array containing items without unique IDs.
+// Tells the consumer to replace its current set of items with `items` and
+// update the selected item ID to be `selectedItemID`. It's an error to pass
+// an `items` array containing items without unique IDs.
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID;
 
-// Tells the consumer to insert |item| at |index| and update the selected item
-// ID to be |selectedItemID|. It's an error if |item|'s ID duplicates an
+// Tells the consumer to insert `item` at `index` and update the selected item
+// ID to be `selectedItemID`. It's an error if `item`'s ID duplicates an
 // ID already passed to the consumer (and not yet removed).
 - (void)insertItem:(TabSwitcherItem*)item
            atIndex:(NSUInteger)index
     selectedItemID:(NSString*)selectedItemID;
 
-// Tells the consumer to remove the item with ID |removedItemID| and update the
-// selected item ID to be |selectedItemID|.
+// Tells the consumer to remove the item with ID `removedItemID` and update the
+// selected item ID to be `selectedItemID`.
 - (void)removeItemWithID:(NSString*)removedItemID
           selectedItemID:(NSString*)selectedItemID;
 
-// Tells the consumer to update the selected item ID to be |selectedItemID|.
+// Tells the consumer to update the selected item ID to be `selectedItemID`.
 - (void)selectItemWithID:(NSString*)selectedItemID;
 
-// Tells the consumer to replace the item with ID |itemID| with |item|.
-// It's an error if |item|'s ID duplicates any other item's ID besides |itemID|.
-// The consumer should ignore this call if |itemID| has not yet been inserted.
+// Tells the consumer to replace the item with ID `itemID` with `item`.
+// It's an error if `item`'s ID duplicates any other item's ID besides `itemID`.
+// The consumer should ignore this call if `itemID` has not yet been inserted.
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item;
 
-// Tells the consumer to move the item with id |itemID| to |toIndex|. Note that
+// Tells the consumer to move the item with id `itemID` to `toIndex`. Note that
 // the ID of the selected item isn't changed by this method, although the index
 // of that item might be.
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex;

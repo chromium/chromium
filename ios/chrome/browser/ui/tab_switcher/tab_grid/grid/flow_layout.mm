@@ -59,7 +59,7 @@
     return [self layoutAttributesForItemAtIndexPath:itemIndexPath];
   }
   // Note that this method is called for any item whose index path changing from
-  // |itemIndexPath|, which includes any items that were in the layout and whose
+  // `itemIndexPath`, which includes any items that were in the layout and whose
   // index path is changing. For an item whose index path is changing, this
   // method is called before
   // -initialLayoutAttributesForAppearingItemAtIndexPath:
@@ -91,7 +91,7 @@
     return [self layoutAttributesForItemAtIndexPath:itemIndexPath];
   }
   // Note that this method is called for any item whose index path is becoming
-  // |itemIndexPath|, which includes any items that were in the layout but whose
+  // `itemIndexPath`, which includes any items that were in the layout but whose
   // index path is changing. For an item whose index path is changing, this
   // method is called after
   // -finalLayoutAttributesForDisappearingItemAtIndexPath:

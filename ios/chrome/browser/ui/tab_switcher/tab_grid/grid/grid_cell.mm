@@ -36,7 +36,7 @@ NSString* kCircleSymbol = @"circle";
 const CGFloat kIndicatorSize = 16.0;
 
 // Frame-based layout utilities for GridTransitionCell.
-// Scales the size of |view|'s frame by |factor| in both height and width. This
+// Scales the size of `view`'s frame by `factor` in both height and width. This
 // scaling is done by changing the frame size without changing its origin,
 // unlike a scale transform which scales around the view's center.
 void ScaleView(UIView* view, CGFloat factor) {
@@ -48,7 +48,7 @@ void ScaleView(UIView* view, CGFloat factor) {
   view.frame = frame;
 }
 
-// Positions |view| by setting its frame's origin to |point|.
+// Positions `view` by setting its frame's origin to `point`.
 void PositionView(UIView* view, CGPoint point) {
   if (!view)
     return;
@@ -91,7 +91,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 @implementation GridCell
 
-// |-dequeueReusableCellWithReuseIdentifier:forIndexPath:| calls this method to
+// `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
 // initialize a cell.
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -100,7 +100,7 @@ void PositionView(UIView* view, CGPoint point) {
 
     // The background color must be set to avoid the corners behind the rounded
     // layer from showing when dragging and dropping. Unfortunately, using
-    // |UIColor.clearColor| here will not remain transparent, so a solid color
+    // `UIColor.clearColor` here will not remain transparent, so a solid color
     // must be chosen. Using the grid color prevents the corners from showing
     // while it transitions to the presented context menu/dragging state.
     self.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
@@ -260,7 +260,7 @@ void PositionView(UIView* view, CGPoint point) {
                                         : UIUserInterfaceStyleUnspecified;
 
   // The light and dark themes have different colored borders based on the
-  // theme, regardless of dark mode, so |overrideUserInterfaceStyle| is not
+  // theme, regardless of dark mode, so `overrideUserInterfaceStyle` is not
   // enough here.
   switch (theme) {
     case GridThemeLight:
@@ -651,7 +651,7 @@ void PositionView(UIView* view, CGPoint point) {
 #pragma mark - GridToTabTransitionView properties.
 
 - (void)setTopCellView:(UIView*)topCellView {
-  // The top cell view is |topBar| and can't be changed.
+  // The top cell view is `topBar` and can't be changed.
   NOTREACHED();
 }
 

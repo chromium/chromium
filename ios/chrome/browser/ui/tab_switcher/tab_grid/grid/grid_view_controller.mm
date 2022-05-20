@@ -71,7 +71,7 @@ NSString* const kSuggestedActionsCellIdentifier =
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
 
-// Creates an NSIndexPath with |index| in section 0.
+// Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
   return [NSIndexPath indexPathForItem:index inSection:0];
 }
@@ -103,11 +103,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong) IncognitoReauthView* blockingView;
 // The local model backing the collection view.
 @property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
-// Identifier of the selected item. This value is disregarded if |self.items| is
+// Identifier of the selected item. This value is disregarded if `self.items` is
 // empty. This bookkeeping is done to set the correct selection on
-// |-viewWillAppear:|.
+// `-viewWillAppear:`.
 @property(nonatomic, copy) NSString* selectedItemID;
-// Index of the selected item in |items|.
+// Index of the selected item in `items`.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 // Items selected for editing.
 @property(nonatomic, strong) NSMutableSet<NSString*>* selectedEditingItemIDs;
@@ -141,7 +141,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // horizontal to grid layout.
 @property(nonatomic, strong)
     UICollectionViewTransitionLayout* gridHorizontalTransitionLayout;
-// YES while |self.gridHorizontalTransitionLayout| is finishing (or cancelling)
+// YES while `self.gridHorizontalTransitionLayout` is finishing (or cancelling)
 // the transition. Is used to avoid cancelling again during enabling/disabling
 // of the thumbstrip.
 @property(nonatomic, assign) BOOL transitionLayoutIsFinishing;
@@ -205,7 +205,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // revealing temporarily the collectionView background. This makes sure
   // both are the same color.
   collectionView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-  // If this stays as the default |YES|, then cells aren't highlighted
+  // If this stays as the default `YES`, then cells aren't highlighted
   // immediately on touch, but after a short delay.
   collectionView.delaysContentTouches = NO;
   collectionView.dataSource = self;
@@ -229,7 +229,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // up. In this tab grid, the selection ring should stay visible on the
   // selected cell on touch down. Multiple selection disables the deselection
   // behavior. Multiple selection will not actually be possible since
-  // |-collectionView:shouldSelectItemAtIndexPath:| returns NO.
+  // `-collectionView:shouldSelectItemAtIndexPath:` returns NO.
   collectionView.allowsMultipleSelection = YES;
   collectionView.dragDelegate = self;
   collectionView.dropDelegate = self;
@@ -323,7 +323,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self updateSuggestedActionsSection];
   }
 
-  // Reloading specific sections in a |performBatchUpdates| fades the changes in
+  // Reloading specific sections in a `performBatchUpdates` fades the changes in
   // rather than reloads the collection view with a harsh flash.
   __weak GridViewController* weakSelf = self;
   [self.collectionView
@@ -452,7 +452,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                                     animated:NO
                               scrollPosition:scrollPosition];
-  // Update the delegate, in case it wasn't set when |items| was populated.
+  // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
   [self removeEmptyStateAnimated:NO];
   self.lastInsertedItemID = nil;
@@ -572,7 +572,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   if (![self.pointerInteractionCells containsObject:cell]) {
     [cell addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-    // |self.pointerInteractionCells| is only expected to get as large as
+    // `self.pointerInteractionCells` is only expected to get as large as
     // the number of reusable cells in memory.
     [self.pointerInteractionCells addObject:cell];
   }
@@ -584,14 +584,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (CGSize)collectionView:(UICollectionView*)collectionView
                     layout:(UICollectionViewLayout*)collectionViewLayout
     sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
-  // |collectionViewLayout| should always be a flow layout.
+  // `collectionViewLayout` should always be a flow layout.
   DCHECK(
       [collectionViewLayout isKindOfClass:[UICollectionViewFlowLayout class]]);
   UICollectionViewFlowLayout* layout =
       (UICollectionViewFlowLayout*)collectionViewLayout;
   CGSize itemSize = layout.itemSize;
   // The SuggestedActions cell can't use the item size that is set in
-  // |prepareLayout| of the layout class. For that specific cell calculate the
+  // `prepareLayout` of the layout class. For that specific cell calculate the
   // anticipated size from the layout section insets and the content view insets
   // and return it.
   if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
@@ -701,7 +701,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // Stop animation of GridCells when removing them from the collection view.
     // This is important to prevent cells from animating indefinitely. This is
     // safe because the animation state of GridCells is set in
-    // |configureCell:withItem:| whenever a cell is used.
+    // `configureCell:withItem:` whenever a cell is used.
     [base::mac::ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
   }
 }
@@ -843,9 +843,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
           item.sourceIndexPath ? self.items.count : self.items.count + 1;
       // Can't use [self isIndexPathForPlusSignCell:] here because the index of
       // the plus sign cell in this point in code depends on
-      // |item.sourceIndexPath|.
-      // I.e., in this point in code, |collectionView.numberOfItemsInSection| is
-      // equal to |self.items.count + 1|.
+      // `item.sourceIndexPath`.
+      // I.e., in this point in code, `collectionView.numberOfItemsInSection` is
+      // equal to `self.items.count + 1|.
       if (destinationIndex == plusSignCellIndex) {
         // Prevent the cell from being dropped where the plus sign cell is.
         destinationIndex = plusSignCellIndex - 1;
@@ -1037,7 +1037,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  // Consistency check: |item|'s ID is not in |items|.
+  // Consistency check: `item`'s ID is not in `items`.
   // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
   auto modelUpdates = ^{
@@ -1135,14 +1135,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
   if ([self indexOfItemWithID:itemID] == NSNotFound)
     return;
-  // Consistency check: |item|'s ID is either |itemID| or not in |items|.
+  // Consistency check: `item`'s ID is either `itemID` or not in `items`.
   DCHECK([item.identifier isEqualToString:itemID] ||
          [self indexOfItemWithID:item.identifier] == NSNotFound);
   NSUInteger index = [self indexOfItemWithID:itemID];
   self.items[index] = item;
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
-  // |cell| may be nil if it is scrolled offscreen.
+  // `cell` may be nil if it is scrolled offscreen.
   if (cell)
     [self configureCell:cell withItem:item];
 }
@@ -1312,14 +1312,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private
 
-// Checks whether |indexPath| corresponds to the index path of the plus sign
+// Checks whether `indexPath` corresponds to the index path of the plus sign
 // cell. The plus sign cell is the last cell in the collection view after all
 // the items.
 - (BOOL)isIndexPathForPlusSignCell:(NSIndexPath*)indexPath {
   // When items are dragged from another collection, the count of cells in the
   // collectionView is increased before self.items.count increases. That's what
   // happens when the UICollectionViewDelegate's method
-  // |targetIndexPathForMoveFromItemAtIndexPath:toProposedIndexPath:| gets
+  // `targetIndexPathForMoveFromItemAtIndexPath:toProposedIndexPath:` gets
   // called, and that's why indexPath.item is not being compared to
   // self.items.count here.
   return self.thumbStripEnabled &&
@@ -1359,8 +1359,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 }
 
-// Returns the index in |self.items| of the first item whose identifier is
-// |identifier|.
+// Returns the index in `self.items` of the first item whose identifier is
+// `identifier`.
 - (NSUInteger)indexOfItemWithID:(NSString*)identifier {
   auto selectedTest =
       ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {
@@ -1369,8 +1369,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [self.items indexOfObjectPassingTest:selectedTest];
 }
 
-// Configures |cell|'s title synchronously, and favicon and snapshot
-// asynchronously with information from |item|. Updates the |cell|'s theme to
+// Configures `cell`'s title synchronously, and favicon and snapshot
+// asynchronously with information from `item`. Updates the `cell`'s theme to
 // this view controller's theme. This view controller becomes the delegate for
 // the cell.
 - (void)configureCell:(GridCell*)cell withItem:(TabSwitcherItem*)item {
@@ -1434,7 +1434,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Tells the delegate that the user tapped the item with identifier
-// corresponding to |indexPath|.
+// corresponding to `indexPath`.
 - (void)tappedItemAtIndexPath:(NSIndexPath*)indexPath {
   if ([self isIndexPathForPlusSignCell:indexPath]) {
     [self.delegate didTapPlusSignInGridViewController:self];
@@ -1495,7 +1495,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.emptyStateAnimator startAnimation];
 }
 
-// Removes the empty state out of view, with animation if |animated| is YES.
+// Removes the empty state out of view, with animation if `animated` is YES.
 - (void)removeEmptyStateAnimated:(BOOL)animated {
   // TODO(crbug.com/820410) : Polish the animation, and put constants where they
   // belong.
@@ -1516,7 +1516,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 }
 
-// Updates the value stored in |fractionVisibleOfLastItem|.
+// Updates the value stored in `fractionVisibleOfLastItem`.
 - (void)updateFractionVisibleOfLastItem {
   CGFloat offset = self.offsetPastEndOfScrollView;
   self.fractionVisibleOfLastItem = base::clamp<CGFloat>(
@@ -1558,7 +1558,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Update visible cells opacity. When thumbstrip is not enabled, all are 1.0.
-// Otherwise not selected tab are |self.notSelectedTabCellOpacity|.
+// Otherwise not selected tab are `self.notSelectedTabCellOpacity`.
 - (void)updateVisibleCellsOpacity {
   if (!self.thumbStripEnabled) {
     return;
@@ -1592,9 +1592,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
   [UIView performWithoutAnimation:^{
     // There is a collection view bug (crbug.com/1300733) that prevents
-    // CollectionView's |reloadData| from working properly if its preceded by
-    // CollectionView's |performBatchUpdates:| in the same UI cycle. To avoid
-    // this bug, |reloadSections:| method is used instead to reload the items in
+    // CollectionView's `reloadData` from working properly if its preceded by
+    // CollectionView's `performBatchUpdates:` in the same UI cycle. To avoid
+    // this bug, `reloadSections:` method is used instead to reload the items in
     // the tab grid.
     [self.collectionView reloadSections:targetSections];
   }];

@@ -11,7 +11,7 @@
 // Grid view.
 @protocol GridShareableItemsProvider
 
-// Returns whether the item with |identifier| is shareable.
+// Returns whether the item with `identifier` is shareable.
 - (BOOL)isItemWithIdentifierSharable:(NSString*)identifier;
 
 @end
