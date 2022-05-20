@@ -57,14 +57,19 @@ class PageDiscardingHelper : public GraphOwned,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb);
 
+  void ImmediatelyDiscardSpecificPage(const PageNode* page_node);
+
   // PageNodeObserver:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
 
   void SetMockDiscarderForTesting(
       std::unique_ptr<mechanism::PageDiscarder> discarder);
-  bool CanUrgentlyDiscardForTesting(const PageNode* page_node) const {
-    return CanUrgentlyDiscard(page_node) == CanUrgentlyDiscardResult::kEligible;
+  bool CanUrgentlyDiscardForTesting(
+      const PageNode* page_node,
+      bool consider_minimum_protection_time = true) const {
+    return CanUrgentlyDiscard(page_node, consider_minimum_protection_time) ==
+           CanUrgentlyDiscardResult::kEligible;
   }
   void SetGraphForTesting(Graph* graph) { graph_ = graph; }
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
@@ -89,8 +94,14 @@ class PageDiscardingHelper : public GraphOwned,
     kMarked,
   };
 
-  // Indicates if a PageNode can be urgently discarded.
-  CanUrgentlyDiscardResult CanUrgentlyDiscard(const PageNode* page_node) const;
+  // Indicates if a PageNode can be urgently discarded. If
+  // `consider_minimum_protection_time` is false, the check that ensures the
+  // page hasn't been visible recently is ignored. This is to support cases
+  // where the time before a tab is discarded is known and shorter than the
+  // grace period.
+  CanUrgentlyDiscardResult CanUrgentlyDiscard(
+      const PageNode* page_node,
+      bool consider_minimum_protection_time = true) const;
 
   // NodeDataDescriber implementation:
   base::Value DescribePageNodeData(const PageNode* node) const override;

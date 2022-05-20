@@ -60,6 +60,16 @@ extern const base::Feature kHighPMFDiscardPolicy;
 // Enable background tab loading of pages (restored via session restore)
 // directly from Performance Manager rather than via TabLoader.
 extern const base::Feature kBackgroundTabLoadingFromPerformanceManager;
+
+// Makes the High-Efficiency Mode available to users. If this is enabled, it
+// doesn't mean High-Efficiency Mode is enabled, just that the user has the
+// option of toggling it.
+extern const base::Feature kHighEfficiencyModeAvailable;
+
+// Defines the time in seconds before a background tab is discarded for
+// High-Efficiency Mode.
+extern const base::FeatureParam<base::TimeDelta>
+    kHighEfficiencyModeTimeBeforeDiscard;
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the

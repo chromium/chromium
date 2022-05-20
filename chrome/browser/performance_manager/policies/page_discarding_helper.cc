@@ -267,6 +267,15 @@ void PageDiscardingHelper::UrgentlyDiscardMultiplePages(
                      std::move(split_callback.second)));
 }
 
+void PageDiscardingHelper::ImmediatelyDiscardSpecificPage(
+    const PageNode* page_node) {
+  if (CanUrgentlyDiscard(page_node,
+                         /* consider_minimum_protection_time */ false) ==
+      CanUrgentlyDiscardResult::kEligible) {
+    page_discarder_->DiscardPageNodes({page_node}, base::DoNothing());
+  }
+}
+
 void PageDiscardingHelper::OnBeforePageNodeRemoved(const PageNode* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_change_to_non_audible_time_.erase(page_node);
@@ -319,7 +328,9 @@ PageDiscardingHelper::GetPageNodeLiveStateData(
 }
 
 PageDiscardingHelper::CanUrgentlyDiscardResult
-PageDiscardingHelper::CanUrgentlyDiscard(const PageNode* page_node) const {
+PageDiscardingHelper::CanUrgentlyDiscard(
+    const PageNode* page_node,
+    bool consider_minimum_protection_time) const {
   if (DiscardAttemptMarker::Get(PageNodeImpl::FromNode(page_node)))
     return CanUrgentlyDiscardResult::kMarked;
 
@@ -336,8 +347,9 @@ PageDiscardingHelper::CanUrgentlyDiscard(const PageNode* page_node) const {
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (page_node->GetTimeSinceLastVisibilityChange() <
-      kNonVisiblePagesUrgentProtectionTime) {
+  if (consider_minimum_protection_time &&
+      page_node->GetTimeSinceLastVisibilityChange() <
+          kNonVisiblePagesUrgentProtectionTime) {
     return CanUrgentlyDiscardResult::kProtected;
   }
 #endif
