@@ -81,6 +81,13 @@ crbug.com/678482 http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
 crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Slow ]
 crbug.com/1229701 http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 crbug.com/1300409 [ Win ] http/tests/inspector-protocol/network/websocket/offline-no-send.js [ Slow ]
+crbug.com/1280873 http/tests/inspector-protocol/network/xhr-cors-preflight-redirect-failure.js [ Slow ]
+crbug.com/1280697 http/tests/inspector-protocol/network/block_cross_site_document_load.js [ Slow ]
+crbug.com/1280585 http/tests/inspector-protocol/network/xhr-post-replay-cors.js [ Slow ]
+crbug.com/1280537 http/tests/inspector-protocol/network/blocked-cookie-same-site-lax.js [ Slow ]
+crbug.com/1279832 http/tests/inspector-protocol/network/cross-origin-isolation/coop-coep-get-security-isolation-info.js [ Slow ]
+crbug.com/1277877 http/tests/inspector-protocol/network/blocked-cookie-same-site-strict.js [ Slow ]
+crbug.com/1280736 http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict.js [ Slow ]
 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
