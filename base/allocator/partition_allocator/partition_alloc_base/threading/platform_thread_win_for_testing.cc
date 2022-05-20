@@ -9,6 +9,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 
@@ -147,11 +148,6 @@ bool CreateThreadInternal(size_t stack_size,
 }
 
 }  // namespace
-
-// static
-PlatformThreadHandle PlatformThreadForTesting::CurrentHandle() {
-  return PlatformThreadHandle(::GetCurrentThread());
-}
 
 // static
 void PlatformThreadForTesting::YieldCurrentThread() {

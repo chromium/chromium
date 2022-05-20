@@ -18,21 +18,12 @@
 namespace base {
 
 class LapTimer;
-class TimeDelta;
-class TimeTicks;
 
 template <typename Type, typename Traits>
 class LazyInstance;
 
 template <typename Type>
 struct LazyInstanceTraitsBase;
-
-template <typename T>
-constexpr TimeDelta Seconds(T n);
-template <typename T>
-constexpr TimeDelta Milliseconds(T n);
-template <typename T>
-constexpr TimeDelta Microseconds(T n);
 
 BASE_EXPORT std::string StringPrintf(const char* format, ...);
 BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
@@ -68,12 +59,6 @@ bool IsAtLeastOS10_14();
 
 #endif  // BUILDFLAG(IS_MAC)
 
-namespace subtle {
-
-BASE_EXPORT TimeTicks TimeTicksNowIgnoringOverride();
-
-}  // namespace subtle
-
 }  // namespace base
 
 namespace partition_alloc::internal::base {
@@ -83,13 +68,8 @@ namespace partition_alloc::internal::base {
 using ::base::LapTimer;
 using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
-using ::base::Microseconds;
-using ::base::Milliseconds;
-using ::base::Seconds;
 using ::base::StringPrintf;
 using ::base::TerminateBecauseOutOfMemory;
-using ::base::TimeDelta;
-using ::base::TimeTicks;
 
 #if BUILDFLAG(IS_MAC)
 template <typename CFT>
@@ -105,8 +85,6 @@ using ::base::mac::IsAtLeastOS10_14;
 
 }  // namespace mac
 #endif  // BUILDFLAG(IS_MAC)
-
-using ::base::subtle::TimeTicksNowIgnoringOverride;
 
 }  // namespace partition_alloc::internal::base
 

@@ -124,7 +124,7 @@ struct FullSlotSpanAllocation {
 // Assumes heap is purged.
 FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
                                        size_t object_size) {
-  CHECK_EQ(0u, root.get_total_size_of_committed_pages());
+  PA_CHECK(0u == root.get_total_size_of_committed_pages());
 
   const size_t raw_size = root.AdjustSizeForExtrasAdd(object_size);
   const size_t bucket_index = root.SizeToBucketIndex(

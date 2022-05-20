@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/allocator/buildflags.h"
-#include "base/time/time.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time_override.h"
 
 #include <windows.h>
 
@@ -24,14 +24,19 @@ PlatformThreadRef PlatformThread::CurrentRef() {
 }
 
 // static
+PlatformThreadHandle PlatformThread::CurrentHandle() {
+  return PlatformThreadHandle(::GetCurrentThread());
+}
+
+// static
 void PlatformThread::Sleep(TimeDelta duration) {
   // When measured with a high resolution clock, Sleep() sometimes returns much
   // too early. We may need to call it repeatedly to get the desired duration.
   // PlatformThread::Sleep doesn't support mock-time, so this always uses
   // real-time.
-  const TimeTicks end = TimeTicksNowIgnoringOverride() + duration;
-  for (TimeTicks now = TimeTicksNowIgnoringOverride(); now < end;
-       now = TimeTicksNowIgnoringOverride()) {
+  const TimeTicks end = subtle::TimeTicksNowIgnoringOverride() + duration;
+  for (TimeTicks now = subtle::TimeTicksNowIgnoringOverride(); now < end;
+       now = subtle::TimeTicksNowIgnoringOverride()) {
     ::Sleep(static_cast<DWORD>((end - now).InMillisecondsRoundedUp()));
   }
 }

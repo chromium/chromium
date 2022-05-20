@@ -9,11 +9,11 @@
 #include <set>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 
 namespace partition_alloc {
 
@@ -48,7 +48,7 @@ class BASE_EXPORT MemoryReclaimer {
 
   // Returns a recommended interval to invoke ReclaimNormal.
   int64_t GetRecommendedReclaimIntervalInMicroseconds() {
-    return base::Seconds(4).InMicroseconds();
+    return internal::base::Seconds(4).InMicroseconds();
   }
 
   // Triggers an explicit reclaim now reclaiming all free memory

@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/starscan/logging.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/time/time.h"
 
 namespace partition_alloc::internal {
 

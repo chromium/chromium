@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket_lookup.h"
@@ -21,7 +22,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
@@ -143,9 +143,11 @@ class BASE_EXPORT ThreadCacheRegistry {
 
   void ResetForTesting();
 
-  static constexpr base::TimeDelta kMinPurgeInterval = base::Seconds(1);
-  static constexpr base::TimeDelta kMaxPurgeInterval = base::Minutes(1);
-  static constexpr base::TimeDelta kDefaultPurgeInterval =
+  static constexpr internal::base::TimeDelta kMinPurgeInterval =
+      internal::base::Seconds(1);
+  static constexpr internal::base::TimeDelta kMaxPurgeInterval =
+      internal::base::Minutes(1);
+  static constexpr internal::base::TimeDelta kDefaultPurgeInterval =
       2 * kMinPurgeInterval;
   static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 
@@ -157,7 +159,8 @@ class BASE_EXPORT ThreadCacheRegistry {
   internal::Lock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
   bool periodic_purge_is_initialized_ = false;
-  base::TimeDelta periodic_purge_next_interval_ = kDefaultPurgeInterval;
+  internal::base::TimeDelta periodic_purge_next_interval_ =
+      kDefaultPurgeInterval;
 
 #if BUILDFLAG(IS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't

@@ -15,8 +15,8 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_ref.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/base_export.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -86,12 +86,18 @@ class BASE_EXPORT PlatformThread {
   // we're on the right thread quickly.
   static PlatformThreadRef CurrentRef();
 
+  // Get the handle representing the current thread. On Windows, this is a
+  // pseudo handle constant which will always represent the thread using it and
+  // hence should not be shared with other threads nor be used to differentiate
+  // the current thread from another.
+  static PlatformThreadHandle CurrentHandle();
+
   // Sleeps for the specified duration (real-time; ignores time overrides).
   // Note: The sleep duration may be in base::Time or base::TimeTicks, depending
   // on platform. If you're looking to use this in unit tests testing delayed
   // tasks, this will be unreliable - instead, use
   // base::test::TaskEnvironment with MOCK_TIME mode.
-  static void Sleep(base::TimeDelta duration);
+  static void Sleep(TimeDelta duration);
 
   // Sets the thread name visible to debuggers/tools. This will try to
   // initialize the context for current thread unless it's a WorkerThread.

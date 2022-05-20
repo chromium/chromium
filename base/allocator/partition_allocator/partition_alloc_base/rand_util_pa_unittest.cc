@@ -14,7 +14,8 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
-#include "base/time/time.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
+#include "base/check_op.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base {
@@ -114,10 +115,10 @@ TEST(PartitionAllocBaseRandUtilTest, DISABLED_RandBytesPerf) {
   const size_t kTestBufferSize = 1 * 1024 * 1024;
 
   std::unique_ptr<uint8_t[]> buffer(new uint8_t[kTestBufferSize]);
-  const base::TimeTicks now = base::TimeTicks::Now();
+  const TimeTicks now = TimeTicks::Now();
   for (int i = 0; i < kTestIterations; ++i)
     base::RandBytes(buffer.get(), kTestBufferSize);
-  const base::TimeTicks end = base::TimeTicks::Now();
+  const TimeTicks end = TimeTicks::Now();
 
   PA_LOG(INFO) << "RandBytes(" << kTestBufferSize
                << ") took: " << (end - now).InMicroseconds() << "µs";

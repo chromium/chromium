@@ -68,9 +68,9 @@ void OnDllProcessDetach() {
 static bool g_thread_cache_key_created = false;
 }  // namespace
 
-constexpr base::TimeDelta ThreadCacheRegistry::kMinPurgeInterval;
-constexpr base::TimeDelta ThreadCacheRegistry::kMaxPurgeInterval;
-constexpr base::TimeDelta ThreadCacheRegistry::kDefaultPurgeInterval;
+constexpr internal::base::TimeDelta ThreadCacheRegistry::kMinPurgeInterval;
+constexpr internal::base::TimeDelta ThreadCacheRegistry::kMaxPurgeInterval;
+constexpr internal::base::TimeDelta ThreadCacheRegistry::kDefaultPurgeInterval;
 constexpr size_t ThreadCacheRegistry::kMinCachedMemoryForPurging;
 uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 

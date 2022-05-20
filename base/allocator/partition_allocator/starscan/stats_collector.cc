@@ -4,9 +4,9 @@
 
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/starscan/logging.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
-#include "base/time/time.h"
 
 namespace partition_alloc::internal {
 

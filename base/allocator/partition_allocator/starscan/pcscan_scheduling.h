@@ -8,10 +8,10 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/time/time.h"
 
 namespace partition_alloc::internal {
 

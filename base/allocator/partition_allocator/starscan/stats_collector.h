@@ -15,9 +15,9 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
-#include "base/time/time.h"
 
 namespace partition_alloc {
 
