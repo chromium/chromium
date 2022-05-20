@@ -603,6 +603,7 @@ suite('GooglePhotosPhotosTest', function() {
     (placeholderEls![0] as HTMLElement).click();
     await new Promise<void>(resolve => setTimeout(resolve));
     assertEquals(wallpaperProvider.getCallCount(clickHandler), 0);
+    assertEquals(placeholderEls![0]!.getAttribute('aria-disabled'), 'true');
 
     // Provide Google Photos data.
     personalizationStore.data.wallpaper.googlePhotos.photos = photos;
@@ -632,6 +633,7 @@ suite('GooglePhotosPhotosTest', function() {
     (photoEls![0] as HTMLElement).click();
     assertEquals(
         await wallpaperProvider.whenCalled(clickHandler), photos[0]!.id);
+    assertEquals(photoEls![0]!.getAttribute('aria-disabled'), 'false');
   });
 
   test('incrementally loads photos', async () => {

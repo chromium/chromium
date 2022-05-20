@@ -65,6 +65,7 @@
         <div class="photos">
           <template is="dom-repeat" items="[[row]]" as="photo">
             <wallpaper-grid-item
+              aria-disabled$="[[getPhotoAriaDisabled_(photo)]]"
               aria-label$="[[getPhotoAriaLabel_(photo)]]"
               aria-posinset$="[[getPhotoAriaIndex_(photo.index)]]"
               aria-selected$="[[getPhotoAriaSelected_(

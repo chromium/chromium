@@ -16,6 +16,7 @@
     role="listbox">
     <template>
       <wallpaper-grid-item
+        aria-disabled$="[[getPhotoAriaDisabled_(photo)]]"
         aria-label$="[[getPhotoAriaLabel_(photo)]]"
         aria-posinset$="[[getPhotoAriaIndex_(index)]]"
         aria-selected$="[[getPhotoAriaSelected_(

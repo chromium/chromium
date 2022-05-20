@@ -276,6 +276,14 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     }
   }
 
+  /**
+   * Returns 'true' or 'false' depending on whether the specified |photo| is
+   * a placeholder.
+   */
+  private getPhotoAriaDisabled_(photo: GooglePhotosPhoto|null): string {
+    return this.isPhotoPlaceholder_(photo).toString();
+  }
+
   /** Returns the aria label for the specified |photo|. */
   private getPhotoAriaLabel_(photo: GooglePhotosPhoto|null): string|undefined {
     if (photo) {
