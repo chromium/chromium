@@ -50,6 +50,13 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_paths_lacros.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -98,7 +105,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   }
 
  protected:
-  std::vector<ExternalInstallOptions> LoadApps(const char* test_dir,
+  std::vector<ExternalInstallOptions> LoadApps(base::StringPiece test_dir,
                                                Profile* profile = nullptr) {
     std::unique_ptr<TestingProfile> testing_profile;
     if (!profile) {
@@ -110,16 +117,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 #endif
     }
 
-    // Uses the chrome/test/data/web_app_default_apps/test_dir directory
-    // that holds the *.json data files from which tests should parse as app
-    // configs.
-    base::FilePath config_dir;
-    if (!base::PathService::Get(chrome::DIR_TEST_DATA, &config_dir)) {
-      ADD_FAILURE()
-          << "base::PathService::Get could not resolve chrome::DIR_TEST_DATA";
-    }
-    config_dir =
-        config_dir.AppendASCII("web_app_default_apps").AppendASCII(test_dir);
+    base::FilePath config_dir = GetConfigDir(test_dir);
     SetPreinstalledWebAppConfigDirForTesting(&config_dir);
 
     auto preinstalled_web_app_manager =
@@ -188,6 +186,26 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     return profile;
   }
 
+  void SetExtraWebAppsDir(base::StringPiece test_dir,
+                          base::StringPiece extra_web_apps_dir) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kExtraWebAppsDir, extra_web_apps_dir);
+#else
+    base::FilePath config_dir = GetConfigDir(test_dir);
+    auto params = crosapi::mojom::BrowserInitParams::New();
+    params->default_paths = crosapi::mojom::DefaultPaths::New();
+    params->default_paths->documents =
+        base::PathService::CheckedGet(chrome::DIR_USER_DOCUMENTS);
+    params->default_paths->downloads =
+        base::PathService::CheckedGet(chrome::DIR_DEFAULT_DOWNLOADS);
+    params->default_paths->preinstalled_web_app_config = config_dir;
+    params->default_paths->preinstalled_web_app_extra_config =
+        config_dir.AppendASCII(extra_web_apps_dir);
+    chrome::SetLacrosDefaultPathsFromInitParams(params.get());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
   void VerifySetOfApps(Profile* profile, const std::set<GURL>& expectations) {
     const auto install_options_list = LoadApps(kUserTypesTestDir, profile);
     ASSERT_EQ(expectations.size(), install_options_list.size());
@@ -210,6 +228,18 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   ScopedTestingPreinstalledAppData preinstalled_web_app_override_;
 
  private:
+  base::FilePath GetConfigDir(base::StringPiece test_dir) {
+    // Uses the chrome/test/data/web_app_default_apps/test_dir directory
+    // that holds the *.json data files from which tests should parse as app
+    // configs.
+    base::FilePath config_dir;
+    if (!base::PathService::Get(chrome::DIR_TEST_DATA, &config_dir)) {
+      ADD_FAILURE()
+          << "base::PathService::Get could not resolve chrome::DIR_TEST_DATA";
+    }
+    return config_dir.AppendASCII("web_app_default_apps").AppendASCII(test_dir);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::FakeChromeUserManager* user_manager() {
     return static_cast<ash::FakeChromeUserManager*>(
@@ -220,6 +250,8 @@ class PreinstalledWebAppManagerTest : public testing::Test {
 
   // To support primary/non-primary users.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+
+  base::test::ScopedCommandLine command_line_;
 #endif
 
   // To support context of browser threads.
@@ -502,27 +534,19 @@ TEST_F(PreinstalledWebAppManagerTest, ChildUser) {
   EXPECT_TRUE(profile->IsChild());
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppChildUrl)});
 }
-#else
-// No app is expected for non-ChromeOS builds.
-TEST_F(PreinstalledWebAppManagerTest, NoApp) {
-  EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PreinstalledWebAppManagerTest, NonPrimaryProfile) {
   VerifySetOfApps(CreateProfile().get(),
                   {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1252272): Enable extra web apps tests for Lacros.
 TEST_F(PreinstalledWebAppManagerTest, ExtraWebApps) {
   // The extra_web_apps directory contains two JSON files in different named
   // subdirectories. The --extra-web-apps-dir switch should control which
   // directory apps are loaded from.
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kExtraWebAppsDir, "model1");
+  SetExtraWebAppsDir("extra_web_apps", "model1");
 
   const auto app_infos = LoadApps("extra_web_apps");
   EXPECT_EQ(1u, app_infos.size());
@@ -530,15 +554,18 @@ TEST_F(PreinstalledWebAppManagerTest, ExtraWebApps) {
 }
 
 TEST_F(PreinstalledWebAppManagerTest, ExtraWebAppsNoMatchingDirectory) {
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ash::switches::kExtraWebAppsDir, "model3");
+  SetExtraWebAppsDir("extra_web_apps", "model3");
 
   const auto app_infos = LoadApps("extra_web_apps");
   EXPECT_EQ(0u, app_infos.size());
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/0);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
+// No app is expected for non-ChromeOS builds.
+TEST_F(PreinstalledWebAppManagerTest, NoApp) {
+  EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class DisabledPreinstalledWebAppManagerTest
