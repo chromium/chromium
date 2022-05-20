@@ -638,4 +638,77 @@ TEST(HlsTypesTest, ParseDecimalResolution) {
   error_test("18446744073709551616x18446744073709551616");
 }
 
+TEST(HlsTypesTest, ParseByteRange) {
+  const auto error_test = [](base::StringPiece input,
+                             const base::Location& from =
+                                 base::Location::Current()) {
+    auto result =
+        types::ByteRange::Parse(SourceString::CreateForTesting(input));
+    ASSERT_TRUE(result.has_error());
+    auto error = std::move(result).error();
+    EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseByteRange)
+        << from.ToString();
+  };
+  const auto ok_test = [](base::StringPiece input, types::ByteRange expected,
+                          const base::Location& from =
+                              base::Location::Current()) {
+    auto result =
+        types::ByteRange::Parse(SourceString::CreateForTesting(input));
+    ASSERT_TRUE(result.has_value());
+    auto value = std::move(result).value();
+    EXPECT_EQ(value.length, expected.length);
+    EXPECT_EQ(value.offset, expected.offset);
+  };
+
+  // Empty string is not allowed
+  error_test("");
+
+  // Length must be a valid DecimalInteger
+  error_test("-1");
+  error_test(" 1");
+  error_test("1 ");
+  error_test(" 1 ");
+  error_test("1.2");
+  error_test("one");
+  error_test("{$length}");
+  error_test("@34");
+
+  // Offset must be a valid DecimalInteger
+  error_test("12@");
+  error_test("12@-3");
+  error_test("12@ 3");
+  error_test("12@3 ");
+  error_test("12@ 3 ");
+  error_test("12@3.4");
+  error_test("12@three");
+  error_test("12@{$offset}");
+  error_test("12@34@");
+
+  // ByteRange may not be quoted
+  error_test("'12@34'");
+  error_test("\"12@34\"");
+
+  // Test some valid inputs
+  ok_test("0", types::ByteRange{.length = 0, .offset = absl::nullopt});
+  ok_test("12", types::ByteRange{.length = 12, .offset = absl::nullopt});
+  ok_test("12@0", types::ByteRange{.length = 12, .offset = 0});
+  ok_test("12@34", types::ByteRange{.length = 12, .offset = 34});
+  ok_test("0@34", types::ByteRange{.length = 0, .offset = 34});
+  ok_test("0@0", types::ByteRange{.length = 0, .offset = 0});
+
+  // Test max supported values
+  ok_test("18446744073709551615@0",
+          types::ByteRange{.length = 18446744073709551615u, .offset = 0});
+  error_test("18446744073709551616@0");
+  ok_test("0@18446744073709551615",
+          types::ByteRange{.length = 0, .offset = 18446744073709551615u});
+  error_test("0@18446744073709551616");
+  ok_test("18446744073709551615@18446744073709551615",
+          types::ByteRange{.length = 18446744073709551615u,
+                           .offset = 18446744073709551615u});
+  error_test("18446744073709551616@18446744073709551615");
+  error_test("18446744073709551615@18446744073709551616");
+  error_test("18446744073709551616@18446744073709551616");
+}
+
 }  // namespace media::hls

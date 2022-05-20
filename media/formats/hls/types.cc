@@ -227,6 +227,33 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
                            .height = std::move(height).value()};
 }
 
+ParseStatus::Or<ByteRange> ByteRange::Parse(SourceString source_str) {
+  // If this ByteRange has an offset, it will be separated from the length by
+  // '@'.
+  const auto at_index = source_str.Str().find_first_of('@');
+  const auto length_str = source_str.Consume(at_index);
+  auto length = ParseDecimalInteger(length_str);
+  if (length.has_error()) {
+    return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+        .AddCause(std::move(length).error());
+  }
+
+  // If the offset was present, try to parse it
+  absl::optional<types::DecimalInteger> offset;
+  if (at_index != base::StringPiece::npos) {
+    source_str.Consume(1);
+    auto offset_result = ParseDecimalInteger(source_str);
+    if (offset_result.has_error()) {
+      return ParseStatus(ParseStatusCode::kFailedToParseByteRange)
+          .AddCause(std::move(offset_result).error());
+    }
+
+    offset = std::move(offset_result).value();
+  }
+
+  return ByteRange{.length = std::move(length).value(), .offset = offset};
+}
+
 ParseStatus::Or<base::StringPiece> ParseQuotedString(
     SourceString source_str,
     const VariableDictionary& variable_dict,

@@ -39,10 +39,26 @@ ParseSignedDecimalFloatingPoint(SourceString source_str);
 // height.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=enumerated%2Dstring%2Dlist.%0A%0A%20%20%20o-,decimal%2Dresolution,-%3A%20two%20decimal%2Dintegers
 struct MEDIA_EXPORT DecimalResolution {
+  static ParseStatus::Or<DecimalResolution> Parse(SourceString source_str);
+
   types::DecimalInteger width;
   types::DecimalInteger height;
+};
 
-  static ParseStatus::Or<DecimalResolution> Parse(SourceString source_str);
+// A `ByteRange` describes a sub-range of a resource. There are a couple tags
+// that use this type, and they all have the format `length[@offset]`.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
+struct MEDIA_EXPORT ByteRange {
+  static ParseStatus::Or<ByteRange> Parse(SourceString source_str);
+
+  // The length of the sub-range, in bytes.
+  types::DecimalInteger length;
+
+  // If present, the offset in bytes from the beginning of the resource.
+  // If not present, the sub-range begins at the next byte following that of the
+  // previous segment. The previous segment must be a subrange of the same
+  // resource.
+  absl::optional<types::DecimalInteger> offset;
 };
 
 // Parses a string surrounded by double-quotes ("), returning the inner string.
