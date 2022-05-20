@@ -22,13 +22,11 @@ class OsInstallScreen : public BaseScreen, public OsInstallClient::Observer {
  public:
   using TView = chromeos::OsInstallScreenView;
 
-  explicit OsInstallScreen(OsInstallScreenView* view,
-                           const base::RepeatingClosure& exit_callback);
+  OsInstallScreen(base::WeakPtr<OsInstallScreenView> view,
+                  const base::RepeatingClosure& exit_callback);
   OsInstallScreen(const OsInstallScreen&) = delete;
   OsInstallScreen& operator=(const OsInstallScreen&) = delete;
   ~OsInstallScreen() override;
-
-  void OnViewDestroyed(OsInstallScreenView* view);
 
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
@@ -38,7 +36,7 @@ class OsInstallScreen : public BaseScreen, public OsInstallClient::Observer {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // OsInstallClient::Observer:
   void StatusChanged(OsInstallClient::Status status,
@@ -49,7 +47,7 @@ class OsInstallScreen : public BaseScreen, public OsInstallClient::Observer {
   void UpdateCountdownString();
   void Shutdown();
 
-  OsInstallScreenView* view_ = nullptr;
+  base::WeakPtr<OsInstallScreenView> view_;
 
   base::TimeTicks shutdown_time_;
 

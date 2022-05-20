@@ -758,7 +758,7 @@ WizardController::CreateScreens() {
 
   if (switches::IsOsInstallAllowed()) {
     append(std::make_unique<OsInstallScreen>(
-        oobe_ui->GetView<OsInstallScreenHandler>(),
+        oobe_ui->GetView<OsInstallScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnOsInstallScreenExit,
                             weak_factory_.GetWeakPtr())));
     append(std::make_unique<OsTrialScreen>(
