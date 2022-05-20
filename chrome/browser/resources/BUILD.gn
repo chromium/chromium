@@ -122,7 +122,6 @@ if (enable_js_type_check) {
       "components:closure_compile",
       "domain_reliability_internals:closure_compile",
       "engagement:closure_compile",
-      "memory_internals:closure_compile",
     ]
     if (is_linux || is_chromeos || is_win || is_mac) {
       deps += [

@@ -5,6 +5,13 @@
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
+type Process = [number, string, boolean];
+
+type ProcessList = {
+  message: string,
+  processes: Process[],
+};
+
 function requestProcessList() {
   sendWithPromise('requestProcessList').then(onProcessListReceived);
 }
@@ -13,17 +20,18 @@ function saveDump() {
   chrome.send('saveDump');
 }
 
-function reportProcess(pid) {
+function reportProcess(pid: number) {
   chrome.send('reportProcess', [pid]);
 }
 
-function startProfiling(pid) {
+function startProfiling(pid: number) {
   chrome.send('startProfiling', [pid]);
 }
 
 // celltype should either be "td" or "th". The contents of the |cols| will be
 // added as children of each table cell if they are non-null.
-function addListRow(table, celltype, cols) {
+function addListRow(
+    table: HTMLElement, celltype: string, cols: Array<Text|HTMLElement|null>) {
   const tr = document.createElement('tr');
   for (const col of cols) {
     const cell = document.createElement(celltype);
@@ -35,7 +43,7 @@ function addListRow(table, celltype, cols) {
   table.appendChild(tr);
 }
 
-function onProcessListReceived(data) {
+function onProcessListReceived(data: ProcessList) {
   $('message').innerText = data['message'];
 
   const proclist = $('proclist');
@@ -80,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   $('refresh').onclick = requestProcessList;
   $('save').onclick = saveDump;
 
-  addWebUIListener('save-dump-progress', progress => {
+  addWebUIListener('save-dump-progress', (progress: string) => {
     $('save-dump-text').innerText = progress;
   });
 
