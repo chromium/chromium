@@ -38,11 +38,7 @@ const CGFloat kImageHeight = 30;
   [super configureCell:tableCell withStyler:styler];
   TableViewClearBrowsingDataCell* cell =
       base::mac::ObjCCastStrict<TableViewClearBrowsingDataCell>(tableCell);
-  UIImage* image = nil;
-  if ([self.imageName length]) {
-    image = [UIImage imageNamed:self.imageName];
-  }
-  [cell setImage:image];
+  [cell setImage:self.image];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
   cell.optionalTextLabel.text = self.optionalText;

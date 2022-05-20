@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
@@ -89,9 +90,41 @@ const std::vector<BrowsingDataRemoveMask> _browsingDataRemoveFlags = {
     BrowsingDataRemoveMask::REMOVE_FORM_DATA,
 };
 
-}  // namespace
+// The size of the symbol image used in the 'Clear Browsing Data' view.
+NSInteger kSymbolPointSize = 22;
 
-static NSDictionary* _imageNamesByItemTypes = @{
+// Specific symbols used in the 'Clear Browsing Data' view.
+NSString* kCachedDataSymbol = @"photo.on.rectangle";
+NSString* kAutofillDataSymbol = @"wand.and.rays";
+
+// Returns the symbol coresponding to the given itemType.
+UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
+  UIImage* symbol = nil;
+  switch (itemType) {
+    case ItemTypeDataTypeBrowsingHistory:
+    case ItemTypeDataTypeCookiesSiteData:
+    case ItemTypeDataTypeSavedPasswords:
+      // TODO(crbug.com/1315544): update these cases when custom symbols are
+      // done.
+      symbol = DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
+                                                  kSymbolPointSize);
+      break;
+    case ItemTypeDataTypeCache:
+      symbol = DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
+                                                  kSymbolPointSize);
+      break;
+    case ItemTypeDataTypeAutofill:
+      symbol = DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,
+                                                  kSymbolPointSize);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return symbol;
+}
+
+static NSDictionary* imageNamesByItemTypes = @{
   [NSNumber numberWithInteger:ItemTypeDataTypeBrowsingHistory] :
       @"clear_browsing_data_history",
   [NSNumber numberWithInteger:ItemTypeDataTypeCookiesSiteData] :
@@ -106,6 +139,8 @@ static NSDictionary* _imageNamesByItemTypes = @{
   [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
       @"clear_browsing_data_autofill",
 };
+
+}  // namespace
 
 @interface ClearBrowsingDataManager () <BrowsingDataRemoverObserving,
                                         PrefObserverDelegate> {
@@ -431,8 +466,15 @@ static NSDictionary* _imageNamesByItemTypes = @{
   clearDataItem.prefName = prefName;
   clearDataItem.checkedBackgroundColor = [[UIColor colorNamed:kBlueColor]
       colorWithAlphaComponent:kSelectedBackgroundColorAlpha];
-  clearDataItem.imageName = [_imageNamesByItemTypes
-      objectForKey:[NSNumber numberWithInteger:itemType]];
+
+  if (UseSymbols()) {
+    clearDataItem.image = SymbolForItemType(itemType);
+  } else {
+    clearDataItem.image = [UIImage
+        imageNamed:[imageNamesByItemTypes
+                       objectForKey:[NSNumber numberWithInteger:itemType]]];
+  }
+
   if (itemType == ItemTypeDataTypeCookiesSiteData) {
     // Because there is no counter for cookies, an explanatory text is
     // displayed.
