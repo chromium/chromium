@@ -435,6 +435,31 @@ void NGTablePainter::PaintBoxDecorationBackground(
   }
 }
 
+namespace {
+
+bool IsFirstRowFragmented(const NGPhysicalBoxFragment& section) {
+  for (const auto& child : section.Children()) {
+    if (!child->IsTableNGRow())
+      continue;
+    return !To<NGPhysicalBoxFragment>(*child).IsFirstForNode();
+  }
+  return false;
+}
+
+bool IsLastRowFragmented(const NGPhysicalBoxFragment& section) {
+  const auto children = section.Children();
+  for (auto it = children.rbegin(); it != children.rend(); ++it) {
+    const auto& child = *it;
+    if (!child->IsTableNGRow())
+      continue;
+    return child->BreakToken() &&
+           !To<NGBlockBreakToken>(child->BreakToken())->IsAtBlockEnd();
+  }
+  return false;
+}
+
+}  // namespace
+
 void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
                                            const PhysicalOffset& paint_offset,
                                            const gfx::Rect& visual_rect) {
@@ -455,20 +480,57 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       fragment_.Style(), DarkModeFilter::ElementRole::kBackground));
 
-  PhysicalRect grid_paint_rect = fragment_.TableGridRect();
-  grid_paint_rect.offset += paint_offset;
+  // We paint collapsed-borders section-by-section for fragmentation purposes.
+  // This means that we need to track the final row we've painted in each
+  // section to avoid double painting.
+  absl::optional<wtf_size_t> previous_painted_row_index;
 
-  WritingModeConverter grid_converter(fragment_.Style().GetWritingDirection(),
-                                      grid_paint_rect.size);
-
-  for (NGTableCollapsedEdge edge = NGTableCollapsedEdge(*collapsed_borders, 0);
-       edge.Exists(); ++edge) {
-    if (!edge.CanPaint())
+  for (const auto& child : fragment_.Children()) {
+    if (!child->IsTableNGSection())
       continue;
-    const wtf_size_t table_row = edge.TableRow();
-    const wtf_size_t table_column = edge.TableColumn();
 
-    {
+    const auto& section = To<NGPhysicalBoxFragment>(*child);
+    const absl::optional<wtf_size_t> section_start_row_index =
+        section.TableSectionStartRowIndex();
+    if (!section_start_row_index)
+      continue;
+
+    bool is_first_row_fragmented = IsFirstRowFragmented(section);
+    bool is_last_row_fragmented = IsLastRowFragmented(section);
+
+    WritingModeConverter converter(fragment_.Style().GetWritingDirection(),
+                                   section.Size());
+
+    const auto& section_row_offsets = *section.TableSectionRowOffsets();
+    const wtf_size_t start_edge_index =
+        *section_start_row_index * collapsed_borders->EdgesPerRow();
+
+    for (NGTableCollapsedEdge edge =
+             NGTableCollapsedEdge(*collapsed_borders, start_edge_index);
+         edge.Exists(); ++edge) {
+      const wtf_size_t table_row = edge.TableRow();
+      const wtf_size_t table_column = edge.TableColumn();
+      const wtf_size_t fragment_table_row =
+          table_row - *section_start_row_index;
+
+      // Check if we've exhausted the rows in this section. Store the final row
+      // which we painted.
+      if (fragment_table_row >= section_row_offsets.size()) {
+        previous_painted_row_index = table_row - 1;
+        break;
+      }
+
+      if (!edge.CanPaint())
+        continue;
+
+      bool is_row_start_fragmented =
+          is_first_row_fragmented && fragment_table_row == 0u;
+
+      const LayoutUnit row_start_offset =
+          section_row_offsets[fragment_table_row];
+      const LayoutUnit column_start_offset =
+          collapsed_borders_geometry->columns[table_column];
+
       LayoutUnit inline_start;
       LayoutUnit block_start;
       LayoutUnit inline_size;
@@ -481,13 +543,26 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
           NOTREACHED();
           continue;
         }
-        inline_start = collapsed_borders_geometry->columns[table_column];
+
+        // Check if we have painted this inline border in a previous section.
+        if (previous_painted_row_index &&
+            *previous_painted_row_index == table_row) {
+          continue;
+        }
+
+        bool is_row_end_fragmented =
+            is_last_row_fragmented &&
+            fragment_table_row == section_row_offsets.size() - 1u;
+
+        // If the current row has been fragmented, omit the inline border.
+        if (is_row_start_fragmented || is_row_end_fragmented)
+          continue;
+
+        inline_start = column_start_offset;
         inline_size = collapsed_borders_geometry->columns[table_column + 1] -
-                      collapsed_borders_geometry->columns[table_column];
+                      column_start_offset;
         block_size = edge.BorderWidth();
-        CHECK_LT(table_row, collapsed_borders_geometry->rows.size());
-        block_start = collapsed_borders_geometry->rows[table_row] -
-                      edge.BorderWidth() / 2;
+        block_start = row_start_offset - edge.BorderWidth() / 2;
         LogicalSize start_joint;
         LogicalSize end_joint;
         bool start_wins;
@@ -507,13 +582,18 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
           inline_size -= end_joint.inline_size / 2;
         }
       } else {  // block_axis
-        CHECK_LT(table_row + 1, collapsed_borders_geometry->rows.size());
-        block_start = collapsed_borders_geometry->rows[table_row];
+        // Check if this block border exists in this section.
+        if (fragment_table_row + 1 >= section_row_offsets.size())
+          continue;
+
+        bool is_row_end_fragmented =
+            is_last_row_fragmented &&
+            fragment_table_row + 1u == section_row_offsets.size() - 1u;
+
+        block_start = row_start_offset;
         block_size =
-            collapsed_borders_geometry->rows[table_row + 1] - block_start;
-        CHECK_LT(table_column, collapsed_borders_geometry->columns.size());
-        inline_start = collapsed_borders_geometry->columns[table_column] -
-                       edge.BorderWidth() / 2;
+            section_row_offsets[fragment_table_row + 1] - row_start_offset;
+        inline_start = column_start_offset - edge.BorderWidth() / 2;
         inline_size = edge.BorderWidth();
         LogicalSize start_joint;
         LogicalSize end_joint;
@@ -521,14 +601,20 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
         bool end_wins;
         ComputeEdgeJoints(*collapsed_borders, edge, start_joint, end_joint,
                           start_wins, end_wins);
-        if (start_wins) {
+        if (is_row_start_fragmented) {
+          // We don't need to perform any adjustment if we've been start
+          // fragmented as there isn't a joint here.
+        } else if (start_wins) {
           block_start -= start_joint.block_size / 2;
           block_size += start_joint.block_size / 2;
         } else {
           block_start += start_joint.block_size / 2;
           block_size -= start_joint.block_size / 2;
         }
-        if (end_wins) {
+        if (is_row_end_fragmented) {
+          // We don't need to perform any adjustment if we've been end
+          // fragmented as there isn't a joint here.
+        } else if (end_wins) {
           block_size += end_joint.block_size / 2;
         } else {
           block_size -= end_joint.block_size / 2;
@@ -537,8 +623,8 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       const LogicalRect logical_border_rect(inline_start, block_start,
                                             inline_size, block_size);
       PhysicalRect physical_border_rect =
-          grid_converter.ToPhysical(logical_border_rect);
-      physical_border_rect.offset += grid_paint_rect.offset;
+          converter.ToPhysical(logical_border_rect);
+      physical_border_rect.offset += child.offset + paint_offset;
 
       BoxSide box_side;
       if (IsHorizontalWritingMode(fragment_.Style().GetWritingMode())) {

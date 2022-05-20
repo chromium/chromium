@@ -778,28 +778,20 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
   }
   // Collapsed borders.
   if (!table_borders.IsEmpty()) {
-    LayoutUnit grid_inline_start = table_borders.TableBorder().inline_start;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
         fragment_borders_geometry =
             std::make_unique<NGTableFragmentData::CollapsedBordersGeometry>();
-    for (const auto& column : column_locations) {
-      fragment_borders_geometry->columns.push_back(column.offset +
-                                                   grid_inline_start);
-    }
+    for (const auto& column : column_locations)
+      fragment_borders_geometry->columns.push_back(column.offset);
     DCHECK_NE(column_locations.size(), 0u);
     fragment_borders_geometry->columns.push_back(
-        column_locations.back().offset + column_locations.back().size +
-        grid_inline_start);
-    LayoutUnit row_offset = table_borders.TableBorder().block_start;
-    for (const auto& row : rows) {
-      fragment_borders_geometry->rows.push_back(row_offset);
-      row_offset += row.block_size;
-    }
-    fragment_borders_geometry->rows.push_back(row_offset);
-    // crbug.com/1179369 make sure dimensions of table_borders and
-    // fragment_borders_geometry are consistent.
+        column_locations.back().offset + column_locations.back().size);
+
+    // Ensure the dimensions of table_borders and fragment_borders_geometry are
+    // consistent.
     DCHECK_LE(table_borders.EdgesPerRow() / 2,
               fragment_borders_geometry->columns.size());
+
     container_builder_.SetTableCollapsedBorders(table_borders);
     container_builder_.SetTableCollapsedBordersGeometry(
         std::move(fragment_borders_geometry));

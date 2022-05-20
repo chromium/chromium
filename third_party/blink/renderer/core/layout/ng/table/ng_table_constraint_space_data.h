@@ -154,6 +154,11 @@ class NGTableConstraintSpaceData
     const wtf_size_t new_start_row_index = new_section.start_row_index;
     const wtf_size_t old_start_row_index = old_section.start_row_index;
 
+    // Collapsed-border painting has a dependency on the row-index.
+    DCHECK_EQ(has_collapsed_borders, other.has_collapsed_borders);
+    if (has_collapsed_borders && new_start_row_index != old_start_row_index)
+      return false;
+
     const wtf_size_t new_end_row_index =
         new_start_row_index + new_section.row_count;
     const wtf_size_t old_end_row_index =

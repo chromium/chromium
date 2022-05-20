@@ -160,6 +160,23 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return ComputeRareDataAddress()->table_cell_column_index;
   }
 
+  absl::optional<wtf_size_t> TableSectionStartRowIndex() const {
+    DCHECK(IsTableNGSection());
+    if (!const_has_rare_data_)
+      return absl::nullopt;
+    const auto* rare_data = ComputeRareDataAddress();
+    if (rare_data->table_section_row_offsets.IsEmpty())
+      return absl::nullopt;
+    return rare_data->table_section_start_row_index;
+  }
+
+  const Vector<LayoutUnit>* TableSectionRowOffsets() const {
+    DCHECK(IsTableNGSection());
+    return const_has_rare_data_
+               ? &ComputeRareDataAddress()->table_section_row_offsets
+               : nullptr;
+  }
+
   // Returns the layout-overflow for this fragment.
   const PhysicalRect LayoutOverflow() const {
     if (is_legacy_layout_root_)
@@ -423,13 +440,19 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
-    // TablesNG rare data.
+    // Table rare-data.
     PhysicalRect table_grid_rect;
     NGTableFragmentData::ColumnGeometries table_column_geometries;
     scoped_refptr<const NGTableBorders> table_collapsed_borders;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
         table_collapsed_borders_geometry;
+
+    // Table-cell rare-data.
     wtf_size_t table_cell_column_index;
+
+    // Table-section rare-data.
+    wtf_size_t table_section_start_row_index;
+    Vector<LayoutUnit> table_section_row_offsets;
   };
 
   const NGFragmentItems* ComputeItemsAddress() const {
