@@ -39,8 +39,13 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 class HistoryClustersMediator implements SearchDelegate {
+    interface Clock {
+        long currentTimeMillis();
+    }
+
     private final HistoryClustersBridge mHistoryClustersBridge;
     private final Context mContext;
     private final Resources mResources;
@@ -55,6 +60,7 @@ class HistoryClustersMediator implements SearchDelegate {
     private final boolean mIsSeparateActivity;
     private Function<GURL, Intent> mOpenUrlIntentCreator;
     private CallbackController mCallbackController = new CallbackController();
+    private Clock mClock;
 
     /**
      * Create a new HistoryClustersMediator.
@@ -73,12 +79,13 @@ class HistoryClustersMediator implements SearchDelegate {
      *         should launch an intent or directly navigate a tab.
      * @param openUrlIntentCreator Function that creates an intent that opens the given url in the
      *         correct main browsing activity.
+     * @param clock Provider of the current time in ms relative to the unix epoch.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
             Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier,
-            boolean isSeparateActivity, Function<GURL, Intent> openUrlIntentCreator) {
+            boolean isSeparateActivity, Function<GURL, Intent> openUrlIntentCreator, Clock clock) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -91,6 +98,7 @@ class HistoryClustersMediator implements SearchDelegate {
         mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
         mIsSeparateActivity = isSeparateActivity;
         mOpenUrlIntentCreator = openUrlIntentCreator;
+        mClock = clock;
     }
 
     // SearchDelegate implementation.
@@ -149,7 +157,7 @@ class HistoryClustersMediator implements SearchDelegate {
         boolean isQueryless = result.getQuery().isEmpty();
         for (HistoryCluster cluster : result.getClusters()) {
             PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-            clusterModel.set(HistoryClustersItemProperties.LABEL, cluster.getLabel());
+            clusterModel.set(HistoryClustersItemProperties.TITLE, cluster.getLabel());
             Drawable journeysDrawable = UiUtils.getTintedDrawable(
                     mContext, R.drawable.ic_journeys, R.color.default_icon_color_tint_list);
             clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
@@ -190,6 +198,8 @@ class HistoryClustersMediator implements SearchDelegate {
             Drawable chevron = UiUtils.getTintedDrawable(mContext,
                     R.drawable.ic_expand_more_black_24dp, R.color.default_icon_color_tint_list);
             clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
+            clusterModel.set(
+                    HistoryClustersItemProperties.LABEL, getTimeString(cluster.getTimestamp()));
         }
     }
 
@@ -233,5 +243,26 @@ class HistoryClustersMediator implements SearchDelegate {
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(gurl);
         currentTab.loadUrl(loadUrlParams);
+    }
+
+    @VisibleForTesting
+    String getTimeString(long timestampMillis) {
+        long timeDeltaMs = mClock.currentTimeMillis() - timestampMillis;
+        if (timeDeltaMs < 0) timeDeltaMs = 0;
+
+        int daysElapsed = (int) TimeUnit.MILLISECONDS.toDays(timeDeltaMs);
+        int hoursElapsed = (int) TimeUnit.MILLISECONDS.toHours(timeDeltaMs);
+        int minutesElapsed = (int) TimeUnit.MILLISECONDS.toMinutes(timeDeltaMs);
+
+        if (daysElapsed > 0) {
+            return mResources.getQuantityString(R.plurals.n_days_ago, daysElapsed, daysElapsed);
+        } else if (hoursElapsed > 0) {
+            return mResources.getQuantityString(R.plurals.n_hours_ago, hoursElapsed, hoursElapsed);
+        } else if (minutesElapsed > 0) {
+            return mResources.getQuantityString(
+                    R.plurals.n_minutes_ago, minutesElapsed, minutesElapsed);
+        } else {
+            return mResources.getString(R.string.just_now);
+        }
     }
 }

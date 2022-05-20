@@ -62,7 +62,7 @@ class HistoryClustersBridge {
 
     @CalledByNative
     static HistoryCluster buildCluster(ClusterVisit[] visits, String[] keywords, String label,
-            int[] labelMatchStarts, int[] labelMatchEnds) {
+            int[] labelMatchStarts, int[] labelMatchEnds, long timestamp) {
         List<String> keywordList = Arrays.asList(keywords);
         List<ClusterVisit> clusterVisitList = Arrays.asList(visits);
 
@@ -73,7 +73,7 @@ class HistoryClustersBridge {
             matchPositions.add(matchPosition);
         }
 
-        return new HistoryCluster(keywordList, clusterVisitList, label, matchPositions);
+        return new HistoryCluster(keywordList, clusterVisitList, label, matchPositions, timestamp);
     }
 
     @CalledByNative

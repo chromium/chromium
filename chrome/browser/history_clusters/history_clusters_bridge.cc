@@ -111,6 +111,9 @@ void HistoryClustersBridge::ClustersQueryDone(
                   env, visit.annotated_visit.url_row.title()));
       cluster_visits.push_back(j_cluster_visit);
     }
+    base::Time visit_time;
+    if (!cluster.visits.empty())
+      visit_time = cluster.visits[0].annotated_visit.visit_row.visit_time;
     ScopedJavaLocalRef<jclass> cluster_visit_type = base::android::GetClass(
         env, "org/chromium/chrome/browser/history_clusters/ClusterVisit");
     std::u16string label = cluster.label.value_or(u"no_label");
@@ -131,7 +134,8 @@ void HistoryClustersBridge::ClustersQueryDone(
             base::android::ToJavaArrayOfStrings(env, cluster.keywords),
             base::android::ConvertUTF16ToJavaString(env, label),
             base::android::ToJavaIntArray(env, label_match_starts),
-            base::android::ToJavaIntArray(env, label_match_ends));
+            base::android::ToJavaIntArray(env, label_match_ends),
+            visit_time.ToJavaTime());
     j_clusters.push_back(j_cluster);
   }
   ScopedJavaLocalRef<jclass> cluster_type = base::android::GetClass(

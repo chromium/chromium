@@ -21,13 +21,15 @@ class HistoryCluster {
     private final List<ClusterVisit> mVisits;
     private final String mLabel;
     private final List<MatchPosition> mMatchPositions;
+    private final long mTimestamp;
 
     public HistoryCluster(List<String> keywords, List<ClusterVisit> visits, String label,
-            List<MatchPosition> matchPositions) {
+            List<MatchPosition> matchPositions, long timestamp) {
         mKeywords = keywords;
         mVisits = visits;
         mLabel = label;
         mMatchPositions = matchPositions;
+        mTimestamp = timestamp;
     }
 
     public List<ClusterVisit> getVisits() {
@@ -36,5 +38,9 @@ class HistoryCluster {
 
     public String getLabel() {
         return mLabel;
+    }
+
+    public long getTimestamp() {
+        return mTimestamp;
     }
 }

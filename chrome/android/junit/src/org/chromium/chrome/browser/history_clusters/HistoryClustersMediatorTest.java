@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.history_clusters;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.geq;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -52,6 +54,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for HistoryClustersMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -93,6 +96,8 @@ public class HistoryClustersMediatorTest {
     private Function<GURL, Intent> mUrlIntentCreator;
     @Mock
     private Drawable mDrawable;
+    @Mock
+    private HistoryClustersMediator.Clock mClock;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
@@ -119,14 +124,14 @@ public class HistoryClustersMediatorTest {
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier, false,
-                mUrlIntentCreator);
+                mUrlIntentCreator, mClock);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
-        mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 1");
-        mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 1");
-        mCluster1 = new HistoryCluster(
-                Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2), "label1", new ArrayList<>());
-        mCluster2 = new HistoryCluster(
-                Arrays.asList("bar", "baz"), Arrays.asList(mVisit3), "label2", new ArrayList<>());
+        mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2");
+        mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 3");
+        mCluster1 = new HistoryCluster(Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2),
+                "label1", new ArrayList<>(), 456L);
+        mCluster2 = new HistoryCluster(Arrays.asList("bar", "baz"), Arrays.asList(mVisit3),
+                "label2", new ArrayList<>(), 123L);
         mHistoryClustersResultWithQuery = new HistoryClustersResult(
                 Arrays.asList(mCluster1, mCluster2), "query", false, false);
         mHistoryClustersResultEmptyQuery =
@@ -178,7 +183,7 @@ public class HistoryClustersMediatorTest {
         assertEquals(item.type, ItemType.CLUSTER);
         PropertyModel model = item.model;
         assertTrue(model.getAllSetProperties().containsAll(Arrays.asList(
-                HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.LABEL)));
+                HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.TITLE)));
     }
 
     @Test
@@ -237,7 +242,7 @@ public class HistoryClustersMediatorTest {
     public void testNavigateSeparateActivity() {
         HistoryClustersMediator standaloneMediator = new HistoryClustersMediator(mBridge,
                 mLargeIconBridge, mContext, mResources, mModelList, mToolbarModel,
-                mHistoryActivityIntentFactory, mTabSupplier, true, mUrlIntentCreator);
+                mHistoryActivityIntentFactory, mTabSupplier, true, mUrlIntentCreator, mClock);
         standaloneMediator.navigateToItemUrl(mMockGurl);
 
         verify(mUrlIntentCreator).apply(mMockGurl);
@@ -261,6 +266,41 @@ public class HistoryClustersMediatorTest {
 
         assertEquals(visitModel1.get(HistoryClustersItemProperties.VISIBILITY), View.VISIBLE);
         assertEquals(visitModel2.get(HistoryClustersItemProperties.VISIBILITY), View.VISIBLE);
+    }
+
+    @Test
+    public void testGetTimeString() {
+        String dayString = "1 day ago";
+        String hourString = "1 hour ago";
+        String minuteString = "1 minute ago";
+        String justNowString = "Just now";
+
+        doReturn(dayString)
+                .when(mResources)
+                .getQuantityString(eq(R.plurals.n_days_ago), geq(1), geq(1));
+        doReturn(hourString)
+                .when(mResources)
+                .getQuantityString(eq(R.plurals.n_hours_ago), geq(1), geq(1));
+        doReturn(minuteString)
+                .when(mResources)
+                .getQuantityString(eq(R.plurals.n_minutes_ago), geq(1), geq(1));
+        doReturn(justNowString).when(mResources).getString(R.string.just_now);
+
+        doReturn(TimeUnit.DAYS.toMillis(1)).when(mClock).currentTimeMillis();
+        String timeString = mMediator.getTimeString(0L);
+        assertEquals(timeString, dayString);
+
+        doReturn(TimeUnit.HOURS.toMillis(1)).when(mClock).currentTimeMillis();
+        timeString = mMediator.getTimeString(0L);
+        assertEquals(timeString, hourString);
+
+        doReturn(TimeUnit.MINUTES.toMillis(1)).when(mClock).currentTimeMillis();
+        timeString = mMediator.getTimeString(0L);
+        assertEquals(timeString, minuteString);
+
+        doReturn(TimeUnit.SECONDS.toMillis(1)).when(mClock).currentTimeMillis();
+        timeString = mMediator.getTimeString(0L);
+        assertEquals(timeString, justNowString);
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

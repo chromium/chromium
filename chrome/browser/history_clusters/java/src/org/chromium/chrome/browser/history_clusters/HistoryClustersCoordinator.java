@@ -73,7 +73,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
                 mToolbarModel, historyActivityIntentFactory, tabSupplier, tabSupplier == null,
-                openUrlIntentCreator);
+                openUrlIntentCreator, System::currentTimeMillis);
     }
 
     public void destroy() {

@@ -27,8 +27,12 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
     @Override
     protected void onClick() {}
 
-    void setLabel(String text) {
+    void setTitle(String text) {
         mTitleView.setText(text);
+    }
+
+    void setLabel(String text) {
+        mDescriptionView.setText(text);
     }
 
     void setIconDrawable(Drawable drawable) {

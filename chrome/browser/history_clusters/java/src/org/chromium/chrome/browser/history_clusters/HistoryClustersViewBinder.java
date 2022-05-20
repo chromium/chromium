@@ -65,6 +65,8 @@ class HistoryClustersViewBinder {
             clusterView.setIconDrawable(model.get(HistoryClustersItemProperties.ICON_DRAWABLE));
         } else if (key == HistoryClustersItemProperties.LABEL) {
             clusterView.setLabel(model.get(HistoryClustersItemProperties.LABEL));
+        } else if (key == HistoryClustersItemProperties.TITLE) {
+            clusterView.setTitle(model.get(HistoryClustersItemProperties.TITLE));
         }
     }
 }
