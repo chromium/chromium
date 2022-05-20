@@ -50,16 +50,27 @@ var allTests = [
     desktop.removeEventListener(
         chrome.automation.EventType.FOCUS, focusHandler);
 
-    // This sends an enableDesktop call, which should be processed after the
-    // disableDesktop request.
+    // This does get the current desktop as well, prior to disabling. Doing this
+    // checks that repeated calls still work prior to the disable coming
+    // through.
     const newDesktop = await new Promise(r => chrome.automation.getDesktop(r));
 
-    // Finally, both |desktop| and |newDesktop| should be valid and refer to the
+    // Both |desktop| and |newDesktop| should be valid and refer to the
     // same tree.
     assertTrue(!!desktop);
     assertTrue(!!newDesktop);
     assertEq(newDesktop, desktop);
     assertEq(chrome.automation.RoleType.DESKTOP, newDesktop.role);
+
+    // Finally, the disabling above (from removing the event listeners) comes
+    // some time later. Wait for it so that it does not impact other tests.
+    await new Promise(r => {
+      setInterval(() => {
+        if (desktop.role === undefined) {
+          r();
+        }
+      }, 100);
+    });
 
     chrome.test.succeed();
   },
@@ -68,8 +79,16 @@ var allTests = [
     const desktop = await new Promise(r => chrome.automation.getDesktop(r));
     assertTrue(!!desktop);
 
-    const button = desktop.find({role: chrome.automation.RoleType.BUTTON});
+    const button = await new Promise(r => {
+      setInterval(() => {
+        let node;
+        if (node = findAutomationNode(desktop, n => n.name === 'remove')) {
+          r(node);
+        }
+      }, 100);
+    });
     assertTrue(!!button);
+    assertEq('remove', button.name);
 
     // Adding a listener should have no effect.
     const focusHandler = () => {};
@@ -93,6 +112,55 @@ var allTests = [
 
     // The tree is completely cleared.
     assertEq(undefined, desktop.role);
+    chrome.test.succeed();
+  },
+
+  // Note that these tests run on the *same* webpage, so the above test already
+  // removed/hide one of the buttons.
+  async function testWindowClose() {
+    const desktop = await new Promise(r => chrome.automation.getDesktop(r));
+    assertTrue(!!desktop);
+
+    const button = await new Promise(r => {
+      setInterval(() => {
+        let node;
+        if (node = findAutomationNode(desktop, n => n.name === 'close')) {
+          r(node);
+        }
+      }, 100);
+    });
+    assertTrue(!!button);
+    assertEq('close', button.name);
+
+    // Adding a listener should have no effect.
+    const focusHandler = () => {};
+    button.addEventListener(chrome.automation.EventType.FOCUS, focusHandler);
+    assertEq(chrome.automation.RoleType.DESKTOP, desktop.role);
+
+    // The click/do default action triggers the window to close.
+    button.doDefault();
+
+    // We can't add event listeners to observe the deletions as to not trigger
+    // adds, so poll for the change.
+    await new Promise(r => {
+      const checkForButton = () => {
+        if (button.role === undefined) {
+          r();
+          clearInterval(id);
+        }
+      };
+      const id = setInterval(checkForButton, 10);
+    });
+
+    // The tree is completely cleared after some time.
+    await new Promise(r => {
+      setInterval(() => {
+        if (desktop.role === undefined) {
+          r();
+        }
+      }, 100);
+    });
+
     chrome.test.succeed();
   }
 ];
