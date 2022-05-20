@@ -144,7 +144,7 @@ void ScreenshotCapturedBubble::Init() {
       views::Builder<views::MdTextButton>()
           .SetCallback(
               base::BindRepeating(&ScreenshotCapturedBubble::EditButtonPressed,
-                                  base::Unretained(this)))
+                                  weak_factory_.GetWeakPtr()))
           .SetText(l10n_util::GetStringUTF16(
               IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -154,7 +154,7 @@ void ScreenshotCapturedBubble::Init() {
       views::Builder<views::MdTextButton>()
           .SetCallback(base::BindRepeating(
               &ScreenshotCapturedBubble::DownloadButtonPressed,
-              base::Unretained(this)))
+              weak_factory_.GetWeakPtr()))
           .SetText(l10n_util::GetStringUTF16(
               IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_DOWNLOAD_BUTTON_LABEL))
           .SetHorizontalAlignment(gfx::ALIGN_RIGHT)
@@ -293,7 +293,9 @@ void ScreenshotCapturedBubble::NavigateToImageEditor(
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
-  std::move(edit_callback_).Run(&params);
+  if (edit_callback_) {
+    std::move(edit_callback_).Run(&params);
+  }
 }
 
 // Calculates the size of the image with padding.
