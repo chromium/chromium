@@ -19,13 +19,10 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.ui.widget.Toast;
 
@@ -199,62 +196,7 @@ public class SyncSettingsUtils {
      * Return a short summary of the current sync status.
      */
     public static String getSyncStatusSummary(Context context) {
-        if (!IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
-            // There is no account with sync consent available.
-            return context.getString(R.string.sync_off);
-        }
-
-        SyncService syncService = SyncService.get();
-        if (syncService == null) {
-            return context.getString(R.string.sync_off);
-        }
-
-        if (syncService.isSyncDisabledByEnterprisePolicy()) {
-            return context.getString(R.string.sync_is_disabled_by_administrator);
-        }
-
-        if (!syncService.isFirstSetupComplete()) {
-            return context.getString(R.string.sync_settings_not_confirmed);
-        }
-
-        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
-            return getSyncStatusSummaryForAuthError(context, syncService.getAuthError());
-        }
-
-        if (syncService.requiresClientUpgrade()) {
-            return context.getString(
-                    R.string.sync_error_upgrade_client, BuildInfo.getInstance().hostPackageLabel);
-        }
-
-        if (syncService.hasUnrecoverableError()) {
-            return context.getString(R.string.sync_error_generic);
-        }
-
-        if (!syncService.isSyncRequested()) {
-            return context.getString(R.string.sync_data_types_off);
-        }
-
-        if (!syncService.isSyncFeatureActive()) {
-            return context.getString(R.string.sync_setup_progress);
-        }
-
-        if (syncService.isPassphraseRequiredForPreferredDataTypes()) {
-            return context.getString(R.string.sync_need_passphrase);
-        }
-
-        if (syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
-            return syncService.isEncryptEverythingEnabled()
-                    ? context.getString(R.string.sync_error_card_title)
-                    : context.getString(R.string.password_sync_error_summary);
-        }
-
-        if (syncService.isTrustedVaultRecoverabilityDegraded()) {
-            return context.getString(R.string.sync_needs_verification_title);
-        }
-
-        return context.getString(R.string.sync_on);
+        return context.getString(R.string.sync_off);
     }
 
     /**
@@ -288,25 +230,7 @@ public class SyncSettingsUtils {
      * Returns an icon that represents the current sync state.
      */
     public static @Nullable Drawable getSyncStatusIcon(Context context) {
-        if (!IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount(ConsentLevel.SYNC)) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
-        }
-
-        SyncService syncService = SyncService.get();
-        if (syncService == null || !syncService.isSyncRequested()) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
-        }
-        if (syncService.isSyncDisabledByEnterprisePolicy()) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
-        }
-
-        if (getSyncError() != SyncError.NO_ERROR) {
-            return AppCompatResources.getDrawable(context, R.drawable.ic_sync_error_48dp);
-        }
-
-        return AppCompatResources.getDrawable(context, R.drawable.ic_sync_on_48dp);
+        return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
     }
 
     /**

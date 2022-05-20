@@ -14,17 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
 import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,10 +102,6 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
      */
     @Override
     protected String findOwnerEmail() {
-        CoreAccountInfo coreAccountInfo = getCoreAccountInfo();
-        if (coreAccountInfo != null) {
-            return coreAccountInfo.getEmail();
-        }
         final @Nullable Account defaultAccount = AccountUtils.getDefaultAccountIfFulfilled(
                 AccountManagerFacadeProvider.getInstance().getAccounts());
         return defaultAccount != null ? defaultAccount.name : null;
@@ -136,9 +127,6 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     private ContactDetails constructOwnerInfo(String ownerEmail) {
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(ownerEmail);
         String name = profileData.getFullNameOrEmail();
-        if (TextUtils.isEmpty(name) || TextUtils.equals(name, ownerEmail)) {
-            name = CoreAccountInfo.getEmailFrom(getCoreAccountInfo());
-        }
 
         ContactDetails contact = new ContactDetails(ContactDetails.SELF_CONTACT_ID, name,
                 Collections.singletonList(ownerEmail), /*phoneNumbers=*/null, /*addresses=*/null);
@@ -148,11 +136,4 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         return contact;
     }
 
-    private CoreAccountInfo getCoreAccountInfo() {
-        // Since this is read-only operation to obtain email address, always using regular profile
-        // for both regular and off-the-record profile is safe.
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-    }
 }

@@ -57,17 +57,6 @@ public class AutofillAssistantClient {
      */
     private boolean mAccountInitialized;
 
-    /**
-     * Account that was used to initiate AutofillAssistant.
-     *
-     * <p>This account is used to  authenticate when sending RPCs and as default account for Payment
-     * Request. Not relevant until the accounts have been fetched, and mAccountInitialized set to
-     * true. Can still be null after the accounts are fetched, in which case authentication is
-     * disabled.
-     */
-    @Nullable
-    private Account mAccount;
-
     /** If set, fetch the access token once the accounts are fetched. */
     private boolean mShouldFetchAccessToken;
 
@@ -212,60 +201,6 @@ public class AutofillAssistantClient {
     private void chooseAccountAsyncIfNecessary(@Nullable String userName) {
         if (mAccountInitializationStarted) return;
         mAccountInitializationStarted = true;
-
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            if (mNativeClientAndroid == 0) return;
-            if (accounts.size() == 1) {
-                // If there's only one account, there aren't any doubts.
-                onAccountChosen(accounts.get(0));
-                return;
-            }
-            Account signedIn = findAccountByName(accounts,
-                    AutofillAssistantClientJni.get().getPrimaryAccountName(
-                            mNativeClientAndroid, AutofillAssistantClient.this));
-            if (signedIn != null) {
-                // TODO(crbug.com/806868): Compare against account name from extras and complain if
-                // they don't match.
-                onAccountChosen(signedIn);
-                return;
-            }
-
-            if (userName != null) {
-                Account account = findAccountByName(accounts, userName);
-                if (account != null) {
-                    onAccountChosen(account);
-                    return;
-                }
-            }
-            onAccountChosen(null);
-        });
-    }
-
-    private void onAccountChosen(@Nullable Account account) {
-        mAccount = account;
-        mAccountInitialized = true;
-        // TODO(crbug.com/806868): Consider providing a way of signing in this case, to enforce
-        // that all calls are authenticated.
-
-        if (mShouldFetchAccessToken) {
-            mShouldFetchAccessToken = false;
-            fetchAccessToken();
-        }
-
-        if (mShouldFetchPaymentsClientToken) {
-            mShouldFetchPaymentsClientToken = false;
-            fetchPaymentsClientToken();
-        }
-    }
-
-    private static Account findAccountByName(List<Account> accounts, String name) {
-        for (int i = 0; i < accounts.size(); i++) {
-            Account account = accounts.get(i);
-            if (account.name.equals(name)) {
-                return account;
-            }
-        }
-        return null;
     }
 
     @CalledByNative
@@ -275,46 +210,21 @@ public class AutofillAssistantClient {
             mShouldFetchAccessToken = true;
             return;
         }
-        if (mAccount == null) {
-            if (mNativeClientAndroid != 0) {
-                AutofillAssistantClientJni.get().onAccessToken(
-                        mNativeClientAndroid, AutofillAssistantClient.this, true, "");
-            }
-            return;
+        if (mNativeClientAndroid != 0) {
+            AutofillAssistantClientJni.get().onAccessToken(
+                    mNativeClientAndroid, AutofillAssistantClient.this, true, "");
         }
-
-        mAccessTokenUtil.getAccessToken(mAccount, new IdentityManager.GetAccessTokenCallback() {
-            @Override
-            public void onGetTokenSuccess(AccessTokenData token) {
-                if (mNativeClientAndroid != 0) {
-                    AutofillAssistantClientJni.get().onAccessToken(mNativeClientAndroid,
-                            AutofillAssistantClient.this, true, token.getToken());
-                }
-            }
-
-            @Override
-            public void onGetTokenFailure(boolean isTransientError) {
-                if (!isTransientError && mNativeClientAndroid != 0) {
-                    AutofillAssistantClientJni.get().onAccessToken(
-                            mNativeClientAndroid, AutofillAssistantClient.this, false, "");
-                }
-            }
-        });
     }
 
     @CalledByNative
     private void invalidateAccessToken(String accessToken) {
-        if (mAccount == null) {
-            return;
-        }
 
-        mAccessTokenUtil.invalidateAccessToken(accessToken);
     }
 
     /** Returns the e-mail address that corresponds to the access token or an empty string. */
     @CalledByNative
     private String getEmailAddressForAccessTokenAccount() {
-        return mAccount != null ? mAccount.name : "";
+        return "";
     }
 
     @CalledByNative
@@ -328,28 +238,9 @@ public class AutofillAssistantClient {
             return;
         }
         byte[] emptyToken = new byte[0];
-        if (mAccount == null) {
-            // If there is no account, send an empty token.
-            AutofillAssistantClientJni.get().onPaymentsClientToken(
-                    mNativeClientAndroid, AutofillAssistantClient.this, emptyToken);
-            return;
-        }
-
-        Activity activity =
-                AutofillAssistantClientJni.get()
-                        .getDependencies(mNativeClientAndroid, AutofillAssistantClient.this)
-                        .getActivity();
-        if (activity == null) {
-            // We require an activity to retrieve the token.
-            AutofillAssistantClientJni.get().onPaymentsClientToken(
-                    mNativeClientAndroid, AutofillAssistantClient.this, emptyToken);
-            return;
-        }
-        GmsIntegrator gmsIntegrator = new GmsIntegrator(mAccount.name, activity);
-        gmsIntegrator.getClientToken((Callback<byte[]>) result -> {
-            AutofillAssistantClientJni.get().onPaymentsClientToken(mNativeClientAndroid,
-                    AutofillAssistantClient.this, result == null ? emptyToken : result);
-        });
+        // If there is no account, send an empty token.
+        AutofillAssistantClientJni.get().onPaymentsClientToken(
+                mNativeClientAndroid, AutofillAssistantClient.this, emptyToken);
     }
 
     /** Returns the android version of the device. */

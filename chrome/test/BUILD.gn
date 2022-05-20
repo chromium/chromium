@@ -5713,7 +5713,6 @@ test("unit_tests") {
   if (is_android) {
     sources += [
       "../browser/android/bookmarks/partner_bookmarks_shim_unittest.cc",
-      "../browser/android/chrome_backup_agent_unittest.cc",
       "../browser/android/compositor/layer/tab_layer_unittest.cc",
       "../browser/android/contextualsearch/contextual_search_delegate_unittest.cc",
       "../browser/android/contextualsearch/contextual_search_field_trial_unittest.cc",
@@ -5748,10 +5747,7 @@ test("unit_tests") {
       "../browser/android/oom_intervention/near_oom_reduction_message_delegate_unittest.cc",
       "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",
       "../browser/android/search_permissions/search_permissions_service_unittest.cc",
-      "../browser/android/signin/signin_manager_android_unittest.cc",
       "../browser/android/signin/web_signin_bridge_unittest.cc",
-      "../browser/android/survey/http_client_type_unittest.cc",
-      "../browser/android/survey/survey_http_client_unittest.cc",
       "../browser/android/url_param_filter/cross_otr_observer_android_unittest.cc",
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",
       "../browser/android/webapk/webapk_installer_unittest.cc",

@@ -82,14 +82,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public Account[] getAccounts() {
-        if (hasGetAccountsPermission() && isGooglePlayServicesAvailable()) {
-            long startTime = SystemClock.elapsedRealtime();
-            Account[] accounts =
-                    mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-            RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountsTime_AccountManager",
-                    SystemClock.elapsedRealtime() - startTime);
-            return accounts;
-        }
         // Account seeding relies on GoogleAuthUtil.getAccountId to get GAIA ids,
         // so don't report any accounts if Google Play Services are out of date.
         return new Account[] {};
@@ -115,13 +107,7 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public void invalidateAuthToken(String authToken) throws AuthException {
-        try {
-            GoogleAuthUtil.clearToken(ContextUtils.getApplicationContext(), authToken);
-        } catch (GoogleAuthException ex) {
-            throw new AuthException(AuthException.NONTRANSIENT, ex);
-        } catch (IOException ex) {
-            throw new AuthException(AuthException.TRANSIENT, ex);
-        }
+
     }
 
     @Override
@@ -207,10 +193,6 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
             Log.e(TAG, "SystemAccountManagerDelegate.getAccountGaiaId", ex);
             return null;
         }
-    }
-
-    protected boolean isGooglePlayServicesAvailable() {
-        return ExternalAuthUtils.getInstance().canUseGooglePlayServices();
     }
 
     protected boolean hasGetAccountsPermission() {

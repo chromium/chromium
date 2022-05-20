@@ -119,7 +119,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
-import org.chromium.chrome.browser.survey.ChromeSurveyController;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -174,7 +173,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -1742,9 +1740,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     "MemoryAndroid.DeviceMemoryClass", am.getMemoryClass());
 
             LauncherShortcutActivity.updateIncognitoShortcut(ChromeTabbedActivity.this);
-
-            ChromeSurveyController.initialize(mTabModelSelector, getLifecycleDispatcher(),
-                    ChromeTabbedActivity.this, MessageDispatcherProvider.from(getWindowAndroid()));
 
             if (mStartSurfaceSupplier.get() != null) {
                 // The tab switcher is not the layout shown on startup, so wait until it is shown

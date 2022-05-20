@@ -8,20 +8,17 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.net.NetworkTrafficAnnotationTag;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -156,9 +153,7 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
 
     @VisibleForTesting
     protected boolean isSignedIn() {
-        return IdentityServicesProvider.get()
-                .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount(ConsentLevel.SYNC);
+        return false;
     }
 
     @VisibleForTesting

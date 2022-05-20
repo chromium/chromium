@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
-
 import android.accounts.Account;
 import android.content.Context;
 import android.content.Intent;
@@ -27,32 +25,25 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
+
 /**
  * Service for state tracking and event delivery to classes that need to observe the state
  * of Assistant Voice Search.
  **/
 public class AssistantVoiceSearchService implements TemplateUrlService.TemplateUrlServiceObserver,
-                                                    IdentityManager.Observer,
                                                     AccountsChangeObserver {
     @VisibleForTesting
     static final String STARTUP_HISTOGRAM_SUFFIX = ".Startup";
@@ -118,7 +109,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     private final TemplateUrlService mTemplateUrlService;
     private final GSAState mGsaState;
     private final SharedPreferencesManager mSharedPrefsManager;
-    private final IdentityManager mIdentityManager;
     private final AccountManagerFacade mAccountManagerFacade;
 
     private boolean mIsDefaultSearchEngineGoogle;
@@ -132,7 +122,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             @NonNull ExternalAuthUtils externalAuthUtils,
             @NonNull TemplateUrlService templateUrlService, @NonNull GSAState gsaState,
             @Nullable Observer observer, @NonNull SharedPreferencesManager sharedPrefsManager,
-            @NonNull IdentityManager identityManager,
             @NonNull AccountManagerFacade accountManagerFacade) {
         mContext = context;
         mExternalAuthUtils = externalAuthUtils;
@@ -140,18 +129,15 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         mGsaState = gsaState;
         mSharedPrefsManager = sharedPrefsManager;
         mObserver = observer;
-        mIdentityManager = identityManager;
         mAccountManagerFacade = accountManagerFacade;
 
         mAccountManagerFacade.addObserver(this);
-        mIdentityManager.addObserver(this);
         mTemplateUrlService.addObserver(this);
         initializeAssistantVoiceSearchState();
     }
 
     public void destroy() {
         mTemplateUrlService.removeObserver(this);
-        mIdentityManager.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
     }
 
@@ -304,11 +290,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             outList.add(EligibilityFailureReason.NON_GOOGLE_SEARCH_ENGINE);
         }
 
-        if (!mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
-            if (returnImmediately) return false;
-            outList.add(EligibilityFailureReason.NO_CHROME_ACCOUNT);
-        }
-
         if (SysUtils.isLowEndDevice()) {
             if (returnImmediately) return false;
             outList.add(EligibilityFailureReason.LOW_END_DEVICE);
@@ -333,8 +314,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     /** Return the current user email or null if no account is present. */
     public @Nullable String getUserEmail() {
-        CoreAccountInfo info = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-        return info == null ? null : info.getEmail();
+        return null;
     }
 
     /**
@@ -357,14 +337,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * See reportUserEligibility for details on which histograms are recorded.
      */
     public static void reportStartupUserEligibility(Context context) {
-        AssistantVoiceSearchService service =
-                new AssistantVoiceSearchService(context, ExternalAuthUtils.getInstance(),
-                        TemplateUrlServiceFactory.get(), GSAState.getInstance(context),
-                        /*observer=*/null, SharedPreferencesManager.getInstance(),
-                        IdentityServicesProvider.get().getIdentityManager(
-                                Profile.getLastUsedRegularProfile()),
-                        AccountManagerFacadeProvider.getInstance());
-        service.reportUserEligibility(STARTUP_HISTOGRAM_SUFFIX);
     }
 
     /**
@@ -435,13 +407,6 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         mIsDefaultSearchEngineGoogle = searchEngineGoogle;
         mShouldShowColorfulButtons = isColorfulMicEnabled();
         notifyObserver();
-    }
-
-    // IdentityManager.Observer implementation
-
-    @Override
-    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        updateColorfulMicState();
     }
 
     // AccountsChangeObserver implementation

@@ -42,7 +42,6 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
 
  private:
   std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
-  std::unique_ptr<android::ChromeBackupWatcher> backup_watcher_;
   std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
 };
 

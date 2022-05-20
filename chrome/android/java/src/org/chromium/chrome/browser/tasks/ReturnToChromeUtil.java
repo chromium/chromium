@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -49,7 +48,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -559,11 +557,7 @@ public final class ReturnToChromeUtil {
      * Caches the status of whether the primary account is synced.
      */
     public static void cachePrimaryAccountSyncStatus() {
-        boolean isPrimaryAccountSync =
-                IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .getIdentityManager()
-                        .hasPrimaryAccount(ConsentLevel.SYNC);
+        boolean isPrimaryAccountSync = false;
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isPrimaryAccountSync);
     }

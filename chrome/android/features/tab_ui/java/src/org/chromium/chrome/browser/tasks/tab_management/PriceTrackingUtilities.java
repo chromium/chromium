@@ -12,12 +12,10 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.ModelType;
 
 import java.util.concurrent.TimeUnit;
@@ -212,9 +210,7 @@ public class PriceTrackingUtilities {
     }
 
     private static boolean isSignedIn() {
-        return IdentityServicesProvider.get()
-                .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount(ConsentLevel.SYNC);
+        return false;
     }
 
     private static boolean isOpenTabsSyncEnabled() {

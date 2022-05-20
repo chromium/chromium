@@ -91,7 +91,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/flags/BadFlagsSnackbarManagerTest.java",
   "junit/src/org/chromium/chrome/browser/fullscreen/BrowserControlsManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerUnitTest.java",
-  "junit/src/org/chromium/chrome/browser/gcore/GoogleApiClientHelperTest.java",
   "junit/src/org/chromium/chrome/browser/gsa/GSAStateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryAdapterAccessibilityTest.java",
   "junit/src/org/chromium/chrome/browser/history/HistoryAdapterTest.java",

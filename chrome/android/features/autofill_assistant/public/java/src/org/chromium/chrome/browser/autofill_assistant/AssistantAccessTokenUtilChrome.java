@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.accounts.Account;
 
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill_assistant.AssistantAccessTokenUtil;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -21,16 +19,12 @@ public class AssistantAccessTokenUtilChrome implements AssistantAccessTokenUtil 
 
     @Override
     public void getAccessToken(Account account, IdentityManager.GetAccessTokenCallback callback) {
-        getIdentityManager().getAccessToken(account, AUTH_TOKEN_TYPE, callback);
+
     }
 
     @Override
     public void invalidateAccessToken(String accessToken) {
-        getIdentityManager().invalidateAccessToken(accessToken);
+
     }
 
-    private IdentityManager getIdentityManager() {
-        return IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
-    }
 }

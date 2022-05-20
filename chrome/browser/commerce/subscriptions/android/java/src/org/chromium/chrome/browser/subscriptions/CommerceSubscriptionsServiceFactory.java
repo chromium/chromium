@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,8 +61,7 @@ public class CommerceSubscriptionsServiceFactory {
         Profile profile = Profile.getLastUsedRegularProfile();
         CommerceSubscriptionsService service = sProfileToSubscriptionsService.get(profile);
         if (service == null) {
-            service = new CommerceSubscriptionsService(new SubscriptionsManagerImpl(profile),
-                    IdentityServicesProvider.get().getIdentityManager(profile));
+            service = new CommerceSubscriptionsService(new SubscriptionsManagerImpl(profile));
             sProfileToSubscriptionsService.put(profile, service);
         }
         return service;

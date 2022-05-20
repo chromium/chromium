@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
-import static org.chromium.chrome.browser.payments.ui.PaymentRequestSection.EDIT_BUTTON_GONE;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -45,7 +43,6 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSecti
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.SectionSeparator;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService.PaymentUisShowStateReconciler;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
@@ -54,9 +51,6 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -67,6 +61,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.chromium.chrome.browser.payments.ui.PaymentRequestSection.EDIT_BUTTON_GONE;
 
 /**
  * The PaymentRequest UI.
@@ -1165,12 +1161,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
     /** @return The email of signed in user or null. */
     @Nullable
     private String getEmail() {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        if (identityManager == null) return null;
-        CoreAccountInfo info = identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
-        if (info == null) return null;
-        return info.getEmail();
+        return null;
     }
 
     private Callback<SectionInformation> createUpdateSectionCallback(@DataType final int type) {

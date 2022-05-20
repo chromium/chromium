@@ -2634,10 +2634,6 @@ static_library("browser") {
       "android/browsing_data/browsing_data_counter_bridge.h",
       "android/browsing_data/url_filter_bridge.cc",
       "android/browsing_data/url_filter_bridge.h",
-      "android/chrome_backup_agent.cc",
-      "android/chrome_backup_agent.h",
-      "android/chrome_backup_watcher.cc",
-      "android/chrome_backup_watcher.h",
       "android/chrome_power_mode_voter.cc",
       "android/chrome_startup_flags.cc",
       "android/chrome_startup_flags.h",
@@ -2859,20 +2855,12 @@ static_library("browser") {
       "android/signin/fre_mobile_identity_consistency_field_trial.h",
       "android/signin/signin_bridge.cc",
       "android/signin/signin_bridge.h",
-      "android/signin/signin_manager_android.cc",
-      "android/signin/signin_manager_android.h",
       "android/signin/signin_metrics_utils.cc",
       "android/signin/unified_consent_service_bridge.cc",
       "android/signin/web_signin_bridge.cc",
       "android/signin/web_signin_bridge.h",
       "android/startup_bridge.cc",
       "android/startup_bridge.h",
-      "android/survey/http_client_type.cc",
-      "android/survey/http_client_type.h",
-      "android/survey/survey_http_client.cc",
-      "android/survey/survey_http_client.h",
-      "android/survey/survey_http_client_bridge.cc",
-      "android/survey/survey_http_client_bridge.h",
       "android/tab_android.cc",
       "android/tab_android.h",
       "android/tab_android_user_data.h",
@@ -3234,9 +3222,6 @@ static_library("browser") {
       "sharing/sms/sms_fetch_request_handler.cc",
       "sharing/sms/sms_fetch_request_handler.h",
       "shell_integration_android.cc",
-      "signin/identity_services_provider_android.cc",
-      "signin/signin_manager_android_factory.cc",
-      "signin/signin_manager_android_factory.h",
       "ssl/chrome_security_state_client.cc",
       "ssl/chrome_security_state_client.h",
       "ssl/chrome_security_state_model_delegate.cc",
@@ -7967,9 +7952,6 @@ if (is_android) {
     sources = [ "sharing/sharing_metrics.h" ]
   }
 
-  java_cpp_enum("survey_http_client_type_enum") {
-    sources = [ "android/survey/http_client_type.h" ]
-  }
 }
 
 if (!is_android) {

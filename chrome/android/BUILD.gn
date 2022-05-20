@@ -22,8 +22,6 @@ import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/android/monochrome_android_manifest_jinja_variables.gni")
 import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
 import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
-import(
-    "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
 import("//chrome/browser/password_manager/buildflags.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
@@ -227,7 +225,6 @@ android_resources("chrome_app_java_resources") {
     "//chrome/browser/ui/android/favicon:java_resources",
     "//chrome/browser/ui/android/management:java_resources",
     "//chrome/browser/ui/android/omnibox:java_resources",
-    "//chrome/browser/ui/android/signin:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/theme:java_resources",
     "//chrome/browser/ui/android/toolbar:java_resources",
@@ -419,7 +416,6 @@ android_library("chrome_java") {
     "//chrome/browser/ui/android/multiwindow:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",
-    "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",
@@ -641,7 +637,6 @@ android_library("chrome_java") {
     "//chrome:supervised_user_url_filter_enum_javagen",
     "//chrome/browser:sharing_dialog_type_generated_enum",
     "//chrome/browser:sharing_send_message_result_generated_enum",
-    "//chrome/browser:survey_http_client_type_enum",
     "//chrome/browser/notifications/scheduler/public:jni_enums",
     "//chrome/browser/supervised_user/supervised_user_error_page:enums_srcjar",
     "//chrome/browser/ui:duplicate_download_enums_java",
@@ -1802,7 +1797,6 @@ android_library("base_module_java") {
     "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
     "java/src/org/chromium/chrome/app/TrichromeZygotePreload.java",
     "java/src/org/chromium/chrome/browser/ChromeBackgroundService.java",
-    "java/src/org/chromium/chrome/browser/ChromeBackupAgent.java",
     "java/src/org/chromium/chrome/browser/DeferredStartupHandler.java",
     "java/src/org/chromium/chrome/browser/app/bluetooth/BluetoothNotificationService.java",
     "java/src/org/chromium/chrome/browser/base/DexFixer.java",
@@ -2651,8 +2645,6 @@ generate_jni("chrome_jni_headers") {
     # files, so include these files in chrome_jni_headers.
     "java/src/org/chromium/chrome/browser/AppHooks.java",
     "java/src/org/chromium/chrome/browser/ApplicationLifetime.java",
-    "java/src/org/chromium/chrome/browser/ChromeBackupAgentImpl.java",
-    "java/src/org/chromium/chrome/browser/ChromeBackupWatcher.java",
     "java/src/org/chromium/chrome/browser/ChromePowerModeVoter.java",
     "java/src/org/chromium/chrome/browser/DevToolsServer.java",
     "java/src/org/chromium/chrome/browser/IntentHandler.java",
@@ -2825,10 +2817,8 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/sharing/shared_clipboard/SharedClipboardMessageHandler.java",
     "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
     "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",
-    "java/src/org/chromium/chrome/browser/signin/SigninManagerImpl.java",
     "java/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridge.java",
     "java/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridge.java",
     "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
     "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
     "java/src/org/chromium/chrome/browser/tab/TabFavicon.java",

@@ -11,7 +11,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/android/chrome_backup_watcher.h"
 #include "chrome/browser/android/mojo/chrome_interface_registrar_android.h"
 #include "chrome/browser/android/preferences/clipboard_android.h"
 #include "chrome/browser/android/seccomp_support_detector.h"
@@ -70,10 +69,6 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
   // once per profile load), that's okay; the additional calls don't change
   // anything.
   android::InitClipboardAndroidFromLocalState(g_browser_process->local_state());
-
-  // Start watching the preferences that need to be backed up backup using
-  // Android backup, so that we create a new backup if they change.
-  backup_watcher_ = std::make_unique<android::ChromeBackupWatcher>(profile);
 
   // The GCM driver can be used at this point because the primary profile has
   // been created. Register non-profile-specific things that use GCM so that no

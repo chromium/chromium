@@ -14,8 +14,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,8 +26,6 @@ public class CommerceSubscriptionsService {
             ChromePreferenceKeys.COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP;
 
     private final SubscriptionsManagerImpl mSubscriptionManager;
-    private final IdentityManager mIdentityManager;
-    private final IdentityManager.Observer mIdentityManagerObserver;
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
     private final CommerceSubscriptionsMetrics mMetrics;
@@ -39,16 +35,9 @@ public class CommerceSubscriptionsService {
 
     /** Creates a new instance. */
     CommerceSubscriptionsService(
-            SubscriptionsManagerImpl subscriptionsManager, IdentityManager identityManager) {
+            SubscriptionsManagerImpl subscriptionsManager) {
         mSubscriptionManager = subscriptionsManager;
-        mIdentityManager = identityManager;
-        mIdentityManagerObserver = new IdentityManager.Observer() {
-            @Override
-            public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-                mSubscriptionManager.onIdentityChanged();
-            }
-        };
-        mIdentityManager.addObserver(mIdentityManagerObserver);
+
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mPriceDropNotificationManager = new PriceDropNotificationManager();
         mMetrics = new CommerceSubscriptionsMetrics();
@@ -85,7 +74,6 @@ public class CommerceSubscriptionsService {
      * Cleans up internal resources. Currently this method calls SubscriptionsManagerImpl#destroy.
      */
     public void destroy() {
-        mIdentityManager.removeObserver(mIdentityManagerObserver);
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
         }

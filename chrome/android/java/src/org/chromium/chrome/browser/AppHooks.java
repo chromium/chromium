@@ -25,10 +25,8 @@ import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.survey.SurveyController;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -99,21 +97,6 @@ public abstract class AppHooks {
     @Nullable
     public DirectActionCoordinator createDirectActionCoordinator() {
         return null;
-    }
-
-    /**
-     * Creates a new {@link SurveyController}.
-     * @return The created {@link SurveyController}.
-     */
-    public SurveyController createSurveyController() {
-        return new SurveyController();
-    }
-
-    /**
-     * @return An instance of GoogleActivityController.
-     */
-    public GoogleActivityController createGoogleActivityController() {
-        return new GoogleActivityController();
     }
 
     /**

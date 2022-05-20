@@ -32,7 +32,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
-import org.chromium.chrome.browser.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
@@ -351,14 +350,6 @@ public class ProcessInitializationHandler {
             public void run() {
                 // Starts syncing with GSA.
                 AppHooks.get().createGsaHelper().startSync();
-            }
-        });
-
-        deferredStartupHandler.addDeferredTask(new Runnable() {
-            @Override
-            public void run() {
-                // Record the saved restore state in a histogram
-                ChromeBackupAgentImpl.recordRestoreHistogram();
             }
         });
 

@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -299,8 +298,6 @@ class LocationBarMediator
         mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
                 ExternalAuthUtils.getInstance(), templateUrlService, GSAState.getInstance(mContext),
                 this, SharedPreferencesManager.getInstance(),
-                IdentityServicesProvider.get().getIdentityManager(
-                        Profile.getLastUsedRegularProfile()),
                 AccountManagerFacadeProvider.getInstance()));
         onAssistantVoiceSearchServiceChanged();
         mLocationBarLayout.onFinishNativeInitialization();

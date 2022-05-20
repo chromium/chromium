@@ -7,8 +7,6 @@ import("//chrome/android/chrome_java_sources.gni")
 import("//chrome/android/chrome_junit_test_java_sources.gni")
 import("//chrome/android/features/autofill_assistant/public/java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
-import(
-    "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
 import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
@@ -29,9 +27,6 @@ if (enable_offline_pages_harness) {
 if (enable_supervised_users) {
   chrome_java_sources += [ "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java" ]
 }
-
-chrome_junit_test_java_sources += commerce_subscriptions_junit_test_sources
-chrome_junit_test_java_deps = commerce_subscriptions_junit_test_deps
 
 if (enable_arcore) {
   chrome_java_sources += [
