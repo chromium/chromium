@@ -84,6 +84,46 @@ window.onload = function() {
         }));
       });
       Promise.all(promises).then(() => chrome.test.succeed());
-    }
+    },
+
+    // Verify that the requested icon size is returned.
+    async function cachedResolutions() {
+      const port = (await chrome.test.getConfig()).testServer.port;
+      const pixelsArr = [16, 32, 64, 48];
+      const promises = pixelsArr.map(pixels => {
+        return new Promise((resolve, reject) => {
+          const favicon = new Favicon({
+            pageUrl: `http://www.example.com:${
+                port}/extensions/favicon/test_file.html`,
+            size: pixels
+          });
+          const image = new Image();
+          image.src = favicon.getUrl();
+          image.onload = () => {
+            chrome.test.assertEq(pixels, image.height);
+            chrome.test.assertEq(pixels, image.width);
+            resolve();
+          }
+        });
+      });
+      Promise.all(promises).then(() => chrome.test.succeed());
+    },
+
+    // The default favicon size is 16.
+    async function defaultSize() {
+      const port = (await chrome.test.getConfig()).testServer.port;
+      const expected = 16;
+      const favicon = new Favicon({
+        pageUrl:
+            `http://www.example.com:${port}/extensions/favicon/test_file.html`
+      });
+      const image = new Image();
+      image.src = favicon.getUrl();
+      image.onload = () => {
+        chrome.test.assertEq(expected, image.height);
+        chrome.test.assertEq(expected, image.width);
+        chrome.test.succeed();
+      }
+    },
   ]);
 }
