@@ -55,8 +55,14 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
   }
 
   BOOL is_page_printable = [web_state->GetView() viewPrintFormatter] != nil;
+
+  // Thumbnail should not be generated for incognito tabs.
   ChromeActivityItemThumbnailGenerator* thumbnail_generator =
-      [[ChromeActivityItemThumbnailGenerator alloc] initWithWebState:web_state];
+      web_state->GetBrowserState()->IsOffTheRecord()
+          ? nil
+          : [[ChromeActivityItemThumbnailGenerator alloc]
+                initWithWebState:web_state];
+
   const GURL& finalURLToShare =
       !share_url.is_empty() ? share_url : web_state->GetVisibleURL();
   web::NavigationItem* visibleItem =
