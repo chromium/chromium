@@ -22,8 +22,13 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/cookies/site_for_cookies.h"
+#include "pdf/content_restriction.h"
+#include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_ready_rect.h"
+#include "pdf/pdf_view_plugin_base.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -285,10 +290,29 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
   MOCK_METHOD(bool, HasFrame, (), (const override));
 
-  MOCK_METHOD(blink::WebLocalFrameClient*,
-              GetWebLocalFrameClient,
-              (),
+  MOCK_METHOD(void, DidStartLoading, (), (override));
+  MOCK_METHOD(void, DidStopLoading, (), (override));
+
+  MOCK_METHOD(void, RecordComputedAction, (const std::string&), (override));
+};
+
+class FakePdfService : public pdf::mojom::PdfService {
+ public:
+  MOCK_METHOD(void,
+              SetListener,
+              (mojo::PendingRemote<pdf::mojom::PdfListener>),
               (override));
+  MOCK_METHOD(void, UpdateContentRestrictions, (int32_t), (override));
+  MOCK_METHOD(void, HasUnsupportedFeature, (), (override));
+  MOCK_METHOD(void,
+              SaveUrlAs,
+              (const GURL&, network::mojom::ReferrerPolicy),
+              (override));
+  MOCK_METHOD(void,
+              SelectionChanged,
+              (const gfx::PointF&, int32_t, const gfx::PointF&, int32_t),
+              (override));
+  MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
 };
 
 }  // namespace
@@ -300,6 +324,15 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
   struct PluginDeleter {
     void operator()(PdfViewWebPlugin* ptr) { ptr->Destroy(); }
   };
+
+  static void AddToPluginParams(base::StringPiece name,
+                                base::StringPiece value,
+                                blink::WebPluginParams& params) {
+    params.attribute_names.push_back(
+        blink::WebString::FromUTF8(name.data(), name.size()));
+    params.attribute_values.push_back(
+        blink::WebString::FromUTF8(value.data(), value.size()));
+  }
 
   void SetUpPlugin(base::StringPiece document_url,
                    const blink::WebPluginParams& params) {
@@ -321,23 +354,33 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
         });
     SetUpClient();
 
-    mojo::AssociatedRemote<pdf::mojom::PdfService> unbound_remote;
     plugin_ =
         std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(new PdfViewWebPlugin(
-            std::move(client), std::move(unbound_remote), params));
+            std::move(client),
+            mojo::AssociatedRemote<pdf::mojom::PdfService>(
+                pdf_receiver_.BindNewEndpointAndPassDedicatedRemote()),
+            params));
   }
 
   void SetUpPluginWithUrl(const std::string& url) {
     blink::WebPluginParams params;
-    params.attribute_names.push_back("src");
-    params.attribute_values.push_back(blink::WebString::FromUTF8(url));
+    AddToPluginParams("src", url, params);
+    SetUpPluginParams(params);
+
     SetUpPlugin(url, params);
   }
+
+  // Allows derived classes to customize plugin parameters within
+  // `SetUpPluginWithUrl()`.
+  virtual void SetUpPluginParams(blink::WebPluginParams& params) {}
 
   // Allows derived classes to customize `client_ptr_` within `SetUpPlugin()`.
   virtual void SetUpClient() {}
 
   void TearDown() override { plugin_.reset(); }
+
+  NiceMock<FakePdfService> pdf_service_;
+  mojo::AssociatedReceiver<pdf::mojom::PdfService> pdf_receiver_{&pdf_service_};
 
   raw_ptr<FakePdfViewWebPluginClient> client_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
@@ -450,6 +493,13 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
   gfx::Canvas canvas_{kCanvasSize, /*image_scale=*/1.0f, /*is_opaque=*/true};
 };
 
+class PdfViewWebPluginFullFrameTest : public PdfViewWebPluginTest {
+ protected:
+  void SetUpPluginParams(blink::WebPluginParams& params) override {
+    AddToPluginParams("full-frame", "full-frame", params);
+  }
+};
+
 TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
   SetUpPluginWithUrl("http://localhost/example.pdf");
 
@@ -499,6 +549,65 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, InitializeForPrintPreview) {
   EXPECT_CALL(*client_ptr_, CreateAssociatedURLLoader).Times(0);
 
   EXPECT_TRUE(plugin_->InitializeForTesting());
+}
+
+TEST_F(PdfViewWebPluginTest, CreateUrlLoader) {
+  EXPECT_CALL(*client_ptr_, DidStartLoading).Times(0);
+  EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
+  plugin_->CreateUrlLoader();
+
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
+            plugin_->document_load_state_for_testing());
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest, CreateUrlLoader) {
+  EXPECT_CALL(*client_ptr_, DidStartLoading);
+  EXPECT_CALL(pdf_service_,
+              UpdateContentRestrictions(kContentRestrictionSave |
+                                        kContentRestrictionPrint));
+  plugin_->CreateUrlLoader();
+
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
+            plugin_->document_load_state_for_testing());
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest, CreateUrlLoaderMultipleTimes) {
+  plugin_->CreateUrlLoader();
+
+  EXPECT_CALL(*client_ptr_, DidStartLoading).Times(0);
+  plugin_->CreateUrlLoader();
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest, CreateUrlLoaderAfterDocumentLoadFailed) {
+  plugin_->CreateUrlLoader();
+  plugin_->DocumentLoadFailed();
+
+  EXPECT_CALL(*client_ptr_, DidStartLoading);
+  plugin_->CreateUrlLoader();
+}
+
+TEST_F(PdfViewWebPluginTest, DocumentLoadFailed) {
+  plugin_->CreateUrlLoader();
+
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadFailure"));
+  EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
+  plugin_->DocumentLoadFailed();
+
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
+            plugin_->document_load_state_for_testing());
+}
+
+TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadFailed) {
+  plugin_->CreateUrlLoader();
+
+  EXPECT_CALL(*client_ptr_, RecordComputedAction("PDF.LoadFailure"));
+  EXPECT_CALL(*client_ptr_, DidStopLoading);
+  plugin_->DocumentLoadFailed();
+
+  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
+            plugin_->document_load_state_for_testing());
 }
 
 TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {

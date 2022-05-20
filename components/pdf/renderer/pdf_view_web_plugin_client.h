@@ -70,7 +70,8 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   void UpdateSelectionBounds() override;
   std::string GetEmbedderOriginString() override;
   bool HasFrame() const override;
-  blink::WebLocalFrameClient* GetWebLocalFrameClient() override;
+  void DidStartLoading() override;
+  void DidStopLoading() override;
   void Print() override;
   void RecordComputedAction(const std::string& action) override;
   std::unique_ptr<chrome_pdf::PdfAccessibilityDataHandler>

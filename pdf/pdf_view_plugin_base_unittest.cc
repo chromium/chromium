@@ -150,9 +150,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
 
-  MOCK_METHOD(void, PluginDidStartLoading, (), (override));
-
-  MOCK_METHOD(void, PluginDidStopLoading, (), (override));
+  MOCK_METHOD(void, DidStartLoading, (), (override));
+  MOCK_METHOD(void, DidStopLoading, (), (override));
 
   MOCK_METHOD(void, InvokePrintDialog, (), (override));
 
@@ -287,32 +286,6 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressMultipleSmall) {
   })")));
 }
 
-TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {
-  fake_plugin_.set_full_frame_for_testing(true);
-  ASSERT_TRUE(fake_plugin_.full_frame());
-
-  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
-  EXPECT_CALL(fake_plugin_, SetContentRestrictions(kContentRestrictionSave |
-                                                   kContentRestrictionPrint));
-  EXPECT_CALL(fake_plugin_, PluginDidStartLoading);
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal);
-  fake_plugin_.CreateUrlLoader();
-  EXPECT_TRUE(fake_plugin_.GetDidCallStartLoadingForTesting());
-}
-
-TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderWithoutFullFrame) {
-  ASSERT_FALSE(fake_plugin_.full_frame());
-
-  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
-  EXPECT_CALL(fake_plugin_, SetContentRestrictions(kContentRestrictionSave |
-                                                   kContentRestrictionPrint))
-      .Times(0);
-  EXPECT_CALL(fake_plugin_, PluginDidStartLoading).Times(0);
-  EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal);
-  fake_plugin_.CreateUrlLoader();
-  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
-}
-
 TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
        DocumentLoadCompleteInFullFramePdfViewerWithAccessibilityEnabled) {
   // Notify the render frame about document loading.
@@ -332,7 +305,7 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
   EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
-  EXPECT_CALL(fake_plugin_, PluginDidStopLoading());
+  EXPECT_CALL(fake_plugin_, DidStopLoading());
   EXPECT_CALL(fake_plugin_,
               SetContentRestrictions(fake_plugin_.GetContentRestrictions()));
   EXPECT_CALL(fake_plugin_,
@@ -365,7 +338,7 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
   EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
-  EXPECT_CALL(fake_plugin_, PluginDidStopLoading());
+  EXPECT_CALL(fake_plugin_, DidStopLoading());
   EXPECT_CALL(fake_plugin_,
               SetContentRestrictions(fake_plugin_.GetContentRestrictions()));
   EXPECT_CALL(fake_plugin_,
@@ -395,7 +368,7 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
   EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
-  EXPECT_CALL(fake_plugin_, PluginDidStopLoading()).Times(0);
+  EXPECT_CALL(fake_plugin_, DidStopLoading()).Times(0);
   EXPECT_CALL(fake_plugin_,
               SetContentRestrictions(fake_plugin_.GetContentRestrictions()))
       .Times(0);
@@ -408,41 +381,6 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest,
   ASSERT_EQ(1u, fake_plugin_.sent_messages().size());
   EXPECT_EQ(CreateExpectedFormTextFieldFocusChangeResponse(),
             fake_plugin_.sent_messages()[0]);
-}
-
-TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithNotifiedRenderFrame) {
-  // Notify the render frame about document loading.
-  fake_plugin_.set_full_frame_for_testing(true);
-  ASSERT_TRUE(fake_plugin_.full_frame());
-  fake_plugin_.CreateUrlLoader();
-
-  ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state_for_testing());
-  EXPECT_TRUE(fake_plugin_.GetDidCallStartLoadingForTesting());
-
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadFailure"));
-  EXPECT_CALL(fake_plugin_, PluginDidStopLoading());
-
-  fake_plugin_.DocumentLoadFailed();
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
-            fake_plugin_.document_load_state_for_testing());
-  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
-}
-
-TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithoutNotifiedRenderFrame) {
-  // The render frame has never been notified about document loading before.
-  ASSERT_FALSE(fake_plugin_.full_frame());
-  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
-
-  ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
-            fake_plugin_.document_load_state_for_testing());
-  EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadFailure"));
-  EXPECT_CALL(fake_plugin_, PluginDidStopLoading()).Times(0);
-
-  fake_plugin_.DocumentLoadFailed();
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
-            fake_plugin_.document_load_state_for_testing());
-  EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
 }
 
 TEST_F(PdfViewPluginBaseTest, DocumentHasUnsupportedFeatureInFullFrame) {

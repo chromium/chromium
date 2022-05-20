@@ -153,10 +153,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Gets the accessibility doc info based on the information from `engine_`.
   AccessibilityDocInfo GetAccessibilityDocInfo() const;
 
-  bool GetDidCallStartLoadingForTesting() const {
-    return did_call_start_loading_;
-  }
-
   bool UnsupportedFeatureIsReportedForTesting(const std::string& feature) const;
 
   bool GetNotifiedBrowserAboutUnsupportedFeatureForTesting() const {
@@ -344,8 +340,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetPluginCanSave(bool can_save) = 0;
 
   // Sends start/stop loading notifications to the plugin's render frame.
-  virtual void PluginDidStartLoading() = 0;
-  virtual void PluginDidStopLoading() = 0;
+  virtual void DidStartLoading() = 0;
+  virtual void DidStopLoading() = 0;
 
   // Requests the plugin's render frame to set up a print dialog for the
   // document.
@@ -429,11 +425,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
   void HandleStopScrollingMessage(const base::Value::Dict& /*message*/);
   void HandleViewportMessage(const base::Value::Dict& message);
-
-  // Sends start/stop loading notifications to the plugin's render frame
-  // depending on `did_call_start_loading_`.
-  void DidStartLoading();
-  void DidStopLoading();
 
   // Saves the document to a file.
   void SaveToFile(const std::string& token);
@@ -570,11 +561,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The current state of document load.
   DocumentLoadState document_load_state_ = DocumentLoadState::kLoading;
-
-  // If true, the render frame has been notified that we're starting a network
-  // request so that it can start the throbber. It will be notified again once
-  // the document finishes loading.
-  bool did_call_start_loading_ = false;
 
   // The current state of accessibility.
   AccessibilityState accessibility_state_ = AccessibilityState::kOff;

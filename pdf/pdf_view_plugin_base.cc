@@ -1326,22 +1326,6 @@ void PdfViewPluginBase::HandleViewportMessage(
   UpdateScroll(GetScrollPositionFromOffset(scroll_offset));
 }
 
-void PdfViewPluginBase::DidStartLoading() {
-  if (did_call_start_loading_)
-    return;
-
-  PluginDidStartLoading();
-  did_call_start_loading_ = true;
-}
-
-void PdfViewPluginBase::DidStopLoading() {
-  if (!did_call_start_loading_)
-    return;
-
-  PluginDidStopLoading();
-  did_call_start_loading_ = false;
-}
-
 void PdfViewPluginBase::SaveToFile(const std::string& token) {
   engine()->KillFormFocus();
   ConsumeSaveToken(token);

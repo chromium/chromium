@@ -65,7 +65,6 @@
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_preset_options.h"
@@ -880,20 +879,20 @@ void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
   service->SetPluginCanSave(can_save);
 }
 
-void PdfViewWebPlugin::PluginDidStartLoading() {
-  auto* client = client_->GetWebLocalFrameClient();
-  if (!client)
+void PdfViewWebPlugin::DidStartLoading() {
+  if (did_call_start_loading_)
     return;
 
-  client->DidStartLoading();
+  client_->DidStartLoading();
+  did_call_start_loading_ = true;
 }
 
-void PdfViewWebPlugin::PluginDidStopLoading() {
-  auto* client = client_->GetWebLocalFrameClient();
-  if (!client)
+void PdfViewWebPlugin::DidStopLoading() {
+  if (!did_call_start_loading_)
     return;
 
-  client->DidStopLoading();
+  client_->DidStopLoading();
+  did_call_start_loading_ = false;
 }
 
 void PdfViewWebPlugin::InvokePrintDialog() {

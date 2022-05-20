@@ -34,7 +34,6 @@
 
 namespace blink {
 class WebAssociatedURLLoader;
-class WebLocalFrameClient;
 class WebURL;
 class WebURLRequest;
 struct WebAssociatedURLLoaderOptions;
@@ -163,9 +162,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Returns whether the plugin container's frame exists.
     virtual bool HasFrame() const = 0;
 
-    // Returns the local frame's client (render frame). May be null in unit
-    // tests.
-    virtual blink::WebLocalFrameClient* GetWebLocalFrameClient() = 0;
+    // Notifies the frame's client that the plugin started loading.
+    virtual void DidStartLoading() = 0;
+
+    // Notifies the frame's client that the plugin stopped loading.
+    virtual void DidStopLoading() = 0;
 
     // Prints the plugin element.
     virtual void Print() {}
@@ -327,8 +328,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
       AccessibilityViewportInfo viewport_info) override;
   void SetContentRestrictions(int content_restrictions) override;
   void SetPluginCanSave(bool can_save) override;
-  void PluginDidStartLoading() override;
-  void PluginDidStopLoading() override;
+  void DidStartLoading() override;
+  void DidStopLoading() override;
   void InvokePrintDialog() override;
   void NotifySelectionChanged(const gfx::PointF& left,
                               int left_height,
@@ -455,6 +456,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The plugin rect in CSS pixels.
   gfx::Rect css_plugin_rect_;
+
+  // If true, the render frame has been notified that we're starting a network
+  // request so that it can start the throbber. It will be notified again once
+  // the document finishes loading.
+  bool did_call_start_loading_ = false;
 
   // Used for submitting forms.
   std::unique_ptr<UrlLoader> form_loader_;
