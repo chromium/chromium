@@ -247,9 +247,10 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
 
   // If the user is not the owner and the owner disabled metrics, the user
   // is not allowed to update the usage opt-in.
-  if (!is_owner_.value_or(false) &&
-      !ash::StatsReportingController::Get()->IsEnabled()) {
-    view_->HideUsageOptin();
+  if (view_) {
+    view_->SetUsageOptinOptinHidden(
+        !is_owner_.value_or(false) &&
+        !ash::StatsReportingController::Get()->IsEnabled());
   }
 
   const bool is_demo = arc::IsArcDemoModeSetupFlow();
@@ -286,9 +287,6 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
 
     UpdateMetricsMode(is_enabled, is_managed);
   }
-
-  if (view_)
-    view_->SetIsDeviceOwner(is_owner_.value());
 }
 
 void ConsolidatedConsentScreen::RecordConsents(

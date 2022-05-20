@@ -220,8 +220,7 @@ found in the LICENSE file. -->
             <span id="usageTitle" class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
             </span>
-            [[getUsageText_(locale, isChildAccount_, isArcEnabled_,
-                            isDemo_, isOwner_)]]
+            [[getUsageText_(locale, isChildAccount_, isArcEnabled_, isDemo_)]]
             <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
                 class="oobe-local-link" is="action-link">
               [[i18nDynamic(locale,
@@ -331,7 +330,7 @@ found in the LICENSE file. -->
         <span
             inner-h-t-m-l=
                 "[[getUsageLearnMoreText_(locale, isChildAccount_,
-                                          isArcEnabled_, isDemo_, isOwner_)]]">
+                                          isArcEnabled_, isDemo_)]]">
         </span>
       </div>
     </oobe-modal-dialog>

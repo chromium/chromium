@@ -51,16 +51,10 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
   builder->Add("consolidatedConsentUsageOptInTitle",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE);
   builder->Add("consolidatedConsentUsageOptIn",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN);
-  builder->Add("consolidatedConsentUsageOptInOwner",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_OWNER);
   builder->Add("consolidatedConsentUsageOptInChild",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_CHILD);
-  builder->Add("consolidatedConsentUsageOptInChildOwner",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_CHILD_OWNER);
   builder->Add("consolidatedConsentUsageOptInArcDisabled",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_ARC_DISABLED);
-  builder->Add("consolidatedConsentUsageOptInArcDisabledOwner",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_ARC_DISABLED_OWNER);
   builder->Add("consolidatedConsentUsageOptInLearnMoreLink",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_LINK);
@@ -84,23 +78,14 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
   builder->Add("consolidatedConsentFooterChild",
                IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD);
   builder->Add("consolidatedConsentUsageOptInLearnMore",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE);
-  builder->Add("consolidatedConsentUsageOptInLearnMoreOwner",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_OWNER);
   builder->Add("consolidatedConsentUsageOptInLearnMoreChild",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD);
-  builder->Add("consolidatedConsentUsageOptInLearnMoreChildOwner",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD_OWNER);
-  builder->Add("consolidatedConsentUsageOptInLearnMoreArcDisabled",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED);
   builder->Add(
-      "consolidatedConsentUsageOptInLearnMoreArcDisabledOwner",
+      "consolidatedConsentUsageOptInLearnMoreArcDisabled",
       IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_OWNER);
   builder->Add(
       "consolidatedConsentUsageOptInLearnMoreArcDisabledChild",
-      IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD);
-  builder->Add(
-      "consolidatedConsentUsageOptInLearnMoreArcDisabledChildOwner",
       IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD_OWNER);
   builder->Add("consolidatedConsentBackupOptInLearnMore",
                IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE);
@@ -206,11 +191,7 @@ void ConsolidatedConsentScreenHandler::SetLocationMode(bool enabled,
   CallJS("login.ConsolidatedConsentScreen.setLocationMode", enabled, managed);
 }
 
-void ConsolidatedConsentScreenHandler::SetIsDeviceOwner(bool is_owner) {
-  CallJS("login.ConsolidatedConsentScreen.setIsDeviceOwner", is_owner);
-}
-
-void ConsolidatedConsentScreenHandler::HideUsageOptin() {
-  CallJS("login.ConsolidatedConsentScreen.setUsageOptinHidden");
+void ConsolidatedConsentScreenHandler::SetUsageOptinOptinHidden(bool hidden) {
+  CallJS("login.ConsolidatedConsentScreen.setUsageOptinHidden", hidden);
 }
 }  // namespace chromeos
