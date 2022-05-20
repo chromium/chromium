@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_user_timing.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -140,6 +141,11 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
                                           "cross-origin timing information.");
     return 0.0;
   }
+
+  // Count the usage of PerformanceTiming attribute names in performance
+  // measure. See crbug.com/1318445.
+  blink::UseCounter::Count(performance_->GetExecutionContext(),
+                           WebFeature::kPerformanceMeasureFindExistingName);
 
   return value - timing->navigationStart();
 }
