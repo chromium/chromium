@@ -37,6 +37,7 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
     case SegmentResultProvider::ResultState::kUnknown:
     case SegmentResultProvider::ResultState::kSuccessFromDatabase:
     case SegmentResultProvider::ResultState::kDefaultModelScoreUsed:
+    case SegmentResultProvider::ResultState::kTfliteModelScoreUsed:
       NOTREACHED();
       return stats::SegmentationSelectionFailureReason::kMaxValue;
     case SegmentResultProvider::ResultState::kDatabaseScoreNotReady:
@@ -57,6 +58,9 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
     case SegmentResultProvider::ResultState::kDefaultModelExecutionFailed:
       return stats::SegmentationSelectionFailureReason::
           kAtLeastOneSegmentDefaultExecFailed;
+    case SegmentResultProvider::ResultState::kTfliteModelExecutionFailed:
+      return stats::SegmentationSelectionFailureReason::
+          kAtLeastOneSegmentTfliteExecFailed;
   }
 }
 
@@ -136,7 +140,7 @@ void SegmentSelectorImpl::OnPlatformInitialized(
       segment_database_, signal_storage_config_, default_model_manager_,
       execution_service, clock_, platform_options_.force_refresh_results);
   if (IsPreviousSelectionInvalid()) {
-    GetRankForNextSegment(std::make_unique<SegmentRanks>());
+    SelectSegmentAndStoreToPrefs();
   }
 
   // If the segment selection is ready, also record the subsegment for all the
@@ -164,6 +168,12 @@ SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
   return selected_segment_last_session_;
 }
 
+void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
+    SegmentSelectionCallback callback) {
+  DCHECK(config_->on_demand_execution);
+  GetRankForNextSegment(std::make_unique<SegmentRanks>(), std::move(callback));
+}
+
 void SegmentSelectorImpl::OnModelExecutionCompleted(
     OptimizationTarget segment_id) {
   DCHECK(segment_result_provider_);
@@ -175,7 +185,7 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
   if (!IsPreviousSelectionInvalid())
     return;
 
-  GetRankForNextSegment(std::make_unique<SegmentRanks>());
+  SelectSegmentAndStoreToPrefs();
 }
 
 bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
@@ -203,24 +213,50 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
   return true;
 }
 
+void SegmentSelectorImpl::SelectSegmentAndStoreToPrefs() {
+  if (config_->on_demand_execution) {
+    return;
+  }
+  GetRankForNextSegment(std::make_unique<SegmentRanks>(),
+                        SegmentSelectionCallback());
+}
+
 void SegmentSelectorImpl::GetRankForNextSegment(
-    std::unique_ptr<SegmentRanks> ranks) {
+    std::unique_ptr<SegmentRanks> ranks,
+    SegmentSelectionCallback callback) {
   for (OptimizationTarget needed_segment : config_->segment_ids) {
     if (ranks->count(needed_segment) == 0) {
-      segment_result_provider_->GetSegmentResult(
-          needed_segment, config_->segmentation_key,
+      SegmentResultProvider::GetResultOptions options;
+      options.segment_id = needed_segment;
+      options.segmentation_key = config_->segmentation_key;
+      options.ignore_db_scores = config_->on_demand_execution;
+      options.callback =
           base::BindOnce(&SegmentSelectorImpl::OnGetResultForSegmentSelection,
                          weak_ptr_factory_.GetWeakPtr(), std::move(ranks),
-                         needed_segment));
+                         std::move(callback), needed_segment);
+
+      segment_result_provider_->GetSegmentResult(std::move(options));
       return;
     }
   }
+
+  // Finished fetching ranks for all segments.
   OptimizationTarget selected_segment = FindBestSegment(*ranks);
-  UpdateSelectedSegment(selected_segment);
+  if (config_->on_demand_execution) {
+    DCHECK(!callback.is_null());
+    SegmentSelectionResult result;
+    result.is_ready = true;
+    result.segment = selected_segment;
+    std::move(callback).Run(result);
+  } else {
+    DCHECK(callback.is_null());
+    UpdateSelectedSegment(selected_segment);
+  }
 }
 
 void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     std::unique_ptr<SegmentRanks> ranks,
+    SegmentSelectionCallback callback,
     OptimizationTarget current_segment_id,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   if (!result->rank) {
@@ -230,7 +266,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   }
   ranks->insert(std::make_pair(current_segment_id, *result->rank));
 
-  GetRankForNextSegment(std::move(ranks));
+  GetRankForNextSegment(std::move(ranks), std::move(callback));
 }
 
 OptimizationTarget SegmentSelectorImpl::FindBestSegment(

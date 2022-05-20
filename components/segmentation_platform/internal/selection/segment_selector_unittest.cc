@@ -56,6 +56,11 @@ Config CreateTestConfig() {
   return config;
 }
 
+class MockResultProvider : public SegmentResultProvider {
+ public:
+  MOCK_METHOD1(GetSegmentResult, void(GetResultOptions&& options));
+};
+
 }  // namespace
 
 class TestSegmentationResultPrefs : public SegmentationResultPrefs {
@@ -167,6 +172,51 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(prefs_->selection.has_value());
   ASSERT_EQ(segment_id2, prefs_->selection->segment_id);
+}
+
+TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
+  Config config = CreateTestConfig();
+  config.on_demand_execution = true;
+  SetUpWithConfig(config);
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+      .WillRepeatedly(Return(true));
+
+  static constexpr OptimizationTarget kSegmentId =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
+  InitializeMetadataForSegment(kSegmentId, mapping, 3);
+
+  static constexpr OptimizationTarget kSegmentId2 =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+  float mapping2[][2] = {{0.3, 1}, {0.4, 4}};
+  InitializeMetadataForSegment(kSegmentId2, mapping2, 2);
+
+  auto result_provider = std::make_unique<MockResultProvider>();
+  EXPECT_CALL(*result_provider, GetSegmentResult(_))
+      .Times(2)
+      .WillRepeatedly(
+          Invoke([](SegmentResultProvider::GetResultOptions&& options) {
+            EXPECT_TRUE(options.ignore_db_scores);
+            int rank = options.segment_id == kSegmentId ? 3 : 4;
+            auto result =
+                std::make_unique<SegmentResultProvider::SegmentResult>(
+                    SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
+                    rank);
+            std::move(options.callback).Run(std::move(result));
+          }));
+  segment_selector_->set_segment_result_provider_for_testing(
+      std::move(result_provider));
+
+  clock_.Advance(base::Days(1));
+  base::RunLoop wait_for_selection;
+  segment_selector_->GetSelectedSegmentOnDemand(base::BindOnce(
+      [](base::OnceClosure quit, const SegmentSelectionResult& result) {
+        EXPECT_TRUE(result.is_ready);
+        EXPECT_EQ(kSegmentId2, result.segment);
+        std::move(quit).Run();
+      },
+      wait_for_selection.QuitClosure()));
+  wait_for_selection.Run();
 }
 
 TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {

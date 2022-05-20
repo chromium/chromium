@@ -36,6 +36,11 @@ class SegmentSelector : public ModelExecutionScheduler::Observer {
   // asynchronously. If none, returns empty result.
   virtual void GetSelectedSegment(SegmentSelectionCallback callback) = 0;
 
+  // Client API. Runs models and selects a segment on demand. Returns empty
+  // result on failure.
+  virtual void GetSelectedSegmentOnDemand(
+      SegmentSelectionCallback callback) = 0;
+
   // Client API. Returns the cached selected segment from the last session
   // synchronously.
   virtual SegmentSelectionResult GetCachedSegmentResult() = 0;

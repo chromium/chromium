@@ -170,7 +170,8 @@ enum class SegmentationSelectionFailureReason {
   kAtLeastOneSegmentDefaultSignalNotCollected = 12,
   kAtLeastOneSegmentDefaultExecFailed = 13,
   kAtLeastOneSegmentDefaultMissingMetadata = 14,
-  kMaxValue = kAtLeastOneSegmentDefaultMissingMetadata
+  kAtLeastOneSegmentTfliteExecFailed = 15,
+  kMaxValue = kAtLeastOneSegmentTfliteExecFailed
 };
 
 // Records the reason for failure or success to compute a segment selection.

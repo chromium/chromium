@@ -56,6 +56,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   void OnPlatformInitialized(ExecutionService* execution_service) override;
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult() override;
+  void GetSelectedSegmentOnDemand(SegmentSelectionCallback callback) override;
 
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.
@@ -64,6 +65,11 @@ class SegmentSelectorImpl : public SegmentSelector {
   // Called whenever a model eval completes. Runs segment selection to find the
   // best segment, and writes it to the pref.
   void OnModelExecutionCompleted(OptimizationTarget segment_id) override;
+
+  void set_segment_result_provider_for_testing(
+      std::unique_ptr<SegmentResultProvider> result_provider) {
+    segment_result_provider_ = std::move(result_provider);
+  }
 
  private:
   // For testing.
@@ -75,13 +81,19 @@ class SegmentSelectorImpl : public SegmentSelector {
   // segment selection TTL has expired, or selection is unavailable.
   bool IsPreviousSelectionInvalid();
 
+  // Gets scores for all segments and recomputes selection and stores the result
+  // to prefs.
+  void SelectSegmentAndStoreToPrefs();
+
   // Gets ranks for each segment from SegmentResultProvider, and then computes
   // segment selection.
-  void GetRankForNextSegment(std::unique_ptr<SegmentRanks> ranks);
+  void GetRankForNextSegment(std::unique_ptr<SegmentRanks> ranks,
+                             SegmentSelectionCallback callback);
 
   // Callback used to get result from SegmentResultProvider for each segment.
   void OnGetResultForSegmentSelection(
       std::unique_ptr<SegmentRanks> ranks,
+      SegmentSelectionCallback callback,
       OptimizationTarget current_segment_id,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 

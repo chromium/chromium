@@ -34,6 +34,22 @@ int ComputeDiscreteMapping(const std::string& segmentation_key,
   return rank;
 }
 
+proto::SegmentInfo* GetSegmentInfo(
+    DefaultModelManager::SegmentInfoList& available_segments,
+    bool default_model) {
+  proto::SegmentInfo* segment_info = nullptr;
+  DefaultModelManager::SegmentSource needed_source =
+      default_model ? DefaultModelManager::SegmentSource::DEFAULT_MODEL
+                    : DefaultModelManager::SegmentSource::DATABASE;
+  for (const auto& info : available_segments) {
+    if (info->segment_source == needed_source) {
+      segment_info = &info->segment_info;
+      break;
+    }
+  }
+  return segment_info;
+}
+
 class SegmentResultProviderImpl : public SegmentResultProvider {
  public:
   SegmentResultProviderImpl(SegmentInfoDatabase* segment_database,
@@ -50,22 +66,22 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
         force_refresh_results_(force_refresh_results),
         task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
-  void GetSegmentResult(OptimizationTarget segment_id,
-                        const std::string& segmentation_key,
-                        SegmentResultCallback callback) override;
+  void GetSegmentResult(GetResultOptions&& options) override;
 
   SegmentResultProviderImpl(SegmentResultProviderImpl&) = delete;
   SegmentResultProviderImpl& operator=(SegmentResultProviderImpl&) = delete;
 
  private:
   struct RequestState {
-    OptimizationTarget segment_id;
-    SegmentResultCallback callback;
     raw_ptr<ModelProvider> default_provider;
-    std::string segmentation_key;
+    GetResultOptions options;
   };
 
   void OnGetSegmentInfo(
+      std::unique_ptr<RequestState> request_state,
+      DefaultModelManager::SegmentInfoList available_segments);
+
+  void TryExecuteModelAndGetScore(
       std::unique_ptr<RequestState> request_state,
       DefaultModelManager::SegmentInfoList available_segments);
 
@@ -73,10 +89,10 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
       std::unique_ptr<RequestState> request_state,
       SegmentResultProvider::ResultState existing_state,
       DefaultModelManager::SegmentInfoList available_segments);
-  void OnDefaultModelExecuted(
-      std::unique_ptr<RequestState> request_state,
-      std::unique_ptr<proto::SegmentInfo> segment_info,
-      const std::pair<float, ModelExecutionStatus>& result);
+  void OnModelExecuted(std::unique_ptr<RequestState> request_state,
+                       std::unique_ptr<proto::SegmentInfo> segment_info,
+                       bool is_metrics_for_default,
+                       const std::pair<float, ModelExecutionStatus>& result);
 
   void PostResultCallback(std::unique_ptr<RequestState> request_state,
                           std::unique_ptr<SegmentResult> result);
@@ -92,15 +108,11 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
   base::WeakPtrFactory<SegmentResultProviderImpl> weak_ptr_factory_{this};
 };
 
-void SegmentResultProviderImpl::GetSegmentResult(
-    OptimizationTarget segment_id,
-    const std::string& segmentation_key,
-    SegmentResultCallback callback) {
+void SegmentResultProviderImpl::GetSegmentResult(GetResultOptions&& options) {
+  const OptimizationTarget segment_id = options.segment_id;
   auto request_state = std::make_unique<RequestState>();
   request_state = std::make_unique<RequestState>();
-  request_state->segment_id = segment_id;
-  request_state->segmentation_key = segmentation_key;
-  request_state->callback = std::move(callback);
+  request_state->options = std::move(options);
   // Factory can be null in tests.
   request_state->default_provider =
       default_model_manager_
@@ -116,20 +128,14 @@ void SegmentResultProviderImpl::GetSegmentResult(
 void SegmentResultProviderImpl::OnGetSegmentInfo(
     std::unique_ptr<RequestState> request_state,
     DefaultModelManager::SegmentInfoList available_segments) {
-  const proto::SegmentInfo* db_segment_info = nullptr;
-  for (const auto& info : available_segments) {
-    DCHECK_EQ(request_state->segment_id, info->segment_info.segment_id());
-    if (info->segment_source == DefaultModelManager::SegmentSource::DATABASE) {
-      db_segment_info = &info->segment_info;
-      break;
-    }
-  }
+  const proto::SegmentInfo* db_segment_info =
+      GetSegmentInfo(available_segments, /*default_model=*/false);
 
   // Don't compute results if we don't have enough signals, or don't have
   // valid unexpired results for any of the segments.
   if (!db_segment_info) {
     VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->segment_id)
+            << OptimizationTarget_Name(request_state->options.segment_id)
             << " does not have segment info.";
     TryGetScoreFromDefaultModel(std::move(request_state),
                                 ResultState::kSegmentNotAvailable,
@@ -137,8 +143,8 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
     return;
   }
 
-  // TODO(ssid): Remove this check since scheduler does this before executing
-  // the model.
+  // TODO(ssid): Remove this check when using database results since the
+  // scheduler does this before executing the model.
   if (!force_refresh_results_ &&
       !signal_storage_config_->MeetsSignalCollectionRequirement(
           db_segment_info->model_metadata())) {
@@ -148,6 +154,15 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
     TryGetScoreFromDefaultModel(std::move(request_state),
                                 ResultState::kSignalsNotCollected,
                                 std::move(available_segments));
+    return;
+  }
+
+  if (request_state->options.ignore_db_scores) {
+    VLOG(1) << __func__ << ": segment="
+            << OptimizationTarget_Name(db_segment_info->segment_id())
+            << " executing model to get score";
+    TryExecuteModelAndGetScore(std::move(request_state),
+                               std::move(available_segments));
     return;
   }
 
@@ -162,11 +177,34 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
     return;
   }
 
-  int rank =
-      ComputeDiscreteMapping(request_state->segmentation_key, *db_segment_info);
+  int rank = ComputeDiscreteMapping(request_state->options.segmentation_key,
+                                    *db_segment_info);
   PostResultCallback(
       std::move(request_state),
       std::make_unique<SegmentResult>(ResultState::kSuccessFromDatabase, rank));
+}
+
+void SegmentResultProviderImpl::TryExecuteModelAndGetScore(
+    std::unique_ptr<RequestState> request_state,
+    DefaultModelManager::SegmentInfoList available_segments) {
+  auto db_segment_info = std::make_unique<proto::SegmentInfo>();
+  proto::SegmentInfo* segment_info =
+      GetSegmentInfo(available_segments, /*default_model=*/false);
+  // Note: The db segment info in `available_segments` is no longer usable.
+  db_segment_info->Swap(segment_info);
+  DCHECK(db_segment_info);
+
+  auto request = std::make_unique<ExecutionService::ExecutionRequest>();
+  // The pointer is kept alive by the unique_ptr in the callback.
+  request->segment_info = db_segment_info.get();
+  request->model_provider =
+      execution_service_->GetModelProvider(db_segment_info->segment_id());
+  request->record_metrics_for_default = true;
+  request->callback = base::BindOnce(
+      &SegmentResultProviderImpl::OnModelExecuted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
+      std::move(db_segment_info), /*is_metrics_for_default=*/false);
+  execution_service_->RequestModelExecution(std::move(request));
 }
 
 void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
@@ -176,33 +214,27 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
   if (!request_state->default_provider ||
       !request_state->default_provider->ModelAvailable()) {
     VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->segment_id)
+            << OptimizationTarget_Name(request_state->options.segment_id)
             << " default provider not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(existing_state));
     return;
   }
 
-  std::unique_ptr<proto::SegmentInfo> default_segment_info;
-  for (auto& info : available_segments) {
-    DCHECK_EQ(request_state->segment_id, info->segment_info.segment_id());
-    if (info->segment_source ==
-        DefaultModelManager::SegmentSource::DEFAULT_MODEL) {
-      default_segment_info = std::make_unique<proto::SegmentInfo>();
-      default_segment_info->Swap(&info->segment_info);
-      break;
-    }
-  }
-
-  if (!default_segment_info) {
+  proto::SegmentInfo* segment_info =
+      GetSegmentInfo(available_segments, /*default_model=*/true);
+  if (!segment_info) {
     VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->segment_id)
+            << OptimizationTarget_Name(request_state->options.segment_id)
             << " default segment info not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(
                            ResultState::kDefaultModelMetadataMissing));
     return;
   }
+
+  auto default_segment_info = std::make_unique<proto::SegmentInfo>();
+  default_segment_info->Swap(segment_info);
 
   DCHECK_EQ(
       metadata_utils::ValidationResult::kValidationSuccess,
@@ -211,7 +243,7 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
       !signal_storage_config_->MeetsSignalCollectionRequirement(
           default_segment_info->model_metadata())) {
     VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->segment_id)
+            << OptimizationTarget_Name(request_state->options.segment_id)
             << " signal collection not met";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(
@@ -225,29 +257,36 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
   // The pointer is kept alive by the unique_ptr in the callback.
   request->segment_info = default_segment_info.get();
   request->record_metrics_for_default = true;
-  request->callback =
-      base::BindOnce(&SegmentResultProviderImpl::OnDefaultModelExecuted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
-                     std::move(default_segment_info));
+  request->callback = base::BindOnce(
+      &SegmentResultProviderImpl::OnModelExecuted,
+      weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
+      std::move(default_segment_info), /*is_metrics_for_default=*/true);
   request->model_provider = default_provider;
   execution_service_->RequestModelExecution(std::move(request));
 }
 
-void SegmentResultProviderImpl::OnDefaultModelExecuted(
+void SegmentResultProviderImpl::OnModelExecuted(
     std::unique_ptr<RequestState> request_state,
     std::unique_ptr<proto::SegmentInfo> segment_info,
+    bool is_metrics_for_default,
     const std::pair<float, ModelExecutionStatus>& result) {
   if (result.second == ModelExecutionStatus::kSuccess) {
     segment_info->mutable_prediction_result()->set_result(result.first);
-    int rank =
-        ComputeDiscreteMapping(request_state->segmentation_key, *segment_info);
+    int rank = ComputeDiscreteMapping(request_state->options.segmentation_key,
+                                      *segment_info);
+    ResultState state = is_metrics_for_default
+                            ? ResultState::kDefaultModelScoreUsed
+                            : ResultState::kTfliteModelScoreUsed;
     PostResultCallback(std::move(request_state),
-                       std::make_unique<SegmentResult>(
-                           ResultState::kDefaultModelScoreUsed, rank));
+                       std::make_unique<SegmentResult>(state, rank));
   } else {
+    // TODO(ssid): If the real model execution failed, fallback to default
+    // execution.
+    ResultState state = is_metrics_for_default
+                            ? ResultState::kDefaultModelExecutionFailed
+                            : ResultState::kTfliteModelExecutionFailed;
     PostResultCallback(std::move(request_state),
-                       std::make_unique<SegmentResult>(
-                           ResultState::kDefaultModelExecutionFailed));
+                       std::make_unique<SegmentResult>(state));
   }
 }
 
@@ -255,8 +294,8 @@ void SegmentResultProviderImpl::PostResultCallback(
     std::unique_ptr<RequestState> request_state,
     std::unique_ptr<SegmentResult> result) {
   task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(request_state->callback), std::move(result)));
+      FROM_HERE, base::BindOnce(std::move(request_state->options.callback),
+                                std::move(result)));
 }
 
 }  // namespace
@@ -266,6 +305,12 @@ SegmentResultProvider::SegmentResult::SegmentResult(ResultState state)
 SegmentResultProvider::SegmentResult::SegmentResult(ResultState state, int rank)
     : state(state), rank(rank) {}
 SegmentResultProvider::SegmentResult::~SegmentResult() = default;
+
+SegmentResultProvider::GetResultOptions::GetResultOptions() = default;
+SegmentResultProvider::GetResultOptions::~GetResultOptions() = default;
+SegmentResultProvider::GetResultOptions&
+SegmentResultProvider::GetResultOptions::operator=(GetResultOptions&&) =
+    default;
 
 // static
 std::unique_ptr<SegmentResultProvider> SegmentResultProvider::Create(

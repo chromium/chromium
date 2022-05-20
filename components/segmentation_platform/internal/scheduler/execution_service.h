@@ -42,7 +42,8 @@ class ExecutionService {
   void InitForTesting(
       std::unique_ptr<processing::FeatureListQueryProcessor> feature_processor,
       std::unique_ptr<ModelExecutor> executor,
-      std::unique_ptr<ModelExecutionScheduler> scheduler);
+      std::unique_ptr<ModelExecutionScheduler> scheduler,
+      std::unique_ptr<ModelExecutionManager> execution_manager);
 
   void Initialize(
       StorageService* storage_service,
@@ -61,8 +62,12 @@ class ExecutionService {
   // SegmentInfo with valid metadata and features.
   void OnNewModelInfoReady(const proto::SegmentInfo& segment_info);
 
+  // Gets the model provider for execution.
+  ModelProvider* GetModelProvider(OptimizationTarget segment_id);
+
   using ModelExecutionCallback =
       base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
+
   struct ExecutionRequest {
     ExecutionRequest();
     ~ExecutionRequest();
@@ -95,6 +100,8 @@ class ExecutionService {
   void RunDailyTasks(bool is_startup);
 
  private:
+  raw_ptr<StorageService> storage_service_{};
+
   // Training/inference input data generation.
   std::unique_ptr<processing::FeatureListQueryProcessor>
       feature_list_query_processor_;
@@ -106,7 +113,7 @@ class ExecutionService {
   std::unique_ptr<ModelExecutor> model_executor_;
 
   // Model execution.
-  std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
+  std::unique_ptr<ModelExecutionManager> model_execution_manager_;
 
   // Model execution scheduling logic.
   std::unique_ptr<ModelExecutionScheduler> model_execution_scheduler_;

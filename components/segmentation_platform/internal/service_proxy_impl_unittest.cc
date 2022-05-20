@@ -204,7 +204,8 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
   MockModelExecutionScheduler* scheduler = scheduler_moved.get();
   ExecutionService execution;
-  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved));
+  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
+                           nullptr);
 
   // Scheduler is not set, ExecuteModel() will do nothing.
   EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
@@ -241,7 +242,8 @@ TEST_F(ServiceProxyImplTest, OverwriteResult) {
   auto scheduler_moved = std::make_unique<MockModelExecutionScheduler>();
   MockModelExecutionScheduler* scheduler = scheduler_moved.get();
   ExecutionService execution;
-  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved));
+  execution.InitForTesting(nullptr, nullptr, std::move(scheduler_moved),
+                           nullptr);
 
   // Scheduler is not set, OverwriteValue() will do nothing.
   EXPECT_CALL(*scheduler, OnModelExecutionCompleted(_, _)).Times(0);

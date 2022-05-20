@@ -70,6 +70,11 @@ struct Config {
 
   // List of segment ids that the current config requires to be available.
   std::vector<optimization_guide::proto::OptimizationTarget> segment_ids;
+
+  // The selection only supports returning results from on-demand model
+  // executions instead of returning result from previous sessions. The
+  // selection TTLs are ignored in this config.
+  bool on_demand_execution = false;
 };
 
 }  // namespace segmentation_platform

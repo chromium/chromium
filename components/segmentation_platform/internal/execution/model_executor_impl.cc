@@ -105,7 +105,7 @@ void ModelExecutorImpl::ExecuteModel(const proto::SegmentInfo& segment_info,
   ModelExecutionTraceEvent trace_event("ModelExecutorImpl::ExecuteModel",
                                        *state);
 
-  if (!state->model_provider->ModelAvailable()) {
+  if (!state->model_provider || !state->model_provider->ModelAvailable()) {
     RunModelExecutionCallback(std::move(state), 0,
                               ModelExecutionStatus::kSkippedModelNotReady);
     return;

@@ -84325,6 +84325,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="At least one segment does not have default signals"/>
   <int value="13" label="At least one segment default model execution failed"/>
   <int value="14" label="At least one segment default model missing metadata"/>
+  <int value="15"
+      label="At least one segment on demand tflite model execution failed"/>
 </enum>
 
 <enum name="SelectedNewTabCreationOption">
