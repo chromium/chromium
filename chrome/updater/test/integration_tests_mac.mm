@@ -418,5 +418,9 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
                           base::FilePath(FILE_PATH_LITERAL("NONE")));
 }
 
+void RunOfflineInstall(UpdaterScope scope) {
+  // TODO(crbug.com/1286574).
+}
+
 }  // namespace test
 }  // namespace updater
