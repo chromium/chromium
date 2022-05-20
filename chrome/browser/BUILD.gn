@@ -3462,16 +3462,6 @@ static_library("browser") {
     }
   } else {
     #!is_android
-    if (!is_chromeos_lacros) {
-      sources += [
-        "apps/app_service/publisher_host.cc",
-        "apps/app_service/publisher_host.h",
-        "apps/app_service/publishers/extension_apps.cc",
-        "apps/app_service/publishers/extension_apps.h",
-        "apps/app_service/publishers/extension_apps_base.cc",
-        "apps/app_service/publishers/extension_apps_base.h",
-      ]
-    }
     sources += [
       "accessibility/caption_bubble_context_browser.h",
       "accessibility/invert_bubble_prefs.cc",
@@ -4466,10 +4456,86 @@ static_library("browser") {
       "//chrome/browser/web_applications/app_service",
     ]
 
+    if (!is_chromeos) {
+      sources += [
+        "apps/app_service/app_service_proxy_desktop.cc",
+        "apps/app_service/app_service_proxy_desktop.h",
+      ]
+    }
     if (!is_chromeos_ash) {
       sources += [
         "accessibility/soda_installer_impl.cc",
         "accessibility/soda_installer_impl.h",
+        "device_identity/device_oauth2_token_store_desktop.cc",
+        "device_identity/device_oauth2_token_store_desktop.h",
+        "enterprise/remote_commands/cbcm_remote_commands_factory.cc",
+        "enterprise/remote_commands/cbcm_remote_commands_factory.h",
+        "enterprise/remote_commands/clear_browsing_data_job.cc",
+        "enterprise/remote_commands/clear_browsing_data_job.h",
+        "first_run/upgrade_util.cc",
+        "first_run/upgrade_util.h",
+        "lifetime/switch_utils.cc",
+        "lifetime/switch_utils.h",
+        "metrics/upgrade_metrics_provider.cc",
+        "metrics/upgrade_metrics_provider.h",
+        "net/disk_cache_dir_policy_handler.cc",
+        "net/disk_cache_dir_policy_handler.h",
+        "platform_util.cc",
+        "policy/cbcm_invalidations_initializer.cc",
+        "policy/cbcm_invalidations_initializer.h",
+        "policy/chrome_browser_cloud_management_controller_desktop.cc",
+        "policy/chrome_browser_cloud_management_controller_desktop.h",
+        "policy/chrome_browser_cloud_management_register_watcher.cc",
+        "policy/chrome_browser_cloud_management_register_watcher.h",
+        "policy/client_data_delegate_desktop.cc",
+        "policy/client_data_delegate_desktop.h",
+        "policy/cloud/user_policy_signin_service.cc",
+        "policy/cloud/user_policy_signin_service.h",
+        "policy/cloud/user_policy_signin_service_internal.h",
+        "profiles/avatar_menu.cc",
+        "profiles/avatar_menu.h",
+        "profiles/avatar_menu_actions_desktop.cc",
+        "profiles/avatar_menu_actions_desktop.h",
+        "profiles/avatar_menu_desktop.cc",
+        "profiles/avatar_menu_observer.h",
+        "profiles/profile_activity_metrics_recorder.cc",
+        "profiles/profile_activity_metrics_recorder.h",
+        "profiles/profile_list.h",
+        "profiles/profile_list_desktop.cc",
+        "profiles/profile_list_desktop.h",
+        "profiles/profile_statistics.cc",
+        "profiles/profile_statistics.h",
+        "profiles/profile_statistics_aggregator.cc",
+        "profiles/profile_statistics_aggregator.h",
+        "profiles/profile_statistics_common.cc",
+        "profiles/profile_statistics_common.h",
+        "profiles/profile_statistics_factory.cc",
+        "profiles/profile_statistics_factory.h",
+        "signin/force_signin_verifier.cc",
+        "signin/force_signin_verifier.h",
+        "signin/signin_manager.cc",
+        "signin/signin_manager.h",
+        "signin/signin_manager_factory.cc",
+        "signin/signin_manager_factory.h",
+        "upgrade_detector/get_installed_version.cc",
+        "upgrade_detector/get_installed_version.h",
+        "upgrade_detector/installed_version_monitor.h",
+        "upgrade_detector/installed_version_poller.cc",
+        "upgrade_detector/installed_version_poller.h",
+        "upgrade_detector/upgrade_detector_impl.cc",
+        "upgrade_detector/upgrade_detector_impl.h",
+      ]
+
+      deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/browser" ]
+    }
+    if (!is_chromeos_lacros) {
+      sources += [
+        "apps/app_service/publisher_host.cc",
+        "apps/app_service/publisher_host.h",
+        "apps/app_service/publishers/extension_apps.cc",
+        "apps/app_service/publishers/extension_apps.h",
+        "apps/app_service/publishers/extension_apps_base.cc",
+        "apps/app_service/publishers/extension_apps_base.h",
       ]
     }
     if (enable_extensions) {
@@ -4504,6 +4570,21 @@ static_library("browser") {
 
     if (is_posix || is_fuchsia) {
       sources += [ "task_manager/sampling/shared_sampler_stub.cc" ]
+    }
+
+    if (is_chrome_branded) {
+      deps += [ "//chrome/browser/lens/region_search" ]
+    }
+
+    if (!is_official_build) {
+      deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
+    }
+
+    if (use_minikin_hyphenation) {
+      sources += [
+        "component_updater/hyphenation_component_installer.cc",
+        "component_updater/hyphenation_component_installer.h",
+      ]
     }
   }
 
@@ -5135,13 +5216,6 @@ static_library("browser") {
       "signin/chrome_signin_and_sync_status_metrics_provider.cc",
       "signin/chrome_signin_and_sync_status_metrics_provider.h",
     ]
-
-    if (!is_android && !is_chromeos_lacros) {
-      sources += [
-        "apps/app_service/app_service_proxy_desktop.cc",
-        "apps/app_service/app_service_proxy_desktop.h",
-      ]
-    }
   }
 
   if (is_chromeos_ash || enable_extensions || is_android) {
@@ -6171,10 +6245,6 @@ static_library("browser") {
     ]
   }
 
-  if (!is_android && is_chrome_branded) {
-    deps += [ "//chrome/browser/lens/region_search" ]
-  }
-
   if (is_win || is_chromeos || is_mac) {
     sources += [
       "webshare/safe_browsing_request.cc",
@@ -6229,71 +6299,6 @@ static_library("browser") {
       "downgrade/user_data_downgrade.cc",
       "downgrade/user_data_downgrade.h",
     ]
-  }
-
-  if (!is_android && !is_chromeos_ash) {
-    sources += [
-      "device_identity/device_oauth2_token_store_desktop.cc",
-      "device_identity/device_oauth2_token_store_desktop.h",
-      "enterprise/remote_commands/cbcm_remote_commands_factory.cc",
-      "enterprise/remote_commands/cbcm_remote_commands_factory.h",
-      "enterprise/remote_commands/clear_browsing_data_job.cc",
-      "enterprise/remote_commands/clear_browsing_data_job.h",
-      "first_run/upgrade_util.cc",
-      "first_run/upgrade_util.h",
-      "lifetime/switch_utils.cc",
-      "lifetime/switch_utils.h",
-      "metrics/upgrade_metrics_provider.cc",
-      "metrics/upgrade_metrics_provider.h",
-      "net/disk_cache_dir_policy_handler.cc",
-      "net/disk_cache_dir_policy_handler.h",
-      "platform_util.cc",
-      "policy/cbcm_invalidations_initializer.cc",
-      "policy/cbcm_invalidations_initializer.h",
-      "policy/chrome_browser_cloud_management_controller_desktop.cc",
-      "policy/chrome_browser_cloud_management_controller_desktop.h",
-      "policy/chrome_browser_cloud_management_register_watcher.cc",
-      "policy/chrome_browser_cloud_management_register_watcher.h",
-      "policy/client_data_delegate_desktop.cc",
-      "policy/client_data_delegate_desktop.h",
-      "policy/cloud/user_policy_signin_service.cc",
-      "policy/cloud/user_policy_signin_service.h",
-      "policy/cloud/user_policy_signin_service_internal.h",
-      "profiles/avatar_menu.cc",
-      "profiles/avatar_menu.h",
-      "profiles/avatar_menu_actions_desktop.cc",
-      "profiles/avatar_menu_actions_desktop.h",
-      "profiles/avatar_menu_desktop.cc",
-      "profiles/avatar_menu_observer.h",
-      "profiles/profile_activity_metrics_recorder.cc",
-      "profiles/profile_activity_metrics_recorder.h",
-      "profiles/profile_list.h",
-      "profiles/profile_list_desktop.cc",
-      "profiles/profile_list_desktop.h",
-      "profiles/profile_statistics.cc",
-      "profiles/profile_statistics.h",
-      "profiles/profile_statistics_aggregator.cc",
-      "profiles/profile_statistics_aggregator.h",
-      "profiles/profile_statistics_common.cc",
-      "profiles/profile_statistics_common.h",
-      "profiles/profile_statistics_factory.cc",
-      "profiles/profile_statistics_factory.h",
-      "signin/force_signin_verifier.cc",
-      "signin/force_signin_verifier.h",
-      "signin/signin_manager.cc",
-      "signin/signin_manager.h",
-      "signin/signin_manager_factory.cc",
-      "signin/signin_manager_factory.h",
-      "upgrade_detector/get_installed_version.cc",
-      "upgrade_detector/get_installed_version.h",
-      "upgrade_detector/installed_version_monitor.h",
-      "upgrade_detector/installed_version_poller.cc",
-      "upgrade_detector/installed_version_poller.h",
-      "upgrade_detector/upgrade_detector_impl.cc",
-      "upgrade_detector/upgrade_detector_impl.h",
-    ]
-
-    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/browser" ]
   }
 
   if (is_android || is_chromeos || is_win) {
@@ -7443,17 +7448,6 @@ static_library("browser") {
 
   if (use_udev) {
     deps += [ "//device/udev_linux" ]
-  }
-
-  if (!is_android && !is_official_build) {
-    deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
-  }
-
-  if (use_minikin_hyphenation && !is_android) {
-    sources += [
-      "component_updater/hyphenation_component_installer.cc",
-      "component_updater/hyphenation_component_installer.h",
-    ]
   }
 
   if (safe_browsing_mode != 0) {
