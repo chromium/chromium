@@ -541,6 +541,13 @@ component("base") {
     deps += [ "//third_party/fontconfig" ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/cpp:crosapi_constants",
+      "//chromeos/lacros:lacros_paths",
+    ]
+  }
+
   if (use_glib) {
     configs += [ "//build/config/linux:glib" ]
     sources += [

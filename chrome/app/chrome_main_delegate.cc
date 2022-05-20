@@ -1090,6 +1090,18 @@ void ChromeMainDelegate::PreSandboxStartup() {
           lacros_resources_dir.Append(FILE_PATH_LITERAL("resources.pak")),
           user_data_dir.Append(crosapi::kSharedResourcesPackName),
           ui::kScaleFactorNone);
+      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
+          ash_resources_dir.Append(FILE_PATH_LITERAL("chrome_100_percent.pak")),
+          lacros_resources_dir.Append(
+              FILE_PATH_LITERAL("chrome_100_percent.pak")),
+          user_data_dir.Append(crosapi::kSharedChrome100PercentPackName),
+          ui::k100Percent);
+      ui::DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
+          ash_resources_dir.Append(FILE_PATH_LITERAL("chrome_200_percent.pak")),
+          lacros_resources_dir.Append(
+              FILE_PATH_LITERAL("chrome_200_percent.pak")),
+          user_data_dir.Append(crosapi::kSharedChrome200PercentPackName),
+          ui::k200Percent);
     }
   }
 #endif

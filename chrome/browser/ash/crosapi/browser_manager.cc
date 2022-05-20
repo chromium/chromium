@@ -154,6 +154,13 @@ enum class LacrosLaunchModeAndSource {
   kMaxValue = kForcedByPolicyLacrosOnly
 };
 
+// Resources file sharing mode.
+enum class ResourcesFileSharingMode {
+  kDefault = 0,
+  // Failed to handle cached shared resources properly.
+  kError = 1,
+};
+
 using LaunchParamsFromBackground = BrowserManager::LaunchParamsFromBackground;
 
 // Pointer to the global instance of BrowserManager.
@@ -195,22 +202,20 @@ bool RotateLacrosLogs() {
   return false;
 }
 
-// Return false when there is a failure that might break resource file sharing
-// feature.
-bool ClearOrMoveSharedResourceFile(bool clear_shared_resource_file) {
-  base::FilePath shared_resource_path =
-      browser_util::GetUserDataDir().Append(crosapi::kSharedResourcesPackName);
+ResourcesFileSharingMode ClearOrMoveSharedResourceFileInternal(
+    bool clear_shared_resource_file,
+    base::FilePath shared_resource_path) {
   // If shared resource pak doesn't exit, do nothing.
   if (!base::PathExists(shared_resource_path))
-    return true;
+    return ResourcesFileSharingMode::kDefault;
 
   // Clear shared resource file cache if `clear_shared_resource_file` is true.
   if (clear_shared_resource_file) {
     if (!base::DeleteFile(shared_resource_path)) {
       LOG(ERROR) << "Failed to delete cached shared resource file.";
-      return false;
+      return ResourcesFileSharingMode::kError;
     }
-    return true;
+    return ResourcesFileSharingMode::kDefault;
   }
 
   base::FilePath renamed_shared_resource_path =
@@ -220,9 +225,41 @@ bool ClearOrMoveSharedResourceFile(bool clear_shared_resource_file) {
   if (!base::Move(shared_resource_path, renamed_shared_resource_path)) {
     LOG(ERROR) << "Failed to move cached shared resource file to temporary "
                << "location.";
-    return false;
+    return ResourcesFileSharingMode::kError;
   }
-  return true;
+  return ResourcesFileSharingMode::kDefault;
+}
+
+ResourcesFileSharingMode ClearOrMoveSharedResourceFile(
+    bool clear_shared_resource_file) {
+  // Check 3 resource paks, resources.pak, chrome_100_percent.pak and
+  // chrome_200_percent.pak.
+  ResourcesFileSharingMode resources_file_sharing_mode =
+      ResourcesFileSharingMode::kDefault;
+  // Return kError if any of the resources failed to clear or move.
+  // Make sure that ClearOrMoveSharedResourceFileInternal() runs for all
+  // resources even if it already fails for some resource.
+  if (ClearOrMoveSharedResourceFileInternal(
+          clear_shared_resource_file, browser_util::GetUserDataDir().Append(
+                                          crosapi::kSharedResourcesPackName)) ==
+      ResourcesFileSharingMode::kError) {
+    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
+  }
+  if (ClearOrMoveSharedResourceFileInternal(
+          clear_shared_resource_file,
+          browser_util::GetUserDataDir().Append(
+              crosapi::kSharedChrome100PercentPackName)) ==
+      ResourcesFileSharingMode::kError) {
+    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
+  }
+  if (ClearOrMoveSharedResourceFileInternal(
+          clear_shared_resource_file,
+          browser_util::GetUserDataDir().Append(
+              crosapi::kSharedChrome200PercentPackName)) ==
+      ResourcesFileSharingMode::kError) {
+    resources_file_sharing_mode = ResourcesFileSharingMode::kError;
+  }
+  return resources_file_sharing_mode;
 }
 
 // This method runs some work on a background thread prior to launching lacros.
@@ -265,7 +302,8 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
   // Clear shared resource file cache if it's initial lacros launch after ash
   // reboot. If not, rename shared resource file cache to temporal name on
   // Lacros launch.
-  if (!ClearOrMoveSharedResourceFile(clear_shared_resource_file))
+  if (ClearOrMoveSharedResourceFile(clear_shared_resource_file) ==
+      ResourcesFileSharingMode::kError)
     params.enable_resource_file_sharing = false;
 
   return params;

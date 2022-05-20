@@ -98,6 +98,7 @@ ResourceBundle::LottieThemedImageParseFunction
 
 ResourceBundle* g_shared_instance_ = nullptr;
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   base::FilePath path;
   if (base::PathService::Get(base::DIR_ASSETS, &path))
@@ -110,6 +111,7 @@ base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   return base::FilePath(pak_name.c_str());
 #endif  // BUILDFLAG(IS_WIN)
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 SkBitmap CreateEmptyBitmap() {
   SkBitmap bitmap;
@@ -949,6 +951,7 @@ void ResourceBundle::FreeImages() {
 #endif
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void ResourceBundle::LoadChromeResources() {
   // Always load the 1x data pack first as the 2x data pack contains both 1x and
   // 2x images. The 1x data pack only has 1x images, thus passes in an accurate
@@ -963,6 +966,7 @@ void ResourceBundle::LoadChromeResources() {
         GetResourcesPakFilePath("chrome_200_percent.pak"), k200Percent);
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ResourceBundle::AddDataPackFromPathInternal(
     const base::FilePath& path,
