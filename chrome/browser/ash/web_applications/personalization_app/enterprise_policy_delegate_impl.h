@@ -8,6 +8,8 @@
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -20,7 +22,8 @@ namespace ash::personalization_app {
 
 class EnterprisePolicyDelegateImpl : public EnterprisePolicyDelegate,
                                      public user_manager::UserManager::Observer,
-                                     public WallpaperControllerObserver {
+                                     public WallpaperControllerObserver,
+                                     public ShellObserver {
  public:
   explicit EnterprisePolicyDelegateImpl(
       content::BrowserContext* browser_context);
@@ -46,12 +49,24 @@ class EnterprisePolicyDelegateImpl : public EnterprisePolicyDelegate,
   // WallpaperControllerObserver:
   void OnWallpaperChanged() override;
 
+  // ShellObserver:
+  void OnShellDestroying() override;
+
   raw_ptr<Profile> profile_;
+
+  base::ScopedObservation<Shell,
+                          ShellObserver,
+                          &Shell::AddShellObserver,
+                          &Shell::RemoveShellObserver>
+      scoped_shell_observation_{this};
+
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       scoped_user_manager_observation_{this};
+
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       scoped_wallpaper_controller_observation_{this};
+
   base::ObserverList<EnterprisePolicyDelegate::Observer> observer_list_;
 };
 

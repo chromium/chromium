@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/enterprise_policy_delegate_impl.h"
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/shell.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
@@ -27,6 +28,8 @@ ash::UserImageManager* GetUserImageManager(const Profile* profile) {
 EnterprisePolicyDelegateImpl::EnterprisePolicyDelegateImpl(
     content::BrowserContext* browser_context)
     : profile_(Profile::FromBrowserContext(browser_context)) {
+  DCHECK(Shell::HasInstance());
+  scoped_shell_observation_.Observe(Shell::Get());
   scoped_user_manager_observation_.Observe(user_manager::UserManager::Get());
   scoped_wallpaper_controller_observation_.Observe(WallpaperController::Get());
 }
@@ -70,6 +73,11 @@ void EnterprisePolicyDelegateImpl::OnWallpaperChanged() {
     observer.OnWallpaperIsEnterpriseManagedChanged(
         IsWallpaperEnterpriseManaged());
   }
+}
+
+void EnterprisePolicyDelegateImpl::OnShellDestroying() {
+  // WallpaperController is about to be destroyed.
+  scoped_wallpaper_controller_observation_.Reset();
 }
 
 }  // namespace ash::personalization_app
