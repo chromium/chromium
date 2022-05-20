@@ -134,8 +134,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
-    Builder& SetIcon(ImageModel icon) {
+    Builder& SetIcon(ImageModel icon,
+                     ImageModel dark_mode_icon = ImageModel()) {
       model_->icon_ = std::move(icon);
+      model_->dark_mode_icon_ = std::move(dark_mode_icon);
       return *this;
     }
 
@@ -353,6 +355,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   const ImageModel& icon(base::PassKey<DialogModelHost>) const { return icon_; }
 
+  const ImageModel& dark_mode_icon(base::PassKey<DialogModelHost>) const {
+    return dark_mode_icon_;
+  }
+
   absl::optional<int> initially_focused_field(
       base::PassKey<DialogModelHost>) const {
     return initially_focused_field_;
@@ -405,6 +411,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::string internal_name_;
   std::u16string title_;
   ImageModel icon_;
+  ImageModel dark_mode_icon_;
 
   std::vector<std::unique_ptr<DialogModelField>> fields_;
   absl::optional<int> initially_focused_field_;

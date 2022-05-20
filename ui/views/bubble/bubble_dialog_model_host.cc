@@ -154,11 +154,30 @@ END_METADATA
 // into this class. This was done in steps to limit the size of the diff.
 class BubbleDialogModelHost::ContentsView : public View {
  public:
-  explicit ContentsView(ui::DialogModel* model) {
+  ContentsView(BubbleDialogModelHost* parent, ui::DialogModel* model)
+      : parent_(parent) {
     // Note that between-child spacing is manually handled using kMarginsKey.
     SetLayoutManager(
         std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
   }
+
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    if (!parent_->ShouldShowWindowIcon())
+      return;
+    const ui::ImageModel dark_mode_icon =
+        parent_->model_->dark_mode_icon(parent_->GetPassKey());
+    if (!dark_mode_icon.IsEmpty() &&
+        color_utils::IsDark(parent_->GetBackgroundColor())) {
+      parent_->SetIcon(dark_mode_icon.GetImage().AsImageSkia());
+      return;
+    }
+    parent_->SetIcon(
+        parent_->model_->icon(GetPassKey()).GetImage().AsImageSkia());
+  }
+
+ private:
+  BubbleDialogModelHost* const parent_;
 };
 
 class BubbleDialogModelHost::LayoutConsensusView : public View {
@@ -245,7 +264,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     : BubbleDialogDelegate(anchor_view, arrow),
       model_(std::move(model)),
       contents_view_(
-          SetContentsView(std::make_unique<ContentsView>(model_.get()))) {
+          SetContentsView(std::make_unique<ContentsView>(this, model_.get()))) {
   model_->set_host(GetPassKey(), this);
 
   // Dialog callbacks can safely refer to |model_|, they can't be called after
