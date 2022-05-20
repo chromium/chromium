@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -110,16 +111,17 @@ void HTMLButtonElement::ParseAttribute(
 
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
-    PopupTriggerAction action;
-    if (Element* popupElement = togglePopupElement(action)) {
-      DCHECK_NE(action, PopupTriggerAction::kNone);
-      if (popupElement->popupOpen() && (action == PopupTriggerAction::kToggle ||
-                                        action == PopupTriggerAction::kHide)) {
-        popupElement->hidePopup(ASSERT_NO_EXCEPTION);
-      } else if (!popupElement->popupOpen() &&
-                 (action == PopupTriggerAction::kToggle ||
-                  action == PopupTriggerAction::kShow)) {
-        popupElement->InvokePopup(this);
+    auto popup = togglePopupElement();
+    if (popup.element) {
+      DCHECK_NE(popup.action, PopupTriggerAction::kNone);
+      if (popup.element->popupOpen() &&
+          (popup.action == PopupTriggerAction::kToggle ||
+           popup.action == PopupTriggerAction::kHide)) {
+        popup.element->hidePopup(ASSERT_NO_EXCEPTION);
+      } else if (!popup.element->popupOpen() &&
+                 (popup.action == PopupTriggerAction::kToggle ||
+                  popup.action == PopupTriggerAction::kShow)) {
+        popup.element->InvokePopup(this);
       }
     }
     if (!IsDisabledFormControl()) {
@@ -148,43 +150,42 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
 //  used.
 //  4. If both 'showpopup' and 'hidepopup' are present, the behavior is to
 //  toggle.
-Element* HTMLButtonElement::togglePopupElement(
-    PopupTriggerAction& action) const {
-  action = PopupTriggerAction::kNone;
+HTMLButtonElement::TogglePopupElement HTMLButtonElement::togglePopupElement()
+    const {
+  const TogglePopupElement no_element{nullptr, PopupTriggerAction::kNone,
+                                      g_null_name};
   if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
-    return nullptr;
+    return no_element;
   if (!IsInTreeScope())
-    return nullptr;
+    return no_element;
   AtomicString idref;
+  QualifiedName attribute_name = html_names::kTogglepopupAttr;
+  PopupTriggerAction action = PopupTriggerAction::kToggle;
   if (FastHasAttribute(html_names::kTogglepopupAttr)) {
     idref = FastGetAttribute(html_names::kTogglepopupAttr);
-    action = PopupTriggerAction::kToggle;
   } else if (FastHasAttribute(html_names::kShowpopupAttr)) {
     idref = FastGetAttribute(html_names::kShowpopupAttr);
     action = PopupTriggerAction::kShow;
+    attribute_name = html_names::kShowpopupAttr;
   }
   if (FastHasAttribute(html_names::kHidepopupAttr)) {
     if (idref.IsNull()) {
       idref = FastGetAttribute(html_names::kHidepopupAttr);
       action = PopupTriggerAction::kHide;
+      attribute_name = html_names::kHidepopupAttr;
     } else if (FastGetAttribute(html_names::kHidepopupAttr) == idref) {
       action = PopupTriggerAction::kToggle;
+      // Leave attribute_name as-is in this case.
     }
   }
   if (idref.IsNull()) {
-    DCHECK_EQ(action, PopupTriggerAction::kNone);
-    return nullptr;
+    return no_element;
   }
   Element* popup_element = GetTreeScope().getElementById(idref);
   if (!popup_element || !popup_element->HasValidPopupAttribute()) {
-    action = PopupTriggerAction::kNone;
-    return nullptr;
+    return no_element;
   }
-  return popup_element;
-}
-Element* HTMLButtonElement::togglePopupElement() const {
-  PopupTriggerAction action;
-  return togglePopupElement(action);
+  return TogglePopupElement{popup_element, action, attribute_name};
 }
 
 bool HTMLButtonElement::HasActivationBehavior() const {

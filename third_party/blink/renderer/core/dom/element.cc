@@ -2648,11 +2648,10 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
       // Case #2 or 3: An anchor or trigger for a showing popup.
       update_highest(anchors_and_invokers.at(current_element));
     } else if (auto* button = DynamicTo<HTMLButtonElement>(current_element)) {
-      if (auto* invoked_popup = button->togglePopupElement()) {
-        if (popup_position.Contains(invoked_popup)) {
-          // Case #4: An invoking element pointing to a showing popup.
-          update_highest(invoked_popup);
-        }
+      if (auto invoked_popup = button->togglePopupElement().element;
+          invoked_popup && popup_position.Contains(invoked_popup)) {
+        // Case #4: An invoking element pointing to a showing popup.
+        update_highest(invoked_popup);
       }
     }
   }

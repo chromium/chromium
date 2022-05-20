@@ -1192,7 +1192,8 @@ enum DescriptionFrom {
   kSummary,  // HTML-AAM 5.8.2
   kSvgDescElement,
   kTableCaption,  // HTML-AAM 5.9.2
-  kTitle
+  kTitle,
+  kPopupElement, // E.g. |triggerpopup| attr pointing to `popup=hint`.
 };
 
 // Next value: 4

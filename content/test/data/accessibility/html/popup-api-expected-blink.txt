@@ -15,7 +15,7 @@ rootWebArea
 ++++++++++inlineTextBox name='Button pointing to hidden popup'
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored name='Popup'
-++++++button name='Show button pointing to hidden hint'
+++++++button description='Hint' name='Show button pointing to hidden hint' descriptionFrom=popupElement
 ++++++++staticText name='Show button pointing to hidden hint'
 ++++++++++inlineTextBox name='Show button pointing to hidden hint'
 ++++++genericContainer ignored invisible
@@ -28,7 +28,7 @@ rootWebArea
 ++++++button name='Button pointing to showing popup'
 ++++++++staticText name='Button pointing to showing popup'
 ++++++++++inlineTextBox name='Button pointing to showing popup'
-++++++button name='Show button pointing to showing hint'
+++++++button description='Hint (nested)' name='Show button pointing to showing hint' descriptionFrom=popupElement
 ++++++++staticText name='Show button pointing to showing hint'
 ++++++++++inlineTextBox name='Show button pointing to showing hint'
 ++++++genericContainer

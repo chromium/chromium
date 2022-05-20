@@ -17,6 +17,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -1598,26 +1599,9 @@ std::string WebAXObjectProxy::NameFrom() {
     case ax::mojom::NameFrom::kUninitialized:
     case ax::mojom::NameFrom::kNone:
       return "";
-    case ax::mojom::NameFrom::kAttribute:
-      return "attribute";
-    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
-      return "attributeExplicitlyEmpty";
-    case ax::mojom::NameFrom::kCaption:
-      return "caption";
-    case ax::mojom::NameFrom::kContents:
-      return "contents";
-    case ax::mojom::NameFrom::kPlaceholder:
-      return "placeholder";
-    case ax::mojom::NameFrom::kRelatedElement:
-      return "relatedElement";
-    case ax::mojom::NameFrom::kValue:
-      return "value";
-    case ax::mojom::NameFrom::kTitle:
-      return "title";
+    default:
+      return ui::ToString(name_from);
   }
-
-  NOTREACHED();
-  return std::string();
 }
 
 int WebAXObjectProxy::NameElementCount() {
@@ -1663,26 +1647,9 @@ std::string WebAXObjectProxy::DescriptionFrom() {
   switch (description_from) {
     case ax::mojom::DescriptionFrom::kNone:
       return "";
-    case ax::mojom::DescriptionFrom::kAriaDescription:
-      return "ariaDescription";
-    case ax::mojom::DescriptionFrom::kButtonLabel:
-      return "buttonLabel";
-    case ax::mojom::DescriptionFrom::kRelatedElement:
-      return "relatedElement";
-    case ax::mojom::DescriptionFrom::kRubyAnnotation:
-      return "rubyAnnotation";
-    case ax::mojom::DescriptionFrom::kSummary:
-      return "summary";
-    case ax::mojom::DescriptionFrom::kSvgDescElement:
-      return "svgDescElement";
-    case ax::mojom::DescriptionFrom::kTableCaption:
-      return "tableCaption";
-    case ax::mojom::DescriptionFrom::kTitle:
-      return "title";
+    default:
+      return ui::ToString(description_from);
   }
-
-  NOTREACHED();
-  return std::string();
 }
 
 std::string WebAXObjectProxy::Placeholder() {

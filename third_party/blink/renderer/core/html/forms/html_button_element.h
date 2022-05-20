@@ -45,10 +45,18 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
                          mojom::blink::FocusType,
                          InputDeviceCapabilities*) override;
 
+  struct TogglePopupElement final {
+   public:
+    DISALLOW_NEW();
+    WeakMember<Element> element;
+    PopupTriggerAction action;
+    QualifiedName attribute_name;
+    void Trace(Visitor* visitor) const { visitor->Trace(element); }
+  };
+
   // Retrieves the element pointed to by 'togglepopup', 'showpopup', and/or
   // 'hidepopup' content attributes, if any.
-  Element* togglePopupElement(PopupTriggerAction& action) const;
-  Element* togglePopupElement() const;
+  TogglePopupElement togglePopupElement() const;
 
  private:
   enum Type { kSubmit, kReset, kButton };

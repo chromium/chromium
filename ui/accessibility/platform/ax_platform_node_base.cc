@@ -1242,6 +1242,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DescriptionFrom::kButtonLabel:
         from = "button-label";
         break;
+      case ax::mojom::DescriptionFrom::kPopupElement:
+        from = "popup-element";
+        break;
       case ax::mojom::DescriptionFrom::kRelatedElement:
         // Both @title an aria-describedby=tooltip get "tooltip".
         from = IsDescribedByTooltip() ? "tooltip" : "aria-describedby";

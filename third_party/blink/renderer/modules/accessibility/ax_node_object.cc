@@ -1841,10 +1841,9 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   // with type kPopup, then set aria-expanded=false when the popup is hidden,
   // and aria-expanded=true when it is showing.
   if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    if (auto* popup = button->togglePopupElement()) {
-      if (popup->PopupType() == PopupValueType::kPopup) {
-        return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
-      }
+    if (auto popup = button->togglePopupElement().element;
+        popup && popup->PopupType() == PopupValueType::kPopup) {
+      return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
     }
   }
 
@@ -3236,8 +3235,7 @@ String AXNodeObject::TextAlternative(
     NameSources* name_sources) const {
   // If nameSources is non-null, relatedObjects is used in filling it in, so it
   // must be non-null as well.
-  if (name_sources)
-    DCHECK(related_objects);
+  DCHECK(!name_sources || related_objects);
 
   bool found_text_alternative = false;
 
@@ -5592,6 +5590,40 @@ String AXNodeObject::Description(
         description_sources->back().text = description;
       } else {
         return description;
+      }
+    }
+  }
+
+  // For buttons that contain the |togglepopup|, |showpopup|, or |hidepopup|
+  // popup triggering attributes, and the pointed-to element is a valid popup
+  // with type kHint, then set aria-describedby to the hint popup.
+  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
+    auto popup = button->togglePopupElement();
+    if (popup.element && popup.element->PopupType() == PopupValueType::kHint) {
+      description_from = ax::mojom::blink::DescriptionFrom::kPopupElement;
+      if (description_sources) {
+        description_sources->push_back(
+            DescriptionSource(found_description, popup.attribute_name));
+        description_sources->back().type = description_from;
+      }
+      AXObject* popup_ax_object = AXObjectCache().GetOrCreate(popup.element);
+      if (popup_ax_object) {
+        AXObjectSet visited;
+        description = RecursiveTextAlternative(*popup_ax_object,
+                                               popup_ax_object, visited);
+        if (related_objects) {
+          related_objects->push_back(
+              MakeGarbageCollected<NameSourceRelatedObject>(popup_ax_object,
+                                                            description));
+        }
+        if (description_sources) {
+          DescriptionSource& source = description_sources->back();
+          source.related_objects = *related_objects;
+          source.text = description;
+          found_description = true;
+        } else {
+          return description;
+        }
       }
     }
   }
