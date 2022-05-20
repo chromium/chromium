@@ -19,13 +19,13 @@
 
 namespace blink {
 
-class AnnotationAgentImpl;
 class DocumentLoader;
 class LocalFrame;
 class KURL;
 class TextDirective;
 
-class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
+class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor,
+                                             public TextFragmentFinder::Client {
  public:
   // When a document is loaded, this method will be called to see if it meets
   // the criteria to generate a new permission token (at a high level it means:
@@ -67,7 +67,16 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
 
   void Trace(Visitor*) const override;
 
-  void DidFinishAttach(const AnnotationAgentImpl& annotation);
+  // TextFragmentFinder::Client interface
+  void DidFindMatch(const RangeInFlatTree& range, bool is_unique) override;
+
+  void NoMatchFound() override {}
+
+  using DirectiveFinderPair =
+      std::pair<Member<TextDirective>, Member<TextFragmentFinder>>;
+  const HeapVector<DirectiveFinderPair>& DirectiveFinderPairs() const {
+    return directive_finder_pairs_;
+  }
 
   bool IsTextFragmentAnchor() override { return true; }
 
@@ -83,17 +92,18 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
   bool HasSearchEngineSource();
 
   // This keeps track of each TextDirective and its associated
-  // AnnotationAgentImpl. The directive is the DOM object exposed to JS that's
-  // parsed from the URL while the AnnotationAgent is the object responsible
-  // for performing the search for the specified text in the Document.
-  using DirectiveAnnotationPair =
-      std::pair<Member<TextDirective>, Member<AnnotationAgentImpl>>;
-  HeapVector<DirectiveAnnotationPair> directive_annotation_pairs_;
+  // TextFragmentFinder. The directive is the DOM object exposed to JS that's
+  // parsed from the URL while the finder is the object responsible for
+  // performing the search for the specified text in the Document.
+  HeapVector<DirectiveFinderPair> directive_finder_pairs_;
 
   bool search_finished_ = false;
   // Indicates that we should scroll into view the first match that we find, set
   // to true each time the anchor is invoked if the user hasn't scrolled.
   bool first_match_needs_scroll_ = false;
+  // Whether we successfully scrolled into view a match at least once, used for
+  // metrics reporting.
+  bool did_scroll_into_view_ = false;
   // Whether we found a match. Used to determine if we should activate the
   // element fragment anchor at the end of searching.
   bool did_find_match_ = false;
@@ -103,11 +113,11 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
   // Whether PerformPreRafActions should run at the next rAF.
   bool needs_perform_pre_raf_actions_ = false;
 
-  // Whether an annotation agent tried attaching to text in the page.
+  // Whether a text fragment finder was run.
   bool has_performed_first_text_search_ = false;
 
   enum BeforematchState {
-    kNoMatchFound,  // DidFinishAttach has not been called.
+    kNoMatchFound,  // DidFindMatch has not been called.
     kEventQueued,   // Beforematch event has been queued, but not fired yet.
     kFiredEvent     // Beforematch event has been fired.
   } beforematch_state_ = kNoMatchFound;

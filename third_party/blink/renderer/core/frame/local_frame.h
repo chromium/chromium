@@ -692,6 +692,12 @@ class CORE_EXPORT LocalFrame final
 
   LocalFrameToken GetLocalFrameToken() const;
 
+  TextFragmentHandler* GetTextFragmentHandler() const {
+    // |text_fragment_handler_| is always set on the main frame and created
+    // lazily for child frames.
+    return text_fragment_handler_;
+  }
+
   LoaderFreezeMode GetLoaderFreezeMode();
 
   // Swaps `this` LocalFrame in to replace the current frame  (e.g. in the case
@@ -721,10 +727,6 @@ class CORE_EXPORT LocalFrame final
   // Explainer:
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history
   bool ShouldMaintainTrivialSessionHistory() const;
-
-  TextFragmentHandler* GetTextFragmentHandler() const {
-    return text_fragment_handler_;
-  }
 
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
@@ -928,9 +930,8 @@ class CORE_EXPORT LocalFrame final
   using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
   Member<SavedScrollOffsets> saved_scroll_offsets_;
 
-  // Created lazily when needed, either via the browser's SharedHighlighting
-  // binding to it or via a context menu with a selection being opened in a
-  // frame.
+  // Always non-null for the main frame and created lazily for child frames;
+  // null otherwise.
   Member<TextFragmentHandler> text_fragment_handler_;
 
   // Manages a transient affordance for this frame to enter fullscreen.

@@ -281,7 +281,7 @@ TEST_F(AnnotationAgentImplTest, RemoveClearsState) {
 
   EXPECT_FALSE(IsRemoved(agent));
 
-  agent->Attach();
+  agent->Attach(GetDocument());
   ASSERT_TRUE(agent->IsAttached());
 
   agent->Remove();
@@ -305,7 +305,7 @@ TEST_F(AnnotationAgentImplTest, AttachIsSynchronous) {
       mojom::blink::AnnotationType::kSharedHighlight,
       *MakeGarbageCollected<MockAnnotationSelector>());
 
-  agent->Attach();
+  agent->Attach(GetDocument());
   EXPECT_TRUE(agent->IsAttached());
 }
 
@@ -329,14 +329,14 @@ TEST_F(AnnotationAgentImplTest, SuccessfulAttachCreatesMarker) {
   auto* agent_bar = CreateAgentForRange(range_bar);
   ASSERT_TRUE(agent_bar);
 
-  agent_foo->Attach();
+  agent_foo->Attach(GetDocument());
   ASSERT_TRUE(agent_foo->IsAttached());
 
   // A marker should have been created on "FOO" but not yet on "BAR".
   EXPECT_EQ(NumMarkersInRange(*range_foo), 1ul);
   EXPECT_EQ(NumMarkersInRange(*range_bar), 0ul);
 
-  agent_bar->Attach();
+  agent_bar->Attach(GetDocument());
   ASSERT_TRUE(agent_bar->IsAttached());
 
   // Both "FOO" and "BAR" should each have a single marker.
@@ -370,8 +370,8 @@ TEST_F(AnnotationAgentImplTest, RemovedAgentRemovesMarkers) {
   auto* agent_bar = CreateAgentForRange(range_bar);
   ASSERT_TRUE(agent_bar);
 
-  agent_foo->Attach();
-  agent_bar->Attach();
+  agent_foo->Attach(GetDocument());
+  agent_bar->Attach(GetDocument());
   ASSERT_EQ(NumMarkersInRange(*range_foo), 1ul);
   ASSERT_EQ(NumMarkersInRange(*range_bar), 1ul);
 
@@ -405,7 +405,7 @@ TEST_F(AnnotationAgentImplTest, AgentFailsAttachment) {
       CreateRangeToExpectedText(p, 0, 17, "TEST FOO PAGE BAR");
   ASSERT_EQ(NumMarkersInRange(*range), 0ul);
 
-  agent->Attach();
+  agent->Attach(GetDocument());
 
   EXPECT_EQ(NumMarkersInRange(*range), 0ul);
   EXPECT_FALSE(agent->IsAttached());
@@ -432,7 +432,7 @@ TEST_F(AnnotationAgentImplTest, AgentFailsAttachmentReportsToHost) {
   ASSERT_TRUE(host.agent_.is_connected());
   ASSERT_FALSE(host.did_finish_attachment_rect_);
 
-  agent->Attach();
+  agent->Attach(GetDocument());
   host.FlushForTesting();
 
   ASSERT_TRUE(host.did_finish_attachment_rect_);
@@ -511,7 +511,7 @@ TEST_F(AnnotationAgentImplTest, AttachmentReportsRectsToHost) {
   ASSERT_FALSE(host_foo.did_finish_attachment_rect_);
   ASSERT_FALSE(host_bar.did_finish_attachment_rect_);
 
-  agent_foo->Attach();
+  agent_foo->Attach(GetDocument());
   EXPECT_TRUE(agent_foo->IsAttached());
 
   host_foo.FlushForTesting();
@@ -520,7 +520,7 @@ TEST_F(AnnotationAgentImplTest, AttachmentReportsRectsToHost) {
   EXPECT_EQ(*host_foo.did_finish_attachment_rect_, gfx::Rect(0, 1010, 30, 10));
   ASSERT_FALSE(host_bar.did_finish_attachment_rect_);
 
-  agent_bar->Attach();
+  agent_bar->Attach(GetDocument());
   EXPECT_TRUE(agent_bar->IsAttached());
 
   host_bar.FlushForTesting();
@@ -567,7 +567,7 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoView) {
 
   MockAnnotationAgentHost host_foo;
   host_foo.BindToAgent(*agent_foo);
-  agent_foo->Attach();
+  agent_foo->Attach(GetDocument());
   ASSERT_TRUE(agent_foo->IsAttached());
 
   host_foo.FlushForTesting();
@@ -630,7 +630,7 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoViewZoomed) {
 
   MockAnnotationAgentHost host_foo;
   host_foo.BindToAgent(*agent_foo);
-  agent_foo->Attach();
+  agent_foo->Attach(GetDocument());
   ASSERT_TRUE(agent_foo->IsAttached());
 
   host_foo.FlushForTesting();

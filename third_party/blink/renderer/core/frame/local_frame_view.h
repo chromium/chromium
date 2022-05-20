@@ -445,7 +445,7 @@ class CORE_EXPORT LocalFrameView final
                           bool should_scroll = true);
   FragmentAnchor* GetFragmentAnchor() { return fragment_anchor_; }
   void InvokeFragmentAnchor();
-  void ClearFragmentAnchor();
+  void DismissFragmentAnchor();
 
   bool ShouldSetCursor() const;
 

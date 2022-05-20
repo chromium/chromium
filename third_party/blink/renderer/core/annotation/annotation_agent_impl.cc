@@ -66,9 +66,8 @@ void AnnotationAgentImpl::Bind(
       WTF::Bind(&AnnotationAgentImpl::Remove, WrapWeakPersistent(this)));
 }
 
-void AnnotationAgentImpl::Attach() {
+void AnnotationAgentImpl::Attach(Document& document) {
   DCHECK(!IsRemoved());
-  Document& document = *owning_container_->GetSupplementable();
   selector_->FindRange(document, AnnotationSelector::kSynchronous,
                        WTF::Bind(&AnnotationAgentImpl::DidFinishAttach,
                                  WrapWeakPersistent(this)));
@@ -109,7 +108,7 @@ void AnnotationAgentImpl::Remove() {
   owning_container_.Clear();
 }
 
-void AnnotationAgentImpl::ScrollIntoView() const {
+void AnnotationAgentImpl::ScrollIntoView() {
   DCHECK(!IsRemoved());
 
   if (!IsAttached())
@@ -153,18 +152,6 @@ void AnnotationAgentImpl::DidFinishAttach(const RangeInFlatTree* range) {
                        ToPositionInDOMTree(attached_range_->EndPosition()));
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
-
-    // TODO(bokan): DocumentMarkers don't support overlapping markers. We could
-    // be smarter about how we construct markers so they don't overlap - or we
-    // could make DocumentMarkerController allow overlaps.
-    // https://crbug.com/1327370.
-    if (!document->Markers()
-             .MarkersIntersectingRange(
-                 attached_range_->ToEphemeralRange(),
-                 DocumentMarker::MarkerTypes::TextFragment())
-             .IsEmpty()) {
-      return;
-    }
 
     // TODO(bokan): Add new marker types based on `type_`.
     document->Markers().AddTextFragmentMarker(dom_range);
