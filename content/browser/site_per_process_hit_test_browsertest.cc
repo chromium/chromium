@@ -931,7 +931,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::ValuesIn(kMultiScale)));
 
 // Flaky on MSAN. https://crbug.com/959924
-#if defined(MEMORY_SANITIZER)
+// Flaky on Linux Wayland and Lacros. https://crbug.com/1158437
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ScrollNestedLocalNonFastScrollableDiv \
   DISABLED_ScrollNestedLocalNonFastScrollableDiv
 #else
