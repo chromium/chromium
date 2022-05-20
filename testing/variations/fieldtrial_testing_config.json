@@ -5020,22 +5020,6 @@
             ]
         }
     ],
-    "MoreFrequentUmaUploads": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MoreFrequentUmaUploads"
-                    ]
-                }
-            ]
-        }
-    ],
     "MuteCompromisedPasswords": [
         {
             "platforms": [
