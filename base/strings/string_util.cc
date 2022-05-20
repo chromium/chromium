@@ -90,16 +90,6 @@ int CompareCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
 
-bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece b) {
-  return a.size() == b.size() &&
-         internal::CompareCaseInsensitiveASCIIT(a, b) == 0;
-}
-
-bool EqualsCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b) {
-  return a.size() == b.size() &&
-         internal::CompareCaseInsensitiveASCIIT(a, b) == 0;
-}
-
 const std::string& EmptyString() {
   static const base::NoDestructor<std::string> s;
   return *s;

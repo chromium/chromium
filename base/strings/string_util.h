@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <initializer_list>
 #include <string>
 #include <type_traits>
@@ -158,11 +159,32 @@ template<typename Char> struct CaseInsensitiveCompareASCII {
 BASE_EXPORT int CompareCaseInsensitiveASCII(StringPiece a, StringPiece b);
 BASE_EXPORT int CompareCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b);
 
+namespace internal {
+template <typename CharT, typename CharU>
+inline bool EqualsCaseInsensitiveASCIIT(BasicStringPiece<CharT> a,
+                                        BasicStringPiece<CharU> b) {
+  return std::equal(a.begin(), a.end(), b.begin(), b.end(),
+                    [](auto lhs, auto rhs) {
+                      return ToLowerASCII(lhs) == ToLowerASCII(rhs);
+                    });
+}
+}  // namespace internal
+
 // Equality for ASCII case-insensitive comparisons. For full Unicode support,
 // use base::i18n::ToLower or base::i18h::FoldCase and then compare with either
 // == or !=.
-BASE_EXPORT bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece b);
-BASE_EXPORT bool EqualsCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b);
+inline bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+inline bool EqualsCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+inline bool EqualsCaseInsensitiveASCII(StringPiece16 a, StringPiece b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+inline bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece16 b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
 
 // These threadsafe functions return references to globally unique empty
 // strings.

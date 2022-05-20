@@ -24,11 +24,6 @@ int CompareCaseInsensitiveASCII(WStringPiece a, WStringPiece b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
 
-bool EqualsCaseInsensitiveASCII(WStringPiece a, WStringPiece b) {
-  return a.size() == b.size() &&
-         internal::CompareCaseInsensitiveASCIIT(a, b) == 0;
-}
-
 bool RemoveChars(WStringPiece input,
                  WStringPiece remove_chars,
                  std::wstring* output) {
