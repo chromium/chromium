@@ -490,6 +490,12 @@ def main():
                       help='Build arm binaries. Only valid on macOS.')
   parser.add_argument('--disable-asserts', action='store_true',
                       help='build with asserts disabled')
+  parser.add_argument('--host-cc',
+                      help='build with host C compiler, requires --host-cxx as '
+                      'well')
+  parser.add_argument('--host-cxx',
+                      help='build with host C++ compiler, requires --host-cc '
+                      'as well')
   parser.add_argument('--gcc-toolchain', help='what gcc toolchain to use for '
                       'building; --gcc-toolchain=/opt/foo picks '
                       '/opt/foo/bin/gcc')
@@ -664,12 +670,18 @@ def main():
 
   if sys.platform.startswith('linux'):
     MaybeDownloadHostGcc(args)
-    DownloadPinnedClang()
-    cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang')
-    cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang++')
-    # Use the libraries in the specified gcc installation for building.
-    cflags.append('--gcc-toolchain=' + args.gcc_toolchain)
-    cxxflags.append('--gcc-toolchain=' + args.gcc_toolchain)
+    if args.host_cc or args.host_cxx:
+      assert args.host_cc and args.host_cxx, \
+             "--host-cc and --host-cxx need to be used together"
+      cc = args.host_cc
+      cxx = args.host_cxx
+    else:
+      DownloadPinnedClang()
+      cc = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang')
+      cxx = os.path.join(PINNED_CLANG_DIR, 'bin', 'clang++')
+      # Use the libraries in the specified gcc installation for building.
+      cflags.append('--gcc-toolchain=' + args.gcc_toolchain)
+      cxxflags.append('--gcc-toolchain=' + args.gcc_toolchain)
     base_cmake_args += [
         # The host clang has lld.
         '-DLLVM_ENABLE_LLD=ON',
