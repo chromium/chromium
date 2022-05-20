@@ -235,4 +235,17 @@ suite('Metrics', function() {
         .querySelector<HTMLElement>('#menuDeleteButton')!.click();
     assertEquals(1, histogram[SyncedTabsHistogram.HIDE_FOR_NOW]);
   });
+
+  test('history-clusters-duration', async () => {
+    await finishSetup([]);
+
+    navigateTo('/journeys', app);
+    await flushTasks();
+
+    navigateTo('/history', app);
+    await flushTasks();
+
+    const args = await testService.whenCalled('recordLongTime');
+    assertEquals(args[0], 'History.Clusters.WebUISessionDuration');
+  });
 });

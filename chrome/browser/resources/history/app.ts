@@ -19,6 +19,7 @@ import './strings.m.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
@@ -241,6 +242,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private tabsIcons_: Array<string>;
   private tabsNames_: Array<string>;
   private toolbarShadow_: boolean;
+  private historyClustersViewStartTime_: Date|null = null;
 
   constructor() {
     super();
@@ -259,6 +261,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
     this.eventTracker_.add(
         document, 'keydown', e => this.onKeyDown_(e as KeyboardEvent));
+    this.eventTracker_.add(
+        document, 'visibilitychange', this.onVisibilityChange_.bind(this));
     this.addWebUIListener(
         'sign-in-state-changed',
         (signedIn: boolean) => this.onSignInStateChanged_(signedIn));
@@ -404,6 +408,21 @@ export class HistoryAppElement extends HistoryAppElementBase {
     }
   }
 
+  private onVisibilityChange_() {
+    if (this.selectedPage_ !== Page.HISTORY_CLUSTERS) {
+      return;
+    }
+
+    if (document.visibilityState === 'hidden') {
+      this.recordHistoryClustersDuration_();
+    } else if (
+        document.visibilityState === 'visible' &&
+        this.historyClustersViewStartTime_ === null) {
+      // Restart the timer if the user switches back to the History tab.
+      this.historyClustersViewStartTime_ = new Date();
+    }
+  }
+
   private onDeleteCommand_() {
     if (this.$.toolbar.count === 0 || this.pendingDelete_) {
       return;
@@ -460,10 +479,18 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return querying && !incremental && searchTerm !== '';
   }
 
-  private selectedPageChanged_() {
+  private selectedPageChanged_(newPage: Page, oldPage: Page) {
     this.unselectAll();
     this.historyViewChanged_();
     this.maybeUpdateSelectedHistoryTab_();
+
+    if (oldPage === Page.HISTORY_CLUSTERS &&
+        newPage !== Page.HISTORY_CLUSTERS) {
+      this.recordHistoryClustersDuration_();
+    }
+    if (newPage === Page.HISTORY_CLUSTERS) {
+      this.historyClustersViewStartTime_ = new Date();
+    }
   }
 
   private updateScrollTarget_() {
@@ -505,6 +532,18 @@ export class HistoryAppElement extends HistoryAppElementBase {
       this._scrollHandler();
     });
     this.recordHistoryPageView_();
+  }
+
+  // Records the history clusters page duration.
+  private recordHistoryClustersDuration_() {
+    assert(this.historyClustersViewStartTime_ !== null);
+
+    const duration =
+        new Date().getTime() - this.historyClustersViewStartTime_.getTime();
+    this.browserService_!.recordLongTime(
+        'History.Clusters.WebUISessionDuration', duration);
+
+    this.historyClustersViewStartTime_ = null;
   }
 
   private hasDrawerChanged_() {

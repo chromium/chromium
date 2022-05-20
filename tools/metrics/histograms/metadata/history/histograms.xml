@@ -1028,6 +1028,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.Clusters.WebUISessionDuration" units="ms"
+    expires_after="2022-11-30">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    Records the amount of time the Journeys WebUI is open.
+
+    This timer is started when the Journeys WebUI is loaded. The Journeys WebUI
+    is loaded when either the user directly goes to the Journeys WebUI, or when
+    the user switches to the Journeys tab from a different tab.
+
+    The timer is stopped and the elapsed time recorded when either the whole
+    WebUI is closed, or if the user disables the Journeys preference, or if the
+    user switches tabs off the Journeys tab onto a different one.
+
+    Elapsed times longer than one hour are recorded as one hour.
+  </summary>
+</histogram>
+
 <histogram name="History.DatabaseAdvancedMetricsTime" units="ms"
     expires_after="M77">
   <owner>shess@chromium.org</owner>

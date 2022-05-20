@@ -33,6 +33,7 @@ export interface BrowserService {
   recordHistogram(histogram: string, value: number, max: number): void;
   recordAction(action: string): void;
   recordTime(histogram: string, time: number): void;
+  recordLongTime(histogram: string, time: number): void;
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
   queryHistoryContinuation(): Promise<QueryResult>;
@@ -94,6 +95,13 @@ export class BrowserServiceImpl implements BrowserService {
 
   recordTime(histogram: string, time: number) {
     chrome.send('metricsHandler:recordTime', [histogram, time]);
+  }
+
+  recordLongTime(histogram: string, time: number) {
+    // It's a bit odd that this is the only one to use chrome.metricsPrivate,
+    // but that's because the other code predates chrome.metricsPrivate.
+    // In any case, the MetricsHandler doesn't support long time histograms.
+    chrome.metricsPrivate.recordLongTime(histogram, time);
   }
 
   navigateToUrl(url: string, target: string, e: MouseEvent) {
