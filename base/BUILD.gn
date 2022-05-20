@@ -1019,11 +1019,11 @@ mixed_component("base") {
 
   if (is_win) {
     sources += [
+      "debug/close_handle_hook_win.cc",
+      "debug/close_handle_hook_win.h",
       "debug/debugger_win.cc",
       "debug/gdi_debug_util_win.cc",
       "debug/gdi_debug_util_win.h",
-      "debug/handle_hooks_win.cc",
-      "debug/handle_hooks_win.h",
       "debug/invalid_access_win.cc",
       "debug/invalid_access_win.h",
       "debug/stack_trace_win.cc",

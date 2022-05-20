@@ -11,21 +11,6 @@ namespace win {
 
 using base::win::internal::ScopedHandleVerifier;
 
-std::ostream& operator<<(std::ostream& os, HandleOperation operation) {
-  switch (operation) {
-    case HandleOperation::kHandleAlreadyTracked:
-      return os << "Handle Already Tracked";
-    case HandleOperation::kCloseHandleNotTracked:
-      return os << "Closing an untracked handle";
-    case HandleOperation::kCloseHandleNotOwner:
-      return os << "Closing a handle owned by something else";
-    case HandleOperation::kCloseHandleHook:
-      return os << "CloseHandleHook validation failure";
-    case HandleOperation::kDuplicateHandleHook:
-      return os << "DuplicateHandleHook validation failure";
-  }
-}
-
 // Static.
 bool HandleTraits::CloseHandle(HANDLE handle) {
   return ScopedHandleVerifier::Get()->CloseHandle(handle);
@@ -51,8 +36,8 @@ void DisableHandleVerifier() {
   return ScopedHandleVerifier::Get()->Disable();
 }
 
-void OnHandleBeingClosed(HANDLE handle, HandleOperation operation) {
-  return ScopedHandleVerifier::Get()->OnHandleBeingClosed(handle, operation);
+void OnHandleBeingClosed(HANDLE handle) {
+  return ScopedHandleVerifier::Get()->OnHandleBeingClosed(handle);
 }
 
 }  // namespace win

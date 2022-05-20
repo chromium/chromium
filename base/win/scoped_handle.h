@@ -7,8 +7,6 @@
 
 #include "base/win/windows_types.h"
 
-#include <ostream>
-
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
@@ -27,16 +25,6 @@
 
 namespace base {
 namespace win {
-
-enum class HandleOperation {
-  kHandleAlreadyTracked,
-  kCloseHandleNotTracked,
-  kCloseHandleNotOwner,
-  kCloseHandleHook,
-  kDuplicateHandleHook
-};
-
-std::ostream& operator<<(std::ostream& os, HandleOperation operation);
 
 // Generic wrapper for raw handles that takes care of closing handles
 // automatically. The class interface follows the style of
@@ -125,9 +113,8 @@ class GenericScopedHandle {
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ScopedHandleDeathTest, HandleVerifierWrongOwner);
-  FRIEND_TEST_ALL_PREFIXES(ScopedHandleDeathTest,
-                           HandleVerifierUntrackedHandle);
+  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierWrongOwner);
+  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierUntrackedHandle);
   Handle handle_;
 };
 
@@ -196,7 +183,7 @@ using UncheckedScopedHandle =
     GenericScopedHandle<HandleTraits, DummyVerifierTraits>;
 using CheckedScopedHandle = GenericScopedHandle<HandleTraits, VerifierTraits>;
 
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() && !defined(ARCH_CPU_64_BITS)
 using ScopedHandle = CheckedScopedHandle;
 #else
 using ScopedHandle = UncheckedScopedHandle;
@@ -211,8 +198,7 @@ BASE_EXPORT void DisableHandleVerifier();
 // verification of improper handle closing is desired. If |handle| is being
 // tracked by the handle verifier and ScopedHandle is not the one closing it,
 // a CHECK is generated.
-BASE_EXPORT void OnHandleBeingClosed(HANDLE handle, HandleOperation operation);
-
+BASE_EXPORT void OnHandleBeingClosed(HANDLE handle);
 }  // namespace win
 }  // namespace base
 

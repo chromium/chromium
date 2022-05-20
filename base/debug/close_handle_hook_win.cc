@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/debug/handle_hooks_win.h"
+#include "base/debug/close_handle_hook_win.h"
 
-#include <windows.h>
-
+#include <Windows.h>
 #include <psapi.h>
 #include <stddef.h>
 
-#include "base/logging.h"
+#include <algorithm>
+#include <memory>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/pe_image.h"
 #include "base/win/scoped_handle.h"
@@ -19,18 +20,24 @@
 
 namespace {
 
-using CloseHandleType = decltype(&::CloseHandle);
-using DuplicateHandleType = decltype(&::DuplicateHandle);
+typedef BOOL (WINAPI* CloseHandleType) (HANDLE handle);
 
-CloseHandleType g_close_function = nullptr;
-DuplicateHandleType g_duplicate_function = nullptr;
+typedef BOOL (WINAPI* DuplicateHandleType)(HANDLE source_process,
+                                           HANDLE source_handle,
+                                           HANDLE target_process,
+                                           HANDLE* target_handle,
+                                           DWORD desired_access,
+                                           BOOL inherit_handle,
+                                           DWORD options);
+
+CloseHandleType g_close_function = NULL;
+DuplicateHandleType g_duplicate_function = NULL;
 
 // The entry point for CloseHandle interception. This function notifies the
 // verifier about the handle that is being closed, and calls the original
 // function.
 BOOL WINAPI CloseHandleHook(HANDLE handle) {
-  base::win::OnHandleBeingClosed(handle,
-                                 base::win::HandleOperation::kCloseHandleHook);
+  base::win::OnHandleBeingClosed(handle);
   return g_close_function(handle);
 }
 
@@ -43,8 +50,7 @@ BOOL WINAPI DuplicateHandleHook(HANDLE source_process,
                                 DWORD options) {
   if ((options & DUPLICATE_CLOSE_SOURCE) &&
       (GetProcessId(source_process) == ::GetCurrentProcessId())) {
-    base::win::OnHandleBeingClosed(
-        source_handle, base::win::HandleOperation::kDuplicateHandleHook);
+    base::win::OnHandleBeingClosed(source_handle);
   }
 
   return g_duplicate_function(source_process, source_handle, target_process,
@@ -68,7 +74,9 @@ class AutoProtectMemory {
   AutoProtectMemory(const AutoProtectMemory&) = delete;
   AutoProtectMemory& operator=(const AutoProtectMemory&) = delete;
 
-  ~AutoProtectMemory() { RevertProtection(); }
+  ~AutoProtectMemory() {
+    RevertProtection();
+  }
 
   // Grants write access to a given memory range.
   bool ChangeProtection(void* address, size_t bytes);
@@ -93,7 +101,7 @@ bool AutoProtectMemory::ChangeProtection(void* address, size_t bytes) {
     return false;
 
   DWORD is_executable = (PAGE_EXECUTE | PAGE_EXECUTE_READ |
-                         PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY) &
+                        PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY) &
                         memory_info.Protect;
 
   DWORD protect = is_executable ? PAGE_EXECUTE_READWRITE : PAGE_READWRITE;
@@ -120,12 +128,9 @@ void AutoProtectMemory::RevertProtection() {
   old_protect_ = 0;
 }
 
-#if defined(ARCH_CPU_32_BITS)
-// Performs an EAT interception. Only supported on 32-bit.
-void EATPatch(HMODULE module,
-              const char* function_name,
-              void* new_function,
-              void** old_function) {
+// Performs an EAT interception.
+void EATPatch(HMODULE module, const char* function_name,
+              void* new_function, void** old_function) {
   if (!module)
     return;
 
@@ -145,35 +150,30 @@ void EATPatch(HMODULE module,
     return;
 
   // Perform the patch.
-  *eat_entry =
-      base::checked_cast<DWORD>(reinterpret_cast<uintptr_t>(new_function) -
-                                reinterpret_cast<uintptr_t>(module));
+  *eat_entry = static_cast<DWORD>(reinterpret_cast<uintptr_t>(new_function) -
+                                  reinterpret_cast<uintptr_t>(module));
 }
-#endif  // defined(ARCH_CPU_32_BITS)
 
 // Performs an IAT interception.
-std::unique_ptr<base::win::IATPatchFunction> IATPatch(HMODULE module,
-                                                      const char* function_name,
-                                                      void* new_function,
-                                                      void** old_function) {
+base::win::IATPatchFunction* IATPatch(HMODULE module, const char* function_name,
+                                      void* new_function, void** old_function) {
   if (!module)
-    return nullptr;
+    return NULL;
 
-  auto patch = std::make_unique<base::win::IATPatchFunction>();
+  base::win::IATPatchFunction* patch = new base::win::IATPatchFunction;
   __try {
     // There is no guarantee that |module| is still loaded at this point.
     if (patch->PatchFromModule(module, "kernel32.dll", function_name,
                                new_function)) {
-      return nullptr;
+      delete patch;
+      return NULL;
     }
-  } __except ((GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION ||
-               GetExceptionCode() == EXCEPTION_GUARD_PAGE ||
-               GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR)
-                  ? EXCEPTION_EXECUTE_HANDLER
-                  : EXCEPTION_CONTINUE_SEARCH) {
+  } __except((GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION ||
+              GetExceptionCode() == EXCEPTION_GUARD_PAGE ||
+              GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR) ?
+             EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) {
     // Leak the patch.
-    std::ignore = patch.release();
-    return nullptr;
+    return NULL;
   }
 
   if (!(*old_function)) {
@@ -184,32 +184,44 @@ std::unique_ptr<base::win::IATPatchFunction> IATPatch(HMODULE module,
   return patch;
 }
 
-}  // namespace
+// Keeps track of all the hooks needed to intercept functions which could
+// possibly close handles.
+class HandleHooks {
+ public:
+  HandleHooks() {}
 
-// static
+  HandleHooks(const HandleHooks&) = delete;
+  HandleHooks& operator=(const HandleHooks&) = delete;
+
+  ~HandleHooks() {}
+
+  void AddIATPatch(HMODULE module);
+  void AddEATPatch();
+
+ private:
+  std::vector<base::win::IATPatchFunction*> hooks_;
+};
+
 void HandleHooks::AddIATPatch(HMODULE module) {
   if (!module)
     return;
 
-  auto close_handle_patch =
+  base::win::IATPatchFunction* patch = NULL;
+  patch =
       IATPatch(module, "CloseHandle", reinterpret_cast<void*>(&CloseHandleHook),
                reinterpret_cast<void**>(&g_close_function));
-  if (!close_handle_patch)
+  if (!patch)
     return;
-  // This is intentionally leaked.
-  std::ignore = close_handle_patch.release();
+  hooks_.push_back(patch);
 
-  auto duplicate_handle_patch = IATPatch(
-      module, "DuplicateHandle", reinterpret_cast<void*>(&DuplicateHandleHook),
-      reinterpret_cast<void**>(&g_duplicate_function));
-  if (!duplicate_handle_patch)
+  patch = IATPatch(module, "DuplicateHandle",
+                   reinterpret_cast<void*>(&DuplicateHandleHook),
+                   reinterpret_cast<void**>(&g_duplicate_function));
+  if (!patch)
     return;
-  // This is intentionally leaked.
-  std::ignore = duplicate_handle_patch.release();
+  hooks_.push_back(patch);
 }
 
-#if defined(ARCH_CPU_32_BITS)
-// static
 void HandleHooks::AddEATPatch() {
   // An attempt to restore the entry on the table at destruction is not safe.
   EATPatch(GetModuleHandleA("kernel32.dll"), "CloseHandle",
@@ -219,23 +231,32 @@ void HandleHooks::AddEATPatch() {
            reinterpret_cast<void*>(&DuplicateHandleHook),
            reinterpret_cast<void**>(&g_duplicate_function));
 }
-#endif  // defined(ARCH_CPU_32_BITS)
 
-// static
-void HandleHooks::PatchLoadedModules() {
+void PatchLoadedModules(HandleHooks* hooks) {
   const DWORD kSize = 256;
   DWORD returned;
-  auto modules = std::make_unique<HMODULE[]>(kSize);
-  if (!::EnumProcessModules(GetCurrentProcess(), modules.get(),
-                            kSize * sizeof(HMODULE), &returned)) {
+  std::unique_ptr<HMODULE[]> modules(new HMODULE[kSize]);
+  if (!EnumProcessModules(GetCurrentProcess(), modules.get(),
+                          kSize * sizeof(HMODULE), &returned)) {
     return;
   }
   returned /= sizeof(HMODULE);
   returned = std::min(kSize, returned);
 
   for (DWORD current = 0; current < returned; current++) {
-    AddIATPatch(modules[current]);
+    hooks->AddIATPatch(modules[current]);
   }
+}
+
+}  // namespace
+
+void InstallHandleHooks() {
+  static HandleHooks* hooks = new HandleHooks();
+
+  // Performing EAT interception first is safer in the presence of other
+  // threads attempting to call CloseHandle.
+  hooks->AddEATPatch();
+  PatchLoadedModules(hooks);
 }
 
 }  // namespace debug
