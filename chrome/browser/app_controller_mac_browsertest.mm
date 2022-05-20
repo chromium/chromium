@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
-#import <Foundation/NSAppleEventDescriptor.h>
-#import <objc/message.h>
-#import <objc/runtime.h>
 #include <stddef.h>
 
 #include <string>
@@ -79,6 +75,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/base/mac/url_conversions.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -87,37 +84,13 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
-using base::SysUTF16ToNSString;
-
-@interface AppController (ForTesting)
-- (void)getUrl:(NSAppleEventDescriptor*)event
-     withReply:(NSAppleEventDescriptor*)reply;
-@end
-
 namespace {
 
 GURL g_open_shortcut_url = GURL::EmptyGURL();
 
-// Returns an Apple Event that instructs the application to open |url|.
-NSAppleEventDescriptor* AppleEventToOpenUrl(const GURL& url) {
-  NSAppleEventDescriptor* shortcut_event = [[[NSAppleEventDescriptor alloc]
-      initWithEventClass:kASAppleScriptSuite
-                 eventID:kASSubroutineEvent
-        targetDescriptor:nil
-                returnID:kAutoGenerateReturnID
-           transactionID:kAnyTransactionID] autorelease];
-  NSString* url_string = base::SysUTF8ToNSString(url.spec());
-  [shortcut_event setParamDescriptor:[NSAppleEventDescriptor
-                                         descriptorWithString:url_string]
-                          forKeyword:keyDirectObject];
-  return shortcut_event;
-}
-
 // Instructs the NSApp's delegate to open |url|.
-void SendAppleEventToOpenUrlToAppController(const GURL& url) {
-  AppController* controller =
-      base::mac::ObjCCast<AppController>([NSApp delegate]);
-  [controller getUrl:AppleEventToOpenUrl(url) withReply:nullptr];
+void SendOpenUrlToAppController(const GURL& url) {
+  [NSApp.delegate application:NSApp openURLs:@[ net::NSURLWithGURL(url) ]];
 }
 
 void RunClosureWhenProfileInitialized(const base::RepeatingClosure& closure,
@@ -199,7 +172,7 @@ class ProfileDestructionWaiter {
   if (!g_open_shortcut_url.is_valid())
     return;
 
-  SendAppleEventToOpenUrlToAppController(g_open_shortcut_url);
+  SendOpenUrlToAppController(g_open_shortcut_url);
 }
 
 @end
@@ -705,8 +678,8 @@ class AppControllerOpenShortcutBrowserTest : public InProcessBrowserTest {
     Method destination = class_getInstanceMethod(openShortcutClass,
         targetMethod);
 
-    ASSERT_TRUE(original != NULL);
-    ASSERT_TRUE(destination != NULL);
+    ASSERT_TRUE(original);
+    ASSERT_TRUE(destination);
 
     method_exchangeImplementations(original, destination);
 
@@ -735,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerOpenShortcutBrowserTest,
 
 class AppControllerReplaceNTPBrowserTest : public InProcessBrowserTest {
  protected:
-  AppControllerReplaceNTPBrowserTest() {}
+  AppControllerReplaceNTPBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -777,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
                 ->GetLastCommittedURL());
 
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
-  SendAppleEventToOpenUrlToAppController(simple);
+  SendOpenUrlToAppController(simple);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   content::TestNavigationObserver event_navigation_observer(
@@ -801,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
   // Open a url.
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
-  SendAppleEventToOpenUrlToAppController(simple);
+  SendOpenUrlToAppController(simple);
   // It should be opened in the regular browser.
   content::TestNavigationObserver event_navigation_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
@@ -816,8 +789,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
 
 class AppControllerMainMenuBrowserTest : public InProcessBrowserTest {
  protected:
-  AppControllerMainMenuBrowserTest() {
-  }
+  AppControllerMainMenuBrowserTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
@@ -979,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath path2 = profile_manager->GenerateNextProfileDirectoryPath();
   std::unique_ptr<Profile> profile2 =
-      Profile::CreateProfile(path2, NULL, Profile::CREATE_MODE_SYNCHRONOUS);
+      Profile::CreateProfile(path2, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
   Profile* profile2_ptr = profile2.get();
   profile_manager->RegisterTestingProfile(std::move(profile2), false);
   bookmarks::test::WaitForBookmarkModelToLoad(
@@ -1003,19 +975,19 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_NE(profile1_submenu, profile2_submenu);
 
   // Test that only bookmark 2 is shown.
-  EXPECT_FALSE([[ac bookmarkMenuBridge]->BookmarkMenu() itemWithTitle:
-      SysUTF16ToNSString(title1)]);
-  EXPECT_TRUE([[ac bookmarkMenuBridge]->BookmarkMenu() itemWithTitle:
-      SysUTF16ToNSString(title2)]);
+  EXPECT_FALSE([[ac bookmarkMenuBridge]->BookmarkMenu()
+      itemWithTitle:base::SysUTF16ToNSString(title1)]);
+  EXPECT_TRUE([[ac bookmarkMenuBridge]->BookmarkMenu()
+      itemWithTitle:base::SysUTF16ToNSString(title2)]);
 
   // Switch *back* to profile 1 and *don't* force the menu to build.
   [ac setLastProfile:profile1];
 
   // Test that only bookmark 1 is shown in the restored menu.
-  EXPECT_TRUE([[ac bookmarkMenuBridge]->BookmarkMenu() itemWithTitle:
-      SysUTF16ToNSString(title1)]);
-  EXPECT_FALSE([[ac bookmarkMenuBridge]->BookmarkMenu() itemWithTitle:
-      SysUTF16ToNSString(title2)]);
+  EXPECT_TRUE([[ac bookmarkMenuBridge]->BookmarkMenu()
+      itemWithTitle:base::SysUTF16ToNSString(title1)]);
+  EXPECT_FALSE([[ac bookmarkMenuBridge]->BookmarkMenu()
+      itemWithTitle:base::SysUTF16ToNSString(title2)]);
 
   // Ensure a cached menu was used.
   EXPECT_EQ(profile1_submenu, [ac bookmarkMenuBridge]->BookmarkMenu());
