@@ -8023,6 +8023,9 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   const std::vector<IPEndPoint> nameservers = {
       CreateExpected("192.168.0.1", 92)};
   overrides.nameservers = nameservers;
+  overrides.dns_over_tls_active = true;
+  const std::string dns_over_tls_hostname = "dns.example.com";
+  overrides.dns_over_tls_hostname = dns_over_tls_hostname;
   const std::vector<std::string> search = {"str"};
   overrides.search = search;
   overrides.append_to_multi_label_name = false;
@@ -8053,6 +8056,8 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
   const DnsConfig* overridden_config = client_ptr->GetEffectiveConfig();
   ASSERT_TRUE(overridden_config);
   EXPECT_EQ(nameservers, overridden_config->nameservers);
+  EXPECT_TRUE(overridden_config->dns_over_tls_active);
+  EXPECT_EQ(dns_over_tls_hostname, overridden_config->dns_over_tls_hostname);
   EXPECT_EQ(search, overridden_config->search);
   EXPECT_FALSE(overridden_config->append_to_multi_label_name);
   EXPECT_EQ(ndots, overridden_config->ndots);
