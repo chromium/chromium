@@ -14,13 +14,6 @@ import("//third_party/fuchsia-sdk/sdk/build/cipd.gni")
 
 visibility = [ ":*" ]
 
-# gn binary location.
-if (host_os == "mac") {
-  _gn_path = "//buildtools/mac/gn"
-} else if (host_os == "linux") {
-  _gn_path = "//buildtools/linux64/gn"
-}
-
 if (is_chrome_branded) {
   package_base_path = "chrome_internal/fuchsia"
 } else {
@@ -92,6 +85,14 @@ template("cipd_archive") {
     _license_path = "${target_gen_dir}/${target_name}/LICENSE"
     _invoker_dir = get_label_info(":${invoker.target_name}", "dir")
     _license_target = "${_invoker_dir}:${invoker.target_name}${_archive_suffix}"
+
+    # GN is used by the script and is thus an input.
+    if (host_os == "mac") {
+      _gn_path = "//buildtools/mac/gn"
+    } else if (host_os == "linux") {
+      _gn_path = "//buildtools/linux64/gn"
+    }
+
     script = "//tools/licenses.py"
     inputs = [ "$_gn_path" ]
     outputs = [ _license_path ]
