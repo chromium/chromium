@@ -106,6 +106,7 @@
 <translation id="3533435340678213462">개인 정보를 보호하기 위해 Chromium에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chromium에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="3567254597502212821">이 기기에서 Chromium을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="3575459661164320785">컴퓨터에 유해한 소프트웨어가 있습니다. Chromium에서 유해한 소프트웨어를 삭제하고, 설정을 복원하고, 확장 프로그램을 사용 중지하여 브라우저가 다시 정상적으로 작동하도록 할 수 있습니다.</translation>
+<translation id="3593091352817399191">이미 다른 계정으로 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chromium에서 나만의 프로필을 만들 수 있습니다.</translation>
 <translation id="3639635944603682591">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복구하려면 <ph name="USER_EMAIL" />(으)로 Chromium에 로그인하세요.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다.}=1{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창이 다시 열리지 않습니다.}other{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>

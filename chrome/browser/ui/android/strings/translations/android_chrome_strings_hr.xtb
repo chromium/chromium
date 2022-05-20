@@ -489,7 +489,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Upravljanje prozorima</translation>
-<translation id="3624977496395967031">Kliknite da biste otvorili opcije razvrstavanja</translation>
 <translation id="3631987586758005671">Dijeljenje s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatski se prijavite na web-lokacije pomoću spremljenih vjerodajnica. Kada je ta značajka isključena, tražit će se potvrda prije svakog prijavljivanja na web-lokaciju.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="4225895483398857530">Prečac alatne trake</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
 <translation id="4248098802131000011">Osigurajte svoje zaporke od povreda podataka i drugih sigurnosnih problema</translation>
+<translation id="4249955472157341256">Poredaj po najnovijem</translation>
 <translation id="4250229828105606438">Snimka zaslona</translation>
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Koji se podaci upotrebljavaju<ph name="END_BOLD" />: vaša povijest pregledavanja, zapisnik web-lokacija koje ste posjetili u Chromeu na ovom uređaju.</translation>
@@ -897,7 +897,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5957442310066583693">Da biste vidjeli web-lokacije koje najčešće posjećujete, dodirnite gumb početnog zaslona</translation>
 <translation id="5958275228015807058">Pronađite svoje datoteke i stranice u Preuzimanjima</translation>
 <translation id="5962718611393537961">Dodirnite da biste saželi</translation>
-<translation id="5964805880140440652">Da biste podijelili ovu stranicu s nekim drugim uređajem, uključite sinkroniziranje u Chromeovim postavkama</translation>
 <translation id="5964869237734432770">Zaustavite opise slike</translation>
 <translation id="5979084224081478209">Provjeri zaporke</translation>
 <translation id="5995726099713306770">Ponovo preuzeti stranicu?</translation>

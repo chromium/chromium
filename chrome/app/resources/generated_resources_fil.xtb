@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Ipinapakita ang mga password mula sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Magdagdag ng Port</translation>
 <translation id="1026822031284433028">I-load ang larawan</translation>
+<translation id="1028700151766901954">Dahilan: Nananatili ang LBS sa <ph name="DEFAULT_OPEN_BROWSER" /> bilang default.</translation>
 <translation id="1029317248976101138">I-zoom</translation>
 <translation id="1031362278801463162">Preview ng paglo-load</translation>
 <translation id="1032605640136438169">Pakisuri ang mga bagong tuntunin</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Pag-encipher ng Data</translation>
 <translation id="1072700771426194907">Na-detect ang USB device</translation>
 <translation id="107278043869924952">Gumamit ng PIN bilang karagdagan sa password</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Kapag pinayagan ang mga ChromeOS device na magpadala ng mga awtomatikong ulat, makakatulong ito sa aming bigyang-priyoridad kung ano ang dapat ayusin at pahusayin sa ChromeOS. Puwedeng kasama sa mga ulat na ito ang mga bagay gaya ng kung aling mga feature ang ginamit, gaano karaming memory ang karaniwang nagagamit, at data ng diagnostic at paggamit ng Android app. Makakatulong din ang ilang pinagsama-samang data sa mga Google app at partner, gaya ng mga developer ng Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihintong payagan ang mga ulat na ito anumang oras sa mga setting ng ChromeOS device ng iyong anak. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ang pag-off sa feature na ito ay hindi nakakaapekto sa kakayahan ng device na ito na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo tulad ng mga pag-update ng system at seguridad.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Kung naka-on ang setting ng Aktibidad sa Web at App para sa Google Account ng iyong anak, posibleng ma-save ang data ng anak mo sa kanyang Google Account. Matuto pa tungkol sa mga setting na ito at kung paano isaayos ang mga ito sa families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Kung io-on ng may-ari ng device ang "Magpadala ng data ng paggamit at diagnostic", posibleng ma-upload din sa Google ang mga ulat ng pag-crash.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Mag-navigate sa mga page gamit ang text cursor</translation>
 <translation id="1076382954055048850">Magpakita ng iba pang session ng Cast</translation>
 <translation id="1076698951459398590">I-enable ang Tema</translation>
@@ -1445,10 +1441,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2328561734797404498">Paki-restart ang iyong device para magamit ang <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kapag nasa Incognito mode ka, puwede lang gumamit ng mga cookie ang mga site para tingnan ang iyong aktibidad sa pag-browse sa sarili nilang site. Ide-delete ang mga cookie sa pagtatapos ng Incognito session.</translation>
 <translation id="2329597144923131178">Mag-sign in upang makuha ang iyong mga bookmark, history, password at ibang mga setting sa lahat ng iyong device.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Kapag pinayagan ang iyong mga ChromeOS device na magpadala ng mga awtomatikong ulat, makakatulong ito sa aming bigyang-priyoridad kung ano ang dapat ayusin at pahusayin sa ChromeOS. Puwedeng kasama sa mga ulat na ito ang mga bagay gaya ng kung aling mga feature ang ginagamit mo, gaano karaming memory ang karaniwang ginagamit mo, data ng diagnostic at paggamit ng Android app, at mga error. Makakatulong din ang ilang pinagsama-samang data sa mga Google app at partner, gaya ng mga developer ng Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihinto ang pagpayag sa mga ulat na ito anumang oras sa mga setting ng iyong ChromeOS device. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Kung naka-on ang setting ng Aktibidad sa Web at App para sa iyong Google Account, posibleng ma-save sa Google Account mo ang iyong data sa Android. Puwede mong makita ang iyong data, i-delete ito, at baguhin ang mga setting ng account mo sa account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Kung io-on ng may-ari ng device ang "Magpadala ng data ng paggamit at diagnostic", posibleng ma-upload din sa Google ang mga ulat ng pag-crash.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Tingnan sa store</translation>
 <translation id="2332192922827071008">Buksan ang Mga Kagustuhan</translation>
 <translation id="2332515770639153015">Naka-on ang Pinahusay na Ligtas na Pag-browse</translation>
@@ -2787,10 +2779,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3651488188562686558">Idiskonekta sa Wi-Fi</translation>
 <translation id="3652817283076144888">Sinisimulan</translation>
 <translation id="3653160965917900914">Mga file share ng network</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Kapag pinayagan ang mga ChromeOS device na magpadala ng mga awtomatikong ulat, makakatulong ito sa aming bigyang-priyoridad kung ano ang dapat ayusin at pahusayin sa ChromeOS. Posibleng kasama sa mga ulat na ito ang mga bagay gaya ng aling mga feature ang ginamit, at gaano kalaking memory ang karaniwang nagagamit.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihintong payagan ang mga ulat na ito anumang oras sa mga setting ng ChromeOS device ng iyong anak. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ang pag-off sa feature na ito ay hindi nakakaapekto sa kakayahan ng device na ito na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo tulad ng mga pag-update ng system at seguridad.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Kung io-on ng may-ari ng device ang "Magpadala ng data ng paggamit at diagnostic", posibleng ma-upload din sa Google ang mga ulat ng pag-crash.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Ipagpatuloy ang pagpapahintulot sa <ph name="HOST" /> na i-access ang iyong mikropono</translation>
 <translation id="3654045516529121250">Basahin ang iyong mga setting ng pagiging naa-access</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{May permanenteng access ito sa isang file.}one{May permanenteng access ito sa # file.}other{May permanenteng access ito sa # na file.}}</translation>
@@ -3366,6 +3354,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4209092469652827314">Malaki</translation>
 <translation id="4209251085232852247">Naka-off</translation>
 <translation id="4210048056321123003">Dina-download ang virtual machine</translation>
+<translation id="4210380525132844778">Dahilan: Nakita ang <ph name="RULE" /> sa listahang "<ph name="LIST_NAME" />."</translation>
 <translation id="421182450098841253">&amp;Ipakita ang Bookmarks Bar</translation>
 <translation id="4211851069413100178">Magpadala ng data ng paggamit at diagnostic na data. Tumulong sa pagpapaganda ng iyong karanasan sa Android sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Maaaring piliin ng may-aring magpadala ng diagnostic na data at data ng paggamit para sa device na ito sa Google. Kung naka-on ang iyong karagdagang setting ng Aktibidad sa Web at App, maaaring ma-save ang data na ito sa Google account mo. <ph name="BEGIN_LINK2" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Huwag nang gamitin sa mga Android app</translation>
@@ -3994,6 +3983,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4842976633412754305">Sinusubukan ng page na ito na mag-load ng mga script mula sa mga hindi napatunayang pinagmulan.</translation>
 <translation id="4844333629810439236">Iba pang mga keyboard</translation>
 <translation id="4844633725025837809">Para sa dagdag na kaligtasan, i-encrypt ang mga password sa iyong device bago i-save ang mga ito sa Google Password Manager</translation>
+<translation id="4846628405149428620">Piliin kung saan makakapag-save ng mga pagbabago ang site na ito</translation>
 <translation id="4846680374085650406">Sinusunod mo ang rekomendasyon ng administrator para sa setting na ito.</translation>
 <translation id="4847902821209177679">Pinili ang <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pindutin ang Enter para piliin ang mga album sa <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
@@ -4061,7 +4051,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4900652253009739885">Hindi maalis ang tanging switch na nakatalaga sa “Piliin.” Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Pumili ng status ng eksperimento para sa eksperimentong <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Di-wasto ang patakaran na-download mula sa server: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Tumulong na pahusayin ang mga feature at performance ng Chrome at ChromeOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit. Makakatulong din ang ilang pinagsama-samang data sa mga Android app at Google partner. Kung naka-on ang setting ng Aktibidad sa Web at App para sa Google Account ng iyong anak, posibleng ma-save sa Google Account ng anak mo ang data sa Android ng iyong anak.</translation>
 <translation id="4906490889887219338">Mag-set up o mamahala ng mga file share ng network. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Piliin kung kailan mari-read at mababago ng extension na ito ang data ng iyong site</translation>
 <translation id="4907161631261076876">Hindi karaniwang dina-download ang app na ito at maaaring mapanganib.</translation>
@@ -5193,6 +5182,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6063284707309177505">Gumawa ng QR Code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang mga personal na resulta ni <ph name="SUPERVISED_USER_NAME" />. Para makatipid ng baterya, puwede mong piliin sa mga setting ng Assistant ni <ph name="SUPERVISED_USER_NAME" /> na i-on lang ang “Hey Google” kapag nakakonekta ang device na ito sa isang power source.</translation>
 <translation id="6064217302520318294">Lock ng screen</translation>
+<translation id="6065145031947216733">Ihiwalay ang iyong pag-browse?</translation>
 <translation id="6065289257230303064">Mga Katangian ng Direktoryo ng Paksa ng Certificate</translation>
 <translation id="6066794465984119824">Hindi nakatakda ang hash ng larawan</translation>
 <translation id="6069464830445383022">Ang iyong Google Account ang gagamitin mo sa pag-sign in sa Chromebook</translation>
@@ -5271,6 +5261,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6129953537138746214">Puwang</translation>
 <translation id="6130692320435119637">Magdagdag ng Wi-Fi</translation>
 <translation id="6130887916931372608">Key ng Keyboard</translation>
+<translation id="6135823405800500595">Tiyaking nasa malapit ang iyong telepono, naka-unlock, at naka-on ang Bluetooth at Wi-Fi</translation>
 <translation id="6136114942382973861">Isara ang bar ng mga download</translation>
 <translation id="6136287496450963112">Hindi pinoprotektahan ng PIN ang iyong security key. Para pamahalaan ang mga fingerprint, gumawa muna ng PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA Signature na may SHA-384</translation>
@@ -5516,10 +5507,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupong walang pangalan - 1 tab}one{Grupong walang pangalan - # tab}other{Grupong walang pangalan - # na tab}}</translation>
 <translation id="6385149369087767061">Kumonekta sa internet at subukan ulit</translation>
 <translation id="6385543213911723544">Maaaring mag-save at magbasa ng data ng cookie ang mga site</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Kapag pinayagan ang iyong mga ChromeOS device na magpadala ng mga awtomatikong ulat, makakatulong ito sa aming bigyang-priyoridad kung ano ang dapat ayusin at pahusayin sa ChromeOS. Puwedeng kasama sa mga ulat na ito ang mga bagay gaya ng kung aling mga feature ang ginagamit mo at gaano karaming memory ang karaniwang ginagamit mo.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihinto ang pagpayag sa mga ulat na ito anumang oras sa mga setting ng iyong Chrome device. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ang pag-off sa feature na ito ay hindi nakakaapekto sa kakayahan ng iyong device na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo tulad ng mga pag-update ng system at seguridad.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Kung io-on ng may-ari ng device ang "Magpadala ng data ng paggamit at diagnostic", posibleng ma-upload din sa Google ang mga ulat ng pag-crash.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Babala - Naka-enable ang detalyadong pag-log; posibleng maglaman ang mga log sa ibaba ng mga URL o iba pang sensitibong impormasyon. Pakitingnan ulit at tiyaking kumportable kang isumite ang impormasyong ito.</translation>
 <translation id="6387674443318562538">I-split nang Patayo</translation>
 <translation id="6388429472088318283">Maghanap sa mga wika</translation>
@@ -5640,7 +5627,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6504601948739128893">Hindi pinapayagang gamitin ang mga font na naka-install sa iyong device</translation>
 <translation id="6504611359718185067">Kumonekta sa internet upang magdagdag ng printer</translation>
 <translation id="6506374932220792071">X9.62 ECDSA Signature na may SHA-256</translation>
-<translation id="6507936476364432879">Tumulong na pahusayin ang mga feature at performance ng Chrome at ChromeOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
 <translation id="6508248480704296122">Kaugnay ng <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Lisensya ng media</translation>
@@ -6967,7 +6953,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7807711621188256451">Palaging pahintulutan ang <ph name="HOST" /> na i-access ang iyong camera</translation>
 <translation id="7810202088502699111">Hinarangan ang mga pop-up sa pahinang ito.</translation>
 <translation id="781167124805380294">I-cast ang <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Tumulong na pahusayin ang mga feature at performance ng Chrome at ChromeOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit. Makakatulong din ang ilang pinagsama-samang data sa mga Android app at Google partner. Kung naka-on ang setting ng Aktibidad sa Web at App para sa iyong Google Account, posibleng ma-save sa Google Account mo ang iyong data sa Android.</translation>
 <translation id="7814458197256864873">&amp;Kopyahin</translation>
 <translation id="7815680994978050279">Na-block ang mapanganib na download</translation>
 <translation id="7817361223956157679">Hindi pa gumagana ang on-screen na keyboard sa mga app ng Linux</translation>
@@ -7106,6 +7091,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7947962633355574091">K&amp;opyahin ang Address ng Video</translation>
 <translation id="7947964080535614577">Karaniwang nagpapakita ng mga ad ang mga site para makapagbigay ang mga ito ng content o mga serbisyo nang libre. Pero, kilalang nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad ang ilang site.</translation>
 <translation id="7948407723851303488">Lahat ng page ng <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Dahilan: Sinusuportahan lang ng LBS ang mga URL na http://, https://, at file://.</translation>
 <translation id="7951265006188088697">Para magdagdag o mamahala ng mga paraan ng pagbabayad sa Google Pay, bisitahin ang iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">I-off ang virtual card</translation>
 <translation id="7952708427581814389">Puwedeng hilingin ng mga site na makita ang text at mga larawan sa iyong clipboard</translation>
@@ -7651,6 +7637,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8480869669560681089">Hindi kilalang device mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Kumpirmahin ang Pahintulot sa USB</translation>
 <translation id="8481980314595922412">Naka-on ang mga feature ng trial</translation>
+<translation id="8486666913807228950">Dahilan: Nakita ang inverted na tuntuning <ph name="REVERT_RULE" /> sa listahang "Puwersahang buksan sa."</translation>
 <translation id="848666842773560761">Sinusubukan ng isang app na i-access ang camera. I-off ang switch ng privacy ng camera para payagan ang access.</translation>
 <translation id="8487678622945914333">Mag-zoom In</translation>
 <translation id="8489156414266187072">Ipinapakita lang ang mga personal na suhestyon sa iyong account</translation>

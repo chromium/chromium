@@ -489,7 +489,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3616113530831147358">Hljóð</translation>
 <translation id="3622349720008044802">Stjórna gluggum</translation>
-<translation id="3624977496395967031">Smelltu til að opna flokkunarvalkosti</translation>
 <translation id="3631987586758005671">Deilir í <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Skrá þig sjálfkrafa inn á vefsvæði með vistuðum skilríkjum. Þegar slökkt er á þessum eiginleika verðurðu beðin(n) um staðfestingu í hvert sinn sem þú skráir þig inn á vefsvæði.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4225895483398857530">Flýtileið á tækjastiku</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="4248098802131000011">Tryggðu öryggi aðgangsorðanna gagnvart öryggisbrotum og öðrum öryggisvandamálum</translation>
+<translation id="4249955472157341256">Raða eftir nýjasta</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4256782883801055595">Leyfi opins kóða</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Hvaða gögn eru notuð:<ph name="END_BOLD" /> Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chrome í þessu tæki.</translation>
@@ -897,7 +897,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5957442310066583693">Ýttu á heimahnappinn til að sjá vefsvæðin sem þú heimsækir oftast</translation>
 <translation id="5958275228015807058">Þú finnur skrár og síður í Niðurhali</translation>
 <translation id="5962718611393537961">Ýttu til að draga saman</translation>
-<translation id="5964805880140440652">Til að deila þessari síðu í öðru tæki skaltu kveikja á samstillingu í stillingum Chrome</translation>
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
 <translation id="5979084224081478209">Yfirfara aðgangsorð</translation>
 <translation id="5995726099713306770">Sækja síðu aftur?</translation>

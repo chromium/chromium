@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">ดูความช่วยเหลือเพิ่มเติมได้ที่<ph name="BEGIN_LINK" />ศูนย์ช่วยเหลือ<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">อัลกอริทึมการบีบอัด</translation>
 <translation id="4794140124556169553">การทดสอบ CPU อาจส่งผลต่อประสิทธิภาพของระบบ</translation>
+<translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
 <translation id="4808449224298348341">ยกเลิกงานพิมพ์ <ph name="DOCUMENT_TITLE" /> แล้ว</translation>
 <translation id="4809927044794281115">ธีมสว่าง</translation>
 <translation id="4813136279048157860">รูปภาพของฉัน</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
+<translation id="5947494881799873997">ย้อนกลับ</translation>
 <translation id="5951259522948394825">ตรวจสอบว่าทุกอย่างอยู่ในตำแหน่งที่เหมาะสมและดูรายงานการวินิจฉัย</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
 <translation id="5984145644188835034">วอลเปเปอร์เริ่มต้น</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
+<translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8747900814994928677">ยืนยันการเปลี่ยนแปลง</translation>

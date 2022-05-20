@@ -489,7 +489,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3622349720008044802">Hantera fönster</translation>
-<translation id="3624977496395967031">Klicka för att öppna sorteringsalternativ</translation>
 <translation id="3631987586758005671">Delas med <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -584,6 +583,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4225895483398857530">Genväg i verktygsfältet</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4248098802131000011">Skydda dina lösenord från dataintrång och andra säkerhetsproblem</translation>
+<translation id="4249955472157341256">Sortera efter senaste</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chrome på den här enheten registreras.</translation>
@@ -898,7 +898,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5957442310066583693">Tryck på hemknappen om du vill se dina mest besökta webbplatser</translation>
 <translation id="5958275228015807058">Du hittar filerna och sidorna i Nedladdningar</translation>
 <translation id="5962718611393537961">Tryck här om du vill komprimera</translation>
-<translation id="5964805880140440652">Aktivera synkronisering i inställningarna för Chrome om du vill dela den här sidan med annan enhet</translation>
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
 <translation id="5995726099713306770">Vill du ladda ned sidan igen?</translation>

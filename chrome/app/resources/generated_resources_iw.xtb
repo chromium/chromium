@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">‏הצגה של סיסמאות מ<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /> שלך</translation>
 <translation id="1026655690966755180">הוספת יציאה</translation>
 <translation id="1026822031284433028">טעינת תמונה</translation>
+<translation id="1028700151766901954">‏סיבה: תכונת LBS נשארת ב-<ph name="DEFAULT_OPEN_BROWSER" /> כברירת מחדל.</translation>
 <translation id="1029317248976101138">התקרבות לתצוגה</translation>
 <translation id="1031362278801463162">טעינת התצוגה המקדימה מתבצעת</translation>
 <translation id="1032605640136438169">יש לקרוא את התנאים החדשים</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">קידוד נתונים</translation>
 <translation id="1072700771426194907">‏זוהה התקן USB</translation>
 <translation id="107278043869924952">יש להשתמש בקוד אימות בנוסף לסיסמה</translation>
-<translation id="1073264809281558926">‏<ph name="BEGIN_PARAGRAPH1" />שליחה אוטומטית של דוחות ממכשירי ChromeOS עוזרת לנו לקבוע את סדר העדיפויות של התיקונים והשיפורים ב-ChromeOS. הדוחות האלה יכולים להכיל מידע כמו התכונות שבהן נעשה שימוש, נפח הזיכרון שבשימוש בדרך כלל וכן נתוני השימוש וניתוח הביצועים של אפליקציות ל-Android. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להעניק או לבטל את ההרשאה לשליחת הדוחות האלה בהגדרות מכשיר ChromeOS של הילד או הילדה שלך. מנהלי דומיין יכולים לשנות את ההגדרה הזו במסוף Admin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />השבתת התכונה הזו לא משפיעה על היכולת של המכשיר הזה לשלוח את המידע הדרוש לשירותים חיוניים, כמו אבטחה ועדכוני מערכת.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />אם ההגדרה 'פעילות באינטרנט ובאפליקציות' פועלת בחשבון Google של הילד או הילדה שלך, יכול להיות שהנתונים שלהם יישמרו בחשבון Google שלהם. בכתובת families.google.com יש מידע נוסף על ההגדרות האלה והוראות לשינוי שלהן.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />אם בעל המכשיר מפעיל את האפשרות 'שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים', יכול להיות שדוחות קריסה יועלו אל Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">ניווט בדפים באמצעות סמן הטקסט</translation>
 <translation id="1076382954055048850">‏הצגת סשנים אחרים של העברה (cast)</translation>
 <translation id="1076698951459398590">הפעלת עיצוב</translation>
@@ -1443,10 +1439,6 @@
 <translation id="2328561734797404498">יש להפעיל מחדש את המכשיר כדי להשתמש ב-<ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">‏במצב פרטי, אתרים יכולים להשתמש בקובצי cookie רק כדי לראות את פעילות הגלישה שלך באתר שלהם בלבד. קובצי cookie נמחקים בסיום הסשן הפרטי.</translation>
 <translation id="2329597144923131178">יש להיכנס כדי לקבל גישה אל הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים שברשותך.</translation>
-<translation id="2330878972945412956">‏<ph name="BEGIN_PARAGRAPH1" />שליחה אוטומטית של דוחות ממכשירי ChromeOS עוזרת לנו לקבוע את סדר העדיפויות של התיקונים והשיפורים ב-ChromeOS. הדוחות האלה יכולים להכיל מידע כמו התכונות שמשמשות אותך, נפח הזיכרון שבשימוש בדרך כלל, נתוני שימוש וניתוח הביצועים של אפליקציות ל-Android ושגיאות. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google וכן יעזרו לשותפים של Google, כמו מפתחים של Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להעניק או לבטל את ההרשאה לשליחת הדוחות האלה בהגדרות של מכשיר ChromeOS. מנהלי דומיין יכולים לשנות את ההגדרה הזו במסוף Admin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />אם ההגדרה 'פעילות באינטרנט ובאפליקציות' פועלת בחשבון Google שלך, יכול להיות שהנתונים של Android יישמרו בחשבון Google שלך. יש לך אפשרות להציג או למחוק את הנתונים ולשנות את הגדרות החשבון בכתובת account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />אם בעל המכשיר מפעיל את האפשרות 'שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים', יכול להיות שדוחות הקריסה יועלו אל Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">הצגה בחנות</translation>
 <translation id="2332192922827071008">פתיחת ההעדפות</translation>
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
@@ -2786,10 +2778,6 @@
 <translation id="3651488188562686558">‏ניתוק חיבור ה-Wi-Fi</translation>
 <translation id="3652817283076144888">מתבצע אתחול</translation>
 <translation id="3653160965917900914">התקני רשת לשיתוף קבצים</translation>
-<translation id="3653411319514369774">‏<ph name="BEGIN_PARAGRAPH1" />שליחה אוטומטית של דוחות ממכשירי ChromeOS עוזרת לנו לקבוע את סדר העדיפויות של התיקונים והשיפורים ב-ChromeOS. הדוחות האלה יכולים להכיל מידע כמו התכונות שבהן נעשה שימוש ונפח הזיכרון שבשימוש בדרך כלל.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להעניק או לבטל את ההרשאה לשליחת הדוחות האלה בהגדרות מכשיר ChromeOS של הילד או הילדה שלך. מנהלי דומיין יכולים לשנות את ההגדרה הזו במסוף Admin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />השבתת התכונה הזו לא משפיעה על היכולת של המכשיר הזה לשלוח את המידע הדרוש לשירותים חיוניים, כמו אבטחה ועדכוני מערכת.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />אם בעל המכשיר מפעיל את האפשרות 'שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים', יכול להיות שדוחות הקריסה יועלו אל Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">להמשיך לאפשר ל-<ph name="HOST" /> לגשת למיקרופון</translation>
 <translation id="3654045516529121250">קריאת הגדרות הנגישות שלך</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{גישה קבועה אל קובץ אחד.}two{גישה קבועה אל # קבצים.}many{גישה קבועה אל # קבצים.}other{גישה קבועה אל # קבצים.}}</translation>
@@ -3365,6 +3353,7 @@
 <translation id="4209092469652827314">גדול</translation>
 <translation id="4209251085232852247">מושבת</translation>
 <translation id="4210048056321123003">מתבצעת הורדה של המכונה הווירטואלית</translation>
+<translation id="4210380525132844778">סיבה: הכלל <ph name="RULE" /> נמצא ברשימה '<ph name="LIST_NAME" />'.</translation>
 <translation id="421182450098841253">&amp;הצגת את סרגל הסימניות</translation>
 <translation id="4211851069413100178">‏שליחה של נתוני אבחון ונתונים על השימוש. אפשר לעזור בשיפור החוויה ב-Android. לשם כך יש לשלוח אל Google באופן אוטומטי נתוני אבחון ונתונים לגבי השימוש במכשיר ובאפליקציות. נתונים אלה יעזרו לשמור על יציבות המערכת והאפליקציות, כמו גם לביצוע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ולשותפים של Google, כמו מפתחי Android. ה<ph name="BEGIN_LINK1" />הגדרה<ph name="END_LINK1" /> הזו נאכפת על-ידי הבעלים. ייתכן שהבעלים יבחרו לשלוח אל Google נתוני אבחון ונתונים לגבי אופן השימוש במכשיר הזה. אם הופעלה האפשרות 'פעילות באתרי אינטרנט ובאפליקציות נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלך. <ph name="BEGIN_LINK2" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">‏הפסקת השימוש באפליקציות ל-Android</translation>
@@ -3993,6 +3982,7 @@
 <translation id="4842976633412754305">דף זה מנסה לטעון סקריפטים ממקורות שאינם מאומתים.</translation>
 <translation id="4844333629810439236">מקלדות אחרות</translation>
 <translation id="4844633725025837809">‏כדי לשפר את הבטיחות, כדאי להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
+<translation id="4846628405149428620">בחירת המיקום לשמירת שינויים על ידי האתר הזה</translation>
 <translation id="4846680374085650406">הפעילות שלך נעשית בהתאם להמלצה של מנהל המערכת לגבי הגדרה זו.</translation>
 <translation id="4847902821209177679">‏בחרת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> – יש להקיש על Enter כדי לבחור אלבומי <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">‏קריאה ל-Google Assistant במילים "Hey Google"</translation>
@@ -4060,7 +4050,6 @@
 <translation id="4900652253009739885">לא ניתן להסיר את המתג היחיד שהוקצה לפעולה "בחירה". צריך להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">המדיניות שהורדה מהשרת אינה חוקית: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">‏שליחה אוטומטית של נתוני השימוש וניתוח הביצועים אל Google תעזור לשפר את התכונות ואת הביצועים של Chrome ושל ChromeOS. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ל-Android ולשותפים של Google. אם ההגדרה 'פעילות באינטרנט ובאפליקציות' הופעלה בחשבון Google של הילד או הילדה שלך, יכול להיות שנתוני Android שלהם יישמרו בחשבון Google שלהם.</translation>
 <translation id="4906490889887219338">הגדרה או ניהול של התקני רשת לשיתוף קבצים. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">עליך לבחור מתי התוסף הזה יוכל לקרוא את נתוני האתר שלך ולשנות אותם</translation>
 <translation id="4907161631261076876">הורדת הקובץ הזה אינה נפוצה והקובץ עלול להיות מסוכן.</translation>
@@ -5192,6 +5181,7 @@
 <translation id="6063284707309177505">‏יצירת קוד QR</translation>
 <translation id="6063847492705284550">‏<ph name="BEGIN_BOLD" />הערה:<ph name="END_BOLD" /> יכול להיות שמישהו יצליח לגשת אל התוצאות האישיות של <ph name="SUPERVISED_USER_NAME" /> גם באמצעות קול דומה או הקלטה. כדי לחסוך בצריכת הסוללה, אפשר לבחור בהגדרות Assistant של <ph name="SUPERVISED_USER_NAME" /> שהפקודה “Hey Google” תפעל רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="6064217302520318294">נעילת מסך</translation>
+<translation id="6065145031947216733">להפריד את פעילות הגלישה שלך?</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
 <translation id="6066794465984119824">‏לא הוגדר גיבוב (hash) של תמונה</translation>
 <translation id="6069464830445383022">‏הכניסה ל-Chromebook תתבצע באמצעות חשבון Google</translation>
@@ -5270,6 +5260,7 @@
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6130692320435119637">‏הוספת Wi-Fi</translation>
 <translation id="6130887916931372608">מקש במקלדת</translation>
+<translation id="6135823405800500595">‏יש לוודא שהטלפון נמצא בקרבת מקום, שהוא לא נעול ושה-Bluetooth וה-Wi-Fi פועלים</translation>
 <translation id="6136114942382973861">סגירת סרגל ההורדות</translation>
 <translation id="6136287496450963112">מפתח האבטחה שלך אינו מוגן באמצעות קוד אימות. כדי לנהל טביעות אצבע, יש ליצור תחילה קוד אימות.</translation>
 <translation id="6138680304137685902">‏חתימת X9.62 ECDSA עם SHA-384</translation>
@@ -5515,10 +5506,6 @@
 <translation id="63849924261838903">{NUM_TABS,plural, =1{קבוצה ללא שם – כרטיסייה אחת}two{קבוצה ללא שם – # כרטיסיות}many{קבוצה ללא שם – # כרטיסיות}other{קבוצה ללא שם – # כרטיסיות}}</translation>
 <translation id="6385149369087767061">יש להתחבר לאינטרנט ולנסות שוב</translation>
 <translation id="6385543213911723544">‏אתרים יכולים לשמור ולקרוא נתונים של קובצי cookie</translation>
-<translation id="6385599849914981574">‏<ph name="BEGIN_PARAGRAPH1" />שליחה אוטומטית של דוחות ממכשירי ChromeOS עוזרת לנו לקבוע את סדר העדיפויות של התיקונים והשיפורים ב-ChromeOS. הדוחות האלה יכולים להכיל מידע כמו התכונות שמשמשות אותך ונפח הזיכרון שבשימוש בדרך כלל.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להעניק או לבטל את ההרשאה לשליחת הדוחות האלה בהגדרות של מכשיר Chrome. מנהלי דומיין יכולים לשנות את ההגדרה הזו במסוף Admin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />השבתת התכונה הזו לא משפיעה על היכולת של המכשיר לשלוח את המידע הדרוש עבור שירותים חיוניים, כמו אבטחה ועדכוני מערכת.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />אם בעל המכשיר מפעיל את האפשרות 'שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים', יכול להיות שדוחות הקריסה יועלו אל Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">‏אזהרה - הרישום המפורט פועל. יומני הרישום שבהמשך עשויים לכלול כתובות URL או מידע רגיש אחר. יש לעיין בהם כדי לוודא שאין לך בעיה לשלוח את המידע הזה.</translation>
 <translation id="6387674443318562538">פיצול אנכי</translation>
 <translation id="6388429472088318283">חיפוש שפות</translation>
@@ -5639,7 +5626,6 @@
 <translation id="6504601948739128893">אין הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
 <translation id="6504611359718185067">התחברות לאינטרנט כדי להוסיף מדפסת</translation>
 <translation id="6506374932220792071">‏חתימת X9.62 ECDSA עם SHA-256</translation>
-<translation id="6507936476364432879">‏שליחה אוטומטית של נתוני השימוש וניתוח הביצועים אל Google תעזור לשפר את התכונות ואת הביצועים של Chrome ושל ChromeOS.</translation>
 <translation id="6508248480704296122">קשור אל <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">יישום: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">רישיון מדיה</translation>
@@ -6967,7 +6953,6 @@
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
 <translation id="7810202088502699111">חלונות קופצים נחסמו בדף זה.</translation>
 <translation id="781167124805380294">העברה של <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">‏שליחה אוטומטית של נתוני השימוש וניתוח הביצועים אל Google תעזור לשפר את התכונות ואת הביצועים של Chrome ושל ChromeOS. חלק מהנתונים הנצברים יעזרו גם לאפליקציות ל-Android ולשותפים של Google. אם ההגדרה 'פעילות באינטרנט ובאפליקציות' פועלת בחשבון Google שלך, יכול להיות שהנתונים של Android יישמרו בחשבון Google שלך.</translation>
 <translation id="7814458197256864873">&amp;העתקה</translation>
 <translation id="7815680994978050279">נחסמה הורדה מסוכנת</translation>
 <translation id="7817361223956157679">‏המקלדת שמופיעה במסך לא עובדת עדיין באפליקציות Linux</translation>
@@ -7106,6 +7091,7 @@
 <translation id="7947962633355574091">העתקת כתובת &amp;סרטון</translation>
 <translation id="7947964080535614577">אתרים מציגים בדרך כלל מודעות כדי שיוכלו לספק תוכן או שירותים בחינם. עם זאת, ידוע שאתרים מסוימים מציגים מודעות שמפריעות או מטעות.</translation>
 <translation id="7948407723851303488">כל הדפים של <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">‏סיבות: ב-LBS יש תמיכה רק בכתובות URL עם הקידומת http://‎,‏ https://‎ ו-file://‎.</translation>
 <translation id="7951265006188088697">‏כדי להוסיף או לנהל אמצעי תשלום של Google Pay, יש לעבור אל <ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" />.</translation>
 <translation id="795130320946928025">השבתת הכרטיס הווירטואלי</translation>
 <translation id="7952708427581814389">אתרים יכולים לבקש הרשאה לראות טקסט ותמונות בלוח העריכה</translation>
@@ -7652,6 +7638,7 @@
 <translation id="8480869669560681089">מכשיר לא מוכר של <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">‏אישור הרשאת גישה ל-USB</translation>
 <translation id="8481980314595922412">התכונות הניסיוניות מופעלות</translation>
+<translation id="8486666913807228950">סיבה: הכלל ההפוך <ph name="REVERT_RULE" /> נמצא ברשימה 'פתיחה מאולצת באמצעות'.</translation>
 <translation id="848666842773560761">נדרשת לאפליקציה גישה למצלמה. יש לכבות את מתג הפרטיות של המצלמה כדי להתיר גישה.</translation>
 <translation id="8487678622945914333">התקרבות לתצוגה</translation>
 <translation id="8489156414266187072">הצעות מותאמות אישית מוצגות בחשבון שלך בלבד</translation>

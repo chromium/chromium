@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">tabell <ph name="TABLENAME" /> <ph name="TABLEROWS" />×<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorera nästa tangenttryckning</translation>
 <translation id="4623097797855662355">Kolofon</translation>
+<translation id="4624970070706497034">TalkBack har inte längre stöd för anpassning på Chromebook. Du kan fortfarande använda TalkBack med standardkortkommandon. Tryck på Sök + A och sedan K för att se tillgängliga kortkommandon. Om du fortfarande vill använda TalkBack trycker du kommandot igen.</translation>
 <translation id="463135993322337640">Tryck på ChromeVox O + N om du vill veta mer om nyheterna.</translation>
 <translation id="4649220074413114917">Du kan avbryta det som läses upp genom att trycka på skärmen med två fingrar. Det kan vara bra om du inte vill att ChromeVox ska läsa upp något. Fortsätt genom att trycka på skärmen med två fingrar.</translation>
 <translation id="4660783501463101648">Klassisk Chromevox har tagits bort. Det går inte längre att aktivera och inaktivera klassisk Chromevox med tangentbordet.</translation>

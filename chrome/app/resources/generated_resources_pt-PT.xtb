@@ -55,6 +55,7 @@
 <translation id="1054153489933238809">Abrir &amp;imagem original num Novo separador</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Atualize o <ph name="DEVICE_TYPE" /> dentro de 1 semana}other{Atualize o <ph name="DEVICE_TYPE" /> dentro de {NUM_WEEKS} semanas}}</translation>
 <translation id="1056898198331236512">Aviso</translation>
+<translation id="105822690353767994">Permita sempre que a extensão seja executada neste site se não quiser voltar a ver esta mensagem.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Introduza o novo PIN. Um PIN tem de ter, pelo menos, um caráter e pode incluir letras, números e outros carateres.}other{Introduza o novo PIN. Um PIN tem de ter pelo menos # carateres e pode incluir letras, números e outros carateres.}}</translation>
 <translation id="1059484610606223931">Protocolo de Transferência de Hipertexto Seguro (HTTPS)</translation>
@@ -74,11 +75,6 @@
 <translation id="1071917609930274619">Cifragem de dados</translation>
 <translation id="1072700771426194907">Dispositivo USB detetado</translation>
 <translation id="107278043869924952">Utilizar PIN para além da palavra-passe</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no Chrome OS. Estes relatórios podem incluir informações como que funcionalidades foram utilizadas, a quantidade de memória habitualmente utilizada e dados de diagnóstico e utilização de apps Android. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios em qualquer altura nas definições do dispositivo Chrome OS da criança. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se a definição Atividade da Web e de apps estiver ativada para a Conta Google da criança, os dados da criança podem ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as pode ajustar em families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a opção "Enviar dados de utilização e diagnóstico", os relatórios de falhas também podem ser carregados para a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navegar pelas páginas com um cursor de texto</translation>
 <translation id="1076382954055048850">Mostrar outras sessões do Cast</translation>
 <translation id="1076698951459398590">Ativar tema</translation>
@@ -861,6 +857,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
       Isto não afeta as apps ou o conteúdo noutros dispositivos.</translation>
 <translation id="1809734401532861917">Adicionar os marcadores, o histórico, as palavras-passe e outras definições a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810366086647840386">Servidor da imagem</translation>
+<translation id="1811908311154949291">Frame bloqueado de Navegação anónima: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1813278315230285598">Serviços</translation>
 <translation id="18139523105317219">Nome da parte EDI</translation>
 <translation id="1815083418640426271">Colar como Texto Simples</translation>
@@ -1430,10 +1427,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2328561734797404498">Reinicie o dispositivo para utilizar a app <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quando está no Modo de navegação anónima, os sites apenas podem ver a sua atividade de navegação no site deles. Os cookies são eliminados no final da sessão de Navegação anónima.</translation>
 <translation id="2329597144923131178">Inicie sessão para aceder aos marcadores, ao histórico, às palavras-passe e a outras definições em todos os dispositivos.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no Chrome OS. Estes relatórios podem incluir informações como que funcionalidades utiliza, a quantidade de memória que utiliza habitualmente, dados de diagnóstico e utilização de apps Android e erros. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios em qualquer altura nas definições do dispositivo Chrome OS. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Se a definição Atividade da Web e de apps estiver ativada para a sua Conta Google, os seus dados Android podem ser guardados na sua Conta Google. Pode ver os seus dados, eliminá-los e alterar as definições da conta em account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a opção "Enviar dados de utilização e diagnóstico", os relatórios de falhas também podem ser carregados para a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Ver na loja</translation>
 <translation id="2332192922827071008">Abrir as Preferências</translation>
 <translation id="2332515770639153015">A Navegação segura melhorada está ativada</translation>
@@ -1680,6 +1673,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2553340429761841190">O <ph name="PRODUCT_NAME" /> não conseguiu estabelecer ligação a <ph name="NETWORK_ID" />. Selecione outra rede ou tente novamente.</translation>
 <translation id="2553440850688409052">Ocultar este plug-in</translation>
 <translation id="2554553592469060349">O ficheiro selecionado é demasiado grande (tamanho máx.: 3 MB).</translation>
+<translation id="25568951186001797">Frame bloqueado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">O seu histórico de navegação afeta os anúncios que vê</translation>
 <translation id="2558896001721082624">Mostrar sempre opções de acessibilidade no menu do sistema</translation>
 <translation id="2559889124253841528">Guardar no dispositivo</translation>
@@ -2243,6 +2237,7 @@ Pretende pará-lo?</translation>
 <translation id="3101126716313987672">Escurecer luz</translation>
 <translation id="3101709781009526431">Data e hora</translation>
 <translation id="3103451787721578293">Introduza um motivo para o carregamento destes dados:</translation>
+<translation id="3105339775057145050">Última atualização sem êxito</translation>
 <translation id="3105796011181310544">Pretende reverter para o Google?</translation>
 <translation id="310671807099593501">O site está a utilizar o Bluetooth.</translation>
 <translation id="3108931485517391283">Não é possível receber</translation>
@@ -2545,6 +2540,7 @@ Pretende pará-lo?</translation>
 <translation id="3433621910545056227">Ups! Falha do sistema ao estabelecer o bloqueio dos atributos de hora-instalação do dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as pode ajustar em families.google.com.</translation>
+<translation id="3434475275396485144">Esta definição é gerida pelo administrador do seu telemóvel</translation>
 <translation id="3434512374684753970">Áudio e vídeo</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" está a solicitar o seu <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Segurança</translation>
@@ -2773,10 +2769,6 @@ Pretende pará-lo?</translation>
 <translation id="3651488188562686558">Desligar-se da rede Wi-Fi</translation>
 <translation id="3652817283076144888">A inicializar</translation>
 <translation id="3653160965917900914">Partilhas de ficheiros na rede</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no Chrome OS. Estes relatórios podem incluir informações como quando as funcionalidades foram utilizadas e a quantidade de memória habitualmente utilizada.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios em qualquer altura nas definições do dispositivo Chrome OS da criança. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a opção "Enviar dados de utilização e diagnóstico", os relatórios de falhas também podem ser carregados para a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Continuar a permitir que <ph name="HOST" /> aceda ao seu microfone</translation>
 <translation id="3654045516529121250">Ler definições de acessibilidade</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tem acesso permanente a um ficheiro.}other{Tem acesso permanente a # ficheiros.}}</translation>
@@ -4048,7 +4040,6 @@ Pretende pará-lo?</translation>
 <translation id="4900652253009739885">Não é possível remover o único interruptor atribuído a "Selecionar". Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política transferida do servidor é inválida: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Ajude a melhorar as funcionalidades e o desempenho do Chrome e Chrome OS ao enviar automaticamente dados de diagnóstico e utilização para a Google. Alguns dados agregados também ajudam as apps Android e os parceiros Google. Se a definição Atividade da Web e de apps estiver ativada para a Conta Google da criança, os dados Android da criança podem ser guardados na Conta Google da criança.</translation>
 <translation id="4906490889887219338">Configure ou efetue a gestão de partilhas de ficheiros na rede. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Escolha quando esta extensão pode ler e alterar os seus dados de sites</translation>
 <translation id="4907161631261076876">Este ficheiro não é habitualmente transferido e pode ser perigoso.</translation>
@@ -5506,10 +5497,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupo sem nome – 1 separador}other{Grupo sem nome – # separadores}}</translation>
 <translation id="6385149369087767061">Estabeleça ligação à Internet e tente novamente.</translation>
 <translation id="6385543213911723544">Os sites podem guardar e ler os dados de cookies</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS enviem relatórios automáticos, ajuda-nos a dar prioridade ao que deve ser corrigido e melhorado no Chrome OS. Estes relatórios podem incluir informações como que funcionalidades utiliza e a quantidade de memória que utiliza habitualmente.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios a qualquer altura nas definições do dispositivo Chrome SO. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a opção "Enviar dados de utilização e diagnóstico", os relatórios de falhas também podem ser carregados para a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Aviso – O registo detalhado está ativado. Os registos abaixo podem incluir URLs ou outras informações confidenciais. Reveja-os e certifique-se de que concorda com o envio destas informações.</translation>
 <translation id="6387674443318562538">Divisão vertical</translation>
 <translation id="6388429472088318283">Pesquisar idiomas</translation>
@@ -5630,7 +5617,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6504601948739128893">Sem autorização para utilizar tipos de letra instalados no dispositivo</translation>
 <translation id="6504611359718185067">Estabeleça ligação à Internet para adicionar uma impressora</translation>
 <translation id="6506374932220792071">Assinatura X9.62 ECDSA com SHA-256</translation>
-<translation id="6507936476364432879">Ajude a melhorar as funcionalidades e o desempenho do Chrome e Chrome OS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="6508248480704296122">Relacionado com <ph name="NAME_PH" />.</translation>
 <translation id="6508261954199872201">Aplicação: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licença de multimédia</translation>
@@ -6390,6 +6376,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7264695323040866038">Usar sempre a app <ph name="APP" /> para abrir links da Web suportados?</translation>
 <translation id="7267044199012331848">Não foi possível instalar a máquina virtual. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Vá levantando o dedo para adicionar as diferentes partes da sua impressão digital.</translation>
+<translation id="7267898843336437186">Selecione uma pasta que este site possa ver</translation>
 <translation id="7268127947535186412">Esta definição é gerida pelo proprietário do dispositivo.</translation>
 <translation id="7269736181983384521">Utilização de dados da funcionalidade Partilhar na proximidade</translation>
 <translation id="7272674038937250585">Nenhuma descrição fornecida</translation>
@@ -6955,7 +6942,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7807711621188256451">Permitir sempre que <ph name="HOST" /> aceda à sua câmara</translation>
 <translation id="7810202088502699111">Os pop-ups foram bloqueados nesta página.</translation>
 <translation id="781167124805380294">Transmitir <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Ajude a melhorar as funcionalidades e o desempenho do Chrome e Chrome OS ao enviar automaticamente dados de diagnóstico e utilização para a Google. Alguns dados agregados também ajudam as apps Android e os parceiros Google. Se a definição Atividade da Web e de apps estiver ativada para a sua Conta Google, os seus dados Android podem ser guardados na sua Conta Google.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7815680994978050279">Transferência perigosa bloqueada</translation>
 <translation id="7817361223956157679">O teclado no ecrã ainda não funciona em aplicações Linux.</translation>
@@ -7991,6 +7977,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8838770651474809439">Hambúrguer</translation>
 <translation id="8838778928843281408">Gerir telemóveis</translation>
 <translation id="8841843049738266382">Ler e alterar utilizadores na lista de autorizações</translation>
+<translation id="8842059467121215385">Atualize a página para usar "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8842594465773264717">Eliminar esta impressão digital</translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8846132060409673887">Consultar o fabricante e modelo deste computador</translation>
@@ -8146,6 +8133,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="899657321862108550">O seu Chrome, em qualquer lugar</translation>
 <translation id="899676909165543803">O sensor de impressões digitais é a tecla inferior direita no seu teclado. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="8999560016882908256">Erro de sintaxe da secção: <ph name="ERROR_LINE" />.</translation>
+<translation id="9003185744423389627">Falha na ligação ao servidor de gestão de dispositivos com o estado "<ph name="STATUS_TEXT" />" a <ph name="FAILURE_TIME" /></translation>
 <translation id="9003647077635673607">Permitir em todos os Sites</translation>
 <translation id="9003677638446136377">Verificar novamente</translation>
 <translation id="9004754973617721124">Pretende limpar os dados e as autorizações do site <ph name="SITE_NAME" />, de todos os sites associados ao mesmo e da respetiva app instalada?</translation>

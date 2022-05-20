@@ -489,7 +489,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Kelola jendela</translation>
-<translation id="3624977496395967031">Klik untuk membuka opsi pengurutan</translation>
 <translation id="3631987586758005671">Membagikan ke <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Otomatis login ke situs web menggunakan kredensial yang tersimpan. Saat fitur dinonaktifkan, Anda akan dimintai verifikasi setiap kali hendak login ke situs web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="4225895483398857530">Pintasan toolbar</translation>
 <translation id="4242533952199664413">Buka setelan</translation>
 <translation id="4248098802131000011">Amankan sandi Anda dari pelanggaran data dan masalah keamanan lainnya</translation>
+<translation id="4249955472157341256">Urutkan menurut yang Terbaru</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Lisensi open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Data yang digunakan:<ph name="END_BOLD" /> Histori penjelajahan Anda, catatan situs yang telah Anda buka menggunakan Chrome di perangkat ini.</translation>
@@ -897,7 +897,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5957442310066583693">Untuk melihat situs teratas Anda, ketuk tombol Beranda</translation>
 <translation id="5958275228015807058">Temukan file dan halaman di Download</translation>
 <translation id="5962718611393537961">Ketuk untuk menciutkan</translation>
-<translation id="5964805880140440652">Untuk membagikan halaman ini ke perangkat lain, aktifkan sinkronisasi di setelan Chrome</translation>
 <translation id="5964869237734432770">Hentikan deskripsi gambar</translation>
 <translation id="5979084224081478209">Periksa sandi</translation>
 <translation id="5995726099713306770">Download halaman lagi?</translation>

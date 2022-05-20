@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3622349720008044802">จัดการหน้าต่าง</translation>
-<translation id="3624977496395967031">คลิกเพื่อเปิดตัวเลือกการจัดเรียง</translation>
 <translation id="3631987586758005671">กำลังแชร์กับ <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">ลงชื่อเข้าใช้เว็บไซต์โดยอัตโนมัติโดยใช้ข้อมูลเข้าสู่ระบบที่เก็บไว้ เมื่อฟีเจอร์นี้ปิดอยู่ ระบบจะขอให้คุณยืนยันทุกครั้งก่อนลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">ทางลัดแถบเครื่องมือ</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4248098802131000011">รักษารหัสผ่านให้ปลอดภัยจากการละเมิดข้อมูลและปัญหาด้านความปลอดภัยอื่นๆ</translation>
+<translation id="4249955472157341256">จัดเรียงตามล่าสุด</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
 <translation id="4256782883801055595">ใบอนุญาตโอเพนซอร์ส</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ข้อมูลใดบ้างที่มีการนำไปใช้:<ph name="END_BOLD" /> ประวัติการท่องเว็บของคุณ บันทึกรายการเว็บไซต์ที่คุณเข้าชมโดยใช้ Chrome ในอุปกรณ์นี้</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">หากต้องการดูเว็บไซต์ยอดนิยม ให้แตะปุ่มหน้าแรก</translation>
 <translation id="5958275228015807058">หาไฟล์และหน้าในโฟลเดอร์ดาวน์โหลด</translation>
 <translation id="5962718611393537961">แตะเพื่อยุบ</translation>
-<translation id="5964805880140440652">หากต้องการแชร์หน้านี้กับอุปกรณ์อีกเครื่องหนึ่ง ให้เปิดการซิงค์ในการตั้งค่า Chrome</translation>
 <translation id="5964869237734432770">หยุดรับคำอธิบายรูปภาพ</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
 <translation id="5995726099713306770">ดาวน์โหลดหน้าเว็บอีกครั้งใช่ไหม</translation>

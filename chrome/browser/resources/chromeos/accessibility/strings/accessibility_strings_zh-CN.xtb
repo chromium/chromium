@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">表格“<ph name="TABLENAME" />”<ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">将忽略下一次按键</translation>
 <translation id="4623097797855662355">版权页</translation>
+<translation id="4624970070706497034">我们不再支持在 Chromebook 上自定义 TalkBack 功能。您仍能使用此功能，但应改用 TalkBack 默认键盘快捷键。先按搜索键+A，然后按 K 键，即可查看可用的键盘快捷键。如果您仍想使用 TalkBack，请再次按相应命令。</translation>
 <translation id="463135993322337640">按 ChromeVox 的 O 键、N 键，即可了解最新功能</translation>
 <translation id="4649220074413114917">用 2 根手指点按屏幕可停止任何当前语音。如果您不想让 ChromeVox 读出某些内容，此手势很有用。若要继续，请用 2 根手指点按屏幕。</translation>
 <translation id="4660783501463101648">移除了 Classic。现已无法再通过键盘切换回 ChromeVox Classic。</translation>

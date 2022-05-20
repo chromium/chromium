@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Datachiffrering</translation>
 <translation id="1072700771426194907">USB-enhet oppdaget</translation>
 <translation id="107278043869924952">Bruk PIN-kode i tillegg til passord</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Slike rapporter kan for eksempel inneholde informasjon om hvilke funksjoner som var i bruk, hvor mye minne som vanligvis var i bruk, og diagnostikk- og bruksdata for Android-apper. Noen samlede data hjelper også Google-apper og -partnere, for eksempel Android-utviklere.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for barnets ChromeOS-enhet. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Enhetens evne til å sende informasjonen som kreves for nødvendige tjenester, for eksempel systemoppdateringer og sikkerhet, påvirkes ikke hvis du slår av denne funksjonen.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Hvis innstillingen for Nett- og appaktivitet er påslått for barnets Google-konto, kan barnets data bli lagret i Google-kontoen. Finn ut mer om disse innstillingene og hvordan du endrer dem, på families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Hvis eieren av enheten slår på «Send bruks- og diagnostikkdata», kan programstopprapporter også bli lastet opp til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Naviger på sider med en tekstmarkør</translation>
 <translation id="1076382954055048850">Vis andre Cast-økter</translation>
 <translation id="1076698951459398590">Slå på temaet</translation>
@@ -1439,10 +1434,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2328561734797404498">Start enheten på nytt for å bruke <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Når du er i inkognitomodus, kan nettsteder bare bruke informasjonskapsler for å se nettleseraktiviteten din på sitt eget nettsted. Informasjonskapslene slettes når inkognitoøkten avsluttes.</translation>
 <translation id="2329597144923131178">Logg på for å få bokmerkene, loggen, passordene og de andre innstillingene dine på alle enhetene du bruker.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enhetene dine lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Slike rapporter kan for eksempel inneholde informasjon om hvilke funksjoner du bruker, hvor mye minne du vanligvis bruker, diagnostikk- og bruksdata for Android-apper samt feil. Noen samlede data hjelper også Google-apper og -partnere, for eksempel Android-utviklere.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for ChromeOS-enheten. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Hvis innstillingen for Nett- og appaktivitet er påslått for Google-kontoen din, kan Android-data bli lagret i Google-kontoen. Du kan se og slette dataene dine samt endre kontoinnstillingene dine på account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Hvis eieren av enheten slår på «Send bruks- og diagnostikkdata», kan programstopprapporter også bli lastet opp til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Se i Nettmarked</translation>
 <translation id="2332192922827071008">Åpne Innstillinger</translation>
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
@@ -2781,10 +2772,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3651488188562686558">koble fra Wi-Fi</translation>
 <translation id="3652817283076144888">Initialiserer</translation>
 <translation id="3653160965917900914">Fildelinger på nettverket</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enheter lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Slike rapporter kan for eksempel inneholde informasjon om når hvilke funksjoner var i bruk, og hvor mye minne som vanligvis var i bruk.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for barnets ChromeOS-enhet. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Enhetens evne til å sende informasjonen som kreves for nødvendige tjenester, for eksempel systemoppdateringer og sikkerhet, påvirkes ikke hvis du slår av denne funksjonen.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Hvis eieren av enheten slår på «Send bruks- og diagnostikkdata», kan programstopprapporter også bli lastet opp til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Fortsett å tillate <ph name="HOST" /> å bruke mikrofonen din</translation>
 <translation id="3654045516529121250">lese tilgjengelighetsinnstillingene dine</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent tilgang til én fil.}other{Den har permanent tilgang til # filer.}}</translation>
@@ -4054,7 +4041,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4900652253009739885">Kan ikke fjerne den eneste bryteren som er tilordnet «Velg». Trykk på en valgfri tast for å <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet.</translation>
 <translation id="49027928311173603">Innstillingene som ble lastet ned fra tjeneren er ugyldige: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Bidra til å gjøre funksjonene og ytelsen til Chrome og ChromeOS bedre ved å sende diagnostikk- og bruksdata automatisk til Google. Noen samlede data hjelper også Android-apper og Google-partnere. Hvis innstillingen for Nett- og appaktivitet er påslått for barnets Google-konto, kan barnets Android-data bli lagret i barnets Google-konto.</translation>
 <translation id="4906490889887219338">Konfigurer eller administrer delte nettverksressurser. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Velg når denne utvidelsen kan lese og endre nettstedsdataene dine</translation>
 <translation id="4907161631261076876">Denne filen lastes sjelden ned, og den kan være farlig.</translation>
@@ -5510,10 +5496,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Gruppe uten navn – 1 fane}other{Gruppe uten navn – # faner}}</translation>
 <translation id="6385149369087767061">Koble til internett og prøv på nytt</translation>
 <translation id="6385543213911723544">Nettsteder kan lagre og lese data fra informasjonskapsler</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ved å gi ChromeOS-enhetene dine lov til å sende oss automatiske rapporter hjelper du oss med å prioritere hva vi skal fikse og gjøre bedre i ChromeOS. Slike rapporter kan for eksempel inneholde informasjon om hvilke funksjoner du bruker, og hvor mye minne du vanligvis bruker.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for Chrome-enheten. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Enhetens evne til å sende informasjonen som kreves for nødvendige tjenester, for eksempel systemoppdateringer og sikkerhet, påvirkes ikke hvis du slår av denne funksjonen.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Hvis eieren av enheten slår på «Send bruks- og diagnostikkdata», kan programstopprapporter også bli lastet opp til Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Advarsel – Detaljert loggføring er slått på. Loggene nedenfor kan inneholde nettadresser eller annen sensitiv informasjon. Gjennomgå informasjonen og sjekk at du er villig til å sende den inn.</translation>
 <translation id="6387674443318562538">Del vertikalt</translation>
 <translation id="6388429472088318283">Søk etter språk</translation>
@@ -5634,7 +5616,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6504601948739128893">Får ikke bruke skrifttyper som er installert på enheten</translation>
 <translation id="6504611359718185067">Koble til Internett for å legge til en skriver</translation>
 <translation id="6506374932220792071">X9.62 ECDSA-signatur med SHA-256</translation>
-<translation id="6507936476364432879">Bidra til å gjøre funksjonene og ytelsen til Chrome og ChromeOS bedre ved å sende diagnostikk- og bruksdata automatisk til Google.</translation>
 <translation id="6508248480704296122">Knyttet til <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielisens</translation>
@@ -6959,7 +6940,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7807711621188256451">Tillat alltid at <ph name="HOST" /> bruker kameraet ditt</translation>
 <translation id="7810202088502699111">Forgrunnsvinduer er blokkert på siden.</translation>
 <translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Bidra til å gjøre funksjonene og ytelsen til Chrome og ChromeOS bedre ved å sende diagnostikk- og bruksdata automatisk til Google. Noen samlede data hjelper også Android-apper og Google-partnere. Hvis innstillingen for Nett- og appaktivitet er påslått for Google-kontoen din, kan Android-data bli lagret i Google-kontoen.</translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
 <translation id="7815680994978050279">En farlig nedlasting er blokkert</translation>
 <translation id="7817361223956157679">Skjermtastaturet virker ikke i Linux-apper ennå</translation>

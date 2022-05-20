@@ -489,7 +489,6 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="3602290021589620013">Rhagolwg</translation>
 <translation id="3616113530831147358">Sain</translation>
 <translation id="3622349720008044802">Rheoli ffenestri</translation>
-<translation id="3624977496395967031">Cliciwch i agor opsiynau trefnu</translation>
 <translation id="3631987586758005671">Wrthi'n rhannu i <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Mewngofnodi'n awtomatig i wefannau gan ddefnyddio manylion adnabod sydd wedi'u cadw. Pan fydd y gosodiad hwn wedi'i ddiffodd, gofynnir i chi gadarnhau bob tro cyn mewngofnodi i wefan.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="4225895483398857530">Llwybr byr bar offer</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
 <translation id="4248098802131000011">Cadwch eich cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill</translation>
+<translation id="4249955472157341256">Trefnu yn ôl Diweddaraf</translation>
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="4256782883801055595">Trwyddedau ffynhonnell agored</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
@@ -897,7 +897,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5957442310066583693">I weld eich hoff wefannau, tapiwch y botwm Hafan</translation>
 <translation id="5958275228015807058">Gallwch ddod o hyd i'ch ffeiliau a'ch tudalennau yn Lawrlwythiadau</translation>
 <translation id="5962718611393537961">Tapiwch i grebachu</translation>
-<translation id="5964805880140440652">I rannu'r dudalen hon i ddyfais arall, trowch gysoni ymlaen yn Gosodiadau Chrome</translation>
 <translation id="5964869237734432770">Stopio disgrifio lluniau</translation>
 <translation id="5979084224081478209">Gwirio cyfrineiriau</translation>
 <translation id="5995726099713306770">Lawrlwytho'r dudalen eto?</translation>

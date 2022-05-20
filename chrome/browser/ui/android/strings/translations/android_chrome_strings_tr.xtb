@@ -489,7 +489,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3616113530831147358">Ses</translation>
 <translation id="3622349720008044802">Pencereleri yönetin</translation>
-<translation id="3624977496395967031">Sıralama seçeneklerini açmak için tıklayın</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ile paylaşılıyor</translation>
 <translation id="363596933471559332">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik kapatıldığında, bir web sitesinde oturum açmadan önce her defasında doğrulama yapmanız istenir.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="4225895483398857530">Araç çubuğu kısayolu</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4248098802131000011">Şifrelerinizi veri ihlali ve diğer güvenlik sorunlarına karşı güvende tutun</translation>
+<translation id="4249955472157341256">En güncel tarihe göre sırala</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
 <translation id="4256782883801055595">Açık kaynak lisansları</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Tarama geçmişiniz ve bu cihazda Chrome'u kullanarak ziyaret ettiğiniz sitelerin kaydı.</translation>
@@ -897,7 +897,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5957442310066583693">Popüler sitelerinizi görmek için Ana sayfa düğmesine dokunun</translation>
 <translation id="5958275228015807058">Dosyalarınızı ve sayfalarınızı İndirilenler bölümünde bulabilirsiniz</translation>
 <translation id="5962718611393537961">Daraltmak için dokunun</translation>
-<translation id="5964805880140440652">Bu sayfayı başka bir cihazla paylaşmak için Chrome ayarlarında senkronizasyonu açın</translation>
 <translation id="5964869237734432770">Resim açıklamasını durdur</translation>
 <translation id="5979084224081478209">Şifreleri kontrol et</translation>
 <translation id="5995726099713306770">Sayfa tekrar indirilsin mi?</translation>

@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">目前显示的是您 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中存储的密码</translation>
 <translation id="1026655690966755180">添加端口</translation>
 <translation id="1026822031284433028">加载图片</translation>
+<translation id="1028700151766901954">原因：LBS 默认留在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
 <translation id="1029317248976101138">缩放</translation>
 <translation id="1031362278801463162">正在加载预览</translation>
 <translation id="1032605640136438169">请查阅新版条款</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">数据加密</translation>
 <translation id="1072700771426194907">检测到了 USB 设备</translation>
 <translation id="107278043869924952">使用 PIN 码和密码</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子的 Google 帐号开启“网络与应用活动记录”设置，孩子的数据可能会被保存到其 Google 帐号中。访问 families.google.com 可详细了解这些设置以及如何进行调整。<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">使用文本光标浏览网页</translation>
 <translation id="1076382954055048850">显示其他投射会话</translation>
 <translation id="1076698951459398590">启用主题背景</translation>
@@ -1422,10 +1418,6 @@
 <translation id="2328561734797404498">请重启您的设备，即可使用 <ph name="APP_NAME" />。</translation>
 <translation id="2328636661627946415">当您处于无痕模式时，网站只能使用 Cookie 查看您在相应网站上的浏览活动。无痕式会话结束时，系统会删除 Cookie。</translation>
 <translation id="2329597144923131178">登录后可获取您所有设备上保存的书签、历史记录、密码和其他设置。</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据、错误，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">在应用店中查看</translation>
 <translation id="2332192922827071008">打开偏好设置</translation>
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
@@ -2762,10 +2754,6 @@
 <translation id="3651488188562686558">断开 Wi-Fi 连接</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">网络文件共享</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">继续允许 <ph name="HOST" /> 使用您的麦克风</translation>
 <translation id="3654045516529121250">读取您的无障碍设置</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{此应用对 1 个文件拥有永久访问权限。}other{此应用对 # 个文件拥有永久访问权限。}}</translation>
@@ -3340,6 +3328,7 @@
 <translation id="4209092469652827314">大</translation>
 <translation id="4209251085232852247">已关闭</translation>
 <translation id="4210048056321123003">正在下载虚拟机</translation>
+<translation id="4210380525132844778">原因：系统在“<ph name="LIST_NAME" />”列表中发现了“<ph name="RULE" />”。</translation>
 <translation id="421182450098841253">显示书签栏(&amp;S)</translation>
 <translation id="4211851069413100178">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您的 Android 使用体验。这些数据会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">停止使用此帐号登录 Android 应用</translation>
@@ -3965,6 +3954,7 @@
 <translation id="4842976633412754305">此网页正试图从未经验证的来源加载脚本。</translation>
 <translation id="4844333629810439236">其他键盘布局</translation>
 <translation id="4844633725025837809">为了提高安全性，请先在设备上对密码进行加密，然后再将其保存到 Google 密码管理器中</translation>
+<translation id="4846628405149428620">选择要让此网站将所做更改保存到何处</translation>
 <translation id="4846680374085650406">您目前所采用的是管理员的建议设置。</translation>
 <translation id="4847902821209177679">已选中 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" />，按 Enter 键即可从 <ph name="TOPIC_SOURCE" />中选择影集</translation>
 <translation id="4848191975108266266">Google 助理“Ok Google”</translation>
@@ -4032,7 +4022,6 @@
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="4901309472892185668">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。</translation>
 <translation id="49027928311173603">从服务器下载的策略无效：<ph name="VALIDATION_ERROR" />。</translation>
-<translation id="4904511036057277323">自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。部分汇总数据还会对 Android 应用和 Google 合作伙伴有所帮助。如果您已为孩子的 Google 帐号开启“网络与应用活动记录”设置，孩子的 Android 数据可能会被保存到其 Google 帐号中。</translation>
 <translation id="4906490889887219338">设置或管理网络文件共享。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">选择此扩展程序何时可以读取和更改您的网站数据</translation>
 <translation id="4907161631261076876">此文件属于不常下载的内容，可能存在危险。</translation>
@@ -5161,6 +5150,7 @@
 <translation id="6063284707309177505">创建二维码</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。为了省电，您可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理设置中选择让“Ok Google”指令仅在此设备已接通电源时可用。</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
+<translation id="6065145031947216733">单独存储您的浏览数据？</translation>
 <translation id="6065289257230303064">证书主题背景目录属性</translation>
 <translation id="6066794465984119824">图片哈希未设置</translation>
 <translation id="6069464830445383022">您将使用 Google 帐号登录 Chromebook</translation>
@@ -5239,6 +5229,7 @@
 <translation id="6129953537138746214">空格</translation>
 <translation id="6130692320435119637">添加 Wi-Fi</translation>
 <translation id="6130887916931372608">键盘按键</translation>
+<translation id="6135823405800500595">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="6136114942382973861">关闭下载内容栏</translation>
 <translation id="6136287496450963112">您尚未设置 PIN 码来保护您的安全密钥。若要管理指纹，请先创建一个 PIN 码。</translation>
 <translation id="6138680304137685902">采用 SHA-384 算法的 X9.62 ECDSA 签名</translation>
@@ -5484,10 +5475,6 @@
 <translation id="63849924261838903">{NUM_TABS,plural, =1{未命名群组 - 1 个标签页}other{未命名群组 - # 个标签页}}</translation>
 <translation id="6385149369087767061">请连接到互联网，然后重试</translation>
 <translation id="6385543213911723544">网站可以保存和读取 Cookie 数据</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">警告 - 详细记录功能已启用。以下日志中可能会包含网址或其他敏感信息。请检查并确保您同意提交这些信息。</translation>
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜索语言</translation>
@@ -5608,7 +5595,6 @@
 <translation id="6504601948739128893">不得使用您设备上安装的字体</translation>
 <translation id="6504611359718185067">请连接到互联网以添加打印机</translation>
 <translation id="6506374932220792071">采用 SHA-256 算法的 X9.62 ECDSA 签名</translation>
-<translation id="6507936476364432879">自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。</translation>
 <translation id="6508248480704296122">已与“<ph name="NAME_PH" />”关联</translation>
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒体许可</translation>
@@ -6933,7 +6919,6 @@
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="781167124805380294">投射“<ph name="FILE_NAME" />”</translation>
-<translation id="7811886112806886172">自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。部分汇总数据还会对 Android 应用和 Google 合作伙伴有所帮助。如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>
@@ -7071,6 +7056,7 @@
 <translation id="7947962633355574091">复制视频地址(&amp;O)</translation>
 <translation id="7947964080535614577">网站通常会显示广告，以便能够免费提供内容或服务。但是，我们已知某些网站会展示侵扰性或误导性广告。</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有网页</translation>
+<translation id="7950629216186736592">原因：LBS 仅支持 http://、https:// 和 file:// 网址。</translation>
 <translation id="7951265006188088697">要添加或管理 Google Pay 付款方式，请访问 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">停用虚拟卡</translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
@@ -7615,6 +7601,7 @@
 <translation id="8480869669560681089">由“<ph name="VENDOR_NAME" />”提供的未知设备</translation>
 <translation id="8481187309597259238">确认 USB 权限</translation>
 <translation id="8481980314595922412">试用版功能已开启</translation>
+<translation id="8486666913807228950">原因：系统在“会被强制在…中打开”列表中发现了反转规则“<ph name="REVERT_RULE" />”。</translation>
 <translation id="848666842773560761">有一款应用正在尝试使用摄像头。若要允许它使用摄像头，请关闭摄像头的隐私保护开关。</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8489156414266187072">个性化建议仅会显示在您的帐号中</translation>

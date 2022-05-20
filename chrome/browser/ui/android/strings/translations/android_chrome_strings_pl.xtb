@@ -489,7 +489,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3622349720008044802">Zarządzaj oknami</translation>
-<translation id="3624977496395967031">Kliknij, aby otworzyć opcje sortowania</translation>
 <translation id="3631987586758005671">Udostępniam urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatycznie loguj się na stronach, używając zapisanych danych logowania. Gdy ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o weryfikację.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4225895483398857530">Skrót na pasku narzędzi</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4248098802131000011">Chroń swoje hasła przed naruszeniem bezpieczeństwa danych i innymi zagrożeniami</translation>
+<translation id="4249955472157341256">Sortuj od najnowszego</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
 <translation id="4256782883801055595">Licencje open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> używamy Twojej historii przeglądania, czyli rejestru witryn, które odwiedzasz w Chrome na tym urządzeniu.</translation>
@@ -897,7 +897,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5957442310066583693">Aby zobaczyć swoje najczęściej odwiedzane strony, kliknij przycisk strony głównej</translation>
 <translation id="5958275228015807058">Znajdź pliki i strony w Pobranych plikach</translation>
 <translation id="5962718611393537961">Kliknij, by zwinąć</translation>
-<translation id="5964805880140440652">Aby udostępnić tę stronę na innym urządzeniu, włącz synchronizację w ustawieniach Chrome</translation>
 <translation id="5964869237734432770">Wstrzymaj opisy obrazów</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
 <translation id="5995726099713306770">Pobrać stronę ponownie?</translation>

@@ -489,7 +489,6 @@ Thinta uphinde ubambe noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho 
 <translation id="3602290021589620013">Hlola kuqala</translation>
 <translation id="3616113530831147358">Umsindo</translation>
 <translation id="3622349720008044802">Phatha amawindi</translation>
-<translation id="3624977496395967031">Chofoza ukuze uvule izinketho zokuhlunga</translation>
 <translation id="3631987586758005671">Yabelana ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Ngena ngemvume ngokuzenzakalela kumawebhusayithi usebenzisa ukuqinisekisa okugciniwe. Uma isici sivaliwe, uzocelwa ukuqinisekisa njalo ngaphambi kokungena ngemvume kuwebhusayithi.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -581,8 +580,10 @@ Thinta uphinde ubambe noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho 
 <translation id="4209895695669353772">Ukuze uthole okuqukethwe okwenziwe kwaba ngokwakho i-Google, vula ukuvumelanisa</translation>
 <translation id="4214315110991671325">Uma uvumela amakhukhi, i-Chrome ingase iwasebenzisele ukulayisha kusengaphambili.</translation>
 <translation id="4225895483398857530">Isinqamuleli sebha yamathuluzi</translation>
+<translation id="4227318652298512614">Landela noma yimaphi amasayithi owafunayo</translation>
 <translation id="4242533952199664413">Vula izilungiselelo</translation>
 <translation id="4248098802131000011">Gcina amaphasiwedi akho aphephile kuzephuli zesivumelwano sedatha nakwezinye izinkinga zokuvikeleka</translation>
+<translation id="4249955472157341256">Hlunga Ngokwakamuva</translation>
 <translation id="4250229828105606438">Isithombe-skrini</translation>
 <translation id="4256782883801055595">Amalayisensi womthombo ovulekile</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Iyiphi idatha esetshenziswayo:<ph name="END_BOLD" /> Umlando wakho wokubhrawuza, irekhodi lamasayithi owavakashele usebenzisa i-Chrome kule divayisi.</translation>
@@ -897,7 +898,6 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5957442310066583693">Ukuze ubone amasayithi akho aphezulu, thepha inkinobho Yasekhaya</translation>
 <translation id="5958275228015807058">Thola amafayela akho namakhasi kokulandiwe</translation>
 <translation id="5962718611393537961">Thepha ukuze ugoqe</translation>
-<translation id="5964805880140440652">Ukuze wabelane ngaleli khasi nenye idivayisi, vula ukuvumelanisa kuzilungiselelo ze-Chrome</translation>
 <translation id="5964869237734432770">Misa izincazelo zesithombe</translation>
 <translation id="5979084224081478209">Hlola amaphasiwedi</translation>
 <translation id="5995726099713306770">Dawuniloda futhi ikhasi?</translation>

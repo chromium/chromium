@@ -489,7 +489,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3622349720008044802">Spravovat okna</translation>
-<translation id="3624977496395967031">Kliknutím otevřete možnosti řazení</translation>
 <translation id="3631987586758005671">Sdílení se zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Přihlašovat se na weby automaticky pomocí uložených identifikačních údajů. Když je tato funkce vypnutá, budete před každým přihlášením na web požádáni o ověření.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="4225895483398857530">Zkratka lišty</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4248098802131000011">Ochraňte svá hesla před porušeními zabezpečení údajů a jinými bezpečnostními problémy</translation>
+<translation id="4249955472157341256">Seřadit podle nejnovější</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4256782883801055595">Licence open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Jaké údaje používáme:<ph name="END_BOLD" /> Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromu na tomto zařízení.</translation>
@@ -897,7 +897,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5957442310066583693">Chcete-li zobrazit své top weby, klepněte na tlačítko domovské stránky</translation>
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
-<translation id="5964805880140440652">Chcete-li tuto stránku sdílet s jiným zařízením, zapněte v nastavení Chromu synchronizaci</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5979084224081478209">Zkontrolovat hesla</translation>
 <translation id="5995726099713306770">Stáhnout stránku znovu?</translation>

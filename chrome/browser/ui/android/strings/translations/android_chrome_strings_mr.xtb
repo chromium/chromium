@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
 <translation id="3622349720008044802">विंडो व्यवस्थापित करा</translation>
-<translation id="3624977496395967031">क्रमवारी लावण्याचे पर्याय उघडण्यासाठी क्लिक करा</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> शी शेअर करत आहे</translation>
 <translation id="363596933471559332">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य बंद असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी दरवेळी तुम्हाला पडताळणीसाठी विचारले जाईल.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">टूलबार शॉर्टकट</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4248098802131000011">डेटा भंग आणि इतर सुरक्षितता समस्यांपासून तुमचे पासवर्ड सुरक्षित ठेवा</translation>
+<translation id="4249955472157341256">नवीनतम यानुसार क्रमाने लावा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4256782883801055595">मुक्त स्रोत परवाने</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />कोणता डेटा वापरला जातो:<ph name="END_BOLD" /> तुमचा ब्राउझिंग इतिहास, या डिव्हाइसवर तुम्ही Chrome वापरून भेट दिलेल्या साइटची नोंद.</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">तुमच्या टॉप साइट पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
-<translation id="5964805880140440652">हे पेज दुसर्‍या डिव्हाइसवर शेअर करण्यासाठी, Chrome सेटिंग्जमध्ये सिंक सुरू करा</translation>
 <translation id="5964869237734432770">इमेजची वर्णने थांबवा</translation>
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
 <translation id="5995726099713306770">पेज पुन्हा डाउनलोड करायचे आहे का?</translation>

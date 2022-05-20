@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">tabla <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorando siguiente pulsación de tecla</translation>
 <translation id="4623097797855662355">Colofón</translation>
+<translation id="4624970070706497034">TalkBack ya no admite personalización en Chromebooks. Puedes seguir usando TalkBack, pero utilizarás sus combinaciones de teclas predeterminadas. Pulsa la tecla de búsqueda + A y, a continuación, K para ver las combinaciones de teclas disponibles. Si quieres seguir usando TalkBack, pulsa el comando de nuevo.</translation>
 <translation id="463135993322337640">Pulsa las teclas O y N en ChromeVox para descubrir las novedades</translation>
 <translation id="4649220074413114917">Puedes tocar la pantalla con dos dedos para detener cualquier mensaje de voz en curso. Es útil cuando no quieras que ChromeVox lea algo. Para continuar, toca la pantalla con dos dedos.</translation>
 <translation id="4660783501463101648">Versión clásica de ChromeVox eliminada. Se ha quitado la combinación de teclas para volver a la versión anterior.</translation>

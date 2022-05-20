@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Sýnir aðgangsorð af <ph name="BEGIN_LINK" />Google reikningnum<ph name="END_LINK" /> þínum</translation>
 <translation id="1026655690966755180">Bæta við tengi</translation>
 <translation id="1026822031284433028">Hlaða mynd</translation>
+<translation id="1028700151766901954">Ástæða: Stuðningur við eldri vafra er sjálfgefinn í <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Aðdráttur</translation>
 <translation id="1031362278801463162">Hleður forskoðun</translation>
 <translation id="1032605640136438169">Kynntu þér nýju skilmálana</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Gagnadulritun</translation>
 <translation id="1072700771426194907">USB-tæki greint</translation>
 <translation id="107278043869924952">Nota PIN-númer til viðbótar við aðgangsorð</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvaða eiginleikar voru notaðir, hversu mikið minni var yfirleitt notað sem og greiningar- og notkunargögn Android forrita. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS tækis barnsins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Þótt slökkt sé á þessum eiginleika hefur það ekki áhrif á getu þessa tækis til að senda mikilvægar upplýsingar fyrir nauðsynlega þjónustu á borð við kerfisuppfærslur og öryggisþjónustu.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á vef- og forritavirkni á Google reikningi barnsins verða gögn barnsins hugsanlega vistuð á Google reikningi þess. Fáðu frekari upplýsingar um þessar stillingar og hvernig þær eru stilltar á families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Ef eigandi tækisins kveikir á „Senda notkunar- og greiningargögn“ verður hrunskýrslum hugsanlega einnig hlaðið upp á Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Skoða síður með textabendli</translation>
 <translation id="1076382954055048850">Sýna aðrar útsendingarlotur</translation>
 <translation id="1076698951459398590">Virkja þema</translation>
@@ -1445,10 +1441,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2328561734797404498">Endurræstu tækið til að nota <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Þegar þú notar huliðsstillingu geta vefsvæði aðeins notað fótspor til að sjá vafranotkun þína á sínu eigin vefsvæði. Fótsporum er eytt við lok hverrar huliðslotu.</translation>
 <translation id="2329597144923131178">Skráðu þig inn til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvaða eiginleikar eru notaðir, hversu mikið minni er yfirleitt notað, greiningar- og notkunargögn Android forrita og villur. Sum samantekin gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ef kveikt er á vef- og forritavirkni á Google reikningnum þínum verða Android gögnin þín hugsanlega vistuð á Google reikningnum þínum. Þú getur skoðað gögnin þín, eytt þeim og breytt reikningsstillingunum á account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ef eigandi tækisins kveikir á „Senda notkunar- og greiningargögn“ verður hrunskýrslum hugsanlega einnig hlaðið upp á Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Skoða í verslun</translation>
 <translation id="2332192922827071008">Opna kjörstillingar</translation>
 <translation id="2332515770639153015">Kveikt er á enn öruggari vefskoðun</translation>
@@ -2786,10 +2778,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3651488188562686558">Aftengjast Wi-Fi</translation>
 <translation id="3652817283076144888">Frumstillir</translation>
 <translation id="3653160965917900914">Samnýttar skráageymslur</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvenær tilteknir eiginleikar voru notaðir og hversu mikið minni var yfirleitt notað.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS tækis barnsins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Þótt slökkt sé á þessum eiginleika hefur það ekki áhrif á getu þessa tækis til að senda mikilvægar upplýsingar fyrir nauðsynlega þjónustu á borð við kerfisuppfærslur og öryggisþjónustu.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ef eigandi tækisins kveikir á „Senda notkunar- og greiningargögn“ verður hrunskýrslum hugsanlega einnig hlaðið upp á Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Halda áfram að veita <ph name="HOST" /> aðgang að hljóðnemanum</translation>
 <translation id="3654045516529121250">Lesa aðgengisstillingar</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Það hefur varanlegan aðgang að einni skrá.}one{Það hefur varanlegan aðgang að # skrá.}other{Það hefur varanlegan aðgang að # skrám.}}</translation>
@@ -3365,6 +3353,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4209092469652827314">Stórt</translation>
 <translation id="4209251085232852247">Slökkt</translation>
 <translation id="4210048056321123003">Sækir sýndarvélina</translation>
+<translation id="4210380525132844778">Ástæða: <ph name="RULE" /> fannst á listanum „<ph name="LIST_NAME" />“.</translation>
 <translation id="421182450098841253">&amp;Sýna bókamerkjastiku</translation>
 <translation id="4211851069413100178">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir þig með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að því að bæta stöðugleika kerfa og forrita auk annarra endurbóta. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Eigandi valdi þessa <ph name="BEGIN_LINK1" />stillingu<ph name="END_LINK1" />. Eigandi getur kosið að senda greiningar- og notkunargögn þessa tækis til Google. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum. <ph name="BEGIN_LINK2" />Frekari upplýsingar<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Hætta að nota með Android forritum</translation>
@@ -4060,7 +4049,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4900652253009739885">Ekki er hægt að fjarlægja eina rofann sem er úthlutaður til „Velja“. Ýttu á hvaða hnapp sem er til að <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Veldu ástand tilraunar fyrir <ph name="EXPERIMENT_NAME" /> tilraunina.</translation>
 <translation id="49027928311173603">Reglan sem sótt var frá þjóninum er ógild: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Hjálpaðu til við að bæta eiginleika og afköst Chrome og ChromeOS með því að senda greiningar- og notkunargögn sjálfkrafa til Google. Einnig kunna tiltekin samantekin gögn að gagnast Android forritum og samstarfsaðilum Google. Ef kveikt er á vef- og forritavirkni á Google reikningi barnsins verða Android gögn barnsins hugsanlega vistuð á Google reikningi þess.</translation>
 <translation id="4906490889887219338">Setja upp eða hafa umsjón með samnýttum skráageymslum. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Veldu hvenær þessi viðbót getur lesið og breytt vefsvæðisgögnum</translation>
 <translation id="4907161631261076876">Þessi skrá er ekki sótt oft og kann að vera hættuleg.</translation>
@@ -5192,6 +5180,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6063284707309177505">Búa til QR-kóða</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að sérsniðnum niðurstöðum <ph name="SUPERVISED_USER_NAME" />. Þú getur valið í stillingum Hjálpara <ph name="SUPERVISED_USER_NAME" /> að kveikja eingöngu á „Ok, Google“ þegar þetta tæki er tengt við aflgjafa til að spara rafhlöðuna.</translation>
 <translation id="6064217302520318294">Skjálás</translation>
+<translation id="6065145031947216733">Viltu aðskilja vefskoðunina?</translation>
 <translation id="6065289257230303064">Skráasafnseigindir vottorðsviðfangs</translation>
 <translation id="6066794465984119824">Tæti myndar er ekki stillt</translation>
 <translation id="6069464830445383022">Google reikningurinn þinn er notaður fyrir innskráningu á Chromebook</translation>
@@ -5270,6 +5259,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6129953537138746214">Bil</translation>
 <translation id="6130692320435119637">Bæta Wi-Fi við</translation>
 <translation id="6130887916931372608">Lykill á lyklaborði</translation>
+<translation id="6135823405800500595">Gakktu úr skugga um að síminn sé nálægt þér, ólæstur og með kveikt á Bluetooth og Wi-Fi</translation>
 <translation id="6136114942382973861">Loka niðurhalsstiku</translation>
 <translation id="6136287496450963112">Öryggislykillinn þinn er ekki varinn með PIN-númeri. Til að hafa umsjón með fingraförum þarftu að búa til PIN-númer.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA undirskrift með SHA-384</translation>
@@ -5515,10 +5505,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Hópur án heitis - 1 flipi}one{Hópur án heitis - # flipi}other{Hópur án heitis - # flipar}}</translation>
 <translation id="6385149369087767061">Tengstu internetinu og reyndu aftur</translation>
 <translation id="6385543213911723544">Vefsvæði geta vistað og lesið fótsporagögn</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Við eigum auðveldara með að forgangsraða því sem þarf að lagfæra og bæta í ChromeOS ef þú leyfir ChromeOS tækjum að senda skýrslur sjálfkrafa. Þessar skýrslur innihalda t.d. upplýsingar um hvaða eiginleikar eru notaðir og hversu mikið minni er yfirleitt notað.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum Chrome tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Þótt slökkt sé á þessum eiginleika hefur það ekki áhrif á getu tækisins til að senda mikilvægar upplýsingar fyrir nauðsynlega þjónustu á borð við kerfisuppfærslur og öryggisþjónustu.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ef eigandi tækisins kveikir á „Senda notkunar- og greiningargögn“ verður hrunskýrslum hugsanlega einnig hlaðið upp á Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Viðvörun – kveikt er á ítarlegri skráningu. Notkunarskrár gætu innihaldið vefslóðir eða aðrar viðkvæmar upplýsingar. Farðu yfir gögnin og gakktu úr skugga um að þú viljir senda þessar upplýsingar.</translation>
 <translation id="6387674443318562538">Lóðrétt skipting</translation>
 <translation id="6388429472088318283">Leita í tungumálum</translation>
@@ -5639,7 +5625,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6504601948739128893">Mega ekki nota leturgerðir sem eru uppsettar í tækinu þínu</translation>
 <translation id="6504611359718185067">Tengjast við netið til að bæta við prentara</translation>
 <translation id="6506374932220792071">X9.62 ECDSA undirskrift með SHA-256</translation>
-<translation id="6507936476364432879">Hjálpaðu til við að bæta eiginleika og afköst Chrome og ChromeOS með því að senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
 <translation id="6508248480704296122">Tengist <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Forrit: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Margmiðlunarleyfi</translation>
@@ -6966,7 +6951,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7807711621188256451">Veita <ph name="HOST" /> alltaf aðgang að myndavélinni</translation>
 <translation id="7810202088502699111">Sprettigluggar voru útilokaðir á þessari síðu.</translation>
 <translation id="781167124805380294">Senda út <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Hjálpaðu til við að bæta eiginleika og afköst Chrome og ChromeOS með því að senda greiningar- og notkunargögn sjálfkrafa til Google. Einnig kunna tiltekin samantekin gögn að gagnast Android forritum og samstarfsaðilum Google. Ef kveikt er á vef- og forritavirkni á Google reikningnum þínum verða Android gögnin þín hugsanlega vistuð á Google reikningnum þínum.</translation>
 <translation id="7814458197256864873">Afrita</translation>
 <translation id="7815680994978050279">Lokað á hættulegt niðurhal</translation>
 <translation id="7817361223956157679">Skjályklaborðið virkar ekki í Linux-forritum enn sem komið er</translation>
@@ -7105,6 +7089,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7947962633355574091">A&amp;frita slóð myndskeiðs</translation>
 <translation id="7947964080535614577">Yfirleitt birta vefsvæði auglýsingar til að geta boðið upp á gjaldfrjálst efni eða þjónustur. Sum vefsvæði eru hins vegar þekkt fyrir að birta ágengar eða villandi auglýsingar.</translation>
 <translation id="7948407723851303488">Allar síður <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Ástæða: Stuðningur við eldri vafra styður eingöngu vefslóðirnar http://, https:// og file://.</translation>
 <translation id="7951265006188088697">Til að bæta við eða hafa umsjón með greiðslumátum í Google Pay skaltu fara á <ph name="BEGIN_LINK" />Google reikninginn<ph name="END_LINK" /> þinn</translation>
 <translation id="795130320946928025">Slökkva á sýndarkorti</translation>
 <translation id="7952708427581814389">Vefsvæði geta beðið um að sjá texta og myndir á klippiborðinu</translation>
@@ -7648,6 +7633,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8480869669560681089">Óþekkt tæki frá <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Staðfesta USB-heimild</translation>
 <translation id="8481980314595922412">Kveikt er á prufueiginleikum</translation>
+<translation id="8486666913807228950">Ástæða: umsnúin regla, <ph name="REVERT_RULE" />, fannst á listanum „Þvinga opnun í“.</translation>
 <translation id="848666842773560761">Forrit er að reyna að opna myndavélina. Slökktu á persónuverndarrofa myndavélarinnar til að heimila aðgang.</translation>
 <translation id="8487678622945914333">Auka aðdrátt</translation>
 <translation id="8489156414266187072">Persónulegar tillögur eru eingöngu birtar á reikningnum þínum</translation>

@@ -25,6 +25,7 @@
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google hisobingizdagi<ph name="END_LINK" /> parollar chiqarilgan</translation>
 <translation id="1026655690966755180">Port kiritish</translation>
 <translation id="1026822031284433028">Rasmni yuklash</translation>
+<translation id="1028700151766901954">Sababi: LBS standart holatda <ph name="DEFAULT_OPEN_BROWSER" />da qoladi.</translation>
 <translation id="1029317248976101138">Masshtab</translation>
 <translation id="1031362278801463162">Ma’lumotlar oldindan ko‘rish uchun yuklanmoqda</translation>
 <translation id="1032605640136438169">Yangi shartlar bilan tanishib chiqing</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Ma‘lumotlar shifrlanishi</translation>
 <translation id="1072700771426194907">USB qurilma aniqlandi</translation>
 <translation id="107278043869924952">Parol bilan birga PIN kod ham ishlatish</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga qaysi funksiyalardan foydalanilgani, odatda qancha xotira ishlatilishi, Android ilovasi diagnostika va foydalanish statistikasi kabi maʼlumotlar kirishi mumkin. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda farzandingizning ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Bu funksiya faol boʻlmasa ham tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni yaxshilash maqsadida qurilma axborotlari yuborilaveradi.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Farzandingizning Google hisobi uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari uning Google hisobida saqlanadi. Bu parametr va uni sozlash haqidagi batafsil axborotni families.google.com sahifasidan olish mumkin.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Qurilma egasi tomonidan “diagnostika va foydalanish statistikasi maʼlumotlarini yuborish” yoqilsa, ishdan chiqishlar hisoboti ham Googlega yuborilishi mumkin.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Sahifalarni matn kursori bilan kezish</translation>
 <translation id="1076382954055048850">Boshqa translatsiya seanslarini chiqarish</translation>
 <translation id="1076698951459398590">Mavzuni yoqish</translation>
@@ -1431,10 +1427,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2328561734797404498"><ph name="APP_NAME" /> ilovasini ishlatish uchun qurilmangizni qayta ishga tushiring.</translation>
 <translation id="2328636661627946415">Inkognito rejimini yoqqaningizda, saytlar cookie fayllarni faqatgina u saytni kezish vaqtingizda koʻradi Inkognito seansi tugaganda cookie fayllar oʻchirib tashlanadi.</translation>
 <translation id="2329597144923131178">Xatcho‘plar, tarix, parollar va boshqa sozlamalarni barcha qurilmalaringizda sinxronlash uchun hisobingizga kiring.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga qaysi funksiyalar va odatda qancha xotira ishlatilishi, Android ilovasi diagnostikasi, foydalanish statistikasi va xatolari kabi maʼlumotlar kirishi mumkin. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Google hisobingiz uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari Google hisobingizda saqlanadi. Maʼlumotlaringizni account.google.com orqali koʻrish, oʻchirib tashlash va oʻzgartirish mumkin.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Qurilma egasi tomonidan “diagnostika va foydalanish statistikasi maʼlumotlarini yuborish” yoqilsa, ishdan chiqishlar hisoboti ham Googlega yuborilishi mumkin.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Internet-do‘konda ochish</translation>
 <translation id="2332192922827071008">Parametrlarni ochish</translation>
 <translation id="2332515770639153015">Saytlarni kuchaytirilgan rejimda xavfsiz kezish rejimi yoniq</translation>
@@ -2773,10 +2765,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3651488188562686558">Wi-Fi tarmoqdan uzish</translation>
 <translation id="3652817283076144888">Ishga tushirilmoqda</translation>
 <translation id="3653160965917900914">Fayllarni tarmoqda ulashish</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga qaysi funksiyalar va odatda qancha xotira ishlatilishi kabi maʼlumotlar kirishi mumkin.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda farzandingizning ChromeOS qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Bu funksiya faol boʻlmasa ham tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni yaxshilash maqsadida qurilma axborotlari yuborilaveradi.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Qurilma egasi tomonidan “diagnostika va foydalanish statistikasi maʼlumotlarini yuborish” yoqilsa, ishdan chiqishlar hisoboti ham Googlega yuborilishi mumkin.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" /> saytiga mikrofondan foydalanishiga ruxsat berilaversin</translation>
 <translation id="3654045516529121250">Maxsus imkoniyatlar sozlamalarini o‘qish</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{1 ta faylga doimiy ruxsati bor.}other{# ta faylga doimiy ruxsati bor.}}</translation>
@@ -3352,6 +3340,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4209092469652827314">Katta</translation>
 <translation id="4209251085232852247">Yoqilmagan</translation>
 <translation id="4210048056321123003">Virtual mashina yuklab olinmoqda</translation>
+<translation id="4210380525132844778">Sababi: <ph name="RULE" /> <ph name="LIST_NAME" /> roʻyxatida edi.</translation>
 <translation id="421182450098841253">&amp;Xatcho‘plar panelini ko‘rsatish</translation>
 <translation id="4211851069413100178">Foydalanish va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu <ph name="BEGIN_LINK1" />parametr<ph name="END_LINK1" /> qurilma egasi tomonidan oʻrnatilgan. Qurilma egasi undagi foydalanish haqidagi va diagnostika axborotini Google serverlariga avtomatik yuborilishini tayinlashi mumkin. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar Google hisobingizda saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Android ilovlaridan foydalanishni toʻxatish</translation>
@@ -4048,7 +4037,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4900652253009739885">“Tanlash” uchun tayinlangan kalit tugma bekor qilinmadi. <ph name="RESPONSE" /> uchun istalgan tugmani bosing.</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> tajribaviy funksiyasi holatini tanlang.</translation>
 <translation id="49027928311173603">Serverdan yaroqsiz siyosat yuklab olindi: <ph name="VALIDATION_ERROR" /></translation>
-<translation id="4904511036057277323">Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS tizimini takomillashtirishga yordam bering. Ayrim jamlangan axborotlar Android ilovalari va Google hamkorlariga yordam beradi. Farzandingiz Google hisobi uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari uning Google hisobida saqlanadi.</translation>
 <translation id="4906490889887219338">Tarmoqdagi fayl ulashuvlarini sozlash yoki boshqarish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Bu kengaytmani qachon sayt maʼlumotlarini oʻqishi va oʻzgartirishni tanlang</translation>
 <translation id="4907161631261076876">Bu faylni yuklab olish tavsiya etilmaydi, chunki u zararli bo‘lishi mumkin.</translation>
@@ -5180,6 +5168,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6063284707309177505">QR kod yaratish</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Oʻxshash yoki yozib olingan ovozlar ham <ph name="SUPERVISED_USER_NAME" />ning shaxsiy natijalarini olishi mumkin. Batareyani tejash uchun <ph name="SUPERVISED_USER_NAME" />ning Assistent sozlamalari orqali “Ok Google” faqat qurilma quvvat manbasiga ulanganda ishlashini tanlash mumkin.</translation>
 <translation id="6064217302520318294">Ekran qulfi</translation>
+<translation id="6065145031947216733">Alohida ajratilsinmi?</translation>
 <translation id="6065289257230303064">Sertifikat subyekti katalogi atributlari</translation>
 <translation id="6066794465984119824">Rasm heshi belgilanmagan</translation>
 <translation id="6069464830445383022">Chromebook qurilmangizga Google hisobingizdan kirasiz</translation>
@@ -5258,6 +5247,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6129953537138746214">Bo‘shliq</translation>
 <translation id="6130692320435119637">Wi-Fi kiritish</translation>
 <translation id="6130887916931372608">Klaviatura tugmasi</translation>
+<translation id="6135823405800500595">Uning yaqin-atrofda, qulfdan chiqarilgan, Bluetooth va Wi-Fi yoqilganligiga ishonch hosil qiling</translation>
 <translation id="6136114942382973861">Yuklanmalar panelini yopish</translation>
 <translation id="6136287496450963112">Elektron kalit PIN kod bilan himoyalanmagan. Barmoq izlarini boshqarish uchun avval PIN kod yarating.</translation>
 <translation id="6138680304137685902">SHA-384 algoritmli X9.62 ECDSA imzosi</translation>
@@ -5503,10 +5493,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Nomsiz guruh – 1 ta varaq}other{Nomsiz guruh – # ta varaq}}</translation>
 <translation id="6385149369087767061">Internetga ulanib, qaytadan urining</translation>
 <translation id="6385543213911723544">Cookie-fayllarni saqlash va o‘qish imkoniyatiga ega saytlar</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />ChromeOS qurilmalariga hisobotlarni avtomatik yuborishga ruxsat bersangiz, xatolarni tuzatish va ChromeOS tizimini yaxshilashimizda yordam bergan boʻlasiz. Bunday hisobotlarga qaysi funksiyalardan foydalanilgani, odatda qancha xotira ishlatilishi kabi maʼlumotlar kirishi mumkin.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda Chrome qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Bu funksiya yoniq boʻlmasa ham, tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni yaxshilash maqsadida qurilma axborotlari yuborilaveradi.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Qurilma egasi tomonidan “diagnostika va foydalanish statistikasi maʼlumotlarini yuborish” yoqilsa, ishdan chiqishlar hisoboti ham Googlega yuborilishi mumkin.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Diqqat! Batafsil maʼlumotlarni qayd qilish funksiyasi yoqilgan. Ular quyida keltirilgan (jumladan, URL manzillari va boshqa maxfiy maʼlumotlar). Ularni Googlega yuborishga tayyormisiz?</translation>
 <translation id="6387674443318562538">Vertikal ajratish</translation>
 <translation id="6388429472088318283">Tillarni qidirish</translation>
@@ -5627,7 +5613,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6504601948739128893">Qurilmangizga oʻrnatilgan shriftlardan foydalanish taqiqlangan</translation>
 <translation id="6504611359718185067">Printer qo‘shish uchun internetga ulaning</translation>
 <translation id="6506374932220792071">SHA-256 algoritmli X9.62 ECDSA imzosi</translation>
-<translation id="6507936476364432879">Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS tizimini takomillashtirishga yordam bering.</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> bilan aloqador</translation>
 <translation id="6508261954199872201">Ilova: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Litsenziyalar</translation>
@@ -6951,7 +6936,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7807711621188256451"><ph name="HOST" /> saytiga kameradan foydalanishga doim ruxsat berish</translation>
 <translation id="7810202088502699111">Qalqib chiquvchi oynalar bloklandi.</translation>
 <translation id="781167124805380294">Translatsiya qilish: <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS tizimini takomillashtirishga yordam bering. Ayrim jamlangan axborotlar Android ilovalari va Google hamkorlariga yordam beradi. Google hisobingiz uchun veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, Android maʼlumotlari Google hisobingizda saqlanadi.</translation>
 <translation id="7814458197256864873">&amp;Nuxsa olish</translation>
 <translation id="7815680994978050279">Xavfli yuklanma bloklandi</translation>
 <translation id="7817361223956157679">Ekran klaviaturasi hozircha Linux ilovalarda ishlamaydi</translation>
@@ -7090,6 +7074,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7947962633355574091">Videoning URL manzilini nusxalash</translation>
 <translation id="7947964080535614577">Saytlar odatda bepul kontent yoki xizmatlar taqdim qilish maqsadida reklama chiqaradi. Lekin ayrim saytlarda yoqimsiz yoki befoyda reklamalar chiqishi ham mumkin.</translation>
 <translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> barcha sahifalari</translation>
+<translation id="7950629216186736592">Sababi: LBS faqat quyidagilar bilan ishlaydi: http://, https:// va file:// URL.</translation>
 <translation id="7951265006188088697"><ph name="BEGIN_LINK" />Google Hisob<ph name="END_LINK" /> sahifasi orqali Google Pay toʻlov usullarini qoʻshish yoki boshqarish mumkin</translation>
 <translation id="795130320946928025">Virtual kartani oʻchirish</translation>
 <translation id="7952708427581814389">Saytlar klipborddagi rasm va matnlarni koʻrishga ruxsat soʻray oladi</translation>
@@ -7633,6 +7618,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8480869669560681089">Notanish qurilma (<ph name="VENDOR_NAME" />)</translation>
 <translation id="8481187309597259238">USB ruxsatnomasini tasdiqlash</translation>
 <translation id="8481980314595922412">Bepul sinov funksiyalari yoniq</translation>
+<translation id="8486666913807228950">Sababi: “Majburiy ochish” roʻyxatida <ph name="REVERT_RULE" /> teskari qoida topildi.</translation>
 <translation id="848666842773560761">Ilova kameradan foydalanmoqchi. Ruxsat berish uchun kamera maxfiylik qoidasini faolsizlantiring.</translation>
 <translation id="8487678622945914333">Yaqinlashtirish</translation>
 <translation id="8489156414266187072">Shaxsiy takliflar faqat sizning hisobda chiqadi</translation>

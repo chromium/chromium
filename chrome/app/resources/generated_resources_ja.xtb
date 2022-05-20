@@ -55,6 +55,7 @@
 <translation id="1054153489933238809">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 週間以内に <ph name="DEVICE_TYPE" />を更新してください}other{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" />を更新してください}}</translation>
 <translation id="1056898198331236512">警告</translation>
+<translation id="105822690353767994">今後このメッセージが表示されないようにする場合は、このサイトでの拡張機能の実行を常に許可します</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{新しい PIN を入力してください。PIN は 1 文字以上の長さにする必要があり、文字や数字などを含めることができます。}other{新しい PIN を入力してください。PIN は # 文字以上の長さにする必要があり、文字や数字などを含めることができます。}}</translation>
 <translation id="1059484610606223931">ハイパーテキスト トランスポート プロトコル（HTTPS）</translation>
@@ -74,11 +75,6 @@
 <translation id="1071917609930274619">データの暗号化</translation>
 <translation id="1072700771426194907">USB デバイスが検出されました</translation>
 <translation id="107278043869924952">パスワードに加えて PIN を使用する</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。自動レポートでは、使用された機能、通常のメモリ使用量、Android アプリの診断データと使用状況データなどの情報が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />お子様の Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、お子様のデータがお子様の Google アカウントに保存されることがあります。これらの設定の詳細と変更方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />デバイスの所有者が [使用状況データや診断データの送信] をオンにしている場合は、障害レポートが Google にアップロードされることもあります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">テキスト カーソルを使ってページ間を移動する</translation>
 <translation id="1076382954055048850">他のキャスト セッションを表示</translation>
 <translation id="1076698951459398590">テーマを有効にする</translation>
@@ -860,6 +856,7 @@
     他のデバイスのアプリやコンテンツに影響はありません。</translation>
 <translation id="1809734401532861917">自分のブックマーク、履歴、パスワード、その他の設定を <ph name="USER_EMAIL_ADDRESS" /> に追加します</translation>
 <translation id="1810366086647840386">イメージ サーバー</translation>
+<translation id="1811908311154949291">シークレット モードのフェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1813278315230285598">サービス</translation>
 <translation id="18139523105317219">EDI パーティ名</translation>
 <translation id="1815083418640426271">プレーン テキストとして貼り付ける</translation>
@@ -1425,10 +1422,6 @@
 <translation id="2328561734797404498"><ph name="APP_NAME" /> を使用するには、デバイスを再起動してください。</translation>
 <translation id="2328636661627946415">シークレット モードの間、各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。シークレット モード セッションが終了すると、Cookie は削除されます。</translation>
 <translation id="2329597144923131178">ログインすると、お使いのどのデバイスでも同じブックマーク、履歴、パスワード、その他の設定を利用できるようになります。</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。自動レポートでは、使用されている機能、通常のメモリ使用量、Android アプリの診断データと使用状況データ、エラーなどの情報が送信されます。一部の集計データは、Google のアプリとパートナー（Android デベロッパーなど）によっても利用されます。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />あなたの Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、Google アカウントにあなたの Android データが保存されることがあります。データの確認と削除、アカウント設定の変更は、account.google.com で行えます。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />デバイスの所有者が [使用状況データや診断データの送信] をオンにしている場合は、障害レポートが Google にアップロードされることもあります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">ストアで見る</translation>
 <translation id="2332192922827071008">設定を開く</translation>
 <translation id="2332515770639153015">セーフ ブラウジング保護強化機能はオンになっています</translation>
@@ -1674,6 +1667,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> は <ph name="NETWORK_ID" /> に接続できませんでした。別のネットワークを選択するか、もう一度お試しください。</translation>
 <translation id="2553440850688409052">このプラグインを表示しない</translation>
 <translation id="2554553592469060349">選択したファイルが大きすぎます（最大サイズ: 3 MB）。</translation>
+<translation id="25568951186001797">フェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">閲覧履歴は表示される広告に影響します</translation>
 <translation id="2558896001721082624">システム メニューにユーザー補助オプションを常に表示する</translation>
 <translation id="2559889124253841528">デバイスに保存</translation>
@@ -2236,6 +2230,7 @@
 <translation id="3101126716313987672">ライトを暗くする</translation>
 <translation id="3101709781009526431">日時</translation>
 <translation id="3103451787721578293">このデータをアップロードする理由を入力してください。</translation>
+<translation id="3105339775057145050">前回失敗した更新</translation>
 <translation id="3105796011181310544">Google に戻しますか？</translation>
 <translation id="310671807099593501">サイトで Bluetooth が使用されています</translation>
 <translation id="3108931485517391283">受信できません</translation>
@@ -2537,6 +2532,7 @@
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。これらの設定の詳細と変更方法については、families.google.com をご覧ください。</translation>
+<translation id="3434475275396485144">この設定はスマートフォンの管理者によって管理されています</translation>
 <translation id="3434512374684753970">音声と動画</translation>
 <translation id="3435688026795609344">「<ph name="EXTENSION_NAME" />」が <ph name="CODE_TYPE" /> をリクエストしています</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
@@ -2765,10 +2761,6 @@
 <translation id="3651488188562686558">Wi-Fi から切断します</translation>
 <translation id="3652817283076144888">初期化しています</translation>
 <translation id="3653160965917900914">ネットワーク ファイル共有</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。自動レポートでは、どの機能がいつ使用されたか、通常のメモリ使用量はどれくらいだったかなどの情報が送信されます。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />デバイスの所有者が [使用状況データや診断データの送信] をオンにしている場合は、障害レポートが Google にアップロードされることもあります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" /> によるマイクへのアクセスを引き続き許可する</translation>
 <translation id="3654045516529121250">ユーザー補助設定の読み取り</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{1 個のファイルに永続的にアクセスできます。}other{# 個のファイルに永続的にアクセスできます。}}</translation>
@@ -4035,7 +4027,6 @@
 <translation id="4900652253009739885">「選択」に割り当てられているスイッチが 1 つしかないため、削除できません。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。</translation>
 <translation id="49027928311173603">サーバーからダウンロードされたポリシーが無効です: <ph name="VALIDATION_ERROR" />。</translation>
-<translation id="4904511036057277323">診断データと使用状況データを Google に自動送信して、Chrome および Chrome OS の機能とパフォーマンスの改善にご協力ください。一部の集計データは、Android アプリと Google パートナーによっても利用されます。お子様の Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、お子様の Android データがお子様の Google アカウントに保存されることがあります。</translation>
 <translation id="4906490889887219338">ネットワーク ファイル共有を設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">この拡張機能がサイトデータの読み取りと変更を行えるタイミングを選択してください</translation>
 <translation id="4907161631261076876">このファイルは一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります。</translation>
@@ -5487,10 +5478,6 @@
 <translation id="63849924261838903">{NUM_TABS,plural, =1{名前のないグループ - 1 個のタブ}other{名前のないグループ - # 個のタブ}}</translation>
 <translation id="6385149369087767061">インターネットに接続して、もう一度お試しください</translation>
 <translation id="6385543213911723544">サイトでは Cookie データの保存と読み込みが可能です</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Chrome OS デバイスが自動レポートを送信することを許可して、Google が優先度の高い順に Chrome OS を修正および改善する取り組みにご協力ください。自動レポートでは、使用されている機能、通常のメモリ使用量などの情報が送信されます。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、Chrome OS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />デバイスの所有者が [使用状況データや診断データの送信] をオンにしている場合は、障害レポートが Google にアップロードされることもあります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">警告 - 詳細なログが有効になっています。以下のログには、URL その他扱いに注意を要する情報が含まれることがあります。ログの内容を確認したうえで送信してください。</translation>
 <translation id="6387674443318562538">縦に分割</translation>
 <translation id="6388429472088318283">言語を検索</translation>
@@ -5611,7 +5598,6 @@
 <translation id="6504601948739128893">デバイスにインストールされたフォントの使用を許可しない</translation>
 <translation id="6504611359718185067">プリンタを追加するにはインターネットに接続してください</translation>
 <translation id="6506374932220792071">X9.62 ECDSA 署名（SHA-256）</translation>
-<translation id="6507936476364432879">診断データと使用状況データを Google に自動送信して、Chrome および Chrome OS の機能とパフォーマンスの改善にご協力ください。</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> に関連しています</translation>
 <translation id="6508261954199872201">アプリ: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">メディア ライセンス</translation>
@@ -6368,6 +6354,7 @@
 <translation id="7264695323040866038">サポートされているウェブリンクを開く際に、常に <ph name="APP" /> アプリを使用しますか？</translation>
 <translation id="7267044199012331848">仮想マシンをインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7267875682732693301">指を何度か離して、あらゆる角度から指紋を登録します</translation>
+<translation id="7267898843336437186">このサイトに表示を許可するフォルダを選択してください</translation>
 <translation id="7268127947535186412">この設定はデバイスの所有者が管理しています。</translation>
 <translation id="7269736181983384521">ニアバイシェアのデータ使用</translation>
 <translation id="7272674038937250585">説明が提供されていません</translation>
@@ -6932,7 +6919,6 @@
 <translation id="7807711621188256451"><ph name="HOST" /> によるカメラへのアクセスを常に許可する</translation>
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> のキャスト</translation>
-<translation id="7811886112806886172">診断データと使用状況データを Google に自動送信して、Chrome および Chrome OS の機能とパフォーマンスの改善にご協力ください。一部の集計データは、Android アプリと Google パートナーによっても利用されます。あなたの Google アカウントで [ウェブとアプリのアクティビティ] の設定がオンになっている場合は、Google アカウントにあなたの Android データが保存されることがあります。</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7817361223956157679">画面キーボードは現在のところ Linux アプリでは使用できません</translation>
@@ -7967,6 +7953,7 @@
 <translation id="8838770651474809439">ハンバーガー</translation>
 <translation id="8838778928843281408">スマートフォンの管理</translation>
 <translation id="8841843049738266382">許可リストに登録されたユーザーの読み取りと変更</translation>
+<translation id="8842059467121215385">「<ph name="EXTENSION_NAME" />」を使用できるようページを更新してください</translation>
 <translation id="8842594465773264717">この指紋を削除</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8846132060409673887">このパソコンのメーカーと機種の情報を取得する</translation>
@@ -8122,6 +8109,7 @@
 <translation id="899657321862108550">あなたの Chrome をいつでもどこでも</translation>
 <translation id="899676909165543803">指紋認証センサーはキーボードの右下のキーに搭載されています。いずれかの指で軽く触れてください。</translation>
 <translation id="8999560016882908256">セクションの構文エラーです: <ph name="ERROR_LINE" /></translation>
+<translation id="9003185744423389627">デバイス管理サーバーに接続できませんでした（ステータス「<ph name="STATUS_TEXT" />」、<ph name="FAILURE_TIME" />）</translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
 <translation id="9003677638446136377">もう一度確認</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限、およびそのサイトのインストール済みのアプリを削除しますか？</translation>

@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Duomenų kodavimas</translation>
 <translation id="1072700771426194907">Aptiktas USB įrenginys</translation>
 <translation id="107278043869924952">Be slaptažodžio, papildomai naudoti PIN kodą</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Leisdami „Chrome“ OS įrenginiams siųsti automatines ataskaitas padėsite mums nustatyti, ką pirmiausia reikia sutvarkyti ir patobulinti „Chrome“ OS. Į šias ataskaitas gali būti įtraukta, pvz., informacija, kurios funkcijos buvo naudojamos, kiek įprastai atminties naudojama, ir „Android“ programos diagnostikos bei naudojimo duomenys. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada įjungti arba išjungti šias ataskaitas vaiko „Chrome“ OS įrenginio nustatymuose. Jei esate domeno administratorius, šį nustatymą galite pakeisti administratoriaus pulte.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Išjungus šią funkciją vis tiek galima siųsti šio įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jei Žiniatinklio ir programų veiklos nustatymas įjungtas vaiko „Google“ paskyroje, vaiko duomenys gali būti išsaugoti jo „Google“ paskyroje. Sužinokite daugiau apie šiuos nustatymus ir jų koregavimą adresu families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Jei įrenginio savininkas įjungia funkciją „Siųsti naudojimo ir diagnostikos duomenis“, strigčių ataskaitos taip pat gali būti įkeltos į sistemą „Google“.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Puslapių naršymas teksto žymekliu</translation>
 <translation id="1076382954055048850">Rodyti kitus „Cast“ seansus</translation>
 <translation id="1076698951459398590">Įgalinti temą</translation>
@@ -1448,10 +1443,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2328561734797404498">Paleiskite įrenginį iš naujo, kad galėtumėte naudoti programą „<ph name="APP_NAME" />“.</translation>
 <translation id="2328636661627946415">Kai naršote inkognito režimu, svetainės gali naudoti slapukus, kad peržiūrėtų jūsų naršymo veiklą tik savo svetainėje. Pasibaigus inkognito režimo seansui slapukai ištrinami.</translation>
 <translation id="2329597144923131178">Pris. ir pas. žymių, ist., slapt. bei kitų nust. duom. visuose įreng.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Leisdami „Chrome“ OS įrenginiams siųsti automatines ataskaitas padėsite mums nustatyti, ką pirmiausia reikia sutvarkyti ir patobulinti „Chrome“ OS. Į šias ataskaitas gali būti įtraukta, pvz., informacija, kurios funkcijos buvo naudojamos, kiek įprastai atminties naudojama, „Android“ programos diagnostikos ir naudojimo duomenys bei klaidos. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada įjungti arba išjungti šias ataskaitas „Chrome“ OS įrenginio nustatymuose. Jei esate domeno administratorius, šį nustatymą galite pakeisti administratoriaus pulte.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jei Žiniatinklio ir programų veiklos nustatymas įjungtas „Google“ paskyroje, „Android“ duomenys gali būti išsaugoti „Google“ paskyroje. Apsilankę adresu account.google.com galite peržiūrėti savo duomenis, juos ištrinti ir keisti paskyros nustatymus.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jei įrenginio savininkas įjungia funkciją „Siųsti naudojimo ir diagnostikos duomenis“, strigčių ataskaitos taip pat gali būti įkeltos į sistemą „Google“.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Žiūrėti parduotuvėje</translation>
 <translation id="2332192922827071008">Atidarykite nuostatas</translation>
 <translation id="2332515770639153015">Sustiprintas saugus naršymas įjungtas</translation>
@@ -2790,10 +2781,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3651488188562686558">Atsijungti nuo „Wi-Fi“</translation>
 <translation id="3652817283076144888">Inicijuojama</translation>
 <translation id="3653160965917900914">Tinklo failų bendrinimas</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Leisdami „Chrome“ OS įrenginiams siųsti automatines ataskaitas padėsite mums nustatyti, ką pirmiausia reikia sutvarkyti ir patobulinti „Chrome“ OS. Į šias ataskaitas gali būti įtraukta, pvz., informacija, kurios funkcijos buvo naudojamos ir kiek įprastai atminties naudojama.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada įjungti arba išjungti šias ataskaitas vaiko „Chrome“ OS įrenginio nustatymuose. Jei esate domeno administratorius, šį nustatymą galite pakeisti administratoriaus pulte.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Išjungus šią funkciją vis tiek galima siųsti šio įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jei įrenginio savininkas įjungia funkciją „Siųsti naudojimo ir diagnostikos duomenis“, strigčių ataskaitos taip pat gali būti įkeltos į sistemą „Google“.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Toliau leisti <ph name="HOST" /> pasiekti mikrofoną</translation>
 <translation id="3654045516529121250">Skaitykite pasiekiamumo nustatymus</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Suteikta nuolatinė prieiga prie vieno failo.}one{Suteikta nuolatinė prieiga prie # failo.}few{Suteikta nuolatinė prieiga prie # failų.}many{Suteikta nuolatinė prieiga prie # failo.}other{Suteikta nuolatinė prieiga prie # failų.}}</translation>
@@ -4065,7 +4052,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4900652253009739885">Nepavyko pašalinti vienintelio jungiklio, priskirto veiksmui „Pasirinkti“. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>
 <translation id="4901309472892185668">Pasirinkite eksperimento būseną, skirtą eksperimentui „<ph name="EXPERIMENT_NAME" />“.</translation>
 <translation id="49027928311173603">Iš serverio atsisiųsta politika netinkama: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Padėkite tobulinti „Chrome“ ir „Chrome“ OS funkcijas bei našumą automatiškai siųsdami diagnostikos ir naudojimo duomenis į sistemą „Google“. Be to, tam tikri sukaupti duomenys bus naudingi „Android“ programoms ir „Google“ partneriams. Jei Žiniatinklio ir programų veiklos nustatymas įjungtas vaiko „Google“ paskyroje, vaiko „Android“ duomenys gali būti išsaugoti jo „Google“ paskyroje.</translation>
 <translation id="4906490889887219338">Nustatykite arba tvarkykite tinklo failų bendrinimą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Pasirinkite, kada šis plėtinys gali skaityti ir keisti svetainės duomenis</translation>
 <translation id="4907161631261076876">Šis failas atsisiunčiamas retai ir gali būti pavojingas.</translation>
@@ -5523,10 +5509,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupė be pavadinimo – vienas skirtukas}one{Grupė be pavadinimo – # skirtukas}few{Grupė be pavadinimo – # skirtukai}many{Grupė be pavadinimo – # skirtuko}other{Grupė be pavadinimo – # skirtukų}}</translation>
 <translation id="6385149369087767061">Prisijunkite prie interneto ir bandykite dar kartą</translation>
 <translation id="6385543213911723544">Svetainės gali išsaugoti ir skaityti slapukų duomenis</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Leisdami „Chrome“ OS įrenginiams siųsti automatines ataskaitas padėsite mums nustatyti, ką pirmiausia reikia sutvarkyti ir patobulinti „Chrome“ OS. Į šias ataskaitas gali būti įtraukta, pvz., informacija, kurios funkcijos buvo naudojamos ir kiek įprastai atminties naudojama.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada įjungti arba išjungti šias ataskaitas „Chrome“ įrenginio nustatymuose. Jei esate domeno administratorius, šį nustatymą galite pakeisti administratoriaus pulte.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Išjungus šią funkciją vis tiek galima siųsti įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jei įrenginio savininkas įjungia funkciją „Siųsti naudojimo ir diagnostikos duomenis“, strigčių ataskaitos taip pat gali būti įkeltos į sistemą „Google“.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Įspėjimas – įgalintas išsamus įrašymas į žurnalus; į toliau pateiktus žurnalus gali būti įtraukta URL ar kitos neskelbtinos informacijos. Peržiūrėkite ir įsitikinkite, kad norite pateikti šią informaciją.</translation>
 <translation id="6387674443318562538">Vertikalus skaidymas</translation>
 <translation id="6388429472088318283">Ieškoti kalbų</translation>
@@ -5647,7 +5629,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6504601948739128893">Neleidžiama naudoti įrenginyje įdiegtų šriftų</translation>
 <translation id="6504611359718185067">Prisijunkite prie interneto, kad pridėtumėte spausdintuvą</translation>
 <translation id="6506374932220792071">X9.62 ECDSA parašas naudojant SHA-256</translation>
-<translation id="6507936476364432879">Padėkite tobulinti „Chrome“ ir „Chrome“ OS funkcijas bei našumą automatiškai siųsdami diagnostikos ir naudojimo duomenis į sistemą „Google“.</translation>
 <translation id="6508248480704296122">Susiję su „<ph name="NAME_PH" />“</translation>
 <translation id="6508261954199872201">Programa: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medijos licencija</translation>
@@ -6978,7 +6959,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7807711621188256451">Visada leisti <ph name="HOST" /> pasiekti fotoaparatą</translation>
 <translation id="7810202088502699111">Šiame puslapyje iššokantieji langai buvo užblokuoti.</translation>
 <translation id="781167124805380294">„<ph name="FILE_NAME" />“ perdavimas</translation>
-<translation id="7811886112806886172">Padėkite tobulinti „Chrome“ ir „Chrome“ OS funkcijas bei našumą automatiškai siųsdami diagnostikos ir naudojimo duomenis į sistemą „Google“. Be to, tam tikri sukaupti duomenys bus naudingi „Android“ programoms ir „Google“ partneriams. Jei Žiniatinklio ir programų veiklos nustatymas įjungtas „Google“ paskyroje, „Android“ duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
 <translation id="7814458197256864873">&amp;Kopijuoti</translation>
 <translation id="7815680994978050279">Užblokuotas pavojingas atsisiuntimas</translation>
 <translation id="7817361223956157679">Ekrano klaviatūra „Linux“ programose kol kas neveikia</translation>

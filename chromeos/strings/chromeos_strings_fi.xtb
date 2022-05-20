@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Saat lisää ohjeita <ph name="BEGIN_LINK" />ohjekeskuksesta<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Pakkausalgoritmi</translation>
 <translation id="4794140124556169553">CPU-testin suorittaminen voi vaikuttaa järjestelmän suorituskykyyn</translation>
+<translation id="4804818685124855865">Katkaise yhteys</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Vaalea teema</translation>
 <translation id="4813136279048157860">Omat kuvat</translation>
@@ -530,6 +531,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5931523347251946569">Tiedostoa ei löydy</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="594552776027197022">Luo satunnainen avainpari</translation>
+<translation id="5947494881799873997">Palauta</translation>
 <translation id="5951259522948394825">Varmista, että kaikki on paikoillaan ja katso diagnostinen raportti</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Oletustaustakuva</translation>
@@ -813,6 +815,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>
 <translation id="8723108084122415655">Muu kuin oletusverkko yli viiverajan</translation>
+<translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8726019395068607495">Pysähtynyt – Luukku auki</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8747900814994928677">Vahvista muutos</translation>

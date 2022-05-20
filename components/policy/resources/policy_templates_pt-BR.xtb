@@ -5301,6 +5301,15 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6786666051053129545">Ativar o fluxo do Voice Match do Google Assistente</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6786967369487349613">Configurar o diretório do perfil de roaming</translation>
+<translation id="6789319144568227749">Configura o suporte a cabeçalhos de solicitação de CORS sem caractere curinga.
+
+      A versão 97 do <ph name="PRODUCT_NAME" /> introduz o suporte a cabeçalhos de solicitação de CORS sem caractere curinga. Diante de uma solicitação de rede entre origens usando fetch() e XMLHttpRequest com um cabeçalho Authorization adicionado pelo script, o cabeçalho precisa receber autorização explícita do cabeçalho Access-Control-Allow-Headers na resposta de simulação do CORS. Aqui, "explícita" significa que o caractere curinga "*" não inclui o cabeçalho Authorization. Para ver mais detalhes, consulte <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
+
+      Se esta política for deixada sem definição ou for definida como verdadeira, o <ph name="PRODUCT_NAME" /> vai oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga e se comportará como descrito acima.
+
+      Se esta política for definida como falsa, o Chrome vai permitir o uso do caractere curinga "*" no cabeçalho Access-Control-Allow-Headers da resposta de simulação do CORS para incluir o cabeçalho Authorization.
+
+      A política corporativa é temporária e será removida no futuro.</translation>
 <translation id="6789422336869764846">Se a política for definida como "Ativada" ou não for definida, o estado da chave do desenvolvedor dos dispositivos registrados durante a inicialização será informado.
 
       Se a política for definida como "Desativada", o estado da chave do desenvolvedor dos dispositivos registrados não será informado.</translation>

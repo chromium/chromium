@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">थप मद्दत चाहिएमा <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="4793756956024303490">कम्प्रेसनसम्बन्धी एल्गोरिदम</translation>
 <translation id="4794140124556169553">तपाईंले CPU को जाँच गर्नुभयो भने तपाईंको प्रणालीको कार्यसम्पादनमा असर पर्न सक्छ</translation>
+<translation id="4804818685124855865">जडान विच्छेद</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> प्रिन्ट गर्ने कार्य रद्द गरियो</translation>
 <translation id="4809927044794281115">उज्यालो थिम</translation>
 <translation id="4813136279048157860">मेरा फोटो</translation>
@@ -529,6 +530,7 @@
 <translation id="5931523347251946569">फाइल भेट्टिएन</translation>
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="594552776027197022">क्रमरहित किपेयर सिर्जना गर्नुहोस्</translation>
+<translation id="5947494881799873997">उल्टाउनुहोस्</translation>
 <translation id="5951259522948394825">सबै लगहरू सही छन् भन्ने कुरा पुष्टि गर्नुहोस् र डाइग्नोस्टिक रिपोर्ट हेर्नुहोस्</translation>
 <translation id="5972388717451707488">अपडेट इन्जिन</translation>
 <translation id="5984145644188835034">डिफल्ट वालपेपर</translation>
@@ -812,6 +814,7 @@
 <translation id="8712637175834984815">भयो</translation>
 <translation id="871560550817059752">प्रिन्ट गर्न सकिएन - मसी सकियो</translation>
 <translation id="8723108084122415655">डिफल्ट नेटवर्कका रूपमा सेट नगरिएको यस नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
+<translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8726019395068607495">रोकियो - प्रिन्टरको कभर खुला छ</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8747900814994928677">परिवर्तनको पुष्टि गर्नुहोस्</translation>

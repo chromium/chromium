@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Mostrando contrasinais da túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Engadir porto</translation>
 <translation id="1026822031284433028">Cargar imaxe</translation>
+<translation id="1028700151766901954">Razón: LBS queda en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1031362278801463162">Cargando vista previa</translation>
 <translation id="1032605640136438169">Revísaas</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Codificación de datos</translation>
 <translation id="1072700771426194907">Detectouse un dispositivo USB</translation>
 <translation id="107278043869924952">Usar PIN ademais do contrasinal</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes poden incluírse datos sobre as funcións que se utilizaron e o espazo de memoria que adoita empregarse, así como datos de uso e diagnóstico das aplicacións Android, entre outros. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do dispositivo Chrome OS do teu fillo ou filla. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desactivación desta función non afecta á capacidade deste dispositivo de enviar a información necesaria para servizos esenciais, como as actualizacións do sistema e a seguranza.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se está activada a opción Actividade web e das aplicacións na Conta de Google da túa filla ou fillo, pódense gardar nela os seus datos. Consulta máis información acerca destas opcións de configuración e sobre como axustalas en families.google.com.<ph name="END_PARAGRAPH4" />
-<ph name="BEGIN_PARAGRAPH4" />Se o propietario do dispositivo activa a opción Enviar datos de uso e diagnóstico, é posible que os informes de fallos tamén se carguen en Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navegar por páxinas cun cursor de texto</translation>
 <translation id="1076382954055048850">Mostrar outras sesións de emisión de contido</translation>
 <translation id="1076698951459398590">Activar tema</translation>
@@ -1428,10 +1424,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2328561734797404498">Reinicia o teu dispositivo para utilizar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Estás no modo de incógnito, os sitios só poden utilizar as cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio. As cookies elimínanse ao final da sesión do modo mencionado.</translation>
 <translation id="2329597144923131178">Inicia sesión para ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes pode incluírse información como as funcións que utilizas, o espazo de memoria que adoitas empregar, os datos de uso e diagnóstico das aplicacións Android e os erros. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do teu dispositivo Chrome OS. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Se tes activada a opción Actividade web e das aplicacións na Conta de Google, pódense gardar nela os teus datos de Android. Podes consultar os teus datos, eliminalos e cambiar a configuración da conta en account.google.com.<ph name="END_PARAGRAPH3" />
-<ph name="BEGIN_PARAGRAPH4" />Se o propietario do dispositivo activa a opción Enviar datos de uso e diagnóstico, é posible que os informes de fallos tamén se carguen en Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Ver na tenda</translation>
 <translation id="2332192922827071008">Abrir preferencias</translation>
 <translation id="2332515770639153015">Está activada a función Navegación segura mellorada</translation>
@@ -2769,10 +2761,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3651488188562686558">Desconectar da wifi</translation>
 <translation id="3652817283076144888">Iniciando</translation>
 <translation id="3653160965917900914">Sistemas de ficheiros compartidos en rede</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes poden incluírse datos sobre as funcións que se utilizaron e o espazo de memoria que adoita empregarse, entre outros.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do dispositivo Chrome OS do teu fillo ou filla. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desactivación desta función non afecta á capacidade deste dispositivo de enviar a información necesaria para servizos esenciais, como as actualizacións do sistema e a seguranza.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o propietario do dispositivo activa a opción Enviar datos de uso e diagnóstico, é posible que os informes de fallos tamén se carguen en Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Continuar permitindo a <ph name="HOST" /> acceder ao teu micrófono</translation>
 <translation id="3654045516529121250">Ler a configuración de accesibilidade</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ten acceso permanente a un ficheiro.}other{Ten acceso permanente a # ficheiros.}}</translation>
@@ -3348,6 +3336,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209251085232852247">Estado: desactivado</translation>
 <translation id="4210048056321123003">Descargando máquina virtual</translation>
+<translation id="4210380525132844778">Razón: atopouse <ph name="RULE" /> na lista "<ph name="LIST_NAME" />".</translation>
 <translation id="421182450098841253">&amp;Mostrar a barra de marcadores</translation>
 <translation id="4211851069413100178">Enviar datos de uso e de diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta <ph name="BEGIN_LINK1" />opción de configuración<ph name="END_LINK1" /> contrólaa o propietario. O cal pode optar por enviar datos de diagnóstico e uso deste dispositivo a Google. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa conta de Google. <ph name="BEGIN_LINK2" />Máis información<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Deixar de usar con aplicacións Android</translation>
@@ -4042,7 +4031,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4900652253009739885">Non se pode quitar o único interruptor que ten asignada a acción Seleccionar. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política descargada do servidor non é válida: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Se queres axudar a mellorar as funcións e o rendemento de Chrome e de Chrome OS, permite que se lle envíen a Google de forma automática os datos de uso e diagnóstico. Algúns datos agregados tamén serán útiles para os socios de Google e as aplicacións Android. Se está activada a opción Actividade web e das aplicacións na Conta de Google da túa filla ou fillo, pódense gardar nela os seus datos de Android.</translation>
 <translation id="4906490889887219338">Configurar ou xestionar sistemas de ficheiros compartidos en rede. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Escolle cando esta extensión pode ler e cambiar os datos dos teus sitios</translation>
 <translation id="4907161631261076876">Este ficheiro non se descarga habitualmente e pode ser perigoso.</translation>
@@ -5171,6 +5159,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6063284707309177505">Crear código QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Calquera persoa que teña unha voz parecida ou que dispoña dunha gravación dela poderá acceder aos resultados persoais de <ph name="SUPERVISED_USER_NAME" />. Para aforrar batería, podes seleccionar na configuración do Asistente de <ph name="SUPERVISED_USER_NAME" /> ter activado “Hey Google” tan só cando o dispositivo está conectado a unha fonte de alimentación.</translation>
 <translation id="6064217302520318294">Bloqueo de pantalla</translation>
+<translation id="6065145031947216733">Queres separar os teus datos de navegación?</translation>
 <translation id="6065289257230303064">Atributos de directorio da entidade do certificado</translation>
 <translation id="6066794465984119824">Non se configurou o hash da imaxe</translation>
 <translation id="6069464830445383022">A túa Conta de Google permite iniciar sesión no Chromebook</translation>
@@ -5249,6 +5238,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6129953537138746214">Espazo</translation>
 <translation id="6130692320435119637">Engadir wifi</translation>
 <translation id="6130887916931372608">Tecla do teclado</translation>
+<translation id="6135823405800500595">Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados</translation>
 <translation id="6136114942382973861">Pechar barra de descargas</translation>
 <translation id="6136287496450963112">A túa chave de seguranza non está protexida cun PIN. Para xestionar as impresións dixitais, primeiro crea un PIN.</translation>
 <translation id="6138680304137685902">Sinatura X9.62 ECDSA con SHA-384</translation>
@@ -5494,10 +5484,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupo sen nome (1 pestana)}other{Grupo sen nome (# pestanas)}}</translation>
 <translation id="6385149369087767061">Conéctate a Internet e téntao de novo</translation>
 <translation id="6385543213911723544">Os sitios poden gardar e ler os datos das cookies</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que os dispositivos Chrome OS envíen informes de forma automática, axúdasnos a establecer prioridades en relación cos aspectos que necesitan corrixirse e mellorarse no sistema operativo. Nestes informes poden incluírse datos sobre as funcións que utilizas e o espazo de memoria que adoitas empregar.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Podes permitir ou deter o envío destes informes cando queiras desde a configuración do teu dispositivo Chrome. Se administras un dominio, podes cambiar esta opción de configuración na consola de administración.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desactivación desta función non afecta á capacidade do dispositivo de enviar a información necesaria para servizos esenciais, como as actualizacións do sistema e a seguranza.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o propietario do dispositivo activa a opción Enviar datos de uso e diagnóstico, é posible que os informes de fallos tamén se carguen en Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Advertencia: O rexistro detallado está activado. É posible que entre os rexistros seguintes se inclúan URL ou outra información confidencial. Revisa a información e asegúrate de que queres enviala.</translation>
 <translation id="6387674443318562538">Dividir verticalmente</translation>
 <translation id="6388429472088318283">Buscar idiomas</translation>
@@ -5618,7 +5604,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6504601948739128893">Sitios que non teñen permiso para utilizar os tipos de letra instalados no dispositivo</translation>
 <translation id="6504611359718185067">Conéctate a Internet para engadir unha impresora</translation>
 <translation id="6506374932220792071">Sinatura X9.62 ECDSA con SHA-256</translation>
-<translation id="6507936476364432879">Se queres axudar a mellorar as funcións e o rendemento de Chrome e de Chrome OS, permite que se lle envíen a Google de forma automática os datos de uso e diagnóstico.</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licenza multimedia</translation>
@@ -6943,7 +6928,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7807711621188256451">Permitir sempre a <ph name="HOST" /> acceder á túa cámara</translation>
 <translation id="7810202088502699111">Bloqueáronse as ventás emerxentes nesta páxina.</translation>
 <translation id="781167124805380294">Emitir <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Se queres axudar a mellorar as funcións e o rendemento de Chrome e de Chrome OS, permite que se lle envíen a Google de forma automática os datos de uso e diagnóstico. Algúns datos agregados tamén serán útiles para os socios de Google e as aplicacións Android. Se tes activada a opción Actividade web e das aplicacións na Conta de Google, pódense gardar nela os teus datos de Android.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7815680994978050279">Bloqueouse unha descarga perigosa</translation>
 <translation id="7817361223956157679">O teclado en pantalla aínda non está dispoñible en aplicacións de Linux</translation>
@@ -7081,6 +7065,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7947962633355574091">C&amp;opiar enderezo de vídeo</translation>
 <translation id="7947964080535614577">Os sitios adoitan mostrar anuncios para poder ofrecer contido ou servizos sen custo económico. Non obstante, algúns conteñen anuncios enganosos ou intrusivos.</translation>
 <translation id="7948407723851303488">Todas as páxinas de <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Razón: LBS só admite os URL http://, https:// e file://.</translation>
 <translation id="7951265006188088697">Para engadir ou xestionar métodos de pago de Google Pay, visita a túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Desactivar tarxeta virtual</translation>
 <translation id="7952708427581814389">Os sitios poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis</translation>
@@ -7624,6 +7609,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8480869669560681089">Dispositivo descoñecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirma o permiso do USB</translation>
 <translation id="8481980314595922412">As funcións de proba están activadas</translation>
+<translation id="8486666913807228950">Razón: atopouse a regra invertida <ph name="REVERT_RULE" /> na lista "Forzar a apertura en".</translation>
 <translation id="848666842773560761">Hai unha aplicación que está tentando acceder á cámara. Para darlle acceso, desactiva o interruptor de privacidade da cámara.</translation>
 <translation id="8487678622945914333">Achegar o zoom</translation>
 <translation id="8489156414266187072">As suxestións persoais só se mostran na túa conta</translation>

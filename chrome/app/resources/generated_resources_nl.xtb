@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Gegevenscodering</translation>
 <translation id="1072700771426194907">USB-apparaat gedetecteerd</translation>
 <translation id="107278043869924952">Pincode gebruiken naast wachtwoord</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Als je Chrome OS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in Chrome OS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals welke functies er zijn gebruikt, hoeveel geheugen er gewoonlijk wordt gebruikt, en diagnostische en gebruiksgegevens van Android-apps. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan in de instellingen van het Chrome OS-apparaat van je kind. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Als je deze functie uitzet, kan dit apparaat nog steeds de informatie sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Als de instelling Web- en app-activiteit aanstaat voor het Google-account van je kind, kunnen de gegevens van je kind worden opgeslagen in het Google-account van je kind. Ga naar families.google.com voor meer informatie over deze instellingen en hoe je ze kunt aanpassen.<ph name="END_PARAGRAPH4" />
-<ph name="BEGIN_PARAGRAPH4" />Als de eigenaar van het apparaat de optie 'Stuur gebruiks- en diagnostische gegevens' aanzet, kunnen er ook crashrapporten naar Google worden geüpload.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navigeren op pagina's met een tekstcursor</translation>
 <translation id="1076382954055048850">Andere Cast-sessies tonen</translation>
 <translation id="1076698951459398590">Thema aanzetten</translation>
@@ -1430,10 +1425,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2328561734797404498">Start je apparaat opnieuw op om <ph name="APP_NAME" /> te gebruiken.</translation>
 <translation id="2328636661627946415">Als je in de incognitomodus zit, kunnen sites alleen cookies gebruiken om je browse-activiteit op hun eigen site te bekijken. De cookies worden aan het einde van de incognitosessie verwijderd.</translation>
 <translation id="2329597144923131178">Als je inlogt, heb je al je instellingen op al je apparaten: bookmarks, geschiedenis, wachtwoorden en meer.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Als je je Chrome OS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in Chrome OS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals welke functies je gebruikt, hoeveel geheugen je gewoonlijk gebruikt, diagnostische en gebruiksgegevens van Android-apps, en fouten. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome OS-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Als de instelling Web- en app-activiteit aanstaat voor je Google-account, kunnen je Android-gegevens worden opgeslagen in je Google-account. Op account.google.com kun je je gegevens bekijken en verwijderen, en je accountinstellingen wijzigen.<ph name="END_PARAGRAPH3" />
-<ph name="BEGIN_PARAGRAPH4" />Als de eigenaar van het apparaat de optie 'Stuur gebruiks- en diagnostische gegevens' aanzet, kunnen er ook crashrapporten naar Google worden geüpload.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Bekijken in de Web Store</translation>
 <translation id="2332192922827071008">Voorkeuren openen</translation>
 <translation id="2332515770639153015">De uitgebreide versie van Safe Browsing staat aan</translation>
@@ -2771,10 +2762,6 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3651488188562686558">Verbinding met wifi-netwerk verbreken</translation>
 <translation id="3652817283076144888">Initialiseren</translation>
 <translation id="3653160965917900914">Fileshares via netwerk</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Als je Chrome OS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in Chrome OS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals welke functies er zijn gebruikt en hoeveel geheugen er gewoonlijk wordt gebruikt.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan in de instellingen van het Chrome OS-apparaat van je kind. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Als je deze functie uitzet, kan dit apparaat nog steeds de informatie sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Als de eigenaar van het apparaat de optie 'Stuur gebruiks- en diagnostische gegevens' aanzet, kunnen er ook crashrapporten naar Google worden geüpload.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" /> toegang tot je microfoon blijven geven</translation>
 <translation id="3654045516529121250">Je toegankelijkheidsinstellingen lezen</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{De app heeft permanent toegang tot één bestand.}other{De app heeft permanent toegang tot # bestanden.}}</translation>
@@ -3976,6 +3963,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4842976633412754305">Deze pagina probeert scripts van niet-geverifieerde bronnen te laden.</translation>
 <translation id="4844333629810439236">Andere toetsenborden</translation>
 <translation id="4844633725025837809">Voor extra beveiliging versleutel je je wachtwoorden op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
+<translation id="4846628405149428620">Selecteer waar deze site wijzigingen kan opslaan</translation>
 <translation id="4846680374085650406">Je volgt de aanbeveling van de beheerder voor deze instelling.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> geselecteerd, druk op Enter om <ph name="TOPIC_SOURCE" />-albums te selecteren</translation>
 <translation id="4848191975108266266">Google Assistent 'Oké Google'</translation>
@@ -4043,7 +4031,6 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4900652253009739885">Kan niet de enige schakelaar verwijderen die is toegewezen aan de actie Selecteren. Druk op een toets om te <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Het beleid dat van de server is gedownload, is ongeldig: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Help de functies en prestaties van Chrome en Chrome OS te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen. Daarnaast zijn sommige verzamelde gegevens nuttig voor Android-apps en Google-partners. Als de instelling Web- en app-activiteit aanstaat voor het Google-account van je kind, kunnen de Android-gegevens van je kind worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="4906490889887219338">Fileshares via netwerk instellen of beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Kiezen wanneer deze extensie je sitegegevens kan lezen en wijzigen</translation>
 <translation id="4907161631261076876">Dit bestand wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
@@ -5496,10 +5483,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Naamloze groep - 1 tabblad}other{Naamloze groep - # tabbladen}}</translation>
 <translation id="6385149369087767061">Maak verbinding met internet en probeer het opnieuw</translation>
 <translation id="6385543213911723544">Sites kunnen cookiegegevens opslaan en lezen</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Als je je Chrome OS-apparaten toestaat ons automatische rapporten te sturen, kunnen we beter prioriteiten stellen voor wat in Chrome OS moet worden opgelost en verbeterd. Deze rapporten kunnen informatie bevatten zoals welke functies je gebruikt en hoeveel geheugen je gewoonlijk gebruikt.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Als je deze functie uitzet, kan je apparaat nog steeds de informatie sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Als de eigenaar van het apparaat de optie 'Stuur gebruiks- en diagnostische gegevens' aanzet, kunnen er ook crashrapporten naar Google worden geüpload.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Waarschuwing: Gedetailleerde logboekregistratie staat aan. De onderstaande logboeken kunnen URL's of andere gevoelige informatie bevatten. Check de informatie om te zien of je akkoord gaat met het indienen van deze informatie.</translation>
 <translation id="6387674443318562538">Verticaal splitsen</translation>
 <translation id="6388429472088318283">Zoek in talen</translation>
@@ -5620,7 +5603,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6504601948739128893">Mogen geen lettertypen gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="6504611359718185067">Maak verbinding met internet om een printer toe te voegen</translation>
 <translation id="6506374932220792071">X9.62 ECDSA-handtekening met SHA-256</translation>
-<translation id="6507936476364432879">Help de functies en prestaties van Chrome en Chrome OS te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen.</translation>
 <translation id="6508248480704296122">Gerelateerd aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Applicatie: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medialicentie</translation>
@@ -6943,7 +6925,6 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7807711621188256451"><ph name="HOST" /> altijd toegang tot je camera geven</translation>
 <translation id="7810202088502699111">Er zijn pop-ups op deze pagina geblokkeerd</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> casten</translation>
-<translation id="7811886112806886172">Help de functies en prestaties van Chrome en Chrome OS te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen. Daarnaast zijn sommige verzamelde gegevens nuttig voor Android-apps en Google-partners. Als de instelling Web- en app-activiteit aanstaat voor je Google-account, kunnen je Android-gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="7814458197256864873">&amp;Kopiëren</translation>
 <translation id="7815680994978050279">Gevaarlijke download geblokkeerd</translation>
 <translation id="7817361223956157679">Het schermtoetsenbord werkt nog niet in Linux-apps</translation>

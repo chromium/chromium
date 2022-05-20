@@ -65,6 +65,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> cihazını qidalandırır</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Telefonun məkanını təyin edin</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> adlı yadda saxlanmış masa artıq mövcuddur</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" /> olduqda yenidən istifadə edin.</translation>
 <translation id="1290331692326790741">Zəif siqnal</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> tətbiqini <ph name="FOLDER_NAME" /> qovluğuna köçürün.</translation>
@@ -269,6 +270,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> ilə birləşdirmək üçün Ctrl + W düymələrini basın. Masa və pəncərələri bağlamaq üçün Ctrl + Shift + W düymələrini basın.</translation>
 <translation id="2595239820337756193">5000 mil</translation>
 <translation id="2596078834055697711">Pəncərənin skrinşotunu çəkin</translation>
+<translation id="2598725286293895280">Masada dəstəklənməyən tətbiqlər</translation>
 <translation id="2607678425161541573">Onlayn giriş tələb olunur</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, fayllar, tətbiqlər və s. axtarın...</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -644,6 +646,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4734965478015604180">Üfüqi</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Rəqəm klaviaturası qısayolu dəyişib. Funksiya düymələrindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + üst sıradakı bir düyməyə basın.</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
+<translation id="4740516757091333363">Yadda saxlanmış masa silinsin?</translation>
 <translation id="4752784485658729358">Yalnız 6 saxlanmış masaya icazə verilir. Yenisini yaddaşda saxlamaq üçün masalardan birini silin.</translation>
 <translation id="4759238208242260848">Endirmələr</translation>
 <translation id="4774338217796918551">Sabah <ph name="COME_BACK_TIME" /> olduqda yenidən davam edin.</translation>
@@ -741,6 +744,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5352250171825660495">Tünd tema aktivdir</translation>
 <translation id="5356963482258194581">Tünd və açıq tema arasında keçid edin. Masaüstünə sağla klikləyin və Divar kağızı və üslub seçin.</translation>
 <translation id="5379115545237091094">Həddindən çox cəhd</translation>
+<translation id="5391307769715781764">Yadda saxlanmış masa dəyişdirilsin?</translation>
 <translation id="5393156353051693207">Tətbiqləri yenidən sıralamaq üçün istənilən yerə toxunub saxlayın</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" /> tətbiqinin üzərindədir, qovluq yaratmaq üçün buraxın.</translation>
 <translation id="5397578532367286026">Bu istifadəçinin istifadəsi və tarixçəsi (<ph name="MANAGER_EMAIL" />) on chrome.com domenindəki menecer tərəfindən izlənə bilər.</translation>
@@ -974,6 +978,7 @@ Yeni quraşdırma</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6801878137098616817">Bu yaxınlarda redaktə edilib</translation>
 <translation id="6803622936009808957">Heç bir dəstəklənən həll tapılmadığı üçün displeyləri güzgüləyə bilmədi. Əvəzinə artırılmış desktop daxil edildi.</translation>
+<translation id="6812232930908427253">Masanı yadda saxlamaq mümkün olmadı. Həddindən çox pəncərə və ya tab.</translation>
 <translation id="6818242057446442178">Söz üzrə geri qayıdın</translation>
 <translation id="6819327813400217281">Kamera aşağı sol küncə çəkildi</translation>
 <translation id="6820676911989879663">Fasilə verin!</translation>

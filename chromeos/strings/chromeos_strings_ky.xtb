@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Кеңири маалымат алуу үчүн <ph name="BEGIN_LINK" />Жардам борборуна<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4793756956024303490">Кысуунун алгоритми</translation>
 <translation id="4794140124556169553">CPU сыноосу иштетилсе, системанын ишине кедергиси тийиши мүмкүн</translation>
+<translation id="4804818685124855865">Ажыратуу</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> документин басып чыгаруу токтотулду</translation>
 <translation id="4809927044794281115">Жарык тема</translation>
 <translation id="4813136279048157860">Менин сүрөттөрүм</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">Файл табылган жок</translation>
 <translation id="5939518447894949180">Кайра коюу</translation>
 <translation id="594552776027197022">Башаламан иретте жуп ачкычты түзүү</translation>
+<translation id="5947494881799873997">Кайтаруу</translation>
 <translation id="5951259522948394825">Баары жайында экенин ырастап, мүчүлүштүктөрдү аныктоо маалыматын караңыз</translation>
 <translation id="5972388717451707488">Каражатты жаңыртуу</translation>
 <translation id="5984145644188835034">Демейки тушкагаз</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="871560550817059752">Басылып чыгарылган жок - Сыя түгөнүп калды</translation>
 <translation id="8723108084122415655">Демейкиден башка тармак күтүү убакытынын босогосунан жогору</translation>
+<translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8726019395068607495">Токтоду – Эшик ачык</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8747900814994928677">Өзгөртүүнү ырастоо</translation>

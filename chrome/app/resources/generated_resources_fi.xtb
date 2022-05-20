@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Näytetään salasanat <ph name="BEGIN_LINK" />Google-tililtäsi<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Lisää portti</translation>
 <translation id="1026822031284433028">Lataa kuva</translation>
+<translation id="1028700151766901954">Syy: Vanhojen selaimien tukena säilyy oletuksena <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Lähennä</translation>
 <translation id="1031362278801463162">Ladataan esikatselua</translation>
 <translation id="1032605640136438169">Lue uudet ehdot</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Tiedon salakoodaus</translation>
 <translation id="1072700771426194907">USB-laite havaittu</translation>
 <translation id="107278043869924952">Käytä PIN-koodia salasanan lisäksi</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä sekä Android-sovellusten diagnostiikka- ja käyttödataa. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa lapsesi ChromeOS-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jos Verkko- ja sovellustoiminta ‑asetus on päällä lapsen Google-tilillä, dataa voidaan tallentaa hänen tililleen. Lue lisää näistä asetuksista ja niiden muuttamisesta osoitteesta families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Siirry sivuilla tekstikohdistimen avulla</translation>
 <translation id="1076382954055048850">Näytä muut striimausistunnot</translation>
 <translation id="1076698951459398590">Ota teema käyttöön</translation>
@@ -1443,10 +1439,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2328561734797404498">Käynnistä laite uudelleen käyttääksesi <ph name="APP_NAME" />:ää.</translation>
 <translation id="2328636661627946415">Kun olet incognito-tilassa, sivustot voivat käyttää evästeitä vain selaustoimintasi näkemiseen omalla sivustollaan. Evästeet poistetaan incognito-käyttökerran jälkeen.</translation>
 <translation id="2329597144923131178">Kirjaudu ja käytä kirjanm., historiaa, salasan. ja muita asetuksia kaikissa laitteissasi.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista, tyypillisestä muistin käytöstä sekä Android-sovellusten diagnostiikka- ja käyttödataa ja virheitä. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa ChromeOS-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jos Verkko‑ ja sovellustoiminta ‑asetus on päällä Google-tililläsi, Android-dataa voidaan tallentaa tilillesi. Voit nähdä dataa, poistaa sitä ja muuttaa tiliasetuksia osoitteessa account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Näytä Web Storessa</translation>
 <translation id="2332192922827071008">Siirry valintoihin</translation>
 <translation id="2332515770639153015">Parannettu selaussuoja on päällä</translation>
@@ -2785,10 +2777,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3651488188562686558">Katkaise Wi-Fi-yhteys</translation>
 <translation id="3652817283076144888">Alustetaan</translation>
 <translation id="3653160965917900914">Verkkotiedostojen jakaminen</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa lapsesi ChromeOS-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Anna sivuston <ph name="HOST" /> käyttää edelleen mikrofoniasi</translation>
 <translation id="3654045516529121250">Lukea esteettömyysasetuksia.</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Sillä on yhden tiedoston pysyvä käyttöoikeus.}other{Sillä on # tiedoston pysyvä käyttöoikeus.}}</translation>
@@ -3361,6 +3349,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4209092469652827314">Suuri</translation>
 <translation id="4209251085232852247">Poistettu käytöstä</translation>
 <translation id="4210048056321123003">Ladataan virtuaalikonetta</translation>
+<translation id="4210380525132844778">Syy: <ph name="RULE" /> löytyi <ph name="LIST_NAME" />-luettelosta.</translation>
 <translation id="421182450098841253">Näytä kirjanmerkkipalkki</translation>
 <translation id="4211851069413100178">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Omistaja on ottanut tämän <ph name="BEGIN_LINK1" />asetuksen<ph name="END_LINK1" /> käyttöön. Omistaja voi lähettää tätä laitetta koskevaa diagnostiikka- ja käyttödataa Googlelle. Jos olet ottanut käyttöön muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi. <ph name="BEGIN_LINK2" />Lue lisää<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Lopeta käyttäminen Android-sovelluksissa</translation>
@@ -4056,7 +4045,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4900652253009739885">Ainoaa Valinta-toiminnolle määritettyä kytkintä ei voi poistaa. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="4901309472892185668">Valitse kokeilutila tälle kokeilulle: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Palvelimelta ladattu käytäntö on virheellinen: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti. Kootusta datasta on hyötyä myös Android-sovelluksille ja Googlen kumppaneille. Jos Verkko- ja sovellustoiminta ‑asetus on päällä lapsen Google-tilillä, Android-dataa voidaan tallentaa hänen tililleen.</translation>
 <translation id="4906490889887219338">Aloita verkkotiedostojen jakaminen tai muuta sitä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Valitse, kun tämä laajennus voi lukea ja muuttaa sivustodataasi</translation>
 <translation id="4907161631261076876">Tätä tiedostoa ei ladata usein ja se saattaa olla haitallinen.</translation>
@@ -5188,6 +5176,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6063284707309177505">Luo QR-koodi</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Huom.<ph name="END_BOLD" /> Käyttäjän (<ph name="SUPERVISED_USER_NAME" />) henkilökohtaisiin tuloksiin voi olla mahdollista päästä käsiksi myös, jos hänen ääntään on nauhoitettu tai jonkun toisen ääni muistuttaa hänen ääntään. Jos haluat säästää virtaa, muuta käyttäjän <ph name="SUPERVISED_USER_NAME" /> Assistantin asetuksia niin, että "Ok Google" on käytössä vain, kun laite on kytketty virtalähteeseen.</translation>
 <translation id="6064217302520318294">Näytön lukitus</translation>
+<translation id="6065145031947216733">Pidetäänkö selailu erillään?</translation>
 <translation id="6065289257230303064">Varmenteen kohdehakemiston attribuutit</translation>
 <translation id="6066794465984119824">Tiivistettyä kuvaa ei ole määritetty</translation>
 <translation id="6069464830445383022">Kirjaudut Chromebookille Google-tililläsi</translation>
@@ -5266,6 +5255,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6129953537138746214">Välilyönti</translation>
 <translation id="6130692320435119637">Lisää Wi-Fi-yhteys</translation>
 <translation id="6130887916931372608">Näppäimistön näppäin</translation>
+<translation id="6135823405800500595">Varmista, että puhelimesi on lähellä, sen lukitus on avattuna ja Bluetooth‑ ja Wi-Fi‑yhteydet ovat päällä</translation>
 <translation id="6136114942382973861">Sulje latauspalkki</translation>
 <translation id="6136287496450963112">Suojausavaintasi ei ole suojattu PIN-koodilla. Luo PIN-koodi, jotta voit ylläpitää sormenjälkiä.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA ‑allekirjoitus, jossa on SHA-384</translation>
@@ -5511,10 +5501,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Nimetön ryhmä – 1 välilehti}other{Nimetön ryhmä – # välilehteä}}</translation>
 <translation id="6385149369087767061">Muodosta internetyhteys ja yritä uudelleen</translation>
 <translation id="6385543213911723544">Sivustot voivat lukea ja tallentaa evästetietoja.</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa ChromeOS-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Varoitus: Yksityiskohtaiset lokit ovat käytössä. Alla olevat lokit voivat sisältää URL-osoitteita tai muita arkaluontoisia tietoja. Tarkista tiedot ja varmista, että haluat lähettää ne.</translation>
 <translation id="6387674443318562538">Pystysuuntainen jako</translation>
 <translation id="6388429472088318283">Hae kieliä</translation>
@@ -5635,7 +5621,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6504601948739128893">Laitteellesi asennettujen fonttien käyttäminen kielletty</translation>
 <translation id="6504611359718185067">Muodosta yhteys internetiin, niin voit lisätä tulostimen.</translation>
 <translation id="6506374932220792071">X9.62 ECDSA ‑allekirjoitus, jossa on SHA-256</translation>
-<translation id="6507936476364432879">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
 <translation id="6508248480704296122">Liittyy kohteeseen <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Sovellus: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medialisenssi</translation>
@@ -6959,7 +6944,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7807711621188256451">Anna aina sivuston <ph name="HOST" /> käyttää kameraasi</translation>
 <translation id="7810202088502699111">Ponnahdusikkunat estettiin tällä sivulla.</translation>
 <translation id="781167124805380294">Suoratoista <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti. Kootusta datasta on hyötyä myös Android-sovelluksille ja Googlen kumppaneille. Jos Verkko‑ ja sovellustoiminta ‑asetus on päällä Google-tililläsi, Android-dataa voidaan tallentaa tilillesi.</translation>
 <translation id="7814458197256864873">K&amp;opioi</translation>
 <translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7817361223956157679">Näyttönäppäimistö ei vielä toimi Linux-sovelluksissa</translation>
@@ -7098,6 +7082,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7947962633355574091">K&amp;opioi videon osoite</translation>
 <translation id="7947964080535614577">Sivustot näyttävät yleensä mainoksia voidakseen tarjota sisältöä tai palveluja maksutta. Joidenkin sivustojen tiedetään näyttävän häiritseviä tai harhaanjohtavia mainoksia.</translation>
 <translation id="7948407723851303488">Kaikki sivut, joiden verkkotunnus on <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Syy: Vanhojen selaimien tuki koskee vain http://-, https://- ja file://-URL-osoitteita.</translation>
 <translation id="7951265006188088697">Lisää tai muokkaa Google Payn maksutapoja avaamalla <ph name="BEGIN_LINK" />Google-tili<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Laita virtuaalinen kortti pois päältä</translation>
 <translation id="7952708427581814389">Sivustot saavat pyytää leikepöydällä olevan tekstin ja kuvien näkemistä</translation>
@@ -7642,6 +7627,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8480869669560681089">Tuntematon laite toimittajalta <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Vahvista USB:n käyttöoikeus</translation>
 <translation id="8481980314595922412">Kokeiluominaisuudet ovat käytössä</translation>
+<translation id="8486666913807228950">Syy: Käänteinen sääntö <ph name="REVERT_RULE" /> löytyi "Pakota avaaminen täällä:" ‑luettelosta.</translation>
 <translation id="848666842773560761">Sovellus yrittää käyttää kameraa. Salli kameran käyttö laittamalla sen yksityisyysvalinta pois päältä.</translation>
 <translation id="8487678622945914333">Lähennä</translation>
 <translation id="8489156414266187072">Henkilökohtaisia ehdotuksia näytetään vain sinun tililläsi</translation>

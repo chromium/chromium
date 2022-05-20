@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Codificação de dados</translation>
 <translation id="1072700771426194907">Dispositivo USB detectado</translation>
 <translation id="107278043869924952">Usar um PIN além da senha</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar no ChromeOS. Esses relatórios podem incluir informações como quais recursos foram usados, a quantidade de memória usada normalmente e dados de uso e diagnóstico do app Android. Alguns dados agregados também ajudarão apps do Google e nossos parceiros, como os desenvolvedores Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />É possível ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS da criança. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se a configuração "Atividade na Web e de apps" estiver ativada para a Conta do Google da criança, esses dados vão poder ser salvos na Conta do Google dela. Saiba mais sobre essas configurações e como as ajustar em families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a configuração "Enviar dados de uso e diagnóstico", os relatórios de falhas também podem ser enviados ao Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navegar pelas páginas com um cursor de texto</translation>
 <translation id="1076382954055048850">Mostrar outras sessões de transmissão</translation>
 <translation id="1076698951459398590">Ativar tema</translation>
@@ -1446,10 +1441,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2328561734797404498">Reinicie o dispositivo para usar o app <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quando você está no modo de navegação anônima, os sites só podem usar cookies para ver sua atividade de navegação na própria página. Os cookies são excluídos no fim da sessão de navegação anônima.</translation>
 <translation id="2329597144923131178">Faça login para que favoritos, histórico, senhas e outras configurações fiquem disponíveis em todos os seus dispositivos.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ao autorizar que seus dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar no ChromeOS. Esses relatórios podem incluir informações como quais recursos e quanta memória você normalmente usa, dados de uso e diagnóstico do app Android e erros. Alguns dados agregados também ajudarão apps do Google e nossos parceiros, como os desenvolvedores Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Você pode ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Se a configuração "Atividade na Web e de apps" estiver ativada para sua Conta do Google, esses dados do Android vão poder ser salvos na sua Conta do Google. Você pode ver seus dados, excluí-los e mudar as configurações da conta em account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a configuração "Enviar dados de uso e diagnóstico", relatórios de erros também vão poder ser enviados ao Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Ver na loja</translation>
 <translation id="2332192922827071008">Abrir preferências</translation>
 <translation id="2332515770639153015">O Navegação segura com maior proteção está ativado</translation>
@@ -2789,10 +2780,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3651488188562686558">Desconectar do Wi-Fi</translation>
 <translation id="3652817283076144888">Inicializando</translation>
 <translation id="3653160965917900914">Compartilhamentos de arquivos de rede</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ao permitir que dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar no ChromeOS. Esses relatórios podem incluir informações como quais recursos foram usados e a quantidade de memória usada normalmente.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />É possível ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo ChromeOS da criança. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a configuração "Enviar dados de uso e diagnóstico", relatórios de erros também vão poder ser enviados ao Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Continuar permitindo que <ph name="HOST" /> acesse seu microfone</translation>
 <translation id="3654045516529121250">Ler suas configurações de acessibilidade</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tem acesso permanente a um arquivo.}one{Tem acesso permanente a # arquivos.}other{Tem acesso permanente a # arquivos.}}</translation>
@@ -4065,7 +4052,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4900652253009739885">Não é possível remover o único interruptor atribuído à ação "Selecionar". Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A política baixada do servidor é inválida: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Ajude a melhorar os recursos e o desempenho do Chrome e do ChromeOS enviando automaticamente dados de uso e diagnóstico ao Google. Alguns dados agregados também ajudam apps Android e parceiros do Google. Se a configuração "Atividade na Web e de apps" estiver ativada para a Conta do Google da criança, esses dados do Android vão poder ser salvos na Conta do Google dela.</translation>
 <translation id="4906490889887219338">Configurar ou gerenciar compartilhamentos de arquivos em rede. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Escolha quando esta extensão pode ler e alterar os dados do site</translation>
 <translation id="4907161631261076876">Esse arquivo não é transferido com frequência e pode ser perigoso.</translation>
@@ -5523,10 +5509,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupo sem nome: 1 guia}one{Grupo sem nome: # guia}other{Grupo sem nome: # guias}}</translation>
 <translation id="6385149369087767061">Conecte-se à Internet e tente novamente</translation>
 <translation id="6385543213911723544">Os sites podem salvar e ler os dados dos cookies</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ao autorizar que seus dispositivos ChromeOS enviem relatórios automáticos, você nos ajuda a priorizar o que precisamos corrigir e melhorar no ChromeOS. Esses relatórios podem incluir informações como quais recursos e quanta memória você normalmente usa.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Você pode ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo Chrome. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se o proprietário do dispositivo ativar a configuração "Enviar dados de uso e diagnóstico", relatórios de erros também vão poder ser enviados ao Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Aviso: o registro detalhado está ativado. Os registros abaixo podem incluir URLs ou outras informações sensíveis. Revise-os e confirme se você está de acordo com o envio dessas informações.</translation>
 <translation id="6387674443318562538">Divisão vertical</translation>
 <translation id="6388429472088318283">Idiomas de pesquisa</translation>
@@ -5647,7 +5629,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6504601948739128893">Sem autorização para usar as fontes instaladas no dispositivo</translation>
 <translation id="6504611359718185067">Conectar à Internet para adicionar uma impressora</translation>
 <translation id="6506374932220792071">Assinatura X9.62 ECDSA com SHA-256</translation>
-<translation id="6507936476364432879">Ajude a melhorar os recursos e o desempenho do Chrome e do ChromeOS enviando automaticamente dados de uso e diagnóstico ao Google.</translation>
 <translation id="6508248480704296122">Relacionado a <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicativo: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licença de mídia</translation>
@@ -6974,7 +6955,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7807711621188256451">Sempre permitir que <ph name="HOST" /> acesse sua câmera</translation>
 <translation id="7810202088502699111">As pop-ups foram bloqueadas nesta página.</translation>
 <translation id="781167124805380294">Transmitir <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Ajude a melhorar os recursos e o desempenho do Chrome e do ChromeOS enviando automaticamente dados de uso e diagnóstico ao Google. Alguns dados agregados também ajudam apps Android e parceiros do Google. Se a configuração "Atividade na Web e de apps" estiver ativada para sua Conta do Google, esses dados do Android vão poder ser salvos na sua Conta do Google.</translation>
 <translation id="7814458197256864873">Co&amp;piar</translation>
 <translation id="7815680994978050279">Download perigoso bloqueado</translation>
 <translation id="7817361223956157679">O teclado na tela ainda não funciona com aplicativos do Linux</translation>

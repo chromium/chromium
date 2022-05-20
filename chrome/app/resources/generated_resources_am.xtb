@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">የይለፍ ቃሎችን ከእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ማሳየት</translation>
 <translation id="1026655690966755180">ወደብ አክል</translation>
 <translation id="1026822031284433028">ምስል አክል</translation>
+<translation id="1028700151766901954">ምክንያት፦ LBS በ<ph name="DEFAULT_OPEN_BROWSER" /> ውስጥ በነባሪነት ይቆያል።</translation>
 <translation id="1029317248976101138">ማጉሊያ</translation>
 <translation id="1031362278801463162">ቅድመ-እይታን በመጫን ላይ</translation>
 <translation id="1032605640136438169">እባክዎ አዲሶቹን ደንቦች ይገምግሙ</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">የውሂብ ሚስጥራዊነት</translation>
 <translation id="1072700771426194907">ዩኤስቢ መሣሪያ ተፈልጎ ተገኝቷል</translation>
 <translation id="107278043869924952">ከይለፍ ቃል በተጨማሪም ፒን ይጠቀሙ</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />የChromeOS መሣሪያዎች ራስ-ሰር ሪፖርቶችን እንዲልክ መፍቀድ እኛ በChromeOS ውስጥ ምን መስተካከል እና መሻሻል እንዳለበት ቅድሚያ እንድንሰጥ ያግዘናል። እነዚህ ሪፖርቶች እንደ የትኛዎቹ ባህሪያት ስራ ላይ እንደዋሉ፣ ምን ያህል ማህደረ ትውስታ በተለምዶ ስራ ላይ ውሎ እንደነበር እና የAndroid መተግበሪያ የምርመራ እና የአጠቃቀም ውሂብ ያሉ ነገሮችን ሊያካትቱ ይችላሉ። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ።<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />በማንኛውም ጊዜ በልጅዎ የChromeOS መሣሪያ ቅንብሮች ውስጥ እነዚህን ሪፖርቶች መፍቀድ መጀመር ወይም ማቆም ይችላሉ። እርስዎ የጎራ አስተዳዳሪ ከሆኑ ይህን ቅንብር በአስተዳዳሪ መሥሪያው ውስጥ መቀየር ይችላሉ።<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ይህን ባሕሪ ማጥፋት ይህ መሣሪያ እንደ የሥርዓት ዝማኔዎች እና ደህንነት ላሉ አስፈላጊ አገልግሎቶች የሚያስፈልገውን መረጃ የመላክ ችሎታው ላይ ተጽዕኖ አያሳርፍበትም።<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />የልጅዎ የGoogle መለያ የድር እና መተግበሪያ እንቅስቃሴ ቅንብሩ በርቶ ከሆነ የልጅዎ ውሂብ በGoogle መለያቸው ላይ ሊቀመጥ ይችላል። families.google.com ላይ ስለእነዚህ ቅንብሮች እና እንዴት እነሱን ማስተካከል እንደሚችሉ የበለጠ ይወቁ።<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />የመሣሪያው ባለቤት «የአጠቃቀም እና የምርመራ ውሂብ ላክ» የሚለውን ካበራ የብልሽት ሪፖርቶች ወደ Google ሊሰቀሉ ይችላሉ።<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">ገጾችን በጽሑፍ ጠቋሚ ይዳስሱ</translation>
 <translation id="1076382954055048850">ሌላ የcast ክፍለ-ጊዜዎችን አሳይ</translation>
 <translation id="1076698951459398590">ገጽታን አንቃ</translation>
@@ -1438,10 +1434,6 @@
 <translation id="2328561734797404498"><ph name="APP_NAME" />ን ለመጠቀም እባክዎ የእርስዎን መሣሪያ ዳግም ያስነሱት።</translation>
 <translation id="2328636661627946415">ማንነትን የማያሳውቅ ሁነታ ላይ ሲሆኑ፣ ጣቢያዎች የአሰሳ እንቅስቃሴዎን በራሳቸው ጣቢያ ላይ ለማየት ኩኪዎችን ብቻ መጠቀም ይችላሉ። ኩኪዎች የሚሰረዙት ማንነትን የማያሳውቅ ክፍለ ጊዜ መጨረሻ ላይ ነው።</translation>
 <translation id="2329597144923131178">የእርስዎን ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ መለያ ይግቡ።</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />የእርስዎ የChromeOS መሣሪያዎች ራስ-ሰር ሪፖርቶችን እንዲልኩ መፍቀድ እኛ በChromeOS ውስጥ ምን መስተካከል እና መሻሻል እንዳለበት ቅድሚያ እንድንሰጥ ያግዘናል። እነዚህ ሪፖርቶች እንደ የትኛዎቹን ባህሪያት እንደሚጠቀሙ፣ ምን ያህል ማህደረ ትውስታ እንደሚጠቀሙ፣ የAndroid መተግበሪያ የምርመራ እና የአጠቃቀም ውሂብ እና ስህተቶችን ሊያካትቱ ይችላሉ። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ።<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />በማንኛውም ጊዜ በእርስዎ የChromeOS መሣሪያ ቅንብሮች ውስጥ እነዚህን ሪፖርቶች መፍቀድ መጀመር ወይም ማቆም ይችላሉ። እርስዎ የጎራ አስተዳዳሪ ከሆኑ ይህን ቅንብር በአስተዳዳሪ መሥሪያው ውስጥ መቀየር ይችላሉ።<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />የGoogle መለያዎ የድር እና የመተግበሪያ እንቅስቃሴ ቅንብር ከበራ የAndroid ውሂብዎ ወደ የGoogle መለያዎ ሊቀመጥ ይችላል። በaccount.google.com ላይ የእርስዎን ውሂብ ማየት፣ መሰረዝ እና የእርስዎን መለያ ቅንብሮች መለወጥ ይችላሉ።<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />የመሣሪያው ባለቤት «የአጠቃቀም እና የምርመራ ውሂብ ላክ» የሚለውን ካበራ የብልሽት ሪፖርቶች ወደ Google ሊሰቀሉ ይችላሉ።<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">በመደብር ውስጥ ይመልከቱ</translation>
 <translation id="2332192922827071008">ምርጫዎችን ክፈት</translation>
 <translation id="2332515770639153015">የተሻሻለ የደህንነት አሰሳ በርቷል</translation>
@@ -2780,10 +2772,6 @@
 <translation id="3651488188562686558">ከWi-Fi ግንኙነት አቋርጥ</translation>
 <translation id="3652817283076144888">በማስጀመር ላይ</translation>
 <translation id="3653160965917900914">የአውታረ መረብ ፋይል ማጋራቶች</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />የChromeOS መሣሪያዎች ራስ-ሰር ሪፖርቶችን እንዲልክ መፍቀድ እኛ በChromeOS ውስጥ ምን መስተካከል እና መሻሻል እንዳለበት ቅድሚያ እንድንሰጥ ያግዘናል። እነዚህ ሪፖርቶች እንደ የትኛዎቹ ባህሪያት ስራ ላይ እንደዋሉ እና ምን ያህል ማህደረ ትውስታ በተለምዶ ስራ ላይ ውሎ እንደነበር ያሉ ነገሮችን ሊያካትቱ ይችላሉ።<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />በማንኛውም ጊዜ በልጅዎ የChromeOS መሣሪያ ቅንብሮች ውስጥ እነዚህን ሪፖርቶች መፍቀድ መጀመር ወይም ማቆም ይችላሉ። እርስዎ የጎራ አስተዳዳሪ ከሆኑ ይህን ቅንብር በአስተዳዳሪ መሥሪያው ውስጥ መቀየር ይችላሉ።<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ይህን ባሕሪ ማጥፋት ይህ መሣሪያ እንደ የሥርዓት ዝማኔዎች እና ደህንነት ላሉ አስፈላጊ አገልግሎቶች የሚያስፈልገውን መረጃ የመላክ ችሎታው ላይ ተጽዕኖ አያሳርፍበትም።<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />የመሣሪያው ባለቤት «የአጠቃቀም እና የምርመራ ውሂብ ላክ» የሚለውን ካበራ የብልሽት ሪፖርቶች ወደ Google ሊሰቀሉ ይችላሉ።<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" />ን የማይክሮፎንዎን መዳረሻ መፍቀዱን ይቀጥሉ</translation>
 <translation id="3654045516529121250">የተደራሽነት ቅንብሮችዎን ያነብባል</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{ወደ አንድ ፋይል ቋሚ መዳረሻ አለው።}one{ወደ # ፋይሎች ቋሚ መዳረሻ አለው።}other{ወደ # ፋይሎች ቋሚ መዳረሻ አለው።}}</translation>
@@ -3357,6 +3345,7 @@
 <translation id="4209092469652827314">ትልቅ</translation>
 <translation id="4209251085232852247">ጠፍተዋል</translation>
 <translation id="4210048056321123003">ምናባዊውን ማሽን በማውረድ ላይ</translation>
+<translation id="4210380525132844778">ምክንያት፦ <ph name="RULE" /> በ«<ph name="LIST_NAME" />» ዝርዝር ውስጥ ተገኝቷል።</translation>
 <translation id="421182450098841253">&amp;የዕልባቶች አሞሌን አሳይ</translation>
 <translation id="4211851069413100178">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ በራስ-ሰር ወደ Google በመላክ የAndroid ተሞክሮዎ እንዲሻሻል ያግዙ። ይህ የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ <ph name="BEGIN_LINK1" />ቅንብር<ph name="END_LINK1" /> በባለቤቱ ተፈጻሚ ይደረጋል። ባለቤቱ የዚህ መሣሪያ የምርመራ እና የአጠቃቀም ለGoogle ለመላክ ሊመርጥ ይችላሉ። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">በAndroid መተግበሪያዎች መጠቀም አቁም</translation>
@@ -4052,7 +4041,6 @@
 <translation id="4900652253009739885">ለ«ምረጥ» የተመደበውን ብቸኛውን መቀየሪያ ማስወገድ አይቻልም። ለ<ph name="RESPONSE" /> ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="4901309472892185668">ለ<ph name="EXPERIMENT_NAME" /> ሙከራ የሙከራ ሁኔታን ይምረጡ።</translation>
 <translation id="49027928311173603">ከአገልጋዩ የወረደው መመሪያ ልክ ያልሆነ ነው፦ <ph name="VALIDATION_ERROR" />።</translation>
-<translation id="4904511036057277323">የምርመራ እና የአጠቃቀም ውሂብን በራስ-ሰር ወደ Google በመላክ የChrome እና የChromeOS ባህሪያትን እና አፈጻጸምን እንዲሻሻል ያግዙ። አንዳንድ ውሑድ ውሂብ እንዲሁም የAndroid መተግበሪያዎችን እና የGoogle አጋሮችን ያግዛል። የልጅዎ የGoogle መለያ የድር እና የመተግበሪያ ቅንብሩ እንቅስቃሴ በርቶ ከሆነ የልጅዎ የAndroid ውሂብ በልጅዎ የGoogle መለያ ላይ ሊቀመጥ ይችላል።</translation>
 <translation id="4906490889887219338">የአውታረ መረብ ፋይል ማጋራቶችን ያዋቅሩ ወይም ያቀናብሩ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">ይህ ቅጥያ የጣቢያዎን ውሂብ ማንበብ እና መለወጥ በሚችልበት ጊዜ ይምረጡ</translation>
 <translation id="4907161631261076876">ይህ ፋይል በተለምዶ የሚወርድ አይደለም፣ እና አደገኛ ሊሆን ይችላል።</translation>
@@ -5184,6 +5172,7 @@
 <translation id="6063284707309177505">የQR ኮድ ፍጠር</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቀረጻ የ<ph name="SUPERVISED_USER_NAME" />ን የግል ውጤቶች ሊደርስበት ይችል ይሆናል። ባትሪ ለመቆጠብ ይህ መሣሪያ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ «Hey Google» እንዲበራ በ<ph name="SUPERVISED_USER_NAME" />ረዳት ቅንብሮች ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="6064217302520318294">ማያ ገጽ መቆለፊያ</translation>
+<translation id="6065145031947216733">የእርስዎ አሰሳ ይለይ?</translation>
 <translation id="6065289257230303064">የሰርቲፊኬት ርዕስ የማውጫ አይነታዎች</translation>
 <translation id="6066794465984119824">የምስል ሃሽ አልተዘጋጀም</translation>
 <translation id="6069464830445383022">የእርስዎ Google መለያ የእርስዎ Chromebook መግቢያ ነው</translation>
@@ -5262,6 +5251,7 @@
 <translation id="6129953537138746214">ባዶ ቦታ</translation>
 <translation id="6130692320435119637">Wi-Fi ያክሉ</translation>
 <translation id="6130887916931372608">የቁልፍ ሰሌዳ ቁልፍ</translation>
+<translation id="6135823405800500595">ስልክዎ በአቅራቢያ መኖሩን፣ መከፈቱን እና ብሉቱዝና Wi-Fi መብራታቸውን ያረጋግጡ።</translation>
 <translation id="6136114942382973861">የውርዶች አሞሌን ዝጋ</translation>
 <translation id="6136287496450963112">የእርስዎ ደህንነት ቁልፍ በፒን ጥበቃ እየተደረገለት አይደለም ያለው። የዲጂታል አሻራዎችን ለማቀናበር መጀመሪያ ፒን ይፍጠሩ።</translation>
 <translation id="6138680304137685902">የX9.62 ECDSA ፊርማ በSHA-384</translation>
@@ -5507,10 +5497,6 @@
 <translation id="63849924261838903">{NUM_TABS,plural, =1{ያልተሰየመ ቡድን - 1 ትር}one{ያልተሰየመ ቡድን - # ትሮች}other{ያልተሰየመ ቡድን - # ትሮች}}</translation>
 <translation id="6385149369087767061">ከበይነመረቡ ጋር ይገናኙና እንደገና ይሞክሩ</translation>
 <translation id="6385543213911723544">ጣቢያዎች የኩኪ ውሂብ ማስቀመጥ እና ማንበብ ይችላሉ</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />የእርስዎ የChromeOS መሣሪያዎች ራስ-ሰር ሪፖርቶችን እንዲልኩ መፍቀድ እኛ በChromeOS ውስጥ ምን መስተካከል እና መሻሻል እንዳለበት ቅድሚያ እንድንሰጥ ያግዘናል። እነዚህ ሪፖርቶች የትኛዎቹን ባህሪያት እንደሚጠቀሙ እና ምን ያህል ማህደረ ትውስታን በተለምዶ እንደሚጠቀሙ ያሉ ነገሮችን ሊያካትቱ ይችላሉ።<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />በማንኛውም ጊዜ በእርስዎ የChrome መሣሪያ ቅንብሮች ውስጥ እነዚህን ሪፖርቶች መፍቀድ መጀመር ወይም ማቆም ይችላሉ። እርስዎ የጎራ አስተዳዳሪ ከሆኑ ይህን ቅንብር በአስተዳዳሪ መሥሪያው ውስጥ መቀየር ይችላሉ።<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ይህን ባሕሪ ማጥፋት መሣሪያዎ እንደ የሥርዓት ዝማኔዎች እና ደህንነት ላሉ አስፈላጊ አገልግሎቶች የሚያስፈልገውን መረጃ የመላክ ችሎታው ላይ ተጽዕኖ አያሳርፍም።<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />የመሣሪያው ባለቤት «የአጠቃቀም እና የምርመራ ውሂብ ላክ» የሚለውን ካበራ የብልሽት ሪፖርቶች ወደ Google ሊሰቀሉ ይችላሉ።<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">ማስጠንቀቂያ - ዝርዝር ምዝግብ ማስታወሻ መያዝ ነቅቷል፤ ከታች ያሉት ምዝግብ ማስታወሻዎች ዩአርኤሎችን ወይም ሌላ ሚስጥራዊነት ያለው መረጃ ሊይዙ ይችላሉ። እባክዎ ይከልሱና ይህን መረጃ ማስገባትዎ ምቾት እንደማይነሳዎ ያረጋግጡ።</translation>
 <translation id="6387674443318562538">ቁልቁል ክፈል</translation>
 <translation id="6388429472088318283">ቋንቋዎችን ይፈልጉ</translation>
@@ -5631,7 +5617,6 @@
 <translation id="6504601948739128893">በእርስዎ መሣሪያ ላይ የተገጠሙ ቅርጸ-ቁምፊዎችን ለመጠቀም አልተፈቀደም</translation>
 <translation id="6504611359718185067">አታሚን ለማከል ከበይነመረብ ጋር ያገናኙ</translation>
 <translation id="6506374932220792071">የX9.62 ECDSA ፊርማ በSHA-256</translation>
-<translation id="6507936476364432879">የምርመራ እና የአጠቃቀም ውሂብን በራስ-ሰር ወደ Google በመላክ የChrome እና የChromeOS ባህሪያትን እና አፈጻጸምን እንዲሻሻል ያግዙ።</translation>
 <translation id="6508248480704296122">ከ<ph name="NAME_PH" /> ጋር የሚዛመድ</translation>
 <translation id="6508261954199872201">መተግበሪያ፦ <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">የማህደረ መረጃ ፈቃድ</translation>
@@ -6958,7 +6943,6 @@
 <translation id="7807711621188256451"><ph name="HOST" /> ሁልጊዜ የእርስዎ ካሜራ መዳረሻ ይፈቀድለት</translation>
 <translation id="7810202088502699111">በዚህ ገጽ ብቅ-ባዮች ታግደዋል።</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" />ን Cast ያድርጉ</translation>
-<translation id="7811886112806886172">የምርመራ እና የአጠቃቀም ውሂብን በራስ-ሰር ወደ Google በመላክ የChrome እና የChromeOS ባህሪያትን እና አፈጻጸምን እንዲሻሻል ያግዙ። አንዳንድ ውሑድ ውሂብ እንዲሁም የAndroid መተግበሪያዎችን እና የGoogle አጋሮችን ያግዛል። የGoogle መለያዎ የድር እና የመተግበሪያ እንቅስቃሴ ቅንብር ከበራ የAndroid ውሂብዎ ወደ የGoogle መለያዎ ሊቀመጥ ይችላል።</translation>
 <translation id="7814458197256864873">&amp;ቅዳ</translation>
 <translation id="7815680994978050279">አደገኛ ውርድ ታግዷል</translation>
 <translation id="7817361223956157679">ታይታ የቁልፍ ሰሌዳ በ Linux መተግበሪያዎች ላይ እስካሁን አይሠራም</translation>
@@ -7097,6 +7081,7 @@
 <translation id="7947962633355574091">የቪዲዮ አድራሻ &amp;ቅዳ</translation>
 <translation id="7947964080535614577">ጣቢያዎች ይዘትን ወይም አገልግሎቶችን ከክፍያ ነፃ ማቅረብ እንዲችሉ ማስታወቂያዎችን ያሳያሉ። ነገር ግን አንዳንድ ጣቢያዎች ረባሽ ወይም አሳሳች ማስታወቂያዎችን በማሳየት ይታወቃሉ።</translation>
 <translation id="7948407723851303488">የ<ph name="DOMAIN_NAME" /> ሁሉም ገጾች</translation>
+<translation id="7950629216186736592">ምክንያት፦ LBS የሚደግፈው የ http://፣ https:// እና file:// ዩአርኤሎችን ብቻ ነው።</translation>
 <translation id="7951265006188088697">የ Google Pay ክፍያ ዘዴዎችን ለማከል ወይም ለማስተዳደር፣ የእርስዎን <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ይጎብኙ</translation>
 <translation id="795130320946928025">ምናባዊ ካርድን አጥፋ</translation>
 <translation id="7952708427581814389">ጣቢያዎች በቅንጥብ ሰሌዳዎ ላይ ጽሑፍን እና ምስሎችን ለማየት መጠየቅ ይችላሉ</translation>
@@ -7646,6 +7631,7 @@ nil</translation>
 <translation id="8480869669560681089">ያልታወቀው መሣሪያ ከ<ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">የዩኤስቢ ፈቃድን ያረጋግጡ</translation>
 <translation id="8481980314595922412">የሙከራ ባህሪዎች በርተዋል</translation>
+<translation id="8486666913807228950">ምክንያት፦ የተገለበጠው ደንብ <ph name="REVERT_RULE" /> «በሃይል መክፈት» ዝርዝር ውስጥ ተገኝቷል።</translation>
 <translation id="848666842773560761">አንድ መተግበሪያ ካሜራን ለመድረስ እየሞከረ ነው። መዳረሻ ለመፍቀድ የካሜራ ግላዊነት ማብሪያ/ማጥፊያውን ያጥፉት።</translation>
 <translation id="8487678622945914333">አጉላ</translation>
 <translation id="8489156414266187072">የግል የአስተያየት ጥቆማዎች በእርስዎ መለያ ላይ ብቻ ይታያሉ</translation>

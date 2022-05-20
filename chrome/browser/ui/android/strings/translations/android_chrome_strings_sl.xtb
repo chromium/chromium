@@ -489,7 +489,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3616113530831147358">Zvok</translation>
 <translation id="3622349720008044802">Upravljanje oken</translation>
-<translation id="3624977496395967031">Kliknite, če želite odpreti možnosti razvrščanja.</translation>
 <translation id="3631987586758005671">Deljenje z napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Samodejna prijava v spletna mesta s shranjenimi poverilnicami. Ko je ta funkcija izklopljena, bo pri vsaki prijavi v spletno mesto potrebno preverjanje.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4225895483398857530">Bližnjica do orodne vrstice</translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="4248098802131000011">Varuje gesla pred podatkovnimi kršitvami in drugimi varnostnimi težavami</translation>
+<translation id="4249955472157341256">Razvrsti glede na najnovejše</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4256782883801055595">Odprtokodne licence</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
@@ -897,7 +897,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5957442310066583693">Če si želite ogledati najbolj priljubljena spletna mesta, se dotaknite gumba za domačo stran</translation>
 <translation id="5958275228015807058">Poiščite datoteke in strani v Prenosih</translation>
 <translation id="5962718611393537961">Dotik za strnitev</translation>
-<translation id="5964805880140440652">Če želite to stran deliti z drugo napravo, v nastavitvah Chroma vklopite sinhronizacijo</translation>
 <translation id="5964869237734432770">Ustavi prenos opisov slik</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
 <translation id="5995726099713306770">Ali želite znova prenesti stran?</translation>

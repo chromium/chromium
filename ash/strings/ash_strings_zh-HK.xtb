@@ -95,6 +95,7 @@
 <translation id="1420732223884894666">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片和媒體。</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1438357537418863713">應用程式串流已完成設定。當您開始使用時，這裡會顯示最近啟動過的應用程式。</translation>
+<translation id="1447641497144572814">螢幕保護程式啟動</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量校咗靜音。</translation>
 <translation id="1467432559032391204">向左</translation>
@@ -769,6 +770,7 @@
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="557563299383177668">下一段</translation>
 <translation id="5577281275355252094">請確認手機已啟用藍牙功能，以便使用 Phone Hub</translation>
+<translation id="5580000943347215299">媒體庫</translation>
 <translation id="558849140439112033">拖曳以選取要擷取的範圍</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>

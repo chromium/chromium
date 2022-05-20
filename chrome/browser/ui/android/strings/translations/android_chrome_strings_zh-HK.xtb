@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音效檔案</translation>
 <translation id="3622349720008044802">管理視窗</translation>
-<translation id="3624977496395967031">按一下即可開啟排序選項</translation>
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
@@ -524,6 +523,7 @@
 <translation id="3845098929839618392">在無痕式分頁中開啟</translation>
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
+<translation id="3859206958100234503">進行同步處理，取得您在所有裝置上的密碼、書籤和其他資料</translation>
 <translation id="3861633093716975811">熱門影片</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3894427358181296146">新增資料夾</translation>
@@ -583,6 +583,7 @@
 <translation id="4225895483398857530">工具列捷徑</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4248098802131000011">確保密碼安全，避免發生資料外洩或其他安全性問題</translation>
+<translation id="4249955472157341256">按最新項目排序</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />需要使用什麼資料：<ph name="END_BOLD" />您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
@@ -696,6 +697,7 @@
 <translation id="4842515939542199281">如要透過語音進行搜尋，請輕按「麥克風」圖示</translation>
 <translation id="4844633725025837809">為進一步增強安全性，請先在裝置上將密碼加密，然後才將密碼儲存至 Google 密碼管理工具</translation>
 <translation id="4850886885716139402">檢視</translation>
+<translation id="4852014461738377247">正在登入\u2026</translation>
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4866368707455379617">無法為 Chrome 安裝 <ph name="MODULE" /></translation>
@@ -897,7 +899,6 @@
 <translation id="5957442310066583693">如要查看熱門網站，請輕按「主按鈕」</translation>
 <translation id="5958275228015807058">在「下載」主畫面尋找您的檔案和網頁</translation>
 <translation id="5962718611393537961">輕按即可收合</translation>
-<translation id="5964805880140440652">如要將此頁面分享至另一部裝置，請在 Chrome 設定中開啟同步功能</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5995726099713306770">要再次下載頁面嗎？</translation>
@@ -1150,6 +1151,7 @@
 <translation id="7304873321153398381">離線。Chrome 無法檢查密碼。</translation>
 <translation id="7313188324932846546">輕按即可設定同步</translation>
 <translation id="7332075081379534664">登入成功</translation>
+<translation id="7333232495927792353">進行同步處理，取得 Google 提供的最相關內容</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>
 <translation id="7352339641508007922">拖曳以擷取長螢幕截圖</translation>
@@ -1530,6 +1532,7 @@
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>
 <translation id="968900484120156207">您瀏覽的網頁會在這裡顯示</translation>
 <translation id="970715775301869095">尚餘 <ph name="MINUTES" /> 分鐘</translation>
+<translation id="978443947993957527">查看為您精選的內容</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="987264212798334818">一般</translation>

@@ -137,7 +137,7 @@
 <translation id="1829244130665387512">Găsește în pagină</translation>
 <translation id="1834891354138622109">Coloană</translation>
 <translation id="1845944666972354496">Atinge de două ori pentru a activa</translation>
-<translation id="1846771122725914429">Afișajul braille prin Bluetooth</translation>
+<translation id="1846771122725914429">Afișajul Braille prin Bluetooth</translation>
 <translation id="1852018405765032699">Dacă atingi ecranul cu patru degete, meniurile ChromeVox se deschid sau închid. Aceste meniuri conțin informații utile despre comenzi și comenzi rapide. După deschiderea meniurilor, poți să glisezi cu un deget pentru a naviga prin elemente și să atingi de două ori ca să le activezi. Pentru a continua, atinge ecranul cu patru degete.</translation>
 <translation id="1865601187525349519">Sfârșitul textului</translation>
 <translation id="1876229593313240038">document</translation>
@@ -152,7 +152,7 @@
 <translation id="1964135212174907577">Obiectul următor</translation>
 <translation id="1966649499058910679">Evidențiază fiecare cuvânt când este rostit</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
-<translation id="1988733631391393183">Afișează comenzile braille în meniurile ChromeVox</translation>
+<translation id="1988733631391393183">Afișează comenzile Braille în meniurile ChromeVox</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{paranteză pătrată stânga}few{# paranteze pătrate stânga}other{# de paranteze pătrate stânga}}</translation>
 <translation id="2009187674653301682">Nu este exponent</translation>
 <translation id="2010555995361223825">Meniuri ChromeVox</translation>
@@ -356,7 +356,7 @@
 <translation id="3283583562490372694">debifată</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3286390186030710347">Glisor</translation>
-<translation id="3300348286427369683">Compatibilitate cu textul îmbogățit. ChromeVox acceptă acum câmpuri de text îmbogățit, inclusiv comenzi de accesare, orientarea cursorului pentru textul braille, selectarea și altele.</translation>
+<translation id="3300348286427369683">Compatibilitate cu textul îmbogățit. ChromeVox acceptă acum câmpuri de text îmbogățit, inclusiv comenzi de accesare, orientarea cursorului pentru textul Braille, selectarea și altele.</translation>
 <translation id="3300733168898541351">anulează</translation>
 <translation id="3307886118343381874">Accesați finalul tabelului</translation>
 <translation id="3312997241656799641">Următorul link accesat</translation>
@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Se ignoră următoarea apăsare de tastă</translation>
 <translation id="4623097797855662355">Colofon</translation>
+<translation id="4624970070706497034">TalkBack nu mai oferă personalizare pentru Chromebookuri. Îl poți folosi în continuare, dar alături de comenzile rapide de la tastatură TalkBack prestabilite. Apasă Search+A, apoi K pentru a vedea comenzile rapide disponibile. Dacă tot mai vrei să folosești TalkBack, apasă comanda din nou.</translation>
 <translation id="463135993322337640">Apasă pe ChromeVox o, n pentru a afla noutățile</translation>
 <translation id="4649220074413114917">Poți opri citirea dacă atingi ecranul cu două degete. Această opțiune este utilă dacă nu vrei ca ChromeVox să citească ceva. Pentru a continua, atinge ecranul cu două degete.</translation>
 <translation id="4660783501463101648">Versiunea clasică a fost eliminată. Comanda de comutare de la tastatură pentru revenirea la versiunea clasică ChromeVox a fost eliminată.</translation>
@@ -615,7 +616,7 @@
 <translation id="5142101052131610456">Toate lecțiile</translation>
 <translation id="5158275234811857234">Copertă</translation>
 <translation id="516076699907426116">Pentru a continua, explorează prin atingere ca să găsești butonul Lecția următoare. Apoi atinge de două ori pentru a continua.</translation>
-<translation id="5170206230005240598">Subtitrările braille sunt activate</translation>
+<translation id="5170206230005240598">Subtitrările Braille sunt activate</translation>
 <translation id="5183440668879371625">Rândul Braille anterior</translation>
 <translation id="5189244881767082992">Rând</translation>
 <translation id="5263034204789987535">Mătase de porumb</translation>
@@ -763,7 +764,7 @@
 <translation id="6158882249329863701">rândul <ph name="TABLECELLROWINDEX" />, coloana <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">instrument de măsurare</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
-<translation id="6166362019018438352">Subtitrările braille sunt dezactivate</translation>
+<translation id="6166362019018438352">Subtitrările Braille sunt dezactivate</translation>
 <translation id="6186305613600865047">Navigați la sfârșitul paginii</translation>
 <translation id="6187190722927752226">Acvamarin</translation>
 <translation id="6197361807490522975">Albastru închis</translation>
@@ -884,7 +885,7 @@
 <translation id="712735679809149106">ecou cuvânt</translation>
 <translation id="7137397390322864165">Roz portocaliu</translation>
 <translation id="7140168702531682811">Exponent</translation>
-<translation id="7143034430156387447">Comută între braille cu 6 și 8 puncte</translation>
+<translation id="7143034430156387447">Comută între Braille cu 6 și 8 puncte</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7153618581592392745">Lavandă</translation>
 <translation id="7157306005867877619">Rezumat</translation>
@@ -895,7 +896,7 @@
 <translation id="7209751026933045237">Nu există un glisor următor</translation>
 <translation id="7218782500591078391">Galben auriu</translation>
 <translation id="7226216518520804442">listă</translation>
-<translation id="7229749224609077523">Selectează un tabel braille cu 6 puncte:</translation>
+<translation id="7229749224609077523">Selectează un tabel Braille cu 6 puncte:</translation>
 <translation id="72393384879519786">Titlu</translation>
 <translation id="7240858705033280249">Accesează Detaliile</translation>
 <translation id="7241683698754534149">Deschideți descrierea lungă într-o filă nouă</translation>
@@ -928,7 +929,7 @@
 <translation id="7408482676469142474">tabel</translation>
 <translation id="7419264136822406994">Poți folosi comanda Shift + Tab ca să treci la elementul interactiv anterior. Pentru a continua, apasă Shift + Tab.</translation>
 <translation id="7425395583360211003">sfârșit de rând</translation>
-<translation id="7429415133937917139">Simulează ieșirea unui afișaj braille actualizabil
+<translation id="7429415133937917139">Simulează ieșirea unui afișaj Braille actualizabil
         în panoul ChromeVox din partea de sus a ecranului</translation>
 <translation id="7434509671034404296">Dezvoltator</translation>
 <translation id="743783356331413498">Exemplu</translation>
@@ -985,7 +986,7 @@
 <translation id="7842115774595115751">Activează comenzile de navigare</translation>
 <translation id="7846634333498149051">Tastatură</translation>
 <translation id="7851816175263618915">Unele semne de punctuație</translation>
-<translation id="7871691770940645922">Afișaj braille virtual</translation>
+<translation id="7871691770940645922">Afișaj Braille virtual</translation>
 <translation id="7882421473871500483">Maro</translation>
 <translation id="78826985582142166">cursor</translation>
 <translation id="7913106023953875143">Nu există un titlu de nivel 2 următor</translation>
@@ -1097,7 +1098,7 @@
 <translation id="8640369214276455272">Fum alb</translation>
 <translation id="8651481478098336970">dezactivează sunetul</translation>
 <translation id="8653646212587894517">Afișați lista de linkuri</translation>
-<translation id="8656888282555543604">Activează înregistrarea braille</translation>
+<translation id="8656888282555543604">Activează înregistrarea Braille</translation>
 <translation id="8659501358298941449">Listele drop-down</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> la sfârșit</translation>
 <translation id="867187640362843212">Titlu 5</translation>
@@ -1139,7 +1140,7 @@
 <translation id="8993737615451556423">Oferă comenzi pentru accelerarea, încetinirea și întreruperea vocii care citește</translation>
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
 <translation id="9040132695316389094">Titlu 1</translation>
-<translation id="9061884144798498064">Selectează un tabel braille cu 8 puncte:</translation>
+<translation id="9061884144798498064">Selectează un tabel Braille cu 8 puncte:</translation>
 <translation id="9063946545000394379">treci la caracterul anterior</translation>
 <translation id="9065283790526219006">+fereastră pop-up</translation>
 <translation id="9065912140022662363">Nu există un buton radio următor</translation>
@@ -1174,7 +1175,7 @@
 <translation id="957570623732056069">Glisează spre stânga sau spre dreapta cu un deget pentru a parcurge această lecție</translation>
 <translation id="958854023026327378">Glisează cu un deget în jos</translation>
 <translation id="962913030769097253">Titlul de nivel 1 următor</translation>
-<translation id="966588271015727539">Selectează un afișaj braille prin Bluetooth</translation>
+<translation id="966588271015727539">Selectează un afișaj Braille prin Bluetooth</translation>
 <translation id="973955474346881951">Activează/dezactivează modul taste persistente</translation>
 <translation id="985654871861528815">Mută în jos cu un rând</translation>
 <translation id="992256792861109788">Roz</translation>

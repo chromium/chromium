@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Илүү их тусламж авах бол <ph name="BEGIN_LINK" />Тусламжийн төв<ph name="END_LINK" /> рүү очно уу.</translation>
 <translation id="4793756956024303490">Шахалтын алгоритм</translation>
 <translation id="4794140124556169553">Төв процессорын нэгжийн туршилтыг ажиллуулах нь таны системийн гүйцэтгэлд нөлөөлж болзошгүй</translation>
+<translation id="4804818685124855865">Таслах</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> хэвлэх ажлыг цуцалсан</translation>
 <translation id="4809927044794281115">Цайвар загвар</translation>
 <translation id="4813136279048157860">Миний зураг</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
+<translation id="5947494881799873997">Буцаах</translation>
 <translation id="5951259522948394825">Бүх зүйл зохих ёсоор байгаа эсэхийг баталгаажуулж, оношилгооны тайланг харна уу</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="5984145644188835034">Өгөгдмөл дэлгэцийн зураг</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="871560550817059752">Амжилтгүй болсон - Бэх дууссан</translation>
 <translation id="8723108084122415655">Өгөгдмөл бус сүлжээ хоцролтын хязгаараас дээш байна</translation>
+<translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8726019395068607495">Зогссон - Таг нээлттэй</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>

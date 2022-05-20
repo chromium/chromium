@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3616113530831147358">ສຽງ</translation>
 <translation id="3622349720008044802">ຈັດການໜ້າຈໍ</translation>
-<translation id="3624977496395967031">ຄລິກເພື່ອເປີດຕົວເລືອກການຈັດຮຽງ</translation>
 <translation id="3631987586758005671">ກຳລັງແບ່ງປັນໃສ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">ເຂົ້າສູ່ລະບົບເວັບ​ໄຊ​ໂດຍ​ອັດຕະ​ໂນ​ມັດໂດຍ​ໃຊ້​ຂໍ້​ມູນ​ປະ​ຈໍາ​ຕົວ​ທີ່​ຮັກສາ​ໄວ້. ​ເມື່ອຄຸນສົມບັດນີ້ຖືກປິດການນຳໃຊ້, ທ່ານ​ຈະ​ຖືກ​ຮ້ອງ​ຂໍ​ໃຫ້​ກວດ​ສອບ​ໃນ​ທຸກໆເທື່ອ ກ່ອນ​ທີ່​ຈະ​ລົງ​ຊື່​ເຂົ້າ​ເວັບ​ໄຊໃດ​ໜຶ່ງ.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -584,6 +583,7 @@
 <translation id="4227318652298512614">ຕິດຕາມເວັບໄຊໃດກໍໄດ້ທີ່ທ່ານຕ້ອງການ</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="4248098802131000011">ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນໆ</translation>
+<translation id="4249955472157341256">ຈັດຮຽງຕາມຫຼ້າສຸດ</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="4256782883801055595">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ມີການໃຊ້ຂໍ້ມູນໃດ:<ph name="END_BOLD" /> ປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ບັນທຶກຂອງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໂດຍໃຊ້ Chrome ຢູ່ອຸປະກອນນີ້.</translation>
@@ -898,7 +898,6 @@
 <translation id="5957442310066583693">ເພື່ອເບິ່ງເວັບໄຊຍອດນິຍົມຂອງທ່ານ, ກະລຸນາແຕະປຸ່ມໜ້າທຳອິດ</translation>
 <translation id="5958275228015807058">ຊອກຫາໄຟລ໌ ແລະ ໜ້າເວັບຂອງທ່ານໃນການດາວໂຫຼດ</translation>
 <translation id="5962718611393537961">ແຕະເພື່ອຫຍໍ້ລົງ</translation>
-<translation id="5964805880140440652">ເພື່ອແບ່ງປັນໜ້ານີ້ກັບອຸປະກອນອື່ນ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="5964869237734432770">ຢຸດຄຳອະທິບາຍຮູບ</translation>
 <translation id="5979084224081478209">ກວດເບິ່ງລະຫັດຜ່ານ</translation>
 <translation id="5995726099713306770">ດາວໂຫຼດໜ້າອີກເທື່ອໜຶ່ງບໍ່?</translation>

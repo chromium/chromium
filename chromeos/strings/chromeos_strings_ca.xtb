@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Per obtenir més ajuda, ves al <ph name="BEGIN_LINK" />Centre d'ajuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritme de compressió</translation>
 <translation id="4794140124556169553">Executar una prova de CPU pot afectar el rendiment del sistema</translation>
+<translation id="4804818685124855865">Desconnecta</translation>
 <translation id="4808449224298348341">S'ha cancel·lat la tasca d'impressió del document <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Tema clar</translation>
 <translation id="4813136279048157860">Les meves imatges</translation>
@@ -530,6 +531,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="594552776027197022">Genera un parell de claus aleatori</translation>
+<translation id="5947494881799873997">Reverteix</translation>
 <translation id="5951259522948394825">Confirma que tot sigui al seu lloc i consulta l'informe de diagnòstic</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
@@ -813,6 +815,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
 <translation id="8723108084122415655">La xarxa no predeterminada supera el llindar de latència</translation>
+<translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8747900814994928677">Confirma el canvi</translation>

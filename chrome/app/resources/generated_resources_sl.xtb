@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Prikaz gesel iz <ph name="BEGIN_LINK" />računa Google<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Dodajanje vrat</translation>
 <translation id="1026822031284433028">Naloži sliko</translation>
+<translation id="1028700151766901954">Razlog: LBS privzeto ostane v brskalniku <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Povečaj</translation>
 <translation id="1031362278801463162">Nalaganje predogleda</translation>
 <translation id="1032605640136438169">Preglejte nove pogoje</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Šifriranje podatkov</translation>
 <translation id="1072700771426194907">Zaznana je naprava USB</translation>
 <translation id="107278043869924952">Uporabite PIN poleg gesla</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom Chrome OS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema Chrome OS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, katere funkcije so bile uporabljene, koliko pomnilnika je bilo običajno uporabljenega in podatke o uporabi aplikacij za Android. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah otrokove naprave s sistemom Chrome OS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Izklop te funkcije ne vpliva na zmožnost te naprave, da pošilja podatke, potrebne za ključne storitve, kot so posodobitve in varnost sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Če ste za otrokov račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Preberite več o teh nastavitvah in njihovem prilagajanju na families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Če lastnik naprave vklopi »Pošiljanje podatkov o uporabi in diagnostičnih podatkov«, se poročila o zrušitvah morda tudi naložijo v Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Premikanje po straneh s kazalcem besedila</translation>
 <translation id="1076382954055048850">Prikaz drugih sej za predvajanje</translation>
 <translation id="1076698951459398590">Omogoči temo</translation>
@@ -1447,10 +1443,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2328561734797404498">Znova zaženite napravo, če želite uporabljati aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">V anonimnem načinu lahko spletna mesta uporabljajo piškotke samo za ogled vaše dejavnosti brskanja na tem spletnem mestu. Po koncu anonimne seje se piškotki izbrišejo.</translation>
 <translation id="2329597144923131178">Prijavite se, da boste lahko dostopali do zaznamkov, zgodovine, gesel in drugih nastavitev v vseh napravah.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom Chrome OS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema Chrome OS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, katere funkcije uporabljate, koliko pomnilnika običajno uporabljate, diagnostične podatke in podatke o uporabi aplikacij za Android ter napake. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave s sistemom Chrome OS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Če ste za račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo podatki naprave Android morda shranjeni v računu Google. Na account.google.com si lahko ogledate podatke in jih izbrišete ter spremenite nastavitve računa.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Če lastnik naprave vklopi »Pošiljanje podatkov o uporabi in diagnostičnih podatkov«, se poročila o zrušitvah morda tudi naložijo v Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Ogled v trgovini</translation>
 <translation id="2332192922827071008">Odpri nastavitve</translation>
 <translation id="2332515770639153015">Izboljšano varno brskanje je vklopljeno</translation>
@@ -2789,10 +2781,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3651488188562686558">Prekinitev povezave z omrežjem Wi-Fi</translation>
 <translation id="3652817283076144888">Inicializacija</translation>
 <translation id="3653160965917900914">Omrežna datotečna sredstva v skupni rabi</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom Chrome OS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema Chrome OS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, katere funkcije so bile uporabljene in koliko pomnilnika je bilo običajno uporabljenega.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah otrokove naprave s sistemom Chrome OS. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Izklop te funkcije ne vpliva na zmožnost te naprave, da pošilja podatke, potrebne za ključne storitve, kot so posodobitve in varnost sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Če lastnik naprave vklopi »Pošiljanje podatkov o uporabi in diagnostičnih podatkov«, se poročila o zrušitvah morda tudi naložijo v Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Še naprej omogočaj gostitelju <ph name="HOST" /> dostop do mikrofona</translation>
 <translation id="3654045516529121250">Branje nastavitev za funkcije za ljudi s posebnimi potrebami</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ima trajni dostop do ene datoteke.}one{Ima trajni dostop do # datoteke.}two{Ima trajni dostop do # datotek.}few{Ima trajni dostop do # datotek.}other{Ima trajni dostop do # datotek.}}</translation>
@@ -3368,6 +3356,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4209092469652827314">Velika</translation>
 <translation id="4209251085232852247">Izklopljeno</translation>
 <translation id="4210048056321123003">Prenos navideznega računalnika</translation>
+<translation id="4210380525132844778">Razlog: Pravilo <ph name="RULE" /> je bilo najdeno na seznamu »<ph name="LIST_NAME" />«.</translation>
 <translation id="421182450098841253">&amp;Pokaži vrstico z zaznamki</translation>
 <translation id="4211851069413100178">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To <ph name="BEGIN_LINK1" />nastavitev<ph name="END_LINK1" /> je uveljavil lastnik naprave. Lastnik bo morda izbral, da se za to napravo pošiljajo diagnostični podatki in podatki o uporabi Googlu. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu za Google. <ph name="BEGIN_LINK2" />Več o tem<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Prenehaj uporabljati z aplikacijami za Android</translation>
@@ -4063,7 +4052,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4900652253009739885">Edinega stikala, dodeljenega dejanju »Izberi«, ni mogoče odstraniti. Pritisnite poljubno tipko, če želite narediti to: <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravilnik, prenesen iz strežnika, ni veljaven: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Pomagajte izboljšati funkcije Chroma in sistema Chrome OS ter njuno delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu. Nekateri združeni podatki bodo prav tako v pomoč aplikacijam za Android in Googlovim partnerjem. Če ste za otrokov račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo podatki otrokove naprave Android morda shranjeni v njegovem računu Google.</translation>
 <translation id="4906490889887219338">Nastavitev ali upravljanje omrežnih datotečnih sredstev v skupni rabi. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Izberite, kdaj lahko ta razširitev bere in spreminja podatke spletnega mesta</translation>
 <translation id="4907161631261076876">Datoteka ni pogosto prenesena in je lahko nevarna.</translation>
@@ -5197,6 +5185,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6063284707309177505">Ustvari kodo QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Opomba:<ph name="END_BOLD" /> S podobnim glasom ali posnetkom bi bilo morda mogoče dostopati do osebnih rezultatov otroka <ph name="SUPERVISED_USER_NAME" />. Zaradi varčevanja z baterijo lahko v nastavitvah Pomočnika otroka <ph name="SUPERVISED_USER_NAME" /> izberete, da je sprožilna besedna zveza »Hey Google« vklopljena samo, ko je ta naprava priključena na vir napajanja.</translation>
 <translation id="6064217302520318294">Zaklepanje zaslona</translation>
+<translation id="6065145031947216733">Želite ločiti brskanje?</translation>
 <translation id="6065289257230303064">Atributi imenika subjekta potrdila</translation>
 <translation id="6066794465984119824">Zgoščena vrednost slike ni nastavljena.</translation>
 <translation id="6069464830445383022">Z računom Google se prijavite v Chromebook</translation>
@@ -5275,6 +5264,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6129953537138746214">Presledek</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6130887916931372608">Tipka tipkovnice</translation>
+<translation id="6135823405800500595">Poskrbite, da je telefon v bližini, odklenjen in ima vklopljeni povezavi Bluetooth in Wi-Fi.</translation>
 <translation id="6136114942382973861">Zapri vrstico za prenose</translation>
 <translation id="6136287496450963112">Vaš varnostni ključ ni zaščiten s kodo PIN. Če želite upravljati prstne odtise, naprej ustvarite kodo PIN.</translation>
 <translation id="6138680304137685902">Podpis X9.62 ECDSA z algoritmom SHA-384</translation>
@@ -5520,10 +5510,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Neimenovana skupina – 1 zavihek}one{Neimenovana skupina – # zavihek}two{Neimenovana skupina – # zavihka}few{Neimenovana skupina – # zavihki}other{Neimenovana skupina – # zavihkov}}</translation>
 <translation id="6385149369087767061">Vzpostavite internetno povezavo in poskusite znova</translation>
 <translation id="6385543213911723544">Spletna mesta lahko shranjujejo in berejo podatke piškotkov</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Če napravam s sistemom Chrome OS dovolite pošiljanje samodejnih poročil, bomo potrebne popravke in izboljšave sistema Chrome OS lažje razvrstili po pomembnosti. Ta poročila lahko med drugim vključujejo podatke o tem, katere funkcije uporabljate in koliko pomnilnika običajno uporabljate.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave Chrome. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Izklop te funkcije ne vpliva na zmožnost naprave, da pošilja podatke, potrebne za ključne storitve, kot so posodobitve in varnost sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Če lastnik naprave vklopi »Pošiljanje podatkov o uporabi in diagnostičnih podatkov«, se poročila o zrušitvah morda tudi naložijo v Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Opozorilo: Omogočeno je podrobno zapisovanje v dnevnik. Dnevniki lahko vključujejo URL-je ali druge občutljive podatke. Preglejte te podatke in se prepričajte, ali je pošiljanje za vas sprejemljivo.</translation>
 <translation id="6387674443318562538">Razdeli navpično</translation>
 <translation id="6388429472088318283">Iskanje jezikov</translation>
@@ -5644,7 +5630,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6504601948739128893">Ni dovoljena uporaba pisave, nameščene v napravi</translation>
 <translation id="6504611359718185067">Povežite se v internet, če želite dodati tiskalnik</translation>
 <translation id="6506374932220792071">Podpis X9.62 ECDSA z algoritmom SHA-256</translation>
-<translation id="6507936476364432879">Pomagajte izboljšati funkcije Chroma in sistema Chrome OS ter njuno delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="6508248480704296122">Sorodno z <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licenca za predstavnost</translation>
@@ -6975,7 +6960,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7807711621188256451">Vedno dovoli gostitelju <ph name="HOST" /> dostop do kamere</translation>
 <translation id="7810202088502699111">Pojavna okna na tej strani so blokirana.</translation>
 <translation id="781167124805380294">Predvajanje <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Pomagajte izboljšati funkcije Chroma in sistema Chrome OS ter njuno delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu. Nekateri združeni podatki bodo prav tako v pomoč aplikacijam za Android in Googlovim partnerjem. Če ste za račun Google vklopili beleženje dejavnosti v spletu in aplikacijah, bodo podatki naprave Android morda shranjeni v računu Google.</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>
 <translation id="7815680994978050279">Nevaren prenos je bil blokiran</translation>
 <translation id="7817361223956157679">Zaslonska tipkovnica še ne deluje v aplikacijah za Linux</translation>
@@ -7114,6 +7098,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7947962633355574091">Kopiraj naslov videoposnetka</translation>
 <translation id="7947964080535614577">Spletna mesta običajno prikazujejo oglase zato, da vam lahko zagotovijo vsebino ali storitve brez stroškov. Vseeno pa so nekatera spletna mesta znana po tem, da prikazujejo vsiljive ali zavajajoče oglase.</translation>
 <translation id="7948407723851303488">Vse strani domene <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Razlog: LBS podpira samo URL-je s protokoli http://, https:// in file://.</translation>
 <translation id="7951265006188088697">Če želite dodati ali upravljati plačilna sredstva za Google Pay, obiščite <ph name="BEGIN_LINK" />račun za Google<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Izklopi navidezno kartico</translation>
 <translation id="7952708427581814389">Spletna mesta lahko zahtevajo ogled besedila in slik v odložišču</translation>
@@ -7658,6 +7643,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8480869669560681089">Neznana naprava ponudnika <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potrditev dovoljenja za USB</translation>
 <translation id="8481980314595922412">Funkcije preizkusa so omogočene</translation>
+<translation id="8486666913807228950">Razlog: Obrnjeno pravilo <ph name="REVERT_RULE" /> je bilo najdeno na seznamu »Vsiljeno odprtje v«.</translation>
 <translation id="848666842773560761">Aplikacija poskuša dostopati do kamere. Če želite omogočiti dostop, izklopite zasebnost kamere.</translation>
 <translation id="8487678622945914333">Povečaj</translation>
 <translation id="8489156414266187072">Osebni predlogi so prikazani samo v vašem računu</translation>

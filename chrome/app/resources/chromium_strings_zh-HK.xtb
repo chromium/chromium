@@ -106,6 +106,7 @@
 <translation id="3533435340678213462">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。您亦可移除不希望 Chromium 列在興趣喜好清單中的項目。</translation>
 <translation id="3567254597502212821">您的瀏覽記錄，亦即您在此裝置上使用 Chromium 瀏覽過的網站記錄。</translation>
 <translation id="3575459661164320785">在您的電腦上發現有害軟件。Chromium 可移除該軟件、復原設定及停用擴充程式，讓瀏覽器恢復正常運作。</translation>
+<translation id="3593091352817399191">已登入另一個帳戶。Chromium 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
 <translation id="3639635944603682591">此使用者的瀏覽資料將從裝置上刪除。如要復原資料，請以「<ph name="USER_EMAIL" />」身分登入 Chromium。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。您的無痕式視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>

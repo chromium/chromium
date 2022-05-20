@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Besök <ph name="BEGIN_LINK" />hjälpcentret<ph name="END_LINK" /> om du vill ha mer hjälp.</translation>
 <translation id="4793756956024303490">Komprimeringsalgoritm</translation>
 <translation id="4794140124556169553">Systemet kan bli långsammare när du kör ett CPU-test</translation>
+<translation id="4804818685124855865">Koppla från</translation>
 <translation id="4808449224298348341">Utskriftsjobbet <ph name="DOCUMENT_TITLE" /> har avbrutits</translation>
 <translation id="4809927044794281115">Ljust tema</translation>
 <translation id="4813136279048157860">Mina bilder</translation>
@@ -530,6 +531,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5931523347251946569">Filen hittades inte</translation>
 <translation id="5939518447894949180">Återställ</translation>
 <translation id="594552776027197022">Generera slumpmässigt nyckelpar</translation>
+<translation id="5947494881799873997">Återgå</translation>
 <translation id="5951259522948394825">Bekräfta att allt sitter på rätt ställe och visa diagnostikrapporten</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardbakgrund</translation>
@@ -813,6 +815,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="871560550817059752">Misslyckades – slut på bläck</translation>
 <translation id="8723108084122415655">Tröskelvärdet för latens överskreds för nätverket som inte är standard</translation>
+<translation id="8725066075913043281">Försök igen</translation>
 <translation id="8726019395068607495">Har stoppats – luckan är öppen</translation>
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8747900814994928677">Bekräfta ändring</translation>

@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Đang hiển thị các mật khẩu lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
 <translation id="1026655690966755180">Thêm cổng</translation>
 <translation id="1026822031284433028">Tải hình ảnh</translation>
+<translation id="1028700151766901954">Lý do: Chế độ hỗ trợ trình duyệt cũ (LBS) ở trong <ph name="DEFAULT_OPEN_BROWSER" /> theo mặc định.</translation>
 <translation id="1029317248976101138">Thu phóng</translation>
 <translation id="1031362278801463162">Đang tải chế độ xem trước</translation>
 <translation id="1032605640136438169">Vui lòng xem các điều khoản mới này</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Mã hóa Dữ liệu</translation>
 <translation id="1072700771426194907">Đã phát hiện thiết bị USB</translation>
 <translation id="107278043869924952">Sử dụng mã PIN cùng với mật khẩu</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị Chrome OS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong Chrome OS. Các báo cáo này có thể bao gồm những nội dung như danh sách tính năng được sử dụng, mức bộ nhớ thường được sử dụng cũng như dữ liệu sử dụng và chẩn đoán của ứng dụng Android. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như các nhà phát triển Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome OS của con bạn. Nếu là quản trị viên miền, thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Việc tắt tính năng này sẽ không ảnh hưởng đến việc thiết bị gửi thông tin cần thiết cho các dịch vụ thiết yếu như bảo mật và cập nhật hệ thống.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Nếu bạn bật chế độ Hoạt động trên web và ứng dụng cho Tài khoản Google của con bạn, thì dữ liệu của con bạn có thể sẽ được lưu vào Tài khoản Google của trẻ. Tìm hiểu thêm về các chế độ cài đặt này và cách điều chỉnh tại families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Nếu chủ sở hữu thiết bị bật chế độ "Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng", thì có thể báo cáo sự cố cũng sẽ được tải lên Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Di chuyển giữa các trang bằng con trỏ văn bản</translation>
 <translation id="1076382954055048850">Xem các phiên truyền khác</translation>
 <translation id="1076698951459398590">Bật chủ đề</translation>
@@ -1444,10 +1440,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2328561734797404498">Vui lòng khởi động lại thiết bị để sử dụng <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Khi bạn ở Chế độ ẩn danh, các trang web chỉ có thể sử dụng cookie để xem hoạt động duyệt web của bạn trên chính trang web của họ. Cookie sẽ bị xoá khi Phiên truy cập ẩn danh kết thúc.</translation>
 <translation id="2329597144923131178">Đăng nhập để sử dụng dấu trang, lịch sử hoạt động, mật khẩu và các tùy chọn cài đặt khác trên tất cả thiết bị của bạn.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị Chrome OS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong Chrome OS. Các báo cáo này có thể bao gồm những nội dung như các tính năng bạn sử dụng, mức bộ nhớ bạn thường sử dụng, lỗi, dữ liệu sử dụng và chẩn đoán của ứng dụng Android. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như các nhà phát triển Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong chế độ cài đặt trên thiết bị ChromeOS. Nếu là quản trị viên miền thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Nếu bạn bật chế độ Hoạt động trên web và ứng dụng cho Tài khoản Google, thì dữ liệu Android có thể sẽ được lưu vào Tài khoản Google của bạn. Bạn có thể xem, xoá dữ liệu và thay đổi chế độ cài đặt cho tài khoản tại account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Nếu chủ sở hữu thiết bị bật chế độ "Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng", thì có thể báo cáo sự cố cũng sẽ được tải lên Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Xem trong cửa hàng</translation>
 <translation id="2332192922827071008">Mở Tùy chọn</translation>
 <translation id="2332515770639153015">Tính năng Duyệt web an toàn có tăng cường bảo vệ đang bật</translation>
@@ -2786,10 +2778,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3651488188562686558">Ngắt kết nối khỏi Wi-Fi</translation>
 <translation id="3652817283076144888">Đang khởi chạy</translation>
 <translation id="3653160965917900914">Chia sẻ tệp trong mạng</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị Chrome OS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong Chrome OS. Các báo cáo này có thể bao gồm những nội dung như danh sách tính năng được sử dụng và mức bộ nhớ thường được sử dụng<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome OS của con bạn. Nếu là quản trị viên miền, thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Việc tắt tính năng này sẽ không ảnh hưởng đến việc thiết bị gửi thông tin cần thiết cho các dịch vụ thiết yếu như bảo mật và cập nhật hệ thống.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Nếu chủ sở hữu thiết bị bật chế độ "Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng", thì có thể báo cáo sự cố cũng sẽ được tải lên Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Tiếp tục cho phép <ph name="HOST" /> truy cập micrô của bạn</translation>
 <translation id="3654045516529121250">Đọc cài đặt trợ năng của bạn</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ứng dụng có quyền truy cập vĩnh viễn vào một tệp.}other{Ứng dụng có quyền truy cập vĩnh viễn vào # tệp.}}</translation>
@@ -3365,6 +3353,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4209092469652827314">Lớn</translation>
 <translation id="4209251085232852247">Đang tắt</translation>
 <translation id="4210048056321123003">Đang tải máy ảo xuống</translation>
+<translation id="4210380525132844778">Lý do: Tìm thấy <ph name="RULE" /> trong danh sách "<ph name="LIST_NAME" />".</translation>
 <translation id="421182450098841253">&amp;Hiển thị thanh dấu trang</translation>
 <translation id="4211851069413100178">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Giúp cải thiện trải nghiệm Android của bạn bằng cách tự động gửi dữ liệu chẩn đoán cũng như dữ liệu về mức sử dụng ứng dụng và thiết bị cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Mục <ph name="BEGIN_LINK1" />cài đặt<ph name="END_LINK1" /> này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng của thiết bị này cho Google. Nếu bạn bật chế độ cài đặt bổ sung Hoạt động trên web và ứng dụng thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. <ph name="BEGIN_LINK2" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Không dùng trong ứng dụng Android nữa</translation>
@@ -4060,7 +4049,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4900652253009739885">Không thể xóa công tắc duy nhất đang được gán cho thao tác "Chọn". Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Chọn trạng thái thử nghiệm cho quá trình thử nghiệm <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Chính sách được tải xuống từ máy chủ không hợp lệ: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Giúp cải thiện hiệu suất và các tính năng của Chrome và Chrome OS bằng cách tự động gửi báo cáo sự cố cũng như dữ liệu sử dụng và chẩn đoán cho Google. Một số dữ liệu tổng hợp cũng sẽ giúp ích cho ứng dụng Android và đối tác của Google. Nếu bạn bật chế độ Hoạt động trên web và ứng dụng cho Tài khoản Google của con bạn, thì dữ liệu Android của con bạn có thể được lưu vào Tài khoản Google của trẻ.</translation>
 <translation id="4906490889887219338">Thiết lập hoặc quản lý tính năng chia sẻ tệp trong mạng. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Chọn thời điểm tiện ích này có thể đọc và thay đổi dữ liệu trang web của bạn</translation>
 <translation id="4907161631261076876">Tệp này thường không được tải xuống và có thể nguy hiểm.</translation>
@@ -5192,6 +5180,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6063284707309177505">Tạo mã QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của <ph name="SUPERVISED_USER_NAME" /> cũng có thể truy cập vào các kết quả cá nhân của con bạn. Để tiết kiệm pin, bạn có thể chọn chỉ bật tính năng "OK Google" khi thiết bị của <ph name="SUPERVISED_USER_NAME" /> được kết nối với nguồn điện trong phần cài đặt của Trợ lý.</translation>
 <translation id="6064217302520318294">Phương thức khóa màn hình</translation>
+<translation id="6065145031947216733">Tách biệt hoạt động duyệt web của bạn?</translation>
 <translation id="6065289257230303064">Các Thuộc tính Thư mục Đối tượng Chứng chỉ</translation>
 <translation id="6066794465984119824">Chưa đặt hàm băm hình ảnh</translation>
 <translation id="6069464830445383022">Tài khoản Google của bạn chính là tài khoản để đăng nhập vào Chromebook</translation>
@@ -5270,6 +5259,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6129953537138746214">Dấu cách</translation>
 <translation id="6130692320435119637">Thêm mạng Wi-Fi</translation>
 <translation id="6130887916931372608">Nút bàn phím</translation>
+<translation id="6135823405800500595">Hãy đảm bảo điện thoại của bạn đang ở gần, đã mở khoá và đã bật Bluetooth và Wi-Fi</translation>
 <translation id="6136114942382973861">Đóng thanh tệp đã tải xuống</translation>
 <translation id="6136287496450963112">Khóa bảo mật của bạn không được bảo vệ bằng mã PIN. Để quản lý vân tay số, trước tiên, hãy tạo một mã PIN.</translation>
 <translation id="6138680304137685902">Chữ ký X9.62 ECDSA với SHA-384</translation>
@@ -5515,10 +5505,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Nhóm chưa có tên – 1 thẻ}other{Nhóm chưa có tên – # thẻ}}</translation>
 <translation id="6385149369087767061">Hãy kết nối Internet rồi thử lại</translation>
 <translation id="6385543213911723544">Trang web có thể lưu và đọc dữ liệu cookie</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Việc bạn cho phép các thiết bị Chrome OS gửi báo cáo tự động sẽ giúp chúng tôi sắp xếp thứ tự ưu tiên cho những vấn đề cần khắc phục và cải thiện trong Chrome OS. Các báo cáo này có thể bao gồm danh sách tính năng bạn sử dụng và mức bộ nhớ bạn thường sử dụng.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome. Nếu là quản trị viên miền thì bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Việc tắt tính năng này sẽ không ảnh hưởng đến việc thiết bị gửi thông tin cần thiết cho các dịch vụ thiết yếu như bảo mật và cập nhật hệ thống.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Nếu chủ sở hữu thiết bị bật chế độ "Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng", thì có thể báo cáo sự cố cũng sẽ được tải lên Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Cảnh báo – Tính năng ghi nhật ký chi tiết đang bật; những nhật ký dưới đây có thể bao gồm các URL hoặc thông tin nhạy cảm khác. Vui lòng xem lại và đảm bảo rằng bạn cảm thấy thoải mái khi gửi thông tin này.</translation>
 <translation id="6387674443318562538">Chia dọc</translation>
 <translation id="6388429472088318283">Ngôn ngữ tìm kiếm</translation>
@@ -5639,7 +5625,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6504601948739128893">Không cho phép sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
 <translation id="6504611359718185067">Kết nối với Internet để thêm máy in</translation>
 <translation id="6506374932220792071">Chữ ký X9.62 ECDSA với SHA-256</translation>
-<translation id="6507936476364432879">Giúp cải thiện hiệu suất và các tính năng của Chrome và Chrome OS bằng cách tự động gửi báo cáo sự cố cũng như dữ liệu sử dụng và chẩn đoán cho Google.</translation>
 <translation id="6508248480704296122">Liên quan tới <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Ứng dụng: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Giấy phép phương tiện</translation>
@@ -6964,7 +6949,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="781167124805380294">Truyền <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Giúp cải thiện hiệu suất và các tính năng của Chrome và Chrome OS bằng cách tự động gửi báo cáo sự cố cũng như dữ liệu sử dụng và chẩn đoán cho Google. Một số dữ liệu tổng hợp cũng sẽ giúp ích cho ứng dụng Android và đối tác của Google. Nếu bạn bật chế độ Hoạt động trên web và ứng dụng cho Tài khoản Google, thì dữ liệu Android có thể sẽ được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="7814458197256864873">Sao &amp;chép</translation>
 <translation id="7815680994978050279">Tải xuống nguy hiểm đã chặn</translation>
 <translation id="7817361223956157679">Bàn phím ảo chưa hoạt động trên các ứng dụng Linux</translation>
@@ -7103,6 +7087,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7947962633355574091">S&amp;ao chép địa chỉ video</translation>
 <translation id="7947964080535614577">Các trang web thường hiện quảng cáo để có thể cung cấp miễn phí nội dung hoặc dịch vụ. Tuy nhiên, một số trang web được xác định là đưa ra quảng cáo xâm nhập hoặc quảng cáo gây hiểu lầm.</translation>
 <translation id="7948407723851303488">Tất cả trang của <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Lý do: Chế độ hỗ trợ trình duyệt cũ (LBS) chỉ hỗ trợ http://, https:// và file:// URL.</translation>
 <translation id="7951265006188088697">Để thêm hoặc quản lý các phương thức thanh toán trên Google Pay, hãy truy cập vào <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
 <translation id="795130320946928025">Tắt thẻ ảo</translation>
 <translation id="7952708427581814389">Các trang web có thể yêu cầu xem văn bản và hình ảnh trên bảng nhớ tạm</translation>
@@ -7647,6 +7632,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8480869669560681089">Thiết bị không xác định từ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Xác nhận quyền đối với USB</translation>
 <translation id="8481980314595922412">Các tính năng dùng thử đang bật</translation>
+<translation id="8486666913807228950">Lý do: Tìm thấy quy tắc nghịch đảo <ph name="REVERT_RULE" /> trong danh sách "Buộc mở trong".</translation>
 <translation id="848666842773560761">Một ứng dụng đang cố truy cập vào máy ảnh. Hãy tắt nút quyền riêng tư khi dùng máy ảnh để cho phép ứng dụng đó truy cập.</translation>
 <translation id="8487678622945914333">Phóng To</translation>
 <translation id="8489156414266187072">Nội dung đề xuất cá nhân chỉ hiển thị trên tài khoản của bạn</translation>

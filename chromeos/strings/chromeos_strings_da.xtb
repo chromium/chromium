@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Få yderligere hjælp ved at gå til <ph name="BEGIN_LINK" />Hjælp<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritme til komprimering</translation>
 <translation id="4794140124556169553">Systemets ydeevne kan blive påvirket under kørsel af en CPU-test</translation>
+<translation id="4804818685124855865">Afbryd</translation>
 <translation id="4808449224298348341">Udskriftsjobbet <ph name="DOCUMENT_TITLE" /> blev annulleret</translation>
 <translation id="4809927044794281115">Lyst tema</translation>
 <translation id="4813136279048157860">Mine billeder</translation>
@@ -529,6 +530,7 @@
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
 <translation id="5939518447894949180">Nulstil</translation>
 <translation id="594552776027197022">Generér vilkårligt nøglepar</translation>
+<translation id="5947494881799873997">Fortryd</translation>
 <translation id="5951259522948394825">Bekræft, at alt sidder, som det skal, og se diagnosticeringsrapporten</translation>
 <translation id="5972388717451707488">Opdater maskine</translation>
 <translation id="5984145644188835034">Standardbaggrund</translation>
@@ -812,6 +814,7 @@
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
 <translation id="8723108084122415655">Det netværk, der ikke er angivet som standardnetværket, overstiger grænsen for forsinkelse</translation>
+<translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8726019395068607495">Stoppet – Åben låge</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8747900814994928677">Bekræft ændring</translation>

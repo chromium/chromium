@@ -65,6 +65,7 @@
 <translation id="1275285675049378717">A következő töltése: <ph name="POWER_SOURCE" />…</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Telefon helymeghatározása</translation>
+<translation id="1287002645302686982">Már van <ph name="DESK_TEMPLATE_NAME" /> nevű mentett asztal</translation>
 <translation id="1289185460362160437">Térjen vissza ekkor: <ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> áthelyezése a következő mappába: <ph name="FOLDER_NAME" />.</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610">Nyomja le a Ctrl + W billentyűkombinációt a következő asztallal való egyesítéshez: <ph name="DESK_NAME" />. Az asztal és az ablakok bezárásához nyomja le a Ctrl + Shift + W billentyűkombinációt.</translation>
 <translation id="2595239820337756193">5000 mérföld</translation>
 <translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
+<translation id="2598725286293895280">Nem támogatott alkalmazások vannak az asztalon</translation>
 <translation id="2607678425161541573">Online bejelentkezés szükséges</translation>
 <translation id="2620016719323068571">Keresés a következők között: <ph name="CATEGORY" />, fájlok, alkalmazások és egyebek…</translation>
 <translation id="2620436844016719705">Rendszer</translation>
@@ -645,6 +647,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4734965478015604180">Vízszintes</translation>
 <translation id="4735498845456076464">A(z) <ph name="LAUNCHER_KEY_NAME" /> + szám billentyűparancs módosult. A funkcióbillentyűk használatához nyomja le a következő billentyűparancsot: <ph name="LAUNCHER_KEY_NAME" /> + a kívánt billentyű a felső soron.</translation>
 <translation id="473775607612524610">Frissítés</translation>
+<translation id="4740516757091333363">Törli a mentett asztalt?</translation>
 <translation id="4752784485658729358">Csak hat mentett asztal engedélyezett. Távolítsa el valamelyiket, ha új asztalt szeretne menteni.</translation>
 <translation id="4759238208242260848">Letöltések</translation>
 <translation id="4774338217796918551">Térjen vissza holnap, ekkor: <ph name="COME_BACK_TIME" />.</translation>
@@ -742,6 +745,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5352250171825660495">Sötét téma bekapcsolva.</translation>
 <translation id="5356963482258194581">Válthat a sötét és a világos téma között. Kattintson jobb egérgombbal az asztalon, majd válassza a Háttérkép és stílus elemet.</translation>
 <translation id="5379115545237091094">Túl sok próbálkozás</translation>
+<translation id="5391307769715781764">Lecseréli a mentett asztalt?</translation>
 <translation id="5393156353051693207">Az alkalmazások átrendezéséhez tartsa lenyomva ujját bárhol</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> az alatta lévő <ph name="IN_PLACE_APP" /> alkalmazáson; mappa létrehozásához engedje el.</translation>
 <translation id="5397578532367286026">A felhasználó használati adatait és előzményeit a kezelő (<ph name="MANAGER_EMAIL" />) a chrome.com webhelyen tekintheti meg.</translation>
@@ -975,6 +979,7 @@ Frissen telepítve</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6801878137098616817">Nemrégiben szerkesztette</translation>
 <translation id="6803622936009808957">A kijelzők tükrözése sikertelen, mivel nem található támogatott felbontás. Ehelyett kiterjesztett asztal módba váltott a rendszer.</translation>
+<translation id="6812232930908427253">Nem lehet menteni az asztalt. Túl sok ablak vagy lap van megnyitva.</translation>
 <translation id="6818242057446442178">Visszalépés szavanként</translation>
 <translation id="6819327813400217281">Kamera a bal alsó sarokhoz igazítva</translation>
 <translation id="6820676911989879663">Tartson egy kis szünetet!</translation>

@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ഫോൺ കണ്ടെത്തൽ</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> എന്ന പേരിൽ സംരക്ഷിച്ച ഡെസ്‌ക് നിലവിലുണ്ട്</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" />-ന്‌ തിരികെ വരിക.</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1290982764014248209"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="DRAGGED_APP" /> നീക്കുക.</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> എന്നതുമായി സംയോജിപ്പിക്കാൻ Ctrl + W അമർത്തുക. ഡെസ്ക്കും വിൻഡോകളും അടയ്ക്കാൻ Ctrl + Shift + W അമർത്തുക.</translation>
 <translation id="2595239820337756193">5K എത്ര മൈലാണ്</translation>
 <translation id="2596078834055697711">വിൻഡോ സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
+<translation id="2598725286293895280">ഡെസ്‌കിൽ പിന്തുണയില്ലാത്ത ആപ്പുകളുണ്ട്</translation>
 <translation id="2607678425161541573">ഓൺലൈനായി സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="2620016719323068571">നിങ്ങളുടെ <ph name="CATEGORY" />, ഫയലുകൾ, ആപ്പുകൾ എന്നിവയും മറ്റും തിരയൂ...</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">സമാന്തരം</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + നമ്പർ' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. ഫംഗ്ഷന്‍ കീകൾ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> + ഏറ്റവും മുകളിലെ വരിയിലുള്ള കീ അമർത്തുക.</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="4740516757091333363">സംരക്ഷിച്ച ഡെസ്‌ക് ഇല്ലാതാക്കണോ?</translation>
 <translation id="4752784485658729358">സംരക്ഷിച്ച 6 ഡെസ്ക്കുകൾ മാത്രമേ അനുവദിക്കൂ. പുതിയൊരെണ്ണം സംരക്ഷിക്കാൻ ഒരു ഡെസ്‌ക് നീക്കം ചെയ്യുക.</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
 <translation id="4774338217796918551">നാളെ <ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
@@ -741,6 +744,7 @@
 <translation id="5352250171825660495">ഡാർക്ക് തീം ഓണാണ്</translation>
 <translation id="5356963482258194581">ഡാർക്ക്, ലൈറ്റ് തീമുകൾ തമ്മിൽ മാറുക. ഡെസ്‌ക്ടോപ്പിൽ വലത് ക്ലിക്ക് ചെയ്ത ശേഷം വാൾപേപ്പറും സ്റ്റൈലും തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5379115545237091094">നിരവധി ശ്രമങ്ങൾ</translation>
+<translation id="5391307769715781764">സംരക്ഷിച്ച ഡെസ്‌കിന് പകരം മറ്റൊന്ന് നൽകണോ?</translation>
 <translation id="5393156353051693207">നിങ്ങളുടെ ആപ്പുകൾ പുനഃക്രമീകരിക്കാൻ എവിടെയെങ്കിലും സ്പർശിച്ച് പിടിക്കുക</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> എന്നതിന് മുകളിലാണ് <ph name="DRAGGED_APP_NAME" />, ഫോൾഡർ സൃഷ്‌ടിക്കാൻ റിലീസ് ചെയ്യുക.</translation>
 <translation id="5397578532367286026">ഈ ഉപയോക്താവിന്റെ ഉപയോഗവും ചരിത്രവും chrome.com-ൽ മാനേജർക്ക് (<ph name="MANAGER_EMAIL" />) അവലോകനം ചെയ്യാനാകും.</translation>
@@ -974,6 +978,7 @@
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
 <translation id="6801878137098616817">അടുത്തിടെ എഡിറ്റ് ചെയ്തത്</translation>
 <translation id="6803622936009808957">പിന്തുണയ്‌ക്കുന്ന മിഴിവുകൾ കണ്ടെത്താത്തതിനാൽ പ്രദർശനങ്ങൾ പ്രതിഫലിപ്പിക്കാനായില്ല. പകരം വിപുലീകൃത ഡെസ്‌ക്‌ടോപ്പ് നൽകി.</translation>
+<translation id="6812232930908427253">ഡെസ്‌ക് സംരക്ഷിക്കാനായില്ല. വിൻഡോകളും ടാബുകളും വളരെ കൂടുതലാണ്.</translation>
 <translation id="6818242057446442178">ഒരു വാക്ക് പിന്നിലേക്ക് പോവുക</translation>
 <translation id="6819327813400217281">താഴെ ഇടത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു</translation>
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>

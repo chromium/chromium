@@ -193,6 +193,7 @@
 <translation id="2079504693865562705">隐藏任务栏中的应用</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安！</translation>
+<translation id="2088116547584365419">游戏</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
 <translation id="2108303511227308752">键盘快捷键“Alt + 退格键”已更改。若要使用 Delete 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 退格键。</translation>
@@ -766,6 +767,7 @@
 <translation id="5571066253365925590">蓝牙已启用</translation>
 <translation id="557563299383177668">下一个段落</translation>
 <translation id="5577281275355252094">请确保在手机上启用蓝牙以便使用 Phone Hub</translation>
+<translation id="5580000943347215299">库</translation>
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按 Ctrl + Alt + Z 即可停用语音反馈。</translation>

@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Encriptació de dades</translation>
 <translation id="1072700771426194907">S'ha detectat un dispositiu USB</translation>
 <translation id="107278043869924952">Utilitza un PIN a més d'una contrasenya</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius Chrome OS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a Chrome OS. Aquests informes poden incloure dades com ara quines funcions s'han fet servir, quanta memòria s'utilitzava normalment i dades de diagnòstic i d'ús de les aplicacions d'Android. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome OS del teu fill o filla. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si l'opció de configuració Activitat al web i en aplicacions està activada per al Compte de Google del teu fill o filla, és possible que les seves dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots modificar-les, ves a families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietari del dispositiu activa l'opció Envia dades d'ús i de diagnòstic, és possible que també es pengin informes d'error a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navega per les pàgines amb un cursor de text</translation>
 <translation id="1076382954055048850">Mostra altres sessions d'emissió</translation>
 <translation id="1076698951459398590">Activa el tema</translation>
@@ -1430,10 +1425,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2328561734797404498">Reinicia el dispositiu per utilitzar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quan estàs en mode d'incògnit, els llocs web només poden fer servir les galetes per veure la teva activitat de navegació en aquests mateixos llocs web. Les galetes se suprimeixen en finalitzar la sessió d'incògnit.</translation>
 <translation id="2329597144923131178">Inicieu la sessió per tenir adreces d'interès, historial, contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius Chrome OS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a Chrome OS. Aquests informes poden incloure dades com ara quines funcions fas servir, quanta memòria utilitzes normalment, errors i dades de diagnòstic i d'ús de les aplicacions d'Android. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome OS. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Si l'opció de configuració Activitat al web i en aplicacions està activada per al teu Compte de Google, és possible que les teves dades d'Android es desin al teu Compte de Google. Pots veure les teves dades, suprimir-les i modificar la configuració del teu compte a account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietari del dispositiu activa l'opció Envia dades d'ús i de diagnòstic, és possible que també es pengin informes d'error a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Mostra a la botiga</translation>
 <translation id="2332192922827071008">Obre les preferències</translation>
 <translation id="2332515770639153015">La funció Navegació segura millorada està activada</translation>
@@ -2772,10 +2763,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3651488188562686558">Desconnecta de la Wi-Fi</translation>
 <translation id="3652817283076144888">S'està inicialitzant</translation>
 <translation id="3653160965917900914">Fitxers compartits de la xarxa</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius Chrome OS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a Chrome OS. Aquests informes poden incloure dades com ara quines funcions s'han fet servir i quanta memòria s'utilitzava normalment.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome OS del teu fill o filla. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietari del dispositiu activa l'opció Envia dades d'ús i de diagnòstic, és possible que també es pengin informes d'error a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Continua permetent que <ph name="HOST" /> accedeixi al micròfon</translation>
 <translation id="3654045516529121250">Consultar la configuració d'accessibilitat</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Té accés permanent a un fitxer.}other{Té accés permanent a # fitxers.}}</translation>
@@ -3978,6 +3965,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4842976633412754305">Aquesta pàgina està provant de carregar scripts de fonts no autenticades.</translation>
 <translation id="4844333629810439236">Altres teclats</translation>
 <translation id="4844633725025837809">Per augmentar la seguretat, encripta les contrasenyes al dispositiu abans de desar-les al gestor de contrasenyes de Google</translation>
+<translation id="4846628405149428620">Selecciona on pot desar els canvis aquest lloc web</translation>
 <translation id="4846680374085650406">Esteu seguint la recomanació de l'administració per a aquesta configuració.</translation>
 <translation id="4847902821209177679">S'ha seleccionat <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, prem Retorn per seleccionar els àlbums de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">"Ok Google" de l'Assistent de Google</translation>
@@ -4045,7 +4033,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4900652253009739885">No es pot suprimir l'únic interruptor assignat a Selecciona. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Selecciona l'estat de l'experiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política que s'ha baixat del servidor no és vàlida: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Ajuda a millorar les funcions i el rendiment de Chrome i Chrome OS enviant automàticament dades de diagnòstic i d'ús a Google. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google. Si l'opció de configuració Activitat al web i en aplicacions està activada per al Compte de Google del teu fill o filla, és possible que les seves dades d'Android es desin al seu Compte de Google.</translation>
 <translation id="4906490889887219338">Configura o gestiona els fitxers compartits de la xarxa. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Tria quan aquesta extensió pot llegir i canviar les teves dades de llocs web</translation>
 <translation id="4907161631261076876">Aquest fitxer no se sol baixar i podria ser perillós.</translation>
@@ -5501,10 +5488,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grup sense nom (1 pestanya)}other{Grup sense nom (# pestanyes)}}</translation>
 <translation id="6385149369087767061">Connecta't a Internet i torna-ho a provar</translation>
 <translation id="6385543213911723544">Els llocs poden desar i llegir dades de galetes</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius Chrome OS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a Chrome OS. Aquests informes poden incloure dades com ara quines funcions fas servir i quanta memòria utilitzes normalment.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietari del dispositiu activa l'opció Envia dades d'ús i de diagnòstic, és possible que també es pengin informes d'error a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Advertiment: el registre detallat està activat; els informes que s'indiquen a continuació poden incloure URL o una altra informació sensible. Consulta aquesta informació i mira si no et fa res que s'enviïn aquestes dades.</translation>
 <translation id="6387674443318562538">Divisió vertical</translation>
 <translation id="6388429472088318283">Cerca idiomes</translation>
@@ -5625,7 +5608,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6504601948739128893">Sense permís per utilitzar els tipus de lletra instal·lats al teu dispositiu</translation>
 <translation id="6504611359718185067">Per poder afegir una impressora, connecta't a Internet</translation>
 <translation id="6506374932220792071">Signatura d'ECDSA X9.62 amb SHA-256</translation>
-<translation id="6507936476364432879">Ajuda a millorar les funcions i el rendiment de Chrome i Chrome OS enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
 <translation id="6508248480704296122">Relacionada amb <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicació: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Llicència per a recursos multimèdia</translation>
@@ -6950,7 +6932,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
 <translation id="781167124805380294">Emet <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Ajuda a millorar les funcions i el rendiment de Chrome i Chrome OS enviant automàticament dades de diagnòstic i d'ús a Google. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google. Si l'opció de configuració Activitat al web i en aplicacions està activada per al teu Compte de Google, és possible que les teves dades d'Android es desin al teu Compte de Google.</translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7815680994978050279">S'ha bloquejat una baixada perillosa</translation>
 <translation id="7817361223956157679">El teclat en pantalla encara no funciona en aplicacions per a Linux</translation>

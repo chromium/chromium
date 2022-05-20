@@ -489,7 +489,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Manage windows</translation>
-<translation id="3624977496395967031">Click to open sort options</translation>
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -584,6 +583,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4227318652298512614">Follow any sites you want</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
+<translation id="4249955472157341256">Sort by Latest</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open-source licences</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chrome on this device.</translation>
@@ -898,7 +898,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5957442310066583693">To see your top sites, tap the Home button</translation>
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
-<translation id="5964805880140440652">To share this page to another device, turn on sync in Chrome settings</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5995726099713306770">Download page again?</translation>

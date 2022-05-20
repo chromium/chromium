@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3622349720008044802">ونڈوز کا نظم کریں</translation>
-<translation id="3624977496395967031">ترتیب دینے کے اختیارات کھولنے کے لیے کلک کریں</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> کے ساتھ اشتراک کیا جا رہا ہے</translation>
 <translation id="363596933471559332">اسٹور کردہ اسناد کا استعمال کر کے ویب سائٹس میں خود کار طور پر سائن ان کریں۔ خصوصیت آف ہونے پر، کسی ویب سائٹ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کو کہا جائے گا۔</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">ٹول بار کا شارٹ کٹ</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="4248098802131000011">ڈیٹا کی خلاف ورزیوں اور سیکیورٹی کے دیگر معاملات سے اپنا پاس ورڈ محفوظ رکھیں</translation>
+<translation id="4249955472157341256">تازہ ترین کے لحاظ سے ترتیب دیں</translation>
 <translation id="4250229828105606438">اسکرین شاٹ</translation>
 <translation id="4256782883801055595">اوپن سورس لائسنسز</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />کون سا ڈیٹا استعمال کیا جاتا ہے:<ph name="END_BOLD" /> آپ کی براؤزنگ کی سرگزشت، ان سائٹس کا ریکارڈ جو آپ اس آلے پر Chrome کا استعمال کر کے ملاحظہ کر چکے ہیں۔</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">اپنی سر فہرست سائٹس دیکھنے کے لیے، ہوم بٹن پر تھپتھپائیں</translation>
 <translation id="5958275228015807058">اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
 <translation id="5962718611393537961">سکیڑنے کیلئے تھپتھپائیں</translation>
-<translation id="5964805880140440652">‏اس صفحہ کا کسی دوسرے آلہ پر اشتراک کرنے کے لیے Chrome کی ترتیبات میں 'سِنک کرنا' آن کریں</translation>
 <translation id="5964869237734432770">تصویری تفصیلات کو روکیں</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
 <translation id="5995726099713306770">صفحے کو دوبارہ لوڈ کریں؟</translation>

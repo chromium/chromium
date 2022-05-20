@@ -72,11 +72,6 @@
 <translation id="1071917609930274619">Data Şifrələnməsi</translation>
 <translation id="1072700771426194907">USB cihazı aşkarlandı</translation>
 <translation id="107278043869924952">Parol ilə yanaşı PIN istifadə edin</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarına avtomatik hesabatlar göndərmək icazəsi vermək bizə ChromeOS'da nəyi düzəldəcıyimizi və təkmilləşdirəcəyimizi prioritetləşdirməyə kömək edir. Bu hesabatlara hansı funksiyaların istifadə edilməsi və adətən nə qədər yaddaş istifadə edildiyi və Android tətbiqi diaqnostika və istifadə datası kimi məlumatlar daxil ola bilər. Bəzi birləşdirilmiş data Google tətbiqlərinə və Android developerləri kimi partnyorlara da kömək edəcək.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt övladınızın ChromeOS cihaz ayarlarında bu hesabatlara icazə verməyə başlaya və ya dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Bu funksiyanı deaktiv etmək bu cihazın sistem güncəlləmələri və təhlükəsizlik kimi vacib xidmətlər üçün lazım olan məlumatları göndərmə imkanına təsir göstərmir.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Veb və Tətbiq Fəaliyyəti ayarı övladınızın Google Hesabı üçün aktiv edilərsə, övladınızın datası onun Google Hesabında yadda saxlanıla bilər. families.google.com ünvanında bu ayarlar və onları tənzimləmək haqqında ətraflı məlumat əldə edin.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Cihaz sahibi "İstifadə və diaqnostika datasını göndər" seçimini aktiv etsə, qəza hesabatları da Google'a yüklənə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Səhifələri mətn kursoru ilə vərəqləyin</translation>
 <translation id="1076382954055048850">Digər Yayım sessiyalarını göstərin</translation>
 <translation id="1076698951459398590">Temanı Aktiv Edin</translation>
@@ -1429,10 +1424,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2328561734797404498"><ph name="APP_NAME" /> tətbiqindən istifadə etmək üçün cihazı yenidən başladın.</translation>
 <translation id="2328636661627946415">Anonim rejimdə olduğunuz zaman saytlar öz saytlarında baxış fəaliyyətinizi görmək üçün yalnız kukilərdən istifadə edə bilər. Kukilər Anonim sessiyanın sonunda silinir.</translation>
 <translation id="2329597144923131178">Bütün cihazlarınızda əlfəcin, tarixçə, parol və digər ayarları əldə etmək üçün daxil olun.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarına avtomatik hesabatlar göndərmək icazəsi vermək bizə ChromeOS'da nəyi düzəldəcıyimizi və təkmilləşdirəcəyimizi prioritetləşdirməyə kömək edir. Bu hesabatlara hansı funksiyaların istifadə edilməsi və adətən nə qədər yaddaş istifadə edildiyi və Android tətbiqi diaqnostika və istifadə datası və xətalar kimi məlumatlar daxil ola bilər. Bəzi birləşdirilmiş data Google tətbiqlərinə və Android developerləri kimi partnyorlara da kömək edəcək.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt ChromeOS cihaz ayarlarınızda bu hesabatlara icazə verməyə başlaya və ya dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Veb və Tətbiq Fəaliyyəti ayarı Google Hesabınız üçün aktiv edilərsə, Android datanız Google Hesabınızda yadda saxlanıla bilər. account.google.com ünvanında datanıza baxa, onları silə və hesab ayarlarınızı dəyişə bilərsiniz.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Cihaz sahibi "İstifadə və diaqnostika datasını göndər" seçimini aktiv etsə, qəza hesabatları da Google'a yüklənə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Marketdə baxın</translation>
 <translation id="2332192922827071008">Tərcihləri Açın</translation>
 <translation id="2332515770639153015">Qabaqcıl Güvənli Baxış aktivdir</translation>
@@ -2770,10 +2761,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3651488188562686558">Wi-Fi şəbəkəsindən ayrıldı</translation>
 <translation id="3652817283076144888">Başladılır</translation>
 <translation id="3653160965917900914">Şəbəkə fayl paylaşımları</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarına avtomatik hesabatlar göndərmək icazəsi vermək bizə ChromeOS'da nəyi düzəldəcıyimizi və təkmilləşdirəcəyimizi prioritetləşdirməyə kömək edir. Bu hesabatlara hansı funksiyaların istifadə edilməsi və adətən nə qədər yaddaş istifadə edildiyi kimi məlumatlar daxil ola bilər.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt övladınızın ChromeOS cihaz ayarlarında bu hesabatlara icazə verməyə başlaya və ya dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Bu funksiyanı deaktiv etmək bu cihazın sistem güncəlləmələri və təhlükəsizlik kimi vacib xidmətlər üçün lazım olan məlumatları göndərmə imkanına təsir göstərmir.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Cihaz sahibi "İstifadə və diaqnostika datasını göndər" seçimini aktiv etsə, qəza hesabatları da Google'a yüklənə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" /> saytına mikrofonunuza girməyə icazə verin</translation>
 <translation id="3654045516529121250">Əlçatımlılıq ayarlarını oxuyun</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Bir fayla daimi girişi var.}other{# fayla daimi girişi var.}}</translation>
@@ -4043,7 +4030,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4900652253009739885">"Seçin" əməliyyatına təyin edilmiş yeganə keçiricini ləğv etmək mümkün deyil. <ph name="RESPONSE" /> istənilən düyməni basın.</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> təcrübəsi üçün təcrübə vəziyyətini seçin.</translation>
 <translation id="49027928311173603">Serverdən endirilmiş qaydalar güvənsizdir: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Diaqnostika və istifadə datasını avtomatik Google'a göndərməklə Chrome və ChromeOS funksiyalarını və performansını təkmilləşdirməyə yardım edin. Bəzi birləşdirilmiş data Android tətbiqləri və Google partnyorlarına da kömək edəcək. Veb və Tətbiq Fəaliyyəti ayarı övladınızın Google Hesabı üçün aktiv edilərsə, övladınızın Android datası onun Google Hesabında yadda saxlanıla bilər.</translation>
 <translation id="4906490889887219338">Şəbəkə fayl paylaşımlarını ayarlayın və ya idarə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Bu artırmanın sayt datanızı nə vaxt oxuya və dəyişə biləcəyini seçin</translation>
 <translation id="4907161631261076876">Bu tətbiq adətən endirilmir və təhlükəli ola bilər.</translation>
@@ -5498,10 +5484,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Adsız qrup - 1 tab}other{Adsız qrup - # tab}}</translation>
 <translation id="6385149369087767061">İnternetə qoşulun və yenidən cəhd edin</translation>
 <translation id="6385543213911723544">Saytlar kuki datanı saxlaya və oxuya bilər</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />ChromeOS cihazlarına avtomatik hesabatlar göndərmək icazəsi vermək bizə ChromeOS'da nəyi düzəldəcıyimizi və təkmilləşdirəcəyimizi prioritetləşdirməyə kömək edir. Bu hesabatlara hansı funksiyaların istifadə edilməsi və adətən nə qədər yaddaş istifadə edildiyi kimi məlumatlar daxil ola bilər.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt Chrome cihaz ayarlarınızda bu hesabatlara icazə verməyə başlaya və ya dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Bu funksiyanı deaktiv etmək cihazınızın sistem güncəlləmələri və təhlükəsizlik kimi vacib xidmətlər üçün lazım olan məlumatları göndərmə imkanına təsir göstərmir.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Cihaz sahibi "İstifadə və diaqnostika datasını göndər" seçimini aktiv etsə, qəza hesabatları da Google'a yüklənə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Xəbərdarlıq - Təfsilatlı qeydiyyat aktivləşdirilib; aşağıdakı qeydlərə URL-lər və ya digər həssas məlumat daxil ola bilər. Nəzərdən keçirin və əmin olun ki, bu məlumatı göndərməkdə rahatsınız.</translation>
 <translation id="6387674443318562538">Vertikal Bölün</translation>
 <translation id="6388429472088318283">Dil axtarın</translation>
@@ -5622,7 +5604,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6504601948739128893">Cihazınızda quraşdırılmış şriftləri istifadə etmək icazəsi verilmir</translation>
 <translation id="6504611359718185067">Printer əlavə etmək üçün internetə qoşulun</translation>
 <translation id="6506374932220792071">X9.62 ECDSA SHA-256 ilə imza</translation>
-<translation id="6507936476364432879">Diaqnostika və istifadə datasını avtomatik Google'a göndərməklə Chrome və ChromeOS funksiyalarını və performansını təkmilləşdirməyə yardım edin.</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> ilə əlaqədar</translation>
 <translation id="6508261954199872201">Tətbiq: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Media lisenziyası</translation>
@@ -6947,7 +6928,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7807711621188256451">Kameranıza daxil olmaq üçün həmişə <ph name="HOST" /> hostuna icazə verin</translation>
 <translation id="7810202088502699111">Bu səhifədə popaplar bloklanıb.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> faylını yayımlayın</translation>
-<translation id="7811886112806886172">Diaqnostika və istifadə datasını avtomatik Google'a göndərməklə Chrome və ChromeOS funksiyalarını və performansını təkmilləşdirməyə yardım edin. Bəzi birləşdirilmiş data Android tətbiqləri və Google partnyorlarına da kömək edəcək. Veb və Tətbiq Fəaliyyəti ayarı Google Hesabınız üçün aktiv edilərsə, Android datanız Google Hesabınızda yadda saxlanıla bilər.</translation>
 <translation id="7814458197256864873">&amp;Kopyalayın</translation>
 <translation id="7815680994978050279">Təhlükəli endirmə blok edildi</translation>
 <translation id="7817361223956157679">Ekran klaviaturası Linux tətbiqlərində hələ dəstəklənmir</translation>

@@ -489,7 +489,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3602290021589620013">Priekšskatīt</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Logu pārvaldība</translation>
-<translation id="3624977496395967031">Noklikšķiniet, lai atvērtu kārtošanas iespējas</translation>
 <translation id="3631987586758005671">Notiek kopīgošana ar ierīci <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automātiski pierakstīties vietnēs, izmantojot saglabātos akreditācijas datus. Ja funkcija ir izslēgta, verifikācija būs jāveic ikreiz, kad pierakstīsieties vietnē.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="4225895483398857530">Rīkjoslas īsinājumtaustiņš</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4248098802131000011">Aizsargājiet savas paroles pret datu pārkāpumiem un citām drošības problēmām.</translation>
+<translation id="4249955472157341256">Kārtot, sākot ar jaunāko saturu</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
 <translation id="4256782883801055595">Atklātā pirmkoda licences</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kādi dati tiek izmantoti:<ph name="END_BOLD" /> jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chrome.</translation>
@@ -897,7 +897,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5957442310066583693">Lai skatītu vietnes, ko apmeklējat visbiežāk, pieskarieties pogai Sākumlapa</translation>
 <translation id="5958275228015807058">Atrodiet savus failus un lapas sadaļā Lejupielādes</translation>
 <translation id="5962718611393537961">Pieskarties, lai sakļautu</translation>
-<translation id="5964805880140440652">Lai kopīgotu šo lapu citā ierīcē, Chrome iestatījumos ieslēdziet sinhronizāciju.</translation>
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
 <translation id="5979084224081478209">Pārbaudīt paroles</translation>
 <translation id="5995726099713306770">Vai vēlaties vēlreiz lejupielādēt lapu?</translation>

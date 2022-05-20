@@ -489,7 +489,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3602290021589620013">I-preview</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Pamahalaan ang mga window</translation>
-<translation id="3624977496395967031">I-click para buksan ang mga opsyon sa pagbubukod-bukod</translation>
 <translation id="3631987586758005671">Ibinabahagi sa <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Awtomatikong mag-sign in sa mga website gamit ang mga naka-store na kredensyal. Kapag naka-off ang feature, hihilingin sa iyong mag-verify sa tuwing magsa-sign in ka sa isang website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="4225895483398857530">Shortcut ng toolbar</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4248098802131000011">Panatilihing ligtas ang iyong mga password mula sa mga paglabag sa data breaches at iba pang isyu sa seguridad</translation>
+<translation id="4249955472157341256">Pagbukud-bukurin ayon sa Pinakabago</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Mga lisensya ng open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chrome sa device na ito.</translation>
@@ -897,7 +897,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5957442310066583693">Para makita ang iyong mga nangungunang site, i-tap ang button ng Home</translation>
 <translation id="5958275228015807058">Hanapin ang iyong mga file at page sa Mga Download</translation>
 <translation id="5962718611393537961">I-tap upang i-collapse</translation>
-<translation id="5964805880140440652">Para ibahagi ang page na ito sa isa pang device, i-on ang pag-sync sa mga setting ng Chrome</translation>
 <translation id="5964869237734432770">Ihinto ang desc ng larawan</translation>
 <translation id="5979084224081478209">Suriin ang mga password</translation>
 <translation id="5995726099713306770">I-download ulit ang page?</translation>

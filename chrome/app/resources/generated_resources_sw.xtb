@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Inaonyesha manenosiri kutoka <ph name="BEGIN_LINK" />Akaunti yako ya Google<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Weka Mlango</translation>
 <translation id="1026822031284433028">Pakia Picha</translation>
+<translation id="1028700151766901954">Sababu: LBS husalia katika <ph name="DEFAULT_OPEN_BROWSER" /> kwa chaguomsingi.</translation>
 <translation id="1029317248976101138">Kuza</translation>
 <translation id="1031362278801463162">Inapakia nakala ya kuchungulia</translation>
 <translation id="1032605640136438169">Tafadhali pitia Sheria na Masharti mapya</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Usimbaji wa Data</translation>
 <translation id="1072700771426194907">Imetambua kifaa cha USB</translation>
 <translation id="107278043869924952">Tumia PIN pamoja na nenosiri</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vinavyotumia mfumo wa uendeshaji wa Chrome vitume ripoti kiotomatiki hutusaidia kujua vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha mfumo wa uendeshaji wa Chrome. Ripoti hizi zinaweza kujumuisha vitu kama vile vipengele vilivyotumika, kadirio la kiasi cha hifadhi kilichotumika na data ya uchunguzi na matumizi ya programu za Android. Baadhi ya data iliyojumlishwa pia itasaidia programu na washirika wa Google, kama vile wasanidi programu wa Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa cha mtoto wako kinachotumia mfumo wa uendeshaji wa Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Hatua ya kuzima kipengele hiki haiathiri uwezo wa kifaa hiki wa kutuma maelezo yanayohitajika kutekeleza huduma muhimu kama vile masasisho ya mfumo na usalama.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ikiwa mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu imewashwa katika Akaunti ya Google ya mtoto wako, huenda data ya mtoto wako ikahifadhiwa kwenye Akaunti yake ya Google. Pata maelezo zaidi kuhusu mipangilio hii na jinsi ya kuirekebisha katika families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Mmiliki wa kifaa akiwasha "Tuma data ya matumizi na uchunguzi", huenda pia ripoti za kuacha kufanya kazi zikapakiwa kwenye Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Pitia kurasa kwa kutumia kiteuzi</translation>
 <translation id="1076382954055048850">Onyesha vipindi vingine vya kutuma</translation>
 <translation id="1076698951459398590">Washa Mandhari</translation>
@@ -1441,10 +1437,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2328561734797404498">Tafadhali zima kisha uwashe kifaa chako ili utumie <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Unapotumia hali fiche, tovuti zinaweza tu kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti hizo. Vidakuzi hufutwa mwishoni mwa kipindi katika hali fiche.</translation>
 <translation id="2329597144923131178">Ingia katika akaunti ili upate alamisho, historia, manenosiri, na mipangilio yako mingine kwenye vifaa vyako vyote.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vyako vinavyotumia mfumo wa uendeshaji wa Chrome vitume ripoti kiotomatiki hutusaidia kujua vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha mfumo wa uendeshaji wa Chrome. Ripoti hizi zinaweza kujumuisha vitu kama vile vipengele unavyotumia, kadirio la kiasi cha hifadhi unachotumia, data ya uchunguzi na matumizi ya programu za Android na hitilafu. Baadhi ya data iliyojumlishwa pia itasaidia programu na washirika wa Google, kama vile wasanidi programu wa Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa chako kinachotumia mfumo wa uendeshaji wa Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ikiwa umewasha mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu katika Akaunti yako ya Google, huenda data yako ya Android ikahifadhiwa kwenye Akaunti yako ya Google. Unaweza kuona data yako, kuifuta na kubadilisha mipangilio ya akaunti yako katika account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Mmiliki wa kifaa akiwasha "Tuma data ya matumizi na uchunguzi", huenda pia ripoti za kuacha kufanya kazi zikapakiwa kwenye Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Angalia katika Duka la Wavuti</translation>
 <translation id="2332192922827071008">Fungua Mapendeleo</translation>
 <translation id="2332515770639153015">Kipengele cha Kuvinjari Salama Kilichoboreshwa kimewashwa</translation>
@@ -2783,10 +2775,6 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3651488188562686558">Ondoa muunganisho wa Wi-Fi</translation>
 <translation id="3652817283076144888">Inaanzisha</translation>
 <translation id="3653160965917900914">Faili za kushiriki katika mtandao</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vinavyotumia mfumo wa uendeshaji wa Chrome vitume ripoti kiotomatiki hutusaidia kujua vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha mfumo wa uendeshaji wa Chrome. Ripoti hizi zinaweza kujumuisha vitu kama vile vipengele vilivyotumika na kadirio la kiasi cha hifadhi kilichotumika.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa cha mtoto wako kinachotumia mfumo wa uendeshaji wa Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Hatua ya kuzima kipengele hiki haiathiri uwezo wa kifaa hiki wa kutuma maelezo yanayohitajika kutekeleza huduma muhimu kama vile masasisho ya mfumo na usalama.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Mmiliki wa kifaa akiwasha "Tuma data ya matumizi na uchunguzi", huenda pia ripoti za kuacha kufanya kazi zikapakiwa kwenye Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Endelea kuruhusu <ph name="HOST" /> kufikia maikrofoni yako</translation>
 <translation id="3654045516529121250">Soma mipangilio yako ya ufikiaji</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ina idhini ya ufikiaji wa kudumu wa faili moja.}other{Ina idhini ya ufikiaji wa kudumu wa faili #.}}</translation>
@@ -3360,6 +3348,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4209092469652827314">Kubwa</translation>
 <translation id="4209251085232852247">Imezimwa</translation>
 <translation id="4210048056321123003">Inapakua mashine dhahania</translation>
+<translation id="4210380525132844778">Sababu: <ph name="RULE" /> imepatikana katika orodha ya "<ph name="LIST_NAME" />".</translation>
 <translation id="421182450098841253">&amp;Onyesha Upau wa Alamisho</translation>
 <translation id="4211851069413100178">Tuma data ya matumizi na uchunguzi. Tusaidie kuboresha jinsi unavyotumia Android kwa kutuma kiotomatiki data ya uchunguzi na matumizi ya kifaa na programu kwa Google. Maelezo haya yatatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu za Google na washirika kama vile wasanidi programu za Android. <ph name="BEGIN_LINK1" />Mipangilio<ph name="END_LINK1" /> hii inatekelezwa na mmiliki. Mmiliki anaweza kuamua kutuma data ya uchunguzi na matumizi ya kifaa hiki kwa Google. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu, huenda data hii itahifadhiwa kwenye akaunti yako ya Google. <ph name="BEGIN_LINK2" />Pata maelezo zaidi<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Acha kutumia kwenye programu za Android</translation>
@@ -4055,7 +4044,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4900652253009739885">Huwezi kuondoa swichi ya pekee iliyokabidhiwa kitendo cha “Chagua.” Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Chagua hali ya jaribio la <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Sera iliyopakuliwa kutoka kwenye seva ni batili: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Tusaidie kuboresha vipengele na utendaji wa Chrome na mfumo wa uendeshaji wa Chrome kwa kutuma kiotomatiki data ya uchunguzi na matumizi kwa Google. Baadhi ya data iliyojumlishwa pia itasaidia programu za Android na washirika wa Google. Ikiwa mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu imewashwa katika Akaunti ya Google ya mtoto wako, huenda data ya Android ya mtoto wako ikahifadhiwa kwenye Akaunti yake ya Google.</translation>
 <translation id="4906490889887219338">Dhibiti au uweke mipangilio ya faili za kushiriki katika mtandao. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Chagua wakati kiendelezi hiki kinaweza kusoma na kubadilisha data ya tovuti yako</translation>
 <translation id="4907161631261076876">Faili hii haipakuliwi kwa kawaida na huenda ikawa hatari.</translation>
@@ -5187,6 +5175,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6063284707309177505">Zalisha Msimbo wa QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Kumbuka:<ph name="END_BOLD" /> Huenda sauti au rekodi ya sauti inayolingana na ya <ph name="SUPERVISED_USER_NAME" /> ikaweza kufikia matokeo yake ya binafsi. Ili kuokoa betri, unaweza kuchagua kipengele cha “Ok Google” kiwashwe tu wakati kifaa hiki kimeunganishwa kwenye chanzo cha nishati, katika mipangilio ya programu ya Mratibu ya <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="6064217302520318294">Kufunga skrini</translation>
+<translation id="6065145031947216733">Ungependa kutenganisha historia yako ya kuvinjari?</translation>
 <translation id="6065289257230303064">Vipengele vya Saraka ya Vichwa cha Vyeti</translation>
 <translation id="6066794465984119824">Kiwakilishi kifupi cha picha hakijawekwa</translation>
 <translation id="6069464830445383022">Tumia Akaunti yako ya Google kuingia katika Chromebook yako</translation>
@@ -5265,6 +5254,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6129953537138746214">Nafasi</translation>
 <translation id="6130692320435119637">Weka Wi-Fi</translation>
 <translation id="6130887916931372608">Kitufe cha kibodi</translation>
+<translation id="6135823405800500595">Hakikisha simu yako ipo karibu, imefunguliwa na umewasha Bluetooth pamoja na Wi-Fi</translation>
 <translation id="6136114942382973861">Funga upau wa vipakuliwa</translation>
 <translation id="6136287496450963112">Ufunguo wako wa usalama haujalindwa kwa PIN. Ili uweze kudhibiti alama za vidole, kwanza weka PIN.</translation>
 <translation id="6138680304137685902">Sahihi ya X9.62 ECDSA yenye SHA-384</translation>
@@ -5510,10 +5500,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Kikundi ambacho hakina jina - kichupo kimoja}other{Kikundi ambacho hakina jina - vichupo #}}</translation>
 <translation id="6385149369087767061">Unganisha kwenye intaneti kisha ujaribu tena</translation>
 <translation id="6385543213911723544">Tovuti zinaweza kuhifadhi na kusoma data ya vidakuzi</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Hatua ya kuruhusu vifaa vyako vinavyotumia mfumo wa uendeshaji wa Chrome vitume ripoti kiotomatiki hutusaidia kujua vipengele tutakavyovipa kipaumbele wakati wa kurekebisha na kuboresha mfumo wa uendeshaji wa Chrome. Ripoti hizi zinaweza kujumuisha vitu kama vile vipengele unavyotumia na kadirio la kiasi cha hifadhi unachotumia.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Unaweza kuanza au kuacha kuruhusu ripoti hizi wakati wowote katika mipangilio ya kifaa chako cha Chrome. Ikiwa wewe ni msimamizi wa kikoa, unaweza kubadilisha mipangilio hii katika dashibodi ya msimamizi.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Hatua ya kuzima kipengele hiki haiathiri uwezo wa kifaa chako wa kutuma maelezo yanayohitajika kutekeleza huduma muhimu kama vile masasisho ya mfumo na usalama.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Mmiliki wa kifaa akiwasha "Tuma data ya matumizi na uchunguzi", huenda pia ripoti za kuacha kufanya kazi zikapakiwa kwenye Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Onyo - Kipengele cha kuweka kumbukumbu za kina kimewashwa; kumbukumbu zilizo hapa chini zinaweza kujumuisha URL au maelezo mengine nyeti. Tafadhali kagua na uhakikishe kuwa umeridhia kuwasilisha maelezo haya.</translation>
 <translation id="6387674443318562538">Gawanya Wima</translation>
 <translation id="6388429472088318283">Tafuta lugha</translation>
@@ -5634,7 +5620,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6504601948739128893">Zisizoruhusiwa kutumia fonti zilizosakinishwa kwenye kifaa chako</translation>
 <translation id="6504611359718185067">Unganisha kwenye intaneti ili uongeze printa</translation>
 <translation id="6506374932220792071">Sahihi ya X9.62 ECDSA yenye SHA-256</translation>
-<translation id="6507936476364432879">Tusaidie kuboresha vipengele na utendaji wa Chrome na mfumo wa uendeshaji wa Chrome kwa kutuma kiotomatiki data ya uchunguzi na matumizi kwa Google.</translation>
 <translation id="6508248480704296122">Inahusiana na <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Programu: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Leseni ya maudhui</translation>
@@ -6960,7 +6945,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7807711621188256451">Ruhusu <ph name="HOST" /> kufikia kamera yako kila wakati</translation>
 <translation id="7810202088502699111">Madirisha ibukizi yalizuiwa kwenye ukurasa huu.</translation>
 <translation id="781167124805380294">Tuma <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Tusaidie kuboresha vipengele na utendaji wa Chrome na mfumo wa uendeshaji wa Chrome kwa kutuma kiotomatiki data ya uchunguzi na matumizi kwa Google. Baadhi ya data iliyojumlishwa pia itasaidia programu za Android na washirika wa Google. Ikiwa umewasha mipangilio ya Historia ya Shughuli kwenye Wavuti na Programu katika Akaunti yako ya Google, huenda data yako ya Android ikahifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="7814458197256864873">&amp;Nakili</translation>
 <translation id="7815680994978050279">Upakuaji hatari umezuiwa</translation>
 <translation id="7817361223956157679">Kibodi ya skrini bado haifanyi kazi kwenye programu za Linux</translation>
@@ -7099,6 +7083,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7947962633355574091">Nakili Anwani ya Video</translation>
 <translation id="7947964080535614577">Kwa kawaida tovuti huonyesha matangazo ili ziweze kutoa maudhui au huduma bila malipo. Lakini, baadhi ya tovuti huonyesha matangazo yanayopotosha au yanayokatiza matumizi.</translation>
 <translation id="7948407723851303488">Kurasa zote za <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Sababu: LBS inaweza kutumia URL za http://, https:// na file:// pekee.</translation>
 <translation id="7951265006188088697">Ili uongeze au uthibiti njia za kulipa za Google Pay, tembelea <ph name="BEGIN_LINK" />Akaunti yako ya Google<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Zima kadi pepe</translation>
 <translation id="7952708427581814389">Tovuti zinaweza kuomba ruhusa ya kuona maandishi na picha kwenye ubao wako wa kunakili</translation>
@@ -7643,6 +7628,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8480869669560681089">Kifaa ambacho hakijulikani kutoka kwa <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Thibitisha Ruhusa ya USB</translation>
 <translation id="8481980314595922412">Vipengele vya jaribio vimewashwa</translation>
+<translation id="8486666913807228950">Sababu: Amri iliyogeuzwa ya <ph name="REVERT_RULE" /> imepatikana katika orodha ya "Force open in".</translation>
 <translation id="848666842773560761">Kuna programu inayojaribu kufikia kamera. Zima swichi ya faragha ya kamera ili uruhusu ifikiwe.</translation>
 <translation id="8487678622945914333">Kuza</translation>
 <translation id="8489156414266187072">Mapendekezo binafsi yanaonyeshwa tu kwenye akaunti yako</translation>

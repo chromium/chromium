@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Dodatnu pomoć potražite u <ph name="BEGIN_LINK" />centru za pomoć<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritam komprimovanja</translation>
 <translation id="4794140124556169553">Pokretanje testa procesora može da utiče na učinak sistema</translation>
+<translation id="4804818685124855865">Prekini vezu</translation>
 <translation id="4808449224298348341">Otkazan je zadatak štampanja <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Svetla tema</translation>
 <translation id="4813136279048157860">Moje slike</translation>
@@ -530,6 +531,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Generišite nasumični par ključeva</translation>
+<translation id="5947494881799873997">Vrati</translation>
 <translation id="5951259522948394825">Potvrdite da je sve u redu i pregledajte izveštaj o dijagnostici</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Podrazumevana pozadina</translation>
@@ -813,6 +815,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>
 <translation id="8723108084122415655">Mreža koja nije podrazumevana premašuje graničnu vrednost za kašnjenje</translation>
+<translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8726019395068607495">Zaustavljeno – vrata su otvorena</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8747900814994928677">Potvrdite promenu</translation>

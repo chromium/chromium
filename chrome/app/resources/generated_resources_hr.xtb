@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Prikazivanje zaporki s vašeg <ph name="BEGIN_LINK" />Google računa<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Dodavanje priključka</translation>
 <translation id="1026822031284433028">Učitaj sliku</translation>
+<translation id="1028700151766901954">Razlog: LBS ostaje u pregledniku <ph name="DEFAULT_OPEN_BROWSER" /> prema zadanim postavkama.</translation>
 <translation id="1029317248976101138">Zumiranje</translation>
 <translation id="1031362278801463162">Učitavanje pregleda</translation>
 <translation id="1032605640136438169">Pregledajte nove uvjete</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Šifriranje podataka</translation>
 <translation id="1072700771426194907">Otkriven je USB uređaj</translation>
 <translation id="107278043869924952">Koristite PIN uz zaporku</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o tome koje su značajke upotrebljavane, koliko se memorije obično upotrebljavalo te podatke o upotrebi i dijagnostici Android aplikacija. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama djetetovog uređaja s OS-om Chrome. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanje te značajke ne utječe na mogućnost uređaja da šalje informacije koje su potrebne za ključne usluge kao što su ažuriranja sustava i sigurnost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako je za Google račun vašeg djeteta uključena postavka Aktivnost na webu i u aplikacijama, podaci vašeg djeteta mogu se spremati na njegov Google račun. Više o tim postavkama i načinu na koji ih možete prilagoditi saznajte na families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi opciju Šalji podatke o upotrebi i dijagnostici, Googleu se mogu prenositi i izvješća o padu programa.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Kretanje stranicama pomoću pokazivača za tekst</translation>
 <translation id="1076382954055048850">Prikazivanje drugih sesija Emitiranja</translation>
 <translation id="1076698951459398590">Omogući temu</translation>
@@ -1432,10 +1428,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2328561734797404498">Ponovo pokrenite uređaj da biste koristili <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kad ste u anonimnom načinu rada, web-lokacija može upotrebljavati kolačiće samo kako bi vidjela vašu aktivnost pregledavanja na toj web-lokaciji. Kolačići se brišu na kraju anonimne sesije.</translation>
 <translation id="2329597144923131178">Prijavite se da biste imali svoje oznake, povijest, zaporke i druge postavke na svim svojim uređajima.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite svojim uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o tome kojim se značajkama koristite, koliko memorije obično upotrebljavate, podatke o upotrebi i dijagnostici Android aplikacija te pogreške. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama uređaja s OS-om Chrome. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ako je za vaš Google račun uključena postavka Aktivnost na webu i u aplikacijama, vaši podaci s Androida mogu se spremati na vaš Google račun. Na stranici account.google.com možete pogledati svoje podatke, izbrisati ih ili promijeniti postavke računa.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi opciju Šalji podatke o upotrebi i dijagnostici, Googleu se mogu prenositi i izvješća o padu programa.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Pogledaj u web-trgovini</translation>
 <translation id="2332192922827071008">Otvori Postavke</translation>
 <translation id="2332515770639153015">Uključeno je poboljšano sigurno pregledavanje</translation>
@@ -2774,10 +2766,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3651488188562686558">prekinuti vezu s Wi-Fijem</translation>
 <translation id="3652817283076144888">Inicijalizacija</translation>
 <translation id="3653160965917900914">Mrežna dijeljenja datoteka</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o tome kad su značajke upotrebljavane i koliko se memorije obično upotrebljavalo.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama djetetovog uređaja s OS-om Chrome. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanje te značajke ne utječe na mogućnost uređaja da šalje informacije koje su potrebne za ključne usluge kao što su ažuriranja sustava i sigurnost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi opciju Šalji podatke o upotrebi i dijagnostici, Googleu se mogu prenositi i izvješća o padu programa.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Nastavi dopuštati hostu <ph name="HOST" /> pristup mikrofonu</translation>
 <translation id="3654045516529121250">čitati postavke pristupačnosti</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ima trajni pristup jednoj datoteci.}one{Ima trajni pristup # datoteci.}few{Ima trajni pristup do # datoteke.}other{Ima trajni pristup do # datoteka.}}</translation>
@@ -3353,6 +3341,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4209092469652827314">Velik</translation>
 <translation id="4209251085232852247">Isključeno</translation>
 <translation id="4210048056321123003">Preuzimanje virtualnog računala</translation>
+<translation id="4210380525132844778">Razlog: pravilo <ph name="RULE" /> pronađeno je na popisu <ph name="LIST_NAME" />.</translation>
 <translation id="421182450098841253">&amp;Prikaz trake oznake</translation>
 <translation id="4211851069413100178">Slanje podataka o upotrebi i dijagnostici. Pomognite poboljšati Android automatskim slanjem dijagnostičkih podataka te podataka o upotrebi uređaja i aplikacija Googleu. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Ovu <ph name="BEGIN_LINK1" />postavku<ph name="END_LINK1" /> zadao je vlasnik. Vlasnik može Googleu slati dijagnostiku i podatke o upotrebi za ovaj uređaj. Ako je uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. <ph name="BEGIN_LINK2" />Saznajte više<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Prestani koristiti s Android aplikacijama</translation>
@@ -4048,7 +4037,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4900652253009739885">Nije moguće ukloniti jedini prekidač dodijeljen radnji Odaberi. Pritisnite bilo koju tipku za <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravilo preuzeto s poslužitelja nije važeće: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Pomozite poboljšati značajke i izvedbu Chromea i OS-a Chrome automatskim slanjem podataka o upotrebi i dijagnostici Googleu. Neki skupni podaci pomoći će i Android aplikacijama i Google partnerima. Ako je za Google račun vašeg djeteta uključena postavka Aktivnost na webu i u aplikacijama, podaci vašeg djeteta s Androida mogu se spremati na njegov Google račun.</translation>
 <translation id="4906490889887219338">Postavite mrežna dijeljenja datoteka ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Odaberite kad to proširenje može čitati i mijenjati vaše podatke web-lokacije</translation>
 <translation id="4907161631261076876">Ova se aplikacija ne preuzima često i može biti opasna.</translation>
@@ -5177,6 +5165,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6063284707309177505">Izrada QR kôda</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> netko sa sličnim glasom ili snimkom možda bi mogao pristupiti osobnim rezultatima s računa kojim se koristi <ph name="SUPERVISED_USER_NAME" />. Radi štednje baterije u postavkama Asistenta računa kojim se koristi <ph name="SUPERVISED_USER_NAME" /> možete odabrati da se "Hey Google" detektira samo kad je uređaj priključen na izvor napajanja.</translation>
 <translation id="6064217302520318294">Zaključavanje zaslona</translation>
+<translation id="6065145031947216733">Želite li odvojiti pregledavanje?</translation>
 <translation id="6065289257230303064">Atributi direktorija predmeta certifikata</translation>
 <translation id="6066794465984119824">Hash slike nije postavljen</translation>
 <translation id="6069464830445383022">Vaš Google račun koristi se za prijavu na Chromebook</translation>
@@ -5255,6 +5244,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6130887916931372608">Tipka tipkovnice</translation>
+<translation id="6135823405800500595">Provjerite je li telefon u blizini, je li otključan i jesu li Bluetooth i Wi-Fi uključeni.</translation>
 <translation id="6136114942382973861">Zatvori traku preuzimanja</translation>
 <translation id="6136287496450963112">Vaš sigurnosni ključ nije zaštićen PIN-om. Za upravljanje otiscima prstiju najprije izradite PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA potpis uz SHA-384</translation>
@@ -5500,10 +5490,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Neimenovana grupa – 1 kartica}one{Neimenovana grupa – # kartica}few{Neimenovana grupa – # kartice}other{Neimenovana grupa – # kartica}}</translation>
 <translation id="6385149369087767061">Povežite se s internetom i pokušajte ponovo</translation>
 <translation id="6385543213911723544">Web-lokacije mogu spremiti i čitati podatke kolačića</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ako dopustite svojim uređajima s OS-om Chrome da nam šalju automatska izvješća, lakše ćemo odrediti prioritete za ispravljanje pogrešaka i poboljšavanje OS-a Chrome. Ta izvješća mogu uključivati, primjerice, informacije o tome kojim se značajkama koristite i koliko memorije obično upotrebljavate.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ta izvješća možete uključiti ili isključiti kad god želite u postavkama Chrome uređaja. Ako ste administrator domene, tu postavku možete promijeniti na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanje te značajke ne utječe na mogućnost uređaja da šalje informacije koje su potrebne za ključne usluge kao što su ažuriranja sustava i sigurnost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi opciju Šalji podatke o upotrebi i dijagnostici, Googleu se mogu prenositi i izvješća o padu programa.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Upozorenje: omogućeni su detaljni zapisnici. Zapisnici u nastavku mogu uključivati URL-ove ili neke druge osjetljive podatke. Pregledajte ih kako ne biste poslali neke podatke koje ne želite dijeliti.</translation>
 <translation id="6387674443318562538">Podijeli okomito</translation>
 <translation id="6388429472088318283">Pretražite jezike</translation>
@@ -5624,7 +5610,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6504601948739128893">web-lokacije kojima nije dopušteno korištenje fontova instaliranih na uređaju</translation>
 <translation id="6504611359718185067">Povežite se s internetom da biste dodali pisač</translation>
 <translation id="6506374932220792071">X9.62 ECDSA potpis uz SHA-256</translation>
-<translation id="6507936476364432879">Pomozite poboljšati značajke i izvedbu Chromea i OS-a Chrome automatskim slanjem podataka o upotrebi i dijagnostici Googleu.</translation>
 <translation id="6508248480704296122">Povezano s <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licenca medija</translation>
@@ -6953,7 +6938,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7807711621188256451">Uvijek dopusti hostu <ph name="HOST" /> pristup kameri</translation>
 <translation id="7810202088502699111">Na ovoj su stranici blokirani skočni prozori.</translation>
 <translation id="781167124805380294">Emitiranje datoteke <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Pomozite poboljšati značajke i izvedbu Chromea i OS-a Chrome automatskim slanjem podataka o upotrebi i dijagnostici Googleu. Neki skupni podaci pomoći će i Android aplikacijama i Google partnerima. Ako je za vaš Google račun uključena postavka Aktivnost na webu i u aplikacijama, vaši podaci s Androida mogu se spremati na vaš Google račun.</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>
 <translation id="7815680994978050279">Blokirano je opasno preuzimanje</translation>
 <translation id="7817361223956157679">Tipkovnica na zaslonu još uvijek ne funkcionira u Linux aplikacijama</translation>
@@ -7091,6 +7075,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7947962633355574091">K&amp;opiraj adresu videozapisa</translation>
 <translation id="7947964080535614577">Web-lokacije obično prikazuju oglase kako bi mogle pružati sadržaj ili usluge bez dodatnih troškova. Međutim, za neke je web-lokacije poznato da prikazuju ometajuće ili obmanjujuće oglase.</translation>
 <translation id="7948407723851303488">Sve stranice domene <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Razlog: LBS podržava samo http://, https:// i file:// URL-ove.</translation>
 <translation id="7951265006188088697">Da biste dodali načine plaćanja u Google Payu, posjetite <ph name="BEGIN_LINK" />Google račun<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Isključi virtualnu karticu</translation>
 <translation id="7952708427581814389">Web-lokacije mogu tražiti dopuštenje da vide tekst i slike u vašem međuspremniku</translation>
@@ -7635,6 +7620,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8480869669560681089">Nepoznati uređaj usluge <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrda dopuštenja USB-a</translation>
 <translation id="8481980314595922412">Probne značajke su uključene</translation>
+<translation id="8486666913807228950">Razlog: obrnuto pravilo <ph name="REVERT_RULE" /> pronađeno je na popisu Nametanje otvaranja u pregledniku.</translation>
 <translation id="848666842773560761">Aplikacija pokušava pristupiti fotoaparatu. Da biste omogućili pristup, isključite prekidač za privatnost fotoaparata.</translation>
 <translation id="8487678622945914333">Povećaj</translation>
 <translation id="8489156414266187072">Osobni prijedlozi prikazuju se samo na vašem računu</translation>

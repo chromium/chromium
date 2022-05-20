@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Am ragor o help, ewch i'r <ph name="BEGIN_LINK" />Ganolfan Gymorth<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithm cywasgu</translation>
 <translation id="4794140124556169553">Gall cynnal arbrawf CPU effeithio ar berfformiad eich system</translation>
+<translation id="4804818685124855865">Datgysylltu</translation>
 <translation id="4808449224298348341">Wedi canslo'r dasg argraffu <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Thema olau</translation>
 <translation id="4813136279048157860">Fy Lluniau</translation>
@@ -530,6 +531,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5931523347251946569">Ni chanfuwyd y ffeil</translation>
 <translation id="5939518447894949180">Ailosod</translation>
 <translation id="594552776027197022">Cynhyrchu pâr o allweddi ar hap</translation>
+<translation id="5947494881799873997">Dychwelyd</translation>
 <translation id="5951259522948394825">Cadarnhewch fod popeth yn y lle iawn a gweler yr adroddiad diagnosteg</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Papur Wal Diofyn</translation>
@@ -813,6 +815,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="871560550817059752">Wedi methu - Allan o inc</translation>
 <translation id="8723108084122415655">Mae cuddni'r rhwydwaith nad yw'n ddiofyn wedi mynd y tu hwnt i'r trothwy</translation>
+<translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
 <translation id="8726019395068607495">Wedi stopio - Mae'r drws ar agor</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8747900814994928677">Cadarnhau'r newid</translation>

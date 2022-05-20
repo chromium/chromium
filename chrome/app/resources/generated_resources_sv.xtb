@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Visar lösenord från ditt <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Lägg till en port</translation>
 <translation id="1026822031284433028">Läs in bild</translation>
+<translation id="1028700151766901954">Orsak: Stöd för äldre webbläsare använder <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
 <translation id="1029317248976101138">Zooma in</translation>
 <translation id="1031362278801463162">Läser in förhandsgranskning</translation>
 <translation id="1032605640136438169">Läs de nya villkoren</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Datachiffrering</translation>
 <translation id="1072700771426194907">En USB-enhet har upptäckts</translation>
 <translation id="107278043869924952">Använd en pinkod utöver lösenordet</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från Chrome OS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i Chrome OS. Dessa rapporter kan innehålla information som vilka funktioner som använts, hur mycket minne som brukar användas, diagnostikdata om Android-appar och data om användning. Viss samlad data används även till att förbättra appar från Google och produkter från Googles partner, till exempel Android-utvecklare.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst tillåta att de här rapporterna skickas eller dra tillbaka tillståndet via inställningarna för barnets Chrome OS-enhet. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Enheten kan fortfarande skicka den information som behövs för viktiga tjänster, som systemuppdateringar och säkerhet, även om du inaktiverar funktionen.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Om inställningen Webb- och appaktivitet har aktiverats för ditt barns Google-konto kan barnets data sparas i Google-kontot. Läs mer om inställningarna och hur du ändrar dem på families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Om enhetens ägare aktiverar Skicka diagnostik- och användningsdata kan även felrapporter laddas upp på Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navigera på sidor med en textmarkör</translation>
 <translation id="1076382954055048850">Visa andra Cast-sessioner</translation>
 <translation id="1076698951459398590">Aktivera temat</translation>
@@ -1444,10 +1440,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2328561734797404498">Starta om enheten om du vill använda <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">När du surfar i inkognitoläge kan webbplatser bara använda cookies för att se webbaktivitet på den egna webbplatsen. Cookies raderas när inkognitosessionen avslutas.</translation>
 <translation id="2329597144923131178">Logga in så blir bokmärken, historik, lösenord med mera tillgängligt på alla dina enheter.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från Chrome OS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i Chrome OS. Dessa rapporter kan innehålla information som vilka funktioner du använder, hur mycket minne du brukar använda, diagnostikdata om Android-appar och data om användning och fel. Viss samlad data används även till att förbättra appar från Google och produkter från Googles partner, till exempel Android-utvecklare.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome OS-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Om inställningen Webb- och appaktivitet har aktiverats för ditt Google-konto kan Android-datan sparas i Google-kontot. Du kan visa din data, radera den och ändra inställningarna på account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Om enhetens ägare aktiverar Skicka diagnostik- och användningsdata kan även felrapporter laddas upp på Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Visa i butik</translation>
 <translation id="2332192922827071008">Öppna inställningarna</translation>
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
@@ -2786,10 +2778,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3651488188562686558">Enheten kopplas från wifi</translation>
 <translation id="3652817283076144888">Initierar</translation>
 <translation id="3653160965917900914">Filresurser i nätverk</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från Chrome OS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i Chrome OS. Dessa rapporter kan innehålla information som vilka funktioner som använts och hur mycket minne som brukar användas.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst tillåta att de här rapporterna skickas eller dra tillbaka tillståndet via inställningarna för barnets Chrome OS-enhet. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Enheten kan fortfarande skicka den information som behövs för viktiga tjänster, som systemuppdateringar och säkerhet, även om du inaktiverar funktionen.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Om enhetens ägare aktiverar Skicka diagnostik- och användningsdata kan även felrapporter laddas upp på Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Fortsätt tillåta <ph name="HOST" /> att använda din mikrofon</translation>
 <translation id="3654045516529121250">Läsa tillgänglighetsinställningarna</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent åtkomst till en fil.}other{Den har permanent åtkomst till # filer.}}</translation>
@@ -3365,6 +3353,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4209251085232852247">Inaktiverade</translation>
 <translation id="4210048056321123003">Den virtuella maskinen laddas ned</translation>
+<translation id="4210380525132844778">Orsak: <ph name="RULE" /> hittades i listan <ph name="LIST_NAME" />.</translation>
 <translation id="421182450098841253">&amp;Visa bokmärkesfältet</translation>
 <translation id="4211851069413100178">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Ägaren kan ange att diagnostik- och användningsdata om den här enheten ska skickas till Google. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Sluta använda kontot i Android-appar</translation>
@@ -4060,7 +4049,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4900652253009739885">Det går inte att ta bort den enda brytaren som tilldelats Välj. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Välj experimentstatus för experimentet <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Policyn som laddades ned från servern är ogiltig: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chrome och Chrome OS. Viss samlad data används även till att förbättra Android-appar och produkter från Googles partner. Om inställningen Webb- och appaktivitet har aktiverats för ditt barns Google-konto kan barnets Android-data sparas i Google-kontot.</translation>
 <translation id="4906490889887219338">Konfigurera eller hantera filresurser i nätverk. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Välj när det här tillägget kan läsa och ändra webbplatsdata</translation>
 <translation id="4907161631261076876">Den här filen brukar inte laddas ned. Den kan vara skadlig.</translation>
@@ -5192,6 +5180,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6063284707309177505">Skapa QR-kod</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Det kan hända att de personliga resultaten för <ph name="SUPERVISED_USER_NAME" /> även går att komma åt med en liknande röst eller en inspelning. För att spara batteri kan du välja att ”Hey Google” endast är aktiverat när enheten är ansluten till en strömkälla. Detta gör du i Assistent-inställningarna för <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="6064217302520318294">Skärmlås</translation>
+<translation id="6065145031947216733">Vill du hålla isär webbinformation?</translation>
 <translation id="6065289257230303064">Attribut för certifikatämneskatalog</translation>
 <translation id="6066794465984119824">Avbildningens hashvärde har inte angetts</translation>
 <translation id="6069464830445383022">Du loggar in på Chromebook med ditt Google-konto.</translation>
@@ -5270,6 +5259,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6129953537138746214">Blanksteg</translation>
 <translation id="6130692320435119637">Lägg till wifi-nätverk</translation>
 <translation id="6130887916931372608">Tangent på tangentbordet</translation>
+<translation id="6135823405800500595">Kontrollera att telefonen är i närheten, olåst och att Bluetooth och wifi har aktiverats</translation>
 <translation id="6136114942382973861">Stäng nedladdningsfältet</translation>
 <translation id="6136287496450963112">Säkerhetsnyckeln skyddas inte av en pinkod. Skapa en pinkod först om du vill använda fingeravtryck.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA-signatur med SHA-384</translation>
@@ -5515,10 +5505,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Namnlös grupp – 1 flik}other{Namnlös grupp – # flikar}}</translation>
 <translation id="6385149369087767061">Anslut till internet och försök igen</translation>
 <translation id="6385543213911723544">Webbplatser får spara och läsa uppgifter i cookies</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Du kan tillåta att rapporter skickas till oss automatiskt från Chrome OS-enheter, vilket hjälper oss att prioritera vad som bör åtgärdas och förbättras i Chrome OS. Dessa rapporter kan innehålla information som vilka funktioner du använder och hur mycket minne du brukar använda.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Enheten kan fortfarande skicka den information som behövs för viktiga tjänster, som systemuppdateringar och säkerhet, även om du inaktiverar funktionen.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Om enhetens ägare aktiverar Skicka diagnostik- och användningsdata kan även felrapporter laddas upp på Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Varning – Detaljerad loggning har aktiverats. Loggarna nedan kan innehålla webbadresser eller andra känsliga uppgifter. Granska och kontrollera att du vill skicka in dessa uppgifter.</translation>
 <translation id="6387674443318562538">Dela lodrätt</translation>
 <translation id="6388429472088318283">Sök efter språk</translation>
@@ -5639,7 +5625,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6504601948739128893">Har inte tillåtelse att använda teckensnitt som har installerats på enheten</translation>
 <translation id="6504611359718185067">Anslut till internet om du vill lägga till en skrivare</translation>
 <translation id="6506374932220792071">X9.62 ECDSA-signatur med SHA-256</translation>
-<translation id="6507936476364432879">Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chrome och Chrome OS.</translation>
 <translation id="6508248480704296122">Kopplade till <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielicens</translation>
@@ -6964,7 +6949,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7807711621188256451">Låt alltid <ph name="HOST" /> använda din kamera</translation>
 <translation id="7810202088502699111">Popup-fönster är blockerade på den här sidan.</translation>
 <translation id="781167124805380294">Casta <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chrome och Chrome OS. Viss samlad data används även till att förbättra Android-appar och produkter från Googles partner. Om inställningen Webb- och appaktivitet har aktiverats för ditt Google-konto kan Android-datan sparas i Google-kontot.</translation>
 <translation id="7814458197256864873">&amp;Kopiera</translation>
 <translation id="7815680994978050279">En farlig nedladdning blockerades</translation>
 <translation id="7817361223956157679">Skärmtangentbordet fungerar inte i Linux-appar ännu</translation>
@@ -7103,6 +7087,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7947962633355574091">K&amp;opiera videoadress</translation>
 <translation id="7947964080535614577">Webbplatser som visar annonser brukar göra det så att de kan tillhandahålla innehåll eller tjänster utan kostnad. Men vissa webbplatser kan visa påträngande eller vilseledande annonser.</translation>
 <translation id="7948407723851303488">Alla sidor av <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Orsak: Stöd för äldre webbläsare fungerar bara med webbadresser som har protokollen http://, https:// och file://.</translation>
 <translation id="7951265006188088697">Öppna <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /> om du vill lägga till eller hantera betalningsmetoder på Google Pay</translation>
 <translation id="795130320946928025">Inaktivera virtuellt kort</translation>
 <translation id="7952708427581814389">Webbplatser får begära tillstånd att läsa text och bilder i Urklipp</translation>
@@ -7647,6 +7632,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8480869669560681089">Okänd enhet från <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekräfta USB-behörighet</translation>
 <translation id="8481980314595922412">Provfunktionerna är aktiverade</translation>
+<translation id="8486666913807228950">Orsak: Den inverterade regeln <ph name="REVERT_RULE" /> hittades i listan Tvinga att öppna i.</translation>
 <translation id="848666842773560761">En app försöker använda kameran. Om du vill låta den göra detta måste du inaktivera integritetsinställningen som blockerar kameran.</translation>
 <translation id="8487678622945914333">Zooma in</translation>
 <translation id="8489156414266187072">Personliga förslag visas bara i ditt konto</translation>

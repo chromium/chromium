@@ -489,7 +489,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Oynalarni boshqarish</translation>
-<translation id="3624977496395967031">Saralash parametrlarini ochish uchun bosing</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> qurilmasiga ulashilmoqda</translation>
 <translation id="363596933471559332">Saytlarga kirish vaqtida saqlangan hisob ma’lumotlaridan foydalanish. Agar funksiya o‘chiq bo‘lsa, har safar kirish vaqtida hisob ma’lumotlarini to‘ldirish kerak bo‘ladi.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4225895483398857530">Asboblar paneli yorligʻi</translation>
 <translation id="4242533952199664413">Sozlamalarni ochish</translation>
 <translation id="4248098802131000011">Axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun parolingizni himoyalang</translation>
+<translation id="4249955472157341256">Oxirgilar asosida saralash</translation>
 <translation id="4250229828105606438">Skrinshot</translation>
 <translation id="4256782883801055595">Ochiq kodli DT litsenziyalari</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Qanday maʼlumotlar ishlatilishi:<ph name="END_BOLD" /> Bu qurilmada Chrome orqali siz kirgan saytlar tarixidagi qaydlar.</translation>
@@ -897,7 +897,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5957442310066583693">Eng sara saytlarni koʻrish uchun bosh sahifa tugmasini bosing</translation>
 <translation id="5958275228015807058">Fayl va sahiflarni “Yuklanmalar” jildidan topish mumkin</translation>
 <translation id="5962718611393537961">Bosib yig‘ish</translation>
-<translation id="5964805880140440652">Bu sahifani boshqa qurilmaga ulashish uchun Chrome sozlamalarida sinxronizatsiyani yoqing</translation>
 <translation id="5964869237734432770">Rasm tavsiflari yuklanmasin</translation>
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
 <translation id="5995726099713306770">Sahifa qayta yuklab olinsinmi?</translation>

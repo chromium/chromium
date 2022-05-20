@@ -489,7 +489,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3616113530831147358">Ääni</translation>
 <translation id="3622349720008044802">Hallitse ikkunoita</translation>
-<translation id="3624977496395967031">Klikkaa avataksesi lajitteluvaihtoehdot</translation>
 <translation id="3631987586758005671">Jaetaan: <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Kirjaudu automaattisesti verkkosivustoille käyttämällä tallennettuja kirjautumistietoja. Jos tämä toiminto ei ole käytössä, sinua pyydetään vahvistamaan kirjautuminen aina, kun kirjaudut sivustolle.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="4225895483398857530">Työkalupalkin pikakuvake</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
 <translation id="4248098802131000011">Suojaa salasanasi tietosuojaloukkauksilta ja muilta tietoturvaongelmilta</translation>
+<translation id="4249955472157341256">Lajittele viimeisimmät ensimmäisiksi</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="4256782883801055595">Avoimen lähdekoodin käyttöluvat</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Selaushistoriaasi ja listaa sivuista, joilla olet käynyt Chromella tällä laitteella</translation>
@@ -897,7 +897,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5957442310066583693">Katso suositut sivustosi napauttamalla Etusivu-painiketta</translation>
 <translation id="5958275228015807058">Löydät tiedostosi ja sivusi Latauksista</translation>
 <translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
-<translation id="5964805880140440652">Jos haluat jakaa tämän sivun toiselle laitteelle, ota synkronointi käyttöön Chromen asetuksista</translation>
 <translation id="5964869237734432770">Lopeta kuvaselitykset</translation>
 <translation id="5979084224081478209">Tarkista salasanat</translation>
 <translation id="5995726099713306770">Ladataanko sivu uudelleen?</translation>

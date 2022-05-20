@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Zašifrovanie údajov</translation>
 <translation id="1072700771426194907">Zistilo sa zariadenie USB</translation>
 <translation id="107278043869924952">Používať s heslom kód PIN</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ak povolíte zariadeniam so systémom Chrome OS odosielať automatické hlásenia, pomôžete nám tým určiť, čo treba v systéme Chrome OS prioritne opraviť a zlepšiť. Tieto hlásenia môžu obsahovať informácie, napríklad aké funkcie boli použité, koľko pamäte bolo zvyčajne využívanej, diagnostiky a údaje o využití aplikácií pre Android. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, ako sú vývojári pre Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Tieto hlásenia môžete kedykoľvek začať alebo prestať povoľovať v nastaveniach zariadenia so systémom Chrome OS svojho dieťaťa. Ak ste správcom domény, toto nastavenie môžete zmeniť v správcovskej konzole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Vypnutím tejto funkcie neovplyvníte schopnosť tohto zariadenia odosielať informácie potrebné na fungovanie základných služieb, ako sú aktualizácie systému a zabezpečenie.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ak zapnete nastavenie Aktivita na internete a v aplikáciách pre účet Google svojho dieťaťa, údaje dieťaťa sa môžu ukladať do jeho účtu Google. Viac o týchto nastaveniach a o tom, ako ich upraviť, sa dozviete na families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Ak vlastník zariadenia zapne Odosielať údaje o využití a diagnostiky, na Google sa môžu nahrať aj prehľady pádov.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Prechádzať stránkami pomocou textového kurzora</translation>
 <translation id="1076382954055048850">Zobraziť ďalšie relácie prenosu</translation>
 <translation id="1076698951459398590">Povoliť motív</translation>
@@ -1432,10 +1427,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2328561734797404498">Ak chcete používať <ph name="APP_NAME" />, reštartujte svoje zariadenie.</translation>
 <translation id="2328636661627946415">Keď máte aktivovaný režim inkognito, weby uvidia pomocou súborov cookie vašu aktivitu prehliadania iba na vlastných stránkach. Po ukončení relácie inkognito sa súbory cookie odstránia.</translation>
 <translation id="2329597144923131178">Prihláste sa a používajte svoje záložky, históriu, heslá a ďalšie nastavenia vo všetkých svojich zariadeniach.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ak povolíte zariadeniam so systémom Chrome OS odosielať automatické hlásenia, pomôžete nám tým určiť, čo treba v systéme Chrome OS prioritne opraviť a zlepšiť. Tieto hlásenia môžu obsahovať informácie, napríklad aké používate funkcie, koľko pamäte zvyčajne využívate, diagnostiky aj údaje o využití aplikácií pre Android a chyby. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, ako sú vývojári pre Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Tieto hlásenia môžete kedykoľvek začať alebo prestať povoľovať v nastaveniach svojho zariadenia so systémom Chrome OS. Ak ste správcom domény, toto nastavenie môžete zmeniť v správcovskej konzole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ak pre svoj účet Google zapnete nastavenie Aktivita na internete a v aplikáciách, údaje Androidu sa môžu ukladať do vášho účtu Google. Môžete ich zobraziť a odstrániť na account.google.com, kde tiež môžete zmeniť nastavenia účtu.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ak vlastník zariadenia zapne Odosielať údaje o využití a diagnostiky, na Google sa môžu nahrať aj prehľady pádov.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Zobraziť v obchode</translation>
 <translation id="2332192922827071008">Otvoriť predvoľby</translation>
 <translation id="2332515770639153015">Zlepšené bezpečné prehliadanie je zapnuté</translation>
@@ -2774,10 +2765,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3651488188562686558">Odpojí sa od siete Wi‑Fi</translation>
 <translation id="3652817283076144888">Inicializuje sa</translation>
 <translation id="3653160965917900914">Sieťové zdieľané úložiská</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ak povolíte zariadeniam so systémom Chrome OS odosielať automatické hlásenia, pomôžete nám tým určiť, čo treba v systéme Chrome OS prioritne opraviť a zlepšiť. Tieto hlásenia môžu obsahovať informácie, napríklad aké funkcie boli použité a koľko pamäte bolo zvyčajne využívanej.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Tieto hlásenia môžete kedykoľvek začať alebo prestať povoľovať v nastaveniach zariadenia so systémom Chrome OS svojho dieťaťa. Ak ste správcom domény, toto nastavenie môžete zmeniť v správcovskej konzole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Vypnutím tejto funkcie neovplyvníte schopnosť tohto zariadenia odosielať informácie potrebné na fungovanie základných služieb, ako sú aktualizácie systému a zabezpečenie.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ak vlastník zariadenia zapne Odosielať údaje o využití a diagnostiky, na Google sa môžu nahrať aj prehľady pádov.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Aj naďalej povoliť stránkam <ph name="HOST" /> prístup k mikrofónu</translation>
 <translation id="3654045516529121250">Čítať nastavenia dostupnosti</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Aplikácia má trvalý prístup k jednému súboru.}few{Aplikácia má trvalý prístup k # súborom.}many{Aplikácia má trvalý prístup k # súboru.}other{Aplikácia má trvalý prístup k # súborom.}}</translation>
@@ -3981,6 +3968,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4842976633412754305">Táto stránka sa snaží načítať skripty z neoverených zdrojov.</translation>
 <translation id="4844333629810439236">Ďalšie klávesnice</translation>
 <translation id="4844633725025837809">Šifrujte heslá v zariadení ešte pred ich uložením do správcu hesiel Google, čím zvýšite zabezpečenie</translation>
+<translation id="4846628405149428620">Vyberte, kam tento web môže ukladať zmeny</translation>
 <translation id="4846680374085650406">V prípade tohto nastavenia dodržiavate odporúčania správcu.</translation>
 <translation id="4847902821209177679">Zdroj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> je vybraný, stlačením klávesa Enter vyberte albumy zo zdroja <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">„Ok Google“ v Asistentovi Google</translation>
@@ -4048,7 +4036,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4900652253009739885">Jediný prepínač pridelený k akcii Vybrať sa nedá odstrániť. Ak chcete <ph name="RESPONSE" />, stlačte ľubovoľný kláves.</translation>
 <translation id="4901309472892185668">Vyberte stav experimentu <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravidlo stiahnuté zo servera je neplatné: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Pomôžte zlepšovať funkcie a výkonnosť Chromu aj systému Chrome OS automatickým odosielaním diagnostík a údajov o využití do Googlu. Niektoré súhrnné dáta pomôžu aj aplikáciám pre Android a partnerom Googlu. Ak zapnete nastavenie Aktivita na internete a v aplikáciách pre účet Google svojho dieťaťa, údaje Androidu dieťaťa sa môžu ukladať do jeho účtu Google.</translation>
 <translation id="4906490889887219338">Nastaviť alebo spravovať sieťové zdieľané úložiská. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Vyberte, kedy môže toto rozšírenie čítať a meniť dáta webov</translation>
 <translation id="4907161631261076876">Tento súbor sa bežne nesťahuje a môže byť nebezpečný.</translation>
@@ -5505,10 +5492,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Skupina bez názvu – 1 karta}few{Skupina bez názvu – # karty}many{Unnamed group - # tabs}other{Skupina bez názvu – # kariet}}</translation>
 <translation id="6385149369087767061">Pripojte sa k internetu a skúste to znova</translation>
 <translation id="6385543213911723544">Webové stránky môžu ukladať a čítať údaje súborov cookie</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ak povolíte zariadeniam so systémom Chrome OS odosielať automatické hlásenia, pomôžete nám tým určiť, čo treba v systéme Chrome OS prioritne opraviť a zlepšiť. Tieto hlásenia môžu obsahovať informácie, napríklad aké používate funkcie a koľko pamäte zvyčajne využívate.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Tieto hlásenia môžete kedykoľvek začať alebo prestať povoľovať v nastaveniach svojho zariadenia Chrome. Ak ste správcom domény, toto nastavenie môžete zmeniť v správcovskej konzole.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Vypnutím tejto funkcie neovplyvníte schopnosť zariadenia odosielať informácie potrebné na fungovanie základných služieb, ako sú aktualizácie systému a zabezpečenie.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ak vlastník zariadenia zapne Odosielať údaje o využití a diagnostiky, na Google sa môžu nahrať aj prehľady pádov.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Upozornenie: Podrobné zapisovanie do denníka je povolené. Denníky uvedené nižšie môžu obsahovať webové adresy alebo iné citlivé údaje. Skontrolujte ich a uistite sa, že proti odoslaniu týchto informácií nemáte námietky.</translation>
 <translation id="6387674443318562538">Rozdeliť zvislo</translation>
 <translation id="6388429472088318283">Vyhľadajte jazyky</translation>
@@ -5629,7 +5612,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6504601948739128893">Weby, ktoré majú zakázané používať písma nainštalované v zariadení</translation>
 <translation id="6504611359718185067">Ak chcete pridať tlačiareň, pripojte sa k internetu</translation>
 <translation id="6506374932220792071">Podpis X9.62 ECDSA s SHA-256</translation>
-<translation id="6507936476364432879">Pomôžte zlepšovať funkcie a výkonnosť Chromu aj systému Chrome OS automatickým odosielaním diagnostík a údajov o využití do Googlu.</translation>
 <translation id="6508248480704296122">Podobné ako <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikácia: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licencia pre médiá</translation>
@@ -6958,7 +6940,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7807711621188256451">Vždy povoliť stránkam <ph name="HOST" /> prístup ku kamere</translation>
 <translation id="7810202088502699111">Na tejto stránke boli zablokované kontextové okná.</translation>
 <translation id="781167124805380294">Prenos súboru <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Pomôžte zlepšovať funkcie a výkonnosť Chromu aj systému Chrome OS automatickým odosielaním diagnostík a údajov o využití do Googlu. Niektoré súhrnné dáta pomôžu aj aplikáciám pre Android a partnerom Googlu. Ak pre svoj účet Google zapnete nastavenie Aktivita na internete a v aplikáciách, údaje Androidu sa môžu ukladať do vášho účtu Google.</translation>
 <translation id="7814458197256864873">&amp;Kopírovať</translation>
 <translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7817361223956157679">Klávesnica na obrazovke ešte nie je v systéme Linux funkčná</translation>

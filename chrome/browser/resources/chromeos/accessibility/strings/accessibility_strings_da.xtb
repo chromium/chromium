@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignorerer næste tastetryk</translation>
 <translation id="4623097797855662355">Slutskrift</translation>
+<translation id="4624970070706497034">TalkBack leverer ikke længere tilpasningsmuligheder til Chromebooks. Du kan stadig bruge TalkBack, men du skal bruge TalkBacks standardtastaturgenveje. Tryk på søgetasten+A efterfulgt af K for at se de tilgængelige genveje. Hvis du stadig vil bruge TalkBack, skal du indtaste kommandoen igen.</translation>
 <translation id="463135993322337640">Tryk på ChromeVox o, n for at se nyhederne</translation>
 <translation id="4649220074413114917">Du kan stoppe alt det, der siges, ved at trykke på skærmen med to fingre. Dette er nyttigt, hvis du ikke vil have, at ChromeVox læser noget. Tryk på skærmen med to fingre for at fortsætte.</translation>
 <translation id="4660783501463101648">Classic er fjernet. Tastaturknappen, som skifter tilbage til ChromeVox Classic, er fjernet.</translation>

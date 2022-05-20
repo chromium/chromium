@@ -5212,6 +5212,15 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
 <translation id="6786666051053129545">Voice Match-proces van de Google Assistent aanzetten</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6786967369487349613">De map voor roaming-profielen instellen</translation>
+<translation id="6789319144568227749">Hiermee stel je ondersteuning voor CORS-verzoekheaders zonder jokertekens in.
+
+      In versie 97 van <ph name="PRODUCT_NAME" /> wordt ondersteuning voor CORS-verzoekheaders zonder jokertekens geïntroduceerd. Als scripts een cross-origin-netwerkverzoek via fetch() en XMLHttpRequest doen met een door het script toegevoegde Authorization-header, moet de header expliciet worden toegestaan door de Access-Control-Allow-Headers-header in de CORS-pre-flightreactie. Expliciet houdt hier in dat het jokertekensymbool * de Authorization-header niet dekt. Zie <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> voor meer informatie.
+
+      Als je dit beleid niet instelt of instelt op True, ondersteunt <ph name="PRODUCT_NAME" /> de CORS-verzoekheaders zonder jokertekens en gedraagt het product zich zoals hierboven beschreven.
+
+      Als je dit beleid instelt op False, staat Chrome het jokertekensymbool (*) toe in de Access-Control-Allow-Headers-header in de CORS-pre-flightreactie om de Authorization-header te dekken.
+
+      Dit zakelijke beleid is tijdelijk. Het is de bedoeling het in de toekomst te verwijderen.</translation>
 <translation id="6789422336869764846">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus toen de computer werd opgestart.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de status van de schakelaar voor de ontwikkelaarsmodus niet.</translation>

@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Več pomoči je na voljo v <ph name="BEGIN_LINK" />centru za pomoč<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritem stiskanja</translation>
 <translation id="4794140124556169553">Izvajanje preizkusa CPE-ja lahko vpliva na delovanje sistema.</translation>
+<translation id="4804818685124855865">Prekini povezavo</translation>
 <translation id="4808449224298348341">Preklicano tiskalno opravilo za dokument <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Svetla tema</translation>
 <translation id="4813136279048157860">Moje slike</translation>
@@ -530,6 +531,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5931523347251946569">Datoteke ni bilo mogoče najti</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
 <translation id="594552776027197022">Ustvarjanje naključnega para ključev</translation>
+<translation id="5947494881799873997">Razveljavi</translation>
 <translation id="5951259522948394825">Potrdite, da je vse na svojem mestu in si oglejte diagnostično poročilo.</translation>
 <translation id="5972388717451707488">Posodobitev mehanizma</translation>
 <translation id="5984145644188835034">Privzeto ozadje</translation>
@@ -813,6 +815,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="871560550817059752">Napaka – zmanjkalo je črnila</translation>
 <translation id="8723108084122415655">Omrežje, ki ni privzeto, je nad pragom zakasnitve</translation>
+<translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8726019395068607495">Ustavljeno – vrata so odprta</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8747900814994928677">Potrditev spremembe</translation>

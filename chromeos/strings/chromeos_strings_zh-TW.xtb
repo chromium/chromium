@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">如需其他協助，請前往<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />。</translation>
 <translation id="4793756956024303490">壓縮演算法</translation>
 <translation id="4794140124556169553">執行 CPU 測試可能會影響系統效能</translation>
+<translation id="4804818685124855865">中斷連線</translation>
 <translation id="4808449224298348341">已取消列印工作「<ph name="DOCUMENT_TITLE" />」</translation>
 <translation id="4809927044794281115">淺色主題</translation>
 <translation id="4813136279048157860">我的圖片</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="594552776027197022">產生隨機金鑰組</translation>
+<translation id="5947494881799873997">還原</translation>
 <translation id="5951259522948394825">確認一切無誤並查看診斷報告</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">預設桌布</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>
 <translation id="8723108084122415655">非預設網路超過延遲門檻</translation>
+<translation id="8725066075913043281">再試一次</translation>
 <translation id="8726019395068607495">已停止 - 蓋子處於開啟狀態</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8747900814994928677">確認變更</translation>

@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ignoring next key press</translation>
 <translation id="4623097797855662355">Colophon</translation>
+<translation id="4624970070706497034">TalkBack no longer provides customisation for Chromebooks. You can still use it, but use TalkBack default keyboard shortcuts. Press Search+A then K to see available shortcuts. If you still want to use TalkBack, press the command again.</translation>
 <translation id="463135993322337640">Press ChromeVox o, n to find out what's new</translation>
 <translation id="4649220074413114917">Tapping the screen with two fingers can be used to stop any current speech. This is useful if you don’t want ChromeVox to read something. To continue, tap the screen with two fingers.</translation>
 <translation id="4660783501463101648">Classic removed. The keyboard toggle to switch back into ChromeVox Classic has been removed.</translation>

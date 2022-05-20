@@ -489,7 +489,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Xestionar as ventás</translation>
-<translation id="3624977496395967031">Facer clic para ver opcións de ordenación</translation>
 <translation id="3631987586758005671">Compartindo co dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Iniciar sesión automaticamente nos sitios web coas credenciais almacenadas. Cando a función estea desactivada, solicitaráseche sempre a verificación antes de iniciar sesión nun sitio web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4225895483398857530">Atallo da barra de ferramentas</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4248098802131000011">Protexe os teus contrasinais fronte a violacións da seguranza dos datos e outros problemas de seguranza</translation>
+<translation id="4249955472157341256">Ordenar por máis recente</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Licenzas de código aberto</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Que datos se usan?<ph name="END_BOLD" /> O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
@@ -897,7 +897,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5957442310066583693">Tocar o botón Inicio para ver os teus sitios favoritos</translation>
 <translation id="5958275228015807058">Atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
 <translation id="5962718611393537961">Toca para contraer</translation>
-<translation id="5964805880140440652">Para compartir esta páxina con outro dispositivo, activa a sincronización na configuración de Chrome</translation>
 <translation id="5964869237734432770">Descricións de imaxes: non</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="5995726099713306770">Queres descargar esta páxina de novo?</translation>

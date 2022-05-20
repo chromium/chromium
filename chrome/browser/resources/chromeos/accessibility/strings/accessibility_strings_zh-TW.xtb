@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">「<ph name="TABLENAME" />」表格 <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">忽略下一個按鍵</translation>
 <translation id="4623097797855662355">版權頁標記</translation>
+<translation id="4624970070706497034">TalkBack 不再為 Chromebook 提供自訂項目。你仍然可以使用自訂功能，但無法使用 TalkBack 預設的鍵盤快速鍵。先按下搜尋鍵 + A 鍵，再按下 K 鍵即可查看可用的快速鍵。如果你仍想使用 TalkBack，請再次按下指令鍵。</translation>
 <translation id="463135993322337640">按下 ChromeVox 的 O 鍵、N 鍵，即可瞭解最新功能</translation>
 <translation id="4649220074413114917">用雙指輕觸螢幕可以停止目前朗讀的任何內容。如果不希望 ChromeVox 繼續朗讀，這種做法就能派上用場。如要繼續，請用雙指輕觸螢幕。</translation>
 <translation id="4660783501463101648">移除 ChromeVox 傳統模式切換功能：現已無法透過鍵盤切換回 ChromeVox 傳統模式。</translation>

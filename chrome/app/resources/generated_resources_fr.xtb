@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Afficher les mots de passe de votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Ajouter un port</translation>
 <translation id="1026822031284433028">Charger l'image</translation>
+<translation id="1028700151766901954">Motif : LBS reste dans <ph name="DEFAULT_OPEN_BROWSER" /> par défaut.</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1031362278801463162">Chargement de l'aperçu...</translation>
 <translation id="1032605640136438169">Veuillez consulter les nouvelles conditions</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Chiffrement des données</translation>
 <translation id="1072700771426194907">Périphérique USB détecté</translation>
 <translation id="107278043869924952">Utiliser un code en plus du mot de passe</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils Chrome OS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans Chrome OS. Ces rapports peuvent inclure diverses informations (fonctionnalités utilisées, quantité de mémoire généralement utilisée et données d'utilisation et de diagnostic des applis Android). Certaines données globales seront aussi utiles aux partenaires et développeurs d'applis Google tels que les développeurs Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de l'appareil Chrome OS de votre enfant. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Désactiver cette fonctionnalité n'empêche pas cet appareil d'envoyer les informations nécessaires pour bénéficier de services essentiels tels que les mises à jour et la sécurité du système.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si le paramètre "Activité sur le Web et les applications" est activé pour le compte Google de votre enfant, ses données peuvent être enregistrées dans son compte Google. Découvrez plus en détail ces paramètres et comment les ajuster sur le site families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Si le propriétaire de l'appareil active l'option "Envoyer des données d'utilisation et de diagnostic", il se peut que des rapports d'erreur soient également envoyés à Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Parcourir les pages à l'aide d'un curseur de texte</translation>
 <translation id="1076382954055048850">Voir les autres appareils en train de caster</translation>
 <translation id="1076698951459398590">Activer le thème</translation>
@@ -1430,10 +1426,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2328561734797404498">Veuillez redémarrer l'appareil pour utiliser <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">En mode navigation privée, les sites peuvent uniquement utiliser les cookies pour voir votre activité de navigation sur le site en question. Les cookies sont supprimés à la fin de la session de navigation privée.</translation>
 <translation id="2329597144923131178">Connectez-vous pour synchroniser favoris, historique, mots de passe et autres sur vos appareils. </translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils Chrome OS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans Chrome OS. Ces rapports peuvent inclure diverses informations (fonctionnalités utilisées, quantité de mémoire généralement utilisée, données d'utilisation et de diagnostic des applis Android, erreurs, etc.). Certaines données globales seront aussi utiles aux partenaires et développeurs d'applis Google tels que les développeurs Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de votre appareil Chrome OS. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Si le paramètre "Activité sur le Web et les applications" est activé pour votre compte Google, vos données Android peuvent y être enregistrées. Vous pouvez consulter vos données, les supprimer et modifier les paramètres de votre compte sur la page account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si le propriétaire de l'appareil active l'option "Envoyer des données d'utilisation et de diagnostic", il se peut que des rapports d'erreur soient également envoyés à Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Afficher dans la boutique</translation>
 <translation id="2332192922827071008">Ouvrir les préférences</translation>
 <translation id="2332515770639153015">Navigation sécurisée avec protection renforcée activée</translation>
@@ -2772,10 +2764,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3651488188562686558">Se déconnectera du Wi-Fi</translation>
 <translation id="3652817283076144888">Initialisation…</translation>
 <translation id="3653160965917900914">Partages de fichiers en réseau</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils Chrome OS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans Chrome OS. Ces rapports peuvent inclure diverses informations, comme les fonctionnalités utilisées et la quantité de mémoire généralement utilisée.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de l'appareil Chrome OS de votre enfant. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Désactiver cette fonctionnalité n'empêche pas cet appareil d'envoyer les informations nécessaires pour bénéficier de services essentiels tels que les mises à jour et la sécurité du système.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si le propriétaire de l'appareil active l'option "Envoyer des données d'utilisation et de diagnostic", il se peut que des rapports d'erreur soient également envoyés à Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Continuer à autoriser <ph name="HOST" /> à accéder à votre micro</translation>
 <translation id="3654045516529121250">Lire vos paramètres d'accessibilité</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{L'application possède un accès permanent à un fichier.}one{L'application possède un accès permanent à # fichier.}other{L'application possède un accès permanent à # fichiers.}}</translation>
@@ -3351,6 +3339,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209251085232852247">Désactivé</translation>
 <translation id="4210048056321123003">Téléchargement de la machine virtuelle…</translation>
+<translation id="4210380525132844778">Motif : <ph name="RULE" /> a été trouvé dans la liste "<ph name="LIST_NAME" />".</translation>
 <translation id="421182450098841253">&amp;Afficher la barre de favoris</translation>
 <translation id="4211851069413100178">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de votre expérience sur Android en envoyant automatiquement à Google des données relatives aux diagnostics et à l'utilisation de l'appareil et des applications. Ce processus permettra d'améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires, tels que les développeurs Android. Ce <ph name="BEGIN_LINK1" />paramètre<ph name="END_LINK1" /> est appliqué par le propriétaire. Le propriétaire de cet appareil peut choisir d'envoyer à Google des données de diagnostic et d'utilisation. Si vous activez le paramètre relatif à l'activité supplémentaire sur le Web et les applications, ces données peuvent être enregistrées dans votre compte Google. <ph name="BEGIN_LINK2" />En savoir plus<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Ne plus utiliser avec les applis Android</translation>
@@ -4045,7 +4034,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4900652253009739885">Impossible de supprimer l'unique contacteur associé à "Sélectionner". Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La règle téléchargée depuis le serveur n'est pas valide : <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Contribuez à améliorer les fonctionnalités et performances de Chrome et Chrome OS en envoyant automatiquement des données d'utilisation et de diagnostic à Google. Certaines données globales seront aussi utiles aux partenaires Google et développeurs d'applis Android. Si le paramètre "Activité sur le Web et les applications" est activé pour le compte Google de votre enfant, ses données Android peuvent être enregistrées dans son compte Google.</translation>
 <translation id="4906490889887219338">Configurer ou gérer des partages de fichiers en réseau. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Précisez quand cette extension peut lire et modifier les données de votre site</translation>
 <translation id="4907161631261076876">Ce fichier n'étant pas souvent téléchargé, il peut présenter un danger.</translation>
@@ -5178,6 +5166,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6063284707309177505">Créer un code QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Il se peut qu'une voix similaire ou un enregistrement puissent accéder aux résultats personnels de <ph name="SUPERVISED_USER_NAME" />. Afin d'économiser la batterie, configurez les paramètres de l'Assistant de <ph name="SUPERVISED_USER_NAME" /> pour que "Hey Google" ne soit actif que quand l'appareil est branché à l'alimentation.</translation>
 <translation id="6064217302520318294">Verrouillage de l'écran</translation>
+<translation id="6065145031947216733">Séparer votre navigation ?</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
 <translation id="6066794465984119824">Hachage d'image non défini</translation>
 <translation id="6069464830445383022">Connectez-vous à votre Chromebook à l'aide de votre compte Google</translation>
@@ -5256,6 +5245,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6129953537138746214">Espace</translation>
 <translation id="6130692320435119637">Ajouter un réseau Wi-Fi</translation>
 <translation id="6130887916931372608">Touche du clavier</translation>
+<translation id="6135823405800500595">Vérifiez que votre téléphone est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="6136114942382973861">Fermer la barre de téléchargements</translation>
 <translation id="6136287496450963112">Votre clé de sécurité n'est pas protégée par un code. Pour gérer les empreintes digitales, vous devez d'abord en créer un.</translation>
 <translation id="6138680304137685902">Signature X9.62 ECDSA avec SHA-384</translation>
@@ -5501,10 +5491,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Groupe sans nom - 1 onglet}one{Groupe sans nom - # onglet}other{Groupe sans nom - # onglets}}</translation>
 <translation id="6385149369087767061">Connectez-vous à Internet et réessayez</translation>
 <translation id="6385543213911723544">Les sites peuvent enregistrer et consulter les données liées aux cookies.</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Autoriser les appareils Chrome OS à envoyer automatiquement des rapports nous aide à prioriser ce qu'il faut corriger et améliorer dans Chrome OS. Ces rapports peuvent inclure diverses informations, comme les fonctionnalités utilisées et la quantité de mémoire généralement utilisée.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de votre appareil Chrome. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Désactiver cette fonctionnalité n'empêche pas votre appareil d'envoyer les informations nécessaires pour bénéficier de services essentiels tels que les mises à jour et la sécurité du système.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si le propriétaire de l'appareil active l'option "Envoyer des données d'utilisation et de diagnostic", il se peut que des rapports d'erreur soient également envoyés à Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Avertissement : La création de journaux détaillés est activée. Les journaux ci-dessous peuvent contenir des URL ou d'autres informations sensibles. Veuillez examiner les informations incluses et vous assurer que cela ne vous dérange pas de nous les envoyer.</translation>
 <translation id="6387674443318562538">Séparation verticale</translation>
 <translation id="6388429472088318283">Rechercher des langues</translation>
@@ -5625,7 +5611,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6504601948739128893">Non autorisés à utiliser les polices installées sur votre appareil</translation>
 <translation id="6504611359718185067">Connectez-vous à Internet pour ajouter une imprimante</translation>
 <translation id="6506374932220792071">Signature X9.62 ECDSA avec SHA-256</translation>
-<translation id="6507936476364432879">Contribuez à améliorer les fonctionnalités et performances de Chrome et Chrome OS en envoyant automatiquement des données d'utilisation et de diagnostic à Google.</translation>
 <translation id="6508248480704296122">En rapport avec <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licence multimédia</translation>
@@ -6952,7 +6937,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
 <translation id="7810202088502699111">Des fenêtres pop-up ont été bloquées sur cette page.</translation>
 <translation id="781167124805380294">Caster <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Contribuez à améliorer les fonctionnalités et performances de Chrome et Chrome OS en envoyant automatiquement des données d'utilisation et de diagnostic à Google. Certaines données globales seront aussi utiles aux partenaires Google et développeurs d'applis Android. Si le paramètre "Activité sur le Web et les applications" est activé pour votre compte Google, vos données Android peuvent y être enregistrées.</translation>
 <translation id="7814458197256864873">&amp;Copier</translation>
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7817361223956157679">Le clavier à l'écran n'est pas compatible avec les applications Linux pour le moment</translation>
@@ -7091,6 +7075,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7947962633355574091">C&amp;opier l'adresse vidéo</translation>
 <translation id="7947964080535614577">Les sites diffusent généralement des annonces en contrepartie de contenus ou services offerts. Toutefois, certains sites sont connus pour afficher des annonces intrusives ou trompeuses.</translation>
 <translation id="7948407723851303488">Toutes les pages de <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Motif : LBS n'accepte que les URL incluant http://, https:// et file://.</translation>
 <translation id="7951265006188088697">Pour ajouter ou gérer des modes de paiement Google Pay, accédez à votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Désactiver la carte virtuelle</translation>
 <translation id="7952708427581814389">Les sites peuvent demander à voir le texte et les images du presse-papiers</translation>
@@ -7635,6 +7620,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8480869669560681089">Appareil de <ph name="VENDOR_NAME" /> inconnu</translation>
 <translation id="8481187309597259238">Confirmer l'autorisation USB</translation>
 <translation id="8481980314595922412">Les fonctionnalités à l'essai sont activées</translation>
+<translation id="8486666913807228950">Motif : la règle inversée <ph name="REVERT_RULE" /> a été trouvée dans la liste "Forcer l'ouverture dans".</translation>
 <translation id="848666842773560761">Une appli tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
 <translation id="8487678622945914333">Zoom avant</translation>
 <translation id="8489156414266187072">Les suggestions personnelles ne sont affichées que sur votre compte</translation>

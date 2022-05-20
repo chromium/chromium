@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Додатну помоћ потражите у <ph name="BEGIN_LINK" />центру за помоћ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритам компримовања</translation>
 <translation id="4794140124556169553">Покретање теста процесора може да утиче на учинак система</translation>
+<translation id="4804818685124855865">Прекини везу</translation>
 <translation id="4808449224298348341">Отказан је задатак штампања <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Моје слике</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">Фајл није пронађен</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
 <translation id="594552776027197022">Генеришите насумични пар кључева</translation>
+<translation id="5947494881799873997">Врати</translation>
 <translation id="5951259522948394825">Потврдите да је све у реду и прегледајте извештај о дијагностици</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Подразумевана позадина</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">Важи</translation>
 <translation id="871560550817059752">Није успело – нема више мастила</translation>
 <translation id="8723108084122415655">Мрежа која није подразумевана премашује граничну вредност за кашњење</translation>
+<translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8726019395068607495">Заустављено – врата су отворена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Потврдите промену</translation>

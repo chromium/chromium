@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3616113530831147358">오디오</translation>
 <translation id="3622349720008044802">창 관리</translation>
-<translation id="3624977496395967031">정렬 옵션을 열려면 클릭하세요.</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />에 공유하는 중</translation>
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">툴바 바로가기</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
+<translation id="4249955472157341256">최신순 정렬</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="4256782883801055595">오픈소스 라이선스</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chrome으로 방문한 사이트 기록인 방문 기록이 사용됩니다.</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">맞춤 인기 사이트를 보려면 홈 버튼 탭하기</translation>
 <translation id="5958275228015807058">다운로드에서 파일 및 페이지를 찾아보세요.</translation>
 <translation id="5962718611393537961">탭하여 접기</translation>
-<translation id="5964805880140440652">이 페이지를 다른 기기로 공유하려면 Chrome 설정에서 동기화를 사용 설정하세요.</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5995726099713306770">페이지를 다시 다운로드하시겠습니까?</translation>

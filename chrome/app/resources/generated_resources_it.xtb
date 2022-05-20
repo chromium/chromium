@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Crittografia dati</translation>
 <translation id="1072700771426194907">È stato rilevato un dispositivo USB</translation>
 <translation id="107278043869924952">Usa il PIN oltre alla password</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi Chrome OS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in Chrome OS. Questi report possono includere, ad esempio, informazioni sulle funzionalità che sono state utilizzate, sulla quantità di memoria solitamente impiegata, nonché sui dati diagnostici e sull'utilizzo delle app per Android. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come gli sviluppatori Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del dispositivo Chrome OS di tuo figlio. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se l'impostazione Attività web e app è attiva per l'Account Google di tuo figlio, i suoi dati potrebbero essere salvati nel suo account. Scopri di più su queste impostazioni e su come modificarle all'indirizzo families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Se il proprietario del dispositivo attiva l'opzione "Invia dati diagnostici e sull'utilizzo", su Google potrebbero essere caricati anche i report sugli arresti anomali.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Spostati da una pagina all'altra con un cursore di testo</translation>
 <translation id="1076382954055048850">Mostra altre sessioni di trasmissione</translation>
 <translation id="1076698951459398590">Attiva tema</translation>
@@ -1430,10 +1425,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2328561734797404498">Riavvia il dispositivo per utilizzare <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quando sei in modalità di navigazione in incognito, i siti possono usare i cookie solo per vedere la tua attività di navigazione su di essi. I cookie vengono eliminati al termine della sessione in incognito.</translation>
 <translation id="2329597144923131178">Accedi per visualizzare i tuoi Preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi Chrome OS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in Chrome OS. Questi report possono includere, ad esempio, informazioni sulle funzionalità che utilizzi, sulla quantità di memoria solitamente impiegata, sui dati diagnostici e sull'utilizzo delle app per Android, nonché sugli errori. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come gli sviluppatori Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo Chrome OS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Se l'impostazione Attività web e app è attiva per il tuo Account Google, i tuoi dati Android potrebbero essere salvati nell'account. Puoi vedere ed eliminare i tuoi dati, nonché modificare le impostazioni dell'account, all'indirizzo account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se il proprietario del dispositivo attiva l'opzione "Invia dati diagnostici e sull'utilizzo", su Google potrebbero essere caricati anche i report sugli arresti anomali.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Visualizza nello store</translation>
 <translation id="2332192922827071008">Apri Preferenze</translation>
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
@@ -2772,10 +2763,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3651488188562686558">Disconnessione dalla rete Wi-Fi</translation>
 <translation id="3652817283076144888">Inizializzazione in corso</translation>
 <translation id="3653160965917900914">Condivisioni file di rete</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi Chrome OS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in Chrome OS. Questi report possono includere, ad esempio, informazioni sulle funzionalità che sono state utilizzate e sulla quantità di memoria solitamente impiegata.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del dispositivo Chrome OS di tuo figlio. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se il proprietario del dispositivo attiva l'opzione "Invia dati diagnostici e sull'utilizzo", su Google potrebbero essere caricati anche i report sugli arresti anomali.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Continua a consentire l'accesso di <ph name="HOST" /> al microfono</translation>
 <translation id="3654045516529121250">Lettura delle impostazioni di accessibilità</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ha accesso permanente a un file.}other{Ha accesso permanente a # file.}}</translation>
@@ -4046,7 +4033,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4900652253009739885">Impossibile rimuovere l'unico sensore assegnato a "Seleziona". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Il criterio scaricato dal server non è valido. <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome e Chrome OS inviando automaticamente a Google dati diagnostici e sull'utilizzo. Alcuni dati aggregati saranno utili anche alle app per Android e ai partner di Google. Se l'impostazione Attività web e app è attiva per l'Account Google di tuo figlio, i suoi dati Android potrebbero essere salvati nel suo account.</translation>
 <translation id="4906490889887219338">Configura o gestisci condivisioni file di rete. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Scegli quando questa estensione può leggere e modificare i tuoi dati dei siti</translation>
 <translation id="4907161631261076876">Questo file non viene scaricato spesso e potrebbe essere pericoloso.</translation>
@@ -5500,10 +5486,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Gruppo senza nome - 1 scheda}other{Gruppo senza nome - # schede}}</translation>
 <translation id="6385149369087767061">Connettiti a Internet e riprova</translation>
 <translation id="6385543213911723544">I siti possono memorizzare e leggere i dati dei cookie</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi Chrome OS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in Chrome OS. Questi report possono includere, ad esempio, informazioni sulle funzionalità che utilizzi e sulla quantità di memoria solitamente impiegata.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo Chrome OS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Se il proprietario del dispositivo attiva l'opzione "Invia dati diagnostici e sull'utilizzo", su Google potrebbero essere caricati anche i report sugli arresti anomali.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Avviso: è attiva la funzione di registrazione dettagliata. I log indicati di seguito potrebbero includere URL o altre informazioni sensibili. Controlla e assicurati di voler inviare tali dati.</translation>
 <translation id="6387674443318562538">Divisione in verticale</translation>
 <translation id="6388429472088318283">Cerca lingue</translation>
@@ -5624,7 +5606,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6504601948739128893">Non autorizzati a utilizzare i caratteri installati sul tuo dispositivo</translation>
 <translation id="6504611359718185067">Connettiti a Internet per aggiungere una stampante</translation>
 <translation id="6506374932220792071">Firma X9.62 ECDSA con SHA-256</translation>
-<translation id="6507936476364432879">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome e Chrome OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="6508248480704296122">Correlata a <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Applicazione: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licenza multimediale</translation>
@@ -6949,7 +6930,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7807711621188256451">Consenti sempre a <ph name="HOST" /> di accedere alla webcam</translation>
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
 <translation id="781167124805380294">Trasmetti <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome e Chrome OS inviando automaticamente a Google dati diagnostici e sull'utilizzo. Alcuni dati aggregati saranno utili anche alle app per Android e ai partner di Google. Se l'impostazione Attività web e app è attiva per il tuo Account Google, i tuoi dati Android potrebbero essere salvati nell'account.</translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7815680994978050279">Download pericoloso bloccato</translation>
 <translation id="7817361223956157679">La tastiera sullo schermo non funziona ancora nelle app Linux</translation>

@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Si tienes otros inconvenientes, visita el <ph name="BEGIN_LINK" />Centro de ayuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">Ejecutar una prueba de CPU puede afectar el rendimiento de tu sistema.</translation>
+<translation id="4804818685124855865">Desconectar</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
@@ -530,6 +531,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5931523347251946569">No se encontró el archivo</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Generar un par de llaves aleatorio</translation>
+<translation id="5947494881799873997">Revertir</translation>
 <translation id="5951259522948394825">Confirmar que todo está en orden y ver el informe de diagnóstico</translation>
 <translation id="5972388717451707488">Actualizar motor</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
@@ -813,6 +815,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="871560550817059752">Error: Sin tinta</translation>
 <translation id="8723108084122415655">la red no predeterminada supera el umbral de latencia</translation>
+<translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8726019395068607495">Se detuvo: la tapa está abierta</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8747900814994928677">Confirmar cambio</translation>

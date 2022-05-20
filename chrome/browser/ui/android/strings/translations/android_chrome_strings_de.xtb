@@ -489,7 +489,6 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Fenster verwalten</translation>
-<translation id="3624977496395967031">Klicken, um Sortieroptionen anzuzeigen</translation>
 <translation id="3631987586758005671">Wird mit "<ph name="DEVICE_NAME" />" geteilt</translation>
 <translation id="363596933471559332">Du wirst mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, wirst du jedes Mal aufgefordert, dich manuell auf einer Website anzumelden.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="4225895483398857530">Tastenkürzel in Symbolleiste</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4248098802131000011">Schütze deine Passwörter vor Datenpannen und anderen Sicherheitsproblemen</translation>
+<translation id="4249955472157341256">Neueste zuerst</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open Source-Lizenzen</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
@@ -897,7 +897,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5957442310066583693">Auf die Schaltfläche „Startseite“ tippen, um deine Top-Websites aufzurufen</translation>
 <translation id="5958275228015807058">Deine Dateien und Seiten findest du unter "Downloads"</translation>
 <translation id="5962718611393537961">Zum Minimieren tippen</translation>
-<translation id="5964805880140440652">Wenn du diese Seite mit einem anderen Gerät teilen möchtest, aktiviere in den Chrome-Einstellungen die Synchronisierung</translation>
 <translation id="5964869237734432770">Bildbeschreibungen beenden</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
 <translation id="5995726099713306770">Seite noch einmal herunterladen?</translation>

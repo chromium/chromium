@@ -396,6 +396,7 @@
 <translation id="4793710386569335688">ສຳລັບການຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ສູນຊ່ວຍເຫຼືອ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">ອະກໍຣິທຶມ​ການ​ບີບ​ອັດ​ຂໍ້​ມູນ</translation>
 <translation id="4794140124556169553">ການທົດສອບ CPU ອາດກະທົບກັບປະສິດທິພາບລະບົບຂອງທ່ານໄດ້</translation>
+<translation id="4804818685124855865">ຕັດເຊື່ອມຕໍ່</translation>
 <translation id="4808449224298348341">ຍົກເລີກວຽກພິມ <ph name="DOCUMENT_TITLE" /> ແລ້ວ</translation>
 <translation id="4809927044794281115">ຮູບແບບສີສັນແຈ້ງ</translation>
 <translation id="4813136279048157860">ຮູບພາບຂອງຂ້ອຍ</translation>
@@ -531,6 +532,7 @@
 <translation id="5931523347251946569">ບໍ່ພົບໄຟລ໌</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
 <translation id="594552776027197022">ສ້າງຄູ່ກະແຈແບບສຸ່ມ</translation>
+<translation id="5947494881799873997">ກັບຄືນ</translation>
 <translation id="5951259522948394825">ຢືນຢັນວ່າທຸກຢ່າງຖືກຕ້ອງແລ້ວ ແລະ ເບິ່ງລາຍງານການວິນິໄສ</translation>
 <translation id="5972388717451707488">ອັບເດດລະບົບ</translation>
 <translation id="5984145644188835034">ຮູບພື້ນຫຼັງເລີ່ມຕົ້ນ</translation>
@@ -815,6 +817,7 @@
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="8723108084122415655">ເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
+<translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8726019395068607495">ຢຸດພິມ, ຝາເປີດຢູ່</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8747900814994928677">ຢືນຢັນການປ່ຽນແປງ</translation>

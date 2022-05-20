@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3616113530831147358">אודיו</translation>
 <translation id="3622349720008044802">ניהול החלונות</translation>
-<translation id="3624977496395967031">צריך ללחוץ כדי לפתוח את אפשרויות המיון</translation>
 <translation id="3631987586758005671">השיתוף עם <ph name="DEVICE_NAME" /> מתבצע</translation>
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4248098802131000011">הגנה על הסיסמאות שלך מפני פרצות באבטחת המידע ובעיות אבטחה אחרות</translation>
+<translation id="4249955472157341256">מיון לפי 'האחרון'</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chrome במכשיר הזה.</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">להצגת האתרים המובילים שלך, יש להקיש על לחצן דף הבית</translation>
 <translation id="5958275228015807058">הקבצים והדפים שלך נמצאים ב'הורדות'</translation>
 <translation id="5962718611393537961">יש להקיש כדי לכווץ</translation>
-<translation id="5964805880140440652">‏כדי לשתף את הדף הזה עם מכשיר אחר, יש להפעיל את הסנכרון בהגדרות של Chrome</translation>
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
 <translation id="5995726099713306770">להוריד שוב את הדף?</translation>

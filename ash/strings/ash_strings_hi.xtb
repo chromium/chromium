@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> चार्ज कर रहा है</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">फ़ोन का पता लगाने की सुविधा</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> नाम से सेव किया डेस्क पहले से मौजूद है</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> को <ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> को फ़ोल्डर <ph name="FOLDER_NAME" /> पर ले जाएं.</translation>
@@ -268,6 +269,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> के साथ जोड़ने के लिए, Ctrl + W दबाएं. डेस्क और विंडो बंद करने के लिए, Ctrl + Shift + W दबाएं.</translation>
 <translation id="2595239820337756193">5 हज़ार कितने मील होता है</translation>
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
+<translation id="2598725286293895280">डेस्क में ऐसे ऐप्लिकेशन मौजूद हैं जो काम नहीं करते</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करना ज़रूरी है</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number कीबोर्ड शॉर्टकट बदल गया है. फ़ंक्शन बटन इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + सबसे ऊपर की लाइन का कोई एक बटन दबाएं.</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
+<translation id="4740516757091333363">सेव किया गया डेस्क मिटाना है?</translation>
 <translation id="4752784485658729358">सिर्फ़ छह डेस्क सेव किए जा सकते हैं. नया डेस्क सेव करने के लिए, पहले से सेव किया गया कोई डेस्क हटाएं.</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4774338217796918551">कल <ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
@@ -741,6 +744,7 @@
 <translation id="5352250171825660495">गहरे रंग वाली थीम चालू है</translation>
 <translation id="5356963482258194581">गहरे और हल्के रंग वाली थीम के बीच स्विच करें. डेस्कटॉप पर दायां क्लिक करें और 'वॉलपेपर और स्टाइल' चुनें.</translation>
 <translation id="5379115545237091094">कई बार कोशिश की जा चुकी है</translation>
+<translation id="5391307769715781764">सेव किया गया डेस्क बदलना है?</translation>
 <translation id="5393156353051693207">अपने ऐप्लिकेशन का क्रम बदलने के लिए, स्क्रीन के किसी भी हिस्से को दबाकर रखें</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> पर<ph name="DRAGGED_APP_NAME" /> को खींचकर लाया जा रहा है, फ़ोल्डर बनाने के लिए इसे छोड़ें.</translation>
 <translation id="5397578532367286026">chrome.com पर इस उपयोगकर्ता के उपयोग और इतिहास से जुड़ी जानकारी की मैनेजर (<ph name="MANAGER_EMAIL" />) समीक्षा कर सकता है.</translation>
@@ -974,6 +978,7 @@
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6801878137098616817">इसमें, हाल ही में बदलाव किया गया था</translation>
 <translation id="6803622936009808957">प्रदर्शनों को मिरर नहीं किया जा सका क्योंकि कोई समर्थित रिज़ॉल्यूशन नहीं मिला. इसके बजाय विस्तारित डेस्कटॉप में चला गया है.</translation>
+<translation id="6812232930908427253">डेस्क सेव नहीं किया जा सका. बहुत ज़्यादा विंडो या टैब.</translation>
 <translation id="6818242057446442178">एक शब्द पीछे जाएं</translation>
 <translation id="6819327813400217281">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी</translation>
 <translation id="6820676911989879663">आज के लिए इतना ही!</translation>

@@ -386,6 +386,7 @@
 <translation id="4793710386569335688">Pour obtenir de l'aide supplémentaire, accédez au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithme de compression</translation>
 <translation id="4794140124556169553">Effectuer un test de processeur peut avoir un impact sur les performances de votre système</translation>
+<translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée : <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Thème clair</translation>
 <translation id="4813136279048157860">Mes images</translation>
@@ -520,6 +521,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5931523347251946569">Fichier introuvable</translation>
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="594552776027197022">Générer une biclé aléatoire</translation>
+<translation id="5947494881799873997">Rétablir</translation>
 <translation id="5951259522948394825">Confirmez que tout est à sa place et consultez le rapport de diagnostics</translation>
 <translation id="5972388717451707488">Mettre à jour le moteur</translation>
 <translation id="5984145644188835034">Fond d'écran par défaut</translation>
@@ -799,6 +801,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Échec : à court d'encre</translation>
 <translation id="8723108084122415655">Le seuil de latence du réseau autre que par défaut est trop élevé</translation>
+<translation id="8725066075913043281">Réessayer</translation>
 <translation id="8726019395068607495">Tâchez arrêtée : porte de l'imprimante ouverte</translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8747900814994928677">Confirmer la modification</translation>

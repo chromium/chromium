@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">도움이 더 필요하면 <ph name="BEGIN_LINK" />고객센터<ph name="END_LINK" />로 이동하세요.</translation>
 <translation id="4793756956024303490">압축 알고리즘</translation>
 <translation id="4794140124556169553">CPU 테스트를 실행하면 시스템 성능에 영향을 줄 수 있습니다.</translation>
+<translation id="4804818685124855865">연결 해제</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> 인쇄 작업 취소됨</translation>
 <translation id="4809927044794281115">밝은 테마</translation>
 <translation id="4813136279048157860">내 이미지</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
+<translation id="5947494881799873997">되돌리기</translation>
 <translation id="5951259522948394825">모두 제자리에 있는지 살펴보고 진단 보고서를 확인하세요.</translation>
 <translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="5984145644188835034">기본 배경화면</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">확인</translation>
 <translation id="871560550817059752">실패 - 잉크 없음</translation>
 <translation id="8723108084122415655">기본이 아닌 네트워크가 지연 시간 기준을 초과했습니다.</translation>
+<translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8726019395068607495">중지됨 - 덮개 열림</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8747900814994928677">변경사항 확인</translation>

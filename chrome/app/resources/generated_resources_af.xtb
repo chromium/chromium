@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Data-ontsyfering</translation>
 <translation id="1072700771426194907">USB-toestel is bespeur</translation>
 <translation id="107278043869924952">Gebruik PIN saam met wagwoord</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />As jy Chrome-bedryfstelseltoestelle toelaat om outomatiese verslae te stuur, help dit ons om te prioritiseer wat om in Chrome-bedryfstelsel reg te stel en te verbeter. Hierdie verslae kan dinge insluit soos watter kenmerke gebruik is, hoeveel geheue gewoonlik gebruik is, en diagnostiese en gebruiksdata oor Android-programme. Sekere aggregaatdata sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jy kan toestemming vir hierdie verslae enige tyd in die instellings van jou kind se Chrome-bedryfstelseltoestel begin of stop. As jy 'n domeinadministrateur is, kan jy hierdie instelling in die adminkonsole verander.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />As jy hierdie kenmerk afskakel, beïnvloed dit nie hierdie toestel se vermoë om die inligting te stuur wat nodig is vir noodsaaklike dienste soos stelselopdaterings en sekuriteit nie.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />As die Web- en Programaktiwiteit-instelling vir jou kind se Google-rekening aangeskakel is, kan jou kind se data ook in hul Google-rekening gestoor word. Kom by families.google.com meer te wete oor hierdie instellings en hoe om hulle aan te pas.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />As die toesteleienaar "Stuur gebruiks- en diagnostiese data" aanskakel, kan omvalverslae dalk ook na Google opgelaai word.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navigeer deur bladsye met 'n tekspyltjie.</translation>
 <translation id="1076382954055048850">Wys ander uitsaaisessies</translation>
 <translation id="1076698951459398590">Aktiveer tema</translation>
@@ -1445,10 +1440,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2328561734797404498">Herbegin asseblief jou toestel om <ph name="APP_NAME" /> te gebruik.</translation>
 <translation id="2328636661627946415">Wanneer jy Incognitomodus gebruik, kan werwe webkoekies net gebruik om jou blaai-aktiwiteit op hul eie werf te sien. Webkoekies word aan die einde van die Incognito-sessie uitgevee.</translation>
 <translation id="2329597144923131178">Meld aan om jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle te kry.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />As jy jou Chrome-bedryfstelseltoestelle toelaat om outomatiese verslae te stuur, help dit ons om te prioritiseer wat om in Chrome-bedryfstelsel reg te stel en te verbeter. Hierdie verslae kan dinge insluit soos watter kenmerke jy gebruik, hoeveel geheue jy gewoonlik gebruik, Android-program se diagnostiese en gebruiksdata, en foute Sekere aggregaatdata sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jy kan toestemming vir hierdie verslae enige tyd in jou Chrome-bedryfstelseltoestel se instellings begin of stop. As jy 'n domeinadministrateur is, kan jy hierdie instelling in die adminkonsole verander.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />As die Web- en Programaktiwiteit-instelling vir jou Google-rekening aangeskakel is, kan jou Android-data in jou Google-rekening gestoor word. Jy kan by account.google.com jou data sien, dit uitvee en jou rekeninginstellings verander.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />As die toesteleienaar "Stuur gebruiks- en diagnostiese data" aanskakel, sal omvalverslae dalk ook na Google opgelaai word.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Bekyk in winkel</translation>
 <translation id="2332192922827071008">Maak voorkeure oop</translation>
 <translation id="2332515770639153015">Verbeterde Veiligblaai is aan</translation>
@@ -2787,10 +2778,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3651488188562686558">Van Wi-Fi ontkoppel</translation>
 <translation id="3652817283076144888">Inisieer tans</translation>
 <translation id="3653160965917900914">Netwerklêerdelings</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />As jy Chrome-bedryfstelseltoestelle toelaat om outomatiese verslae te stuur, help dit ons om te prioritiseer wat om in Chrome-bedryfstelsel reg te stel en te verbeter. Hierdie verslae kan dinge insluit soos watter kenmerke gebruik is, en hoeveel geheue gewoonlik gebruik is.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jy kan toestemming vir hierdie verslae enige tyd in die instellings van jou kind se Chrome-bedryfstelseltoestel begin of stop. As jy 'n domeinadministrateur is, kan jy hierdie instelling in die adminkonsole verander.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />As jy hierdie kenmerk afskakel, beïnvloed dit nie hierdie toestel se vermoë om die inligting te stuur wat nodig is vir noodsaaklike dienste soos stelselopdaterings en sekuriteit nie.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />As die toesteleienaar "Stuur gebruiks- en diagnostiese data" aanskakel, sal omvalverslae dalk ook na Google toe opgelaai word.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Hou aan om <ph name="HOST" /> toe te laat om by jou mikrofoon in te gaan</translation>
 <translation id="3654045516529121250">Lees jou toeganklikheidinstellings</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Dit het permanente toegang tot een lêer.}other{Dit het permanente toegang tot # lêers.}}</translation>
@@ -4063,7 +4050,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4900652253009739885">Kan nie die enigste skakelaar verwyder wat vir "Kies" toegewys is nie. Druk enige sleutel om <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment.</translation>
 <translation id="49027928311173603">Die beleid wat van die bediener afgelaai is, is ongeldig: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Help om Chrome- en Chrome-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur. Sekere aggregaatdata sal Android-programme en Google-vennote ook help. As die Web- en Programaktiwiteit-instelling vir jou kind se Google-rekening aangeskakel is, kan jou kind se Android-data in jou kind se Google-rekening gestoor word.</translation>
 <translation id="4906490889887219338">Stel netwerklêerdelings op of bestuur dit. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Kies wanneer hierdie uitbreiding jou werfdata kan lees en verander</translation>
 <translation id="4907161631261076876">Hierdie lêer word nie gereeld afgelaai nie en kan gevaarlik wees.</translation>
@@ -5521,10 +5507,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Naamlose groep – 1 oortjie}other{Naamlose groep – # oortjies}}</translation>
 <translation id="6385149369087767061">Koppel aan die internet en probeer weer</translation>
 <translation id="6385543213911723544">Werwe kan webkoekiedata stoor en lees</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />As jy jou Chrome-bedryfstelseltoestelle toelaat om outomatiese verslae te stuur, help dit ons om te prioritiseer wat om in Chrome-bedryfstelsel reg te stel en te verbeter. Hierdie verslae kan dinge insluit soos watter kenmerke jy gebruik en hoeveel geheue jy gewoonlik gebruik.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jy kan toestemming vir hierdie verslae enige tyd in jou Chrome-toestel se instellings begin of stop. As jy 'n domeinadministrateur is, kan jy hierdie instelling in die adminkonsole verander.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />As jy hierdie kenmerk afskakel, beïnvloed dit nie jou toestel se vermoë om die inligting te stuur wat nodig is vir noodsaaklike dienste soos stelselopdaterings en sekuriteit nie.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />As die toesteleienaar "Stuur gebruiks- en diagnostiese data" aanskakel, sal omvalverslae dalk ook na Google toe opgelaai word.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Waarskuwing – Gedetailleerde logvaslegging is geaktiveer; loglêers hieronder kan URL'e en ander sensitiewe inligting insluit. Gaan dit asseblief na en sorg dat jy gemaklik daarmee voel om hierdie inligting in te dien.</translation>
 <translation id="6387674443318562538">Verdeel vertikaal</translation>
 <translation id="6388429472088318283">Soek tale</translation>
@@ -5645,7 +5627,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6504601948739128893">Mag nie lettertipes wat op jou toestel geïnstalleer is, gebruik nie</translation>
 <translation id="6504611359718185067">Koppel aan die internet om 'n drukker by te voeg</translation>
 <translation id="6506374932220792071">X9.62 ECDSA-handtekening met SHA-256</translation>
-<translation id="6507936476364432879">Help om Chrome- en Chrome-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur.</translation>
 <translation id="6508248480704296122">Soortgelyk aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medialisensie</translation>
@@ -6970,7 +6951,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7807711621188256451">Laat <ph name="HOST" /> altyd toe om by jou kamera in te gaan</translation>
 <translation id="7810202088502699111">Opspringers is op hierdie bladsy geblokkeer.</translation>
 <translation id="781167124805380294">Saai <ph name="FILE_NAME" /> uit</translation>
-<translation id="7811886112806886172">Help om Chrome- en Chrome-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur. Sekere aggregaatdata sal Android-programme en Google-vennote ook help. As die Web- en Programaktiwiteit-instelling vir jou Google-rekening aangeskakel is, kan jou Android-data in jou Google-rekening gestoor word.</translation>
 <translation id="7814458197256864873">Kopieer</translation>
 <translation id="7815680994978050279">Gevaarlike aflaai is geblokkeer</translation>
 <translation id="7817361223956157679">Die skermsleutelbord werk nog nie in Linux-programme nie</translation>

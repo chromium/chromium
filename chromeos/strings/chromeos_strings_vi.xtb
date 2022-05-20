@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Để được trợ giúp thêm, hãy truy cập <ph name="BEGIN_LINK" />Trung tâm trợ giúp<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Thuật toán nén</translation>
 <translation id="4794140124556169553">Việc chạy quá trình kiểm tra CPU có thể ảnh hưởng đến hiệu suất của hệ thống</translation>
+<translation id="4804818685124855865">Ngắt kết nối</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Giao diện sáng</translation>
 <translation id="4813136279048157860">Hình ảnh của tôi</translation>
@@ -530,6 +531,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5931523347251946569">Không tìm thấy tệp</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="594552776027197022">Tạo cặp khóa ngẫu nhiên</translation>
+<translation id="5947494881799873997">Hoàn nguyên</translation>
 <translation id="5951259522948394825">Xác nhận mọi thứ đều ổn và xem báo cáo chẩn đoán</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Hình nền mặc định</translation>
@@ -813,6 +815,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
 <translation id="8723108084122415655">Mạng không phải mạng mặc định vượt ngưỡng độ trễ</translation>
+<translation id="8725066075913043281">Thử lại</translation>
 <translation id="8726019395068607495">Đã dừng – Cửa máy in đang mở</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8747900814994928677">Xác nhận thay đổi</translation>

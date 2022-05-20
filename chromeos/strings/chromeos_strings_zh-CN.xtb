@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">如需更多帮助，请访问<ph name="BEGIN_LINK" />帮助中心<ph name="END_LINK" />。</translation>
 <translation id="4793756956024303490">压缩算法</translation>
 <translation id="4794140124556169553">运行 CPU 测试可能会影响系统性能</translation>
+<translation id="4804818685124855865">断开连接</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
 <translation id="4809927044794281115">浅色主题</translation>
 <translation id="4813136279048157860">我的图片</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">未找到文件</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="594552776027197022">生成随机密钥对</translation>
+<translation id="5947494881799873997">还原</translation>
 <translation id="5951259522948394825">确认一切都各就各位并查看诊断报告</translation>
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5984145644188835034">默认壁纸</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">知道了</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>
 <translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
+<translation id="8725066075913043281">重试</translation>
 <translation id="8726019395068607495">已停止 - 机盖未关</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8747900814994928677">确认更改</translation>

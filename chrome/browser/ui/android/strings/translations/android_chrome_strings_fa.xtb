@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3622349720008044802">مدیریت پنجره‌ها</translation>
-<translation id="3624977496395967031">برای باز کردن گزینه‌های مرتب‌سازی، کلیک کنید</translation>
 <translation id="3631987586758005671">درحال هم‌رسانی با <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">با استفاده از اعتبارنامه‌های ذخیره شده، به‌طور خودکار به سیستم وب‌سایت‌ها وارد شوید. وقتی این قابلیت خاموش است، هر بار قبل از وارد شدن به سیستم وب‌سایت از شما خواسته می‌شود اطلاعات را تأیید کنید.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4248098802131000011">گذرواژه خود را از نقض داده و سایر مسائل امنیتی ایمن نگه دارید</translation>
+<translation id="4249955472157341256">مرتب‌سازی براساس جدیدترین</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />انواع داده‌ای که استفاده می‌شود:<ph name="END_BOLD" /> سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chrome در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">برای دیدن سایت‌های برترتان، روی دکمه «صفحه اصلی» ضربه بزنید</translation>
 <translation id="5958275228015807058">فایل‌ها و صفحه‌هایتان را در «بارگیری‌ها» پیدا کنید</translation>
 <translation id="5962718611393537961">برای کوچک کردن ضربه بزنید</translation>
-<translation id="5964805880140440652">‏برای هم‌رسانی این صفحه با دستگاه دیگر، همگام‌سازی را در تنظیمات Chrome روشن کنید.</translation>
 <translation id="5964869237734432770">توقف توضیحات تصویر</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
 <translation id="5995726099713306770">صفحه دوباره بارگیری شود؟</translation>

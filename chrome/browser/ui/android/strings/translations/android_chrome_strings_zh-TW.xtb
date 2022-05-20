@@ -488,7 +488,6 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音訊</translation>
 <translation id="3622349720008044802">管理視窗</translation>
-<translation id="3624977496395967031">按一下即可開啟排序選項</translation>
 <translation id="3631987586758005671">正在分享至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="363596933471559332">自動使用已儲存的憑證登入網站。如果關閉這項功能，每次在您登入網站之前，網站一律會要求驗證。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
@@ -582,6 +581,7 @@
 <translation id="4225895483398857530">工具列捷徑</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4248098802131000011">確保密碼安全，避免發生資料侵害或其他安全性問題</translation>
+<translation id="4249955472157341256">依最新時間排序</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />我們會使用哪些資料：<ph name="END_BOLD" />你的瀏覽記錄，以及在這部裝置上透過 Chrome 造訪的網站記錄。</translation>
@@ -896,7 +896,6 @@
 <translation id="5957442310066583693">如要查看常用網站，請輕觸「首頁」按鈕</translation>
 <translation id="5958275228015807058">前往「下載」主畫面尋找你的檔案和網頁</translation>
 <translation id="5962718611393537961">輕觸即可收合</translation>
-<translation id="5964805880140440652">如要將這個頁面分享至另一部裝置，你必須在 Chrome 設定中開啟同步功能</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5995726099713306770">要再次下載網頁嗎？</translation>

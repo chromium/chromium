@@ -489,7 +489,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
-<translation id="3624977496395967031">Klik for at åbne sorteringsmuligheder</translation>
 <translation id="3631987586758005671">Deler med <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Log automatisk ind på websites med gemte loginoplysninger. Når funktionen er slået fra, bliver du bedt om at bekræfte, hver gang du vil logge ind på et website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4225895483398857530">Genvej til værktøjslinje</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4248098802131000011">Beskyt dine adgangskoder mod brud på datasikkerheden og andre sikkerhedsproblemer</translation>
+<translation id="4249955472157341256">Sortér efter seneste</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open source-licenser</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chrome på denne enhed.</translation>
@@ -897,7 +897,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5957442310066583693">Hvis du vil se dine mest anvendte websites, skal du trykke på knappen Hjem</translation>
 <translation id="5958275228015807058">Find dine filer og sider i Downloads</translation>
 <translation id="5962718611393537961">Tryk for at skjule</translation>
-<translation id="5964805880140440652">Hvis du vil dele denne side med en anden enhed, skal du aktivere synkronisering i indstillingerne for Chrome</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
 <translation id="5995726099713306770">Vil du downloade siden igen?</translation>

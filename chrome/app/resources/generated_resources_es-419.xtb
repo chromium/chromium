@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Cifrado de datos</translation>
 <translation id="1072700771426194907">Se detectó el dispositivo USB</translation>
 <translation id="107278043869924952">Usar PIN y contraseña</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos con Chrome OS envíen informes automáticos, podemos priorizar las tareas de corrección y mejora en Chrome OS. Estos informes pueden incluir cierta información como qué funciones se estaban usando, la cantidad de memoria que se usaba en general y datos de uso y diagnóstico sobre las apps para Android. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento en la configuración del dispositivo con Chrome OS de tu hijo. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Aunque esta función esté desactivada, este dispositivo podrá enviar la información necesaria para los servicios esenciales, como seguridad y actualizaciones del sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si habilitaste la configuración Actividad web y de aplicaciones en la Cuenta de Google de tu hijo, es posible que se almacenen sus datos en la cuenta. Para obtener más información sobre estos parámetros de configuración y cómo ajustarlos, accede a families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietario del dispositivo activa "Enviar datos de uso y diagnóstico", es posible que los informes de fallas también se suban a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navega páginas con un cursor de texto</translation>
 <translation id="1076382954055048850">Mostrar otras sesiones de transmisión</translation>
 <translation id="1076698951459398590">Habilitar tema</translation>
@@ -1427,10 +1422,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2328561734797404498">Para usar <ph name="APP_NAME" />, reinicia el dispositivo.</translation>
 <translation id="2328636661627946415">Cuando estés en el modo Incógnito, los sitios pueden usar cookies únicamente para ver tu actividad de navegación en ese mismo sitio. Las cookies se borran al final de la sesión en modo Incógnito.</translation>
 <translation id="2329597144923131178">Accede a tu cuenta para ver los favoritos, el historial, las contraseñas y otras opciones de configuración en todos los dispositivos.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos con Chrome OS envíen informes automáticos, podemos priorizar las tareas de corrección y mejora en Chrome OS. Estos informes pueden incluir cierta información como las funciones que usas, la cantidad de memoria que usas en general y datos de uso y diagnóstico, así como los errores de las apps para Android. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo con Chrome OS. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Si habilitaste la configuración Actividad web y de aplicaciones en tu Cuenta de Google, es posible que se almacenen tus datos de Android en la cuenta. Para ver y borrar esa información, y cambiar la configuración de la cuenta, accede a account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietario del dispositivo activa "Enviar datos de uso y diagnóstico", es posible que los informes de fallas también se suban a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Ver en Chrome Web Store</translation>
 <translation id="2332192922827071008">Abrir preferencias</translation>
 <translation id="2332515770639153015">Se activó la Navegación segura mejorada</translation>
@@ -2769,10 +2760,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3651488188562686558">Se desconecta de Wi-Fi.</translation>
 <translation id="3652817283076144888">Inicializando</translation>
 <translation id="3653160965917900914">Sistema de archivos compartidos en red</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos con Chrome OS envíen informes automáticos, podemos priorizar las tareas de corrección y mejora en Chrome OS. Estos informes pueden incluir cierta información como qué funciones se estaban usando y la cantidad de memoria que se usaba en general.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento en la configuración del dispositivo con Chrome OS de tu hijo. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Aunque esta función esté desactivada, este dispositivo podrá enviar la información necesaria para los servicios esenciales, como seguridad y actualizaciones del sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietario del dispositivo activa "Enviar datos de uso y diagnóstico", es posible que los informes de fallas también se suban a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Seguir permitiendo que <ph name="HOST" /> acceda al micrófono</translation>
 <translation id="3654045516529121250">Leer la configuración de accesibilidad</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tiene acceso permanente a un archivo.}other{Tiene acceso permanente a # archivos.}}</translation>
@@ -3976,6 +3963,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4842976633412754305">Esta página está tratando de cargar scripts de fuentes no autenticadas.</translation>
 <translation id="4844333629810439236">Otros teclados</translation>
 <translation id="4844633725025837809">Para más seguridad, encripta las contraseñas de tu dispositivo antes de que se guarden en el Administrador de contraseñas de Google</translation>
+<translation id="4846628405149428620">Selecciona dónde puede guardar los cambios este sitio</translation>
 <translation id="4846680374085650406">Estás siguiendo la recomendación del administrador para esta configuración.</translation>
 <translation id="4847902821209177679">Se seleccionó <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />; presiona Intro para seleccionar álbumes de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">"Ok Google" del Asistente de Google</translation>
@@ -4043,7 +4031,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4900652253009739885">No se puede quitar el único interruptor asignado a "Seleccionar". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política descargada del servidor no es válida: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Para ayudar a mejorar las funciones y el rendimiento de Chrome y Chrome OS, envía automáticamente datos de uso y diagnóstico a Google. Algunos datos agregados también ayudarán a los socios de Google y las apps para Android. Si se activó la configuración Actividad web y de aplicaciones para la Cuenta de Google de tu hijo, es posible que se almacenen sus datos de Android en la cuenta.</translation>
 <translation id="4906490889887219338">Configura o administra archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Elige cuándo esta extensión puede leer y cambiar los datos de sitios.</translation>
 <translation id="4907161631261076876">Este archivo no se descarga con frecuencia y podría ser peligroso.</translation>
@@ -5500,10 +5487,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupo sin nombre - 1 pestaña}other{Grupo sin nombre - # pestañas}}</translation>
 <translation id="6385149369087767061">Conéctate a Internet y vuelve a intentarlo</translation>
 <translation id="6385543213911723544">Los sitios pueden guardar y leer los datos de las cookies</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Si permites que los dispositivos con Chrome OS envíen informes automáticos, podemos priorizar las tareas de corrección y mejora en Chrome OS. Estos informes pueden incluir cierta información como qué funciones usas y la cantidad de memoria que usas en general.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de un dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Aunque esta función esté desactivada, tu dispositivo podrá enviar la información necesaria para servicios esenciales, como seguridad y actualizaciones del sistema.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Si el propietario del dispositivo activa "Enviar datos de uso y diagnóstico", es posible que los informes de fallas también se suban a Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Advertencia: Se habilitó el registro detallado. Es posible que los registros que aparecen a continuación incluyan URL o información confidencial. Revísalos y asegúrate de no tener inconvenientes con enviar esta información.</translation>
 <translation id="6387674443318562538">División vertical</translation>
 <translation id="6388429472088318283">Buscar idiomas</translation>
@@ -5624,7 +5607,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6504601948739128893">No pueden usar las fuentes instaladas en el dispositivo</translation>
 <translation id="6504611359718185067">Conectarse a Internet para agregar una impresora</translation>
 <translation id="6506374932220792071">Firma X9.62 ECDSA con SHA-256</translation>
-<translation id="6507936476364432879">Para ayudar a mejorar las funciones y el rendimiento de Chrome y Chrome OS, envía automáticamente datos de uso y diagnóstico a Google.</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licencia de medios</translation>
@@ -6949,7 +6931,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="781167124805380294">Transmitir <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Para ayudar a mejorar las funciones y el rendimiento de Chrome y Chrome OS, envía automáticamente datos de uso y diagnóstico a Google. Algunos datos agregados también ayudarán a los socios de Google y las apps para Android. Si habilitaste la configuración Actividad web y de aplicaciones en tu Cuenta de Google, es posible que se almacenen tus datos de Android en la cuenta.</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7817361223956157679">El teclado en pantalla todavía no es compatible con apps de Linux</translation>

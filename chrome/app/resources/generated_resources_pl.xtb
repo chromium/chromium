@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Szyfrowanie danych</translation>
 <translation id="1072700771426194907">Wykryto urządzenie USB</translation>
 <translation id="107278043869924952">Oprócz hasła używaj też kodu PIN</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z Chrome OS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o używanych funkcjach i typowym wykorzystaniu pamięci, a także dane o korzystaniu z aplikacji na Androida i dotyczące ich dane diagnostyczne. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub zatrzymać w dowolnym momencie w ustawieniach używanego przez dziecko urządzenia z Chrome OS. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Wyłączenie tej funkcji nie ogranicza wysyłania przez to urządzenie informacji potrzebnych do działania kluczowych usług, takich jak aktualizacje systemu czy zabezpieczenia.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jeśli na koncie Google dziecka włączysz ustawienie Aktywność w internecie i aplikacjach, dane dziecka mogą być zapisywane na jego koncie. Więcej informacji o tych ustawieniach i sposobie ich zmiany znajdziesz na families.google.com<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Jeśli właściciel urządzenia włączy opcję „Wysyłaj dane diagnostyczne oraz informacje o użyciu”, do Google mogą być przesyłane również raporty o awariach.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Poruszaj się po stronach przy użyciu kursora tekstowego</translation>
 <translation id="1076382954055048850">Pokazuj inne sesje przesyłania</translation>
 <translation id="1076698951459398590">Włącz motyw</translation>
@@ -1417,10 +1412,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2328561734797404498">Aby użyć <ph name="APP_NAME" />, uruchom ponownie urządzenie.</translation>
 <translation id="2328636661627946415">Kiedy jesteś w trybie incognito, witryny mogą używać plików cookie tylko do sprawdzania Twojej aktywności związanej z przeglądaniem w danej witrynie. Po zakończeniu sesji incognito pliki cookie są usuwane.</translation>
 <translation id="2329597144923131178">Zaloguj się, by korzystać z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z Chrome OS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o używanych funkcjach, typowym wykorzystaniu pamięci, a także dane o korzystaniu z aplikacji na Androida (i dotyczące ich informacje diagnostyczne) oraz o błędach. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub wstrzymać w dowolnym momencie w ustawieniach urządzenia z Chrome OS. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Jeśli na swoim koncie Google włączysz ustawienie Aktywność w internecie i aplikacjach, mogą być na nim zapisywane dane Androida. Na account.google.com możesz je zobaczyć, usunąć oraz zmienić ustawienia konta.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jeśli właściciel urządzenia włączy opcję „Wysyłaj dane diagnostyczne oraz informacje o użyciu”, do Google mogą być również przesyłane raporty o awariach.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Wyświetl w sklepie</translation>
 <translation id="2332192922827071008">Otwórz Ustawienia</translation>
 <translation id="2332515770639153015">Włączono Ulepszone Bezpieczne przeglądanie</translation>
@@ -2758,10 +2749,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3651488188562686558">rozłączy się z siecią Wi-Fi</translation>
 <translation id="3652817283076144888">Inicjuję</translation>
 <translation id="3653160965917900914">Sieciowe udziały plików</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z Chrome OS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o używanych funkcjach i typowym wykorzystaniu pamięci.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub zatrzymać w dowolnym momencie w ustawieniach używanego przez dziecko urządzenia z Chrome OS. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Wyłączenie tej funkcji nie ogranicza wysyłania przez to urządzenie informacji potrzebnych do działania kluczowych usług, takich jak aktualizacje systemu czy zabezpieczenia.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jeśli właściciel urządzenia włączy opcję „Wysyłaj dane diagnostyczne oraz informacje o użyciu”, do Google mogą być również przesyłane raporty o awariach.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Nadal zezwalaj witrynie <ph name="HOST" /> na dostęp do mikrofonu</translation>
 <translation id="3654045516529121250">Odczyt ustawień ułatwień dostępu</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ma stały dostęp do jednego pliku.}few{Ma stały dostęp do # plików.}many{Ma stały dostęp do # plików.}other{Ma stały dostęp do # pliku.}}</translation>
@@ -3965,6 +3952,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4842976633412754305">Ta strona próbuje wczytać skrypty z nieuwierzytelnionych źródeł.</translation>
 <translation id="4844333629810439236">Inne klawiatury</translation>
 <translation id="4844633725025837809">Zanim zapiszesz hasła w menedżerze haseł Google, zaszyfruj je na urządzeniu, aby zwiększyć ich bezpieczeństwo</translation>
+<translation id="4846628405149428620">Wybierz, gdzie ta witryna będzie mogła zapisywać zmiany</translation>
 <translation id="4846680374085650406">Przestrzegasz zaleceń administratora dotyczących tego ustawienia.</translation>
 <translation id="4847902821209177679">Wybrano: <ph name="TOPIC_SOURCE" /> (<ph name="TOPIC_SOURCE_DESC" />). Naciśnij Enter, by wybrać albumy ze źródła <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">„OK Google” w Asystencie Google</translation>
@@ -4032,7 +4020,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4900652253009739885">Nie można usunąć jedynego przełącznika przypisanego do czynności „Wybierz”. Aby <ph name="RESPONSE" />, naciśnij dowolny klawisz.</translation>
 <translation id="4901309472892185668">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Polityka pobrana z serwera jest nieprawidłowa: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Pomóż ulepszać funkcje i działanie Chrome OS, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu. Niektóre dane zbiorcze pomagają również w opracowywaniu lepszych aplikacji na Androida i usług partnerów Google. Jeśli na koncie Google dziecka włączysz ustawienie Aktywność w internecie i aplikacjach, dane Androida z urządzenia dziecka mogą być zapisywane na jego koncie.</translation>
 <translation id="4906490889887219338">Skonfiguruj sieciowe udziały plików i zarządzaj nimi. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Wybierz, kiedy to rozszerzenie może odczytywać i zmieniać dane witryny</translation>
 <translation id="4907161631261076876">Ten plik nie jest często pobierany i może być niebezpieczny.</translation>
@@ -5488,10 +5475,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupa bez nazwy – 1 karta}few{Grupa bez nazwy – # karty}many{Grupa bez nazwy – # kart}other{Grupa bez nazwy – # karty}}</translation>
 <translation id="6385149369087767061">Połącz się z internetem i spróbuj ponownie</translation>
 <translation id="6385543213911723544">Strony mogą zapisywać dane w plikach cookie i je odczytywać</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z Chrome OS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o używanych funkcjach i typowym wykorzystaniu pamięci.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub wstrzymać w dowolnym momencie w ustawieniach urządzenia z Chrome. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Wyłączenie tej funkcji nie ogranicza wysyłania przez urządzenie informacji potrzebnych do działania kluczowych usług, takich jak aktualizacje systemu i zabezpieczenia.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jeśli właściciel urządzenia włączy opcję „Wysyłaj dane diagnostyczne oraz informacje o użyciu”, do Google mogą być również przesyłane raporty o awariach.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Ostrzeżenie: masz włączone szczegółowe zapisywanie w dzienniku. Dzienniki poniżej mogą zawierać adresy URL lub inne poufne informacje. Przejrzyj te dane i upewnij się, że chcesz je przesłać.</translation>
 <translation id="6387674443318562538">Podziel pionowo</translation>
 <translation id="6388429472088318283">Wyszukaj języki</translation>
@@ -5612,7 +5595,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6504601948739128893">Nie mogą używać czcionek zainstalowanych na urządzeniu</translation>
 <translation id="6504611359718185067">Aby dodać drukarkę, połącz się z internetem</translation>
 <translation id="6506374932220792071">Podpis X9.62 ECDSA z SHA-256</translation>
-<translation id="6507936476364432879">Pomóż ulepszać funkcje i działanie Chrome OS, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>
 <translation id="6508248480704296122">Powiązane z: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikacja: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licencja na multimedia</translation>
@@ -6941,7 +6923,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
 <translation id="7810202088502699111">Wyskakujące okienka na tej stronie zostały zablokowane.</translation>
 <translation id="781167124805380294">Prześlij plik <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Pomóż ulepszać funkcje i działanie Chrome OS, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu. Niektóre dane zbiorcze pomagają również w opracowywaniu lepszych aplikacji na Androida i usług partnerów Google. Jeśli na swoim koncie Google włączysz ustawienie Aktywność w internecie i aplikacjach, mogą być na nim zapisywane dane Androida.</translation>
 <translation id="7814458197256864873">&amp;Kopiuj</translation>
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7817361223956157679">W aplikacjach na Linuksa klawiatura ekranowa jeszcze nie działa</translation>

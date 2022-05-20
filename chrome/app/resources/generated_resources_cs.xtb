@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Šifrování dat</translation>
 <translation id="1072700771426194907">Bylo zjištěno zařízení USB</translation>
 <translation id="107278043869924952">Používejte vedle hesla také kód PIN</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Povolením odesílání automatických zpráv v systému ChromeOS nám pomůžete určit, které opravy a vylepšení systému ChromeOS mají prioritu. Tyto zprávy mohou zahrnovat údaje, jako jsou seznam používaných funkcí, typické využití paměti nebo diagnostická data a údaje o využití aplikací pro Android. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Odesílání těchto zpráv můžete v nastavení systému ChromeOS na zařízení dítěte kdykoli povolit nebo zakázat. Pokud jste administrátor domény, můžete toto nastavení změnit v administrátorské konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Pokud je v účtu dítěte zapnuté nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. Další informace o těchto nastaveních a o tom, jak je upravit, naleznete na stránce families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Pokud vlastník zařízení zapne možnost Odesílat údaje o využití a diagnostice, mohou se do Googlu nahrávat také zprávy o selhání.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Procházet stránky pomocí textového kurzoru</translation>
 <translation id="1076382954055048850">Zobrazit další relace Cast</translation>
 <translation id="1076698951459398590">Zapnout motiv</translation>
@@ -1432,10 +1427,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2328561734797404498">Chcete-li používat aplikaci <ph name="APP_NAME" />, restartujte zařízení.</translation>
 <translation id="2328636661627946415">Když jste v anonymním režimu, mohou weby používat soubory cookie pouze ke sledování vaší aktivity prohlížení na svém vlastním webu. Na konci anonymní relace se soubory cookie smažou.</translation>
 <translation id="2329597144923131178">Přihlaste se a synchronizujte záložky, historii, hesla a další nastavení do všech svých zařízení.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Povolením odesílání automatických zpráv v systému ChromeOS nám pomůžete určit, které opravy a vylepšení systému ChromeOS mají prioritu. Tyto zprávy mohou zahrnovat údaje, jako jsou používané funkce, typické využití paměti, diagnostická data a údaje o využití aplikací pro Android a chyby. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Odesílání těchto zpráv můžete kdykoli povolit nebo zakázat v nastavení zařízení se systémem ChromeOS. Pokud jste administrátor domény, můžete toto nastavení změnit v administrátorské konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Pokud je pro váš účet Google zapnuté nastavení Aktivita na webu a v aplikacích, mohou se data ze zařízení se systémem Android ukládat do vašeho účtu Google. Svá data můžete zobrazit a smazat na stránce account.google.com, kde také můžete změnit nastavení svého účtu<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Pokud vlastník zařízení zapne možnost Odesílat údaje o využití a diagnostice, mohou se do Googlu nahrávat také zprávy o selhání.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Zobrazit v obchodu</translation>
 <translation id="2332192922827071008">Otevřít nastavení</translation>
 <translation id="2332515770639153015">Vylepšené Bezpečné prohlížení je zapnuté</translation>
@@ -2773,10 +2764,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3651488188562686558">Bude odpojen od sítě Wi-Fi</translation>
 <translation id="3652817283076144888">Probíhá inicializace</translation>
 <translation id="3653160965917900914">Sdílená úložiště na síti</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Povolením odesílání automatických zpráv v systému ChromeOS nám pomůžete určit, které opravy a vylepšení systému ChromeOS mají prioritu. Tyto zprávy mohou zahrnovat informace, jako je seznam používaných aplikací a typické využití paměti.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Odesílání těchto zpráv můžete v nastavení systému ChromeOS na zařízení dítěte kdykoli povolit nebo zakázat. Pokud jste administrátor domény, můžete toto nastavení změnit v administrátorské konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Pokud vlastník zařízení zapne možnost Odesílat údaje o využití a diagnostice, mohou se do Googlu nahrávat také zprávy o selhání.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Povolit webu <ph name="HOST" /> přístup k mikrofonu i nadále</translation>
 <translation id="3654045516529121250">Čtení nastavení usnadnění přístupu</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Má trvalý přístup k jednomu souboru.}few{Má trvalý přístup ke # souborům.}many{Má trvalý přístup k # souboru.}other{Má trvalý přístup k # souborům.}}</translation>
@@ -4047,7 +4034,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4900652253009739885">Jediný přepínač přiřazený k funkci výběru nelze odstranit. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
 <translation id="4901309472892185668">Vyberte stav experimentální funkce <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Zásada stažená ze serveru je neplatná: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Pomozte se zlepšováním funkcí a výkonu prohlížeče Chrome a systému ChromeOS tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití. Některá souhrnná data pomohou také partnerům společnosti Google a při vylepšování aplikací pro Android. Pokud je v účtu dítěte zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data dítěte ukládat do jeho účtu Google.</translation>
 <translation id="4906490889887219338">Nastavit nebo spravovat sdílená úložiště na síti. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Zvolte, kdy toto rozšíření může číst a měnit data webů</translation>
 <translation id="4907161631261076876">Tento soubor se běžně nestahuje a může být nebezpečný.</translation>
@@ -5501,10 +5487,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Skupina bez názvu – 1 karta}few{Skupina bez názvu – # karty}many{Skupina bez názvu – # karty}other{Skupina bez názvu – # karet}}</translation>
 <translation id="6385149369087767061">Připojte se k internetu a zkuste to znovu</translation>
 <translation id="6385543213911723544">Weby mohou ukládat a číst data souborů cookie</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Povolením odesílání automatických zpráv v systému ChromeOS nám pomůžete určit, které opravy a vylepšení systému ChromeOS mají prioritu. Tyto zprávy mohou zahrnovat údaje, jako například které funkce používáte a kolik obvykle využíváte paměti.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Odesílání těchto zpráv můžete kdykoli povolit nebo zakázat v nastavení zařízení Chrome. Pokud jste administrátor domény, můžete toto nastavení změnit v administrátorské konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Pokud vlastník zařízení zapne možnost Odesílat údaje o využití a diagnostice, mohou se do Googlu nahrávat také zprávy o selhání.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Upozornění: Je aktivováno podrobné protokolování. Níže uvedené protokoly mohou obsahovat adresy URL a další citlivé údaje. Uvedené údaje si prohlédněte a ujistěte se, zda s jejich odesláním souhlasíte.</translation>
 <translation id="6387674443318562538">Svisle rozdělit</translation>
 <translation id="6388429472088318283">Vyhledat jazyky</translation>
@@ -5625,7 +5607,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6504601948739128893">Nemohou používat písma nainstalovaná ve vašem zařízení</translation>
 <translation id="6504611359718185067">Chcete-li přidat tiskárnu, připojte se k internetu.</translation>
 <translation id="6506374932220792071">Podpis X9.62 ECDSA s SHA-256</translation>
-<translation id="6507936476364432879">Pomozte se zlepšováním funkcí a výkonu prohlížeče Chrome a systému ChromeOS tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití.</translation>
 <translation id="6508248480704296122">Souvisí s: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikace: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Mediální licence</translation>
@@ -6954,7 +6935,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7807711621188256451">Vždy povolit webu <ph name="HOST" /> přístup ke kameře</translation>
 <translation id="7810202088502699111">Na této stránce byla zablokována vyskakovací okna.</translation>
 <translation id="781167124805380294">Odeslat soubor <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Pomozte se zlepšováním funkcí a výkonu prohlížeče Chrome a systému ChromeOS tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití. Některá souhrnná data pomohou také partnerům společnosti Google a při vylepšování aplikací pro Android. Pokud je pro váš účet Google zapnuté nastavení Aktivita na webu a v aplikacích, mohou se data ze zařízení se systémem Android ukládat do vašeho účtu Google.</translation>
 <translation id="7814458197256864873">&amp;Kopírovat</translation>
 <translation id="7815680994978050279">Bylo zablokováno stahování nebezpečného souboru</translation>
 <translation id="7817361223956157679">V aplikacích pro Linux softwarová klávesnice zatím nefunguje</translation>

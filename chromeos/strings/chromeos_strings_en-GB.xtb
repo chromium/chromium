@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">For more help, go to the <ph name="BEGIN_LINK" />Help Centre<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Compression algorithm</translation>
 <translation id="4794140124556169553">Running a CPU test may affect your system performance</translation>
+<translation id="4804818685124855865">Disconnect</translation>
 <translation id="4808449224298348341">Cancelled print job <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Light theme</translation>
 <translation id="4813136279048157860">My Images</translation>
@@ -530,6 +531,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5931523347251946569">File not found</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
+<translation id="5947494881799873997">Revert</translation>
 <translation id="5951259522948394825">Confirm everything's in the right place and view the diagnostic report</translation>
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
@@ -813,6 +815,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="871560550817059752">Failed – Out of ink</translation>
 <translation id="8723108084122415655">Non-default network above latency threshold</translation>
+<translation id="8725066075913043281">Try again</translation>
 <translation id="8726019395068607495">Stopped – door open</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8747900814994928677">Confirm change</translation>

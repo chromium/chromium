@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />ক পাৱাৰ যোগান ধৰি আছে</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ফ’নটো ক’ত আছে জানক</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> নামৰ ছেভ কৰি থোৱা এখন ডেস্ক ইতিমধ্যে আছে</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />এ <ph name="COME_BACK_TIME" /> বজাত ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ক <ph name="FOLDER_NAME" /> ফ'ল্ডাৰলৈ স্থানান্তৰ কৰক।</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" />ৰ সৈতে একত্ৰিত কৰিবলৈ Ctrl + W টিপক। ডেস্ক আৰু ৱিণ্ড’ বন্ধ কৰিবলৈ Ctrl + Shift + W টিপক।</translation>
 <translation id="2595239820337756193">৫ হাজাৰ মাইল</translation>
 <translation id="2596078834055697711">ৱিণ্ড’ৰ স্ক্রীণশ্বট লওক</translation>
+<translation id="2598725286293895280">ডেস্কত সমৰ্থন নকৰা এপ্‌ আছে</translation>
 <translation id="2607678425161541573">অনলাইন ছাইন ইনৰ আৱশ্যক</translation>
 <translation id="2620016719323068571">আপোনাৰ <ph name="CATEGORY" />, ফাইল, এপ্‌ আৰু আন বহুতো সন্ধান কৰক...</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">আনুভূমিক</translation>
 <translation id="4735498845456076464">কীব’ৰ্ডৰ শ্বৰ্টকাট <ph name="LAUNCHER_KEY_NAME" /> + নাম্বাৰটো সলনি হৈছে। ফাংশ্বন কীসমূহ ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + ওপৰৰ শাৰীৰ এটা কী টিপক।</translation>
 <translation id="473775607612524610">আপডে'ট কৰক</translation>
+<translation id="4740516757091333363">ছেভ কৰি থোৱা ডেস্ক মচিবনে?</translation>
 <translation id="4752784485658729358">কেৱল ৬ খন ছেভ কৰি ৰখা ডেস্কক অনুমতি দিয়া হয়। এখন নতুন ডেস্ক ছেভ কৰিবলৈ অন্য এখন আঁতৰাওক।</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4774338217796918551">কাইলৈ <ph name="COME_BACK_TIME" /> বজাত আকৌ চাব৷</translation>
@@ -741,6 +744,7 @@
 <translation id="5352250171825660495">গাঢ় ৰঙৰ থীম অন হৈ আছে</translation>
 <translation id="5356963482258194581">গাঢ় ৰঙৰ থীম আৰু পাতল ৰঙৰ থীমৰ মাজত সলনাসলনি কৰক। ডেস্কটপত ৰাইট-ক্লিক কৰক আৰু ৱালপেপাৰ আৰু ষ্টাইল বাছনি কৰক।</translation>
 <translation id="5379115545237091094">অতি বেছি প্ৰয়াস</translation>
+<translation id="5391307769715781764">ছেভ কৰি থোৱা ডেস্ক সলনি কৰিবনে?</translation>
 <translation id="5393156353051693207">আপোনাৰ এপ্ পুনৰ সজাবলৈ যিকোনো ঠাইতে স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" />ৰ ওপৰত আছে, ফ'ল্ডাৰ সৃষ্টি কৰিবলৈ এৰি দিয়ক।</translation>
 <translation id="5397578532367286026">পৰিচালকে(<ph name="MANAGER_EMAIL" />) chrome.comত এই ব্যৱহাৰকাৰীৰ ডিভাইচৰ ব্যৱহাৰ আৰু ইতিহাস পর্যালোচনা কৰিব পাৰে।</translation>
@@ -974,6 +978,7 @@
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6801878137098616817">শেহতীয়াকৈ সম্পাদনা কৰা হৈছে</translation>
 <translation id="6803622936009808957">কোনো সমৰ্থিত ৰিজ’লিউছন বিচাৰি নোপোৱাৰ বাবে ডিছপ্লে’ৰ প্ৰতিবিম্বকৰণ কৰিব নোৱাৰি। বিস্তাৰিত ডেস্কটপত প্ৰৱেশ কৰিব পৰা নগ’ল।</translation>
+<translation id="6812232930908427253">ডেস্ক ছেভ কৰিব পৰা নগ’ল। বহুসংখ্যক ৱিণ্ড’ অথবা টেব।</translation>
 <translation id="6818242057446442178">এটা শব্দ পিছলৈ যাওক</translation>
 <translation id="6819327813400217281">কেমেৰা তলৰ বাওঁফালৰ কোণলৈ স্নেপ কৰা হৈছে</translation>
 <translation id="6820676911989879663">বিৰতি লওক!</translation>

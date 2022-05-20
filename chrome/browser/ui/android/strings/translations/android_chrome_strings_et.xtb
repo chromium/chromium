@@ -489,7 +489,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3602290021589620013">Eelvaade</translation>
 <translation id="3616113530831147358">Heli</translation>
 <translation id="3622349720008044802">Akende haldamine</translation>
-<translation id="3624977496395967031">Klõpsake sortimisvalikute avamiseks</translation>
 <translation id="3631987586758005671">Jagamine seadmega <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Teid logitakse salvestatud mandaadiga veebisaitidele automaatselt sisse. Kui funktsioon on välja lülitatud, palutakse teilt kinnitust iga kord enne veebisaidile sisselogimist.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="4225895483398857530">Tööriistariba otsetee</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
 <translation id="4248098802131000011">Tagage oma paroolide turvalisus, et vältida andmetega seotud rikkumisi ja muid turvaprobleeme</translation>
+<translation id="4249955472157341256">Sordi uusimate järgi</translation>
 <translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
@@ -897,7 +897,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5957442310066583693">Oma sageli külastatud saitide nägemiseks puudutage avakuva nuppu</translation>
 <translation id="5958275228015807058">Leidke oma failid ja lehed jaotisest Allalaadimised</translation>
 <translation id="5962718611393537961">Ahendamiseks puudutage</translation>
-<translation id="5964805880140440652">Selle lehe jagamiseks teise seadmega lülitage sünkroonimine Chrome'i seadetes sisse</translation>
 <translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
 <translation id="5979084224081478209">Kontrolli paroole</translation>
 <translation id="5995726099713306770">Kas soovite lehe uuesti alla laadida?</translation>

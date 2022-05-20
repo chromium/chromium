@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Se afișează parolele din <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>
 <translation id="1026655690966755180">Adaugă un port</translation>
 <translation id="1026822031284433028">Încarcă imaginea</translation>
+<translation id="1028700151766901954">Motivul: CBV rămâne în <ph name="DEFAULT_OPEN_BROWSER" /> în mod prestabilit.</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1031362278801463162">Se încarcă previzualizarea</translation>
 <translation id="1032605640136438169">Consultă noile condiții</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Cifrare de date</translation>
 <translation id="1072700771426194907">S-a detectat un dispozitiv USB</translation>
 <translation id="107278043869924952">Folosește codul PIN pe lângă parolă</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum ce funcții au fost folosite, câtă memorie a fost utilizată de obicei, precum și date de diagnosticare și de utilizare despre aplicațiile pentru Android. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului cu sistem de operare Chrome al copilului. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Dezactivarea acestei funcții nu afectează capacitatea dispozitivului de a trimite informațiile necesare pentru servicii esențiale, cum ar fi actualizările de sistem și securitatea.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Dacă ai activat setarea Activitatea de pe web și din aplicații pentru Contul Google al copilului tău, datele copilului pot fi salvate în Contul său Google. Află mai multe despre aceste setări și cum să le modifici la families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Dacă proprietarul dispozitivului activează opțiunea Trimite date de utilizare și diagnosticare, pot fi trimise rapoarte de blocare la Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navighează în pagini folosind cursorul pentru text</translation>
 <translation id="1076382954055048850">Afișează alte sesiuni Cast</translation>
 <translation id="1076698951459398590">Activează tema</translation>
@@ -1430,10 +1426,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2328561734797404498">Repornește dispozitivul pentru a folosi <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">În modul incognito, site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv. Cookie-urile sunt șterse la sfârșitul sesiunii incognito.</translation>
 <translation id="2329597144923131178">Conectează-te și accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum funcțiile pe care le folosești, câtă memorie utilizezi de obicei, date de diagnosticare și de utilizare despre aplicațiile pentru Android și erori. Unele date agregate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului cu sistem de operare Chrome. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Dacă setarea Activitatea de pe web și din aplicații este activată pentru Contul Google, datele de pe Android pot fi salvate în Contul tău Google. Poți să consulți datele, să le ștergi și să modifici setările contului la account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Dacă proprietarul dispozitivului activează opțiunea Trimite date de utilizare și diagnosticare, pot fi trimise rapoarte de blocare la Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Vedeți în magazin</translation>
 <translation id="2332192922827071008">Deschide Preferințele</translation>
 <translation id="2332515770639153015">Navigarea sigură îmbunătățită este activată</translation>
@@ -2772,10 +2764,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3651488188562686558">se va deconecta de la Wi-Fi.</translation>
 <translation id="3652817283076144888">Se inițializează</translation>
 <translation id="3653160965917900914">Spații comune de stocare fișiere în rețea</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum ce funcții au fost folosite și câtă memorie a fost utilizată de obicei.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului cu sistem de operare Chrome al copilului. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Dezactivarea acestei funcții nu afectează capacitatea dispozitivului de a trimite informațiile necesare pentru servicii esențiale, cum ar fi actualizările de sistem și securitatea.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Dacă proprietarul dispozitivului activează opțiunea Trimite date de utilizare și diagnosticare, pot fi trimise rapoarte de blocare la Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Permiteți în continuare accesul <ph name="HOST" /> la microfonul dvs.</translation>
 <translation id="3654045516529121250">Citește setările de accesibilitate</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Aplicația are acces definitiv la un fișier.}few{Aplicația are acces definitiv la # fișiere.}other{Aplicația are acces definitiv la # de fișiere.}}</translation>
@@ -3351,6 +3339,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4209092469652827314">Mare</translation>
 <translation id="4209251085232852247">Dezactivat</translation>
 <translation id="4210048056321123003">Se descarcă mașina virtuală</translation>
+<translation id="4210380525132844778">Motivul: <ph name="RULE" /> s-a găsit în lista <ph name="LIST_NAME" />.</translation>
 <translation id="421182450098841253">&amp;Afișați bara de marcaje</translation>
 <translation id="4211851069413100178">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date privind diagnosticarea și utilizarea dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK2" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Nu mai folosi cu aplicații pentru Android</translation>
@@ -4045,7 +4034,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4900652253009739885">Nu se poate elimina singurul comutator atribuit acțiunii Selectează. Apasă orice tastă pentru acțiunea <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Selectează starea experimentului pentru experimentul <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Politica descărcată de pe server este nevalidă: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome și a sistemului de operare Chrome, trimițând automat la Google date de diagnosticare și de utilizare. Anumite date agregate vor fi utile atât pentru aplicațiile pentru Android, cât și pentru partenerii Google. Dacă ai activat setarea Activitatea de pe web și din aplicații pentru Contul Google al copilului tău, datele Android ale acestuia pot fi salvate în Contul său Google.</translation>
 <translation id="4906490889887219338">Configurează sau gestionează spații comune de stocare în rețea. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Alege când poate extensia să citească și să modifice datele privind site-urile</translation>
 <translation id="4907161631261076876">Acest fișier nu este descărcat de obicei și ar putea fi periculos.</translation>
@@ -5177,6 +5165,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6063284707309177505">Creează un cod QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Notă:<ph name="END_BOLD" /> o voce asemănătoare sau o înregistrare a vocii ar putea accesa rezultatele personalizate ale lui <ph name="SUPERVISED_USER_NAME" />. Pentru a economisi bateria, poți selecta activarea expresiei „Ok Google” în Setările Asistentului lui <ph name="SUPERVISED_USER_NAME" /> numai când dispozitivul este conectat la o sursă de alimentare.</translation>
 <translation id="6064217302520318294">Blocarea ecranului</translation>
+<translation id="6065145031947216733">Separi navigarea?</translation>
 <translation id="6065289257230303064">Atribute director pentru subiectul certificatului</translation>
 <translation id="6066794465984119824">Valoarea hash a imaginii nu este setată</translation>
 <translation id="6069464830445383022">Contul tău Google reprezintă informațiile de conectare pentru Chromebook</translation>
@@ -5255,6 +5244,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6129953537138746214">Spațiu</translation>
 <translation id="6130692320435119637">Adaugă o rețea Wi-Fi</translation>
 <translation id="6130887916931372608">Tasta de pe tastatură</translation>
+<translation id="6135823405800500595">Asigură-te că telefonul este în apropiere, deblocat, cu funcțiile Bluetooth și Wi-Fi activate</translation>
 <translation id="6136114942382973861">Închide bara de descărcări</translation>
 <translation id="6136287496450963112">Cheia de securitate nu este protejată printr-un cod PIN. Pentru a gestiona amprentele, creează mai întâi un cod PIN.</translation>
 <translation id="6138680304137685902">Semnătură X9.62 ECDSA cu SHA-384</translation>
@@ -5500,10 +5490,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grup nedenumit – o filă}few{Grup nedenumit – # file}other{Grup nedenumit – # de file}}</translation>
 <translation id="6385149369087767061">Conectează-te la internet și încearcă din nou</translation>
 <translation id="6385543213911723544">Site-urile pot să salveze și să citească date despre cookie-uri</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Dacă permiți ca dispozitivele cu sistem de operare Chrome să trimită rapoarte automate, ne ajuți să stabilim o ordine a priorităților privind remedierile și îmbunătățirile pentru sistemul de operare Chrome. Aceste rapoarte pot include aspecte precum ce funcții folosești și câtă memorie utilizezi de obicei.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Poți să acorzi sau să anulezi oricând permisiunea pentru aceste rapoarte în setările dispozitivului Chrome. Dacă ești administratorul unui domeniu, poți să modifici această setare în consola de administrare.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Dezactivarea acestei funcții nu afectează capacitatea dispozitivului de a trimite informațiile necesare pentru servicii esențiale, cum ar fi actualizările de sistem și securitatea.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Dacă proprietarul dispozitivului activează opțiunea Trimite date de utilizare și diagnosticare, pot fi trimise rapoarte de blocare la Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Avertisment: înregistrarea detaliată în jurnal este activată. Jurnalele de mai jos pot să includă adrese URL sau alte informații sensibile. Examinează informațiile și asigură-te că vrei să le trimiți.</translation>
 <translation id="6387674443318562538">Împarte pe verticală</translation>
 <translation id="6388429472088318283">Caută limbi</translation>
@@ -5624,7 +5610,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6504601948739128893">Nu au permisiunea de a folosi fonturile instalate pe dispozitiv</translation>
 <translation id="6504611359718185067">Conectează-te la internet pentru a adăuga o imprimantă</translation>
 <translation id="6506374932220792071">Semnătură X9.62 ECDSA cu SHA-256</translation>
-<translation id="6507936476364432879">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome și a sistemului de operare Chrome, trimițând automat la Google date de diagnosticare și de utilizare.</translation>
 <translation id="6508248480704296122">Conținut similar cu <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicație: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licență media</translation>
@@ -6951,7 +6936,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7807711621188256451">Permiteți întotdeauna accesul <ph name="HOST" /> la camera dvs.</translation>
 <translation id="7810202088502699111">Ferestrele pop-up au fost blocate pe această pagină.</translation>
 <translation id="781167124805380294">Proiectează <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome și a sistemului de operare Chrome, trimițând automat la Google date de diagnosticare și de utilizare. Anumite date agregate vor fi utile atât pentru aplicațiile pentru Android, cât și pentru partenerii Google. Dacă setarea Activitatea de pe web și din aplicații este activată pentru Contul Google, datele de pe Android pot fi salvate în Contul tău Google.</translation>
 <translation id="7814458197256864873">&amp;Copiază</translation>
 <translation id="7815680994978050279">A fost blocată o descărcare periculoasă</translation>
 <translation id="7817361223956157679">Tastatura de pe ecran nu funcționează încă în aplicațiile Linux</translation>
@@ -7089,6 +7073,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7947962633355574091">C&amp;opiază adresa videoclipului</translation>
 <translation id="7947964080535614577">În general, site-urile afișează anunțuri pentru a putea oferi conținut sau servicii fără costuri. Însă, unele site-uri afișează anunțuri deranjante sau înșelătoare.</translation>
 <translation id="7948407723851303488">Toate paginile din <ph name="DOMAIN_NAME" /></translation>
+<translation id="7950629216186736592">Motivul: LBS acceptă numai adresele URL http://, https:// și file://.</translation>
 <translation id="7951265006188088697">Pentru a adăuga sau gestiona metodele de plată Google Pay, accesează <ph name="BEGIN_LINK" />Contul tău Google<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Dezactivează cardul virtual</translation>
 <translation id="7952708427581814389">Site-urile pot solicita permisiunea să vadă text și imagini din clipboard</translation>
@@ -7633,6 +7618,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8480869669560681089">Dispozitiv necunoscut de la <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmă permisiunea pentru USB</translation>
 <translation id="8481980314595922412">Funcțiile de încercare sunt activate</translation>
+<translation id="8486666913807228950">Motivul: în lista „Deschide forțat în” s-a găsit regula inversată <ph name="REVERT_RULE" />.</translation>
 <translation id="848666842773560761">O aplicație încearcă să acceseze camera. Dezactivează comutatorul de confidențialitate al camerei pentru a permite accesul.</translation>
 <translation id="8487678622945914333">Mărește</translation>
 <translation id="8489156414266187072">Sugestiile personale se afișează numai în contul tău</translation>

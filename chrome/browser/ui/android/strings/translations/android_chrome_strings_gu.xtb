@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3622349720008044802">વિન્ડો મેનેજ કરો</translation>
-<translation id="3624977496395967031">સૉર્ટ કરવાના વિકલ્પો ખોલવા માટે ક્લિ કરો</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> પર શેર કરી રહ્યાં છે</translation>
 <translation id="363596933471559332">સંગ્રહિત ઓળખપત્રોનો ઉપયોગ કરીને વેબસાઇટમાં ઑટોમૅટિક રીતે સાઇન ઇન કરો. જ્યારે સુવિધા બંધ હોય છે, ત્યારે વેબસાઇટમાં સાઇન ઇન કરતાં પહેલાં દર વખતે તમને ચકાસણી માટે કહેવામાં આવશે.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">ટૂલબારનો શૉર્ટકટ</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4248098802131000011">ડેટા ઉલ્લંઘનો અને અન્ય સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
+<translation id="4249955472157341256">નવીનતમ મુજબ સૉર્ટ કરો</translation>
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />કયા ડેટાનો ઉપયોગ કરવામાં આવે છે:<ph name="END_BOLD" /> તમારો બ્રાઉઝિંગ ઇતિહાસ, જે આ ડિવાઇસ પર તમે Chrome વડે મુલાકાત લીધેલી સાઇટનો રેકોર્ડ છે.</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ જોવા માટે હોમ બટન પર ટૅપ કરો</translation>
 <translation id="5958275228015807058">ડાઉનલોડમાં તમારી ફાઇલો અને પેજ શોધો</translation>
 <translation id="5962718611393537961">સંકુચિત કરવા માટે ટૅપ કરો</translation>
-<translation id="5964805880140440652">આ પેજને બીજા ડિવાઇસ પર શેર કરવા માટે, Chrome સેટિંગમાં સિંક ચાલુ કરો</translation>
 <translation id="5964869237734432770">છબીના વર્ણનો મેળવવાનું બંધ કરો</translation>
 <translation id="5979084224081478209">પાસવર્ડ ચેક કરો</translation>
 <translation id="5995726099713306770">શું આ પેજ ફરીથી ડાઉનલોડ કરીએ?</translation>

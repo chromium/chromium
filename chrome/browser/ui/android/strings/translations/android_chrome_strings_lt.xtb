@@ -489,7 +489,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3616113530831147358">Garsas</translation>
 <translation id="3622349720008044802">Langų tvarkymas</translation>
-<translation id="3624977496395967031">Spustelėkite, kad atidarytumėte rūšiavimo parinktis</translation>
 <translation id="3631987586758005671">Bendrinama su „<ph name="DEVICE_NAME" />“</translation>
 <translation id="363596933471559332">Automatiškai prisijungti prie svetainių naudojant išsaugotus prisijungimo duomenis. Kai funkcija išjungta, kaskart prisijungiant prie svetainės prašoma patvirtinti.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="4225895483398857530">Įrankių juostos spartusis klavišas</translation>
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
 <translation id="4248098802131000011">Apsaugokite slaptažodžius nuo duomenų saugos pažeidimų ir kitų saugos problemų</translation>
+<translation id="4249955472157341256">Rūšiuoti pagal naujausią</translation>
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="4256782883801055595">Atvirojo šaltinio licencijos</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kokie duomenys naudojami:<ph name="END_BOLD" /> jūsų naršymo istorija, svetainių, kuriose lankėtės naudodami „Chrome“ šiame įrenginyje, įrašas.</translation>
@@ -897,7 +897,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5957442310066583693">Norėdami peržiūrėti populiariausias svetaines palieskite pagrindinio ekrano mygtuką</translation>
 <translation id="5958275228015807058">Suraskite failus ir puslapius „Atsisiuntimų“ skiltyje</translation>
 <translation id="5962718611393537961">Palieskite ir sutraukite</translation>
-<translation id="5964805880140440652">Jei norite bendrinti šį puslapį su kitu įrenginiu, įjunkite sinchronizavimą „Chrome“ nustatymuose</translation>
 <translation id="5964869237734432770">Stabdyti vaizdų aprašus</translation>
 <translation id="5979084224081478209">Patikrinti slaptažodžius</translation>
 <translation id="5995726099713306770">Atsisiųsti puslapį dar kartą?</translation>

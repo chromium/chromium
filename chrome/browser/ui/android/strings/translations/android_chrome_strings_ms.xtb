@@ -489,7 +489,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Urus tetingkap</translation>
-<translation id="3624977496395967031">Klik untuk membuka pilihan pengisihan</translation>
 <translation id="3631987586758005671">Berkongsi ke <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Log masuk secara automatik ke laman web menggunakan bukti kelayakan yang disimpan. Apabila ciri ini dimatikan, anda akan diminta memberikan pengesahan setiap kali sebelum log masuk ke laman web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -524,6 +523,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3845098929839618392">Buka dalam tab Inkognito</translation>
 <translation id="3856096718352044181">Sila sahkan bahawa penyedia ini sah atau cuba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
+<translation id="3859206958100234503">Segerakkan untuk mendapatkan kata laluan, penanda halaman dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="3861633093716975811">Video popular</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3894427358181296146">Tambah folder</translation>
@@ -584,6 +584,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="4227318652298512614">Ikuti mana-mana laman yang anda mahu</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
 <translation id="4248098802131000011">Pastikan kata laluan anda selamat daripada pelanggaran data dan isu keselamatan yang lain</translation>
+<translation id="4249955472157341256">Isih mengikut yang Terbaharu</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="4256782883801055595">Lesen sumber terbuka</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Jenis data yang digunakan:<ph name="END_BOLD" /> Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
@@ -697,6 +698,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4842515939542199281">Untuk mencari menggunakan suara anda, ketik mikrofon</translation>
 <translation id="4844633725025837809">Untuk keselamatan tambahan, sulitkan kata laluan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google</translation>
 <translation id="4850886885716139402">Lihat</translation>
+<translation id="4852014461738377247">Sedang log masuk</translation>
 <translation id="4860895144060829044">Hubungi</translation>
 <translation id="4864369630010738180">Sedang log masuk...</translation>
 <translation id="4866368707455379617">Tidak dapat memasang <ph name="MODULE" /> untuk Chrome</translation>
@@ -898,7 +900,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5957442310066583693">Untuk melihat laman web yang paling kerap anda lawati, ketik butang Skrin Utama</translation>
 <translation id="5958275228015807058">Cari fail dan halaman anda dalam Muat Turun</translation>
 <translation id="5962718611393537961">Ketik untuk runtuhkan</translation>
-<translation id="5964805880140440652">Untuk berkongsi halaman ini dengan peranti lain, hidupkan penyegerakan dalam tetapan Chrome</translation>
 <translation id="5964869237734432770">Hentikan perihalan imej</translation>
 <translation id="5979084224081478209">Semak kata laluan</translation>
 <translation id="5995726099713306770">Muat turun halaman sekali lagi?</translation>
@@ -1151,6 +1152,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="7304873321153398381">Luar talian. Chrome tidak dapat menyemak kata laluan anda.</translation>
 <translation id="7313188324932846546">Ketik untuk menyediakan penyegerakan</translation>
 <translation id="7332075081379534664">Log masuk berjaya</translation>
+<translation id="7333232495927792353">Segerakkan untuk mendapatkan kandungan yang paling berkaitan daripada Google</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7340958967809483333">Pilihan untuk Discover</translation>
 <translation id="7352339641508007922">Seret untuk mengambil tangkapan skrin panjang</translation>
@@ -1531,6 +1533,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="96681097142096641">Lihat paparan mudah?</translation>
 <translation id="968900484120156207">Halaman yang anda lawati dipaparkan di sini</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minit lagi</translation>
+<translation id="978443947993957527">Lihat kandungan untuk anda</translation>
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>
 <translation id="987264212798334818">Umum</translation>

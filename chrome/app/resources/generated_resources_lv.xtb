@@ -25,6 +25,7 @@
 <translation id="1022489261739821355">Jūsu <ph name="BEGIN_LINK" />Google kontā<ph name="END_LINK" /> saglabāto paroļu rādīšana</translation>
 <translation id="1026655690966755180">Pievienot portu</translation>
 <translation id="1026822031284433028">Ielādēt attēlu</translation>
+<translation id="1028700151766901954">Iemesls: funkcija “Mantoto pārlūku atbalsts” pēc noklusējuma tiek izmantota pārlūkā <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
 <translation id="1029317248976101138">Tālummaiņa</translation>
 <translation id="1031362278801463162">Notiek priekšskatījuma ielāde</translation>
 <translation id="1032605640136438169">Lūdzu, pārskatiet jaunos noteikumus.</translation>
@@ -73,11 +74,6 @@
 <translation id="1071917609930274619">Datu šifrēšana</translation>
 <translation id="1072700771426194907">Atrasta USB ierīce</translation>
 <translation id="107278043869924952">Izmantot ne tikai paroli, bet arī PIN</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Atļaujot Chrome OS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt Chrome OS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, izmantotās funkcijas, atmiņas lietojuma parasto apjomu, kā arī Android lietotņu diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot bērna Chrome OS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Izslēdzot šo funkciju, netiek ietekmēta ierīces spēja nosūtīt informāciju, kas nepieciešama būtiskiem pakalpojumiem, piemēram, sistēmas atjauninājumiem un drošībai.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ja bērna Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, bērna dati var tikt saglabāti viņa Google kontā. Plašāku informāciju par šiem iestatījumiem un to pielāgošanu skatiet vietnē families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Ja ierīces īpašnieks ir ieslēdzis iestatījumu “Sūtīt lietojuma un diagnostikas datus”, Google serveros var tikt augšupielādēti arī avāriju pārskati.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Pārvietošanās lapās, izmantojot teksta kursoru</translation>
 <translation id="1076382954055048850">Rādīt citas Cast sesijas</translation>
 <translation id="1076698951459398590">Iespējot motīvu</translation>
@@ -1431,10 +1427,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2328561734797404498">Lai varētu izmantot lietotni <ph name="APP_NAME" />, restartējiet ierīci.</translation>
 <translation id="2328636661627946415">Ja izmantojat inkognito režīmu, vietne drīkst lietot sīkfailus, lai skatītu jūsu pārlūkošanas darbības šajā vietnē, bet ne ārpus tās. Pabeidzot inkognito sesiju, sīkfaili tiek dzēsti.</translation>
 <translation id="2329597144923131178">Pierakstieties, lai grāmatzīmes, vēsture, paroles u.c. būtu pieejamas visās jūsu ierīcēs.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Atļaujot Chrome OS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt Chrome OS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, jūsu izmantotās funkcijas, atmiņas lietojuma parasto apjomu, Android lietotņu diagnostikas un lietojuma datus, kā arī kļūdas. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome OS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ja jūsu Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, jūsu Android dati var tikt saglabāti jūsu Google kontā. Lai skatītu vai dzēstu datus vai mainītu konta iestatījumus, atveriet vietni account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ja ierīces īpašnieks ir ieslēdzis iestatījumu “Sūtīt lietojuma un diagnostikas datus”, Google serveros var tikt augšupielādēti arī avāriju pārskati.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Skatīt veikalā</translation>
 <translation id="2332192922827071008">Atvērt preferences</translation>
 <translation id="2332515770639153015">Droša pārlūkošana ar papildu aizsardzību ir ieslēgta</translation>
@@ -2773,10 +2765,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3651488188562686558">tiks atvienots Wi-Fi.</translation>
 <translation id="3652817283076144888">Inicializēšana</translation>
 <translation id="3653160965917900914">Tīkla failu kopīgošana</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Atļaujot Chrome OS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt Chrome OS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, informāciju par funkciju izmantošanas laiku un atmiņas lietojuma parasto apjomu.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot bērna Chrome OS ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Izslēdzot šo funkciju, netiek ietekmēta ierīces spēja nosūtīt informāciju, kas nepieciešama būtiskiem pakalpojumiem, piemēram, sistēmas atjauninājumiem un drošībai.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ja ierīces īpašnieks ir ieslēdzis iestatījumu “Sūtīt lietojuma un diagnostikas datus”, Google serveros var tikt augšupielādēti arī avāriju pārskati.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Arī turpmāk ļaut vietnei <ph name="HOST" /> piekļūt mikrofonam</translation>
 <translation id="3654045516529121250">Lasīt jūsu piekļuves iestatījumus</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tai ir pastāvīga piekļuve vienam failam.}zero{Tai ir pastāvīga piekļuve # failiem.}one{Tai ir pastāvīga piekļuve # failam.}other{Tai ir pastāvīga piekļuve # failiem.}}</translation>
@@ -3352,6 +3340,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4209092469652827314">Liels</translation>
 <translation id="4209251085232852247">Izslēgts</translation>
 <translation id="4210048056321123003">Notiek virtuālās mašīnas lejupielāde</translation>
+<translation id="4210380525132844778">Iemesls: sarakstā “<ph name="LIST_NAME" />” tika konstatēta kārtula “<ph name="RULE" />”.</translation>
 <translation id="421182450098841253">&amp;Rādīt grāmatzīmju joslu</translation>
 <translation id="4211851069413100178">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo <ph name="BEGIN_LINK1" />iestatījumu<ph name="END_LINK1" /> ir noteicis īpašnieks. Īpašnieks var izvēlēties nosūtīt šīs ierīces diagnostikas un lietojuma datus uz Google serveriem. Ja ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. <ph name="BEGIN_LINK2" />Uzzināt vairāk<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">Vairs neizmantot Android lietotnēs</translation>
@@ -4046,7 +4035,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4900652253009739885">Nevar noņemt vienīgo slēdzi, kas ir piešķirts darbībai “Atlasīt”. Nospiediet jebkuru taustiņu, lai veiktu darbību <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Atlasiet eksperimenta <ph name="EXPERIMENT_NAME" /> statusu.</translation>
 <translation id="49027928311173603">No servera lejupielādētā politika nav derīga: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Palīdziet uzlabot Chrome un Chrome OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Android lietotņu izstrādātāji un Google partneri. Ja bērna Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, bērna Android dati var tikt saglabāti viņa Google kontā.</translation>
 <translation id="4906490889887219338">Iestatiet vai pārvaldiet tīkla failu kopīgošanas ierīces. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Izvēlieties, kad šis paplašinājums var lasīt un mainīt jūsu vietņu datus</translation>
 <translation id="4907161631261076876">Šis fails parasti netiek lejupielādēts un var būt bīstams.</translation>
@@ -5175,6 +5163,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6063284707309177505">Izveidot kvadrātkodu</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Kāds ar līdzīgu balsi vai ierakstu, iespējams, arī varēs piekļūt jūsu bērna (<ph name="SUPERVISED_USER_NAME" />) personīgajiem rezultātiem. Lai taupītu akumulatora enerģiju, bērna (<ph name="SUPERVISED_USER_NAME" />) Asistenta iestatījumos varat atlasīt, ka īsinājumvārda “Ok Google” noteikšanai jādarbojas tikai tad, ja šī ierīce ir pievienota barošanas avotam.</translation>
 <translation id="6064217302520318294">Ekrāna bloķēšana</translation>
+<translation id="6065145031947216733">Vai atdalīt pārlūkošanu?</translation>
 <translation id="6065289257230303064">Sertifikāta subjekta kataloga atribūti</translation>
 <translation id="6066794465984119824">Nav iestatīta attēla jaucējvērtība</translation>
 <translation id="6069464830445383022">Jūsu Google konts — pierakstīšanās informācija Chromebook datoram</translation>
@@ -5253,6 +5242,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6129953537138746214">Atstarpe</translation>
 <translation id="6130692320435119637">Pievienot Wi-Fi tīklu</translation>
 <translation id="6130887916931372608">Tastatūras taustiņš</translation>
+<translation id="6135823405800500595">Tālrunim ir jāatrodas tuvumā, tam ir jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
 <translation id="6136114942382973861">Aizvērt lejupielāžu joslu</translation>
 <translation id="6136287496450963112">Jūsu drošības atslēga nav aizsargāta ar PIN kodu. Lai pārvaldītu pirkstu nospiedumus, vispirms izveidojiet PIN kodu.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA paraksts ar SHA-384</translation>
@@ -5498,10 +5488,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupa bez nosaukuma — 1 cilne}zero{Grupa bez nosaukuma — # ciļņu}one{Grupa bez nosaukuma — # cilne}other{Grupa bez nosaukuma — # cilnes}}</translation>
 <translation id="6385149369087767061">Izveidojiet savienojumu ar internetu un mēģiniet vēlreiz.</translation>
 <translation id="6385543213911723544">Vietnes var saglabāt un lasīt sīkfailu datus</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Atļaujot Chrome OS ierīcēm sūtīt automātiskos pārskatus, varat palīdzēt mums noteikt Chrome OS problēmu un uzlabojumu prioritāti. Šie pārskati var ietvert, piemēram, izmantotās funkcijas un atmiņas lietojuma parasto apjomu.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Jebkurā laikā varat sākt vai apturēt šo pārskatu sūtīšanu, izmantojot Chrome ierīces iestatījumus. Ja esat domēna administrators, varat mainīt šo iestatījumu administratora konsolē.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Izslēdzot šo funkciju, netiek ietekmēta ierīces spēja nosūtīt informāciju, kas nepieciešama būtiskiem pakalpojumiem, piemēram, sistēmas atjauninājumiem un drošībai.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ja ierīces īpašnieks ir ieslēdzis iestatījumu “Sūtīt lietojuma un diagnostikas datus”, Google serveros var tikt augšupielādēti arī avāriju pārskati.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Brīdinājums — ir iespējota detalizēta reģistrēšana; tālāk norādītajos žurnālos var būt iekļauti vietrāži URL vai cita sensitīva informācija. Lūdzu, pārskatiet to un izlemiet, vai vēlaties iesniegt šo informāciju.</translation>
 <translation id="6387674443318562538">Vertikāls dalījums</translation>
 <translation id="6388429472088318283">Meklēt valodas</translation>
@@ -5622,7 +5608,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6504601948739128893">Nav atļauts izmantot jūsu ierīcē instalētos fontus</translation>
 <translation id="6504611359718185067">Lai pievienotu printeri, izveidojiet savienojumu ar internetu.</translation>
 <translation id="6506374932220792071">X9.62 ECDSA paraksts ar SHA-256</translation>
-<translation id="6507936476364432879">Palīdziet uzlabot Chrome un Chrome OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
 <translation id="6508248480704296122">Saistīts(-a) ar <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Lietojumprogramma: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Multivides licence</translation>
@@ -6950,7 +6935,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7807711621188256451">Vienmēr ļaut vietnei <ph name="HOST" /> piekļūt kamerai</translation>
 <translation id="7810202088502699111">Uznirstošie logi šajā lapā tika bloķēti.</translation>
 <translation id="781167124805380294">Faila <ph name="FILE_NAME" /> apraide</translation>
-<translation id="7811886112806886172">Palīdziet uzlabot Chrome un Chrome OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus. Noteiktus apkopotus datus izmantos arī Android lietotņu izstrādātāji un Google partneri. Ja jūsu Google kontā ir ieslēgts iestatījums “Darbības tīmeklī un lietotnēs”, jūsu Android dati var tikt saglabāti jūsu Google kontā.</translation>
 <translation id="7814458197256864873">Ko&amp;pēt</translation>
 <translation id="7815680994978050279">Tika bloķēta bīstama lejupielāde</translation>
 <translation id="7817361223956157679">Ekrāna tastatūra vēl nedarbojas Linux lietotnēs.</translation>
@@ -7089,6 +7073,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7947962633355574091">Kopēt videoklipa adresi</translation>
 <translation id="7947964080535614577">Parasti vietnēs tiek rādītas reklāmas, lai vietnes saturs vai pakalpojumi jums būtu pieejami bez maksas. Taču dažās vietnēs tiek rādītas traucējošas vai maldinošas reklāmas.</translation>
 <translation id="7948407723851303488">Visas domēna <ph name="DOMAIN_NAME" /> lapas</translation>
+<translation id="7950629216186736592">Iemesls: funkcijā “Mantoto pārlūku atbalsts” tiek atbalstīti tikai vietrāži URL ar http://, https:// un file://.</translation>
 <translation id="7951265006188088697">Lai pievienotu vai pārvaldītu Google Pay maksājumu veidus, apmeklējiet savu <ph name="BEGIN_LINK" />Google kontu<ph name="END_LINK" /></translation>
 <translation id="795130320946928025">Izslēgt virtuālo karti</translation>
 <translation id="7952708427581814389">Atļaut vietnēm pieprasīt atļauju skatīt tekstu un attēlus jūsu starpliktuvē</translation>
@@ -7633,6 +7618,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8480869669560681089">Nezināma ierīce no: <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB ierīces atļaujas apstiprināšana</translation>
 <translation id="8481980314595922412">Izmēģinājuma versijas funkcijas ir ieslēgtas</translation>
+<translation id="8486666913807228950">Iemesls: sarakstā “Piespiedu atvēršanas pārlūks” tika konstatēta inversā kārtula “<ph name="REVERT_RULE" />”.</translation>
 <translation id="848666842773560761">Lietotne mēģina piekļūt kamerai. Lai atļautu piekļuvi, izslēdziet kameras konfidencialitātes slēdzi.</translation>
 <translation id="8487678622945914333">Tuvināt</translation>
 <translation id="8489156414266187072">Personiski ieteikumi tiek rādīti tikai jūsu kontā</translation>

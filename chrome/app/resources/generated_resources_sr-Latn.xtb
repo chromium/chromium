@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Šifrovanje podataka</translation>
 <translation id="1072700771426194907">Otkriven je USB uređaj</translation>
 <translation id="107278043869924952">Koristite PIN pored lozinke</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite da nam Chrome OS uređaji šalju automatske izveštaje, pomažete nam da odredimo prioritet za stvari koje treba da popravimo i poboljšamo u Chrome OS-u. Ovi izveštaji mogu da obuhvataju stvari kao što su funkcije koje ste koristili, količina memorije koju ste obično koristili i dijagnostika i podaci o korišćenju za Android aplikacije. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Te izveštaje možete da pokrenete ili zaustavite u bilo kom trenutku u detetovim podešavanjima Chrome OS uređaja. Ako ste administrator domena, možete da promenite ovo podešavanje na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanje ove funkcije ne utiče na mogućnost ovog uređaja da šalje informacije potrebne za osnovne usluge, na primer, ažuriranja sistema i bezbednost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako se podešavanje aktivnosti na vebu i u aplikacijama uključi za detetov Google nalog, detetovi podaci mogu da se čuvaju na njegovom Google nalogu. Saznajte više o ovim podešavanjima i o tome kako da ih prilagodite na families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi podešavanje Šalji podatke o korišćenju i dijagnostici, izveštaji o otkazivanju će se možda takođe otpremati na Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Krećite se stranicama pomoću kursora za tekst</translation>
 <translation id="1076382954055048850">Prikažite druge Cast sesije</translation>
 <translation id="1076698951459398590">Omogući temu</translation>
@@ -1429,10 +1424,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2328561734797404498">Restartujte uređaj da biste koristili aplikaciju <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kada ste u režimu bez arhiviranja, sajtovi mogu da koriste kolačiće samo da bi videli aktivnosti pregledanja kod njih. Kolačići se brišu na kraju sesije bez arhiviranja.</translation>
 <translation id="2329597144923131178">Prijavite se da bi vam obeleživači, istorija, lozinke i druga podešavanja bili dostupni na svim uređajima.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite da nam Chrome OS uređaji šalju automatske izveštaje, pomažete nam da odredimo prioritet za stvari koje treba da popravimo i poboljšamo u Chrome OS-u. Ovi izveštaji mogu da obuhvataju stvari kao što su funkcije koje koristite, količina memorije koju obično koristite, dijagnostika i podaci o korišćenju za Android aplikacije i greške. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ove izveštaje možete da pokrenete ili zaustavite u svakom trenutku u podešavanjima Chrome OS uređaja. Ako ste administrator domena, možete da promenite ovo podešavanje na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ako uključite podešavanje aktivnosti na vebu i u aplikacijama za Google nalog, Android podaci mogu da se čuvaju na Google nalogu. Podatke možete da pregledate i izbrišete, kao i da promenite podešavanja naloga na account.google.com.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi podešavanje Šalji podatke o korišćenju i dijagnostici, izveštaji o otkazivanju će se možda takođe otpremati na Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Prikaži u prodavnici</translation>
 <translation id="2332192922827071008">Otvori Podešavanja</translation>
 <translation id="2332515770639153015">Poboljšano bezbedno pregledanje je uključeno</translation>
@@ -2771,10 +2762,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3651488188562686558">prekinuti vezu sa WiFi-em</translation>
 <translation id="3652817283076144888">Pokreće se</translation>
 <translation id="3653160965917900914">Deljenja datoteka na mreži</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite da nam Chrome OS uređaji šalju automatske izveštaje, pomažete nam da odredimo prioritet za stvari koje treba da popravimo i poboljšamo u Chrome OS-u. Ovi izveštaji mogu da obuhvataju stvari kao što su funkcije koje ste koristili i količina memorije koju ste obično koristili.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Te izveštaje možete da pokrenete ili zaustavite u bilo kom trenutku u detetovim podešavanjima Chrome OS uređaja. Ako ste administrator domena, možete da promenite ovo podešavanje na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanje ove funkcije ne utiče na mogućnost ovog uređaja da šalje informacije potrebne za osnovne usluge, na primer, ažuriranja sistema i bezbednost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi podešavanje Šalji podatke o korišćenju i dijagnostici, izveštaji o otkazivanju će se možda takođe otpremati na Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">I dalje dozvoljavaj da <ph name="HOST" /> pristupa mikrofonu</translation>
 <translation id="3654045516529121250">Čitanje podešavanja pristupačnosti</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ima stalan pristup jednoj datoteci.}one{Ima stalan pristup # datoteci.}few{Ima stalan pristup za # datoteke.}other{Ima stalan pristup za # datoteka.}}</translation>
@@ -4046,7 +4033,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4900652253009739885">Uklanjanje jedinog prekidača dodeljenog radnji Izaberi nije moguće. Pritisnite bilo koji taster za <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Izaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Smernice preuzete sa servera su nevažeće: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Automatski šaljite Google-u dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chrome-a i Chrome OS-a. Android aplikacijama i Google partnerima će pomoći i neki zbirni podaci. Ako se podešavanje aktivnosti na vebu i u aplikacijama uključi za detetov Google nalog, detetovi Android podaci mogu da se čuvaju na njegovom Google nalogu.</translation>
 <translation id="4906490889887219338">Podesite deljenja datoteka na mreži ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Odaberite kada ovaj dodatak može da čita i menja podatke o sajtovima</translation>
 <translation id="4907161631261076876">Ova datoteka se ne preuzima često i može da bude opasna.</translation>
@@ -5503,10 +5489,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupa bez naziva – 1 kartica}one{Grupa bez naziva – # kartica}few{Grupa bez naziva – # kartice}other{Grupa bez naziva – # kartica}}</translation>
 <translation id="6385149369087767061">Povežite se na internet i probajte ponovo</translation>
 <translation id="6385543213911723544">Sajtovi mogu da čuvaju i čitaju podatke kolačića</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite da nam Chrome OS uređaji šalju automatske izveštaje, pomažete nam da odredimo prioritet za stvari koje treba da popravimo i poboljšamo u Chrome OS-u. Ovi izveštaji mogu da obuhvataju stvari kao što su funkcije koje koristite i količina memorije koju obično koristite.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ove izveštaje možete da pokrenete ili zaustavite u svakom trenutku u podešavanjima Chrome uređaja. Ako ste administrator domena, možete da promenite ovo podešavanje na administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanje ove funkcije ne utiče na mogućnost uređaja da šalje informacije potrebne za osnovne usluge, na primer, ažuriranja sistema i bezbednost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi podešavanje Šalji podatke o korišćenju i dijagnostici, izveštaji o otkazivanju će se možda takođe otpremati na Google.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Upozorenje – Omogućeno je detaljno evidentiranje; evidencije u nastavku mogu da sadrže URL-ove ili druge osetljive informacije. Pregledajte ih i uverite se da nemate ništa protiv slanja tih informacija.</translation>
 <translation id="6387674443318562538">Podeli vertikalno</translation>
 <translation id="6388429472088318283">Pretražite jezike</translation>
@@ -5627,7 +5609,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6504601948739128893">Nemaju dozvolu da koriste fontove instalirane na uređaju</translation>
 <translation id="6504611359718185067">Povežite se na internet da biste dodali štampač</translation>
 <translation id="6506374932220792071">Potpis X9.62 ECDSA putem SHA-256</translation>
-<translation id="6507936476364432879">Automatski šaljite Google-u dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chrome-a i Chrome OS-a.</translation>
 <translation id="6508248480704296122">Srodno sa stavkom <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Apl.: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licenca za medije</translation>
@@ -6956,7 +6937,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7807711621188256451">Uvek dozvoli da <ph name="HOST" /> pristupa kameri</translation>
 <translation id="7810202088502699111">Iskačući prozori su blokirani na ovoj stranici.</translation>
 <translation id="781167124805380294">Prebacite <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Automatski šaljite Google-u dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chrome-a i Chrome OS-a. Android aplikacijama i Google partnerima će pomoći i neki zbirni podaci. Ako uključite podešavanje aktivnosti na vebu i u aplikacijama za Google nalog, Android podaci mogu da se čuvaju na Google nalogu.</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>
 <translation id="7815680994978050279">Opasno preuzimanje je blokirano</translation>
 <translation id="7817361223956157679">Tastatura na ekranu još uvek ne radi u Linux aplikacijama</translation>

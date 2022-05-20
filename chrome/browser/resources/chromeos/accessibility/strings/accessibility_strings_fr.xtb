@@ -536,6 +536,7 @@
 <translation id="4601367666219428522">Tab <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">La prochaine touche actionnée sera ignorée.</translation>
 <translation id="4623097797855662355">Achevé d'imprimer</translation>
+<translation id="4624970070706497034">TalkBack n'offre plus de personnalisation pour les Chromebooks. Vous pouvez encore l'utiliser, mais avec les raccourcis clavier par défaut. Pour voir les raccourcis disponibles, appuyez sur Recherche+A, puis sur K. Si vous voulez toujours utiliser TalkBack, appuyez de nouveau sur la touche Commande.</translation>
 <translation id="463135993322337640">Appuyez sur ChromeVox o, n pour découvrir les nouveautés</translation>
 <translation id="4649220074413114917">Appuyez sur l'écran avec deux doigts si vous ne voulez plus que ChromeVox énonce le texte affiché. Pour continuer, appuyez sur l'écran avec deux doigts.</translation>
 <translation id="4660783501463101648">Version classique supprimée. Il est désormais impossible de basculer vers la version classique de ChromeVox par le biais de la touche du clavier initialement prévue à cet effet.</translation>

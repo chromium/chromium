@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Adattitkosítás</translation>
 <translation id="1072700771426194907">USB-eszköz észlelve</translation>
 <translation id="107278043869924952">PIN-kód használata a jelszó mellett</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a Chrome OS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a Chrome OS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. Ezek a jelentések tartalmazhatják például, hogy Ön milyen funkciókat, illetve jellemzően mennyi memóriát használ, valamint az Android-alkalmazás diagnosztikai és használati adatait. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ezeket a jelentéseket bármikor engedélyezheti és letilthatja gyermeke Chrome OS-t futtató eszközének beállításai között. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a felügyeleti konzolban.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A funkció kikapcsolása nem korlátozza ezt az eszközt abban, hogy elküldje az alapvető fontosságú szolgáltatásokkal (pl. a rendszerfrissítésekkel és -biztonsággal) kapcsolatos információkat.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ha az Internetes és alkalmazástevékenységek beállítás be van kapcsolva gyermeke Google-fiókjában, akkor a rendszer gyermeke adatait az ő Google-fiókjába is mentheti. Ezekről a funkciókról és beállításuk módjáról a families.google.com oldalon találhat további információt.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Ha az eszköz tulajdonosa bekapcsolja a „Használati és diagnosztikai adatok küldése” beállítást, a rendszer hibajelentéseket is feltölthet a Google rendszerébe.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Az oldalakon szövegkurzorral navigálhat</translation>
 <translation id="1076382954055048850">További Cast-munkamenetek megjelenítése</translation>
 <translation id="1076698951459398590">Téma engedélyezése</translation>
@@ -1444,10 +1439,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2328561734797404498">A(z) <ph name="APP_NAME" /> használatához indítsa újra eszközét.</translation>
 <translation id="2328636661627946415">Inkognitó módban való böngészés közben az egyes webhelyek az Ön által csak az adott webhelyen végzett böngészési tevékenységek nyomon követésére használhatják a cookie-kat. Az inkognitó munkamenet végén a böngésző törli a cookie-kat.</translation>
 <translation id="2329597144923131178">Jelentkezzen be, hogy könyvjelzőit, előzményeit, jelszavait és más beállításait az összes eszközén elérje.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a Chrome OS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a Chrome OS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. Ezek a jelentések tartalmazhatják például, hogy Ön milyen funkciókat, illetve jellemzően mennyi memóriát használ, az Android-alkalmazás diagnosztikai és használati adatait, valamint a hibákat. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bármikor engedélyezheti és letilthatja ezeket a jelentéseket a Chrome OS-t futtató eszköz beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a felügyeleti konzolban.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ha az Internetes és alkalmazástevékenységek beállítás be van kapcsolva Google-fiókjában, akkor a rendszer mentheti az Android-adatokat a Google-fiókjába. Az account.google.com oldalon megtekintheti az adatait, törölheti őket, továbbá módosíthatja a fiókbeállításokat.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ha az eszköz tulajdonosa bekapcsolja a „Használati és diagnosztikai adatok küldése” beállítást, a rendszer hibajelentéseket is feltölthet a Google rendszerébe.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Megtekintés az áruházban</translation>
 <translation id="2332192922827071008">A beállítások megnyitása</translation>
 <translation id="2332515770639153015">A Biztonságos Böngészés fokozott védelemmel funkció be van kapcsolva</translation>
@@ -2785,10 +2776,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3651488188562686558">Wi-Fi-kapcsolat bontása</translation>
 <translation id="3652817283076144888">Inicializálás…</translation>
 <translation id="3653160965917900914">Hálózati fájlmegosztások</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a Chrome OS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a Chrome OS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. A jelentések tartalmazhatják például, hogy Ön milyen funkciókat, illetve jellemzően mennyi memóriát használ.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Ezeket a jelentéseket bármikor engedélyezheti és letilthatja gyermeke Chrome OS-t futtató eszközének beállításai között. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a felügyeleti konzolban.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A funkció kikapcsolása nem korlátozza ezt az eszközt abban, hogy elküldje az alapvető fontosságú szolgáltatásokkal (pl. a rendszerfrissítésekkel és -biztonsággal) kapcsolatos információkat.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ha az eszköz tulajdonosa bekapcsolja a „Használati és diagnosztikai adatok küldése” beállítást, a rendszer hibajelentéseket is feltölthet a Google rendszerébe.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">A(z) <ph name="HOST" /> továbbra is hozzáférhet az Ön mikrofonjához</translation>
 <translation id="3654045516529121250">A kisegítő lehetőségek beállításainak áttekintése</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Állandó hozzáférése van egy fájlhoz.}other{Állandó hozzáférése van # fájlhoz.}}</translation>
@@ -4060,7 +4047,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4900652253009739885">A „Kiválasztás” művelethez hozzárendelt egyetlen kapcsoló eltávolítása nem lehetséges. Nyomja le bármelyik billentyűt a következőhöz: <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Válasszon ki kísérleti állapotot a következő kísérlethez: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">A szerverről letöltött irányelv érvénytelen: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Segítse a Chrome és a Chromium OS funkcióinak és teljesítményének javítását azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak. Egyes összesített adatok szintén segítik az Android-alkalmazásokat és a Google-partnereket. Ha az Internetes és alkalmazástevékenységek beállítás be van kapcsolva gyermeke Google-fiókjában, akkor a rendszer mentheti gyermeke Android-adatait a Google-fiókjába.</translation>
 <translation id="4906490889887219338">Hálózati fájlmegosztások beállítása, illetve kezelése. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="4907129260985716018">Válassza ki, hogy a bővítmény milyen esetben olvashassa és módosíthassa az Ön webhelyadatait</translation>
 <translation id="4907161631261076876">Ezt a fájlt nem töltik le gyakran, és veszélyes lehet.</translation>
@@ -5519,10 +5505,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Névtelen csoport – 1 lap}other{Névtelen csoport – # lap}}</translation>
 <translation id="6385149369087767061">Csatlakozzon az internethez, és próbálja újra</translation>
 <translation id="6385543213911723544">A webhelyek menthetik és olvashatják a cookie-adatokat</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ha engedélyezi a Chrome OS-t futtató eszközöknek az automatikus jelentésküldést, azzal segít nekünk a Chrome OS hibajavításaival és fejlesztéseivel kapcsolatos prioritások meghatározásában. Ezek a jelentések tartalmazhatják például, hogy Ön milyen funkciókat, illetve jellemzően mennyi memóriát használ.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Bármikor engedélyezheti és letilthatja ezeket a jelentéseket a Chrome-eszköz beállításaiban. Ha Ön domainrendszergazda, akkor ezt a beállítást módosíthatja a felügyeleti konzolban.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />A funkció kikapcsolása nem korlátozza az eszközt abban, hogy elküldje az alapvető fontosságú szolgáltatásokkal (pl. a rendszerfrissítésekkel és -biztonsággal) kapcsolatos információkat.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ha az eszköz tulajdonosa bekapcsolja a „Használati és diagnosztikai adatok küldése” beállítást, a rendszer hibajelentéseket is feltölthet a Google rendszerébe.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Figyelem! A részletes naplózás engedélyezve van: az alábbi naplók URL-eket vagy egyéb bizalmas adatokat tartalmazhatnak. Kérjük, ellenőrizze az információkat, és győződjön meg róla, hogy nem okoz kellemetlenséget az elküldésük.</translation>
 <translation id="6387674443318562538">Felosztás függőlegesen</translation>
 <translation id="6388429472088318283">Nyelv keresése</translation>
@@ -5643,7 +5625,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6504601948739128893">Nem használhatják az eszközre telepített betűtípusokat</translation>
 <translation id="6504611359718185067">Ha nyomtatót szeretne hozzáadni, csatlakozzon az internethez</translation>
 <translation id="6506374932220792071">X9.62 ECDSA aláírás a következővel: SHA-256</translation>
-<translation id="6507936476364432879">Segítse a Chrome és a Chromium OS funkcióinak és teljesítményének javítását azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak.</translation>
 <translation id="6508248480704296122">Kapcsolódik a következőhöz: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Alkalmazás: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Médiaengedély</translation>
@@ -6968,7 +6949,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7807711621188256451">A(z) <ph name="HOST" /> mindig hozzáférhet az Ön kamerájához</translation>
 <translation id="7810202088502699111">Az előugró ablakok le vannak tiltva ezen az oldalon.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> átküldése</translation>
-<translation id="7811886112806886172">Segítse a Chrome és a Chromium OS funkcióinak és teljesítményének javítását azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak. Egyes összesített adatok szintén segítik az Android-alkalmazásokat és a Google-partnereket. Ha az Internetes és alkalmazástevékenységek beállítás be van kapcsolva Google-fiókjában, akkor a rendszer mentheti az Android-adatokat a Google-fiókjába.</translation>
 <translation id="7814458197256864873">&amp;Másolás</translation>
 <translation id="7815680994978050279">Veszélyes letöltés letiltva</translation>
 <translation id="7817361223956157679">A képernyő-billentyűzet még nem használható a Linux-alkalmazásokban</translation>

@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Para mais ajuda, aceda ao <ph name="BEGIN_LINK" />Centro de Ajuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compressão</translation>
 <translation id="4794140124556169553">A execução de um teste da CPU pode afetar o desempenho do sistema</translation>
+<translation id="4804818685124855865">Desligar</translation>
 <translation id="4808449224298348341">Foi cancelada a tarefa de impressão de <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">As minhas imagens</translation>
@@ -530,6 +531,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5931523347251946569">Ficheiro não encontrado</translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
+<translation id="5947494881799873997">Reverter</translation>
 <translation id="5951259522948394825">Confirme se está tudo no local certo e veja o relatório de diagnóstico</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Imagem de fundo predefinida</translation>
@@ -813,6 +815,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="871560550817059752">Falha – Sem tinta</translation>
 <translation id="8723108084122415655">Rede não predefinida acima do limite de latência.</translation>
+<translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8726019395068607495">Parada – Porta aberta</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8747900814994928677">Confirme a alteração</translation>

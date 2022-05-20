@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">その他ご不明な点がある場合は、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="4793756956024303490">圧縮アルゴリズム</translation>
 <translation id="4794140124556169553">CPU のテストを行うと、システムのパフォーマンスに響することがあります</translation>
+<translation id="4804818685124855865">切断</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">ライトモード</translation>
 <translation id="4813136279048157860">自分の画像</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
 <translation id="5939518447894949180">リセット</translation>
 <translation id="594552776027197022">ランダムな鍵ペアを生成</translation>
+<translation id="5947494881799873997">元に戻す</translation>
 <translation id="5951259522948394825">すべてが正しい場所にあることを確認して、診断レポートを表示できます</translation>
 <translation id="5972388717451707488">エンジンを更新</translation>
 <translation id="5984145644188835034">デフォルトの壁紙</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>
+<translation id="8725066075913043281">やり直し</translation>
 <translation id="8726019395068607495">停止 - 扉が開いています</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8747900814994928677">変更を確認</translation>

@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">للحصول على مزيد من المساعدة، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />مركز المساعدة<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">خوارزمية الضغط</translation>
 <translation id="4794140124556169553">‏إنّ إجراء اختبار لوحدة المعالجة المركزية (CPU) قد يؤثر في أداء نظامك.</translation>
+<translation id="4804818685124855865">إلغاء الربط</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4809927044794281115">المظهر الفاتح</translation>
 <translation id="4813136279048157860">صوري</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
+<translation id="5947494881799873997">التراجع عن الإجراء</translation>
 <translation id="5951259522948394825">عليك التأكد من أنّ جميع العناصر في مكانها المناسب والاطّلاع على تقرير التشخيص.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">خلفية تلقائية</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">تم</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
 <translation id="8723108084122415655">وقت استجابة الشبكة غير التلقائية أعلى من الحد الأقصى.</translation>
+<translation id="8725066075913043281">أعد المحاولة</translation>
 <translation id="8726019395068607495">توقّفت الطابعة - باب الطابعة مفتوح</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8747900814994928677">تأكيد التغيير</translation>

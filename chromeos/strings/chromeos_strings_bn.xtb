@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">আরও সাহায্যের জন্য, <ph name="BEGIN_LINK" />সহায়তা কেন্দ্রে<ph name="END_LINK" /> যান।</translation>
 <translation id="4793756956024303490">কম্প্রেশন অ্যালগরিদম</translation>
 <translation id="4794140124556169553">সিপিইউ পরীক্ষা চালালে তার ফলে আপনার সিস্টেম পারফর্ম্যান্সে প্রভাব পড়তে পারে</translation>
+<translation id="4804818685124855865">সংযোগ বিচ্ছিন্ন</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> প্রিন্ট করার কাজ বাতিল করা হয়েছে</translation>
 <translation id="4809927044794281115">হালকা থিম</translation>
 <translation id="4813136279048157860">আমার ছবি</translation>
@@ -529,6 +530,7 @@
 <translation id="5931523347251946569">ফাইল পাওয়া যায়নি</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="594552776027197022">র‍্যান্ডম কী পেয়ার জেনারেট করুন</translation>
+<translation id="5947494881799873997">ফেরান</translation>
 <translation id="5951259522948394825">সবকিছু সঠিক জায়গায় আছে তা নিশ্চিত করুন এবং ডায়াগনস্টিক রিপোর্ট দেখুন</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ডিফল্ট ওয়ালপেপার</translation>
@@ -812,6 +814,7 @@
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="871560550817059752">প্রিন্ট করা যায়নি - প্রিন্টারে কালি নেই</translation>
 <translation id="8723108084122415655">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
+<translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8726019395068607495">বন্ধ হয়ে গেছে - প্রিন্টার ডোর খোলা আছে</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8747900814994928677">পরিবর্তন কনফার্ম করুন</translation>

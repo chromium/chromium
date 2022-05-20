@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">Lisaabi saamiseks avage <ph name="BEGIN_LINK" />abikeskus<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Tihendamisalgoritm</translation>
 <translation id="4794140124556169553">Protsessori testi käitamine võib mõjutada teie süsteemi jõudlust</translation>
+<translation id="4804818685124855865">Katkesta ühendus</translation>
 <translation id="4808449224298348341">Prinditöö <ph name="DOCUMENT_TITLE" /> tühistati</translation>
 <translation id="4809927044794281115">Hele teema</translation>
 <translation id="4813136279048157860">Minu pildid</translation>
@@ -530,6 +531,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5931523347251946569">Faili ei leitud</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
 <translation id="594552776027197022">Loo juhuslik võtmepaar</translation>
+<translation id="5947494881799873997">Ennista</translation>
 <translation id="5951259522948394825">Veenduge, et kõik oleks õigesti, ja vaadake diagnostikaaruannet</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Vaiketaustapilt</translation>
@@ -813,6 +815,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>
 <translation id="8723108084122415655">Mittevaikevõrk ületab latentsusaja piiri</translation>
+<translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8726019395068607495">Peatatud – luuk on avatud</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8747900814994928677">Kinnita muudatus</translation>

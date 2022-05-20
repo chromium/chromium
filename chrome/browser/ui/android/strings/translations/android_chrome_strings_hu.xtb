@@ -489,7 +489,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Ablakok kezelése</translation>
-<translation id="3624977496395967031">Kattintson a rendezési lehetőségek megnyitásához</translation>
 <translation id="3631987586758005671">Megosztás a következővel: <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatikus bejelentkezés webhelyekre a tárolt hitelesítő adatokkal. Ha ez a funkció ki van kapcsolva, mindig meg kell adnia hitelesítő adatait, amikor egy webhelyre szeretne bejelentkezni.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -581,8 +580,10 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4209895695669353772">A Google által javasolt, személyre szabott tartalmak fogadásához kapcsolja be a szinkronizálást</translation>
 <translation id="4214315110991671325">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chrome előtöltéshez használja fel őket.</translation>
 <translation id="4225895483398857530">Eszköztár gyorsparancs</translation>
+<translation id="4227318652298512614">Követheti bármelyik webhelyet</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
 <translation id="4248098802131000011">Védje meg jelszavait az adatvédelmi incidensektől és más biztonsági problémáktól</translation>
+<translation id="4249955472157341256">Rendezés a legutóbbiak szerint</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4256782883801055595">Nyílt forráskódú licencek</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />A felhasznált adatok:<ph name="END_BOLD" /> Böngészési előzményei, az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
@@ -897,7 +898,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5957442310066583693">Legkedveltebb webhelyeinek megtekintéséhez koppintson a Kezdőképernyő gombra</translation>
 <translation id="5958275228015807058">A fájlokat és oldalakat a Letöltések között találja meg</translation>
 <translation id="5962718611393537961">Koppintson az összecsukáshoz</translation>
-<translation id="5964805880140440652">Úgy oszthatja meg az oldalt más eszközzel, hogy bekapcsolja rajta a szinkronizálást a Chrome beállításai között</translation>
 <translation id="5964869237734432770">Képleírások leállítása</translation>
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
 <translation id="5995726099713306770">Ismét letölti az oldalt?</translation>

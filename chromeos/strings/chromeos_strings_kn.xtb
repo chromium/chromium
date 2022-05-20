@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">ಹೆಚ್ಚಿನ ಸಹಾಯ ಬೇಕಿದ್ದರೆ <ph name="BEGIN_LINK" />ಸಹಾಯ ಕೇಂದ್ರಕ್ಕೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="4793756956024303490">ಕುಗ್ಗಿಸುವಿಕೆ ಅಲ್ಗಾರಿದಮ್</translation>
 <translation id="4794140124556169553">CPU ಪರೀಕ್ಷೆಯನ್ನು ರನ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಸಿಸ್ಟಂ ಕಾರ್ಯಕ್ಷಮತೆಯ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರಬಹುದು</translation>
+<translation id="4804818685124855865">ಡಿಸ್‌ಕನೆಕ್ಟ್</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4809927044794281115">ಲೈಟ್ ಥೀಮ್‌</translation>
 <translation id="4813136279048157860">ನನ್ನ ಚಿತ್ರಗಳು</translation>
@@ -529,6 +530,7 @@
 <translation id="5931523347251946569">ಫೈಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
 <translation id="594552776027197022">ರ‍್ಯಾಂಡಮ್ ಕೀ ಜೋಡಿಯನ್ನು ರಚಿಸಿ</translation>
+<translation id="5947494881799873997">ಹಿಂತಿರುಗಿಸು</translation>
 <translation id="5951259522948394825">ಎಲ್ಲವೂ ಸರಿಯಾದ ಸ್ಥಳದಲ್ಲಿದೆ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ ಮತ್ತು ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ವರದಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="5972388717451707488">ಎಂಜಿನ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5984145644188835034">ಡೀಫಾಲ್ಟ್ ವಾಲ್‌ಪೇಪರ್</translation>
@@ -693,7 +695,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7535791657097741517">ಲೈಟ್ ಥೀಮ್‌ ಆನ್ ಮಾಡಿ</translation>
 <translation id="7550715992156305117">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ದಿನಚರಿಗಳು</translation>
-<translation id="7551123448725492271">ಸಾಧನವು ಆಡಿಯೊ ಸಾಧನವಾಗಿದೆ.</translation>
+<translation id="7551123448725492271">ಸಾಧನವು ಆಡಿಯೋ ಸಾಧನವಾಗಿದೆ.</translation>
 <translation id="7561454561030345039">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ಟಚ್‌ಸ್ಕ್ರೀನ್</translation>
@@ -812,6 +814,7 @@
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="871560550817059752">ವಿಫಲವಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8723108084122415655">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್</translation>
+<translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8726019395068607495">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಡೋರ್ ಓಪನ್ ಆಗಿದೆ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8747900814994928677">ಬದಲಾವಣೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>

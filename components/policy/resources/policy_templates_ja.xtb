@@ -4989,6 +4989,15 @@
 <translation id="6786666051053129545">Google アシスタントの Voice Match 設定フローを有効にする</translation>
 <translation id="6786747875388722282">拡張機能</translation>
 <translation id="6786967369487349613">ローミング プロフィール ディレクトリの設定</translation>
+<translation id="6789319144568227749">CORS 非ワイルドカード リクエスト ヘッダーをサポートするかどうかを設定します。
+
+      <ph name="PRODUCT_NAME" /> バージョン 97 より、CORS 非ワイルドカード リクエスト ヘッダーがサポートされるようになりました。スクリプトによって追加された Authorization ヘッダーを使用して fetch() や XMLHttpRequest でクロスオリジン ネットワーク リクエストを行う場合、CORS プリフライト レスポンスの Access-Control-Allow-Headers ヘッダーで Authorization ヘッダーが明示的に許可されている必要があります。この場合の「明示的に」は、Authorization ヘッダーがワイルドカード記号「*」で表されていないことを意味します。詳しくは、<ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> をご覧ください。
+
+      このポリシーを未設定のままにするか true に設定した場合、<ph name="PRODUCT_NAME" /> は CORS 非ワイルドカード リクエスト ヘッダーをサポートし、前述のとおり動作します。
+
+      このポリシーを false に設定した場合、Chrome では CORS プリフライト レスポンスの Access-Control-Allow-Headers ヘッダーで、ワイルドカード記号「*」で表された Authorization ヘッダーが許可されます。
+
+      このエンタープライズ ポリシーは一時的なものであり、今後削除される予定です。</translation>
 <translation id="6789422336869764846">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはデバイス起動時の Dev スイッチの状態を報告します。
 
       このポリシーを無効に設定すると、登録済みのデバイスは Dev スイッチの状態を報告しません。</translation>

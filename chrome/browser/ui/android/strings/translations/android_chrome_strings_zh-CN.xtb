@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">预览</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3622349720008044802">管理窗口</translation>
-<translation id="3624977496395967031">点击即可打开排序选项</translation>
 <translation id="3631987586758005671">正在分享给<ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">使用存储的凭据自动登录网站。当该功能处于停用状态时，您每次都要通过验证才能登录网站。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@
 <translation id="4225895483398857530">工具栏中的快捷方式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4248098802131000011">确保您的密码免受数据泄露和其他安全问题的侵害</translation>
+<translation id="4249955472157341256">按新近度排序</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4256782883801055595">开放源代码许可</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
@@ -897,7 +897,6 @@
 <translation id="5957442310066583693">若要查看为您推荐的热门网站，请点按“主屏幕”按钮</translation>
 <translation id="5958275228015807058">在“下载内容”中查找您的文件和网页</translation>
 <translation id="5962718611393537961">点按即可收起</translation>
-<translation id="5964805880140440652">如果想将此页分享到其他设备，请在 Chrome 设置中开启同步</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5995726099713306770">再次下载此页面？</translation>

@@ -489,7 +489,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Administrar ventanas</translation>
-<translation id="3624977496395967031">Hacer clic para abrir las opciones de ordenación</translation>
 <translation id="3631987586758005671">Compartiendo con <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Permite acceder automáticamente a los sitios web con las credenciales almacenadas. Si la función está desactivada, siempre se solicitará verificación antes de acceder a un sitio web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="4225895483398857530">Acceso directo a la barra de herramientas</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
+<translation id="4249955472157341256">Ordenar por más recientes</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Licencias de código abierto</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Qué información se usa:<ph name="END_BOLD" /> Tu historial de navegación, un registro de los sitios que visitaste con Chrome en este dispositivo.</translation>
@@ -897,7 +897,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5957442310066583693">Para ver los sitios que más visitas, presiona el botón de la página principal</translation>
 <translation id="5958275228015807058">Encuentra tus archivos y páginas en Descargas</translation>
 <translation id="5962718611393537961">Presiona para contraer</translation>
-<translation id="5964805880140440652">Para compartir esta página con otro dispositivo, activa la sincronización en la configuración de Chrome</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
 <translation id="5979084224081478209">Revisar contraseñas</translation>
 <translation id="5995726099713306770">¿Quieres descargar la página de nuevo?</translation>

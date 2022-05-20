@@ -74,11 +74,6 @@
 <translation id="1071917609930274619">Šifriranje podataka</translation>
 <translation id="1072700771426194907">USB uređaj je pronađen</translation>
 <translation id="107278043869924952">Koristi PIN pored lozinke</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite ChromeOS uređajima da šalju automatske izvještaje, pomoći ćete nam da damo prioritet stvarima koje je potrebno popraviti i poboljšati u ChromeOS-u. Ti izvještaji mogu sadržavati informacije o funkcijama koje ste koristili, količini memorije koju obično koristite kao i podatke o dijagnostici i korištenju Android aplikacija. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su programeri za Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama ChromeOS uređaja djeteta. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanjem ove funkcije uređaj će i dalje moći slati informacije potrebne za ključne usluge kao što su ažuriranja sistema i sigurnost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako je postavka Aktivnost na webu i u aplikacijama uključena za Google račun vašeg djeteta, podaci djeteta se mogu pohranjivati na njegovom Google računu. Saznajte više o ovim postavkama i kako ih prilagoditi na families.google.com.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi "Šalji podatke o korištenju i dijagnostici", izvještaji o padovima aplikacije se također mogu otpremati Googleu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navigiranje stranicama pomoću kursora za tekst</translation>
 <translation id="1076382954055048850">Pogledajte druge sesije emitiranja</translation>
 <translation id="1076698951459398590">Omogući temu</translation>
@@ -1444,10 +1439,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2328561734797404498">Ponovo pokrenite uređaj da koristite aplikaciju <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Kada ste u anonimnom načinu rada, web lokacije mogu koristiti kolačiće samo da vide vašu aktivnost pregledanja na njima. Kolačići se brišu na kraju sesije u anonimnom načinu rada.</translation>
 <translation id="2329597144923131178">Prijavite se da biste imali svoje oznake, povijest, zaporke i druge postavke na svim svojim uređajima.</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite ChromeOS uređajima da šalju automatske izvještaje, pomoći ćete nam da damo prioritet stvarima koje je potrebno popraviti i poboljšati u ChromeOS-u. Ti izvještaji mogu sadržavati informacije o funkcijama koje koristite, količini memorije koju obično koristite, podatke o dijagnostici i korištenju Android aplikacija te greške. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su programeri za Android.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama ChromeOS uređaja. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ako je postavka Aktivnost na webu i u aplikacijama uključena za Google račun, podaci Androida se mogu pohranjivati na Google računu. Na stranici account.google.com možete vidjeti i izbrisati svoje podatke te izmijeniti postavke računa.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi funkciju "Šalji podatke o korištenju i dijagnostici", izvještaji o padovima aplikacije se također mogu otpremati Googleu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Prikaži u trgovini</translation>
 <translation id="2332192922827071008">Otvori preference</translation>
 <translation id="2332515770639153015">Poboljšano Sigurno pregledanje je uključeno</translation>
@@ -2785,10 +2776,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3651488188562686558">Prekini vezu s WiFi mrežom</translation>
 <translation id="3652817283076144888">Pokretanje</translation>
 <translation id="3653160965917900914">Dijeljenje fajlova na mreži</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite ChromeOS uređajima da šalju automatske izvještaje, pomoći ćete nam da damo prioritet stvarima koje je potrebno popraviti i poboljšati u ChromeOS-u. Ti izvještaji mogu sadržavati informacije o korištenim funkcijama i koliko memorije je obično korišteno.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama ChromeOS uređaja djeteta. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Isključivanjem ove funkcije uređaj će i dalje moći slati informacije potrebne za ključne usluge kao što su ažuriranja sistema i sigurnost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi funkciju "Šalji podatke o korištenju i dijagnostici", izvještaji o padovima aplikacije se također mogu otpremati Googleu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Nastavi dozvoljavati da <ph name="HOST" /> pristupa vašem mikrofonu</translation>
 <translation id="3654045516529121250">Čitanje vaših postavki pristupačnosti</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ima trajan pristup jednom fajlu.}one{Ima trajan pristup # fajlu.}few{Ima trajan pristup za # fajla}other{Ima trajan pristup za # fajlova}}</translation>
@@ -4061,7 +4048,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4900652253009739885">Nije moguće ukloniti jedini prekidač dodijeljen radnji "Odaberi". Pritisnite bilo koju tipku da: <ph name="RESPONSE" />.</translation>
 <translation id="4901309472892185668">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravilo preuzeto sa servera je nevažeće: <ph name="VALIDATION_ERROR" />.</translation>
-<translation id="4904511036057277323">Pomozite nam da poboljšamo funkcije i performanse Chromea i ChromeOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu. Neki zbirni podaci će također pomoći Android aplikacijama i Googleovim partnerima. Ako je postavka Aktivnost na webu i u aplikacijama uključena, podaci Androida vašeg djeteta se mogu pohranjivati na njegovom Google računu.</translation>
 <translation id="4906490889887219338">Postavite dijeljenje fajlova na mreži ili upravljajte njime. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Odaberite kada ova ekstenzija može čitati i izmjenjivati vaše podatke web lokacije</translation>
 <translation id="4907161631261076876">Ovaj fajl se ne preuzima često i može biti opasan.</translation>
@@ -5518,10 +5504,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Neimenovana grupa – 1 kartica}one{Neimenovana grupa – # kartica}few{Neimenovana grupa – # kartice}other{Neimenovana grupa – # kartica}}</translation>
 <translation id="6385149369087767061">Povežite se s internetom i pokušajte ponovo</translation>
 <translation id="6385543213911723544">Web lokacije mogu pohranjivati i čitati podatke o kolačićima</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Ako dozvolite ChromeOS uređajima da šalju automatske izvještaje, pomoći ćete nam da damo prioritet stvarima koje je potrebno popraviti i poboljšati u ChromeOS-u. Ti izvještaji mogu sadržavati informacije o funkcijama koje koristite i količini memorije koju obično koristite.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama Chrome uređaja. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Ako isključite ovu funkciju, uređaj će i dalje moći slati informacije potrebne za osnovne usluge kao što su ažuriranja sistema i sigurnost.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Ako vlasnik uređaja uključi funkciju "Šalji podatke o korištenju i dijagnostici", izvještaji o padovima aplikacije se također mogu otpremati Googleu.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Upozorenje – omogućeno je detaljno zapisivanje. Zapisi ispod mogu obuhvatati URL-ove ili druge osjetljive informacije. Pregledajte i budite sigurni da vam ne smeta poslati ove informacije.</translation>
 <translation id="6387674443318562538">Podjela po vertikali</translation>
 <translation id="6388429472088318283">Pretražite jezike</translation>
@@ -5642,7 +5624,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6504601948739128893">Nije dozvoljeno koristiti fontove instalirane na uređaju</translation>
 <translation id="6504611359718185067">Povežite se na internet da dodate štampač</translation>
 <translation id="6506374932220792071">X9.62 ECDSA potpis uz SHA-256</translation>
-<translation id="6507936476364432879">Pomozite nam da poboljšamo funkcije i performanse Chromea i ChromeOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="6508248480704296122">Srodno sa stavkom <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikacija: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licenca za medije</translation>
@@ -6971,7 +6952,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7807711621188256451">Uvijek dozvolite web lokaciji <ph name="HOST" /> da pristupa vašoj kameri</translation>
 <translation id="7810202088502699111">Skočni prozori su blokirani na ovoj stranici.</translation>
 <translation id="781167124805380294">Emitiranje datoteke <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">Pomozite nam da poboljšamo funkcije i performanse Chromea i ChromeOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu. Neki zbirni podaci će također pomoći Android aplikacijama i Googleovim partnerima. Ako je postavka Aktivnost na webu i u aplikacijama uključena za Google račun, podaci Androida se mogu pohranjivati na Google računu.</translation>
 <translation id="7814458197256864873">&amp;Kopiraj</translation>
 <translation id="7815680994978050279">Opasno preuzimanje je blokirano</translation>
 <translation id="7817361223956157679">Tastatura na ekranu još uvijek ne radi u aplikacijama za Linux</translation>

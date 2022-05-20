@@ -489,7 +489,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3616113530831147358">Âm thanh</translation>
 <translation id="3622349720008044802">Quản lý cửa sổ</translation>
-<translation id="3624977496395967031">Nhấp để mở lựa chọn sắp xếp</translation>
 <translation id="3631987586758005671">Đang chia sẻ đến <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -583,6 +582,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4248098802131000011">Bảo vệ mật khẩu của bạn trước việc bị rò rỉ dữ liệu và các vấn đề bảo mật khác</translation>
+<translation id="4249955472157341256">Sắp xếp theo Mới nhất</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="4256782883801055595">Giấy phép nguồn mở</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Loại dữ liệu nào được sử dụng:<ph name="END_BOLD" /> Nhật ký duyệt web của bạn, một bản ghi các trang web bạn từng truy cập bằng Chrome trên thiết bị này.</translation>
@@ -897,7 +897,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5957442310066583693">Để xem các trang web hàng đầu của bạn, hãy nhấn vào nút Trang chủ</translation>
 <translation id="5958275228015807058">Tìm tệp và trang của bạn trong Tệp đã tải xuống</translation>
 <translation id="5962718611393537961">Nhấn để thu gọn</translation>
-<translation id="5964805880140440652">Để chia sẻ trang này với một thiết bị khác, hãy bật tính năng đồng bộ hóa trong phần cài đặt Chrome</translation>
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
 <translation id="5995726099713306770">Tải trang xuống lần nữa?</translation>

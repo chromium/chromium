@@ -489,7 +489,6 @@
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3622349720008044802">উইন্ডো ম্যানেজ করুন</translation>
-<translation id="3624977496395967031">সাজানোর বিকল্প খুলতে ক্লিক করুন</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-এর সাথে শেয়ার করা হচ্ছে</translation>
 <translation id="363596933471559332">সঞ্চিত ক্রেডেনশিয়াল ব্যবহার করে ওয়েবসাইটগুলিতে অটোমেটিক সাইন-ইন। যখন বৈশিষ্ট্যটি বন্ধ করা থাকে, তখন প্রতিবারই একটি ওয়েবসাইটে সাইন-ইন করার সময় আপনাকে যাচাইকরণের জন্য বলা হবে।</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -585,6 +584,7 @@
 <translation id="4225895483398857530">টুলবারের শর্টকার্ট</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4248098802131000011">ডেটার নিরাপত্তা লঙ্ঘনকরীদের ও অন্যান্য নিরাপত্তা সংক্রান্ত ইস্যুগুলি থেকে আপনার পাসওয়ার্ড নিরাপদে রাখুন</translation>
+<translation id="4249955472157341256">লেটেস্ট অনুযায়ী সাজান</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="4256782883801055595">ওপেন সোর্স লাইসেন্স</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />কোন ডেটা ব্যবহার করা হয়:<ph name="END_BOLD" /> আপনার ব্রাউজিং ইতিহাস, এই ডিভাইসে Chrome ব্যবহার করে আপনি যে সাইটগুলি ভিজিট করেছেন তার একটি রেকর্ড।</translation>
@@ -899,7 +899,6 @@
 <translation id="5957442310066583693">আপনার জন্য বেছে নেওয়া সেরা সাইট দেখতে 'হোম' বোতাম টিপুন</translation>
 <translation id="5958275228015807058">ডাউনলোড ফোল্ডার থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে নিন</translation>
 <translation id="5962718611393537961">সঙ্কুচিত করতে আলতো চাপুন</translation>
-<translation id="5964805880140440652">এই পৃষ্ঠাটিকে অন্য ডিভাইসের সাথে শেয়ার করার জন্য, Chrome সেটিংস থেকে সিঙ্ক চালু করুন</translation>
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
 <translation id="5995726099713306770">পৃষ্ঠাটি আবার ডাউনলোড করবেন?</translation>

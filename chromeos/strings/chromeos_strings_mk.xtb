@@ -395,6 +395,7 @@
 <translation id="4793710386569335688">За дополнителна помош, одете во <ph name="BEGIN_LINK" />Центарот за помош<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритам за компримирање</translation>
 <translation id="4794140124556169553">Извршувањето CPU-тест може да влијае врз изведбата на системот</translation>
+<translation id="4804818685124855865">Прекини врска</translation>
 <translation id="4808449224298348341">Откажан налог за печатење: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Мои слики</translation>
@@ -530,6 +531,7 @@
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="594552776027197022">Генерирај случаен пар клучеви</translation>
+<translation id="5947494881799873997">Врати</translation>
 <translation id="5951259522948394825">Потврдете дека сѐ е на правилното место и прегледајте го дијагностичкиот извештај</translation>
 <translation id="5972388717451707488">Ажурирајте го софтверот</translation>
 <translation id="5984145644188835034">Стандарден тапет</translation>
@@ -813,6 +815,7 @@
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>
 <translation id="8723108084122415655">Нестандардната мрежа е над прагот за латенција</translation>
+<translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8726019395068607495">Запрено - вратата е отворена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8747900814994928677">Потврдете ја измената</translation>

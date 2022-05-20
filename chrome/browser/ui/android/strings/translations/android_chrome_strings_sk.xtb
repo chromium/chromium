@@ -489,7 +489,6 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3622349720008044802">Správa okien</translation>
-<translation id="3624977496395967031">Kliknutím otvorte možnosti zoradenia</translation>
 <translation id="3631987586758005671">Zdieľa sa so zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Povolí automatické prihlasovanie na webové stránky pomocou uložených poverení. Keď je funkcia vypnutá, zobrazí sa výzva na overenie vždy pred prihlásením na web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
@@ -584,6 +583,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="4227318652298512614">Sledujte ľubovoľné weby</translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="4248098802131000011">Ochráňte svoje heslá pred porušením ochrany údajov a ďalšími bezpečnostnými problémami</translation>
+<translation id="4249955472157341256">Zoradiť od najnovších</translation>
 <translation id="4250229828105606438">Snímka obrazovky</translation>
 <translation id="4256782883801055595">Licencie open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Aké údaje sa používajú:<ph name="END_BOLD" /> vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou Chromu v tomto zariadení.</translation>
@@ -898,7 +898,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5957442310066583693">Ak si chcete zobraziť najobľúbenejšie weby, klepnite na tlačidlo plochy</translation>
 <translation id="5958275228015807058">Nájdite stiahnuté súbory a stránky</translation>
 <translation id="5962718611393537961">Klepnutím zbaliť</translation>
-<translation id="5964805880140440652">Ak chcete zdieľať túto stránku s iným zariadením, zapnite synchronizáciu v nastaveniach Chromu</translation>
 <translation id="5964869237734432770">Zastaviť popisy obrázkov</translation>
 <translation id="5979084224081478209">Skontrolovať heslá</translation>
 <translation id="5995726099713306770">Chcete stránku znova stiahnuť?</translation>
