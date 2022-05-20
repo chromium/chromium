@@ -9768,6 +9768,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Process.Sandbox.StartSandboxedWin.{Event}Duration"
+    units="microseconds" expires_after="2023-01-21">
+  <owner>ajgo@chromium.org</owner>
+  <owner>src/sandbox/policy/win/OWNERS</owner>
+  <summary>
+    Duration of {Event} within StartSandboxedProcess(). Emitted on a successful
+    launch of a sandboxed process on windows. Only emitted where a
+    high-resolution timer is available (see Windows.HasHighResolutionTimeTicks).
+  </summary>
+  <token key="Event">
+    <variant name="CreatePolicy"/>
+    <variant name="GeneratePolicy"/>
+    <variant name="PostSpawnTarget"/>
+    <variant name="SpawnTarget"/>
+    <variant name="Total" summary="the total time"/>
+  </token>
+</histogram>
+
 <histogram name="ProxyOverriddenBubble.UserSelection"
     units="ExtensionBubbleAction" expires_after="2020-12-31">
   <obsolete>
