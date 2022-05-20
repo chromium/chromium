@@ -122,6 +122,7 @@ struct CC_EXPORT CommitState {
   bool new_local_surface_id_request = false;
   bool next_commit_forces_recalculate_raster_scales = false;
   bool next_commit_forces_redraw = false;
+  uint64_t trace_id = 0;
   EventMetrics::List event_metrics;
   // Latency information for work done in ProxyMain::BeginMainFrame. The
   // unique_ptr is allocated in RequestMainFrameUpdate, and passed to Blink's

@@ -679,7 +679,7 @@ class LayerTreeHostImplTest : public testing::Test,
         FakeRasterSource::CreateFromRecordingSource(recording_source.get());
 
     // Create the pending tree.
-    host_impl_->BeginCommit(0);
+    host_impl_->BeginCommit(0, /*trace_id=*/1);
     LayerTreeImpl* pending_tree = host_impl_->pending_tree();
     LayerImpl* root = SetupRootLayer<FakePictureLayerImpl>(
         pending_tree, layer_size, raster_source);
@@ -16173,7 +16173,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
   // Create the pending tree.
-  host_impl_->BeginCommit(0);
+  host_impl_->BeginCommit(0, /*trace_id=*/1);
   LayerTreeImpl* pending_tree = host_impl_->pending_tree();
   auto* root = SetupRootLayer<FakePictureLayerImpl>(pending_tree, layer_size,
                                                     raster_source);

@@ -845,6 +845,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   // This should match the property synchronization in
   // LayerTreeHost::finishCommitOnImplThread().
   target_tree->set_source_frame_number(source_frame_number());
+  target_tree->set_trace_id(trace_id());
   target_tree->set_background_color(background_color());
   target_tree->set_have_scroll_event_handlers(have_scroll_event_handlers());
   target_tree->set_event_listener_properties(

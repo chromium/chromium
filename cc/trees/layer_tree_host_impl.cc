@@ -588,12 +588,14 @@ void LayerTreeHostImpl::ReadyToCommit(
   }
 }
 
-void LayerTreeHostImpl::BeginCommit(int source_frame_number) {
+void LayerTreeHostImpl::BeginCommit(int source_frame_number,
+                                    uint64_t trace_id) {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::BeginCommit");
 
   if (!CommitToActiveTree())
     CreatePendingTree();
   sync_tree()->set_source_frame_number(source_frame_number);
+  sync_tree()->set_trace_id(trace_id);
 }
 
 // This function commits the LayerTreeHost, as represented by CommitState, to an
@@ -2480,9 +2482,15 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
   }
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
-  layer_tree_frame_sink_->SubmitCompositorFrame(
-      std::move(compositor_frame),
-      /*hit_test_data_changed=*/false);
+  {
+    TRACE_EVENT_WITH_FLOW0(
+        "viz,benchmark", "MainFrame.SubmitCompositorFrame",
+        TRACE_ID_GLOBAL(active_tree()->trace_id()),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    layer_tree_frame_sink_->SubmitCompositorFrame(
+        std::move(compositor_frame),
+        /*hit_test_data_changed=*/false);
+  }
 
 #if DCHECK_IS_ON()
   if (!doing_sync_draw_) {
@@ -2558,6 +2566,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
                          TRACE_ID_GLOBAL(CurrentBeginFrameArgs().trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "step", "GenerateCompositorFrame");
+
   rendering_stats_instrumentation_->IncrementFrameCount(1);
 
   memory_history_->SaveEntry(tile_manager_.memory_stats_from_last_assign());

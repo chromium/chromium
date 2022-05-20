@@ -331,7 +331,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const viz::BeginFrameArgs& commit_args,
       const BeginMainFrameMetrics* begin_main_frame_metrics,
       bool commit_timeout = false);
-  virtual void BeginCommit(int source_frame_number);
+  virtual void BeginCommit(int source_frame_number, uint64_t trace_id);
   virtual void FinishCommit(CommitState& commit_state,
                             const ThreadUnsafeCommitState& unsafe_state);
   virtual void CommitComplete();

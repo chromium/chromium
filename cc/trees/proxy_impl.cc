@@ -225,7 +225,6 @@ void ProxyImpl::SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect) {
 }
 
 void ProxyImpl::SetNeedsCommitOnImpl() {
-  DCHECK(IsImplThread());
   SetNeedsCommitOnImplThread();
 }
 
@@ -319,7 +318,12 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     const viz::BeginFrameArgs& commit_args,
     CommitTimestamps* commit_timestamps,
     bool commit_timeout) {
-  TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
+  {
+    TRACE_EVENT_WITH_FLOW0(
+        "viz,benchmark", "MainFrame.NotifyReadyToCommitOnImpl",
+        TRACE_ID_LOCAL(commit_state->trace_id),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  }
   DCHECK(!data_for_commit_.get());
   DCHECK(IsImplThread());
   DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
@@ -405,7 +409,13 @@ void ProxyImpl::OnCanDrawStateChanged(bool can_draw) {
 }
 
 void ProxyImpl::NotifyReadyToActivate() {
-  TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToActivate");
+  if (host_impl_->sync_tree() &&
+      !scheduler_->pending_tree_is_ready_for_activation()) {
+    TRACE_EVENT_WITH_FLOW0(
+        "viz,benchmark", "MainFrame.NotifyReadyToActivate",
+        TRACE_ID_LOCAL(host_impl_->sync_tree()->trace_id()),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  }
   DCHECK(IsImplThread());
   scheduler_->NotifyReadyToActivate();
 }
@@ -694,7 +704,20 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
       host_impl_->FrameSequenceTrackerActiveTypes();
   begin_main_frame_state->evicted_ui_resources =
       host_impl_->EvictedUIResourcesExist();
+  begin_main_frame_state->trace_id =
+      (0x1llu << 51) |  // Signature bit chosen at random to avoid collisions
+      (args.frame_id.source_id << 32) |
+      (args.frame_id.sequence_number & 0xffffffff);
   host_impl_->WillSendBeginMainFrame();
+  {
+    TRACE_EVENT_WITH_FLOW1(
+        "viz,benchmark", "Graphics.Pipeline", TRACE_ID_GLOBAL(args.trace_id),
+        TRACE_EVENT_FLAG_FLOW_IN, "step", "SendBeginMainFrame");
+    TRACE_EVENT_WITH_FLOW0("viz,benchmark",
+                           "MainFrame.SendBeginMainFrameOnImpl",
+                           TRACE_ID_LOCAL(begin_main_frame_state->trace_id),
+                           TRACE_EVENT_FLAG_FLOW_OUT);
+  }
   MainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyMain::BeginMainFrame, proxy_main_weak_ptr_,
@@ -722,7 +745,12 @@ DrawResult ProxyImpl::ScheduledActionDrawForced() {
 }
 
 void ProxyImpl::ScheduledActionCommit() {
-  TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionCommit");
+  {
+    TRACE_EVENT_WITH_FLOW0(
+        "viz,benchmark", "MainFrame.BeginCommit",
+        TRACE_ID_LOCAL(data_for_commit_->commit_state->trace_id),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  }
   DCHECK(IsImplThread());
   DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
          IsMainThreadBlocked());
@@ -737,7 +765,8 @@ void ProxyImpl::ScheduledActionCommit() {
 
   auto* commit_state = data_for_commit_->commit_state.get();
   auto* unsafe_state = data_for_commit_->unsafe_state;
-  host_impl_->BeginCommit(commit_state->source_frame_number);
+  host_impl_->BeginCommit(commit_state->source_frame_number,
+                          commit_state->trace_id);
   host_impl_->FinishCommit(*commit_state, *unsafe_state);
   base::TimeTicks finish_time = base::TimeTicks::Now();
   if (data_for_commit_->commit_timestamps)
@@ -757,8 +786,10 @@ void ProxyImpl::ScheduledActionCommit() {
 }
 
 void ProxyImpl::ScheduledActionPostCommit() {
-  TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionPostCommit");
   DCHECK(IsImplThread());
+  TRACE_EVENT_WITH_FLOW0("viz,benchmark", "MainFrame.CommitComplete",
+                         TRACE_ID_LOCAL(host_impl_->sync_tree()->trace_id()),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   // This is run as a separate step from commit because it can be time-consuming
   // and ought not delay sending the next BeginMainFrame.
@@ -768,7 +799,14 @@ void ProxyImpl::ScheduledActionPostCommit() {
 }
 
 void ProxyImpl::ScheduledActionActivateSyncTree() {
-  TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionActivateSyncTree");
+  if (host_impl_->sync_tree() &&
+      host_impl_->sync_tree()->source_frame_number() !=
+          host_impl_->active_tree()->source_frame_number()) {
+    TRACE_EVENT_WITH_FLOW0(
+        "viz,benchmark", "MainFrame.Activate",
+        TRACE_ID_LOCAL(host_impl_->sync_tree()->trace_id()),
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  }
   DCHECK(IsImplThread());
   host_impl_->ActivateSyncTree();
 }
@@ -818,6 +856,10 @@ void ProxyImpl::ScheduledActionBeginMainFrameNotExpectedUntil(
 DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   DCHECK(IsImplThread());
   DCHECK(host_impl_.get());
+
+  TRACE_EVENT_WITH_FLOW0("viz,benchmark", "MainFrame.Draw",
+                         TRACE_ID_LOCAL(host_impl_->active_tree()->trace_id()),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
   base::AutoReset<bool> mark_inside(&inside_draw_, true);
 

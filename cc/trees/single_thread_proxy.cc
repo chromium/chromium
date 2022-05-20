@@ -233,7 +233,8 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
   DebugScopedSetImplThread impl(task_runner_provider_);
 
-  host_impl_->BeginCommit(commit_state->source_frame_number);
+  host_impl_->BeginCommit(commit_state->source_frame_number,
+                          commit_state->trace_id);
 
   host_impl_->FinishCommit(*commit_state, unsafe_state);
   commit_state.reset();

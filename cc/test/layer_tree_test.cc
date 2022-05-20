@@ -229,8 +229,8 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     test_hooks_->ReadyToCommitOnThread(this);
   }
 
-  void BeginCommit(int source_frame_number) override {
-    LayerTreeHostImpl::BeginCommit(source_frame_number);
+  void BeginCommit(int source_frame_number, uint64_t trace_id) override {
+    LayerTreeHostImpl::BeginCommit(source_frame_number, trace_id);
     test_hooks_->BeginCommitOnThread(this);
   }
 

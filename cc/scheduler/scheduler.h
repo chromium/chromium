@@ -178,6 +178,10 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // new tree can be activated.
   void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation);
 
+  bool pending_tree_is_ready_for_activation() const {
+    return state_machine_.pending_tree_is_ready_for_activation();
+  }
+
   // Drawing should result in submitting a CompositorFrame to the
   // LayerTreeFrameSink and then calling this.
   void DidSubmitCompositorFrame(uint32_t frame_token,
@@ -262,6 +266,9 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   const viz::BeginFrameArgs& last_dispatched_begin_main_frame_args() const {
     return last_dispatched_begin_main_frame_args_;
+  }
+  const viz::BeginFrameArgs& last_commit_origin_frame_args() const {
+    return last_commit_origin_frame_args_;
   }
   const viz::BeginFrameArgs& last_activate_origin_frame_args() const {
     return last_activate_origin_frame_args_;

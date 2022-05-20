@@ -104,7 +104,8 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
   // layer_tree_host_->ActivateCommitState() and the second argument would come
   // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
   // just to keep the test code simple.
-  host_impl_->BeginCommit(pending_commit_state()->source_frame_number);
+  host_impl_->BeginCommit(pending_commit_state()->source_frame_number,
+                          pending_commit_state()->trace_id);
   TreeSynchronizer::SynchronizeTrees(
       *pending_commit_state(), thread_unsafe_commit_state(), active_tree());
   active_tree()->SetPropertyTrees(*property_trees());

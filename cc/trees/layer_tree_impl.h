@@ -284,6 +284,9 @@ class CC_EXPORT LayerTreeImpl {
     source_frame_number_ = frame_number;
   }
 
+  uint64_t trace_id() const { return trace_id_; }
+  void set_trace_id(uint64_t val) { trace_id_ = val; }
+
   bool is_first_frame_after_commit() const {
     return source_frame_number_ != is_first_frame_after_commit_tracker_;
   }
@@ -822,6 +825,7 @@ class CC_EXPORT LayerTreeImpl {
 
   raw_ptr<LayerTreeHostImpl> host_impl_;
   int source_frame_number_;
+  uint64_t trace_id_ = 0;
   int is_first_frame_after_commit_tracker_;
   raw_ptr<HeadsUpDisplayLayerImpl> hud_layer_;
   PropertyTrees property_trees_;
