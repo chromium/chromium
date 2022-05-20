@@ -226,6 +226,10 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-marshmallow-arm64-rel",
+    mirrors = [
+        "ci/android-marshmallow-arm64-rel",
+        "ci/Android Release (Nexus 5X)",
+    ],
     check_for_flakiness = True,
     compilator = "android-marshmallow-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
