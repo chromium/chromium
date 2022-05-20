@@ -416,7 +416,6 @@ void TranslateBubbleView::OnWidgetClosing(views::Widget* widget) {
   if (GetBubbleFrameView()->GetWidget()->closed_reason() ==
       views::Widget::ClosedReason::kCloseButtonClicked) {
     model_->DeclineTranslation();
-    translate::ReportUiAction(translate::CLOSE_BUTTON_CLICKED);
     model_->ReportUIInteraction(translate::UIInteraction::kCloseUIExplicitly);
   } else {
     model_->ReportUIInteraction(translate::UIInteraction::kCloseUILostFocus);
