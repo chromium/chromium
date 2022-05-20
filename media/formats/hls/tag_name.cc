@@ -54,6 +54,8 @@ constexpr auto kTagNames = base::MakeFixedFlatMap({
                  MultivariantPlaylistTagName::kXContentSteering),
     TagNameEntry("EXT-X-DEFINE", CommonTagName::kXDefine),
     TagNameEntry("EXT-X-DISCONTINUITY", MediaPlaylistTagName::kXDiscontinuity),
+    TagNameEntry("EXT-X-DISCONTINUITY-SEQUENCE",
+                 MediaPlaylistTagName::kXDiscontinuitySequence),
     TagNameEntry("EXT-X-ENDLIST", MediaPlaylistTagName::kXEndList),
     TagNameEntry("EXT-X-GAP", MediaPlaylistTagName::kXGap),
     TagNameEntry("EXT-X-I-FRAME-STREAM-INF",

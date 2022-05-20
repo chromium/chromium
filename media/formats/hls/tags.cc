@@ -449,4 +449,9 @@ ParseStatus::Or<XMediaSequenceTag> XMediaSequenceTag::Parse(TagItem tag) {
   return ParseDecimalIntegerTag(tag, &XMediaSequenceTag::number);
 }
 
+ParseStatus::Or<XDiscontinuitySequenceTag> XDiscontinuitySequenceTag::Parse(
+    TagItem tag) {
+  return ParseDecimalIntegerTag(tag, &XDiscontinuitySequenceTag::number);
+}
+
 }  // namespace media::hls

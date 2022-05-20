@@ -15,6 +15,7 @@ class MEDIA_EXPORT MediaSegment {
  public:
   MediaSegment(types::DecimalFloatingPoint duration,
                types::DecimalInteger media_sequence_number,
+               types::DecimalInteger discontinuity_sequence_number,
                GURL uri,
                bool has_discontinuity,
                bool is_gap);
@@ -30,6 +31,11 @@ class MEDIA_EXPORT MediaSegment {
   // Returns the media sequence number of this media segment.
   types::DecimalInteger GetMediaSequenceNumber() const {
     return media_sequence_number_;
+  }
+
+  // Returns the discontinuity sequence number of this media segment.
+  types::DecimalInteger GetDiscontinuitySequenceNumber() const {
+    return discontinuity_sequence_number_;
   }
 
   // The URI of the media resource. This will have already been resolved against
@@ -48,6 +54,7 @@ class MEDIA_EXPORT MediaSegment {
  private:
   types::DecimalFloatingPoint duration_;
   types::DecimalInteger media_sequence_number_;
+  types::DecimalInteger discontinuity_sequence_number_;
   GURL uri_;
   bool has_discontinuity_;
   bool is_gap_;

@@ -41,6 +41,8 @@ enum class ParseStatusCode : StatusCodeType {
   kXStreamInfTagNotFollowedByUri,
   kVariantMissingStreamInfTag,
   kMediaSegmentBeforeMediaSequenceTag,
+  kMediaSegmentBeforeDiscontinuitySequenceTag,
+  kDiscontinuityTagBeforeDiscontinuitySequenceTag,
 };
 
 struct ParseStatusTraits {

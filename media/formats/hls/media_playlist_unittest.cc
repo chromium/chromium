@@ -50,30 +50,30 @@ TEST(HlsMediaPlaylistTest, XDiscontinuityTag) {
   builder.AppendLine("video.ts");
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasDiscontinuity, false);
+  builder.ExpectSegment(HasDiscontinuitySequenceNumber, 0);
 
   builder.AppendLine("#EXT-X-DISCONTINUITY");
   builder.AppendLine("#EXTINF:9.9,\t");
   builder.AppendLine("video.ts");
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasDiscontinuity, true);
+  builder.ExpectSegment(HasDiscontinuitySequenceNumber, 1);
 
   // The discontinuity tag does not apply to subsequent segments
   builder.AppendLine("#EXTINF:9.9,\t");
   builder.AppendLine("video.ts");
   builder.ExpectAdditionalSegment();
   builder.ExpectSegment(HasDiscontinuity, false);
+  builder.ExpectSegment(HasDiscontinuitySequenceNumber, 1);
 
-  // The discontinuity tag may only appear once per segment
-  {
-    auto fork = builder;
-    fork.AppendLine("#EXT-X-DISCONTINUITY");
-    fork.AppendLine("#EXT-X-DISCONTINUITY");
-    fork.AppendLine("#EXTINF:9.9,\t");
-    fork.AppendLine("video.ts");
-    fork.ExpectAdditionalSegment();
-    fork.ExpectSegment(HasDiscontinuity, true);
-    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
-  }
+  // The discontinuity tag may appear multiple times per segment
+  builder.AppendLine("#EXT-X-DISCONTINUITY");
+  builder.AppendLine("#EXT-X-DISCONTINUITY");
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("video.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDiscontinuity, true);
+  builder.ExpectSegment(HasDiscontinuitySequenceNumber, 3);
 
   builder.ExpectOk();
 }
@@ -573,16 +573,19 @@ TEST(HlsMediaPlaylistTest, XMediaSequenceTag) {
     builder.ExpectAdditionalSegment();
     builder.ExpectSegment(HasUri, GURL("http://localhost/segment0.ts"));
     builder.ExpectSegment(HasMediaSequenceNumber, first_sequence_number);
+    builder.ExpectSegment(HasDiscontinuitySequenceNumber, 0);
 
     builder.AppendLine("#EXTINF:9.8,\t");
     builder.AppendLine("segment1.ts");
     builder.ExpectAdditionalSegment();
     builder.ExpectSegment(HasMediaSequenceNumber, first_sequence_number + 1);
+    builder.ExpectSegment(HasDiscontinuitySequenceNumber, 0);
 
     builder.AppendLine("#EXTINF:9.8,\t");
     builder.AppendLine("segment2.ts");
     builder.ExpectAdditionalSegment();
     builder.ExpectSegment(HasMediaSequenceNumber, first_sequence_number + 2);
+    builder.ExpectSegment(HasDiscontinuitySequenceNumber, 0);
   };
 
   // If the playlist does not contain the EXT-X-MEDIA-SEQUENCE tag, the default
@@ -610,6 +613,137 @@ TEST(HlsMediaPlaylistTest, XMediaSequenceTag) {
   fork.AppendLine("#EXT-X-MEDIA-SEQUENCE:9999");
   fill_playlist(fork, 9999);
   fork.ExpectPlaylist(HasMediaSequenceTag, true);
+  fork.ExpectOk();
+}
+
+TEST(HlsMediaPlaylistTest, XDiscontinuitySequenceTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+
+  // The EXT-X-DISCONTINUITY-SEQUENCE tag must be a valid DecimalInteger
+  {
+    for (const base::StringPiece x : {"", ":-1", ":{$foo}", ":1.5", ":one"}) {
+      auto fork = builder;
+      fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE", x);
+      fork.ExpectError(ParseStatusCode::kMalformedTag);
+    }
+  }
+  // The EXT-X-DISCONTINUITY-SEQUENCE tag may not appear twice
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:1");
+    fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:1");
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:0");
+    fork.AppendLine("#EXT-X-DISCONTINUITY");
+    fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:1");
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+  // The EXT-X-DISCONTINUITY-SEQUENCE tag must appear before any media segment
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXTINF:9.8,\t");
+    fork.AppendLine("segment0.ts");
+    fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:0");
+    fork.ExpectError(
+        ParseStatusCode::kMediaSegmentBeforeDiscontinuitySequenceTag);
+  }
+  // The EXT-X-DISCONTINUITY-SEQUENCE tag must appear before any
+  // EXT-X-DISCONTINUITY tag
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-DISCONTINUITY");
+    fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:0");
+    fork.AppendLine("#EXTINF:9.8,\t");
+    fork.AppendLine("segment0.ts");
+    fork.ExpectError(
+        ParseStatusCode::kDiscontinuityTagBeforeDiscontinuitySequenceTag);
+  }
+
+  const auto fill_playlist = [](auto& builder, auto first_media_sequence_number,
+                                auto first_discontinuity_sequence_number) {
+    builder.AppendLine("#EXTINF:9.8,\t");
+    builder.AppendLine("segment0.ts");
+    builder.ExpectAdditionalSegment();
+    builder.ExpectSegment(HasUri, GURL("http://localhost/segment0.ts"));
+    builder.ExpectSegment(HasDiscontinuity, false);
+    builder.ExpectSegment(HasMediaSequenceNumber, first_media_sequence_number);
+    builder.ExpectSegment(HasDiscontinuitySequenceNumber,
+                          first_discontinuity_sequence_number);
+
+    builder.AppendLine("#EXT-X-DISCONTINUITY");
+    builder.AppendLine("#EXTINF:9.8,\t");
+    builder.AppendLine("segment1.ts");
+    builder.ExpectAdditionalSegment();
+    builder.ExpectSegment(HasDiscontinuity, true);
+    builder.ExpectSegment(HasMediaSequenceNumber,
+                          first_media_sequence_number + 1);
+    builder.ExpectSegment(HasDiscontinuitySequenceNumber,
+                          first_discontinuity_sequence_number + 1);
+
+    builder.AppendLine("#EXTINF:9.8,\t");
+    builder.AppendLine("segment2.ts");
+    builder.ExpectAdditionalSegment();
+    builder.ExpectSegment(HasDiscontinuity, false);
+    builder.ExpectSegment(HasMediaSequenceNumber,
+                          first_media_sequence_number + 2);
+    builder.ExpectSegment(HasDiscontinuitySequenceNumber,
+                          first_discontinuity_sequence_number + 1);
+  };
+
+  // If the playlist does not contain the EXT-X-DISCONTINUITY-SEQUENCE tag, the
+  // default starting value is 0.
+  auto fork = builder;
+  fill_playlist(fork, 0, 0);
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-MEDIA-SEQUENCE:10");
+  fill_playlist(fork, 10, 0);
+  fork.ExpectOk();
+
+  // If the playlist has the EXT-X-DISCONTINUITY-SEQUENCE tag, it specifies the
+  // starting value.
+  fork = builder;
+  fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:5");
+  fill_playlist(fork, 0, 5);
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-MEDIA-SEQUENCE:10");
+  fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:5");
+  fill_playlist(fork, 10, 5);
+  fork.ExpectOk();
+
+  // If the very first segment is a discontinuity, it should still have a
+  // subsequent discontinuity sequence number.
+  fork = builder;
+  fork.AppendLine("#EXT-X-MEDIA-SEQUENCE:10");
+  fork.AppendLine("#EXT-X-DISCONTINUITY");
+  fork.AppendLine("#EXTINF:9.2,\t");
+  fork.AppendLine("segment.ts");
+  fork.ExpectAdditionalSegment();
+  fork.ExpectSegment(HasDiscontinuity, true);
+  fork.ExpectSegment(HasMediaSequenceNumber, 10);
+  fork.ExpectSegment(HasDiscontinuitySequenceNumber, 1);
+  fill_playlist(fork, 11, 1);
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-MEDIA-SEQUENCE:10");
+  fork.AppendLine("#EXT-X-DISCONTINUITY-SEQUENCE:5");
+  fork.AppendLine("#EXT-X-DISCONTINUITY");
+  fork.AppendLine("#EXTINF:9.2,\t");
+  fork.AppendLine("segment.ts");
+  fork.ExpectAdditionalSegment();
+  fork.ExpectSegment(HasDiscontinuity, true);
+  fork.ExpectSegment(HasMediaSequenceNumber, 10);
+  fork.ExpectSegment(HasDiscontinuitySequenceNumber, 6);
+  fill_playlist(fork, 11, 6);
   fork.ExpectOk();
 }
 

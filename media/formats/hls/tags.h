@@ -178,6 +178,17 @@ struct MEDIA_EXPORT XMediaSequenceTag {
   types::DecimalInteger number;
 };
 
+// Represents the contents of the #EXT-X-DISCONTINUITY-SEQUENCE tag.
+struct MEDIA_EXPORT XDiscontinuitySequenceTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXDiscontinuitySequence;
+  static ParseStatus::Or<XDiscontinuitySequenceTag> Parse(TagItem);
+
+  // Indicates the discontinuity sequence number to assign to the first media
+  // segment in this playlist. These numbers are useful for synchronizing
+  // between variant stream timelines.
+  types::DecimalInteger number;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

@@ -60,7 +60,10 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XEndListTag> end_list_tag;
   absl::optional<XIFramesOnlyTag> i_frames_only_tag;
   absl::optional<XMediaSequenceTag> media_sequence_tag;
+  absl::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
   std::vector<MediaSegment> segments;
+
+  types::DecimalInteger discontinuity_sequence_number = 0;
 
   // If this media playlist was found through a multivariant playlist, it may
   // import variables from that playlist.
@@ -122,10 +125,19 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXDiscontinuity: {
-          auto error = ParseUniqueTag(*tag, discontinuity_tag);
-          if (error.has_value()) {
-            return std::move(error).value();
+          // Multiple occurrences of `EXT-X-DISCONTINUITY` per media segment are
+          // allowed, and each increments the segment's discontinuity sequence
+          // number by 1. The spec doesn't explicitly forbid this, and this
+          // seems to be how other HLS clients handle this scenario.
+          auto result = XDiscontinuityTag::Parse(*tag);
+          if (result.has_error()) {
+            return std::move(result).error();
           }
+
+          // Even if there was a previous discontinuity tag, overwrite the value
+          // and increment the discontinuity sequence number by 1.
+          discontinuity_tag = std::move(result).value();
+          discontinuity_sequence_number += 1;
           break;
         }
         case MediaPlaylistTagName::kXGap: {
@@ -168,6 +180,25 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           }
           break;
         }
+        case MediaPlaylistTagName::kXDiscontinuitySequence: {
+          auto error = ParseUniqueTag(*tag, discontinuity_sequence_tag);
+          if (error.has_value()) {
+            return std::move(error).value();
+          }
+
+          // This tag must appear before any media segment or
+          // EXT-X-DISCONTINUITY tag.
+          if (!segments.empty()) {
+            return ParseStatusCode::kMediaSegmentBeforeDiscontinuitySequenceTag;
+          }
+          if (discontinuity_sequence_number != 0) {
+            return ParseStatusCode::
+                kDiscontinuityTagBeforeDiscontinuitySequenceTag;
+          }
+
+          discontinuity_sequence_number = discontinuity_sequence_tag->number;
+          break;
+        }
       }
 
       continue;
@@ -198,8 +229,8 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
         (media_sequence_tag ? media_sequence_tag->number : 0) + segments.size();
 
     segments.emplace_back(inf_tag->duration, media_sequence_number,
-                          std::move(segment_uri), discontinuity_tag.has_value(),
-                          gap_tag.has_value());
+                          discontinuity_sequence_number, std::move(segment_uri),
+                          discontinuity_tag.has_value(), gap_tag.has_value());
 
     // Reset per-segment tags
     inf_tag.reset();

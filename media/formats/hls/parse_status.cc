@@ -44,6 +44,8 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kXStreamInfTagNotFollowedByUri);
     PARSE_STATUS_CODE_CASE(kVariantMissingStreamInfTag);
     PARSE_STATUS_CODE_CASE(kMediaSegmentBeforeMediaSequenceTag);
+    PARSE_STATUS_CODE_CASE(kMediaSegmentBeforeDiscontinuitySequenceTag);
+    PARSE_STATUS_CODE_CASE(kDiscontinuityTagBeforeDiscontinuitySequenceTag);
   }
 
   NOTREACHED();

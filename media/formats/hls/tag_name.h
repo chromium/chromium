@@ -58,7 +58,8 @@ enum class MediaPlaylistTagName : TagName {
   kXGap,
   kXPlaylistType,
   kXMediaSequence,
-  kMaxValue = kXMediaSequence,
+  kXDiscontinuitySequence,
+  kMaxValue = kXDiscontinuitySequence,
 };
 
 constexpr TagKind GetTagKind(CommonTagName) {

@@ -119,6 +119,15 @@ inline void HasMediaSequenceNumber(types::DecimalInteger number,
   EXPECT_EQ(segment.GetMediaSequenceNumber(), number) << from.ToString();
 }
 
+// Checks that the latest media segment has the given discontinuity sequence
+// number.
+inline void HasDiscontinuitySequenceNumber(types::DecimalInteger number,
+                                           const base::Location& from,
+                                           const MediaSegment& segment) {
+  EXPECT_EQ(segment.GetDiscontinuitySequenceNumber(), number)
+      << from.ToString();
+}
+
 // Checks that the latest media segment has the given URI.
 inline void HasUri(GURL uri,
                    const base::Location& from,

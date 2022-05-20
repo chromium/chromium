@@ -4,7 +4,6 @@
 
 #include "media/formats/hls/tags.h"
 
-#include <functional>
 #include <utility>
 
 #include "base/location.h"
@@ -114,8 +113,8 @@ void RunEmptyTagTest() {
 // There are a couple of tags that are defined simply as `#EXT-X-TAG:n` where
 // `n` must be a valid DecimalInteger. This helper provides coverage for those
 // tags.
-template <typename T, typename Fn>
-void RunDecimalIntegerTagTest(Fn getter_fn) {
+template <typename T>
+void RunDecimalIntegerTagTest(types::DecimalInteger T::*field) {
   // Content is required
   ErrorTest<T>(absl::nullopt, ParseStatusCode::kMalformedTag);
   ErrorTest<T>("", ParseStatusCode::kMalformedTag);
@@ -133,15 +132,15 @@ void RunDecimalIntegerTagTest(Fn getter_fn) {
   ErrorTest<T>("{$X}", ParseStatusCode::kMalformedTag);
 
   auto tag = OkTest<T>("0");
-  EXPECT_EQ(getter_fn(tag), 0u);
+  EXPECT_EQ(tag.*field, 0u);
   tag = OkTest<T>("1");
-  EXPECT_EQ(getter_fn(tag), 1u);
+  EXPECT_EQ(tag.*field, 1u);
   tag = OkTest<T>("10");
-  EXPECT_EQ(getter_fn(tag), 10u);
+  EXPECT_EQ(tag.*field, 10u);
   tag = OkTest<T>("14");
-  EXPECT_EQ(getter_fn(tag), 14u);
+  EXPECT_EQ(tag.*field, 14u);
   tag = OkTest<T>("999999999999999999");
-  EXPECT_EQ(getter_fn(tag), 999999999999999999u);
+  EXPECT_EQ(tag.*field, 999999999999999999u);
 }
 
 VariableDictionary CreateBasicDictionary(
@@ -462,14 +461,18 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
 TEST(HlsTagsTest, ParseXTargetDurationTag) {
   RunTagIdenficationTest<XTargetDurationTag>("#EXT-X-TARGETDURATION:10\n",
                                              "10");
-  RunDecimalIntegerTagTest<XTargetDurationTag>(
-      std::mem_fn(&XTargetDurationTag::duration));
+  RunDecimalIntegerTagTest(&XTargetDurationTag::duration);
 }
 
 TEST(HlsTagsTest, ParseXMediaSequenceTag) {
   RunTagIdenficationTest<XMediaSequenceTag>("#EXT-X-MEDIA-SEQUENCE:3\n", "3");
-  RunDecimalIntegerTagTest<XMediaSequenceTag>(
-      std::mem_fn(&XMediaSequenceTag::number));
+  RunDecimalIntegerTagTest(&XMediaSequenceTag::number);
+}
+
+TEST(HlsTagsTest, ParseXDiscontinuitySequenceTag) {
+  RunTagIdenficationTest<XDiscontinuitySequenceTag>(
+      "#EXT-X-DISCONTINUITY-SEQUENCE:3\n", "3");
+  RunDecimalIntegerTagTest(&XDiscontinuitySequenceTag::number);
 }
 
 }  // namespace media::hls
