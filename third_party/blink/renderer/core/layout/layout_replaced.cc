@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -634,20 +635,21 @@ void LayoutReplaced::ComputePositionedLogicalHeight(
   computed_values.position_ = logical_top_pos;
 }
 
+absl::optional<gfx::SizeF>
+LayoutReplaced::ComputeObjectViewBoxSizeForIntrinsicSizing() const {
+  if (IntrinsicWidthOverride() || IntrinsicHeightOverride())
+    return absl::nullopt;
+
+  if (auto view_box = ComputeObjectViewBoxRect())
+    return static_cast<gfx::SizeF>(view_box->size);
+
+  return absl::nullopt;
+}
+
 absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
     const LayoutSize* overridden_intrinsic_size) const {
   scoped_refptr<BasicShape> object_view_box = StyleRef().ObjectViewBox();
   if (LIKELY(!object_view_box))
-    return absl::nullopt;
-
-  // We ignore applying the object-view-box property if the element has size
-  // containment, including when contain-intrinsic-size is specified to provide
-  // an explicit intrinsic size for the element's content.
-  // See https://github.com/w3c/csswg-drafts/issues/7187 for a detailed
-  // discussion.
-  // TODO(khushalsagar) : Its unclear whether the view-box should still apply
-  // for paint operations. Update once the github issue is resolved.
-  if (IntrinsicWidthOverride() || IntrinsicHeightOverride())
     return absl::nullopt;
 
   const auto& intrinsic_size =
@@ -658,24 +660,20 @@ absl::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   if (!CanApplyObjectViewBox())
     return absl::nullopt;
 
-  // TODO(khushalsagar) : Also allow rect() and xywh().
-  const auto* inset_shape = To<BasicShapeInset>(object_view_box.get());
-  LayoutUnit left =
-      MinimumValueForLength(inset_shape->Left(), intrinsic_size.Width());
-  LayoutUnit top =
-      MinimumValueForLength(inset_shape->Top(), intrinsic_size.Height());
-  LayoutUnit right =
-      intrinsic_size.Width() -
-      MinimumValueForLength(inset_shape->Right(), intrinsic_size.Width());
-  LayoutUnit bottom =
-      intrinsic_size.Height() -
-      MinimumValueForLength(inset_shape->Bottom(), intrinsic_size.Height());
+  DCHECK(object_view_box->GetType() == BasicShape::kBasicShapeRectType ||
+         object_view_box->GetType() == BasicShape::kBasicShapeInsetType ||
+         object_view_box->GetType() == BasicShape::kBasicShapeXYWHType);
 
-  if (left >= right || top >= bottom)
+  Path path;
+  gfx::RectF bounding_box(0, 0, intrinsic_size.Width().ToFloat(),
+                          intrinsic_size.Height().ToFloat());
+  object_view_box->GetPath(path, bounding_box, 1.f);
+
+  const PhysicalRect view_box_rect =
+      PhysicalRect::EnclosingRect(path.BoundingRect());
+  if (view_box_rect.IsEmpty())
     return absl::nullopt;
 
-  const PhysicalRect view_box_rect(PhysicalOffset(left, top),
-                                   PhysicalSize(right - left, bottom - top));
   const PhysicalRect intrinsic_rect(PhysicalOffset(), intrinsic_size);
   if (view_box_rect == intrinsic_rect)
     return absl::nullopt;
@@ -827,9 +825,9 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
 
-  auto view_box = ComputeObjectViewBoxRect();
-  if (view_box) {
-    intrinsic_sizing_info.size = static_cast<gfx::SizeF>(view_box->size);
+  auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing();
+  if (view_box_size) {
+    intrinsic_sizing_info.size = *view_box_size;
     if (!IsHorizontalWritingMode())
       intrinsic_sizing_info.size.Transpose();
   } else {

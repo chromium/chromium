@@ -6,8 +6,12 @@
 <style>
 .default {
   object-fit: fill;
-  contain: size;
-  contain-intrinsic-size: 50px 100px;
+  width: 100px;
+  height: 200px;
+  position: relative;
+  top: -100px;
+  left: -50px;
+  clip-path: inset(101px 0px 0px 51px);
 }
 </style>
 <img class="default" src="support/exif-orientation-6-ru.jpg"></img>

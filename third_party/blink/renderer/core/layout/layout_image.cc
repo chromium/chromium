@@ -375,10 +375,10 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
     if (SVGImage* svg_image = EmbeddedSVGImage()) {
       svg_image->GetIntrinsicSizingInfo(intrinsic_sizing_info);
 
-      if (auto view_box = ComputeObjectViewBoxRect()) {
+      if (auto view_box_size = ComputeObjectViewBoxSizeForIntrinsicSizing()) {
         DCHECK(intrinsic_sizing_info.has_width);
         DCHECK(intrinsic_sizing_info.has_height);
-        intrinsic_sizing_info.size = static_cast<gfx::SizeF>(view_box->size);
+        intrinsic_sizing_info.size = *view_box_size;
       }
 
       // Handle zoom & vertical writing modes here, as the embedded SVG document

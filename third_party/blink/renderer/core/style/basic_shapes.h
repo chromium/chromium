@@ -283,15 +283,12 @@ class BasicShapeRectCommon : public BasicShape {
     bottom_left_radius_ = radius;
   }
 
-  void GetPath(Path&, const gfx::RectF&, float) override;
-
  protected:
   BasicShapeRectCommon() = default;
 
  protected:
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
- private:
   Length right_;
   Length top_;
   Length bottom_;
@@ -310,6 +307,7 @@ class BasicShapeInset final : public BasicShapeRectCommon {
   }
 
   ShapeType GetType() const override { return kBasicShapeInsetType; }
+  void GetPath(Path&, const gfx::RectF&, float) override;
 };
 
 template <>
@@ -326,6 +324,7 @@ class BasicShapeRect final : public BasicShapeRectCommon {
   }
 
   ShapeType GetType() const override { return kBasicShapeRectType; }
+  void GetPath(Path&, const gfx::RectF&, float) override;
 };
 
 template <>

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -175,14 +176,21 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return type == kLayoutObjectReplaced || LayoutBox::IsOfType(type);
   }
 
-  // Computes a rect, relative to the element's intrinsic bounds, that should be
-  // used as the content source when rendering this element. This value is
-  // used as the input for layout sizing and object-fit/object-position during
-  // painting.
+  // The intrinsic size for a replaced element is based on its content's natural
+  // size. This computes the size including the modification from
+  // object-view-box for layout.
+  // Note that the intrinsic size for the element can be independent of its
+  // content's natural size. For example, if contain-intrinsic-size is
+  // specified. Returns null for these cases.
+  absl::optional<gfx::SizeF> ComputeObjectViewBoxSizeForIntrinsicSizing() const;
+
+ private:
+  // Computes a rect, relative to the element's content's natural size, that
+  // should be used as the content source when rendering this element. This
+  // value is used as the input for object-fit/object-position during painting.
   absl::optional<PhysicalRect> ComputeObjectViewBoxRect(
       const LayoutSize* overridden_intrinsic_size = nullptr) const;
 
- private:
   PhysicalRect ComputeObjectFitAndPositionRect(
       const LayoutSize* overridden_intrinsic_size) const;
 
