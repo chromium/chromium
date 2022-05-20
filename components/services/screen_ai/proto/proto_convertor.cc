@@ -181,9 +181,12 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
       uie->set_parent_id(new_id[child_id_to_parent_id[ax_node_id]]);
     }
 
+    // TODO(https://crbug.com/1278249): Bounding box and Bounding Box Pixels
+    // do not consider offset container, ransforms, device scaling, clipping,
+    // offscreen state, etc. This should be fixed the same way the data is
+    // created for training Screen2x models.
+
     // Bounding Box.
-    // These values are relative to the container position and not to the
-    // actual top-left of the screen. Screen2x is fine with that.
     uie->mutable_bounding_box()->set_top(node.relative_bounds.bounds.y() /
                                          snapshot_height);
     uie->mutable_bounding_box()->set_left(node.relative_bounds.bounds.x() /
@@ -194,8 +197,6 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
                                            snapshot_width);
 
     // Bounding Box Pixels.
-    // These values are relative to the container position and not to the
-    // actual top-left of the screen. Screen2x is fine with that.
     uie->mutable_bounding_box_pixels()->set_top(
         node.relative_bounds.bounds.y());
     uie->mutable_bounding_box_pixels()->set_left(
@@ -204,10 +205,6 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
         node.relative_bounds.bounds.bottom());
     uie->mutable_bounding_box_pixels()->set_right(
         node.relative_bounds.bounds.right());
-
-    // Ensure all |relative_bound| values are relative to the root.
-    DCHECK(node.relative_bounds.offset_container_id ==
-           snapshot.nodes[root_index].relative_bounds.offset_container_id);
 
     // TODO(https://crbug.com/1278249): Add non-essential values.
   }
