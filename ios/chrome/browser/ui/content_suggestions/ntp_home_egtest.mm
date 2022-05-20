@@ -942,7 +942,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #pragma mark - New Tab menu tests
 
 // Tests the "new search" menu item from the new tab menu.
-- (void)testNewSearchFromNewTabMenu {
+// TODO(crbug.com/1280323): Re-enable after removing didLoadPageWithSuccess: to
+// update NTP scroll state.
+- (void)DISABLED_testNewSearchFromNewTabMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
@@ -972,7 +974,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests the "new search" menu item from the new tab menu after disabling the
 // feed.
-- (void)testNewSearchFromNewTabMenuAfterTogglingFeed {
+// TODO(crbug.com/1280323): Re-enable after removing didLoadPageWithSuccess: to
+// update NTP scroll state.
+- (void)DISABLED_testNewSearchFromNewTabMenuAfterTogglingFeed {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }

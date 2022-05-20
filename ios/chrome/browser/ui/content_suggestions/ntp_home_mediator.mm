@@ -283,6 +283,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 #pragma mark - CRWWebStateObserver
 
+// Remove this once NTPCoordinator is started upon creation so
+// setContentOffsetForWebState: can be called when the NTPCoordinator's WebState
+// changes.
+- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+  DCHECK_EQ(_webState, webState);
+  [self setContentOffsetForWebState:webState];
+}
+
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
   [self locationBarDidResignFirstResponder];
