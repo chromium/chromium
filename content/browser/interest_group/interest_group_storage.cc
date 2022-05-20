@@ -120,18 +120,20 @@ absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
 }
 
 base::Value ToValue(const blink::InterestGroup::Ad& ad) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", ad.render_url.spec());
+  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value::Dict& dict = value.GetDict();
+  dict.Set("url", ad.render_url.spec());
   if (ad.metadata)
-    dict.SetStringKey("metadata", ad.metadata.value());
-  return dict;
+    dict.Set("metadata", ad.metadata.value());
+  return value;
 }
-blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value* value) {
+blink::InterestGroup::Ad FromInterestGroupAdValue(
+    const base::Value::Dict& dict) {
   blink::InterestGroup::Ad result;
-  const std::string* maybe_url = value->FindStringKey("url");
+  const std::string* maybe_url = dict.FindString("url");
   if (maybe_url)
     result.render_url = GURL(*maybe_url);
-  const std::string* maybe_metadata = value->FindStringKey("metadata");
+  const std::string* maybe_metadata = dict.FindString("metadata");
   if (maybe_metadata)
     result.metadata = *maybe_metadata;
   return result;
@@ -153,8 +155,10 @@ DeserializeInterestGroupAdVector(const std::string& serialized_ads) {
   if (!ads_value || !ads_value->is_list())
     return absl::nullopt;
   std::vector<blink::InterestGroup::Ad> result;
-  for (const auto& ad_value : ads_value->GetListDeprecated()) {
-    result.emplace_back(FromInterestGroupAdValue(&ad_value));
+  for (const auto& ad_value : ads_value->GetList()) {
+    const base::Value::Dict* dict = ad_value.GetIfDict();
+    if (dict)
+      result.emplace_back(FromInterestGroupAdValue(*dict));
   }
   return result;
 }

@@ -2517,17 +2517,17 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
       TestDevToolsAgentClient::Event breakpoint_hit =
           debug.WaitForMethodNotification("Debugger.paused");
 
-      base::Value* hit_breakpoints =
-          breakpoint_hit.value.FindListPath("params.hitBreakpoints");
+      ASSERT_TRUE(breakpoint_hit.value.is_dict());
+      base::Value::List* hit_breakpoints =
+          breakpoint_hit.value.GetDict().FindListByDottedPath(
+              "params.hitBreakpoints");
       ASSERT_TRUE(hit_breakpoints);
-      base::Value::ConstListView hit_breakpoints_list =
-          hit_breakpoints->GetListDeprecated();
       // This is LE and not EQ to work around
       // https://bugs.chromium.org/p/v8/issues/detail?id=12586
-      ASSERT_LE(1u, hit_breakpoints_list.size());
-      ASSERT_TRUE(hit_breakpoints_list[0].is_string());
+      ASSERT_LE(1u, hit_breakpoints->size());
+      ASSERT_TRUE((*hit_breakpoints)[0].is_string());
       EXPECT_EQ(base::StringPrintf("1:11:0:%s", debug_url.spec().c_str()),
-                hit_breakpoints_list[0].GetString());
+                (*hit_breakpoints)[0].GetString());
 
       // Just resume execution.
       debug.RunCommandAndWaitForResult(

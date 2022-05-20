@@ -79,16 +79,17 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // TODO(crbug.com/1186444): Report errors to devtools for the TryToCopy*().
 // functions.
 
-// Name and owner are optional in `value` (parsed server JSON response), but
+// Name and owner are optional in `dict` (parsed server JSON response), but
 // must match `name` and `owner`, respectively, if either is specified. Returns
 // true if the check passes, and false otherwise.
-[[nodiscard]] bool ValidateNameAndOwnerIfPresent(const url::Origin& owner,
-                                                 const std::string& name,
-                                                 const base::Value& value) {
-  const std::string* maybe_owner = value.FindStringKey("owner");
+[[nodiscard]] bool ValidateNameAndOwnerIfPresent(
+    const url::Origin& owner,
+    const std::string& name,
+    const base::Value::Dict& dict) {
+  const std::string* maybe_owner = dict.FindString("owner");
   if (maybe_owner && url::Origin::Create(GURL(*maybe_owner)) != owner)
     return false;
-  const std::string* maybe_name = value.FindStringKey("name");
+  const std::string* maybe_name = dict.FindString("name");
   if (maybe_name && *maybe_name != name)
     return false;
   return true;
@@ -99,14 +100,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // completed.
 [[nodiscard]] bool TryToCopyTrustedBiddingSignalsKeys(
     blink::InterestGroup& interest_group_update,
-    const base::Value& value) {
-  const base::Value* maybe_update_trusted_bidding_signals_keys =
-      value.FindListKey("trustedBiddingSignalsKeys");
+    const base::Value::Dict& dict) {
+  const base::Value::List* maybe_update_trusted_bidding_signals_keys =
+      dict.FindList("trustedBiddingSignalsKeys");
   if (!maybe_update_trusted_bidding_signals_keys)
     return true;
   std::vector<std::string> trusted_bidding_signals_keys;
   for (const base::Value& keys_value :
-       maybe_update_trusted_bidding_signals_keys->GetListDeprecated()) {
+       *maybe_update_trusted_bidding_signals_keys) {
     const std::string* maybe_key = keys_value.GetIfString();
     if (!maybe_key)
       return false;
@@ -119,17 +120,18 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] absl::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
-    const base::Value& ads_list) {
+    const base::Value::List& ads_list) {
   std::vector<blink::InterestGroup::Ad> ads;
-  for (const base::Value& ads_value : ads_list.GetListDeprecated()) {
-    if (!ads_value.is_dict())
+  for (const base::Value& ads_value : ads_list) {
+    const base::Value::Dict* ads_dict = ads_value.GetIfDict();
+    if (!ads_dict)
       return absl::nullopt;
-    const std::string* maybe_render_url = ads_value.FindStringKey("renderUrl");
+    const std::string* maybe_render_url = ads_dict->FindString("renderUrl");
     if (!maybe_render_url)
       return absl::nullopt;
     blink::InterestGroup::Ad ad;
     ad.render_url = GURL(*maybe_render_url);
-    const base::Value* maybe_metadata = ads_value.FindKey("metadata");
+    const base::Value* maybe_metadata = ads_dict->Find("metadata");
     if (maybe_metadata) {
       std::string metadata;
       JSONStringValueSerializer serializer(&metadata);
@@ -148,8 +150,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the `ads` list JSON field into `interest_group_update`, returns true
 // iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyAds(blink::InterestGroup& interest_group_update,
-                                const base::Value& value) {
-  const base::Value* maybe_ads = value.FindListKey("ads");
+                                const base::Value::Dict& dict) {
+  const base::Value::List* maybe_ads = dict.FindList("ads");
   if (!maybe_ads)
     return true;
   absl::optional<std::vector<blink::InterestGroup::Ad>> maybe_extracted_ads =
@@ -164,8 +166,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // returns true iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyAdComponents(
     blink::InterestGroup& interest_group_update,
-    const base::Value& value) {
-  const base::Value* maybe_ads = value.FindListKey("adComponents");
+    const base::Value::Dict& dict) {
+  const base::Value::List* maybe_ads = dict.FindList("adComponents");
   if (!maybe_ads)
     return true;
   absl::optional<std::vector<blink::InterestGroup::Ad>> maybe_extracted_ads =
@@ -184,45 +186,45 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
   if (result.error) {
     return absl::nullopt;
   }
-  const base::Value& value = *result.value;
-  if (!value.is_dict()) {
+  const base::Value::Dict* dict = result.value->GetIfDict();
+  if (!dict) {
     return absl::nullopt;
   }
-  if (!ValidateNameAndOwnerIfPresent(owner, name, value)) {
+  if (!ValidateNameAndOwnerIfPresent(owner, name, *dict)) {
     return absl::nullopt;
   }
   blink::InterestGroup interest_group_update;
   interest_group_update.owner = owner;
   interest_group_update.name = name;
-  const base::Value* maybe_priority_value = value.FindKey("priority");
+  const base::Value* maybe_priority_value = dict->Find("priority");
   if (maybe_priority_value) {
     // If the field is specified, it must be an integer or a double.
     if (!maybe_priority_value->is_int() && !maybe_priority_value->is_double())
       return absl::nullopt;
     interest_group_update.priority = maybe_priority_value->GetDouble();
   }
-  const std::string* maybe_bidding_url = value.FindStringKey("biddingLogicUrl");
+  const std::string* maybe_bidding_url = dict->FindString("biddingLogicUrl");
   if (maybe_bidding_url)
     interest_group_update.bidding_url = GURL(*maybe_bidding_url);
   const std::string* maybe_bidding_wasm_helper_url =
-      value.FindStringKey("biddingWasmHelperUrl");
+      dict->FindString("biddingWasmHelperUrl");
   if (maybe_bidding_wasm_helper_url) {
     interest_group_update.bidding_wasm_helper_url =
         GURL(*maybe_bidding_wasm_helper_url);
   }
   const std::string* maybe_update_trusted_bidding_signals_url =
-      value.FindStringKey("trustedBiddingSignalsUrl");
+      dict->FindString("trustedBiddingSignalsUrl");
   if (maybe_update_trusted_bidding_signals_url) {
     interest_group_update.trusted_bidding_signals_url =
         GURL(*maybe_update_trusted_bidding_signals_url);
   }
-  if (!TryToCopyTrustedBiddingSignalsKeys(interest_group_update, value)) {
+  if (!TryToCopyTrustedBiddingSignalsKeys(interest_group_update, *dict)) {
     return absl::nullopt;
   }
-  if (!TryToCopyAds(interest_group_update, value)) {
+  if (!TryToCopyAds(interest_group_update, *dict)) {
     return absl::nullopt;
   }
-  if (!TryToCopyAdComponents(interest_group_update, value)) {
+  if (!TryToCopyAdComponents(interest_group_update, *dict)) {
     return absl::nullopt;
   }
   if (!interest_group_update.IsValid()) {
