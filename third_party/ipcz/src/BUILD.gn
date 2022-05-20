@@ -5,6 +5,10 @@
 import("//build_overrides/ipcz.gni")
 import("//testing/test.gni")
 
+# ipcz will not implement a multiprocess reference driver or its supporting
+# primitives for iOS or NaCl platforms. Note that this only affects ipcz tests.
+enable_ipcz_multiprocess_test_support = !is_ios && !is_nacl
+
 shared_library("ipcz_shared") {
   output_name = "ipcz"
   sources = [
@@ -126,6 +130,8 @@ ipcz_source_set("ipcz") {
 }
 
 ipcz_source_set("reference_drivers") {
+  testonly = true
+
   public = [ "reference_drivers/single_process_reference_driver.h" ]
 
   sources = [
@@ -136,9 +142,58 @@ ipcz_source_set("reference_drivers") {
     "reference_drivers/single_process_reference_driver.cc",
   ]
 
+  if (enable_ipcz_multiprocess_test_support) {
+    public += [
+      "reference_drivers/memory.h",
+      "reference_drivers/os_handle.h",
+    ]
+    sources += [ "reference_drivers/memory.cc" ]
+
+    if (is_android) {
+      sources += [
+        "reference_drivers/memory_android.cc",
+        "reference_drivers/os_handle_posix.cc",
+        "reference_drivers/os_handle_posix.h",
+      ]
+    } else if (is_mac) {
+      sources += [
+        "reference_drivers/memory_mac.cc",
+        "reference_drivers/os_handle_mac.cc",
+        "reference_drivers/os_handle_mac.h",
+      ]
+    } else if (is_win) {
+      sources += [
+        "reference_drivers/memory_win.cc",
+        "reference_drivers/os_handle_win.cc",
+        "reference_drivers/os_handle_win.h",
+      ]
+    } else if (is_fuchsia) {
+      sources += [
+        "reference_drivers/memory_fuchsia.cc",
+        "reference_drivers/os_handle_fuchsia.cc",
+        "reference_drivers/os_handle_fuchsia.h",
+      ]
+    } else if (is_posix) {
+      sources += [
+        "reference_drivers/memory_posix.cc",
+        "reference_drivers/os_handle_posix.cc",
+        "reference_drivers/os_handle_posix.h",
+      ]
+    }
+  }
+
   ipcz_deps = [ ":util" ]
   public_deps = [ ":ipcz_header" ]
   configs = [ ":ipcz_include_src_dir" ]
+
+  deps = []
+  if (is_fuchsia) {
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
+  }
+
+  if (is_android) {
+    deps += [ "//third_party/ashmem" ]
+  }
 }
 
 ipcz_source_set("util") {
@@ -294,6 +349,10 @@ ipcz_source_set("ipcz_tests_sources") {
     "util/ref_counted_test.cc",
     "util/stack_trace_test.cc",
   ]
+
+  if (enable_ipcz_multiprocess_test_support) {
+    sources += [ "reference_drivers/memory_test.cc" ]
+  }
 
   deps = [
     "//testing/gmock",
