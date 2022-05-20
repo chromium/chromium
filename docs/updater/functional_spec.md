@@ -9,10 +9,12 @@ and UI.
 [TOC]
 
 ## Metainstaller
-The metainstaller (UpdaterSetup) is a thin executable that contains a compressed
-copy of the updater as a resource, extracts it, and triggers installation of the
-updater / an app. The metainstaller is downloaded by the user and can be run
-from any directory.
+The metainstaller (UpdaterSetup) is a small executable that contains a
+compressed copy of the updater as a resource, extracts it, and triggers
+installation of the updater / an app. The metainstaller is downloaded by the
+user and can be run from any directory.
+
+The size of the metainstaller is less than 1500KiB.
 
 The metainstaller may have a tag attached to it. The tag is a piece of unsigned
 data from which the metainstaller extracts the ID of the application to be
@@ -31,25 +33,37 @@ Metainstaller localization presents the metainstaller UI with the user's
 preferred language on the current system. Every string shown in the UI is
 translated.
 
-## Standalone Installer
-TODO(crbug.com/1035895): Document the standalone installer.
+## Bundle Installer
+The bundle installer allows installation of more than one application. The
+bundle installer is typically used in software distribution scenarios.
 
 TODO(crbug.com/1035895): Document bundled installers.
+
+
+## Standalone Installer
+TODO(crbug.com/1035895): Document the standalone installer, including building
+a standalone installer for a given application.
 
 Applications on macOS frequently install via "drag-install", and then install
 the updater using a standalone installer on the application's first-run. The
 updater app can be embedded in a macOS application bundle as a helper and then
 invoked with appropriate command line arguments to install itself.
 
+## MSI Wrapper
+TODO(crbug.com/1327497) - document.
+
+
 ## Updater
 The updater is installed at:
-*   (Windows, User): `%LOCAL_APP_DATA%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
-*   (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
-*   (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
-*   (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+
+* (Windows, User): `%LOCAL_APP_DATA%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
+* (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
+* (macOS, User): `~/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
+* (macOS, System): `/Library/{COMPANY}/{UPDATERNAME}/{VERSION}/{UPDATERNAME}.app`
 
 The updater's functionality is split between several processes. The mode of a
 process is determined by command-line arguments:
+
 *   --install [--app-id=...]
     *   Install and activate this version of the updater if there is no active
         updater.
@@ -137,8 +151,79 @@ Additionally, the mode may be modified by combining it with:
     *   The updater operates in system scope if and only if this switch is
         present.
 
+### Protocol
+The updater communicates with update servers using the
+[Omaha Protocol](protocol_3_1.md).
+
+### Update Formats
+The updater accepts updates packaged as CRX₃ files. All files must be signed
+with a publisher key. The corresponding public key is hardcoded into the
+updater.
+
 ### Installation
+
+The updater must handle the installation of new applications. The updater can
+download, install, and update an applications when the application is running.
+
+One or more applications can be installed at once, as a bundle.
+
+Before installing, the integrity of the payload if verified. The payloads are
+stored in secure locations of the file system for per-system installs.
+
+
+Considering network connectivity, there are two scenarios for installing an
+application:
+
+1. Online
+2. Offline
+
+#### Online Installs
+
+An online install is done with a [metainstaller](#Metainstaller). Every time an
+online installer is run, it sends an install event ping. The update check and
+the install event ping have the same session id. The install ping is lost if the
+network is unreachable for any reason, or the program has crashed.
+
+#### Standalone/Offline Installs
+
+This type of installs is done with a [standalone/offline installer]
+(#Standalone-Installer). This is an installer which embeds all data required to
+install the application, including the payload and various configuration data
+needed by the application setup. Such an install must be able to complete when
+a network connection is not available.
+
+There are a couple of scenarios where the standalone/offline installer is used:
+
+1. when an interactive user experience is not needed, such as automated
+deployments in the enterprise.
+2. when downloading the application payload is not desirable for any reason.
+3. OEM installs.
+
+[installdataindex](#installdataindex) provides a mechanism to specify
+configuration data which is passed to the application installer.
+
+#### User Interface
 TODO(crbug.com/1035895): Document UI/UX
+
+* The install flow can be stopped before the payload finished downloading.
+* The user interface is localized in the following languages: TBD.
+* Has a silent mode where the UI is not displayed at all.
+
+##### Help Button
+If the installation fails, the updater shows an error message with a "Help"
+button. Clicking the help button opens a web page in the user's default browser.
+The page is opened with a query string:
+`?product={AppId}&errorcode={ErrorCode}`.
+
+#### OEM Installs.
+
+TODO(crbug.com/1139014): Document OEM.
+
+#### Install Source
+
+The `installsource` identifies the originator of an install. It is provided on
+the command line of the metainstaller.
+TODO(crbug.com/1327491) - is this needed? If yes, document the algorithm.
 
 #### Installer APIs
 As part of installing or updating an application, the updater will execute the
@@ -238,15 +323,6 @@ Enterprise policies can prevent the installation of applications:
 *   If the default install policy is unset, the application may be installed.
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
-
-#### UI
-TODO(crbug.com/1035895): Document UI.
-
-##### Help Button
-If the installation fails, the updater shows an error message with a "Help"
-button. Clicking the help button opens a web page in the user's default browser.
-The page is opened with a query string:
-`?product={AppId}&errorcode={ErrorCode}`.
 
 #### Dynamic Install Parameters
 
@@ -422,13 +498,6 @@ The updater will not delete this file.
 part of pings to the update server.
 
 ## Updates
-The updater communicates with update servers using the
-[Omaha Protocol](protocol_3_1.md).
-
-### Update Formats
-The updater accepts updates packaged as CRX₃ files. All files must be signed
-with a publisher key. The corresponding public key is hardcoded into the
-updater.
 
 ### Differential Updates
 TODO(crbug.com/1035895): Document differential updates.
