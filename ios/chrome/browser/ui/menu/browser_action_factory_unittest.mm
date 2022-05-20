@@ -190,7 +190,8 @@ TEST_F(BrowserActionFactoryTest, OpenImageAction) {
 
   GURL testURL = GURL("https://example.com/logo.png");
 
-  UIImage* expectedImage = [UIImage imageNamed:@"open"];
+  UIImage* expectedImage = DefaultSymbolWithPointSize(kOpenImageActionSymbol,
+                                                      kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
 
