@@ -13,7 +13,7 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from '../common/constants.js';
-import {AmbientModeAlbum, GooglePhotosPhoto, TopicSource, WallpaperImage, WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, CurrentWallpaper, GooglePhotosPhoto, TopicSource, WallpaperImage, WallpaperLayout, WallpaperType} from '../trusted/personalization_app.mojom-webui.js';
 
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
@@ -48,6 +48,23 @@ export function getImageKey(image: DisplayableImage): string|
   }
   assert(isGooglePhotosPhoto(image));
   return image.id;
+}
+
+/**
+ * Compare an image from the list of selectable images with the currently
+ * selected user wallpaper.
+ * @param image a selectable image that the user can choose
+ * @param selected currently selected user walpaper
+ * @return boolean whether they are considered the same image
+ */
+export function isImageEqualToSelected(
+    image: DisplayableImage, selected: CurrentWallpaper): boolean {
+  if (isDefaultImage(image)) {
+    // Special case for default images. Mojom generated code for type
+    // |CurrentWallpaper.key| cannot include javascript symbols.
+    return selected.type === WallpaperType.kDefault;
+  }
+  return getImageKey(image) === selected.key;
 }
 
 /**

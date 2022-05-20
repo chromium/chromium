@@ -10,7 +10,7 @@ import {DisplayableImage} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {appendMaxResolutionSuffix, getImageKey, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from '../utils.js';
+import {appendMaxResolutionSuffix, isDefaultImage, isFilePath, isGooglePhotosPhoto, isImageEqualToSelected, isWallpaperImage} from '../utils.js';
 
 import * as action from './wallpaper_actions.js';
 
@@ -280,7 +280,7 @@ export async function selectWallpaper(
     store: PersonalizationStore,
     layout: WallpaperLayout = WallpaperLayout.kCenterCropped): Promise<void> {
   const currentWallpaper = store.data.wallpaper.currentSelected;
-  if (currentWallpaper && currentWallpaper.key === getImageKey(image)) {
+  if (currentWallpaper && isImageEqualToSelected(image, currentWallpaper)) {
     return;
   }
 
