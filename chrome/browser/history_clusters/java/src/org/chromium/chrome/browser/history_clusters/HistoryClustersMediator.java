@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class HistoryClustersMediator implements SearchDelegate {
     private final HistoryClustersBridge mHistoryClustersBridge;
@@ -144,20 +148,20 @@ class HistoryClustersMediator implements SearchDelegate {
     private void queryComplete(HistoryClustersResult result) {
         boolean isQueryless = result.getQuery().isEmpty();
         for (HistoryCluster cluster : result.getClusters()) {
+            PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+            clusterModel.set(HistoryClustersItemProperties.LABEL, cluster.getLabel());
+            Drawable journeysDrawable = UiUtils.getTintedDrawable(
+                    mContext, R.drawable.ic_journeys, R.color.default_icon_color_tint_list);
+            clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
+            ListItem clusterItem = new ListItem(ItemType.CLUSTER, clusterModel);
+            mModelList.add(clusterItem);
             if (isQueryless) {
-                PropertyModel clusterModel =
-                        new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
-                clusterModel.set(HistoryClustersItemProperties.LABEL, cluster.getLabel());
                 clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                         (v) -> startSearch(cluster.getLabel()));
-                Drawable journeysDrawable = UiUtils.getTintedDrawable(
-                        mContext, R.drawable.ic_journeys, R.color.default_icon_color_tint_list);
-                clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
-                ListItem visitItem = new ListItem(ItemType.CLUSTER, clusterModel);
-                mModelList.add(visitItem);
                 continue;
             }
 
+            List<ListItem> visitItems = new ArrayList<>(cluster.getVisits().size());
             for (ClusterVisit visit : cluster.getVisits()) {
                 PropertyModel visitModel =
                         new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
@@ -177,9 +181,42 @@ class HistoryClustersMediator implements SearchDelegate {
                             });
                 }
 
-                ListItem visitItem = new ListItem(ItemType.VISIT, visitModel);
-                mModelList.add(visitItem);
+                visitItems.add(new ListItem(ItemType.VISIT, visitModel));
             }
+
+            mModelList.addAll(visitItems);
+            clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
+                    (v) -> hideCluster(cluster, clusterModel, visitItems));
+            Drawable chevron = UiUtils.getTintedDrawable(mContext,
+                    R.drawable.ic_expand_more_black_24dp, R.color.default_icon_color_tint_list);
+            clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
+        }
+    }
+
+    @VisibleForTesting
+    void hideCluster(
+            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> visitItems) {
+        clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
+                (v) -> showCluster(cluster, clusterModel, visitItems));
+        Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_less_black_24dp,
+                R.color.default_icon_color_tint_list);
+        clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
+
+        for (ListItem item : visitItems) {
+            item.model.set(HistoryClustersItemProperties.VISIBILITY, View.GONE);
+        }
+    }
+
+    @VisibleForTesting
+    void showCluster(
+            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> visitItems) {
+        clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
+                (v) -> hideCluster(cluster, clusterModel, visitItems));
+        Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_more_black_24dp,
+                R.color.default_icon_color_tint_list);
+        clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
+        for (ListItem item : visitItems) {
+            item.model.set(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE);
         }
     }
 

@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -50,6 +51,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /** Unit tests for HistoryClustersMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -146,11 +148,20 @@ public class HistoryClustersMediatorTest {
 
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
-        assertEquals(mModelList.size(), 3);
-        ListItem item = mModelList.get(0);
-        assertEquals(item.type, ItemType.VISIT);
-        PropertyModel model = item.model;
-        assertTrue(model.getAllSetProperties().containsAll(
+        assertEquals(mModelList.size(), 5);
+        ListItem clusterItem = mModelList.get(0);
+        assertEquals(clusterItem.type, ItemType.CLUSTER);
+        PropertyModel clusterModel = clusterItem.model;
+        assertTrue(clusterModel.getAllSetProperties().containsAll(Arrays.asList(
+                HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.LABEL,
+                HistoryClustersItemProperties.END_BUTTON_DRAWABLE)));
+        assertEquals(
+                clusterModel.get(HistoryClustersItemProperties.END_BUTTON_DRAWABLE), mDrawable);
+
+        ListItem visitItem = mModelList.get(1);
+        assertEquals(visitItem.type, ItemType.VISIT);
+        PropertyModel visitModel = visitItem.model;
+        assertTrue(visitModel.getAllSetProperties().containsAll(
                 Arrays.asList(HistoryClustersItemProperties.CLICK_HANDLER,
                         HistoryClustersItemProperties.TITLE, HistoryClustersItemProperties.URL)));
     }
@@ -231,6 +242,25 @@ public class HistoryClustersMediatorTest {
 
         verify(mUrlIntentCreator).apply(mMockGurl);
         verify(mContext).startActivity(mIntent);
+    }
+
+    @Test
+    public void testToggleClusterVisibility() {
+        PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        PropertyModel visitModel1 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        PropertyModel visitModel2 = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+        List<ListItem> visitItems = Arrays.asList(new ListItem(ItemType.VISIT, visitModel1),
+                new ListItem(ItemType.VISIT, visitModel2));
+
+        mMediator.hideCluster(mCluster1, clusterModel, visitItems);
+
+        assertEquals(visitModel1.get(HistoryClustersItemProperties.VISIBILITY), View.GONE);
+        assertEquals(visitModel2.get(HistoryClustersItemProperties.VISIBILITY), View.GONE);
+
+        mMediator.showCluster(mCluster1, clusterModel, visitItems);
+
+        assertEquals(visitModel1.get(HistoryClustersItemProperties.VISIBILITY), View.VISIBLE);
+        assertEquals(visitModel2.get(HistoryClustersItemProperties.VISIBILITY), View.VISIBLE);
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {
