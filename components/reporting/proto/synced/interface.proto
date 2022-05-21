@@ -89,6 +89,12 @@ message UploadEncryptedRecordRequest {
   // public values in the next response. It corresponds to the
   // "attachEncryptionSettings" field in the payload.
   optional bool need_encryption_keys = 2;
+
+  // The remaining storage capacity in bytes.
+  optional uint64_t remaining_storage_capacity = 3;
+
+  // The rate (bytes/sec) at which new events are added to the storage.
+  optional uint64_t new_events_rate = 4;
 }
 
 message UploadEncryptedRecordResponse {
