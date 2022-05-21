@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 
 class GURL;
 
@@ -41,6 +42,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
   // CRX format verification requirements.
   virtual crx_file::VerifierFormat CrxVerifierFormat() const = 0;
+
+  // Overrides for the `GroupPolicyManager`.
+  virtual base::Value::DictStorage GroupPolicies() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;

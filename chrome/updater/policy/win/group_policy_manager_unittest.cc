@@ -48,7 +48,7 @@ void GroupPolicyManagerTests::DeletePolicyKey() {
 
 TEST_F(GroupPolicyManagerTests, NoPolicySet) {
   std::unique_ptr<PolicyManagerInterface> policy_manager =
-      std::make_unique<GroupPolicyManager>();
+      std::make_unique<GroupPolicyManager>(CreateExternalConstants());
   EXPECT_FALSE(policy_manager->IsManaged());
 
   EXPECT_EQ(policy_manager->source(), "GroupPolicy");
@@ -142,7 +142,7 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, 1));
 
   std::unique_ptr<PolicyManagerInterface> policy_manager =
-      std::make_unique<GroupPolicyManager>();
+      std::make_unique<GroupPolicyManager>(CreateExternalConstants());
   EXPECT_EQ(policy_manager->IsManaged(), base::win::IsEnrolledToDomain());
 
   int check_period = 0;
@@ -250,7 +250,7 @@ TEST_F(GroupPolicyManagerTests, WrongPolicyValueType) {
             key.WriteValue(L"RollbackToTargetVersion" TEST_APP_ID, L"1"));
 
   std::unique_ptr<PolicyManagerInterface> policy_manager =
-      std::make_unique<GroupPolicyManager>();
+      std::make_unique<GroupPolicyManager>(CreateExternalConstants());
 
   int check_period = 0;
   EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));

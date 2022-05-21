@@ -132,6 +132,19 @@ crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
       crx_format_verifier_value.GetInt());
 }
 
+base::Value::DictStorage ExternalConstantsOverrider::GroupPolicies() const {
+  if (!override_values_.contains(kDevOverrideKeyGroupPolicies)) {
+    return next_provider_->GroupPolicies();
+  }
+
+  const base::Value& group_policies_value =
+      override_values_.at(kDevOverrideKeyGroupPolicies);
+  CHECK(group_policies_value.is_dict())
+      << "Unexpected type of override[" << kDevOverrideKeyGroupPolicies
+      << "]: " << base::Value::GetTypeName(group_policies_value.type());
+  return group_policies_value.Clone().TakeDictDeprecated();
+}
+
 // static
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(

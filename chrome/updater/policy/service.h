@@ -11,6 +11,8 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -106,7 +108,8 @@ class PolicyService : public base::RefCounted<PolicyService> {
                       std::string* proxy_server) const;
 
   // Creates an instance that takes a snapshot of policies from all providers.
-  static scoped_refptr<PolicyService> Create();
+  static scoped_refptr<PolicyService> Create(
+      scoped_refptr<ExternalConstants> external_constants);
 
  protected:
   virtual ~PolicyService();

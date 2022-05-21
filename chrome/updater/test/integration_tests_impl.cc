@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -186,6 +187,10 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id) {
                           loop.Quit();
                         })));
   loop.Run();
+}
+
+void SetGroupPolicies(const base::Value::DictStorage& values) {
+  ASSERT_TRUE(ExternalConstantsBuilder().SetGroupPolicies(values).Modify());
 }
 
 void ExpectVersionActive(UpdaterScope scope, const std::string& version) {

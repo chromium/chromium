@@ -10,8 +10,10 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/external_constants.h"
 
 #include "chrome/updater/policy/dm_policy_manager.h"
 #if BUILDFLAG(IS_WIN)
@@ -208,10 +210,11 @@ bool PolicyService::QueryAppPolicy(
   return true;
 }
 
-scoped_refptr<PolicyService> PolicyService::Create() {
+scoped_refptr<PolicyService> PolicyService::Create(
+    scoped_refptr<ExternalConstants> external_constants) {
   PolicyManagerVector managers;
 #if BUILDFLAG(IS_WIN)
-  managers.push_back(std::make_unique<GroupPolicyManager>());
+  managers.push_back(std::make_unique<GroupPolicyManager>(external_constants));
 #endif
   std::unique_ptr<PolicyManagerInterface> dm_policy_manager =
       CreateDMPolicyManager();

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/update_service.h"
@@ -28,6 +29,8 @@ class IntegrationTestCommands
     : public base::RefCountedThreadSafe<IntegrationTestCommands> {
  public:
   virtual void EnterTestMode(const GURL& url) const = 0;
+  virtual void SetGroupPolicies(
+      const base::Value::DictStorage& values) const = 0;
   virtual void Clean() const = 0;
   virtual void ExpectClean() const = 0;
   virtual void ExpectInstalled() const = 0;
