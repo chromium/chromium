@@ -522,7 +522,7 @@ void DesktopWindowTreeHostWin::SetFullscreen(bool fullscreen) {
 }
 
 bool DesktopWindowTreeHostWin::IsFullscreen() const {
-  return message_handler_->fullscreen_handler()->fullscreen();
+  return message_handler_->IsFullscreen();
 }
 
 void DesktopWindowTreeHostWin::SetOpacity(float opacity) {

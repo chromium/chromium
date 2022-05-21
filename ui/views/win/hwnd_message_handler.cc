@@ -540,6 +540,11 @@ gfx::Rect HWNDMessageHandler::GetClientAreaBoundsInScreen() const {
 }
 
 gfx::Rect HWNDMessageHandler::GetRestoredBounds() const {
+  // Headless mode window never goes fullscreen, so just return an empty
+  // rectangle here.
+  if (IsHeadless())
+    return gfx::Rect();
+
   // If we're in fullscreen mode, we've changed the normal bounds to the monitor
   // rect, so return the saved bounds instead.
   if (IsFullscreen())
@@ -809,7 +814,10 @@ bool HWNDMessageHandler::IsMaximized() const {
 }
 
 bool HWNDMessageHandler::IsFullscreen() const {
-  return fullscreen_handler_->fullscreen();
+  // In headless mode report the requested window state instead of the actual
+  // one.
+  return IsHeadless() ? headless_window_fullscreen_state_
+                      : fullscreen_handler_->fullscreen();
 }
 
 bool HWNDMessageHandler::IsAlwaysOnTop() const {
@@ -932,9 +940,12 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
 }
 
 void HWNDMessageHandler::SetFullscreen(bool fullscreen) {
-  // Avoid setting fullscreen mode when in headless mode.
-  if (IsHeadless())
+  // Avoid setting fullscreen mode when in headless mode, but keep track
+  // of the requested state for IsFullscreen() to report.
+  if (IsHeadless()) {
+    headless_window_fullscreen_state_ = fullscreen;
     return;
+  }
 
   background_fullscreen_hack_ = false;
   auto ref = msg_handler_weak_factory_.GetWeakPtr();

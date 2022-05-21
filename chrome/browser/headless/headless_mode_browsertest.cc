@@ -26,6 +26,8 @@
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -71,6 +73,12 @@ void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
       command_line->AppendSwitch(switches::kStartFullscreen);
       break;
   }
+}
+
+void ToggleFullscreenModeSync(Browser* browser) {
+  FullscreenNotificationObserver observer(browser);
+  chrome::ToggleFullscreenMode(browser);
+  observer.Wait();
 }
 
 #if BUILDFLAG(IS_LINUX)

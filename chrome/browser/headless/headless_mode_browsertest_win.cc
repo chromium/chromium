@@ -33,3 +33,28 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
           browser()->window()->GetNativeWindow()->GetHost());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_tree_host->GetHWND()));
 }
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+                       ToggleFullscreenWindowVisibility) {
+  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
+      static_cast<DesktopWindowTreeHostWinWrapper*>(
+          browser()->window()->GetNativeWindow()->GetHost());
+  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
+
+  // Verify initial state.
+  ASSERT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify fullscreen state.
+  ToggleFullscreenModeSync(browser());
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify back to normal state.
+  ToggleFullscreenModeSync(browser());
+  ASSERT_FALSE(browser()->window()->IsFullscreen());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+}
