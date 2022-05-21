@@ -14,11 +14,11 @@
 namespace segmentation_platform {
 
 namespace {
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // Default parameters for query tiles model.
-constexpr OptimizationTarget kQueryTilesOptimizationTarget =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES;
+constexpr SegmentId kQueryTilesSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES;
 constexpr proto::TimeUnit kQueryTilesTimeUnit = proto::TimeUnit::DAY;
 constexpr uint64_t kQueryTilesBucketDuration = 1;
 constexpr int64_t kQueryTilesSignalStorageLength = 28;
@@ -42,8 +42,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 2> kQueryTilesUMAFeatures = {
 
 }  // namespace
 
-QueryTilesModel::QueryTilesModel()
-    : ModelProvider(kQueryTilesOptimizationTarget) {}
+QueryTilesModel::QueryTilesModel() : ModelProvider(kQueryTilesSegmentId) {}
 
 void QueryTilesModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
@@ -64,7 +63,7 @@ void QueryTilesModel::InitAndFetchModel(
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindRepeating(model_updated_callback, kQueryTilesOptimizationTarget,
+      base::BindRepeating(model_updated_callback, kQueryTilesSegmentId,
                           std::move(query_tiles_metadata), 2));
 }
 

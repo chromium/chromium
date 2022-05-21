@@ -11,13 +11,13 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
@@ -76,8 +76,7 @@ std::string FeatureToString(const proto::UMAFeature& feature) {
 }  // namespace
 
 ValidationResult ValidateSegmentInfo(const proto::SegmentInfo& segment_info) {
-  if (segment_info.segment_id() ==
-      optimization_guide::proto::OPTIMIZATION_TARGET_UNKNOWN) {
+  if (segment_info.segment_id() == proto::OPTIMIZATION_TARGET_UNKNOWN) {
     return ValidationResult::kSegmentIDNotFound;
   }
 

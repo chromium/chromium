@@ -9,8 +9,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -32,11 +32,9 @@ class ModelProviderFactoryImpl : public ModelProviderFactory {
 
   // ModelProviderFactory impl:
   std::unique_ptr<ModelProvider> CreateProvider(
-      optimization_guide::proto::OptimizationTarget optimization_target)
-      override;
+      proto::SegmentId segment_id) override;
   std::unique_ptr<ModelProvider> CreateDefaultProvider(
-      optimization_guide::proto::OptimizationTarget optimization_target)
-      override;
+      proto::SegmentId segment_id) override;
 
  private:
   raw_ptr<optimization_guide::OptimizationGuideModelProvider>

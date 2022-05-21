@@ -10,9 +10,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 
 class GURL;
@@ -34,14 +34,12 @@ class UkmDataManagerTestUtils {
 
   // Must be called before the first profile initialization, sets up default
   // model overrides for the given `default_overrides`
-  void PreProfileInit(
-      const std::set<optimization_guide::proto::OptimizationTarget>&
-          default_overrides);
+  void PreProfileInit(const std::set<proto::SegmentId>& default_overrides);
 
   // Waits for platform to initialize and request default model for
   // `segment_id`, and then returns the provided `metadata` to the platform.
   void WaitForModelRequestAndUpdateWith(
-      optimization_guide::proto::OptimizationTarget segment_id,
+      proto::SegmentId segment_id,
       const proto::SegmentationModelMetadata& metadata);
 
   // Creates a sample page load UKM based model metadata, with a simple SQL
@@ -58,8 +56,7 @@ class UkmDataManagerTestUtils {
   bool IsUrlInDatabase(const GURL& url);
 
   // Returns the model provider override for the `segment_id`.
-  MockModelProvider* GetDefaultOverride(
-      optimization_guide::proto::OptimizationTarget segment_id);
+  MockModelProvider* GetDefaultOverride(proto::SegmentId segment_id);
 
   // History service is needed for validating test URLs written to database.
   void set_history_service(history::HistoryService* history_service) {
@@ -68,17 +65,15 @@ class UkmDataManagerTestUtils {
 
  private:
   void StoreModelUpdateCallback(
-      optimization_guide::proto::OptimizationTarget segment_id,
+      proto::SegmentId segment_id,
       const ModelProvider::ModelUpdatedCallback& callback);
 
   const raw_ptr<ukm::TestUkmRecorder> ukm_recorder_;
   int source_id_counter_ = 1;
   raw_ptr<history::HistoryService> history_service_;
 
-  std::map<optimization_guide::proto::OptimizationTarget, MockModelProvider*>
-      default_overrides_;
-  std::map<optimization_guide::proto::OptimizationTarget,
-           std::vector<ModelProvider::ModelUpdatedCallback>>
+  std::map<proto::SegmentId, MockModelProvider*> default_overrides_;
+  std::map<proto::SegmentId, std::vector<ModelProvider::ModelUpdatedCallback>>
       callbacks_;
 
   base::WeakPtrFactory<UkmDataManagerTestUtils> weak_factory_{this};

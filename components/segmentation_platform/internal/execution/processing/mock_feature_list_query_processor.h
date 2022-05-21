@@ -20,7 +20,7 @@ class MockFeatureListQueryProcessor : public FeatureListQueryProcessor {
               ProcessFeatureList,
               (const proto::SegmentationModelMetadata&,
                scoped_refptr<InputContext> input_context,
-               optimization_guide::proto::OptimizationTarget,
+               proto::SegmentId,
                base::Time,
                FeatureListQueryProcessor::ProcessOption,
                FeatureProcessorCallback),

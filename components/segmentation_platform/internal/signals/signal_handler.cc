@@ -16,12 +16,10 @@ namespace segmentation_platform {
 SignalHandler::SignalHandler() = default;
 SignalHandler::~SignalHandler() = default;
 
-void SignalHandler::Initialize(
-    StorageService* storage_service,
-    history::HistoryService* history_service,
-    const std::vector<optimization_guide::proto::OptimizationTarget>&
-        segment_ids,
-    base::RepeatingClosure models_refresh_callback) {
+void SignalHandler::Initialize(StorageService* storage_service,
+                               history::HistoryService* history_service,
+                               const std::vector<proto::SegmentId>& segment_ids,
+                               base::RepeatingClosure models_refresh_callback) {
   user_action_signal_handler_ = std::make_unique<UserActionSignalHandler>(
       storage_service->signal_database());
   histogram_signal_handler_ = std::make_unique<HistogramSignalHandler>(

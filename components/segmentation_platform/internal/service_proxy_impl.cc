@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
+#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/public/config.h"
@@ -107,9 +108,9 @@ void ServiceProxyImpl::GetServiceStatus() {
   UpdateObservers(true /* update_service_status */);
 }
 
-void ServiceProxyImpl::ExecuteModel(OptimizationTarget segment_id) {
+void ServiceProxyImpl::ExecuteModel(SegmentId segment_id) {
   if (!execution_service ||
-      segment_id == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+      segment_id == SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
     return;
   }
   segment_db_->GetSegmentInfo(
@@ -129,27 +130,26 @@ void ServiceProxyImpl::OnSegmentInfoFetchedForExecution(
   execution_service->RequestModelExecution(std::move(request));
 }
 
-void ServiceProxyImpl::OverwriteResult(OptimizationTarget segment_id,
-                                       float result) {
+void ServiceProxyImpl::OverwriteResult(SegmentId segment_id, float result) {
   if (!execution_service)
     return;
 
   if (result < 0 || result > 1)
     return;
 
-  if (segment_id != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+  if (segment_id != SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
     execution_service->OverwriteModelExecutionResult(
         segment_id, std::make_pair(result, ModelExecutionStatus::kSuccess));
   }
 }
 
 void ServiceProxyImpl::SetSelectedSegment(const std::string& segmentation_key,
-                                          OptimizationTarget segment_id) {
+                                          SegmentId segment_id) {
   if (!segment_selectors_ ||
       segment_selectors_->find(segmentation_key) == segment_selectors_->end()) {
     return;
   }
-  if (segment_id != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+  if (segment_id != SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
     auto& selector = segment_selectors_->at(segmentation_key);
     selector->UpdateSelectedSegment(segment_id);
   }
@@ -161,31 +161,30 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
     return;
 
   // Convert the |segment_info| vector to a map for quick lookup.
-  base::flat_map<OptimizationTarget, proto::SegmentInfo> optimization_targets;
+  base::flat_map<SegmentId, proto::SegmentInfo> segment_ids;
   for (const auto& info : *segment_info) {
-    optimization_targets[info.first] = info.second;
+    segment_ids[info.first] = info.second;
   }
 
   std::vector<ServiceProxy::ClientInfo> result;
   for (const auto& config : *configs_) {
-    OptimizationTarget selected =
-        OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+    SegmentId selected = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
     if (segment_selectors_ &&
         segment_selectors_->find(config->segmentation_key) !=
             segment_selectors_->end()) {
-      absl::optional<optimization_guide::proto::OptimizationTarget> target =
+      absl::optional<OptimizationTarget> target =
           segment_selectors_->at(config->segmentation_key)
               ->GetCachedSegmentResult()
               .segment;
       if (target.has_value()) {
-        selected = target.value();
+        selected = OptimizationTargetToSegmentId(*target);
       }
     }
     result.emplace_back(config->segmentation_key, selected);
     for (const auto& segment_id : config->segment_ids) {
-      if (!optimization_targets.contains(segment_id))
+      if (!segment_ids.contains(segment_id))
         continue;
-      const auto& info = optimization_targets[segment_id];
+      const auto& info = segment_ids[segment_id];
       result.back().segment_status.emplace_back(
           segment_id, SegmentMetadataToString(info),
           PredictionResultToString(info),
@@ -200,8 +199,7 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
     obs.OnClientInfoAvailable(result);
 }
 
-void ServiceProxyImpl::OnModelExecutionCompleted(
-    OptimizationTarget segment_id) {
+void ServiceProxyImpl::OnModelExecutionCompleted(SegmentId segment_id) {
   // Update the observers with the new execution results.
   UpdateObservers(false);
 }

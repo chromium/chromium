@@ -20,7 +20,7 @@ ExperimentalGroupRecorder::ExperimentalGroupRecorder(
     SegmentInfoDatabase* segment_database,
     FieldTrialRegister* field_trial_register,
     const std::string& segmentation_key,
-    optimization_guide::proto::OptimizationTarget selected_segment)
+    proto::SegmentId selected_segment)
     : field_trial_register_(field_trial_register),
       segmentation_key_(segmentation_key) {
   segment_database->GetSegmentInfo(

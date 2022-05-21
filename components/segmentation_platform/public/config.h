@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 
@@ -69,7 +69,7 @@ struct Config {
   base::TimeDelta unknown_selection_ttl;
 
   // List of segment ids that the current config requires to be available.
-  std::vector<optimization_guide::proto::OptimizationTarget> segment_ids;
+  std::vector<proto::SegmentId> segment_ids;
 
   // The selection only supports returning results from on-demand model
   // executions instead of returning result from previous sessions. The

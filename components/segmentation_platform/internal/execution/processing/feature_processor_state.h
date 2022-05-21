@@ -11,16 +11,16 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::processing {
 
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // FeatureProcessorState is responsible for storing all necessary state during
 // the processing of a model's metadata.
@@ -44,7 +44,7 @@ class FeatureProcessorState {
   FeatureProcessorState(
       base::Time prediction_time,
       base::TimeDelta bucket_duration,
-      OptimizationTarget segment_id,
+      SegmentId segment_id,
       std::deque<Data> data,
       scoped_refptr<InputContext> input_context,
       FeatureListQueryProcessor::FeatureProcessorCallback callback);
@@ -59,7 +59,7 @@ class FeatureProcessorState {
 
   base::Time prediction_time() const { return prediction_time_; }
 
-  OptimizationTarget segment_id() const { return segment_id_; }
+  SegmentId segment_id() const { return segment_id_; }
 
   bool error() const { return error_; }
 
@@ -87,7 +87,7 @@ class FeatureProcessorState {
  private:
   const base::Time prediction_time_;
   const base::TimeDelta bucket_duration_;
-  const OptimizationTarget segment_id_;
+  const SegmentId segment_id_;
   std::deque<Data> data_;
   scoped_refptr<InputContext> input_context_;
 

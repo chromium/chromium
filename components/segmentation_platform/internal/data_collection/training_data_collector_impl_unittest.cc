@@ -30,6 +30,9 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace segmentation_platform {
+namespace {
+
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
@@ -38,17 +41,14 @@ using Segmentation_ModelExecution =
     ::ukm::builders::Segmentation_ModelExecution;
 
 constexpr auto kTestOptimizationTarget0 =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
 constexpr auto kTestOptimizationTarget1 =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
 constexpr char kHistogramName0[] = "histogram0";
 constexpr char kHistogramName1[] = "histogram1";
 constexpr char kSegmentationKey[] = "test_key";
 constexpr int64_t kModelVersion = 123;
 constexpr int kSample = 1;
-
-namespace segmentation_platform {
-namespace {
 
 class TrainingDataCollectorImplTest : public ::testing::Test {
  public:
@@ -82,13 +82,13 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     configs_.emplace_back(std::make_unique<Config>());
     configs_[0]->segmentation_key = kSegmentationKey;
     configs_[0]->segment_ids.push_back(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
     configs_[0]->segment_ids.push_back(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
     SegmentationResultPrefs result_prefs(&prefs_);
     SelectedSegment selected_segment(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     selected_segment.selection_time = base::Time::Now() - base::Days(1);
     result_prefs.SaveSegmentationResultToPref(kSegmentationKey,
                                               selected_segment);
@@ -125,9 +125,8 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     return segment_info;
   }
 
-  proto::SegmentInfo* CreateSegment(OptimizationTarget optimization_target) {
-    auto* segment_info =
-        test_segment_db()->FindOrCreateSegment(optimization_target);
+  proto::SegmentInfo* CreateSegment(SegmentId segment_id) {
+    auto* segment_info = test_segment_db()->FindOrCreateSegment(segment_id);
     auto* model_metadata = segment_info->mutable_model_metadata();
     model_metadata->set_time_unit(proto::TimeUnit::DAY);
     model_metadata->set_signal_storage_length(7);
@@ -341,7 +340,7 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
       {kTestOptimizationTarget0, kModelVersion,
        SegmentationUkmHelper::FloatToInt64(1.f),
        SegmentationUkmHelper::FloatToInt64(0.6f),
-       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
        base::Days(1).InSeconds(), SegmentationUkmHelper::FloatToInt64(2.f),
        SegmentationUkmHelper::FloatToInt64(3.f)});
 }

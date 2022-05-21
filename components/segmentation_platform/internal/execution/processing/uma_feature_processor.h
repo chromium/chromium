@@ -10,11 +10,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform::processing {
 class FeatureProcessorState;
@@ -30,7 +30,7 @@ class UmaFeatureProcessor : public QueryProcessor {
       FeatureAggregator* feature_aggregator,
       const base::Time prediction_time,
       const base::TimeDelta bucket_duration,
-      const optimization_guide::proto::OptimizationTarget segment_id);
+      const proto::SegmentId segment_id);
 
   ~UmaFeatureProcessor() override;
 
@@ -69,7 +69,7 @@ class UmaFeatureProcessor : public QueryProcessor {
   // Data needed for the processing of uma features.
   const base::Time prediction_time_;
   const base::TimeDelta bucket_duration_;
-  const optimization_guide::proto::OptimizationTarget segment_id_;
+  const proto::SegmentId segment_id_;
 
   // Temporary storage of the processing state object.
   // TODO(haileywang): Remove dependency to the state object once error check is

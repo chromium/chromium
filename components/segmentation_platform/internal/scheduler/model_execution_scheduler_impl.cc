@@ -26,7 +26,7 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     SignalStorageConfig* signal_storage_config,
     ModelExecutionManager* model_execution_manager,
     ModelExecutor* model_executor,
-    base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
+    base::flat_set<proto::SegmentId> segment_ids,
     base::Clock* clock,
     const PlatformOptions& platform_options)
     : observers_(observers),
@@ -59,8 +59,8 @@ void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
 
 void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
     bool expired_only) {
-  std::vector<OptimizationTarget> segment_ids(all_segment_ids_.begin(),
-                                              all_segment_ids_.end());
+  std::vector<SegmentId> segment_ids(all_segment_ids_.begin(),
+                                     all_segment_ids_.end());
   segment_database_->GetSegmentInfoForSegments(
       segment_ids,
       base::BindOnce(&ModelExecutionSchedulerImpl::FilterEligibleSegments,
@@ -69,7 +69,7 @@ void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
 
 void ModelExecutionSchedulerImpl::RequestModelExecution(
     const proto::SegmentInfo& segment_info) {
-  OptimizationTarget segment_id = segment_info.segment_id();
+  SegmentId segment_id = segment_info.segment_id();
   CancelOutstandingExecutionRequests(segment_id);
   outstanding_requests_.insert(std::make_pair(
       segment_id,
@@ -86,7 +86,7 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
 }
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const std::pair<float, ModelExecutionStatus>& result) {
   // TODO(shaktisahu): Check ModelExecutionStatus and handle failure cases.
   // Should we save it to DB?
@@ -110,11 +110,11 @@ void ModelExecutionSchedulerImpl::FilterEligibleSegments(
     std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
   std::vector<const proto::SegmentInfo*> models_to_run;
   for (const auto& pair : *all_segments) {
-    OptimizationTarget segment_id = pair.first;
+    SegmentId segment_id = pair.first;
     const proto::SegmentInfo& segment_info = pair.second;
     if (!ShouldExecuteSegment(expired_only, segment_info)) {
       VLOG(1) << "Segmentation scheduler: Skipped executed segment "
-              << optimization_guide::proto::OptimizationTarget_Name(segment_id);
+              << proto::SegmentId_Name(segment_id);
       continue;
     }
 
@@ -168,7 +168,7 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
 }
 
 void ModelExecutionSchedulerImpl::CancelOutstandingExecutionRequests(
-    OptimizationTarget segment_id) {
+    SegmentId segment_id) {
   const auto& iter = outstanding_requests_.find(segment_id);
   if (iter != outstanding_requests_.end()) {
     iter->second.Cancel();
@@ -176,7 +176,7 @@ void ModelExecutionSchedulerImpl::CancelOutstandingExecutionRequests(
   }
 }
 
-void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,
+void ModelExecutionSchedulerImpl::OnResultSaved(SegmentId segment_id,
                                                 bool success) {
   stats::RecordModelExecutionSaveResult(segment_id, success);
   if (!success) {

@@ -15,6 +15,5 @@ proto_library("proto") {
     "types.proto",
   ]
 
-  link_deps =
-      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+  link_deps = [ "//components/segmentation_platform/public/proto" ]
 }

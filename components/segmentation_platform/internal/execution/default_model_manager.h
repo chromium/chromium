@@ -20,9 +20,9 @@
 #include "components/segmentation_platform/public/model_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
+using proto::SegmentId;
+
 class SegmentInfoDatabase;
 
 // DefaultModelManager provides support to query all default models available.
@@ -31,7 +31,7 @@ class SegmentInfoDatabase;
 class DefaultModelManager {
  public:
   DefaultModelManager(ModelProviderFactory* model_provider_factory,
-                      const std::vector<OptimizationTarget>& segment_ids);
+                      const std::vector<SegmentId>& segment_ids);
   virtual ~DefaultModelManager();
 
   // Disallow copy/assign.
@@ -60,37 +60,37 @@ class DefaultModelManager {
   // default model for a given set of segment IDs. The result can contain
   // the same segment ID multiple times.
   virtual void GetAllSegmentInfoFromBothModels(
-      const std::vector<OptimizationTarget>& segment_ids,
+      const std::vector<SegmentId>& segment_ids,
       SegmentInfoDatabase* segment_database,
       MultipleSegmentInfoCallback callback);
 
   // Called to get the segment info from the default model for a given set of
   // segment IDs.
   virtual void GetAllSegmentInfoFromDefaultModel(
-      const std::vector<OptimizationTarget>& segment_ids,
+      const std::vector<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback);
 
   // Returns the default provider or `nulllptr` when unavailable.
-  ModelProvider* GetDefaultProvider(OptimizationTarget segment_id);
+  ModelProvider* GetDefaultProvider(SegmentId segment_id);
 
   void SetDefaultProvidersForTesting(
-      std::map<OptimizationTarget, std::unique_ptr<ModelProvider>>&& providers);
+      std::map<SegmentId, std::unique_ptr<ModelProvider>>&& providers);
 
  private:
   void GetNextSegmentInfoFromDefaultModel(
       std::unique_ptr<SegmentInfoList> result,
-      std::deque<OptimizationTarget> remaining_segment_ids,
+      std::deque<SegmentId> remaining_segment_ids,
       MultipleSegmentInfoCallback callback);
 
   void OnFetchDefaultModel(std::unique_ptr<SegmentInfoList> result,
-                           std::deque<OptimizationTarget> remaining_segment_ids,
+                           std::deque<SegmentId> remaining_segment_ids,
                            MultipleSegmentInfoCallback callback,
-                           OptimizationTarget segment_id,
+                           SegmentId segment_id,
                            proto::SegmentationModelMetadata metadata,
                            int64_t model_version);
 
   void OnGetAllSegmentInfoFromDatabase(
-      const std::vector<OptimizationTarget>& segment_ids,
+      const std::vector<SegmentId>& segment_ids,
       MultipleSegmentInfoCallback callback,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos);
 
@@ -101,8 +101,7 @@ class DefaultModelManager {
       SegmentInfoList segment_infos_from_default_model);
 
   // Default model providers.
-  std::map<OptimizationTarget, std::unique_ptr<ModelProvider>>
-      default_model_providers_;
+  std::map<SegmentId, std::unique_ptr<ModelProvider>> default_model_providers_;
   const raw_ptr<ModelProviderFactory> model_provider_factory_;
 
   base::WeakPtrFactory<DefaultModelManager> weak_ptr_factory_{this};

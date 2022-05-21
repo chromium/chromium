@@ -38,7 +38,7 @@ FeatureListQueryProcessor::~FeatureListQueryProcessor() = default;
 void FeatureListQueryProcessor::ProcessFeatureList(
     const proto::SegmentationModelMetadata& model_metadata,
     scoped_refptr<InputContext> input_context,
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     base::Time prediction_time,
     ProcessOption process_option,
     FeatureProcessorCallback callback) {

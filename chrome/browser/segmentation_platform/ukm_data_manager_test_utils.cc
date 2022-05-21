@@ -8,13 +8,13 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -23,7 +23,7 @@ namespace segmentation_platform {
 
 namespace {
 
-using ::optimization_guide::proto::OptimizationTarget;
+using ::segmentation_platform::proto::SegmentId;
 using ::testing::Return;
 using ::ukm::builders::PageLoad;
 
@@ -73,7 +73,7 @@ UkmDataManagerTestUtils::UkmDataManagerTestUtils(
 UkmDataManagerTestUtils::~UkmDataManagerTestUtils() = default;
 
 void UkmDataManagerTestUtils::PreProfileInit(
-    const std::set<OptimizationTarget>& default_overrides) {
+    const std::set<SegmentId>& default_overrides) {
   // Set test recorder before UkmObserver is created.
   UkmDatabaseClient::GetInstance().set_ukm_recorder_for_testing(ukm_recorder_);
 
@@ -92,13 +92,13 @@ void UkmDataManagerTestUtils::PreProfileInit(
 }
 
 void UkmDataManagerTestUtils::StoreModelUpdateCallback(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const ModelProvider::ModelUpdatedCallback& callback) {
   callbacks_[segment_id].push_back(callback);
 }
 
 void UkmDataManagerTestUtils::WaitForModelRequestAndUpdateWith(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const proto::SegmentationModelMetadata& metadata) {
   // Waits for the platform to fetch the default model metadata. At init time,
   // the platform fetches metadata from default model for:
@@ -167,7 +167,7 @@ bool UkmDataManagerTestUtils::IsUrlInDatabase(const GURL& url) {
 }
 
 MockModelProvider* UkmDataManagerTestUtils::GetDefaultOverride(
-    optimization_guide::proto::OptimizationTarget segment_id) {
+    proto::SegmentId segment_id) {
   return default_overrides_[segment_id];
 }
 

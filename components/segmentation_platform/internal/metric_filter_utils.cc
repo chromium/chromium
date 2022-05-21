@@ -9,12 +9,11 @@
 
 namespace segmentation_platform::stats {
 namespace {
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 }  // namespace
 
-std::string OptimizationTargetToSegmentGroupName(
-    OptimizationTarget segment_id) {
+std::string OptimizationTargetToSegmentGroupName(SegmentId segment_id) {
   return OptimizationTargetToHistogramVariant(segment_id);
 }
 
@@ -25,7 +24,7 @@ std::string SegmentationKeyToTrialName(const std::string& segmentation_key) {
 
 std::string SegmentationKeyToSubsegmentTrialName(
     const std::string& segmentation_key,
-    optimization_guide::proto::OptimizationTarget segment_id) {
+    proto::SegmentId segment_id) {
   return base::StrCat({"Segmentation_",
                        SegmentationKeyToUmaName(segmentation_key), "_",
                        OptimizationTargetToHistogramVariant(segment_id)});

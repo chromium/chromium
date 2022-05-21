@@ -494,9 +494,8 @@ class RemoveFaviconTester {
 
 class RemoveUkmDataTester {
  public:
-  static constexpr optimization_guide::proto::OptimizationTarget kSegmentId =
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+  static constexpr auto kSegmentId = segmentation_platform::proto::
+      OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 
   RemoveUkmDataTester() : test_utils_(&ukm_recorder_) {
     test_utils_.PreProfileInit({kSegmentId});

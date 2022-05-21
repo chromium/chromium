@@ -15,19 +15,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/database_maintenance.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace base {
 class Clock;
 class Time;
 }  // namespace base
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
+using proto::SegmentId;
+
 class DefaultModelManager;
 class SegmentInfoDatabase;
 class SignalDatabase;
@@ -40,13 +40,12 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
   using SignalIdentifier = std::pair<uint64_t, proto::SignalType>;
   using CleanupItem = std::tuple<uint64_t, proto::SignalType, base::Time>;
 
-  explicit DatabaseMaintenanceImpl(
-      const base::flat_set<OptimizationTarget>& segment_ids,
-      base::Clock* clock,
-      SegmentInfoDatabase* segment_info_database,
-      SignalDatabase* signal_database,
-      SignalStorageConfig* signal_storage_config,
-      DefaultModelManager* default_model_manager);
+  explicit DatabaseMaintenanceImpl(const base::flat_set<SegmentId>& segment_ids,
+                                   base::Clock* clock,
+                                   SegmentInfoDatabase* segment_info_database,
+                                   SignalDatabase* signal_database,
+                                   SignalStorageConfig* signal_storage_config,
+                                   DefaultModelManager* default_model_manager);
   ~DatabaseMaintenanceImpl() override;
 
   // DatabaseMaintenance overrides.
@@ -88,7 +87,7 @@ class DatabaseMaintenanceImpl : public DatabaseMaintenance {
   void CompactSamplesDone(base::OnceClosure next_action);
 
   // Input.
-  base::flat_set<OptimizationTarget> segment_ids_;
+  base::flat_set<SegmentId> segment_ids_;
   raw_ptr<base::Clock> clock_;
 
   // Databases.

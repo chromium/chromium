@@ -29,10 +29,10 @@ using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Return;
 
-const OptimizationTarget kTestSegment =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-const OptimizationTarget kTestSegment2 =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE;
+const SegmentId kTestSegment =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+const SegmentId kTestSegment2 =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE;
 
 constexpr float kTestScore = 0.1;
 constexpr float kDatabaseScore = 0.6;
@@ -42,14 +42,13 @@ constexpr int kDatabaseRank = 1;
 class TestModelProvider : public ModelProvider {
  public:
   static constexpr int64_t kVersion = 10;
-  explicit TestModelProvider(OptimizationTarget segment)
-      : ModelProvider(segment) {}
+  explicit TestModelProvider(SegmentId segment) : ModelProvider(segment) {}
 
   void InitAndFetchModel(
       const ModelUpdatedCallback& model_updated_callback) override {
     proto::SegmentationModelMetadata metadata;
     metadata.set_time_unit(proto::TimeUnit::DAY);
-    model_updated_callback.Run(optimization_target_, metadata, kVersion);
+    model_updated_callback.Run(segment_id_, metadata, kVersion);
   }
 
   void ExecuteModelWithInput(const std::vector<float>& inputs,
@@ -63,9 +62,7 @@ class TestModelProvider : public ModelProvider {
 
 class MockModelExecutionManager : public ModelExecutionManager {
  public:
-  MOCK_METHOD(ModelProvider*,
-              GetProvider,
-              (optimization_guide::proto::OptimizationTarget segment_id));
+  MOCK_METHOD(ModelProvider*, GetProvider, (proto::SegmentId segment_id));
 };
 
 }  // namespace
@@ -78,7 +75,7 @@ class SegmentResultProviderTest : public testing::Test {
   void SetUp() override {
     default_manager_ = std::make_unique<DefaultModelManager>(
         &provider_factory_,
-        std::vector<OptimizationTarget>({kTestSegment, kTestSegment2}));
+        std::vector<SegmentId>({kTestSegment, kTestSegment2}));
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     execution_service_ = std::make_unique<ExecutionService>();
     auto query_processor =
@@ -104,7 +101,7 @@ class SegmentResultProviderTest : public testing::Test {
   }
 
   void ExpectSegmentResultOnGet(
-      OptimizationTarget segment_id,
+      SegmentId segment_id,
       bool ignore_db_scores,
       SegmentResultProvider::ResultState expected_state,
       absl::optional<int> expected_rank) {
@@ -130,8 +127,7 @@ class SegmentResultProviderTest : public testing::Test {
     wait_for_result.Run();
   }
 
-  void SetSegmentResult(OptimizationTarget segment,
-                        absl::optional<float> score) {
+  void SetSegmentResult(SegmentId segment, absl::optional<float> score) {
     absl::optional<proto::PredictionResult> result;
     if (score) {
       result = proto::PredictionResult();
@@ -146,7 +142,7 @@ class SegmentResultProviderTest : public testing::Test {
     wait_for_save.Run();
   }
 
-  void InitializeMetadata(OptimizationTarget segment_id) {
+  void InitializeMetadata(SegmentId segment_id) {
     segment_database_->FindOrCreateSegment(segment_id)
         ->mutable_model_metadata()
         ->set_result_time_to_live(7);
@@ -274,7 +270,7 @@ TEST_F(SegmentResultProviderTest, GetFromModel) {
 
 TEST_F(SegmentResultProviderTest, DefaultNeedsSignal) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-  std::map<OptimizationTarget, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
@@ -292,7 +288,7 @@ TEST_F(SegmentResultProviderTest, DefaultNeedsSignal) {
 
 TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-  std::map<OptimizationTarget, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
@@ -313,7 +309,7 @@ TEST_F(SegmentResultProviderTest, DefaultModelFailedExecution) {
 
 TEST_F(SegmentResultProviderTest, GetFromDefault) {
   SetSegmentResult(kTestSegment, absl::nullopt);
-  std::map<OptimizationTarget, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));
 
@@ -334,7 +330,7 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
   InitializeMetadata(kTestSegment2);
   SetSegmentResult(kTestSegment2, kDatabaseScore);
 
-  std::map<OptimizationTarget, std::unique_ptr<ModelProvider>> p;
+  std::map<SegmentId, std::unique_ptr<ModelProvider>> p;
   p.emplace(kTestSegment, std::make_unique<TestModelProvider>(kTestSegment));
   p.emplace(kTestSegment2, std::make_unique<TestModelProvider>(kTestSegment2));
   default_manager_->SetDefaultProvidersForTesting(std::move(p));

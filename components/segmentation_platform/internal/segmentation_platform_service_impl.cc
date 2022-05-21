@@ -30,15 +30,14 @@
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
-
 namespace {
 
-base::flat_set<OptimizationTarget> GetAllSegmentIds(
+using proto::SegmentId;
+
+base::flat_set<SegmentId> GetAllSegmentIds(
     const std::vector<std::unique_ptr<Config>>& configs) {
-  base::flat_set<OptimizationTarget> all_segment_ids;
+  base::flat_set<SegmentId> all_segment_ids;
   for (const auto& config : configs) {
     for (const auto& segment_id : config->segment_ids)
       all_segment_ids.insert(segment_id);
@@ -83,8 +82,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         model_provider_factory_.get());
   }
 
-  std::vector<OptimizationTarget> segment_id_vec(all_segment_ids_.begin(),
-                                                 all_segment_ids_.end());
+  std::vector<SegmentId> segment_id_vec(all_segment_ids_.begin(),
+                                        all_segment_ids_.end());
 
   // Construct signal processors.
   signal_handler_.Initialize(

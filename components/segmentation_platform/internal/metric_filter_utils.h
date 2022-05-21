@@ -9,15 +9,14 @@
 #include <string>
 #include <vector>
 
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::stats {
 
 // Returns a name to be used in UMA dashboard as segment group for the given
 // `segment_id`.
-std::string OptimizationTargetToSegmentGroupName(
-    optimization_guide::proto::OptimizationTarget segment_id);
+std::string OptimizationTargetToSegmentGroupName(proto::SegmentId segment_id);
 
 // Returns a name to be used in UMA dashboard as segmentation type for the given
 // `segmentation_key`.
@@ -27,7 +26,7 @@ std::string SegmentationKeyToTrialName(const std::string& segmentation_key);
 // the given `segmentation_key` and `segment_id`.
 std::string SegmentationKeyToSubsegmentTrialName(
     const std::string& segmentation_key,
-    optimization_guide::proto::OptimizationTarget segment_id);
+    proto::SegmentId segment_id);
 
 }  // namespace segmentation_platform::stats
 

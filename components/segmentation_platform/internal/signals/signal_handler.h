@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace history {
 class HistoryService;
@@ -33,12 +33,10 @@ class SignalHandler {
   SignalHandler(SignalHandler&) = delete;
   SignalHandler& operator=(SignalHandler&) = delete;
 
-  void Initialize(
-      StorageService* storage_service,
-      history::HistoryService* history_service,
-      const std::vector<optimization_guide::proto::OptimizationTarget>&
-          segment_ids,
-      base::RepeatingClosure model_refresh_callback);
+  void Initialize(StorageService* storage_service,
+                  history::HistoryService* history_service,
+                  const std::vector<proto::SegmentId>& segment_ids,
+                  base::RepeatingClosure model_refresh_callback);
 
   void TearDown();
 

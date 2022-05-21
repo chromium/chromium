@@ -23,7 +23,7 @@ UmaFeatureProcessor::UmaFeatureProcessor(
     FeatureAggregator* feature_aggregator,
     const base::Time prediction_time,
     const base::TimeDelta bucket_duration,
-    const OptimizationTarget segment_id)
+    const SegmentId segment_id)
     : uma_features_(std::move(uma_features)),
       signal_database_(signal_database),
       feature_aggregator_(feature_aggregator),

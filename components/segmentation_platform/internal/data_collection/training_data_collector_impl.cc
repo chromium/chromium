@@ -55,7 +55,7 @@ std::map<uint64_t, int> ParseUmaOutputs(
 
 // Find the segmentation key from the configs that contains the segment ID.
 std::string GetSegmentationKey(std::vector<std::unique_ptr<Config>>* configs,
-                               OptimizationTarget segment_id) {
+                               SegmentId segment_id) {
   if (!configs)
     return std::string();
 
@@ -107,7 +107,7 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
   histogram_signal_handler_->AddObserver(this);
 
   DCHECK(segments);
-  const base::flat_set<OptimizationTarget>& allowed_ids =
+  const base::flat_set<SegmentId>& allowed_ids =
       SegmentationUkmHelper::GetInstance()->allowed_segment_ids();
   for (const auto& segment : *segments) {
     // Skip the segment if it is not in allowed list.
@@ -156,13 +156,12 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
   // Report training data for all models that are interested in
   // |histogram_name| as output.
   if (it != immediate_collection_histograms_.end()) {
-    std::vector<OptimizationTarget> optimization_targets(it->second.begin(),
-                                                         it->second.end());
+    std::vector<SegmentId> segment_ids(it->second.begin(), it->second.end());
     auto param = absl::make_optional<ImmediaCollectionParam>();
     param->output_metric_hash = hash;
     param->output_value = static_cast<float>(sample);
     segment_info_database_->GetSegmentInfoForSegments(
-        optimization_targets,
+        segment_ids,
         base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
                        weak_ptr_factory_.GetWeakPtr(), std::move(param)));
   }
@@ -336,8 +335,8 @@ void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
   base::Time next_collection_time = GetNextReportTime(last_collection_time);
   if (clock_->Now() >= next_collection_time) {
     segment_info_database_->GetSegmentInfoForSegments(
-        std::vector<OptimizationTarget>(continuous_collection_segments_.begin(),
-                                        continuous_collection_segments_.end()),
+        std::vector<SegmentId>(continuous_collection_segments_.begin(),
+                               continuous_collection_segments_.end()),
         base::BindOnce(&TrainingDataCollectorImpl::ReportForSegmentsInfoList,
                        weak_ptr_factory_.GetWeakPtr(), absl::nullopt));
   }

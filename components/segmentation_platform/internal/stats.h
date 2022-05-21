@@ -5,16 +5,16 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_STATS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_STATS_H_
 
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform::stats {
+
+using proto::SegmentId;
 
 // Keep in sync with AdaptiveToolbarSegmentSwitch in enums.xml.
 // Visible for testing.
@@ -45,20 +45,20 @@ enum class BooleanSegmentSwitch {
 };
 
 // Returns an UMA display string for the given segment_id.
-std::string OptimizationTargetToHistogramVariant(OptimizationTarget segment_id);
+std::string OptimizationTargetToHistogramVariant(SegmentId segment_id);
 
 // Returns an UMA display string for the given `segmentation_key`.
 const char* SegmentationKeyToUmaName(const std::string& segmentation_key);
 
 // Records the score computed for a given segment.
-void RecordModelScore(OptimizationTarget segment_id, float score);
+void RecordModelScore(SegmentId segment_id, float score);
 
 // Records the result of segment selection whenever segment selection is
 // computed.
 void RecordSegmentSelectionComputed(
     const std::string& segmentation_key,
-    OptimizationTarget new_selection,
-    absl::optional<OptimizationTarget> previous_selection);
+    SegmentId new_selection,
+    absl::optional<SegmentId> previous_selection);
 
 // Database Maintenance metrics.
 // Records the number of unique signal identifiers that were successfully
@@ -74,61 +74,57 @@ void RecordMaintenanceSignalIdentifierCount(size_t count);
 // Model Delivery metrics.
 // Records whether any incoming ML model had metadata attached that we were able
 // to parse.
-void RecordModelDeliveryHasMetadata(OptimizationTarget segment_id,
-                                    bool has_metadata);
+void RecordModelDeliveryHasMetadata(SegmentId segment_id, bool has_metadata);
 // Records the number of tensor features an updated ML model has.
-void RecordModelDeliveryMetadataFeatureCount(OptimizationTarget segment_id,
+void RecordModelDeliveryMetadataFeatureCount(SegmentId segment_id,
                                              size_t count);
 // Records the result of validating the metadata of an incoming ML model.
 // Recorded before and after it has been merged with the already stored
 // metadata.
 void RecordModelDeliveryMetadataValidation(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     bool processed,
     metadata_utils::ValidationResult validation_result);
 // Record what type of model metadata we received.
-void RecordModelDeliveryReceived(OptimizationTarget segment_id);
+void RecordModelDeliveryReceived(SegmentId segment_id);
 // Records the result of attempting to save an updated version of the model
 // metadata.
-void RecordModelDeliverySaveResult(OptimizationTarget segment_id, bool success);
+void RecordModelDeliverySaveResult(SegmentId segment_id, bool success);
 // Records whether the currently stored segment_id matches the incoming
 // segment_id, as these are expected to match.
-void RecordModelDeliverySegmentIdMatches(OptimizationTarget segment_id,
-                                         bool matches);
+void RecordModelDeliverySegmentIdMatches(SegmentId segment_id, bool matches);
 
 // Model Execution metrics.
 // Records the duration of processing a single ML feature. This only takes into
 // account the time it takes to process (aggregate) a feature result, not
 // fetching it from the database. It also takes into account filtering any
 // enum histograms.
-void RecordModelExecutionDurationFeatureProcessing(
-    OptimizationTarget segment_id,
-    base::TimeDelta duration);
+void RecordModelExecutionDurationFeatureProcessing(SegmentId segment_id,
+                                                   base::TimeDelta duration);
 // Records the duration of executing an ML model. This only takes into account
 // the time it takes to invoke and wait for a result from the underlying ML
 // infrastructure from //components/optimization_guide, and not fetching the
 // relevant data from the database.
-void RecordModelExecutionDurationModel(OptimizationTarget segment_id,
+void RecordModelExecutionDurationModel(SegmentId segment_id,
                                        bool success,
                                        base::TimeDelta duration);
 // Records the duration of fetching data for, processing, and executing an ML
 // model.
-void RecordModelExecutionDurationTotal(OptimizationTarget segment_id,
+void RecordModelExecutionDurationTotal(SegmentId segment_id,
                                        ModelExecutionStatus status,
                                        base::TimeDelta duration);
 // Records the result value after successfully executing an ML model.
-void RecordModelExecutionResult(OptimizationTarget segment_id, float result);
+void RecordModelExecutionResult(SegmentId segment_id, float result);
 // Records whether the result value of of executing an ML model was successfully
 // saved.
-void RecordModelExecutionSaveResult(OptimizationTarget segment_id,
-                                    bool success);
+void RecordModelExecutionSaveResult(SegmentId segment_id, bool success);
 // Records the final execution status for any ML model execution.
-void RecordModelExecutionStatus(OptimizationTarget segment_id,
+void RecordModelExecutionStatus(SegmentId segment_id,
                                 bool default_provider,
                                 ModelExecutionStatus status);
 // Records the percent of features in a tensor that are equal to 0 when the
 // segmentation model is executed.
-void RecordModelExecutionZeroValuePercent(OptimizationTarget segment_id,
+void RecordModelExecutionZeroValuePercent(SegmentId segment_id,
                                           const std::vector<float>& tensor);
 
 // Signal Database metrics.
@@ -188,7 +184,7 @@ enum class SegmentationModelAvailability {
   kMaxValue = kMetadataInvalid
 };
 // Records the availability of segmentation models for each target needed.
-void RecordModelAvailability(OptimizationTarget segment_id,
+void RecordModelAvailability(SegmentId segment_id,
                              SegmentationModelAvailability availability);
 
 // Records the number of input tensor that's causing a failure to upload
@@ -212,7 +208,7 @@ enum class TrainingDataCollectionEvent {
 };
 
 // Records analytics for training data collection.
-void RecordTrainingDataCollectionEvent(OptimizationTarget segment_id,
+void RecordTrainingDataCollectionEvent(SegmentId segment_id,
                                        TrainingDataCollectionEvent event);
 
 }  // namespace segmentation_platform::stats

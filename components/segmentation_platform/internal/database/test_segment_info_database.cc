@@ -8,11 +8,11 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/metrics_hashes.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform::test {
@@ -33,7 +33,7 @@ void TestSegmentInfoDatabase::GetAllSegmentInfo(
 }
 
 void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
-    const std::vector<OptimizationTarget>& segment_ids,
+    const std::vector<SegmentId>& segment_ids,
     MultipleSegmentInfoCallback callback) {
   auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {
@@ -43,13 +43,13 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
   std::move(callback).Run(std::move(result));
 }
 
-void TestSegmentInfoDatabase::GetSegmentInfo(OptimizationTarget segment_id,
+void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                              SegmentInfoCallback callback) {
-  auto result = std::find_if(
-      segment_infos_.begin(), segment_infos_.end(),
-      [segment_id](std::pair<OptimizationTarget, proto::SegmentInfo> pair) {
-        return pair.first == segment_id;
-      });
+  auto result =
+      std::find_if(segment_infos_.begin(), segment_infos_.end(),
+                   [segment_id](std::pair<SegmentId, proto::SegmentInfo> pair) {
+                     return pair.first == segment_id;
+                   });
 
   std::move(callback).Run(result == segment_infos_.end()
                               ? absl::nullopt
@@ -57,7 +57,7 @@ void TestSegmentInfoDatabase::GetSegmentInfo(OptimizationTarget segment_id,
 }
 
 void TestSegmentInfoDatabase::UpdateSegment(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     absl::optional<proto::SegmentInfo> segment_info,
     SuccessCallback callback) {
   if (segment_info.has_value()) {
@@ -67,8 +67,7 @@ void TestSegmentInfoDatabase::UpdateSegment(
     // Delete the segment.
     auto new_end = std::remove_if(
         segment_infos_.begin(), segment_infos_.end(),
-        [segment_id](
-            const std::pair<OptimizationTarget, proto::SegmentInfo>& pair) {
+        [segment_id](const std::pair<SegmentId, proto::SegmentInfo>& pair) {
           return pair.first == segment_id;
         });
     segment_infos_.erase(new_end, segment_infos_.end());
@@ -77,7 +76,7 @@ void TestSegmentInfoDatabase::UpdateSegment(
 }
 
 void TestSegmentInfoDatabase::SaveSegmentResult(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     absl::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
@@ -92,7 +91,7 @@ void TestSegmentInfoDatabase::SaveSegmentResult(
 }
 
 void TestSegmentInfoDatabase::AddUserActionFeature(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const std::string& name,
     uint64_t bucket_count,
     uint64_t tensor_length,
@@ -111,7 +110,7 @@ void TestSegmentInfoDatabase::AddUserActionFeature(
 }
 
 void TestSegmentInfoDatabase::AddHistogramValueFeature(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const std::string& name,
     uint64_t bucket_count,
     uint64_t tensor_length,
@@ -130,7 +129,7 @@ void TestSegmentInfoDatabase::AddHistogramValueFeature(
 }
 
 void TestSegmentInfoDatabase::AddHistogramEnumFeature(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const std::string& name,
     uint64_t bucket_count,
     uint64_t tensor_length,
@@ -151,7 +150,7 @@ void TestSegmentInfoDatabase::AddHistogramEnumFeature(
 }
 
 void TestSegmentInfoDatabase::AddSqlFeature(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const MetadataWriter::SqlFeature& feature) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
   MetadataWriter writer(info->mutable_model_metadata());
@@ -159,7 +158,7 @@ void TestSegmentInfoDatabase::AddSqlFeature(
   writer.AddSqlFeatures(features, 1);
 }
 
-void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
+void TestSegmentInfoDatabase::AddPredictionResult(SegmentId segment_id,
                                                   float score,
                                                   base::Time timestamp) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
@@ -170,7 +169,7 @@ void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
 }
 
 void TestSegmentInfoDatabase::AddDiscreteMapping(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     const float mappings[][2],
     int num_pairs,
     const std::string& discrete_mapping_key) {
@@ -186,7 +185,7 @@ void TestSegmentInfoDatabase::AddDiscreteMapping(
   }
 }
 
-void TestSegmentInfoDatabase::SetBucketDuration(OptimizationTarget segment_id,
+void TestSegmentInfoDatabase::SetBucketDuration(SegmentId segment_id,
                                                 uint64_t bucket_duration,
                                                 proto::TimeUnit time_unit) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
@@ -195,7 +194,7 @@ void TestSegmentInfoDatabase::SetBucketDuration(OptimizationTarget segment_id,
 }
 
 proto::SegmentInfo* TestSegmentInfoDatabase::FindOrCreateSegment(
-    OptimizationTarget segment_id) {
+    SegmentId segment_id) {
   proto::SegmentInfo* info = nullptr;
   for (auto& pair : segment_infos_) {
     if (pair.first == segment_id) {

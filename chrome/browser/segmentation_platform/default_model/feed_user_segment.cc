@@ -17,11 +17,11 @@
 namespace segmentation_platform {
 
 namespace {
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // Default parameters for Chrome Start model.
-constexpr OptimizationTarget kFeedUserOptimizationTarget =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
+constexpr SegmentId kFeedUserSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
 constexpr proto::TimeUnit kFeedUserTimeUnit = proto::TimeUnit::DAY;
 constexpr uint64_t kFeedUserBucketDuration = 1;
 constexpr int64_t kFeedUserSignalStorageLength = 28;
@@ -102,8 +102,7 @@ std::string FeedUserSubsegmentToString(FeedUserSubsegment feed_group) {
 
 }  // namespace
 
-FeedUserSegment::FeedUserSegment()
-    : ModelProvider(kFeedUserOptimizationTarget) {}
+FeedUserSegment::FeedUserSegment() : ModelProvider(kFeedUserSegmentId) {}
 
 absl::optional<std::string> FeedUserSegment::GetSubsegmentName(
     int subsegment_rank) {
@@ -139,7 +138,7 @@ void FeedUserSegment::InitAndFetchModel(
   constexpr int kModelVersion = 1;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindRepeating(model_updated_callback, kFeedUserOptimizationTarget,
+      base::BindRepeating(model_updated_callback, kFeedUserSegmentId,
                           std::move(chrome_start_metadata), kModelVersion));
 }
 

@@ -62,11 +62,11 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // Helper function to update the selected segment in the prefs. Auto-extends
   // the selection if the new result is unknown.
-  virtual void UpdateSelectedSegment(OptimizationTarget new_selection);
+  virtual void UpdateSelectedSegment(SegmentId new_selection);
 
   // Called whenever a model eval completes. Runs segment selection to find the
   // best segment, and writes it to the pref.
-  void OnModelExecutionCompleted(OptimizationTarget segment_id) override;
+  void OnModelExecutionCompleted(SegmentId segment_id) override;
 
   void set_segment_result_provider_for_testing(
       std::unique_ptr<SegmentResultProvider> result_provider) {
@@ -77,7 +77,7 @@ class SegmentSelectorImpl : public SegmentSelector {
   // For testing.
   friend class SegmentSelectorTest;
 
-  using SegmentRanks = base::flat_map<OptimizationTarget, int>;
+  using SegmentRanks = base::flat_map<SegmentId, int>;
 
   // Determines whether segment selection can be run based on whether the
   // segment selection TTL has expired, or selection is unavailable.
@@ -98,13 +98,13 @@ class SegmentSelectorImpl : public SegmentSelector {
       std::unique_ptr<SegmentRanks> ranks,
       scoped_refptr<InputContext> input_context,
       SegmentSelectionCallback callback,
-      OptimizationTarget current_segment_id,
+      SegmentId current_segment_id,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // Loops through all segments, performs discrete mapping, honors finch
   // supplied tie-breakers, TTL, inertia etc, and finds the highest rank.
   // Ignores the segments that have no results.
-  OptimizationTarget FindBestSegment(const SegmentRanks& segment_scores);
+  SegmentId FindBestSegment(const SegmentRanks& segment_scores);
 
   std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 

@@ -18,18 +18,18 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::RunOnceCallback;
-using optimization_guide::proto::OptimizationTarget;
 using testing::_;
 
 namespace segmentation_platform {
+
+using proto::SegmentId;
 
 class DefaultModelManagerTest : public testing::Test {
  public:
   DefaultModelManagerTest() : model_provider_factory_(&model_provider_data_) {}
   ~DefaultModelManagerTest() override = default;
 
-  MockModelProvider& FindHandler(
-      optimization_guide::proto::OptimizationTarget segment_id) {
+  MockModelProvider& FindHandler(proto::SegmentId segment_id) {
     return *(*model_provider_data_.default_model_providers.find(segment_id))
                 .second;
   }
@@ -52,14 +52,11 @@ class DefaultModelManagerTest : public testing::Test {
 };
 
 TEST_F(DefaultModelManagerTest, BasicTest) {
-  const auto segment_1 =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  const auto segment_2 =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
-  const auto segment_3 =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE;
+  const auto segment_1 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  const auto segment_2 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+  const auto segment_3 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE;
   const auto segment_4 =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES;
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES;
 
   // Set some model versions.
   const int model_version_db = 4;

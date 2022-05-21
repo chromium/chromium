@@ -7,12 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
-
-using optimization_guide::proto::OptimizationTarget;
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
+
+using proto::SegmentId;
 
 class HistogramSignalHandler;
 class HistoryServiceObserver;
@@ -28,7 +28,7 @@ class SignalFilterProcessor {
                         UserActionSignalHandler* user_action_signal_handler,
                         HistogramSignalHandler* histogram_signal_handler,
                         HistoryServiceObserver* history_observer,
-                        const std::vector<OptimizationTarget>& segment_ids);
+                        const std::vector<SegmentId>& segment_ids);
   ~SignalFilterProcessor();
 
   // Disallow copy/assign.
@@ -53,7 +53,7 @@ class SignalFilterProcessor {
   const raw_ptr<UserActionSignalHandler> user_action_signal_handler_;
   const raw_ptr<HistogramSignalHandler> histogram_signal_handler_;
   const raw_ptr<HistoryServiceObserver> history_observer_;
-  std::vector<OptimizationTarget> segment_ids_;
+  std::vector<SegmentId> segment_ids_;
 
   base::WeakPtrFactory<SignalFilterProcessor> weak_ptr_factory_{this};
 };

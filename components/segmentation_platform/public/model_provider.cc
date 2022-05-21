@@ -6,9 +6,8 @@
 
 namespace segmentation_platform {
 
-ModelProvider::ModelProvider(
-    optimization_guide::proto::OptimizationTarget optimization_target)
-    : optimization_target_(optimization_target) {}
+ModelProvider::ModelProvider(proto::SegmentId segment_id)
+    : segment_id_(segment_id) {}
 
 ModelProvider::~ModelProvider() = default;
 

@@ -42,7 +42,7 @@ class FilterExtractor {
   std::set<uint64_t> user_actions;
   std::set<std::pair<std::string, proto::SignalType>> histograms;
   UkmConfig ukm_config;
-  base::flat_set<OptimizationTarget> history_based_segments;
+  base::flat_set<SegmentId> history_based_segments;
 
  private:
   void AddUmaFeatures(const proto::SegmentationModelMetadata& metadata) {
@@ -95,7 +95,7 @@ SignalFilterProcessor::SignalFilterProcessor(
     UserActionSignalHandler* user_action_signal_handler,
     HistogramSignalHandler* histogram_signal_handler,
     HistoryServiceObserver* history_observer,
-    const std::vector<OptimizationTarget>& segment_ids)
+    const std::vector<SegmentId>& segment_ids)
     : storage_service_(storage_service),
       user_action_signal_handler_(user_action_signal_handler),
       histogram_signal_handler_(histogram_signal_handler),

@@ -28,7 +28,7 @@ int ComputeDiscreteMapping(const std::string& segmentation_key,
       segmentation_key, segment_info.prediction_result().result(),
       segment_info.model_metadata());
   VLOG(1) << __func__
-          << ": segment=" << OptimizationTarget_Name(segment_info.segment_id())
+          << ": segment=" << SegmentId_Name(segment_info.segment_id())
           << ": result=" << segment_info.prediction_result().result()
           << ", rank=" << rank;
 
@@ -110,7 +110,7 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
 };
 
 void SegmentResultProviderImpl::GetSegmentResult(GetResultOptions&& options) {
-  const OptimizationTarget segment_id = options.segment_id;
+  const SegmentId segment_id = options.segment_id;
   auto request_state = std::make_unique<RequestState>();
   request_state = std::make_unique<RequestState>();
   request_state->options = std::move(options);
@@ -135,8 +135,8 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
   // Don't compute results if we don't have enough signals, or don't have
   // valid unexpired results for any of the segments.
   if (!db_segment_info) {
-    VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->options.segment_id)
+    VLOG(1) << __func__
+            << ": segment=" << SegmentId_Name(request_state->options.segment_id)
             << " does not have segment info.";
     TryGetScoreFromDefaultModel(std::move(request_state),
                                 ResultState::kSegmentNotAvailable,
@@ -149,8 +149,8 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
   if (!force_refresh_results_ &&
       !signal_storage_config_->MeetsSignalCollectionRequirement(
           db_segment_info->model_metadata())) {
-    VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(db_segment_info->segment_id())
+    VLOG(1) << __func__
+            << ": segment=" << SegmentId_Name(db_segment_info->segment_id())
             << " does not meet signal collection requirements.";
     TryGetScoreFromDefaultModel(std::move(request_state),
                                 ResultState::kSignalsNotCollected,
@@ -159,8 +159,8 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
   }
 
   if (request_state->options.ignore_db_scores) {
-    VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(db_segment_info->segment_id())
+    VLOG(1) << __func__
+            << ": segment=" << SegmentId_Name(db_segment_info->segment_id())
             << " executing model to get score";
     TryExecuteModelAndGetScore(std::move(request_state),
                                std::move(available_segments));
@@ -169,8 +169,8 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
 
   if (metadata_utils::HasExpiredOrUnavailableResult(*db_segment_info,
                                                     clock_->Now())) {
-    VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(db_segment_info->segment_id())
+    VLOG(1) << __func__
+            << ": segment=" << SegmentId_Name(db_segment_info->segment_id())
             << " has expired or unavailable result.";
     TryGetScoreFromDefaultModel(std::move(request_state),
                                 ResultState::kDatabaseScoreNotReady,
@@ -214,8 +214,8 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
     DefaultModelManager::SegmentInfoList available_segments) {
   if (!request_state->default_provider ||
       !request_state->default_provider->ModelAvailable()) {
-    VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->options.segment_id)
+    VLOG(1) << __func__
+            << ": segment=" << SegmentId_Name(request_state->options.segment_id)
             << " default provider not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(existing_state));
@@ -225,8 +225,8 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
   proto::SegmentInfo* segment_info =
       GetSegmentInfo(available_segments, /*default_model=*/true);
   if (!segment_info) {
-    VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->options.segment_id)
+    VLOG(1) << __func__
+            << ": segment=" << SegmentId_Name(request_state->options.segment_id)
             << " default segment info not available";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(
@@ -243,8 +243,8 @@ void SegmentResultProviderImpl::TryGetScoreFromDefaultModel(
   if (!force_refresh_results_ &&
       !signal_storage_config_->MeetsSignalCollectionRequirement(
           default_segment_info->model_metadata())) {
-    VLOG(1) << __func__ << ": segment="
-            << OptimizationTarget_Name(request_state->options.segment_id)
+    VLOG(1) << __func__
+            << ": segment=" << SegmentId_Name(request_state->options.segment_id)
             << " signal collection not met";
     PostResultCallback(std::move(request_state),
                        std::make_unique<SegmentResult>(

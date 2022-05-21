@@ -17,11 +17,11 @@
 namespace segmentation_platform {
 
 namespace {
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // Default parameters for Chrome Start model.
-constexpr OptimizationTarget kChromeStartOptimizationTarget =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID;
+constexpr SegmentId kChromeStartSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID;
 constexpr proto::TimeUnit kChromeStartTimeUnit = proto::TimeUnit::DAY;
 constexpr uint64_t kChromeStartBucketDuration = 1;
 constexpr int64_t kChromeStartSignalStorageLength = 28;
@@ -59,8 +59,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 8> kChromeStartUMAFeatures = {
 
 }  // namespace
 
-ChromeStartModel::ChromeStartModel()
-    : ModelProvider(kChromeStartOptimizationTarget) {}
+ChromeStartModel::ChromeStartModel() : ModelProvider(kChromeStartSegmentId) {}
 
 void ChromeStartModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
@@ -81,9 +80,9 @@ void ChromeStartModel::InitAndFetchModel(
 
   constexpr int kModelVersion = 1;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindRepeating(
-                     model_updated_callback, kChromeStartOptimizationTarget,
-                     std::move(chrome_start_metadata), kModelVersion));
+      FROM_HERE,
+      base::BindRepeating(model_updated_callback, kChromeStartSegmentId,
+                          std::move(chrome_start_metadata), kModelVersion));
 }
 
 void ChromeStartModel::ExecuteModelWithInput(const std::vector<float>& inputs,

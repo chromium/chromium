@@ -35,11 +35,10 @@ class FeedUserModelTest : public testing::Test {
     loop.Run();
   }
 
-  void OnInitFinishedCallback(
-      base::RepeatingClosure closure,
-      optimization_guide::proto::OptimizationTarget target,
-      proto::SegmentationModelMetadata metadata,
-      int64_t) {
+  void OnInitFinishedCallback(base::RepeatingClosure closure,
+                              proto::SegmentId target,
+                              proto::SegmentationModelMetadata metadata,
+                              int64_t) {
     EXPECT_EQ(metadata_utils::ValidateMetadataAndFeatures(metadata),
               metadata_utils::ValidationResult::kValidationSuccess);
     fetched_metadata_ = metadata;

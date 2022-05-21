@@ -5,11 +5,11 @@
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 
 #include "base/metrics/metrics_hashes.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/aggregation.pb.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
@@ -41,8 +41,8 @@ TEST_F(MetadataUtilsTest, SegmentInfoValidation) {
   EXPECT_EQ(metadata_utils::ValidationResult::kSegmentIDNotFound,
             metadata_utils::ValidateSegmentInfo(segment_info));
 
-  segment_info.set_segment_id(optimization_guide::proto::OptimizationTarget::
-                                  OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  segment_info.set_segment_id(
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
   EXPECT_EQ(metadata_utils::ValidationResult::kMetadataNotFound,
             metadata_utils::ValidateSegmentInfo(segment_info));
 
@@ -385,8 +385,8 @@ TEST_F(MetadataUtilsTest, ValidateSegementInfoMetadataAndFeatures) {
       metadata_utils::ValidationResult::kSegmentIDNotFound,
       metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
 
-  segment_info.set_segment_id(optimization_guide::proto::OptimizationTarget::
-                                  OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  segment_info.set_segment_id(
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
   EXPECT_EQ(
       metadata_utils::ValidationResult::kMetadataNotFound,
       metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));

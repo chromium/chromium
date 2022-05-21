@@ -6,7 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FIELD_TRIAL_REGISTER_H_
 
 #include "base/strings/string_piece.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 
@@ -33,7 +33,7 @@ class FieldTrialRegister {
   // metadata.
   virtual void RegisterSubsegmentFieldTrialIfNeeded(
       base::StringPiece trial_name,
-      optimization_guide::proto::OptimizationTarget segment_id,
+      proto::SegmentId segment_id,
       int subsegment_rank) = 0;
 };
 

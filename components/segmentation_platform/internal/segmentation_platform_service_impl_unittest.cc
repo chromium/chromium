@@ -19,6 +19,7 @@
 #include "components/segmentation_platform/internal/database/mock_ukm_database.h"
 #include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_test_base.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
@@ -101,12 +102,11 @@ class SegmentationPlatformServiceImplTest
   void AssertSelectedSegment(
       const std::string& segmentation_key,
       bool is_ready,
-      OptimizationTarget expected =
-          OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+      SegmentId expected = SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
     SegmentSelectionResult result;
     result.is_ready = is_ready;
     if (is_ready)
-      result.segment = expected;
+      result.segment = SegmentIdToOptimizationTarget(expected);
     base::RunLoop loop;
     segmentation_platform_service_impl_->GetSelectedSegment(
         segmentation_key,
@@ -119,12 +119,11 @@ class SegmentationPlatformServiceImplTest
   void AssertCachedSegment(
       const std::string& segmentation_key,
       bool is_ready,
-      OptimizationTarget expected =
-          OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+      SegmentId expected = SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
     SegmentSelectionResult result;
     result.is_ready = is_ready;
     if (is_ready)
-      result.segment = expected;
+      result.segment = SegmentIdToOptimizationTarget(expected);
     ASSERT_EQ(result,
               segmentation_platform_service_impl_->GetCachedSegmentResult(
                   segmentation_key));
@@ -166,12 +165,12 @@ class SegmentationPlatformServiceImplTest
     // from the database, and then write the merged result of the old and new to
     // the database.
     ASSERT_TRUE(model_provider_data_.model_providers_callbacks.count(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
     model_provider_data_
         .model_providers_callbacks
-            [OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE]
-        .Run(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-             metadata, kModelVersion);
+            [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE]
+        .Run(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
+             kModelVersion);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
@@ -185,14 +184,12 @@ class SegmentationPlatformServiceImplTest
         histogram_tester.GetBucketCount(
             "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 1));
 
-    AssertSelectedSegment(
-        kTestSegmentationKey1, true,
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertSelectedSegment(kTestSegmentationKey1, true,
+                          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     AssertSelectedSegment(kTestSegmentationKey2, false);
     AssertSelectedSegment(kTestSegmentationKey3, false);
-    AssertCachedSegment(
-        kTestSegmentationKey1, true,
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertCachedSegment(kTestSegmentationKey1, true,
+                        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     AssertCachedSegment(kTestSegmentationKey2, false);
     AssertCachedSegment(kTestSegmentationKey3, false);
 
@@ -202,12 +199,12 @@ class SegmentationPlatformServiceImplTest
     segment_db_->LoadCallback(true);
 
     ASSERT_TRUE(model_provider_data_.model_providers_callbacks.count(
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
     model_provider_data_
         .model_providers_callbacks
-            [OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE]
-        .Run(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
-             metadata, kModelVersion);
+            [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE]
+        .Run(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata,
+             kModelVersion);
     segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
 
@@ -232,14 +229,12 @@ class SegmentationPlatformServiceImplTest
     task_environment_.FastForwardBy(base::Hours(1));
     segment_db_->LoadCallback(true);
 
-    AssertSelectedSegment(
-        kTestSegmentationKey1, true,
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertSelectedSegment(kTestSegmentationKey1, true,
+                          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     AssertSelectedSegment(kTestSegmentationKey2, false);
     AssertSelectedSegment(kTestSegmentationKey3, false);
-    AssertCachedSegment(
-        kTestSegmentationKey1, true,
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertCachedSegment(kTestSegmentationKey1, true,
+                        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     AssertCachedSegment(kTestSegmentationKey2, false);
     AssertCachedSegment(kTestSegmentationKey3, false);
   }
@@ -299,14 +294,12 @@ class SegmentationPlatformServiceImplMultiClientTest
 
     base::Value segmentation_result(base::Value::Type::DICTIONARY);
     segmentation_result.SetIntKey(
-        "segment_id",
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+        "segment_id", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     dictionary->SetKey(kTestSegmentationKey1, std::move(segmentation_result));
 
     base::Value segmentation_result2(base::Value::Type::DICTIONARY);
     segmentation_result2.SetIntKey(
-        "segment_id",
-        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
+        "segment_id", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
     dictionary->SetKey(kTestSegmentationKey2, std::move(segmentation_result2));
   }
 };
@@ -324,19 +317,15 @@ TEST_F(SegmentationPlatformServiceImplMultiClientTest, InitializationFlow) {
   // querying segment db.
   segment_db_->LoadCallback(true);
 
-  AssertSelectedSegment(
-      kTestSegmentationKey1, true,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-  AssertSelectedSegment(
-      kTestSegmentationKey2, true,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
+  AssertSelectedSegment(kTestSegmentationKey1, true,
+                        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  AssertSelectedSegment(kTestSegmentationKey2, true,
+                        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
   AssertSelectedSegment(kTestSegmentationKey3, false);
-  AssertCachedSegment(
-      kTestSegmentationKey1, true,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-  AssertCachedSegment(
-      kTestSegmentationKey2, true,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
+  AssertCachedSegment(kTestSegmentationKey1, true,
+                      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  AssertCachedSegment(kTestSegmentationKey2, true,
+                      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
   AssertCachedSegment(kTestSegmentationKey3, false);
 }
 

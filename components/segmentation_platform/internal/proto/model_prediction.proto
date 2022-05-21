@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 package segmentation_platform.proto;
 
 import "components/segmentation_platform/internal/proto/model_metadata.proto";
-import "components/optimization_guide/proto/models.proto";
+import "components/segmentation_platform/public/proto/segmentation_platform.proto";
 
 // Result from the model evaluation for a given segment.
 message PredictionResult {
@@ -25,7 +25,7 @@ message PredictionResult {
 // Next tag: 6
 message SegmentInfo {
   // Segment target.
-  optional optimization_guide.proto.OptimizationTarget segment_id = 1;
+  optional SegmentId segment_id = 1;
 
   // Cached copy of the segment metadata which is important in case the metadata
   // is temporarily not available in the future. It also contains the relevant

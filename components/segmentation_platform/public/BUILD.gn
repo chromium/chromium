@@ -25,6 +25,8 @@ source_set("public") {
     "service_proxy.h",
   ]
 
+  public_deps = [ "//components/segmentation_platform/public/proto" ]
+
   deps = [
     "//base",
     "//components/keyed_service/core",

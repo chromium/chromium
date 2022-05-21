@@ -39,8 +39,7 @@ TEST_F(SegmentationResultPrefsTest, WriteResultAndRead) {
   EXPECT_FALSE(current_result.has_value());
 
   // Save a result. Verify by reading the result back.
-  OptimizationTarget segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   SelectedSegment selected_segment(segment_id);
   result_prefs_->SaveSegmentationResultToPref(result_key, selected_segment);
   current_result = result_prefs_->ReadSegmentationResultFromPref(result_key);
@@ -51,7 +50,7 @@ TEST_F(SegmentationResultPrefsTest, WriteResultAndRead) {
 
   // Overwrite the result with a new segment.
   selected_segment.segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   selected_segment.in_use = true;
   base::Time now = base::Time::Now();
   selected_segment.selection_time = now;
@@ -66,7 +65,7 @@ TEST_F(SegmentationResultPrefsTest, WriteResultAndRead) {
   // first key.
   std::string result_key2 = "some_key2";
   selected_segment.segment_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE;
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE;
   result_prefs_->SaveSegmentationResultToPref(result_key2, selected_segment);
   current_result = result_prefs_->ReadSegmentationResultFromPref(result_key2);
   EXPECT_TRUE(current_result.has_value());
@@ -74,7 +73,7 @@ TEST_F(SegmentationResultPrefsTest, WriteResultAndRead) {
 
   current_result = result_prefs_->ReadSegmentationResultFromPref(result_key);
   EXPECT_TRUE(current_result.has_value());
-  EXPECT_EQ(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+  EXPECT_EQ(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
             current_result->segment_id);
 
   // Save empty result. It should delete the current result.
@@ -85,7 +84,7 @@ TEST_F(SegmentationResultPrefsTest, WriteResultAndRead) {
 
 TEST_F(SegmentationResultPrefsTest, CorruptedValue) {
   std::string result_key = "some_key";
-  SelectedSegment selected_segment(static_cast<OptimizationTarget>(100));
+  SelectedSegment selected_segment(static_cast<SegmentId>(100));
   result_prefs_->SaveSegmentationResultToPref(result_key, selected_segment);
   absl::optional<SelectedSegment> current_result =
       result_prefs_->ReadSegmentationResultFromPref(result_key);

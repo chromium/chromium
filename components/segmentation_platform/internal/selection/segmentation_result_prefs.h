@@ -7,24 +7,24 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-using optimization_guide::proto::OptimizationTarget;
 
 class PrefService;
 
 namespace segmentation_platform {
 
+using proto::SegmentId;
+
 // Struct containing information about the selected segment. Convenient for
 // reading and writing to prefs.
 struct SelectedSegment {
  public:
-  explicit SelectedSegment(OptimizationTarget segment_id);
+  explicit SelectedSegment(SegmentId segment_id);
   ~SelectedSegment();
 
   // The segment selection result.
-  OptimizationTarget segment_id;
+  SegmentId segment_id;
 
   // The time when the segment was selected.
   base::Time selection_time;

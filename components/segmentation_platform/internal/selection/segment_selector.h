@@ -7,14 +7,14 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
+
+using proto::SegmentId;
 
 struct InputContext;
 struct SegmentSelectionResult;

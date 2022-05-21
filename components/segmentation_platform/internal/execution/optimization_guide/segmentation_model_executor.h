@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/optimization_guide/core/base_model_executor.h"
-#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 struct TfLiteTensor;
 

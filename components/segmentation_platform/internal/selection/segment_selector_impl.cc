@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/selection/experimental_group_recorder.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
@@ -66,7 +67,7 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
 
 }  // namespace
 
-using optimization_guide::proto::OptimizationTarget_Name;
+using proto::SegmentId_Name;
 
 SegmentSelectorImpl::SegmentSelectorImpl(
     SegmentInfoDatabase* segment_database,
@@ -111,14 +112,15 @@ SegmentSelectorImpl::SegmentSelectorImpl(
       stats::SegmentationKeyToTrialName(config_->segmentation_key);
   std::string group_name;
   if (selected_segment.has_value()) {
-    selected_segment_last_session_.segment = selected_segment->segment_id;
+    selected_segment_last_session_.segment =
+        SegmentIdToOptimizationTarget(selected_segment->segment_id);
     selected_segment_last_session_.is_ready = true;
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key,
         stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
 
     group_name = stats::OptimizationTargetToSegmentGroupName(
-        *selected_segment_last_session_.segment);
+        selected_segment->segment_id);
   } else {
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key, stats::SegmentationSelectionFailureReason::
@@ -148,7 +150,7 @@ void SegmentSelectorImpl::OnPlatformInitialized(
   // TODO(ssid): Store the scores in prefs so that this can be recorded earlier
   // in startup.
   if (selected_segment_last_session_.is_ready) {
-    for (const OptimizationTarget segment_id : config_->segment_ids) {
+    for (const SegmentId segment_id : config_->segment_ids) {
       experimental_group_recorder_.emplace_back(
           std::make_unique<ExperimentalGroupRecorder>(
               segment_database_, field_trial_register_,
@@ -176,8 +178,7 @@ void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
                         std::move(callback));
 }
 
-void SegmentSelectorImpl::OnModelExecutionCompleted(
-    OptimizationTarget segment_id) {
+void SegmentSelectorImpl::OnModelExecutionCompleted(SegmentId segment_id) {
   DCHECK(segment_result_provider_);
 
   // If the |segment_id| is not in config, then skip any updates early.
@@ -196,7 +197,7 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
   if (previous_selection.has_value()) {
     bool was_unknown_selected = previous_selection->segment_id ==
-                                OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+                                SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
     base::TimeDelta ttl_to_use = was_unknown_selected
                                      ? config_->unknown_selection_ttl
                                      : config_->segment_selection_ttl;
@@ -206,7 +207,7 @@ bool SegmentSelectorImpl::IsPreviousSelectionInvalid() {
           config_->segmentation_key,
           stats::SegmentationSelectionFailureReason::kSelectionTtlNotExpired);
       VLOG(1) << __func__ << ": previous selection of segment="
-              << OptimizationTarget_Name(previous_selection->segment_id)
+              << SegmentId_Name(previous_selection->segment_id)
               << " has not yet expired.";
       return false;
     }
@@ -227,7 +228,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     std::unique_ptr<SegmentRanks> ranks,
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback) {
-  for (OptimizationTarget needed_segment : config_->segment_ids) {
+  for (SegmentId needed_segment : config_->segment_ids) {
     if (ranks->count(needed_segment) == 0) {
       SegmentResultProvider::GetResultOptions options;
       options.segment_id = needed_segment;
@@ -244,12 +245,12 @@ void SegmentSelectorImpl::GetRankForNextSegment(
   }
 
   // Finished fetching ranks for all segments.
-  OptimizationTarget selected_segment = FindBestSegment(*ranks);
+  SegmentId selected_segment = FindBestSegment(*ranks);
   if (config_->on_demand_execution) {
     DCHECK(!callback.is_null());
     SegmentSelectionResult result;
     result.is_ready = true;
-    result.segment = selected_segment;
+    result.segment = SegmentIdToOptimizationTarget(selected_segment);
     std::move(callback).Run(result);
   } else {
     DCHECK(callback.is_null());
@@ -261,7 +262,7 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
     std::unique_ptr<SegmentRanks> ranks,
     scoped_refptr<InputContext> input_context,
     SegmentSelectionCallback callback,
-    OptimizationTarget current_segment_id,
+    SegmentId current_segment_id,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   if (!result->rank) {
     stats::RecordSegmentSelectionFailure(config_->segmentation_key,
@@ -273,15 +274,14 @@ void SegmentSelectorImpl::OnGetResultForSegmentSelection(
   GetRankForNextSegment(std::move(ranks), input_context, std::move(callback));
 }
 
-OptimizationTarget SegmentSelectorImpl::FindBestSegment(
+SegmentId SegmentSelectorImpl::FindBestSegment(
     const SegmentRanks& segment_results) {
   int max_rank = 0;
-  OptimizationTarget max_rank_id =
-      OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+  SegmentId max_rank_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   // Loop through all the results. Convert them to discrete ranks. Select the
   // one with highest discrete rank.
   for (const auto& pair : segment_results) {
-    OptimizationTarget id = pair.first;
+    SegmentId id = pair.first;
     int rank = pair.second;
     if (rank > max_rank) {
       max_rank = rank;
@@ -294,10 +294,9 @@ OptimizationTarget SegmentSelectorImpl::FindBestSegment(
   return max_rank_id;
 }
 
-void SegmentSelectorImpl::UpdateSelectedSegment(
-    OptimizationTarget new_selection) {
-  VLOG(1) << __func__ << ": Updating selected segment="
-          << OptimizationTarget_Name(new_selection);
+void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection) {
+  VLOG(1) << __func__
+          << ": Updating selected segment=" << SegmentId_Name(new_selection);
   const auto& previous_selection =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
 
@@ -310,7 +309,7 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
     skip_updating_prefs = new_selection == previous_selection->segment_id;
     skip_updating_prefs |=
         config_->unknown_selection_ttl == base::TimeDelta() &&
-        new_selection == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+        new_selection == SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
     // TODO(shaktisahu): Use segment selection inertia.
   }
 

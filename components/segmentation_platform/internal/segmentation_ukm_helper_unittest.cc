@@ -24,6 +24,8 @@
 
 using Segmentation_ModelExecution = ukm::builders::Segmentation_ModelExecution;
 
+namespace segmentation_platform {
+
 namespace {
 
 // Round errors allowed during conversion.
@@ -42,16 +44,13 @@ void CompareEncodeDecodeDifference(float tensor) {
       kRoundingError);
 }
 
-absl::optional<segmentation_platform::proto::PredictionResult>
-GetPredictionResult() {
-  segmentation_platform::proto::PredictionResult result;
+absl::optional<proto::PredictionResult> GetPredictionResult() {
+  proto::PredictionResult result;
   result.set_result(0.5);
   return result;
 }
 
 }  // namespace
-
-namespace segmentation_platform {
 
 class SegmentationUkmHelperTest : public testing::Test {
  public:
@@ -109,26 +108,24 @@ TEST_F(SegmentationUkmHelperTest, TestExecutionResultReporting) {
   InitializeAllowedSegmentIds("4");
   std::vector<float> input_tensors = {0.1, 0.7, 0.8, 0.5};
   SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
-      input_tensors, 0.6);
-  ExpectUkmMetrics(
-      Segmentation_ModelExecution::kEntryName,
-      {Segmentation_ModelExecution::kOptimizationTargetName,
-       Segmentation_ModelExecution::kModelVersionName,
-       Segmentation_ModelExecution::kInput0Name,
-       Segmentation_ModelExecution::kInput1Name,
-       Segmentation_ModelExecution::kInput2Name,
-       Segmentation_ModelExecution::kInput3Name,
-       Segmentation_ModelExecution::kPredictionResultName},
-      {
-          optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-          101,
-          SegmentationUkmHelper::FloatToInt64(0.1),
-          SegmentationUkmHelper::FloatToInt64(0.7),
-          SegmentationUkmHelper::FloatToInt64(0.8),
-          SegmentationUkmHelper::FloatToInt64(0.5),
-          SegmentationUkmHelper::FloatToInt64(0.6),
-      });
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors, 0.6);
+  ExpectUkmMetrics(Segmentation_ModelExecution::kEntryName,
+                   {Segmentation_ModelExecution::kOptimizationTargetName,
+                    Segmentation_ModelExecution::kModelVersionName,
+                    Segmentation_ModelExecution::kInput0Name,
+                    Segmentation_ModelExecution::kInput1Name,
+                    Segmentation_ModelExecution::kInput2Name,
+                    Segmentation_ModelExecution::kInput3Name,
+                    Segmentation_ModelExecution::kPredictionResultName},
+                   {
+                       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+                       101,
+                       SegmentationUkmHelper::FloatToInt64(0.1),
+                       SegmentationUkmHelper::FloatToInt64(0.7),
+                       SegmentationUkmHelper::FloatToInt64(0.8),
+                       SegmentationUkmHelper::FloatToInt64(0.5),
+                       SegmentationUkmHelper::FloatToInt64(0.6),
+                   });
 }
 
 // Tests that the training data collection recording works properly.
@@ -140,32 +137,30 @@ TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
   std::vector<int> output_indexes = {2, 3};
 
   SelectedSegment selected_segment(
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
   selected_segment.selection_time = base::Time::Now() - base::Seconds(10);
   SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
-      input_tensors, outputs, output_indexes, GetPredictionResult(),
-      selected_segment);
-  ExpectUkmMetrics(
-      Segmentation_ModelExecution::kEntryName,
-      {Segmentation_ModelExecution::kOptimizationTargetName,
-       Segmentation_ModelExecution::kModelVersionName,
-       Segmentation_ModelExecution::kInput0Name,
-       Segmentation_ModelExecution::kActualResult3Name,
-       Segmentation_ModelExecution::kActualResult4Name,
-       Segmentation_ModelExecution::kPredictionResultName,
-       Segmentation_ModelExecution::kSelectionResultName,
-       Segmentation_ModelExecution::kOutputDelaySecName},
-      {
-          optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-          101,
-          SegmentationUkmHelper::FloatToInt64(0.1),
-          SegmentationUkmHelper::FloatToInt64(1.0),
-          SegmentationUkmHelper::FloatToInt64(0.0),
-          SegmentationUkmHelper::FloatToInt64(0.5),
-          optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-          10,
-      });
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
+      outputs, output_indexes, GetPredictionResult(), selected_segment);
+  ExpectUkmMetrics(Segmentation_ModelExecution::kEntryName,
+                   {Segmentation_ModelExecution::kOptimizationTargetName,
+                    Segmentation_ModelExecution::kModelVersionName,
+                    Segmentation_ModelExecution::kInput0Name,
+                    Segmentation_ModelExecution::kActualResult3Name,
+                    Segmentation_ModelExecution::kActualResult4Name,
+                    Segmentation_ModelExecution::kPredictionResultName,
+                    Segmentation_ModelExecution::kSelectionResultName,
+                    Segmentation_ModelExecution::kOutputDelaySecName},
+                   {
+                       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+                       101,
+                       SegmentationUkmHelper::FloatToInt64(0.1),
+                       SegmentationUkmHelper::FloatToInt64(1.0),
+                       SegmentationUkmHelper::FloatToInt64(0.0),
+                       SegmentationUkmHelper::FloatToInt64(0.5),
+                       proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+                       10,
+                   });
 }
 
 // Tests that recording is disabled if kSegmentationStructuredMetricsFeature
@@ -174,8 +169,7 @@ TEST_F(SegmentationUkmHelperTest, TestDisabledStructuredMetrics) {
   DisableStructureMetrics();
   std::vector<float> input_tensors = {0.1, 0.7, 0.8, 0.5};
   SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
-      input_tensors, 0.6);
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors, 0.6);
   ExpectEmptyUkmMetrics(Segmentation_ModelExecution::kEntryName);
 }
 
@@ -185,8 +179,7 @@ TEST_F(SegmentationUkmHelperTest, TestNotAllowedSegmentId) {
   InitializeAllowedSegmentIds("7, 8");
   std::vector<float> input_tensors = {0.1, 0.7, 0.8, 0.5};
   SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
-      input_tensors, 0.6);
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors, 0.6);
   ExpectEmptyUkmMetrics(Segmentation_ModelExecution::kEntryName);
 }
 
@@ -221,8 +214,8 @@ TEST_F(SegmentationUkmHelperTest, TooManyInputTensors) {
   std::vector<float> input_tensors(100, 0.1);
   ukm::SourceId source_id =
       SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-          optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-          101, input_tensors, 0.6);
+          proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
+          0.6);
   ASSERT_EQ(source_id, ukm::kInvalidSourceId);
   tester.ExpectTotalCount(histogram_name, 1);
   ASSERT_EQ(tester.GetTotalSum(histogram_name), 100);
@@ -239,25 +232,22 @@ TEST_F(SegmentationUkmHelperTest, OutputsValidation) {
 
   ukm::SourceId source_id =
       SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-          optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-          101, input_tensors, outputs, output_indexes, GetPredictionResult(),
-          absl::nullopt);
+          proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
+          outputs, output_indexes, GetPredictionResult(), absl::nullopt);
   ASSERT_EQ(source_id, ukm::kInvalidSourceId);
 
   // output_indexes value too large.
   output_indexes = {100, 1000};
   source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
-      input_tensors, outputs, output_indexes, GetPredictionResult(),
-      absl::nullopt);
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
+      outputs, output_indexes, GetPredictionResult(), absl::nullopt);
   ASSERT_EQ(source_id, ukm::kInvalidSourceId);
 
   // Valid outputs.
   output_indexes = {3, 0};
   source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
-      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
-      input_tensors, outputs, output_indexes, GetPredictionResult(),
-      absl::nullopt);
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors,
+      outputs, output_indexes, GetPredictionResult(), absl::nullopt);
   ASSERT_NE(source_id, ukm::kInvalidSourceId);
 }
 

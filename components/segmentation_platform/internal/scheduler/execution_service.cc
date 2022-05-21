@@ -40,7 +40,7 @@ void ExecutionService::Initialize(
     base::Clock* clock,
     ModelExecutionManager::SegmentationModelUpdatedCallback callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::flat_set<OptimizationTarget>& all_segment_ids,
+    const base::flat_set<SegmentId>& all_segment_ids,
     ModelProviderFactory* model_provider_factory,
     std::vector<ModelExecutionScheduler::Observer*>&& observers,
     const PlatformOptions& platform_options,
@@ -77,8 +77,7 @@ void ExecutionService::OnNewModelInfoReady(
   model_execution_scheduler_->OnNewModelInfoReady(segment_info);
 }
 
-ModelProvider* ExecutionService::GetModelProvider(
-    OptimizationTarget segment_id) {
+ModelProvider* ExecutionService::GetModelProvider(SegmentId segment_id) {
   return model_execution_manager_->GetProvider(segment_id);
 }
 
@@ -105,7 +104,7 @@ void ExecutionService::RequestModelExecution(
 }
 
 void ExecutionService::OverwriteModelExecutionResult(
-    optimization_guide::proto::OptimizationTarget segment_id,
+    proto::SegmentId segment_id,
     const std::pair<float, ModelExecutionStatus>& result) {
   model_execution_scheduler_->OnModelExecutionCompleted(segment_id, result);
 }

@@ -8,12 +8,10 @@
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-using optimization_guide::proto::OptimizationTarget;
 
 namespace base {
 class Clock;
@@ -24,6 +22,8 @@ class Segmentation_ModelExecution;
 }  // namespace ukm::builders
 
 namespace segmentation_platform {
+
+using proto::SegmentId;
 struct SelectedSegment;
 
 // A helper class to record segmentation model execution results in UKM.
@@ -36,7 +36,7 @@ class SegmentationUkmHelper {
   // Record segmentation model information and input/output after the
   // executing the model, and return the UKM source ID.
   ukm::SourceId RecordModelExecutionResult(
-      OptimizationTarget segment_id,
+      SegmentId segment_id,
       int64_t model_version,
       const std::vector<float>& input_tensor,
       float result);
@@ -51,7 +51,7 @@ class SegmentationUkmHelper {
   // tied to the ML model.
   // Return the UKM source ID.
   ukm::SourceId RecordTrainingData(
-      OptimizationTarget segment_id,
+      SegmentId segment_id,
       int64_t model_version,
       const std::vector<float>& input_tensors,
       const std::vector<float>& outputs,
@@ -68,13 +68,13 @@ class SegmentationUkmHelper {
                                   base::Clock* clock);
 
   // Gets a set of segment IDs that are allowed to upload metrics.
-  const base::flat_set<OptimizationTarget>& allowed_segment_ids() {
+  const base::flat_set<SegmentId>& allowed_segment_ids() {
     return allowed_segment_ids_;
   }
 
  private:
   bool AddInputsToUkm(ukm::builders::Segmentation_ModelExecution* ukm_builder,
-                      OptimizationTarget segment_id,
+                      SegmentId segment_id,
                       int64_t model_version,
                       const std::vector<float>& input_tensor);
 
@@ -89,7 +89,7 @@ class SegmentationUkmHelper {
 
   void Initialize();
 
-  base::flat_set<OptimizationTarget> allowed_segment_ids_;
+  base::flat_set<SegmentId> allowed_segment_ids_;
 };
 
 }  // namespace segmentation_platform

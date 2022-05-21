@@ -31,8 +31,7 @@ StorageService::StorageService(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::Clock* clock,
     UkmDataManager* ukm_data_manager,
-    base::flat_set<optimization_guide::proto::OptimizationTarget>
-        all_segment_ids,
+    base::flat_set<proto::SegmentId> all_segment_ids,
     ModelProviderFactory* model_provider_factory)
     : StorageService(
           db_provider->GetDB<proto::SegmentInfo>(
@@ -60,13 +59,12 @@ StorageService::StorageService(
         signal_storage_config_db,
     base::Clock* clock,
     UkmDataManager* ukm_data_manager,
-    base::flat_set<optimization_guide::proto::OptimizationTarget>
-        all_segment_ids,
+    base::flat_set<proto::SegmentId> all_segment_ids,
     ModelProviderFactory* model_provider_factory)
     : default_model_manager_(std::make_unique<DefaultModelManager>(
           model_provider_factory,
-          std::vector<OptimizationTarget>(all_segment_ids.begin(),
-                                          all_segment_ids.end()))),
+          std::vector<SegmentId>(all_segment_ids.begin(),
+                                 all_segment_ids.end()))),
       segment_info_database_(
           std::make_unique<SegmentInfoDatabase>(std::move(segment_db))),
       signal_database_(

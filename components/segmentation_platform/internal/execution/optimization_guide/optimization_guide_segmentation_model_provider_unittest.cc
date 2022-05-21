@@ -25,8 +25,7 @@ class ModelObserverTracker
     registered_model_metadata_.insert_or_assign(target, model_metadata);
   }
 
-  bool DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget target) const {
+  bool DidRegisterForTarget(proto::SegmentId target) const {
     auto it = registered_model_metadata_.find(target);
     if (it == registered_model_metadata_.end())
       return false;
@@ -67,7 +66,7 @@ class OptimizationGuideSegmentationModelProviderTest : public testing::Test {
   }
 
   std::unique_ptr<OptimizationGuideSegmentationModelProvider>
-  CreateModelProvider(optimization_guide::proto::OptimizationTarget target) {
+  CreateModelProvider(proto::SegmentId target) {
     return std::make_unique<OptimizationGuideSegmentationModelProvider>(
         model_observer_tracker_.get(), task_runner_, target);
   }
@@ -81,46 +80,41 @@ class OptimizationGuideSegmentationModelProviderTest : public testing::Test {
 
 TEST_F(OptimizationGuideSegmentationModelProviderTest, InitAndFetchModel) {
   std::unique_ptr<OptimizationGuideSegmentationModelProvider> provider =
-      CreateModelProvider(optimization_guide::proto::OptimizationTarget::
-                              OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+      CreateModelProvider(
+          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
   // Not initialized yet.
   EXPECT_FALSE(model_observer_tracker_->DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 
   // Init should register observer.
   provider->InitAndFetchModel(base::DoNothing());
   EXPECT_TRUE(model_observer_tracker_->DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 
   // Different target does not register yet.
   EXPECT_FALSE(model_observer_tracker_->DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
 
   // Initialize voice provider.
   std::unique_ptr<OptimizationGuideSegmentationModelProvider> provider2 =
-      CreateModelProvider(optimization_guide::proto::OptimizationTarget::
-                              OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
+      CreateModelProvider(
+          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
   provider2->InitAndFetchModel(base::DoNothing());
 
   // 2 observers should be available:
   EXPECT_TRUE(model_observer_tracker_->DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 
   EXPECT_TRUE(model_observer_tracker_->DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
 }
 
 TEST_F(OptimizationGuideSegmentationModelProviderTest,
        ExecuteModelWithoutFetch) {
   std::unique_ptr<OptimizationGuideSegmentationModelProvider> provider =
-      CreateModelProvider(optimization_guide::proto::OptimizationTarget::
-                              OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+      CreateModelProvider(
+          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
 
   base::RunLoop run_loop;
   std::vector<float> input = {4, 5};
@@ -137,12 +131,11 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest,
 
 TEST_F(OptimizationGuideSegmentationModelProviderTest, ExecuteModelWithFetch) {
   std::unique_ptr<OptimizationGuideSegmentationModelProvider> provider =
-      CreateModelProvider(optimization_guide::proto::OptimizationTarget::
-                              OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+      CreateModelProvider(
+          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   provider->InitAndFetchModel(base::DoNothing());
   EXPECT_TRUE(model_observer_tracker_->DidRegisterForTarget(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
 
   base::RunLoop run_loop;
   std::vector<float> input = {4, 5};

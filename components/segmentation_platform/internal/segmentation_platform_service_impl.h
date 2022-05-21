@@ -14,13 +14,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace base {
@@ -123,8 +123,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // Config.
   std::vector<std::unique_ptr<Config>> configs_;
-  base::flat_set<optimization_guide::proto::OptimizationTarget>
-      all_segment_ids_;
+  base::flat_set<proto::SegmentId> all_segment_ids_;
   std::unique_ptr<FieldTrialRegister> field_trial_register_;
 
   std::unique_ptr<StorageService> storage_service_;

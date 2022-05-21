@@ -29,7 +29,7 @@ class SegmentScoreProviderTest : public testing::Test {
         SegmentScoreProvider::Create(segment_database_.get());
   }
 
-  void InitializeMetadataForSegment(OptimizationTarget segment_id,
+  void InitializeMetadataForSegment(SegmentId segment_id,
                                     float mapping[][2],
                                     int num_mapping_pairs) {
     auto* metadata = segment_database_->FindOrCreateSegment(segment_id)
@@ -43,8 +43,7 @@ class SegmentScoreProviderTest : public testing::Test {
         segment_id, mapping, num_mapping_pairs, default_mapping_key);
   }
 
-  void GetSegmentScore(OptimizationTarget segment_id,
-                       const SegmentScore& expected) {
+  void GetSegmentScore(SegmentId segment_id, const SegmentScore& expected) {
     base::RunLoop loop;
     single_segment_manager_->GetSegmentScore(
         segment_id,
@@ -66,8 +65,7 @@ class SegmentScoreProviderTest : public testing::Test {
 };
 
 TEST_F(SegmentScoreProviderTest, GetSegmentScore) {
-  OptimizationTarget segment_id1 =
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  SegmentId segment_id1 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
   InitializeMetadataForSegment(segment_id1, mapping1, 3);
   segment_database_->AddPredictionResult(segment_id1, 0.6, base::Time::Now());
@@ -86,7 +84,7 @@ TEST_F(SegmentScoreProviderTest, GetSegmentScore) {
   GetSegmentScore(segment_id1, expected);
 
   // Returns empty results when called on a segment with no scores.
-  GetSegmentScore(OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+  GetSegmentScore(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
                   SegmentScore());
 }
 

@@ -10,6 +10,7 @@
 
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
@@ -29,15 +30,13 @@ class OptimizationGuideSegmentationModelHandler
     : public optimization_guide::ModelHandler<float,
                                               const std::vector<float>&> {
  public:
-  using ModelUpdatedCallback = base::RepeatingCallback<void(
-      optimization_guide::proto::OptimizationTarget,
-      proto::SegmentationModelMetadata,
-      int64_t)>;
+  using ModelUpdatedCallback = base::RepeatingCallback<
+      void(proto::SegmentId, proto::SegmentationModelMetadata, int64_t)>;
 
   explicit OptimizationGuideSegmentationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      optimization_guide::proto::OptimizationTarget optimization_target,
+      optimization_guide::proto::OptimizationTarget segment_id,
       const ModelUpdatedCallback& model_updated_callback,
       absl::optional<optimization_guide::proto::Any>&& model_metadata);
 
@@ -50,9 +49,8 @@ class OptimizationGuideSegmentationModelHandler
       const OptimizationGuideSegmentationModelHandler&) = delete;
 
   // optimization_guide::ModelHandler overrides.
-  void OnModelUpdated(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      const optimization_guide::ModelInfo& model_info) override;
+  void OnModelUpdated(optimization_guide::proto::OptimizationTarget segment_id,
+                      const optimization_guide::ModelInfo& model_info) override;
 
  private:
   // Callback to invoke whenever the model file has been updated. If there is

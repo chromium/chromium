@@ -21,6 +21,7 @@
 #define CALL_MEMBER_FN(obj, func) ((obj).*(func))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x)[0])
 
+using segmentation_platform::proto::SegmentId;
 using ukm::builders::Segmentation_ModelExecution;
 
 namespace {
@@ -67,7 +68,7 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult5,
     &Segmentation_ModelExecution::SetActualResult6};
 
-base::flat_set<OptimizationTarget> GetSegmentIdsAllowedForReporting() {
+base::flat_set<SegmentId> GetSegmentIdsAllowedForReporting() {
   std::vector<std::string> segment_ids = base::SplitString(
       base::GetFieldTrialParamValueByFeature(
           segmentation_platform::features::
@@ -75,11 +76,11 @@ base::flat_set<OptimizationTarget> GetSegmentIdsAllowedForReporting() {
           segmentation_platform::kSegmentIdsAllowedForReportingKey),
       ",;", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
-  base::flat_set<OptimizationTarget> result;
+  base::flat_set<SegmentId> result;
   for (const auto& id : segment_ids) {
     int segment_id;
     if (base::StringToInt(id, &segment_id))
-      result.emplace(static_cast<OptimizationTarget>(segment_id));
+      result.emplace(static_cast<SegmentId>(segment_id));
   }
   return result;
 }
@@ -105,7 +106,7 @@ SegmentationUkmHelper* SegmentationUkmHelper::GetInstance() {
 }
 
 ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     int64_t model_version,
     const std::vector<float>& input_tensor,
     float result) {
@@ -124,7 +125,7 @@ ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
 }
 
 ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     int64_t model_version,
     const std::vector<float>& input_tensor,
     const std::vector<float>& outputs,
@@ -158,7 +159,7 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
 
 bool SegmentationUkmHelper::AddInputsToUkm(
     ukm::builders::Segmentation_ModelExecution* ukm_builder,
-    OptimizationTarget segment_id,
+    SegmentId segment_id,
     int64_t model_version,
     const std::vector<float>& input_tensor) {
   if (!allowed_segment_ids_.contains(static_cast<int>(segment_id)))

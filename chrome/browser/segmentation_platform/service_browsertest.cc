@@ -34,8 +34,8 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-constexpr OptimizationTarget kSegmentId = OptimizationTarget::
-    OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+constexpr SegmentId kSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 
 constexpr char kSqlFeatureQuery[] = "SELECT COUNT(*) from metrics";
 

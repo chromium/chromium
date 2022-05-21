@@ -12,14 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/leveldb_proto/public/proto_database.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/service_proxy.h"
 
-using optimization_guide::proto::OptimizationTarget;
-
 namespace segmentation_platform {
+using proto::SegmentId;
+
 struct Config;
 class SignalStorageConfig;
 class ExecutionService;
@@ -48,10 +48,10 @@ class ServiceProxyImpl : public ServiceProxy,
 
   // ServiceProxy impl.
   void GetServiceStatus() override;
-  void ExecuteModel(OptimizationTarget segment_id) override;
-  void OverwriteResult(OptimizationTarget segment_id, float result) override;
+  void ExecuteModel(SegmentId segment_id) override;
+  void OverwriteResult(SegmentId segment_id, float result) override;
   void SetSelectedSegment(const std::string& segmentation_key,
-                          OptimizationTarget segment_id) override;
+                          SegmentId segment_id) override;
 
   // Called when segmentation service status changed.
   void OnServiceStatusChanged(bool is_initialized, int status_flag);
@@ -70,7 +70,7 @@ class ServiceProxyImpl : public ServiceProxy,
       std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_info);
 
   // ModelExecutionScheduler::Observer overrides.
-  void OnModelExecutionCompleted(OptimizationTarget segment_id) override;
+  void OnModelExecutionCompleted(SegmentId segment_id) override;
 
   bool is_service_initialized_ = false;
   int service_status_flag_ = 0;

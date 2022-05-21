@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SCHEDULER_MODEL_EXECUTION_SCHEDULER_H_
 
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
-
-using optimization_guide::proto::OptimizationTarget;
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 namespace proto {
 class SegmentInfo;
 }  // namespace proto
+
+using proto::SegmentId;
 
 // Central class responsible for scheduling model execution. Determines which
 // models are eligible for execution based on various criteria e.g. cached
@@ -25,7 +25,7 @@ class ModelExecutionScheduler {
   class Observer {
    public:
     // Called whenever a model execution completes.
-    virtual void OnModelExecutionCompleted(OptimizationTarget segment_id) = 0;
+    virtual void OnModelExecutionCompleted(SegmentId segment_id) = 0;
   };
 
   virtual ~ModelExecutionScheduler() = default;
@@ -54,7 +54,7 @@ class ModelExecutionScheduler {
   // TODO(shaktisahu): Do we want to store that failure reason in the DB
   // instead? We might treat different failures differently next time.
   virtual void OnModelExecutionCompleted(
-      OptimizationTarget segment_id,
+      SegmentId segment_id,
       const std::pair<float, ModelExecutionStatus>& result) = 0;
 };
 

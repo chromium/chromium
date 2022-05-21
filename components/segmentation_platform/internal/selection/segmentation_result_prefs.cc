@@ -12,7 +12,7 @@
 
 namespace segmentation_platform {
 
-SelectedSegment::SelectedSegment(OptimizationTarget segment_id)
+SelectedSegment::SelectedSegment(SegmentId segment_id)
     : segment_id(segment_id), in_use(false) {}
 
 SelectedSegment::~SelectedSegment() = default;
@@ -57,8 +57,7 @@ SegmentationResultPrefs::ReadSegmentationResultFromPref(
   absl::optional<base::Time> selection_time =
       base::ValueToTime(segmentation_result.FindPath("selection_time"));
 
-  SelectedSegment selected_segment(
-      static_cast<OptimizationTarget>(segment_id.value()));
+  SelectedSegment selected_segment(static_cast<SegmentId>(segment_id.value()));
   if (in_use.has_value())
     selected_segment.in_use = in_use.value();
   if (selection_time.has_value())

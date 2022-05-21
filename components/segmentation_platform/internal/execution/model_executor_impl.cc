@@ -9,19 +9,19 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace segmentation_platform {
 namespace {
-using optimization_guide::proto::OptimizationTarget;
 using processing::FeatureListQueryProcessor;
-}
+using proto::SegmentId;
+}  // namespace
 
 struct ModelExecutorImpl::ModelExecutionTraceEvent {
   ModelExecutionTraceEvent(const char* event_name,
@@ -55,7 +55,7 @@ struct ModelExecutorImpl::ExecutionState {
   // https://crbug.com/1021571.
   std::unique_ptr<ModelExecutionTraceEvent> trace_event;
 
-  OptimizationTarget segment_id;
+  SegmentId segment_id;
   int64_t model_version = 0;
   raw_ptr<ModelProvider> model_provider = nullptr;
   bool record_metrics_for_default = false;
@@ -90,7 +90,7 @@ ModelExecutorImpl::~ModelExecutorImpl() = default;
 void ModelExecutorImpl::ExecuteModel(
     std::unique_ptr<ExecutionRequest> request) {
   const proto::SegmentInfo& segment_info = *request->segment_info;
-  OptimizationTarget segment_id = segment_info.segment_id();
+  SegmentId segment_id = segment_info.segment_id();
 
   // Create an ExecutionState that will stay with this request until it has been
   // fully processed.
@@ -157,9 +157,7 @@ void ModelExecutorImpl::ExecuteModel(std::unique_ptr<ExecutionState> state) {
     for (unsigned i = 0; i < state->input_tensor.size(); ++i)
       log_input << " feature " << i << ": " << state->input_tensor[i];
     VLOG(1) << "Segmentation model input: " << log_input.str()
-            << " for segment "
-            << optimization_guide::proto::OptimizationTarget_Name(
-                   state->segment_id);
+            << " for segment " << proto::SegmentId_Name(state->segment_id);
   }
   const std::vector<float>& const_input_tensor = std::move(state->input_tensor);
   stats::RecordModelExecutionZeroValuePercent(state->segment_id,
@@ -182,8 +180,7 @@ void ModelExecutorImpl::OnModelExecutionComplete(
       clock_->Now() - state->model_execution_start_time);
   if (result.has_value()) {
     VLOG(1) << "Segmentation model result: " << *result << " for segment "
-            << optimization_guide::proto::OptimizationTarget_Name(
-                   state->segment_id);
+            << proto::SegmentId_Name(state->segment_id);
     stats::RecordModelExecutionResult(state->segment_id, result.value());
     if (state->model_version && SegmentationUkmHelper::AllowedToUploadData(
                                     state->signal_storage_length, clock_)) {
@@ -195,8 +192,7 @@ void ModelExecutorImpl::OnModelExecutionComplete(
                               ModelExecutionStatus::kSuccess);
   } else {
     VLOG(1) << "Segmentation model returned no result for segment "
-            << optimization_guide::proto::OptimizationTarget_Name(
-                   state->segment_id);
+            << proto::SegmentId_Name(state->segment_id);
     RunModelExecutionCallback(std::move(state), 0,
                               ModelExecutionStatus::kExecutionError);
   }

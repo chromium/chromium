@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "components/optimization_guide/core/model_handler.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace optimization_guide {
 class OptimizationGuideSegmentationModelProvider;
@@ -27,7 +27,7 @@ class OptimizationGuideSegmentationModelProvider : public ModelProvider {
   OptimizationGuideSegmentationModelProvider(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      optimization_guide::proto::OptimizationTarget optimization_target);
+      proto::SegmentId segment_id);
 
   ~OptimizationGuideSegmentationModelProvider() override;
 

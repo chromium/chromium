@@ -7,9 +7,9 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/input_context.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -75,8 +75,7 @@ class SegmentResultProvider {
     GetResultOptions& operator=(GetResultOptions&&);
 
     // The segment ID to fetch result for.
-    OptimizationTarget segment_id =
-        OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+    SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
 
     // The key is used for recording metrics only.
     std::string segmentation_key;

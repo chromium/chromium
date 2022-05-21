@@ -15,12 +15,11 @@ namespace segmentation_platform {
 
 namespace {
 
-using optimization_guide::proto::OptimizationTarget;
+using proto::SegmentId;
 
 // Default parameters for Chrome Start model.
-constexpr OptimizationTarget kChromeStartOptimizationTarget =
-    OptimizationTarget::
-        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+constexpr SegmentId kChromeStartSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 constexpr proto::TimeUnit kChromeStartTimeUnit = proto::TimeUnit::DAY;
 constexpr uint64_t kChromeStartBucketDuration = 1;
 constexpr int64_t kChromeStartSignalStorageLength = 28;
@@ -47,7 +46,7 @@ constexpr std::array<MetadataWriter::UMAFeature, 1> kChromeStartUMAFeatures = {
 }  // namespace
 
 LowUserEngagementModel::LowUserEngagementModel()
-    : ModelProvider(kChromeStartOptimizationTarget) {}
+    : ModelProvider(kChromeStartSegmentId) {}
 
 void LowUserEngagementModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
@@ -68,9 +67,9 @@ void LowUserEngagementModel::InitAndFetchModel(
 
   constexpr int kModelVersion = 1;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindRepeating(
-                     model_updated_callback, kChromeStartOptimizationTarget,
-                     std::move(chrome_start_metadata), kModelVersion));
+      FROM_HERE,
+      base::BindRepeating(model_updated_callback, kChromeStartSegmentId,
+                          std::move(chrome_start_metadata), kModelVersion));
 }
 
 void LowUserEngagementModel::ExecuteModelWithInput(

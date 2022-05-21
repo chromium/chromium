@@ -45,7 +45,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
         std::make_unique<StorageService>(nullptr, std::move(moved_signal_db),
                                          nullptr, nullptr, &ukm_data_manager_);
     clock_.SetNow(base::Time::Now());
-    segment_id_ = OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+    segment_id_ = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   }
 
   void TearDown() override {
@@ -199,7 +199,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
 
   base::SimpleTestClock clock_;
   base::test::TaskEnvironment task_environment_;
-  OptimizationTarget segment_id_;
+  SegmentId segment_id_;
   proto::SegmentationModelMetadata model_metadata;
   MockUkmDataManager ukm_data_manager_;
   std::unique_ptr<StorageService> storage_service_;

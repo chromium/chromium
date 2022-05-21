@@ -18,7 +18,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
@@ -32,6 +31,7 @@
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,8 +45,8 @@ using testing::SetArgReferee;
 
 namespace segmentation_platform {
 
-const OptimizationTarget kSegmentId =
-    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+const SegmentId kSegmentId =
+    SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
 
 class ModelExecutorTest : public testing::Test {
  public:
@@ -150,7 +150,7 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
 
   // Initialize with required metadata.
   test::TestSegmentInfoDatabase metadata_writer;
-  const OptimizationTarget segment_id = kSegmentId;
+  const SegmentId segment_id = kSegmentId;
   metadata_writer.SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
   std::string user_action_name = "some_user_action";
   metadata_writer.AddUserActionFeature(segment_id, user_action_name, 3, 3,

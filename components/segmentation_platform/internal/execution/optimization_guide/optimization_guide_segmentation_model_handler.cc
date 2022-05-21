@@ -12,6 +12,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/optimization_guide/segmentation_model_executor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/stats.h"
 
 namespace segmentation_platform {
@@ -20,7 +21,7 @@ OptimizationGuideSegmentationModelHandler::
     OptimizationGuideSegmentationModelHandler(
         optimization_guide::OptimizationGuideModelProvider* model_provider,
         scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-        optimization_guide::proto::OptimizationTarget optimization_target,
+        optimization_guide::proto::OptimizationTarget segment_id,
         const ModelUpdatedCallback& model_updated_callback,
         absl::optional<optimization_guide::proto::Any>&& model_metadata)
     : optimization_guide::ModelHandler<float, const std::vector<float>&>(
@@ -28,11 +29,11 @@ OptimizationGuideSegmentationModelHandler::
           background_task_runner,
           std::make_unique<SegmentationModelExecutor>(),
           /*model_inference_timeout=*/absl::nullopt,
-          optimization_target,
+          segment_id,
           model_metadata),
       model_updated_callback_(model_updated_callback) {
   stats::RecordModelAvailability(
-      optimization_target,
+      OptimizationTargetToSegmentId(segment_id),
       stats::SegmentationModelAvailability::kModelHandlerCreated);
 }
 
@@ -40,12 +41,11 @@ OptimizationGuideSegmentationModelHandler::
     ~OptimizationGuideSegmentationModelHandler() = default;
 
 void OptimizationGuideSegmentationModelHandler::OnModelUpdated(
-    optimization_guide::proto::OptimizationTarget optimization_target,
+    optimization_guide::proto::OptimizationTarget segment_id,
     const optimization_guide::ModelInfo& model_info) {
   // First invoke parent to update internal status.
   optimization_guide::ModelHandler<
-      float, const std::vector<float>&>::OnModelUpdated(optimization_target,
-                                                        model_info);
+      float, const std::vector<float>&>::OnModelUpdated(segment_id, model_info);
   // The parent class should always set the model availability to true after
   // having received an updated model.
   DCHECK(ModelAvailable());
@@ -55,22 +55,23 @@ void OptimizationGuideSegmentationModelHandler::OnModelUpdated(
   absl::optional<proto::SegmentationModelMetadata> segmentation_model_metadata =
       ParsedSupportedFeaturesForLoadedModel<proto::SegmentationModelMetadata>();
   stats::RecordModelDeliveryHasMetadata(
-      optimization_target, segmentation_model_metadata.has_value());
+      OptimizationTargetToSegmentId(segment_id),
+      segmentation_model_metadata.has_value());
   if (!segmentation_model_metadata.has_value()) {
     // This is not expected to happen, since the optimization guide server is
     // expected to pass this along. Either something failed horribly on the way,
     // we failed to read the metadata, or the server side configuration is
     // wrong.
     stats::RecordModelAvailability(
-        optimization_target,
+        OptimizationTargetToSegmentId(segment_id),
         stats::SegmentationModelAvailability::kMetadataInvalid);
     return;
   }
   stats::RecordModelAvailability(
-      optimization_target,
+      OptimizationTargetToSegmentId(segment_id),
       stats::SegmentationModelAvailability::kModelAvailable);
 
-  model_updated_callback_.Run(optimization_target,
+  model_updated_callback_.Run(OptimizationTargetToSegmentId(segment_id),
                               std::move(*segmentation_model_metadata),
                               model_info.GetVersion());
 }

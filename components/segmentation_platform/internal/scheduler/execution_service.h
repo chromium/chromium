@@ -11,11 +11,11 @@
 #include "base/containers/flat_set.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #include "components/segmentation_platform/internal/input_context.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 class PrefService;
 
@@ -53,7 +53,7 @@ class ExecutionService {
       base::Clock* clock,
       ModelExecutionManager::SegmentationModelUpdatedCallback callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::flat_set<OptimizationTarget>& all_segment_ids,
+      const base::flat_set<SegmentId>& all_segment_ids,
       ModelProviderFactory* model_provider_factory,
       std::vector<ModelExecutionScheduler::Observer*>&& observers,
       const PlatformOptions& platform_options,
@@ -65,12 +65,12 @@ class ExecutionService {
   void OnNewModelInfoReady(const proto::SegmentInfo& segment_info);
 
   // Gets the model provider for execution.
-  ModelProvider* GetModelProvider(OptimizationTarget segment_id);
+  ModelProvider* GetModelProvider(SegmentId segment_id);
 
   void RequestModelExecution(std::unique_ptr<ExecutionRequest> request);
 
   void OverwriteModelExecutionResult(
-      optimization_guide::proto::OptimizationTarget segment_id,
+      proto::SegmentId segment_id,
       const std::pair<float, ModelExecutionStatus>& result);
 
   // Refreshes model results for all eligible models.
