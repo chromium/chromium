@@ -18,6 +18,7 @@ start_surface_java_sources = [
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurface.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceDelegate.java",
+  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceHomeLayout.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceMediator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/StartSurfaceProperties.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/TabSwitcherAndStartSurfaceLayout.java",

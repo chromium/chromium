@@ -278,7 +278,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
                     containerView, shareDelegateSupplier, multiWindowModeStateDispatcher,
-                    scrimCoordinator, /* rootView= */ containerView);
+                    scrimCoordinator, /* rootView= */ containerView, dynamicResourceLoaderSupplier,
+                    snackbarManager, modalDialogManager);
             mTabSwitcherCustomViewManagerSupplier.set(
                     mTabSwitcher.getTabSwitcherCustomViewManager());
         } else {
@@ -413,8 +414,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 UserPrefs.get(Profile.getLastUsedRegularProfile()), mSnackbarManager);
 
         if (mTabSwitcher != null) {
-            mTabSwitcher.initWithNative(mActivity, mTabContentManager,
-                    mDynamicResourceLoaderSupplier.get(), mSnackbarManager, mModalDialogManager);
+            mTabSwitcher.initWithNative();
         }
         if (mTasksSurface != null) {
             mTasksSurface.onFinishNativeInitialization(mActivity, mOmniboxStubSupplier.get(),

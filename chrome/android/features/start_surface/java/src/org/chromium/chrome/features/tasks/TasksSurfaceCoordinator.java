@@ -119,13 +119,15 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getCarouselTabSwitcherContainer(), shareDelegateSupplier,
-                    multiWindowModeStateDispatcher, scrimCoordinator, rootView);
+                    multiWindowModeStateDispatcher, scrimCoordinator, rootView,
+                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
         } else if (tabSwitcherType == TabSwitcherType.GRID) {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getBodyViewContainer(), shareDelegateSupplier,
-                    multiWindowModeStateDispatcher, scrimCoordinator, rootView);
+                    multiWindowModeStateDispatcher, scrimCoordinator, rootView,
+                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher = new SingleTabSwitcherCoordinator(
                     activity, mView.getCarouselTabSwitcherContainer(), tabModelSelector);
@@ -243,10 +245,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub,
             @Nullable FeedReliabilityLogger feedReliabilityLogger) {
-        if (mTabSwitcher != null) {
-            mTabSwitcher.initWithNative(context, mTabContentManager,
-                    mDynamicResourceLoaderSupplier.get(), mSnackbarManager, mModalDialogManager);
-        }
+        if (mTabSwitcher != null) mTabSwitcher.initWithNative();
 
         mMediator.initWithNative(omniboxStub, feedReliabilityLogger);
     }

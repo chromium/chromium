@@ -99,6 +99,7 @@ public class TabSwitcherCoordinator
     // startedHiding() aren't always called for CAROUSEL tab switcher, thus we can't get its
     // visibility directly.
     private static boolean sIsGridTabSwitcherShowing;
+    private final Activity mActivity;
     private final PropertyModelChangeProcessor mContainerViewChangeProcessor;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -110,6 +111,9 @@ public class TabSwitcherCoordinator
     private final @TabListCoordinator.TabListMode int mMode;
     private final MessageCardProviderCoordinator mMessageCardProviderCoordinator;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
+    private final SnackbarManager mSnackbarManager;
+    private final ModalDialogManager mModalDialogManager;
 
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     private TabGroupManualSelectionMode mTabGroupManualSelectionMode;
@@ -123,6 +127,7 @@ public class TabSwitcherCoordinator
     private SharedPreferencesManager.Observer mPriceAnnotationsPrefObserver;
     private final ViewGroup mCoordinatorView;
     private final ViewGroup mRootView;
+    private TabContentManager mTabContentManager;
 
     private final MenuOrKeyboardActionController
             .MenuOrKeyboardActionHandler mTabSwitcherMenuActionHandler =
@@ -177,7 +182,11 @@ public class TabSwitcherCoordinator
             @NonNull ViewGroup container, @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ScrimCoordinator scrimCoordinator, @TabListMode int mode,
-            @NonNull ViewGroup rootView) {
+            @NonNull ViewGroup rootView,
+            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager) {
+        mActivity = activity;
         mMode = mode;
         mTabModelSelector = tabModelSelector;
         mContainer = container;
@@ -185,6 +194,10 @@ public class TabSwitcherCoordinator
         mTabCreatorManager = tabCreatorManager;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mRootView = rootView;
+        mTabContentManager = tabContentManager;
+        mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
+        mSnackbarManager = snackbarManager;
+        mModalDialogManager = modalDialogManager;
 
         mTabSwitcherCustomViewManager =
                 new TabSwitcherCustomViewManager(new TabSwitcherCustomViewManager.Delegate() {
@@ -349,17 +362,15 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    public void initWithNative(Context context, TabContentManager tabContentManager,
-            DynamicResourceLoader dynamicResourceLoader, SnackbarManager snackbarManager,
-            ModalDialogManager modalDialogManager) {
+    public void initWithNative() {
         if (mIsInitialized) return;
 
-        setUpTabGroupManualSelectionMode(context, tabContentManager);
+        setUpTabGroupManualSelectionMode(mActivity, mTabContentManager, mSnackbarManager);
 
-        mTabListCoordinator.initWithNative(dynamicResourceLoader);
+        mTabListCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
         if (mTabGridDialogCoordinator != null) {
-            mTabGridDialogCoordinator.initWithNative(context, mTabModelSelector, tabContentManager,
-                    mTabListCoordinator.getTabGroupTitleEditor());
+            mTabGridDialogCoordinator.initWithNative(mActivity, mTabModelSelector,
+                    mTabContentManager, mTabListCoordinator.getTabGroupTitleEditor());
         }
 
         mMultiThumbnailCardProvider.initWithNative();
@@ -367,9 +378,9 @@ public class TabSwitcherCoordinator
         if (mMode == TabListCoordinator.TabListMode.GRID) {
             if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS)) {
                 mTabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
-                        context, mTabModelSelector, mLifecycleDispatcher);
+                        mActivity, mTabModelSelector, mLifecycleDispatcher);
                 TabSuggestionMessageService tabSuggestionMessageService =
-                        new TabSuggestionMessageService(context, mTabModelSelector,
+                        new TabSuggestionMessageService(mActivity, mTabModelSelector,
                                 mTabSelectionEditorCoordinator.getController());
                 mTabSuggestionsOrchestrator.addObserver(tabSuggestionMessageService);
                 mMessageCardProviderCoordinator.subscribeMessageService(
@@ -381,10 +392,10 @@ public class TabSwitcherCoordinator
                         new NewTabTileCoordinator(mTabModelSelector, mTabCreatorManager);
             }
 
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)
+            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
                     && !TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode)) {
                 mTabGridIphDialogCoordinator =
-                        new TabGridIphDialogCoordinator(context, mContainer, modalDialogManager);
+                        new TabGridIphDialogCoordinator(mActivity, mContainer, mModalDialogManager);
                 IphMessageService iphMessageService =
                         new IphMessageService(mTabGridIphDialogCoordinator);
                 mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
@@ -392,13 +403,13 @@ public class TabSwitcherCoordinator
         }
 
         // TODO(crbug.com/1222762): Only call setUpPriceTracking in GRID TabSwitcher.
-        setUpPriceTracking(context, modalDialogManager);
+        setUpPriceTracking(mActivity, mModalDialogManager);
 
         mIsInitialized = true;
     }
 
     private void setUpTabGroupManualSelectionMode(
-            Context context, TabContentManager tabContentManager) {
+            Context context, TabContentManager tabContentManager, SnackbarManager snackbarManager) {
         // For tab switcher in carousel mode, the selection editor should still follow grid style.
         int selectionEditorMode = mMode == TabListCoordinator.TabListMode.CAROUSEL
                 ? TabListCoordinator.TabListMode.GRID
@@ -406,7 +417,7 @@ public class TabSwitcherCoordinator
         mTabSelectionEditorCoordinator =
                 new TabSelectionEditorCoordinator(context, mCoordinatorView, mTabModelSelector,
                         tabContentManager, selectionEditorMode, mRootView);
-        mMediator.initWithNative(mTabSelectionEditorCoordinator.getController());
+        mMediator.initWithNative(mTabSelectionEditorCoordinator.getController(), snackbarManager);
 
         mTabGroupManualSelectionMode = new TabGroupManualSelectionMode(
                 context.getString(R.string.tab_selection_editor_group),

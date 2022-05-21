@@ -221,7 +221,7 @@ public class TabSwitcherMediatorUnitTest {
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
                 TabListCoordinator.TabListMode.GRID);
 
-        mMediator.initWithNative(controller);
+        mMediator.initWithNative(controller, null);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
     }
