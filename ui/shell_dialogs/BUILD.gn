@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/linux/gtk/gtk.gni")
+import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
@@ -41,23 +41,28 @@ component("shell_dialogs") {
     "//url",
   ]
 
-  if (is_chromeos || (is_linux && !use_gtk)) {
+  if (is_chromeos || is_chromecast) {
     sources += [ "shell_dialog_stub.cc" ]
-  } else if (is_linux) {
+  }
+
+  if (is_linux && !is_chromecast) {
     sources += [
       "select_file_dialog_linux.cc",
       "select_file_dialog_linux.h",
       "select_file_dialog_linux_kde.cc",
       "select_file_dialog_linux_kde.h",
-      "select_file_dialog_linux_portal.cc",
-      "select_file_dialog_linux_portal.h",
       "shell_dialog_linux.cc",
       "shell_dialog_linux.h",
     ]
-    deps += [
-      "//components/dbus/thread_linux",
-      "//dbus",
-    ]
+    deps += [ "//components/dbus/thread_linux" ]
+    if (use_dbus) {
+      defines += [ "USE_DBUS" ]
+      sources += [
+        "select_file_dialog_linux_portal.cc",
+        "select_file_dialog_linux_portal.h",
+      ]
+      deps += [ "//dbus" ]
+    }
   }
 
   if (is_mac) {

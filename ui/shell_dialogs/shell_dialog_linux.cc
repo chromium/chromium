@@ -10,14 +10,26 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_dialog_linux_kde.h"
-#include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+
+#if defined(USE_DBUS)
+#include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
+#endif
+
+namespace ui {
 
 namespace {
 
-ui::ShellDialogLinux* g_shell_dialog_linux = nullptr;
+ShellDialogLinux* g_shell_dialog_linux = nullptr;
 
-enum FileDialogChoice { kUnknown, kToolkit, kKde, kPortal };
+enum FileDialogChoice {
+  kUnknown,
+  kToolkit,
+  kKde,
+#if defined(USE_DBUS)
+  kPortal,
+#endif
+};
 
 FileDialogChoice dialog_choice_ = kUnknown;
 
@@ -26,14 +38,43 @@ std::string& KDialogVersion() {
   return *version;
 }
 
-}  // namespace
+FileDialogChoice GetFileDialogChoice() {
+#if defined(USE_DBUS)
+  // Check to see if the portal is available.
+  if (SelectFileDialogLinuxPortal::IsPortalAvailable())
+    return kPortal;
+  // Make sure to kill the portal connection.
+  SelectFileDialogLinuxPortal::DestroyPortalConnection();
+#endif
 
-namespace ui {
+  // Check to see if KDE is the desktop environment.
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  base::nix::DesktopEnvironment desktop =
+      base::nix::GetDesktopEnvironment(env.get());
+  if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE3 ||
+      desktop == base::nix::DESKTOP_ENVIRONMENT_KDE4 ||
+      desktop == base::nix::DESKTOP_ENVIRONMENT_KDE5) {
+    // Check to see if the user dislikes the KDE file dialog.
+    if (!env->HasVar("NO_CHROME_KDE_FILE_DIALOG")) {
+      // Check to see if the KDE dialog works.
+      if (SelectFileDialogLinux::CheckKDEDialogWorksOnUIThread(
+              KDialogVersion())) {
+        return kKde;
+      }
+    }
+  }
+
+  return kToolkit;
+}
+
+}  // namespace
 
 ShellDialogLinux::ShellDialogLinux() = default;
 
 ShellDialogLinux::~ShellDialogLinux() {
+#if defined(USE_DBUS)
   SelectFileDialogLinuxPortal::DestroyPortalConnection();
+#endif
 }
 
 void ShellDialogLinux::SetInstance(ShellDialogLinux* instance) {
@@ -45,50 +86,27 @@ const ShellDialogLinux* ShellDialogLinux::instance() {
 }
 
 void ShellDialogLinux::Initialize() {
+#if defined(USE_DBUS)
   SelectFileDialogLinuxPortal::StartAvailabilityTestInBackground();
+#endif
 }
 
 SelectFileDialog* CreateSelectFileDialog(
     SelectFileDialog::Listener* listener,
     std::unique_ptr<SelectFilePolicy> policy) {
-  if (dialog_choice_ == kUnknown) {
-    // Start out assuming we are going to use dialogs from the toolkit.
-    dialog_choice_ = kToolkit;
+  if (dialog_choice_ == kUnknown)
+    dialog_choice_ = GetFileDialogChoice();
 
-    // Check to see if the portal is available.
-    if (SelectFileDialogLinuxPortal::IsPortalAvailable()) {
-      dialog_choice_ = kPortal;
-    } else {
-      // Make sure to kill the portal connection.
-      SelectFileDialogLinuxPortal::DestroyPortalConnection();
-
-      // Check to see if KDE is the desktop environment.
-      std::unique_ptr<base::Environment> env(base::Environment::Create());
-      base::nix::DesktopEnvironment desktop =
-          base::nix::GetDesktopEnvironment(env.get());
-      if (desktop == base::nix::DESKTOP_ENVIRONMENT_KDE3 ||
-          desktop == base::nix::DESKTOP_ENVIRONMENT_KDE4 ||
-          desktop == base::nix::DESKTOP_ENVIRONMENT_KDE5) {
-        // Check to see if the user dislikes the KDE file dialog.
-        if (!env->HasVar("NO_CHROME_KDE_FILE_DIALOG")) {
-          // Check to see if the KDE dialog works.
-          if (SelectFileDialogLinux::CheckKDEDialogWorksOnUIThread(
-                  KDialogVersion())) {
-            dialog_choice_ = kKde;
-          }
-        }
-      }
-    }
-  }
-
-  const ui::ShellDialogLinux* shell_dialogs = ui::ShellDialogLinux::instance();
+  const ShellDialogLinux* shell_dialogs = ShellDialogLinux::instance();
   switch (dialog_choice_) {
     case kToolkit:
       if (!shell_dialogs)
         break;
       return shell_dialogs->CreateSelectFileDialog(listener, std::move(policy));
+#if defined(USE_DBUS)
     case kPortal:
       return new SelectFileDialogLinuxPortal(listener, std::move(policy));
+#endif
     case kKde: {
       std::unique_ptr<base::Environment> env(base::Environment::Create());
       base::nix::DesktopEnvironment desktop =
