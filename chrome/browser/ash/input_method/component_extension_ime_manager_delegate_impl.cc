@@ -236,7 +236,7 @@ ComponentExtensionIMEManagerDelegateImpl::GetManifest(
 bool ComponentExtensionIMEManagerDelegateImpl::IsIMEExtensionID(
     const std::string& id) {
   for (auto& extension : allowlisted_component_extensions) {
-    if (base::LowerCaseEqualsASCII(id, extension.id))
+    if (base::EqualsCaseInsensitiveASCII(id, extension.id))
       return true;
   }
   return false;
