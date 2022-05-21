@@ -267,6 +267,7 @@ void FakeWebAppProviderCreator::OnWillCreateBrowserContextServices(
 std::unique_ptr<KeyedService> FakeWebAppProviderCreator::CreateWebAppProvider(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
+  DCHECK(!WebAppProviderFactory::IsServiceCreatedForProfile(profile));
   if (!AreWebAppsEnabled(profile) || !callback_)
     return nullptr;
   return callback_.Run(profile);

@@ -349,6 +349,7 @@ void WebAppProvider::OnSyncBridgeReady() {
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(profile_->GetPrefs(),
                                                           sync_bridge_.get());
+  DoMigrateProfilePrefs(profile_);
 
   registrar_->Start();
   install_finalizer_->Start();
@@ -383,17 +384,6 @@ void WebAppProvider::RegisterProfilePrefs(
   IsolationPrefsUtilsRegisterProfilePrefs(registry);
   RegisterInstallBounceMetricProfilePrefs(registry);
   RegisterDailyWebAppMetricsProfilePrefs(registry);
-}
-
-// static
-void WebAppProvider::MigrateProfilePrefs(Profile* profile) {
-  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (provider) {
-    provider->on_registry_ready_.Post(
-        FROM_HERE,
-        base::BindOnce(&WebAppProvider::DoMigrateProfilePrefs,
-                       provider->weak_ptr_factory_.GetWeakPtr(), profile));
-  }
 }
 
 void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {

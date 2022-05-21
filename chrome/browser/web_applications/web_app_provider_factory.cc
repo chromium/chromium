@@ -26,6 +26,12 @@ WebAppProviderFactory* WebAppProviderFactory::GetInstance() {
   return base::Singleton<WebAppProviderFactory>::get();
 }
 
+// static
+bool WebAppProviderFactory::IsServiceCreatedForProfile(Profile* profile) {
+  return WebAppProviderFactory::GetInstance()->GetServiceForBrowserContext(
+             profile, /*create=*/false) != nullptr;
+}
+
 WebAppProviderFactory::WebAppProviderFactory()
     : BrowserContextKeyedServiceFactory(
           "WebAppProvider",

@@ -29,6 +29,8 @@ class WebAppProviderFactory : public BrowserContextKeyedServiceFactory {
 
   static WebAppProviderFactory* GetInstance();
 
+  static bool IsServiceCreatedForProfile(Profile* profile);
+
  private:
   friend struct base::DefaultSingletonTraits<WebAppProviderFactory>;
   friend class WebAppProvider;

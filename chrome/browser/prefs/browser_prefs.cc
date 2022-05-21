@@ -1835,11 +1835,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   syncer::ClearObsoleteSyncDecoupledFromAndroidMasterSync(profile_prefs);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Added 02/2022.
-  web_app::WebAppProvider::MigrateProfilePrefs(profile);
-#endif
-
   // Added 02/2022
   profile_prefs->ClearPref(kFlocIdValuePrefKey);
   profile_prefs->ClearPref(kFlocIdStatusPrefKey);
