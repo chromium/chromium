@@ -219,13 +219,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Observer that triggers `PostProfileInit()` when new user profiles are
   // created.
   std::unique_ptr<ProfileInitManager> profile_init_manager_;
-
-#if BUILDFLAG(IS_WIN)
-  // Whether or not another browser is already running. This is obtained once
-  // early during startup as each attempt to determine this might race another
-  // browser starting at the same time.
-  bool already_running_ = false;
-#endif
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_

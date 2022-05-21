@@ -35,6 +35,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/win/browser_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/install_static/install_util.h"
@@ -231,17 +232,26 @@ bool IsRunningOldChrome() {
 bool DoUpgradeTasks(const base::CommandLine& command_line) {
   TRACE_EVENT0("startup", "upgrade_util::DoUpgradeTasks");
   const auto begin_time = base::TimeTicks::Now();
-  if (!SwapNewChromeExeIfPresent() && !IsRunningOldChrome()) {
+  // If there is no other instance already running then check if there is a
+  // pending update and complete it by performing the swap and then relaunch.
+  bool did_swap = false;
+  if (!browser_util::IsBrowserAlreadyRunning())
+    did_swap = SwapNewChromeExeIfPresent();
+
+  // We don't need to relaunch if we didn't swap and we aren't running stale
+  // binaries.
+  if (!did_swap && !IsRunningOldChrome()) {
     UMA_HISTOGRAM_MEDIUM_TIMES("Startup.DoUpgradeTasks.NoRelaunch",
                                base::TimeTicks::Now() - begin_time);
     return false;
   }
+
   // At this point the chrome.exe has been swapped with the new one.
   if (RelaunchChromeBrowser(command_line)) {
     UMA_HISTOGRAM_MEDIUM_TIMES("Startup.DoUpgradeTasks.RelaunchSucceeded",
                                base::TimeTicks::Now() - begin_time);
   } else {
-    // The re-launch failed. Feel free to panic now.
+    // The relaunch failed. Feel free to panic now.
     NOTREACHED();
     // Log a metric anyways to see if this is at fault in crbug.com/1252004
     UMA_HISTOGRAM_MEDIUM_TIMES("Startup.DoUpgradeTasks.RelaunchFailed",

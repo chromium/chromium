@@ -757,14 +757,14 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  // On Windows, we use our startup as an opportunity to do upgrade/uninstall
-  // tasks.  Those care whether the browser is already running.  On Linux/Mac,
-  // upgrade/uninstall happen separately.
-  already_running_ = browser_util::IsBrowserAlreadyRunning();
+  // If we are running stale binaries then relaunch and exit immediately.
+  if (upgrade_util::IsRunningOldChrome()) {
+    if (!upgrade_util::RelaunchChromeBrowser(
+            *base::CommandLine::ForCurrentProcess())) {
+      // The relaunch failed. Feel free to panic now.
+      NOTREACHED();
+    }
 
-  // Do the tasks if chrome has been upgraded while it was last running.
-  if (!already_running_ &&
-      upgrade_util::DoUpgradeTasks(*base::CommandLine::ForCurrentProcess())) {
     // Note, cannot return RESULT_CODE_NORMAL_EXIT here as this code needs to
     // result in browser startup bailing.
     return chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
@@ -1361,7 +1361,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // If the command line specifies 'uninstall' then we need to work here
   // unless we detect another chrome browser running.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUninstall)) {
-    return DoUninstallTasks(already_running_);
+    return DoUninstallTasks(browser_util::IsBrowserAlreadyRunning());
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHideIcons) ||
@@ -1448,6 +1448,13 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
                     "now to avoid profile corruption.";
       return chrome::RESULT_CODE_PROFILE_IN_USE;
   }
+
+#if BUILDFLAG(IS_WIN)
+  // We must call DoUpgradeTasks now that we own the browser singleton to
+  // finish upgrade tasks (swap) and relaunch if necessary.
+  if (upgrade_util::DoUpgradeTasks(*base::CommandLine::ForCurrentProcess()))
+    return chrome::RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   // Begin relaunch processing immediately if User Data migration is required
