@@ -28,6 +28,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -216,10 +217,9 @@ class QuotaManagerImplTest : public testing::Test {
 
   void OpenDatabase() { quota_manager_impl_->EnsureDatabaseOpened(); }
 
-  QuotaErrorOr<BucketInfo> GetOrCreateBucket(const StorageKey& storage_key,
-                                             const std::string& bucket_name) {
+  QuotaErrorOr<BucketInfo> UpdateOrCreateBucket(
+      const BucketInitParams& params) {
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
-    BucketInitParams params(storage_key, bucket_name);
     quota_manager_impl_->UpdateOrCreateBucket(params, future.GetCallback());
     return future.Take();
   }
@@ -772,11 +772,11 @@ TEST_F(QuotaManagerImplTest, DatabaseDisabledAfterThreshold) {
   StorageKey storage_key = ToStorageKey("http://a.com/");
   std::string bucket_name = "bucket_a";
 
-  auto bucket = GetOrCreateBucket(storage_key, bucket_name);
+  auto bucket = UpdateOrCreateBucket({storage_key, bucket_name});
   ASSERT_FALSE(bucket.ok());
   ASSERT_FALSE(is_db_disabled());
 
-  bucket = GetOrCreateBucket(storage_key, bucket_name);
+  bucket = UpdateOrCreateBucket({storage_key, bucket_name});
   ASSERT_FALSE(bucket.ok());
   ASSERT_FALSE(is_db_disabled());
 
@@ -786,18 +786,55 @@ TEST_F(QuotaManagerImplTest, DatabaseDisabledAfterThreshold) {
   ASSERT_TRUE(is_db_disabled());
 }
 
-TEST_F(QuotaManagerImplTest, GetOrCreateBucket) {
+TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket) {
   StorageKey storage_key = ToStorageKey("http://a.com/");
   std::string bucket_name = "bucket_a";
 
-  auto bucket = GetOrCreateBucket(storage_key, bucket_name);
+  auto bucket = UpdateOrCreateBucket({storage_key, bucket_name});
   ASSERT_TRUE(bucket.ok());
 
   BucketId created_bucket_id = bucket.value().id;
 
-  bucket = GetOrCreateBucket(storage_key, bucket_name);
+  bucket = UpdateOrCreateBucket({storage_key, bucket_name});
   EXPECT_TRUE(bucket.ok());
   EXPECT_EQ(bucket.value().id, created_bucket_id);
+}
+
+TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  base::SimpleTestClock* clock_ptr = clock.get();
+  quota_manager_impl_->clock_ = std::move(clock);
+  clock_ptr->SetNow(base::Time::Now());
+
+  BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
+  params.expiration = clock_ptr->Now() - base::Days(1);
+
+  auto bucket = UpdateOrCreateBucket(params);
+  ASSERT_FALSE(bucket.ok());
+
+  // Create a new bucket.
+  params.expiration = clock_ptr->Now() + base::Days(1);
+  params.quota = 1000;
+  bucket = UpdateOrCreateBucket(params);
+  ASSERT_TRUE(bucket.ok());
+  EXPECT_EQ(bucket->expiration, params.expiration);
+  EXPECT_EQ(bucket->quota, 1000);
+
+  // Get/Update the same bucket. Verify expiration is updated, but quota is not.
+  params.expiration = clock_ptr->Now() + base::Days(5);
+  params.quota = 500;
+  bucket = UpdateOrCreateBucket(params);
+  ASSERT_TRUE(bucket.ok());
+  EXPECT_EQ(bucket->expiration, params.expiration);
+  EXPECT_EQ(bucket->quota, 1000);
+
+  // Verify that the bucket is clobbered due to being expired. In this case, the
+  // new quota is respected.
+  clock_ptr->Advance(base::Days(20));
+  params.expiration = base::Time();
+  bucket = UpdateOrCreateBucket(params);
+  EXPECT_EQ(bucket->expiration, params.expiration);
+  EXPECT_EQ(bucket->quota, 500);
 }
 
 TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {

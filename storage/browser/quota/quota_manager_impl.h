@@ -45,6 +45,7 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
 namespace base {
+class Clock;
 class SequencedTaskRunner;
 class SingleThreadTaskRunner;
 class TaskRunner;
@@ -181,12 +182,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // expiration and persistence if the existing attributes don't match those
   // found in `bucket_params`, and may clobber the bucket and rebuild it if it's
   // expired. If a bucket doesn't exist, a new bucket is created with the
-  // specified policies. Returns a QuotaError if the operation has failed. This
-  // method is declared as virtual to allow test code to override it.
+  // specified policies. If the existing bucket exists but has expired, it will
+  // be clobbered and recreated. Returns a QuotaError if the operation has
+  // failed. This method is declared as virtual to allow test code to override
+  // it.
   virtual void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
-  // Same as GetOrCreateBucket but takes in StorageType. This should only be
+  // Same as UpdateOrCreateBucket but takes in StorageType. This should only be
   // used by FileSystem, and is expected to be removed when
   // StorageType::kSyncable and StorageType::kPersistent are deprecated.
   // (crbug.com/1233525, crbug.com/1286964).
@@ -501,6 +504,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   friend class QuotaManagerImplTest;
   friend class QuotaTemporaryStorageEvictor;
   friend class UsageTrackerTest;
+  FRIEND_TEST_ALL_PREFIXES(QuotaManagerImplTest,
+                           UpdateOrCreateBucket_Expiration);
 
   class EvictionRoundInfoHelper;
   class UsageAndQuotaInfoGatherer;
@@ -621,6 +626,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                   BucketDataDeleter* deleter,
                                   blink::mojom::QuotaStatusCode status_code);
 
+  // Called after bucket data has been deleted from clients as well as the
+  // database due to bucket expiration. This will recreate the bucket in the
+  // database and pass it to `callback`.
+  void DidDeleteBucketForRecreation(
+      const BucketInitParams& params,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+      BucketInfo bucket_info,
+      blink::mojom::QuotaStatusCode status_code);
+
   // Methods for eviction logic.
   void StartEviction();
   void DeleteBucketFromDatabase(const BucketLocator& bucket,
@@ -680,6 +694,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);
+  void DidGetBucketCheckExpiration(
+      const BucketInitParams& params,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+      QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForDeletion(StatusCallback callback,
                                QuotaErrorOr<BucketInfo> result);
   void DidGetBucketForUsage(QuotaClientType client_type,
@@ -837,6 +855,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   std::map<BucketDataDeleter*, std::unique_ptr<BucketDataDeleter>>
       bucket_data_deleters_;
   std::unique_ptr<StorageKeyGathererTask> storage_key_gatherer_;
+
+  std::unique_ptr<base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

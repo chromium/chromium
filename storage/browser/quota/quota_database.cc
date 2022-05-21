@@ -185,7 +185,8 @@ QuotaDatabase::BucketTableEntry::BucketTableEntry(
       last_modified(last_modified) {}
 
 // QuotaDatabase ------------------------------------------------------------
-QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path)
+QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path,
+                             const base::Clock& clock)
     : storage_directory_(
           profile_path.empty()
               ? nullptr
@@ -196,7 +197,8 @@ QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path)
               : storage_directory_->path().AppendASCII(kDatabaseName)),
       legacy_db_file_path_(profile_path.empty()
                                ? base::FilePath()
-                               : profile_path.AppendASCII(kDatabaseName)) {
+                               : profile_path.AppendASCII(kDatabaseName)),
+      clock_(clock) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -268,6 +270,13 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
     return bucket_result;
   }
 
+  // Don't bother updating anything if the bucket is expired.
+  if (!bucket_result->expiration.is_null() &&
+      (bucket_result->expiration <= clock_.Now())) {
+    return bucket_result;
+  }
+
+  // Update the parameters that can be changed.
   if (!params.expiration.is_null() &&
       (params.expiration != bucket_result->expiration)) {
     DCHECK(!bucket_result->is_default());
@@ -1170,8 +1179,8 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   BindBucketInitParamsToInsertStatement(params, type, /*use_count=*/0,
-                                        /*last_accessed=*/base::Time::Now(),
-                                        /*last_modified=*/base::Time::Now(),
+                                        /*last_accessed=*/clock_.Now(),
+                                        /*last_modified=*/clock_.Now(),
                                         statement);
   QuotaErrorOr<BucketInfo> result = BucketInfoFromSqlStatement(statement);
   const bool done = !statement.Step();

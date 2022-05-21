@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -81,8 +82,8 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
   }
 
   std::unique_ptr<QuotaDatabase> CreateDatabase(bool is_incognito) {
-    return std::make_unique<QuotaDatabase>(is_incognito ? base::FilePath()
-                                                        : ProfilePath());
+    return std::make_unique<QuotaDatabase>(
+        is_incognito ? base::FilePath() : ProfilePath(), clock_);
   }
 
   bool EnsureOpened(QuotaDatabase* db) {
@@ -179,6 +180,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_directory_;
+  base::DefaultClock clock_;
 };
 
 TEST_P(QuotaDatabaseTest, EnsureOpened) {
@@ -194,7 +196,8 @@ TEST_P(QuotaDatabaseTest, EnsureOpened) {
 }
 
 TEST_P(QuotaDatabaseTest, RazeAndReopenWithNoDb) {
-  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  base::DefaultClock clock;
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath(), clock);
   // RazeAndReopen() with no db tries to create the db one last time.
   EXPECT_EQ(db.RazeAndReopen(), QuotaError::kNone);
 
@@ -1111,7 +1114,8 @@ TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
-  QuotaDatabase db(ProfilePath());
+  base::DefaultClock clock;
+  QuotaDatabase db(ProfilePath(), clock);
   BucketInitParams params(
       StorageKey::CreateFromStringForTesting("http://google/"),
       "google_bucket");
@@ -1143,7 +1147,8 @@ TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
 }
 
 TEST_P(QuotaDatabaseTest, Expiration) {
-  QuotaDatabase db(ProfilePath());
+  base::DefaultClock clock;
+  QuotaDatabase db(ProfilePath(), clock);
 
   // Default `expiration` value.
   BucketInitParams params(
@@ -1170,7 +1175,8 @@ TEST_P(QuotaDatabaseTest, Expiration) {
 }
 
 TEST_P(QuotaDatabaseTest, Persistent) {
-  QuotaDatabase db(ProfilePath());
+  base::DefaultClock clock;
+  QuotaDatabase db(ProfilePath(), clock);
 
   // Default `persistent` value.
   BucketInitParams params(

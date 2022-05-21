@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/time/default_clock.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -70,7 +71,7 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
   }
 
   void MigrateDatabase() {
-    QuotaDatabase db(ProfilePath());
+    QuotaDatabase db(ProfilePath(), clock_);
     EXPECT_EQ(db.EnsureOpened(), QuotaError::kNone);
 
     DCHECK_CALLED_ON_VALID_SEQUENCE(db.sequence_checker_);
@@ -87,12 +88,13 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
   }
 
   std::string GetQuotaDatabaseSchema() {
-    QuotaDatabase db(ProfilePath());
+    QuotaDatabase db(ProfilePath(), clock_);
     EXPECT_EQ(db.EnsureOpened(), QuotaError::kNone);
     DCHECK_CALLED_ON_VALID_SEQUENCE(db.sequence_checker_);
     return db.db_->GetSchema();
   }
 
+  base::DefaultClock clock_;
   base::ScopedTempDir temp_directory_;
 };
 
