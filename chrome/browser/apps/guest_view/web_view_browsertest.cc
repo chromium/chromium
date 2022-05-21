@@ -1635,6 +1635,25 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestReassignSrcAttribute) {
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
   TestHelper("testNewWindow", "web_view/shim", NEEDS_TEST_SERVER);
+
+  // The first <webview> tag in the test will run window.open(), which the
+  // embedder will translate into an injected second <webview> tag.  Ensure
+  // that the two <webview>'s remain in the same BrowsingInstance and
+  // StoragePartition.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+  std::vector<content::WebContents*> guest_contents_list;
+  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  ASSERT_EQ(2u, guest_contents_list.size());
+  content::WebContents* guest1 = guest_contents_list[0];
+  content::WebContents* guest2 = guest_contents_list[1];
+  ASSERT_NE(guest1, guest2);
+  auto* guest_instance1 = guest1->GetMainFrame()->GetSiteInstance();
+  auto* guest_instance2 = guest2->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(guest_instance1->IsGuest());
+  EXPECT_TRUE(guest_instance2->IsGuest());
+  EXPECT_EQ(guest_instance1->GetStoragePartitionConfig(),
+            guest_instance2->GetStoragePartitionConfig());
+  EXPECT_TRUE(guest_instance1->IsRelatedSiteInstance(guest_instance2));
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowTwoListeners) {
@@ -1673,12 +1692,15 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
   EXPECT_EQ(guest_instance1->GetStoragePartitionConfig(),
             guest_instance2->GetStoragePartitionConfig());
 
-  // Until <webview> guests have site isolation, both guests should be in the
-  // same SiteInstance, even in this `opener_suppressed` case which typically
-  // places the new window in a new BrowsingInstance.
-  //
-  // TODO(alexmos): revisit this once <webview> guests support site isolation.
-  EXPECT_EQ(guest_instance1, guest_instance2);
+  // Without <webview> site isolation, both guests should be in the same
+  // SiteInstance, even in this `opener_suppressed` case which typically places
+  // the new window in a new BrowsingInstance. With site isolation, the new
+  // guest should be in a different BrowsingInstance.
+  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    EXPECT_FALSE(guest_instance1->IsRelatedSiteInstance(guest_instance2));
+  } else {
+    EXPECT_EQ(guest_instance1, guest_instance2);
+  }
 
   // Check that the source SiteInstance used when the first guest opened the
   // new noreferrer window is also a guest SiteInstance in the same
