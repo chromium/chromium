@@ -24,7 +24,7 @@ void OnError(bool* succeeded) {
 bool ExtractString(AVDictionaryEntry* tag,
                    const char* expected_key,
                    std::string* destination) {
-  if (!base::LowerCaseEqualsASCII(std::string(tag->key), expected_key))
+  if (!base::EqualsCaseInsensitiveASCII(std::string(tag->key), expected_key))
     return false;
 
   if (destination->empty())
@@ -37,7 +37,7 @@ bool ExtractString(AVDictionaryEntry* tag,
 bool ExtractInt(AVDictionaryEntry* tag,
                 const char* expected_key,
                 int* destination) {
-  if (!base::LowerCaseEqualsASCII(std::string(tag->key), expected_key))
+  if (!base::EqualsCaseInsensitiveASCII(std::string(tag->key), expected_key))
     return false;
 
   int temporary = -1;
