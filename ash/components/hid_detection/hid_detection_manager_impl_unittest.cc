@@ -14,6 +14,8 @@
 namespace ash::hid_detection {
 namespace {
 
+using InputMetadata = HidDetectionManager::InputMetadata;
+using InputState = HidDetectionManager::InputState;
 using InputDeviceType = device::mojom::InputDeviceType;
 
 enum HidType {
@@ -21,6 +23,7 @@ enum HidType {
   kTouchpad,
   kKeyboard,
   kTouchscreen,
+  kTablet,
 };
 
 class FakeHidDetectionManagerDelegate : public HidDetectionManager::Delegate {
@@ -107,26 +110,39 @@ class HidDetectionManagerImplTest : public testing::Test {
   void AddDevice(HidType hid_type,
                  InputDeviceType device_type,
                  std::string* id_out = nullptr) {
+    AddDevice(std::vector{hid_type}, device_type, id_out);
+  }
+
+  void AddDevice(std::vector<HidType> hid_types,
+                 InputDeviceType device_type,
+                 std::string* id_out = nullptr) {
     auto device = device::mojom::InputDeviceInfo::New();
     device->id = num_devices_created_++;
     if (id_out)
       *id_out = device->id;
 
+    device->name = device->id;
     device->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
     device->type = device_type;
-    switch (hid_type) {
-      case kMouse:
-        device->is_mouse = true;
-        break;
-      case kTouchpad:
-        device->is_touchpad = true;
-        break;
-      case kKeyboard:
-        device->is_keyboard = true;
-        break;
-      case kTouchscreen:
-        device->is_touchscreen = true;
-        break;
+
+    for (const auto& hid_type : hid_types) {
+      switch (hid_type) {
+        case kMouse:
+          device->is_mouse = true;
+          break;
+        case kTouchpad:
+          device->is_touchpad = true;
+          break;
+        case kKeyboard:
+          device->is_keyboard = true;
+          break;
+        case kTouchscreen:
+          device->is_touchscreen = true;
+          break;
+        case kTablet:
+          device->is_tablet = true;
+          break;
+      }
     }
     fake_input_service_.AddDevice(std::move(device));
     base::RunLoop().RunUntilIdle();
@@ -135,6 +151,21 @@ class HidDetectionManagerImplTest : public testing::Test {
   void RemoveDevice(const std::string& id) {
     fake_input_service_.RemoveDevice(id);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void AssertHidDetectionStatus(InputMetadata pointer_metadata,
+                                InputMetadata keyboard_metadata,
+                                bool touchscreen_detected) {
+    EXPECT_EQ(pointer_metadata.state,
+              GetLastHidDetectionStatus()->pointer_metadata.state);
+    EXPECT_EQ(pointer_metadata.detected_hid_name,
+              GetLastHidDetectionStatus()->pointer_metadata.detected_hid_name);
+    EXPECT_EQ(keyboard_metadata.state,
+              GetLastHidDetectionStatus()->keyboard_metadata.state);
+    EXPECT_EQ(keyboard_metadata.detected_hid_name,
+              GetLastHidDetectionStatus()->keyboard_metadata.detected_hid_name);
+    EXPECT_EQ(touchscreen_detected,
+              GetLastHidDetectionStatus()->touchscreen_detected);
   }
 
  private:
@@ -185,61 +216,236 @@ TEST_F(HidDetectionManagerImplTest, StartDetection_TouchscreenPreConnected) {
   StartHidDetection();
   EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
   ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
-  EXPECT_TRUE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/true);
 }
 
-TEST_F(HidDetectionManagerImplTest,
-       StartDetection_TouchscreenConnectedDisconnected) {
-  AddDevice(HidType::kTouchpad, InputDeviceType::TYPE_USB);
+TEST_F(HidDetectionManagerImplTest, StartDetection_PointerPreConnected) {
+  std::string device_id;
+  AddDevice(HidType::kMouse, InputDeviceType::TYPE_SERIO, &device_id);
   EXPECT_EQ(0u, GetNumHidDetectionStatusChangedCalls());
 
   StartHidDetection();
   EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
   ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
-  EXPECT_FALSE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kConnected, device_id},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+}
 
-  // Add a non-touchscreen device. Touchscreen should not be detected.
-  std::string device_id1;
-  AddDevice(HidType::kKeyboard, InputDeviceType::TYPE_USB, &device_id1);
+TEST_F(HidDetectionManagerImplTest, StartDetection_KeyboardPreConnected) {
+  std::string device_id;
+  AddDevice(HidType::kKeyboard, InputDeviceType::TYPE_SERIO, &device_id);
+  EXPECT_EQ(0u, GetNumHidDetectionStatusChangedCalls());
+
+  StartHidDetection();
   EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_FALSE(GetLastHidDetectionStatus()->touchscreen_detected);
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/InputMetadata{InputState::kConnected, device_id},
+      /*touchscreen_detected=*/false);
+}
 
-  // Add touchscreen device. Touchscreen should be detected.
-  std::string device_id2;
-  AddDevice(HidType::kTouchscreen, InputDeviceType::TYPE_SERIO, &device_id2);
+TEST_F(HidDetectionManagerImplTest,
+       StartDetection_TouchscreenConnectedDisconnected) {
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  std::string touchscreen_id1;
+  AddDevice(HidType::kTouchscreen, InputDeviceType::TYPE_SERIO,
+            &touchscreen_id1);
   EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_TRUE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/true);
 
-  // Remove the non-touchscreen device. Touchscreen should still be detected.
-  RemoveDevice(device_id1);
-  EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_TRUE(GetLastHidDetectionStatus()->touchscreen_detected);
-
-  // Remove the touchscreen device. Touchscreen should no longer be detected.
-  RemoveDevice(device_id2);
+  RemoveDevice(touchscreen_id1);
   EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_FALSE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
 
   StopHidDetection();
   EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_FALSE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
 
-  // Add another touchscreen device. Delegate should not be notified.
-  std::string device_id3;
-  AddDevice(HidType::kTouchscreen, InputDeviceType::TYPE_SERIO, &device_id3);
+  // Add another touchscreen device. This should not inform the delegate.
+  std::string touchscreen_id2;
+  AddDevice(HidType::kTouchscreen, InputDeviceType::TYPE_SERIO,
+            &touchscreen_id2);
   EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_FALSE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
 
-  // Remove the touchscreen device. Delegate should not be notified.
-  RemoveDevice(device_id3);
+  // Remove the touchscreen device. This should not inform the delegate.
+  RemoveDevice(touchscreen_id2);
   EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_FALSE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+}
+
+TEST_F(HidDetectionManagerImplTest,
+       StartDetection_PointerConnectedDisconnected) {
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  std::string pointer_id1;
+  AddDevice(HidType::kMouse, InputDeviceType::TYPE_USB, &pointer_id1);
+  EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kConnectedViaUsb,
+                                         pointer_id1},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  RemoveDevice(pointer_id1);
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  StopHidDetection();
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  // Add another pointer device. This should not inform the delegate.
+  std::string pointer_id2;
+  AddDevice(HidType::kMouse, InputDeviceType::TYPE_USB, &pointer_id2);
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  // Remove the pointer device. This should not inform the delegate.
+  RemoveDevice(pointer_id2);
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+}
+
+TEST_F(HidDetectionManagerImplTest,
+       StartDetection_KeyboardConnectedDisconnected) {
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  std::string keyboard_id1;
+  AddDevice(HidType::kKeyboard, InputDeviceType::TYPE_USB, &keyboard_id1);
+  EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kConnectedViaUsb, keyboard_id1},
+      /*touchscreen_detected=*/false);
+
+  RemoveDevice(keyboard_id1);
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  StopHidDetection();
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  // Add another keyboard device. This should not inform the delegate.
+  std::string keyboard_id2;
+  AddDevice(HidType::kMouse, InputDeviceType::TYPE_USB, &keyboard_id2);
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  // Remove the keyboard device. This should not inform the delegate.
+  RemoveDevice(keyboard_id2);
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
 }
 
 TEST_F(HidDetectionManagerImplTest,
        StartDetection_MultipleTouchscreensDisconnected) {
   std::string device_id1;
-  AddDevice(HidType::kTouchscreen, InputDeviceType::TYPE_SERIO, &device_id1);
+  AddDevice(HidType::kTablet, InputDeviceType::TYPE_SERIO, &device_id1);
   std::string device_id2;
   AddDevice(HidType::kTouchscreen, InputDeviceType::TYPE_SERIO, &device_id2);
   EXPECT_EQ(0u, GetNumHidDetectionStatusChangedCalls());
@@ -247,13 +453,115 @@ TEST_F(HidDetectionManagerImplTest,
   StartHidDetection();
   EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
   ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
-  EXPECT_TRUE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/true);
 
   // Remove the first touchscreen device. The second touchscreen should be
   // detected and delegate notified.
   RemoveDevice(device_id1);
   EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
-  EXPECT_TRUE(GetLastHidDetectionStatus()->touchscreen_detected);
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/true);
+}
+
+TEST_F(HidDetectionManagerImplTest,
+       StartDetection_MultiplePointersDisconnected) {
+  std::string device_id1;
+  AddDevice(HidType::kTouchpad, InputDeviceType::TYPE_UNKNOWN, &device_id1);
+  std::string device_id2;
+  AddDevice(HidType::kMouse, InputDeviceType::TYPE_SERIO, &device_id2);
+  EXPECT_EQ(0u, GetNumHidDetectionStatusChangedCalls());
+
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kConnected, device_id1},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+
+  // Remove the first pointer. The second pointer should be detected and
+  // delegate notified.
+  RemoveDevice(device_id1);
+  EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kConnected, device_id2},
+      /*keyboard_metadata=*/
+      InputMetadata{InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false);
+}
+
+TEST_F(HidDetectionManagerImplTest,
+       StartDetection_MultipleKeyboardsDisconnected) {
+  std::string device_id1;
+  AddDevice(HidType::kKeyboard, InputDeviceType::TYPE_UNKNOWN, &device_id1);
+  std::string device_id2;
+  AddDevice(HidType::kKeyboard, InputDeviceType::TYPE_SERIO, &device_id2);
+  EXPECT_EQ(0u, GetNumHidDetectionStatusChangedCalls());
+
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/InputMetadata{InputState::kConnected, device_id1},
+      /*touchscreen_detected=*/false);
+
+  // Remove the first keyboard. The second keyboard should be detected and
+  // delegate notified.
+  RemoveDevice(device_id1);
+  EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/InputMetadata{InputState::kConnected, device_id2},
+      /*touchscreen_detected=*/false);
+}
+
+TEST_F(HidDetectionManagerImplTest,
+       StartDetection_DeviceMultipleHidTypesDisconnected) {
+  std::string device_id1;
+  AddDevice(HidType::kTouchpad, InputDeviceType::TYPE_USB, &device_id1);
+  std::string device_id2;
+  std::vector<HidType> hid_types{HidType::kKeyboard, HidType::kTouchpad};
+  AddDevice(hid_types, InputDeviceType::TYPE_SERIO, &device_id2);
+  std::string device_id3;
+  AddDevice(HidType::kKeyboard, InputDeviceType::TYPE_UNKNOWN, &device_id3);
+  EXPECT_EQ(0u, GetNumHidDetectionStatusChangedCalls());
+
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kConnectedViaUsb,
+                                         device_id1},
+      /*keyboard_metadata=*/InputMetadata{InputState::kConnected, device_id2},
+      /*touchscreen_detected=*/false);
+
+  RemoveDevice(device_id1);
+  EXPECT_EQ(2u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kConnected, device_id2},
+      /*keyboard_metadata=*/InputMetadata{InputState::kConnected, device_id2},
+      /*touchscreen_detected=*/false);
+
+  RemoveDevice(device_id2);
+  EXPECT_EQ(3u, GetNumHidDetectionStatusChangedCalls());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/InputMetadata{InputState::kSearching,
+                                         /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/InputMetadata{InputState::kConnected, device_id3},
+      /*touchscreen_detected=*/false);
 }
 
 }  // namespace ash::hid_detection

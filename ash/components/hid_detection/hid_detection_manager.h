@@ -7,13 +7,43 @@
 
 #include "base/callback.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace ash::hid_detection {
 
 // Manages detecting and automatically connecting to human interface devices.
 class HidDetectionManager {
  public:
-  // Represents the status of HIDs on the device.
+  // The connection state of an input.
+  enum class InputState {
+    // No device is connected.
+    kSearching,
+
+    // A device is connected via USB.
+    kConnectedViaUsb,
+
+    // A device is connected, but is not known to be USB (Bluetooth vs USB vs
+    // serial).
+    kConnected
+  };
+
+  // Info of an input on the device.
+  struct InputMetadata {
+    InputState state = InputState::kSearching;
+
+    // The name of the HID currently being interfaced with. Empty if |state| is
+    // kSearching (no HID is being interfaced with).
+    std::string detected_hid_name;
+  };
+
+  // Represents the status of inputs on the device.
   struct HidDetectionStatus {
+    // Pointer input info of the device.
+    InputMetadata pointer_metadata;
+
+    // Keyboard input info of the device.
+    InputMetadata keyboard_metadata;
+
     // Indicates the device has a touchscreen connected.
     bool touchscreen_detected;
   };

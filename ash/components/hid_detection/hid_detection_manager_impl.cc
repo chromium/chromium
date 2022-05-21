@@ -10,6 +10,8 @@
 
 namespace ash::hid_detection {
 namespace {
+using InputState = HidDetectionManager::InputState;
+
 // Global InputDeviceManagerBinder instance that can be overridden in tests.
 base::NoDestructor<HidDetectionManagerImpl::InputDeviceManagerBinder>
     g_input_device_manager_binder;
@@ -55,7 +57,9 @@ void HidDetectionManagerImpl::PerformStopHidDetection() {
 HidDetectionManager::HidDetectionStatus
 HidDetectionManagerImpl::ComputeHidDetectionStatus() const {
   return HidDetectionManager::HidDetectionStatus{
-      /*touchscreen_detected=*/connected_touchscreen_id_.has_value()};
+      GetInputMetadata(connected_pointer_id_),
+      GetInputMetadata(connected_keyboard_id_),
+      connected_touchscreen_id_.has_value()};
 }
 
 void HidDetectionManagerImpl::InputDeviceAdded(
@@ -79,8 +83,18 @@ void HidDetectionManagerImpl::InputDeviceRemoved(const std::string& id) {
   bool was_connected_hid_disconnected_ = false;
 
   if (id == connected_touchscreen_id_) {
-    HID_LOG(EVENT) << "Removing touchscreen: " << id;
+    HID_LOG(EVENT) << "Removing connected touchscreen: " << id;
     connected_touchscreen_id_.reset();
+    was_connected_hid_disconnected_ = true;
+  }
+  if (id == connected_pointer_id_) {
+    HID_LOG(EVENT) << "Removing connected pointer: " << id;
+    connected_pointer_id_.reset();
+    was_connected_hid_disconnected_ = true;
+  }
+  if (id == connected_keyboard_id_) {
+    HID_LOG(EVENT) << "Removing connected keyboard: " << id;
+    connected_keyboard_id_.reset();
     was_connected_hid_disconnected_ = true;
   }
 
@@ -123,7 +137,7 @@ void HidDetectionManagerImpl::OnGetDevicesForIsRequired(
 
   HID_LOG(EVENT)
       << "Fetched " << devices.size()
-      << " input devices for GetIsHIdDetectionRequired(). Pointer detected: "
+      << " input devices for GetIsHidDetectionRequired(). Pointer detected: "
       << has_pointer << ", keyboard detected: " << has_keyboard;
 
   // HID detection is not required if both devices are present.
@@ -142,6 +156,7 @@ void HidDetectionManagerImpl::OnGetDevicesAndSetClient(
 }
 
 bool HidDetectionManagerImpl::SetConnectedHids() {
+  HID_LOG(EVENT) << "Setting connected HIDs";
   bool is_any_device_newly_connected_hid = false;
   for (const auto& [device_id, device] : device_id_to_device_map_) {
     is_any_device_newly_connected_hid |=
@@ -159,9 +174,46 @@ bool HidDetectionManagerImpl::AttemptSetDeviceAsConnectedHid(
     connected_touchscreen_id_ = device.id;
     is_device_newly_connected_hid = true;
   }
+  if (!connected_pointer_id_.has_value() &&
+      hid_detection::IsDevicePointer(device)) {
+    HID_LOG(EVENT) << "Pointer detected: " << device.id;
+    connected_pointer_id_ = device.id;
+    is_device_newly_connected_hid = true;
+  }
+  if (!connected_keyboard_id_.has_value() && device.is_keyboard) {
+    HID_LOG(EVENT) << "Keyboard detected: " << device.id;
+    connected_keyboard_id_ = device.id;
+    is_device_newly_connected_hid = true;
+  }
 
-  // TODO(gordonseto): Handle keyboards/pointers.
   return is_device_newly_connected_hid;
+}
+
+HidDetectionManager::InputMetadata HidDetectionManagerImpl::GetInputMetadata(
+    const absl::optional<std::string>& device_id) const {
+  if (!device_id.has_value()) {
+    return InputMetadata();
+  }
+
+  const device::mojom::InputDeviceInfoPtr& device =
+      device_id_to_device_map_.find(device_id.value())->second;
+  DCHECK(device) << " |device_id| not found in |device_id_to_device_map_|";
+  InputState state;
+  switch (device->type) {
+    case device::mojom::InputDeviceType::TYPE_BLUETOOTH:
+      // TODO(gordonseto): Handle Bluetooth type.
+      state = InputState::kConnected;
+      break;
+    case device::mojom::InputDeviceType::TYPE_USB:
+      state = InputState::kConnectedViaUsb;
+      break;
+    case device::mojom::InputDeviceType::TYPE_SERIO:
+      [[fallthrough]];
+    case device::mojom::InputDeviceType::TYPE_UNKNOWN:
+      state = InputState::kConnected;
+      break;
+  }
+  return InputMetadata{state, device->name};
 }
 
 }  // namespace ash::hid_detection

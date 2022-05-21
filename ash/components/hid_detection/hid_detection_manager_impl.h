@@ -71,9 +71,17 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   bool AttemptSetDeviceAsConnectedHid(
       const device::mojom::InputDeviceInfo& device);
 
+  // Returns InputMetadata based on |device_id|. A null |device_id| means no HID
+  // for that input is connected. If |device_id| is not null, it must be a
+  // key for an entry in |device_id_to_device_map_|.
+  InputMetadata GetInputMetadata(
+      const absl::optional<std::string>& device_id) const;
+
   std::map<std::string, device::mojom::InputDeviceInfoPtr>
       device_id_to_device_map_;
   absl::optional<std::string> connected_touchscreen_id_;
+  absl::optional<std::string> connected_pointer_id_;
+  absl::optional<std::string> connected_keyboard_id_;
 
   device::mojom::DeviceService* device_service_ = nullptr;
   mojo::Remote<device::mojom::InputDeviceManager> input_device_manager_;
