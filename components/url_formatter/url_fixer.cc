@@ -575,7 +575,7 @@ GURL FixupURL(const std::string& text, const std::string& desired_tld) {
 
   // 'about:blank' and 'about:srcdoc' are special-cased in various places in the
   // code and shouldn't use the chrome: scheme.
-  if (base::LowerCaseEqualsASCII(scheme, url::kAboutScheme)) {
+  if (base::EqualsCaseInsensitiveASCII(scheme, url::kAboutScheme)) {
     GURL about_url(base::ToLowerASCII(trimmed));
     if (about_url.IsAboutBlank() || about_url.IsAboutSrcdoc())
       return about_url;
