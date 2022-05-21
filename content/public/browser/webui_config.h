@@ -64,6 +64,22 @@ class CONTENT_EXPORT WebUIConfig {
   const std::string host_;
 };
 
+// Templated class with an implementation for CreateWebUIController. Prefer
+// to use this over WebUIConfig if the WebUIController can be created with
+// a single WebUI argument.
+template <typename T>
+class CONTENT_EXPORT DefaultWebUIConfig : public WebUIConfig {
+ public:
+  explicit DefaultWebUIConfig(base::StringPiece scheme, base::StringPiece host)
+      : WebUIConfig(scheme, host) {}
+  ~DefaultWebUIConfig() override = default;
+
+  std::unique_ptr<WebUIController> CreateWebUIController(
+      WebUI* web_ui) override {
+    return std::make_unique<T>(web_ui);
+  }
+};
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_WEBUI_CONFIG_H_

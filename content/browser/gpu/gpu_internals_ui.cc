@@ -908,21 +908,11 @@ void GpuMessageHandler::OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {
 
 }  // namespace
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 // GpuInternalsUI
 //
 ////////////////////////////////////////////////////////////////////////////////
-
-GpuInternalsUIConfig::GpuInternalsUIConfig()
-    : WebUIConfig(kChromeUIScheme, kChromeUIGpuHost) {}
-
-std::unique_ptr<WebUIController> GpuInternalsUIConfig::CreateWebUIController(
-    WebUI* web_ui) {
-  return std::make_unique<GpuInternalsUI>(web_ui);
-}
-
 GpuInternalsUI::GpuInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<GpuMessageHandler>());

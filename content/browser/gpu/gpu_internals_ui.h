@@ -8,16 +8,16 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace content {
 
-class GpuInternalsUIConfig : public WebUIConfig {
- public:
-  GpuInternalsUIConfig();
+class GpuInternalsUI;
 
-  // WebUIConfig
-  std::unique_ptr<WebUIController> CreateWebUIController(
-      WebUI* web_ui) override;
+class GpuInternalsUIConfig : public DefaultWebUIConfig<GpuInternalsUI> {
+ public:
+  GpuInternalsUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIGpuHost) {}
 };
 
 class GpuInternalsUI : public WebUIController {
