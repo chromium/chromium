@@ -53954,19 +53954,24 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2084324285" label="iw"/>
   <int value="-2070680532" label="hi"/>
   <int value="-2070250592" label="zu"/>
+  <int value="-2061822420" label="gv"/>
   <int value="-2042178987" label="si"/>
   <int value="-2041104386" label="mi"/>
   <int value="-2014954614" label="so"/>
+  <int value="-2007848210" label="ay"/>
   <int value="-2005166181" label="ja-Latn"/>
+  <int value="-2001789870" label="sg"/>
   <int value="-1999171202" label="lv"/>
   <int value="-1998337622" label="es-CL"/>
   <int value="-1994870905" label="lt"/>
+  <int value="-1993564971" label="tzm"/>
   <int value="-1986814580" label="om"/>
   <int value="-1920649864" label="an"/>
   <int value="-1898669966" label="zh-CN"/>
   <int value="-1895779836" label="empty string"/>
   <int value="-1872667487" label="rm"/>
   <int value="-1855113037" label="vi"/>
+  <int value="-1835493637" label="ce"/>
   <int value="-1828586117" label="de"/>
   <int value="-1823968882" label="zh"/>
   <int value="-1797669833" label="it-IT"/>
@@ -53982,17 +53987,28 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1696927720" label="la"/>
   <int value="-1690250140" label="ja"/>
   <int value="-1683177340" label="qu"/>
+  <int value="-1679839472" label="bem"/>
   <int value="-1662603770" label="es-VE"/>
+  <int value="-1655091207" label="ee"/>
   <int value="-1625830957" label="ln"/>
+  <int value="-1621588434" label="bho"/>
   <int value="-1612285087" label="en-ZA"/>
+  <int value="-1589643944" label="sa"/>
+  <int value="-1578396049" label="ki"/>
   <int value="-1566592213" label="hi-Latn"/>
   <int value="-1558307126" label="es-CO"/>
+  <int value="-1553574832" label="saq"/>
   <int value="-1532548885" label="pa"/>
   <int value="-1515310228" label="ps"/>
+  <int value="-1481549061" label="dv"/>
   <int value="-1453785110" label="rw"/>
   <int value="-1452189651" label="es-CR"/>
+  <int value="-1403061996" label="mgo"/>
   <int value="-1346992143" label="nn"/>
+  <int value="-1344048927" label="naq"/>
+  <int value="-1301970539" label="dsb"/>
   <int value="-1284862637" label="ru"/>
+  <int value="-1283061184" label="bo"/>
   <int value="-1273588087" label="kn"/>
   <int value="-1242903543" label="es-UY"/>
   <int value="-1230368678" label="kok"/>
@@ -54002,15 +54018,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-1117024738" label="zh-Latn"/>
   <int value="-1100371650" label="sn"/>
   <int value="-1086322569" label="es-AR"/>
+  <int value="-1069161714" label="yue"/>
   <int value="-1052948093" label="jw"/>
+  <int value="-1051941586" label="ff"/>
   <int value="-1048980531" label="ur"/>
   <int value="-1042449480" label="cy"/>
   <int value="-1033645590" label="fil"/>
   <int value="-1025520269" label="az"/>
+  <int value="-1022428397" label="kln"/>
   <int value="-1010619188" label="ru-Latn"/>
+  <int value="-1007452579" label="mni"/>
   <int value="-1000295094" label="no"/>
   <int value="-950444864" label="tk"/>
   <int value="-926982267" label="de-AT"/>
+  <int value="-912744476" label="lus"/>
+  <int value="-901764938" label="doi"/>
   <int value="-887258309" label="hu"/>
   <int value="-873154203" label="en-CA"/>
   <int value="-862298602" label="st"/>
@@ -54018,16 +54040,22 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-846401046" label="chr"/>
   <int value="-838275151" label="xh"/>
   <int value="-812926878" label="ug"/>
+  <int value="-796128841" label="agq"/>
   <int value="-780984386" label="fr-CA"/>
+  <int value="-764225367" label="kri"/>
   <int value="-750267977" label="bg"/>
   <int value="-742603342" label="ca"/>
   <int value="-740941224" label="ku"/>
   <int value="-739605699" label="de-LI"/>
+  <int value="-736352432" label="guz"/>
+  <int value="-735144849" label="bas"/>
   <int value="-734032818" label="km"/>
   <int value="-717751759" label="lb"/>
+  <int value="-678521183" label="teo"/>
   <int value="-659007214" label="el"/>
   <int value="-647197922" label="ceb"/>
   <int value="-645438410" label="my"/>
+  <int value="-645318977" label="smn"/>
   <int value="-644560085" label="su"/>
   <int value="-598481752" label="et"/>
   <int value="-548175087" label="tt"/>
@@ -54044,15 +54072,20 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-349113427" label="am"/>
   <int value="-342591258" label="sq"/>
   <int value="-302282167" label="ti"/>
+  <int value="-288195501" label="ts"/>
+  <int value="-259045309" label="lu"/>
   <int value="-226066958" label="bg-Latn"/>
   <int value="-219674420" label="ta"/>
   <int value="-183664425" label="pt-PT"/>
   <int value="-181870943" label="bn"/>
+  <int value="-119774173" label="dav"/>
   <int value="-110306666" label="sr"/>
   <int value="-91748674" label="tn"/>
+  <int value="-91654905" label="luo"/>
   <int value="-78164291" label="kk"/>
   <int value="-74147910" label="en"/>
   <int value="-35182995" label="fi"/>
+  <int value="-27733173" label="mfe"/>
   <int value="-5034744" label="ny"/>
   <int value="42532257" label="id"/>
   <int value="64053359" label="eu"/>
@@ -54064,64 +54097,98 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="142304335" label="gn"/>
   <int value="142313505" label="ro"/>
   <int value="145030010" label="gu"/>
+  <int value="158276939" label="gsw"/>
   <int value="162326141" label="sl"/>
   <int value="183952636" label="mg"/>
   <int value="191168946" label="mk"/>
+  <int value="264824286" label="ksh"/>
   <int value="350748440" label="und"/>
   <int value="357286655" label="af"/>
+  <int value="443574411" label="dz"/>
   <int value="461111861" label="mt"/>
   <int value="462869158" label="hy"/>
+  <int value="469297921" label="khq"/>
   <int value="470982931" label="sv"/>
   <int value="522435458" label="hr"/>
   <int value="526531379" label="ml"/>
   <int value="538270200" label="uk"/>
   <int value="549800655" label="de-CH"/>
+  <int value="563029930" label="pcm"/>
   <int value="584710092" label="nb"/>
   <int value="596295208" label="bs"/>
+  <int value="622642106" label="ilo"/>
   <int value="632444664" label="yue-HK"/>
+  <int value="652001481" label="fur"/>
   <int value="673577439" label="cs"/>
   <int value="720107264" label="es-PE"/>
   <int value="729519028" label="or"/>
+  <int value="729888861" label="hsb"/>
   <int value="796588925" label="yo"/>
   <int value="804120371" label="jv"/>
+  <int value="806431033" label="mgh"/>
+  <int value="842939712" label="se"/>
+  <int value="844238123" label="kl"/>
+  <int value="861252498" label="seh"/>
   <int value="873647701" label="th"/>
   <int value="910795716" label="ne"/>
   <int value="911100675" label="de-DE"/>
+  <int value="911759580" label="kab"/>
+  <int value="919128771" label="dua"/>
   <int value="925733725" label="ms"/>
   <int value="1062172280" label="en-IN"/>
+  <int value="1084091282" label="sah"/>
   <int value="1092864716" label="ht"/>
   <int value="1110169461" label="hmn"/>
+  <int value="1117613525" label="ewo"/>
   <int value="1119752109" label="te"/>
+  <int value="1129132659" label="kea"/>
   <int value="1140816756" label="ar"/>
   <int value="1152813109" label="to"/>
   <int value="1166708194" label="is"/>
   <int value="1196096274" label="es-US"/>
   <int value="1199169847" label="en-AU"/>
   <int value="1214473765" label="unknown"/>
+  <int value="1222328168" label="rn"/>
+  <int value="1225967405" label="lg"/>
+  <int value="1227107723" label="nyn"/>
   <int value="1228519432" label="fo"/>
   <int value="1282439493" label="es-MX"/>
   <int value="1311313702" label="pt"/>
   <int value="1312638242" label="pl"/>
+  <int value="1327296767" label="gom"/>
   <int value="1437205305" label="uz"/>
+  <int value="1478556106" label="bm"/>
   <int value="1482920614" label="yi"/>
   <int value="1483760478" label="tg"/>
   <int value="1552733612" label="da"/>
+  <int value="1587354509" label="mzn"/>
   <int value="1628170778" label="pt-BR"/>
+  <int value="1632012012" label="zgh"/>
   <int value="1638257274" label="sk"/>
+  <int value="1650591828" label="kw"/>
   <int value="1670494558" label="ko"/>
   <int value="1704087523" label="ky"/>
   <int value="1704315002" label="fr"/>
   <int value="1708437566" label="it-CH"/>
   <int value="1717583602" label="co"/>
   <int value="1724977738" label="ia"/>
+  <int value="1747828010" label="os"/>
   <int value="1754979806" label="fy"/>
+  <int value="1837633193" label="mai"/>
   <int value="1853848431" label="tr"/>
+  <int value="1865219403" label="nd"/>
+  <int value="1866346468" label="in"/>
+  <int value="1883413742" label="kam"/>
   <int value="1884922344" label="ckb"/>
   <int value="1921155040" label="br"/>
+  <int value="1958157353" label="nso"/>
   <int value="1988450082" label="tw"/>
+  <int value="1995581006" label="kde"/>
   <int value="2039992295" label="ig"/>
+  <int value="2072277196" label="ak"/>
   <int value="2077417554" label="fr-CH"/>
   <int value="2078974161" label="ast"/>
+  <int value="2081074480" label="ii"/>
   <int value="2087142539" label="mn"/>
   <int value="2094171128" label="mo"/>
   <int value="2098003573" label="as"/>
