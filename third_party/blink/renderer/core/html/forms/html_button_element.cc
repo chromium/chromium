@@ -117,7 +117,19 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
       if (popup.element->popupOpen() &&
           (popup.action == PopupTriggerAction::kToggle ||
            popup.action == PopupTriggerAction::kHide)) {
-        popup.element->hidePopup(ASSERT_NO_EXCEPTION);
+        // Note that the order is: `mousedown` which runs popup light dismiss
+        // code, then (for clicked elements) focus is set to the clicked
+        // element, then |DOMActivate| runs here. Also note that the light
+        // dismiss code will not hide popups when an activating element is
+        // clicked. Taking that together, if the clicked control is a triggering
+        // element for a popup, light dismiss will do nothing, focus will be set
+        // to the triggering element, then this code will run and will set focus
+        // to the previously focused element. If instead the clicked control is
+        // not a triggering element, then the light dismiss code will hide the
+        // popup and set focus to the previously focused element, then the
+        // normal focus management code will reset focus to the clicked control.
+        popup.element->hidePopupInternal(
+            HidePopupFocusBehavior::kFocusPreviousElement);
       } else if (!popup.element->popupOpen() &&
                  (popup.action == PopupTriggerAction::kToggle ||
                   popup.action == PopupTriggerAction::kShow)) {

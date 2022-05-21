@@ -2409,7 +2409,7 @@ void Element::UpdatePopupAttribute(String value) {
       return;
     // If the popup type is changing, hide it.
     if (popupOpen())
-      hidePopup(ASSERT_NO_EXCEPTION);
+      hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement);
   }
   if (type == PopupValueType::kNone) {
     if (HasValidPopupAttribute()) {
@@ -2460,23 +2460,30 @@ void Element::showPopup(ExceptionState& exception_state) {
         DOMExceptionCode::kInvalidStateError,
         "Invalid on already-showing or disconnected popup elements");
   }
+  bool should_restore_focus = false;
   if (PopupType() == PopupValueType::kPopup ||
       PopupType() == PopupValueType::kHint) {
     if (GetDocument().HintShowing()) {
-      GetDocument().HideTopmostPopupOrHint();
+      GetDocument().HideTopmostPopupOrHint(HidePopupFocusBehavior::kNone);
     }
     if (PopupType() == PopupValueType::kPopup) {
       // Only hide other popups up to this popup's ancestral popup.
-      GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this));
+      GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this),
+                                       HidePopupFocusBehavior::kNone);
     }
     // Add this popup to the stack.
     auto& stack = GetDocument().PopupAndHintStack();
     DCHECK(!stack.Contains(this));
+    // We only restore focus for popup/hint, and only for the first popup in
+    // the stack.
+    should_restore_focus = stack.IsEmpty();
     stack.push_back(this);
   }
   GetPopupData()->setOpen(true);
   GetDocument().AddToTopLayer(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
+  GetPopupData()->setPreviouslyFocusedElement(
+      should_restore_focus ? GetDocument().FocusedElement() : nullptr);
   SetPopupFocusOnShow();
   // Queue the show event.
   Event* event = Event::CreateBubble(event_type_names::kShow);
@@ -2496,24 +2503,42 @@ void Element::hidePopup(ExceptionState& exception_state) {
         DOMExceptionCode::kInvalidStateError,
         "Invalid on already-hidden popup elements");
   }
+  hidePopupInternal(HidePopupFocusBehavior::kFocusPreviousElement);
+}
+
+void Element::hidePopupInternal(HidePopupFocusBehavior focus_behavior) {
   DCHECK(isConnected());
-  GetPopupData()->setOpen(false);
-  GetPopupData()->setInvoker(nullptr);
-  GetPopupData()->setNeedsRepositioningForSelectMenu(false);
+  DCHECK(HasValidPopupAttribute());
+  DCHECK(popupOpen());
   if (PopupType() == PopupValueType::kPopup ||
       PopupType() == PopupValueType::kHint) {
-    GetDocument().HideAllPopupsUntil(this);
-    // Remove this popup from the stack and the top layer.
+    // Hide any popups/hints above us in the stack.
+    GetDocument().HideAllPopupsUntil(this, focus_behavior);
+    // Then remove this popup/hint from the stack.
     auto& stack = GetDocument().PopupAndHintStack();
     DCHECK(stack.back() == this);
     stack.pop_back();
   }
+  GetPopupData()->setOpen(false);
+  GetPopupData()->setInvoker(nullptr);
+  GetPopupData()->setNeedsRepositioningForSelectMenu(false);
   GetDocument().RemoveFromTopLayer(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   // Queue the hide event.
   Event* event = Event::CreateBubble(event_type_names::kHide);
   event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(event);
+  if (Element* previously_focused_element =
+          GetPopupData()->previouslyFocusedElement()) {
+    GetPopupData()->setPreviouslyFocusedElement(nullptr);
+    if (focus_behavior == HidePopupFocusBehavior::kFocusPreviousElement) {
+      FocusOptions* focus_options = FocusOptions::Create();
+      focus_options->setPreventScroll(true);
+      // Call Focus() last, since it will fire a focus event which could modify
+      // this element. Focusing this element may also hide other popups.
+      previously_focused_element->Focus(focus_options);
+    }
+  }
 }
 
 void Element::SetPopupFocusOnShow() {
@@ -2702,16 +2727,19 @@ void Element::HandlePopupLightDismiss(const Event& event) {
     //    1. This mirrors typical platform popups, which dismiss on mousedown.
     //    2. This allows a mouse-drag that starts on a popup and finishes off
     //       the popup, without light-dismissing the popup.
-    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node));
+    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node),
+                                HidePopupFocusBehavior::kNone);
   } else if (event_type == event_type_names::kKeydown) {
     const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
     if (key_event && key_event->key() == "Escape") {
       // Escape key just pops the topmost popup or hint off the stack.
-      document.HideTopmostPopupOrHint();
+      document.HideTopmostPopupOrHint(
+          HidePopupFocusBehavior::kFocusPreviousElement);
     }
   } else if (event_type == event_type_names::kFocusin) {
     // If we focus an element, hide all popups that don't contain that element.
-    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node));
+    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node),
+                                HidePopupFocusBehavior::kNone);
   }
 }
 
@@ -3115,7 +3143,9 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // If a popup is removed from the document, make sure it gets
   // removed from the popup element stack and the top layer.
   if (was_in_document && HasValidPopupAttribute()) {
-    insertion_point.GetDocument().HidePopupIfShowing(this);
+    // We can't run focus event handlers while removing elements.
+    insertion_point.GetDocument().HidePopupIfShowing(
+        this, HidePopupFocusBehavior::kNone);
   }
 
   if (GetDocument().GetPage())

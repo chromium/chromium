@@ -43,6 +43,13 @@ class PopupData final : public GarbageCollected<PopupData> {
     return needs_repositioning_for_select_menu_;
   }
 
+  Element* previouslyFocusedElement() const {
+    return previously_focused_element_;
+  }
+  void setPreviouslyFocusedElement(Element* element) {
+    previously_focused_element_ = element;
+  }
+
   HTMLSelectMenuElement* ownerSelectMenuElement() const {
     return owner_select_menu_element_;
   }
@@ -52,6 +59,7 @@ class PopupData final : public GarbageCollected<PopupData> {
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(invoker_);
+    visitor->Trace(previously_focused_element_);
     visitor->Trace(owner_select_menu_element_);
   }
 
@@ -60,6 +68,7 @@ class PopupData final : public GarbageCollected<PopupData> {
   bool had_defaultopen_when_parsed_ = false;
   PopupValueType type_ = PopupValueType::kNone;
   WeakMember<Element> invoker_;
+  WeakMember<Element> previously_focused_element_;
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.

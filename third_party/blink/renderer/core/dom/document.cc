@@ -7199,33 +7199,35 @@ bool Document::HintShowing() const {
          (popup_and_hint_stack_.back()->PopupType() == PopupValueType::kHint);
 }
 
-void Document::HideTopmostPopupOrHint() {
+void Document::HideTopmostPopupOrHint(HidePopupFocusBehavior focus_behavior) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (popup_and_hint_stack_.IsEmpty())
     return;
-  popup_and_hint_stack_.back()->hidePopup(ASSERT_NO_EXCEPTION);
+  popup_and_hint_stack_.back()->hidePopupInternal(focus_behavior);
 }
 
-void Document::HideAllPopupsUntil(const Element* endpoint) {
+void Document::HideAllPopupsUntil(const Element* endpoint,
+                                  HidePopupFocusBehavior focus_behavior) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   while (!popup_and_hint_stack_.IsEmpty() &&
          popup_and_hint_stack_.back() != endpoint) {
-    popup_and_hint_stack_.back()->hidePopup(ASSERT_NO_EXCEPTION);
+    popup_and_hint_stack_.back()->hidePopupInternal(focus_behavior);
   }
 }
 
-void Document::HidePopupIfShowing(Element* popup) {
+void Document::HidePopupIfShowing(Element* popup,
+                                  HidePopupFocusBehavior focus_behavior) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   DCHECK(popup->HasValidPopupAttribute());
   if (!popup->popupOpen())
     return;
   if (popup->PopupType() == PopupValueType::kAsync) {
-    popup->hidePopup(ASSERT_NO_EXCEPTION);
+    popup->hidePopupInternal(focus_behavior);
   } else {
-    HideAllPopupsUntil(popup);
+    HideAllPopupsUntil(popup, focus_behavior);
     DCHECK(!popup_and_hint_stack_.IsEmpty() &&
            popup_and_hint_stack_.back() == popup);
-    HideTopmostPopupOrHint();
+    HideTopmostPopupOrHint(focus_behavior);
   }
 }
 

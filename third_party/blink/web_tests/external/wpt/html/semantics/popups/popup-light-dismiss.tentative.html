@@ -8,8 +8,10 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/popup-utils.js"></script>
 
-<button id=b1 togglepopup='p1'>Popup 1</button>
+<button id=b1t togglepopup='p1'>Popup 1</button>
+<button id=b1s showpopup='p1'>Popup 1</button>
 <button id=p1anchor>Popup1 anchor (no action)</button>
 <span id=outside>Outside all popups</span>
 <div popup=popup id=p1 anchor=p1anchor>
@@ -30,26 +32,9 @@
   }
 </style>
 <script>
-  function spinEventLoop() {
-    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  }
-  async function clickOn(element) {
-    const actions = new test_driver.Actions();
-    await spinEventLoop();
-    await actions.pointerMove(0, 0, {origin: element})
-        .pointerDown({button: actions.ButtonType.LEFT})
-        .pointerUp({button: actions.ButtonType.LEFT})
-        .send();
-    await spinEventLoop();
-  }
-  async function sendTab() {
-    await spinEventLoop();
-    await new test_driver.send_keys(document.body,'\uE004'); // Tab
-    await spinEventLoop();
-  }
-
   const popup1 = document.querySelector('#p1');
-  const button1 = document.querySelector('#b1');
+  const button1toggle = document.querySelector('#b1t');
+  const button1show = document.querySelector('#b1s');
   const popup1anchor = document.querySelector('#p1anchor');
   const inside1After = document.querySelector('#inside1after');
   const popup2 = document.querySelector('#p2');
@@ -81,7 +66,7 @@
   promise_test(async () => {
     assert_false(popup1.matches(':popup-open'));
     popup1.showPopup();
-    await spinEventLoop();
+    await waitForRender();
     p1HideCount = popup1HideCount;
     await clickOn(inside1);
     assert_true(popup1.matches(':popup-open'));
@@ -102,7 +87,7 @@
   promise_test(async () => {
     popup1.showPopup();
     popup2.showPopup();
-    await spinEventLoop();
+    await waitForRender();
     p1HideCount = popup1HideCount;
     let p2HideCount = popup2HideCount;
     await clickOn(inside2);
@@ -118,7 +103,7 @@
   promise_test(async () => {
     popup1.showPopup();
     popup2.showPopup();
-    await spinEventLoop();
+    await waitForRender();
     p1HideCount = popup1HideCount;
     p2HideCount = popup2HideCount;
     await clickOn(inside1);
@@ -130,9 +115,43 @@
   },'Clicking inside a parent popup should close child popup');
 
   promise_test(async () => {
+    await clickOn(button1show);
+    assert_true(popup1.matches(':popup-open'));
+    await waitForRender();
+    p1HideCount = popup1HideCount;
+    await clickOn(button1show);
+    assert_true(popup1.matches(':popup-open'),'popup1 should stay open');
+    assert_equals(popup1HideCount,p1HideCount,'popup1 should not get hidden and reshown');
+    popup1.hidePopup(); // Cleanup
+    assert_false(popup1.matches(':popup-open'));
+  },'Clicking on invoking element, after using it for activation, shouldn\'t close its popup');
+
+  promise_test(async () => {
+    popup1.showPopup(); // Directly show the popup
+    assert_true(popup1.matches(':popup-open'));
+    await waitForRender();
+    p1HideCount = popup1HideCount;
+    await clickOn(button1show);
+    assert_true(popup1.matches(':popup-open'),'popup1 should stay open');
+    assert_equals(popup1HideCount,p1HideCount,'popup1 should not get hidden and reshown');
+    popup1.hidePopup(); // Cleanup
+    assert_false(popup1.matches(':popup-open'));
+  },'Clicking on invoking element, even if it wasn\'t used for activation, shouldn\'t close its popup');
+
+  promise_test(async () => {
+    popup1.showPopup(); // Directly show the popup
+    assert_true(popup1.matches(':popup-open'));
+    await waitForRender();
+    p1HideCount = popup1HideCount;
+    await clickOn(button1toggle);
+    assert_false(popup1.matches(':popup-open'),'popup1 should be hidden by togglepopup');
+    assert_equals(popup1HideCount,p1HideCount+1,'popup1 should get hidden only once by togglepopup');
+  },'Clicking on togglepopup element, even if it wasn\'t used for activation, should hide it exactly once');
+
+  promise_test(async () => {
     popup1.showPopup();
     assert_true(popup1.matches(':popup-open'));
-    await spinEventLoop();
+    await waitForRender();
     p1HideCount = popup1HideCount;
     await clickOn(popup1anchor);
     assert_true(popup1.matches(':popup-open'),'popup1 not open');

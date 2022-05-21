@@ -185,7 +185,7 @@ void HTMLDialogElement::show() {
 
   // Showing a <dialog> should hide all open popups.
   if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
-    GetDocument().HideAllPopupsUntil(nullptr);
+    GetDocument().HideAllPopupsUntil(nullptr, HidePopupFocusBehavior::kNone);
   }
 
   // The layout must be updated here because setFocusForDialog calls
@@ -243,7 +243,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
 
   // Showing a <dialog> should hide all open popups.
   if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled()) {
-    document.HideAllPopupsUntil(nullptr);
+    document.HideAllPopupsUntil(nullptr, HidePopupFocusBehavior::kNone);
   }
 
   document.AddToTopLayer(this);

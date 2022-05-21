@@ -174,6 +174,11 @@ enum class PopupTriggerAction {
   kHide,
 };
 
+enum class HidePopupFocusBehavior {
+  kNone,
+  kFocusPreviousElement,
+};
+
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 typedef HashMap<AtomicString, SpecificTrustedType> AttrNameToTrustedType;
@@ -553,6 +558,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool popupOpen() const;
   void showPopup(ExceptionState& exception_state);
   void hidePopup(ExceptionState& exception_state);
+  void hidePopupInternal(HidePopupFocusBehavior focus_behavior);
   static const Element* NearestOpenAncestralPopup(Node* start_node);
   static void HandlePopupLightDismiss(const Event& event);
   void InvokePopup(Element* invoker);
