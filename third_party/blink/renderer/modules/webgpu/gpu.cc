@@ -286,8 +286,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
-  auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
-  DCHECK(context_provider);
+  DCHECK_NE(dawn_control_client_, nullptr);
 
   WGPURequestAdapterOptions dawn_options = AsDawnType(options);
   auto* callback =
