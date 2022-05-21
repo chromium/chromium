@@ -47,17 +47,17 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
 }
 
 blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
-  if (base::LowerCaseEqualsASCII(display, "browser"))
+  if (base::EqualsCaseInsensitiveASCII(display, "browser"))
     return blink::mojom::DisplayMode::kBrowser;
-  if (base::LowerCaseEqualsASCII(display, "minimal-ui"))
+  if (base::EqualsCaseInsensitiveASCII(display, "minimal-ui"))
     return blink::mojom::DisplayMode::kMinimalUi;
-  if (base::LowerCaseEqualsASCII(display, "standalone"))
+  if (base::EqualsCaseInsensitiveASCII(display, "standalone"))
     return blink::mojom::DisplayMode::kStandalone;
-  if (base::LowerCaseEqualsASCII(display, "fullscreen"))
+  if (base::EqualsCaseInsensitiveASCII(display, "fullscreen"))
     return blink::mojom::DisplayMode::kFullscreen;
-  if (base::LowerCaseEqualsASCII(display, "window-controls-overlay"))
+  if (base::EqualsCaseInsensitiveASCII(display, "window-controls-overlay"))
     return blink::mojom::DisplayMode::kWindowControlsOverlay;
-  if (base::LowerCaseEqualsASCII(display, "tabbed"))
+  if (base::EqualsCaseInsensitiveASCII(display, "tabbed"))
     return blink::mojom::DisplayMode::kTabbed;
   return blink::mojom::DisplayMode::kUndefined;
 }
@@ -100,41 +100,42 @@ std::string WebScreenOrientationLockTypeToString(
 
 device::mojom::ScreenOrientationLockType WebScreenOrientationLockTypeFromString(
     const std::string& orientation) {
-  if (base::LowerCaseEqualsASCII(orientation, "portrait-primary"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait-primary"))
     return device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY;
-  if (base::LowerCaseEqualsASCII(orientation, "portrait-secondary"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait-secondary"))
     return device::mojom::ScreenOrientationLockType::PORTRAIT_SECONDARY;
-  if (base::LowerCaseEqualsASCII(orientation, "landscape-primary"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape-primary"))
     return device::mojom::ScreenOrientationLockType::LANDSCAPE_PRIMARY;
-  if (base::LowerCaseEqualsASCII(orientation, "landscape-secondary"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape-secondary"))
     return device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY;
-  if (base::LowerCaseEqualsASCII(orientation, "any"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "any"))
     return device::mojom::ScreenOrientationLockType::ANY;
-  if (base::LowerCaseEqualsASCII(orientation, "landscape"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "landscape"))
     return device::mojom::ScreenOrientationLockType::LANDSCAPE;
-  if (base::LowerCaseEqualsASCII(orientation, "portrait"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "portrait"))
     return device::mojom::ScreenOrientationLockType::PORTRAIT;
-  if (base::LowerCaseEqualsASCII(orientation, "natural"))
+  if (base::EqualsCaseInsensitiveASCII(orientation, "natural"))
     return device::mojom::ScreenOrientationLockType::NATURAL;
   return device::mojom::ScreenOrientationLockType::DEFAULT;
 }
 
 mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
-  if (base::LowerCaseEqualsASCII(capture_links, "none"))
+  if (base::EqualsCaseInsensitiveASCII(capture_links, "none"))
     return mojom::CaptureLinks::kNone;
-  if (base::LowerCaseEqualsASCII(capture_links, "new-client"))
+  if (base::EqualsCaseInsensitiveASCII(capture_links, "new-client"))
     return mojom::CaptureLinks::kNewClient;
-  if (base::LowerCaseEqualsASCII(capture_links, "existing-client-navigate"))
+  if (base::EqualsCaseInsensitiveASCII(capture_links,
+                                       "existing-client-navigate"))
     return mojom::CaptureLinks::kExistingClientNavigate;
   return mojom::CaptureLinks::kUndefined;
 }
 
 mojom::HandleLinks HandleLinksFromString(const std::string& handle_links) {
-  if (base::LowerCaseEqualsASCII(handle_links, "auto"))
+  if (base::EqualsCaseInsensitiveASCII(handle_links, "auto"))
     return mojom::HandleLinks::kAuto;
-  if (base::LowerCaseEqualsASCII(handle_links, "preferred"))
+  if (base::EqualsCaseInsensitiveASCII(handle_links, "preferred"))
     return mojom::HandleLinks::kPreferred;
-  if (base::LowerCaseEqualsASCII(handle_links, "not-preferred"))
+  if (base::EqualsCaseInsensitiveASCII(handle_links, "not-preferred"))
     return mojom::HandleLinks::kNotPreferred;
   return mojom::HandleLinks::kUndefined;
 }
@@ -152,24 +153,24 @@ bool ParsedRouteTo::operator!=(const ParsedRouteTo& other) const {
 
 absl::optional<ParsedRouteTo> RouteToFromString(const std::string& route_to) {
   using RouteTo = Manifest::LaunchHandler::RouteTo;
-  if (base::LowerCaseEqualsASCII(route_to, "auto"))
+  if (base::EqualsCaseInsensitiveASCII(route_to, "auto"))
     return ParsedRouteTo{.route_to = RouteTo::kAuto};
-  if (base::LowerCaseEqualsASCII(route_to, "new-client"))
+  if (base::EqualsCaseInsensitiveASCII(route_to, "new-client"))
     return ParsedRouteTo{.route_to = RouteTo::kNewClient};
-  if (base::LowerCaseEqualsASCII(route_to, "existing-client"))
+  if (base::EqualsCaseInsensitiveASCII(route_to, "existing-client"))
     return ParsedRouteTo{.legacy_existing_client_value = true};
-  if (base::LowerCaseEqualsASCII(route_to, "existing-client-navigate"))
+  if (base::EqualsCaseInsensitiveASCII(route_to, "existing-client-navigate"))
     return ParsedRouteTo{.route_to = RouteTo::kExistingClientNavigate};
-  if (base::LowerCaseEqualsASCII(route_to, "existing-client-retain"))
+  if (base::EqualsCaseInsensitiveASCII(route_to, "existing-client-retain"))
     return ParsedRouteTo{.route_to = RouteTo::kExistingClientRetain};
   return absl::nullopt;
 }
 
 absl::optional<NavigateExistingClient> NavigateExistingClientFromString(
     const std::string& navigate_existing_client) {
-  if (base::LowerCaseEqualsASCII(navigate_existing_client, "always"))
+  if (base::EqualsCaseInsensitiveASCII(navigate_existing_client, "always"))
     return NavigateExistingClient::kAlways;
-  if (base::LowerCaseEqualsASCII(navigate_existing_client, "never"))
+  if (base::EqualsCaseInsensitiveASCII(navigate_existing_client, "never"))
     return NavigateExistingClient::kNever;
   return absl::nullopt;
 }
