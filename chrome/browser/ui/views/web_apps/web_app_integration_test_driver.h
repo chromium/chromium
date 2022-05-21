@@ -321,7 +321,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void MaybeNavigateTabbedBrowserInScope(Site site);
 
-  void NavigateTabbedBrowserToSite(const GURL& url);
+  enum class NavigationMode { kNewTab, kCurrentTab };
+  void NavigateTabbedBrowserToSite(const GURL& url, NavigationMode mode);
 
   // Returns an existing app browser if one exists, or launches a new one if
   // not.

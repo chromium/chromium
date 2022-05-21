@@ -263,7 +263,7 @@ class TestAppLauncherHandler : public AppLauncherHandler {
 class BrowserAddedWaiter final : public BrowserListObserver {
  public:
   BrowserAddedWaiter() { BrowserList::AddObserver(this); }
-  ~BrowserAddedWaiter() override = default;
+  ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
 
   void Wait() { run_loop_.Run(); }
 
@@ -671,15 +671,13 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   BeforeStateChangeAction(__FUNCTION__);
   MaybeNavigateTabbedBrowserInScope(InstallableSiteToSite(site));
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  BrowserAddedWaiter browser_added_waiter;
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
-  app_loaded_observer.Wait();
+  browser_added_waiter.Wait();
   active_app_id_ = install_observer.Wait();
-  app_browser_ = GetBrowserForAppId(active_app_id_);
+  app_browser_ = browser_added_waiter.browser_added();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
   AfterStateChangeAction();
 }
@@ -721,20 +719,18 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
         app_id = installed_app_id;
         run_loop.Quit();
       }));
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
 
+  BrowserAddedWaiter browser_added_waiter;
   ASSERT_TRUE(pwa_install_view()->GetVisible());
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   pwa_install_view()->ExecuteForTesting();
 
   run_loop.Run();
-  app_loaded_observer.Wait();
+  browser_added_waiter.Wait();
   active_app_id_ = install_observer.Wait();
   DCHECK_EQ(app_id, active_app_id_);
-  app_browser_ = GetBrowserForAppId(active_app_id_);
+  app_browser_ = browser_added_waiter.browser_added();
 
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   AfterStateChangeAction();
@@ -864,7 +860,11 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
 
 void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   BeforeStateChangeAction(__FUNCTION__);
-  NavigateBrowser(site);
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+
+  NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kNewTab);
 
   EXPECT_TRUE(intent_picker_view()->GetVisible());
 
@@ -894,17 +894,12 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
 
-  NavigateBrowser(site);
+  NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kNewTab);
 
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
   BrowserAddedWaiter browser_added_waiter;
   CHECK(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
   browser_added_waiter.Wait();
-  app_loaded_observer.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   active_app_id_ = app_id;
 
@@ -1098,7 +1093,7 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
 
 void WebAppIntegrationTestDriver::NavigateBrowser(Site site) {
   BeforeStateChangeAction(__FUNCTION__);
-  NavigateTabbedBrowserToSite(GetInScopeURL(site));
+  NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kCurrentTab);
   AfterStateChangeAction();
 }
 
@@ -1119,7 +1114,8 @@ void WebAppIntegrationTestDriver::NavigatePwaSiteATo(Site site) {
 void WebAppIntegrationTestDriver::NavigateNotfoundUrl() {
   BeforeStateChangeAction(__FUNCTION__);
   NavigateTabbedBrowserToSite(
-      delegate_->EmbeddedTestServer()->GetURL("/non-existant/index.html"));
+      delegate_->EmbeddedTestServer()->GetURL("/non-existant/index.html"),
+      NavigationMode::kCurrentTab);
   AfterStateChangeAction();
 }
 
@@ -2237,15 +2233,13 @@ void WebAppIntegrationTestDriver::InstallCreateShortcut(bool open_in_window) {
       /*auto_open_in_window=*/open_in_window);
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  BrowserAddedWaiter browser_added_waiter;
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   active_app_id_ = observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
   if (open_in_window) {
-    app_loaded_observer.Wait();
-    app_browser_ = GetBrowserForAppId(active_app_id_);
+    browser_added_waiter.Wait();
+    app_browser_ = browser_added_waiter.browser_added();
   }
 }
 
@@ -2348,7 +2342,8 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   // Manifest updates must occur as the first navigation after a webapp is
   // installed, otherwise the throttle is tripped.
   ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
-  NavigateTabbedBrowserToSite(app_url_with_manifest_param);
+  NavigateTabbedBrowserToSite(app_url_with_manifest_param,
+                              NavigationMode::kCurrentTab);
 }
 
 void WebAppIntegrationTestDriver::MaybeWaitForManifestUpdates() {
@@ -2378,17 +2373,26 @@ void WebAppIntegrationTestDriver::MaybeNavigateTabbedBrowserInScope(Site site) {
   auto browser_url = GetCurrentTab(browser())->GetURL();
   auto dest_url = GetInScopeURL(site);
   if (browser_url.is_empty() || browser_url != dest_url) {
-    NavigateTabbedBrowserToSite(dest_url);
+    NavigateTabbedBrowserToSite(dest_url, NavigationMode::kCurrentTab);
   }
 }
 
-void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(const GURL& url) {
+void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
+    const GURL& url,
+    NavigationMode mode) {
   DCHECK(browser());
   content::WebContents* web_contents = GetCurrentTab(browser());
   auto* app_banner_manager =
       webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  if (mode == NavigationMode::kNewTab) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  } else {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  }
   app_banner_manager->WaitForInstallableCheck();
 }
 
@@ -2483,16 +2487,12 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
 
 void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
     const AppId& app_id) {
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
   command_line.AppendSwitchASCII(switches::kTestType, "browser");
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
-  app_loaded_observer.Wait();
   content::RunAllTasksUntilIdle();
 }
 
