@@ -357,13 +357,16 @@ void NotificationGroupingController::OnNotificationDisplayed(
 void NotificationGroupingController::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
+  auto* message_center = MessageCenter::Get();
   if (grouped_notification_list_->GroupedChildNotificationExists(
           notification_id)) {
     const std::string parent_id =
         grouped_notification_list_->GetParentForChild(notification_id);
 
     RemoveGroupedChild(notification_id);
-    MessageCenter::Get()->ResetPopupTimer(parent_id);
+
+    if (message_center->FindPopupNotificationById(parent_id))
+      message_center->ResetPopupTimer(parent_id);
 
     metrics_utils::LogCountOfNotificationsInOneGroup(
         grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
@@ -380,7 +383,7 @@ void NotificationGroupingController::OnNotificationRemoved(
     grouped_notification_list_->ClearGroupedNotification(notification_id);
 
     for (const auto& id : to_be_deleted)
-      MessageCenter::Get()->RemoveNotification(id, by_user);
+      message_center->RemoveNotification(id, by_user);
   }
 }
 
