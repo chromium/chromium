@@ -7,6 +7,8 @@
 #include <lib/zx/handle.h>
 #include <zircon/status.h>
 
+#include <utility>
+
 #include "third_party/abseil-cpp/absl/base/macros.h"
 
 namespace ipcz::reference_drivers {
