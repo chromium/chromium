@@ -1382,6 +1382,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void UpdateName(const AtomicString& old_name, const AtomicString& new_name);
 
   void UpdateFocusgroup(const AtomicString& input);
+  void UpdateFocusgroupInShadowRootIfNeeded();
 
   void ClientQuads(Vector<gfx::QuadF>& quads) const;
 

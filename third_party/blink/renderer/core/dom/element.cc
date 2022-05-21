@@ -3080,6 +3080,13 @@ Node::InsertionNotificationRequest Element::InsertedInto(
         FastGetAttribute(html_names::kFocusgroupAttr);
     if (!focusgroup_value.IsNull())
       UpdateFocusgroup(focusgroup_value);
+
+    // We parse the focusgroup attribute for the ShadowDOM elements before we
+    // parse it for any of its root's ancestors, which might lead to an
+    // incorrect focusgroup value. Re-run the algorithm for the ShadowDOM
+    // elements when the ShadowRoot's parent gets inserted in the tree.
+    if (GetShadowRoot())
+      UpdateFocusgroupInShadowRootIfNeeded();
   }
 
   if (parentElement() && parentElement()->IsInCanvasSubtree())
@@ -7084,8 +7091,70 @@ inline void Element::UpdateFocusgroup(const AtomicString& input) {
   if (!RuntimeEnabledFeatures::FocusgroupEnabled())
     return;
 
+  if (ShadowRoot* shadow_root = ContainingShadowRoot())
+    shadow_root->SetHasFocusgroupAttributeOnDescendant(true);
+
   EnsureElementRareData().SetFocusgroupFlags(
       focusgroup::ParseFocusgroup(this, input));
+}
+
+void Element::UpdateFocusgroupInShadowRootIfNeeded() {
+  ShadowRoot* shadow_root = GetShadowRoot();
+  DCHECK(shadow_root);
+
+  // There's no need to re-run the focusgroup parser on the nodes of the shadow
+  // tree if none of them had the focusgroup attribute set.
+  if (!shadow_root->HasFocusgroupAttributeOnDescendant())
+    return;
+
+  Element* ancestor = this;
+  bool has_focusgroup_ancestor = false;
+  while (ancestor) {
+    if (ancestor->GetFocusgroupFlags() != FocusgroupFlags::kNone) {
+      has_focusgroup_ancestor = true;
+      break;
+    }
+    ancestor = ancestor->parentElement();
+  }
+
+  // We don't need to update the focusgroup value for the ShadowDOM elements if
+  // there is no ancestor with a focusgroup value, since the parsing would be
+  // exactly the same as the one that happened when we first built the
+  // ShadowDOM.
+  if (!has_focusgroup_ancestor)
+    return;
+
+  // In theory, we should only reach this point when at least one node within
+  // the shadow tree has the focusgroup attribute. However, it's possible to get
+  // here if a node initially had the focusgroup attribute but then lost it
+  // since we don't reset the `ShadowRoot::HasFocusgroupAttributeOnDescendant`
+  // upon removing the attribute.
+  //
+  // Setting this value back to false before iterating over the nodes of the
+  // shadow tree allow us to reset the bit in case an update to the shadow tree
+  // removed all focusgroup attributes from the shadow tree. If there's still
+  // a focusgroup attribute, then the call to `UpdateFocusgroup` below will
+  // make sure that the bit is set to true for the containing shadow root.
+  shadow_root->SetHasFocusgroupAttributeOnDescendant(false);
+
+  Node* next = FlatTreeTraversal::Next(*this, this);
+  while (next) {
+    bool skip_subtree = false;
+    if (Element* next_element = DynamicTo<Element>(next)) {
+      const AtomicString& focusgroup_value =
+          next_element->FastGetAttribute(html_names::kFocusgroupAttr);
+      if (!focusgroup_value.IsNull())
+        next_element->UpdateFocusgroup(focusgroup_value);
+
+      if (auto* next_shadow_root = next_element->GetShadowRoot())
+        skip_subtree = !next_shadow_root->HasFocusgroupAttributeOnDescendant();
+    }
+
+    if (skip_subtree)
+      next = FlatTreeTraversal::NextSkippingChildren(*next, this);
+    else
+      next = FlatTreeTraversal::Next(*next, this);
+  }
 }
 
 void Element::WillModifyAttribute(const QualifiedName& name,

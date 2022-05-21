@@ -7,7 +7,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -17,15 +17,14 @@
 namespace blink::focusgroup {
 
 FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element) {
-  // TODO(bebeaudr): We should be using FlatTreeTraversal here.
-  Element* ancestor = Traversal<Element>::FirstAncestor(*element);
+  Element* ancestor = FlatTreeTraversal::ParentElement(*element);
   while (ancestor) {
     FocusgroupFlags ancestor_flags = ancestor->GetFocusgroupFlags();
     // When this is true, we found the focusgroup to extend.
     if (ancestor_flags != FocusgroupFlags::kNone) {
       return ancestor_flags;
     }
-    ancestor = Traversal<Element>::FirstAncestor(*ancestor);
+    ancestor = FlatTreeTraversal::ParentElement(*ancestor);
   }
   return FocusgroupFlags::kNone;
 }

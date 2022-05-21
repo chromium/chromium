@@ -173,6 +173,13 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return needs_dir_auto_attribute_update_;
   }
 
+  void SetHasFocusgroupAttributeOnDescendant(bool flag) {
+    has_focusgroup_attribute_on_descendant_ = flag;
+  }
+  bool HasFocusgroupAttributeOnDescendant() const {
+    return has_focusgroup_attribute_on_descendant_;
+  }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   StyleSheetList& StyleSheets();
@@ -214,7 +221,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned is_declarative_shadow_root_ : 1;
   unsigned available_to_element_internals_ : 1;
   unsigned needs_dir_auto_attribute_update_ : 1;
-  unsigned unused_ : 8;
+  unsigned has_focusgroup_attribute_on_descendant_ : 1;
+  unsigned unused_ : 7;
 };
 
 inline Element* ShadowRoot::ActiveElement() const {
