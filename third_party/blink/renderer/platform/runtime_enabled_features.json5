@@ -1990,11 +1990,6 @@
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",
     },
-    {
-      name: "RtcAudioJitterBufferRtxHandling",
-      origin_trial_feature_name: "RtcAudioJitterBufferRtxHandling",
-      status: "experimental",
-    },
     // Enables the use of the RTCIceTransport with extensions.
     {
       name: "RTCIceTransportExtension",

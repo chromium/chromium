@@ -424,11 +424,6 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
         static_cast<int>(configuration->rtcAudioJitterBufferMinDelayMs());
   }
 
-  if (RuntimeEnabledFeatures::RtcAudioJitterBufferRtxHandlingEnabled(context)) {
-    UseCounter::Count(context, WebFeature::kRTCAudioJitterBufferRtxHandling);
-    web_configuration.audio_jitter_buffer_enable_rtx_handling = true;
-  }
-
   return web_configuration;
 }
 

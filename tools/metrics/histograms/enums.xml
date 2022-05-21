@@ -38559,7 +38559,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2734"
       label="V8HTMLVideoElement_AutoPictureInPicture_AttributeSetter"/>
   <int value="2735" label="AutoPictureInPictureAttribute"/>
-  <int value="2736" label="RTCAudioJitterBufferRtxHandling"/>
+  <int value="2736" label="OBSOLETE_RTCAudioJitterBufferRtxHandling"/>
   <int value="2737" label="WebShareCanShare"/>
   <int value="2738" label="PriorityHints"/>
   <int value="2739" label="TextAutosizedCrossSiteIframe"/>

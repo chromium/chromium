@@ -2081,7 +2081,7 @@ enum WebFeature {
   kV8HTMLVideoElement_AutoPictureInPicture_AttributeGetter = 2733,
   kV8HTMLVideoElement_AutoPictureInPicture_AttributeSetter = 2734,
   kAutoPictureInPictureAttribute = 2735,
-  kRTCAudioJitterBufferRtxHandling = 2736,
+  kOBSOLETE_RTCAudioJitterBufferRtxHandling = 2736,
   kWebShareCanShare = 2737,
   kPriorityHints = 2738,
   kTextAutosizedCrossSiteIframe = 2739,
