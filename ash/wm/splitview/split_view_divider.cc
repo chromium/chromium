@@ -486,6 +486,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   params.parent = Shell::GetContainer(controller->root_window(),
                                       kShellWindowId_AlwaysOnTopContainer);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+  params.name = "SplitViewDivider";
   divider_widget_->set_focus_on_creation(false);
   divider_widget_->Init(std::move(params));
   divider_widget_->SetVisibilityAnimationTransition(
