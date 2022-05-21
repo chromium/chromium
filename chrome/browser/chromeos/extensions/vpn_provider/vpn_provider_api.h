@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_PROVIDER_API_H_
-#define EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_PROVIDER_API_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_VPN_PROVIDER_VPN_PROVIDER_API_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_VPN_PROVIDER_VPN_PROVIDER_API_H_
 
 #include <string>
 
@@ -14,9 +14,7 @@ namespace extensions {
 class VpnThreadExtensionFunction : public ExtensionFunction {
  public:
   void SignalCallCompletionSuccess();
-  void SignalCallCompletionSuccessWithId(const std::string& configuration_id);
-  void SignalCallCompletionSuccessWithWarning(const std::string& warning);
-
+  void SignalCallCompletionSuccessWithId(const std::string& configuration_name);
   void SignalCallCompletionFailure(const std::string& error_name,
                                    const std::string& error_message);
 
@@ -81,4 +79,4 @@ class VpnProviderNotifyConnectionStateChangedFunction
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_PROVIDER_API_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_VPN_PROVIDER_VPN_PROVIDER_API_H_

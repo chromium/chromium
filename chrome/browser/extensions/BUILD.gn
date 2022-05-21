@@ -1125,6 +1125,7 @@ static_library("extensions") {
       "//ash/webui/resources:media_app_bundle_resources_grit",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
+      "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",

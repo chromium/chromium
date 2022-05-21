@@ -156,7 +156,6 @@ group("api_implementations") {
       "//extensions/browser/api/cec_private",
       "//extensions/browser/api/diagnostics",
       "//extensions/browser/api/virtual_keyboard",
-      "//extensions/browser/api/vpn_provider",
       "//extensions/browser/api/webcam_private",
     ]
   }

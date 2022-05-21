@@ -75,8 +75,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "extensions/browser/api/vpn_provider/vpn_service.h"
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using blink::web_pref::WebPreferences;
@@ -219,12 +218,10 @@ size_t GetExtensionBackgroundProcessCount() {
 }  // namespace
 
 ChromeContentBrowserClientExtensionsPart::
-    ChromeContentBrowserClientExtensionsPart() {
-}
+    ChromeContentBrowserClientExtensionsPart() = default;
 
 ChromeContentBrowserClientExtensionsPart::
-    ~ChromeContentBrowserClientExtensionsPart() {
-}
+    ~ChromeContentBrowserClientExtensionsPart() = default;
 
 // static
 GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
@@ -351,7 +348,8 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 
 // static
 bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
-    content::RenderProcessHost* process_host, const GURL& url) {
+    content::RenderProcessHost* process_host,
+    const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Enforce that extension URLs commit in the correct extension process where
@@ -573,7 +571,7 @@ std::unique_ptr<content::VpnServiceProxy>
 ChromeContentBrowserClientExtensionsPart::GetVpnServiceProxy(
     content::BrowserContext* browser_context) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::VpnService* vpn_service =
+  chromeos::VpnServiceInterface* vpn_service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context);
   if (!vpn_service)
     return nullptr;

@@ -50,7 +50,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
 #endif
 
@@ -102,7 +101,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   UsbDeviceManager::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VirtualKeyboardAPI::GetFactoryInstance();
-  chromeos::VpnServiceFactory::GetInstance();
   WebcamPrivateAPI::GetFactoryInstance();
 #endif
   WebRequestAPI::GetFactoryInstance();

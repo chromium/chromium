@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_
-#define EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_
 
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -20,7 +21,7 @@ struct DefaultSingletonTraits;
 
 namespace chromeos {
 
-class VpnService;
+using VpnServiceInterface = extensions::api::VpnServiceInterface;
 
 // Factory to create VpnService.
 class VpnServiceFactory : public BrowserContextKeyedServiceFactory {
@@ -28,7 +29,8 @@ class VpnServiceFactory : public BrowserContextKeyedServiceFactory {
   VpnServiceFactory(const VpnServiceFactory&) = delete;
   VpnServiceFactory& operator=(const VpnServiceFactory&) = delete;
 
-  static VpnService* GetForBrowserContext(content::BrowserContext* context);
+  static VpnServiceInterface* GetForBrowserContext(
+      content::BrowserContext* context);
   static VpnServiceFactory* GetInstance();
 
  private:
@@ -46,4 +48,4 @@ class VpnServiceFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace chromeos
 
-#endif  // EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_

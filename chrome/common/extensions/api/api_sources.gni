@@ -86,6 +86,7 @@ if (is_chromeos) {
     "platform_keys_internal.idl",
     "platform_keys.idl",
     "quick_unlock_private.idl",
+    "vpn_provider.idl",
   ]
 
   if (use_cups) {

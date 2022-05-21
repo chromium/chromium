@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/vpn_provider/vpn_service.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 
 #include <stdint.h>
 #include <utility>
@@ -19,7 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/values.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_observer.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -46,6 +46,12 @@ namespace api_vpn = extensions::api::vpn_provider;
 void DoNothingFailureCallback(const std::string& error_name,
                               const std::string& error_message) {
   LOG(ERROR) << error_name << ": " << error_message;
+}
+
+void RunWarningCallback(
+    extensions::api::VpnServiceInterface::SuccessCallback callback,
+    const std::string& /*warning*/) {
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -170,6 +176,7 @@ class VpnService::VpnServiceProxyImpl : public content::VpnServiceProxy {
             FailureCallback failure,
             std::unique_ptr<content::PepperVpnProviderResourceHostProxy>
                 pepper_vpn_provider_proxy) override;
+
   void SendPacket(const std::string& extension_id,
                   const std::vector<char>& data,
                   SuccessCallback success,
@@ -257,22 +264,22 @@ void VpnService::SendShowAddDialogToExtension(const std::string& extension_id) {
 
 void VpnService::SendShowConfigureDialogToExtension(
     const std::string& extension_id,
-    const std::string& configuration_id) {
+    const std::string& configuration_name) {
   SendSignalToExtension(
       extension_id, extensions::events::VPN_PROVIDER_ON_UI_EVENT,
       api_vpn::OnUIEvent::kEventName,
       api_vpn::OnUIEvent::Create(api_vpn::UI_EVENT_SHOWCONFIGUREDIALOG,
-                                 configuration_id));
+                                 configuration_name));
 }
 
 void VpnService::SendPlatformError(const std::string& extension_id,
-                                   const std::string& configuration_id,
+                                   const std::string& configuration_name,
                                    const std::string& error_message) {
   SendSignalToExtension(
       extension_id, extensions::events::VPN_PROVIDER_ON_PLATFORM_MESSAGE,
       api_vpn::OnPlatformMessage::kEventName,
       api_vpn::OnPlatformMessage::Create(
-          configuration_id, api_vpn::PLATFORM_MESSAGE_ERROR, error_message));
+          configuration_name, api_vpn::PLATFORM_MESSAGE_ERROR, error_message));
 }
 
 std::string VpnService::GetKey(const std::string& extension_id,
@@ -353,7 +360,6 @@ void VpnService::NetworkListChanged() {
 }
 
 void VpnService::CreateConfiguration(const std::string& extension_id,
-                                     const std::string& extension_name,
                                      const std::string& configuration_name,
                                      SuccessCallback success,
                                      FailureCallback failure) {
@@ -381,23 +387,17 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
   VpnConfiguration* configuration =
       CreateConfigurationInternal(extension_id, configuration_name, key);
 
-  base::DictionaryValue properties;
-  properties.SetKey(shill::kTypeProperty, base::Value(shill::kTypeVPN));
-  properties.SetKey(shill::kNameProperty, base::Value(configuration_name));
-  properties.SetKey(shill::kProviderHostProperty, base::Value(extension_id));
-  properties.SetKey(shill::kObjectPathSuffixProperty,
-                    base::Value(configuration->key()));
-  properties.SetKey(shill::kProviderTypeProperty,
-                    base::Value(shill::kProviderThirdPartyVpn));
-  properties.SetKey(shill::kProfileProperty, base::Value(profile->path));
-
-  // Note: This will not create an entry in |policy_util|. TODO(pneubeck):
-  // Determine the correct thing to do here, crbug.com/459278.
-  std::string guid = base::GenerateGUID();
-  properties.SetKey(shill::kGuidProperty, base::Value(guid));
+  base::Value::Dict properties;
+  properties.Set(shill::kTypeProperty, shill::kTypeVPN);
+  properties.Set(shill::kNameProperty, configuration_name);
+  properties.Set(shill::kProviderHostProperty, extension_id);
+  properties.Set(shill::kObjectPathSuffixProperty, configuration->key());
+  properties.Set(shill::kProviderTypeProperty, shill::kProviderThirdPartyVpn);
+  properties.Set(shill::kProfileProperty, profile->path);
+  properties.Set(shill::kGuidProperty, base::GenerateGUID());
 
   network_configuration_handler_->CreateShillConfiguration(
-      properties,
+      base::Value(std::move(properties)),
       base::BindOnce(&VpnService::OnCreateConfigurationSuccess,
                      weak_factory_.GetWeakPtr(), std::move(success),
                      configuration),
@@ -407,11 +407,11 @@ void VpnService::CreateConfiguration(const std::string& extension_id,
 }
 
 void VpnService::DestroyConfiguration(const std::string& extension_id,
-                                      const std::string& configuration_id,
+                                      const std::string& configuration_name,
                                       SuccessCallback success,
                                       FailureCallback failure) {
   // The ID is the configuration name for now. This may change in the future.
-  const std::string key = GetKey(extension_id, configuration_id);
+  const std::string key = GetKey(extension_id, configuration_name);
   if (!base::Contains(key_to_configuration_map_, key)) {
     std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
@@ -438,16 +438,18 @@ void VpnService::DestroyConfiguration(const std::string& extension_id,
 }
 
 void VpnService::SetParameters(const std::string& extension_id,
-                               const base::DictionaryValue& parameters,
-                               StringCallback success,
+                               base::Value::Dict parameters,
+                               SuccessCallback success,
                                FailureCallback failure) {
   if (!DoesActiveConfigurationExistAndIsAccessAuthorized(extension_id)) {
     std::move(failure).Run(std::string(), std::string("Unauthorized access."));
     return;
   }
 
-  shill_client_->SetParameters(active_configuration_->object_path(), parameters,
-                               std::move(success), std::move(failure));
+  shill_client_->SetParameters(
+      active_configuration_->object_path(), base::Value(std::move(parameters)),
+      base::BindOnce(&RunWarningCallback, std::move(success)),
+      std::move(failure));
 }
 
 void VpnService::SendPacket(const std::string& extension_id,

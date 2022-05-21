@@ -10,6 +10,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chromeos/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
@@ -21,9 +24,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/api/vpn_provider/vpn_provider_api.h"
-#include "extensions/browser/api/vpn_provider/vpn_service.h"
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
@@ -116,8 +116,8 @@ class TestShillThirdPartyVpnDriverClient
 
 class VpnProviderApiTest : public extensions::ExtensionApiTest {
  public:
-  VpnProviderApiTest() {}
-  ~VpnProviderApiTest() override {}
+  VpnProviderApiTest() = default;
+  ~VpnProviderApiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -136,7 +136,8 @@ class VpnProviderApiTest : public extensions::ExtensionApiTest {
   void LoadVpnExtension() {
     extension_ = LoadExtension(test_data_dir_.AppendASCII("vpn_provider"));
     extension_id_ = extension_->id();
-    service_ = VpnServiceFactory::GetForBrowserContext(profile());
+    service_ = static_cast<chromeos::VpnService*>(
+        VpnServiceFactory::GetForBrowserContext(profile()));
     content::RunAllPendingInMessageLoop();
   }
 
@@ -335,18 +336,17 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, ConfigPersistence) {
   AddNetworkProfileForUser();
   EXPECT_FALSE(DoesConfigExist(kTestConfig));
 
-  base::DictionaryValue properties;
-  properties.SetKey(shill::kTypeProperty, base::Value(shill::kTypeVPN));
-  properties.SetKey(shill::kNameProperty, base::Value(kTestConfig));
-  properties.SetKey(shill::kProviderHostProperty, base::Value(extension_id_));
-  properties.SetKey(shill::kObjectPathSuffixProperty,
-                    base::Value(GetKey(kTestConfig)));
-  properties.SetKey(shill::kProviderTypeProperty,
-                    base::Value(shill::kProviderThirdPartyVpn));
-  properties.SetKey(shill::kProfileProperty, base::Value(kNetworkProfilePath));
+  base::Value::Dict properties;
+  properties.Set(shill::kTypeProperty, shill::kTypeVPN);
+  properties.Set(shill::kNameProperty, kTestConfig);
+  properties.Set(shill::kProviderHostProperty, extension_id_);
+  properties.Set(shill::kObjectPathSuffixProperty, GetKey(kTestConfig));
+  properties.Set(shill::kProviderTypeProperty, shill::kProviderThirdPartyVpn);
+  properties.Set(shill::kProfileProperty, kNetworkProfilePath);
+
   NetworkHandler::Get()
       ->network_configuration_handler()
-      ->CreateShillConfiguration(properties,
+      ->CreateShillConfiguration(base::Value(std::move(properties)),
                                  base::BindOnce(DoNothingSuccessCallback),
                                  base::BindOnce(DoNothingFailureCallback));
   content::RunAllPendingInMessageLoop();

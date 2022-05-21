@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "extensions/browser/api/vpn_provider/vpn_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -17,9 +17,9 @@
 namespace chromeos {
 
 // static
-VpnService* VpnServiceFactory::GetForBrowserContext(
+VpnServiceInterface* VpnServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<VpnService*>(
+  return static_cast<VpnServiceInterface*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 

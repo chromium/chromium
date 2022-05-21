@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/vpn_provider/vpn_provider_api.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"
 
 #include <memory>
 #include <utility>
@@ -13,9 +13,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "extensions/browser/api/vpn_provider/vpn_service.h"
-#include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
-#include "extensions/common/api/vpn_provider.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
+#include "chrome/common/extensions/api/vpn_provider.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace extensions {
@@ -76,7 +75,7 @@ bool CheckIPCIDRSanityList(const std::vector<std::string>& list,
 }
 
 void ConvertParameters(const api_vpn::Parameters& parameters,
-                       base::DictionaryValue* parameter_value,
+                       base::Value::Dict* parameter_value,
                        std::string* error) {
   if (!CheckIPCIDRSanity(parameters.address, true /* CIDR */,
                          false /*IPV4 */)) {
@@ -102,50 +101,50 @@ void ConvertParameters(const api_vpn::Parameters& parameters,
     return;
   }
 
-  std::vector<std::string> cidr_parts = base::SplitString(
-      parameters.address, kCIDRSeperator, base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> cidr_parts =
+      base::SplitString(parameters.address, kCIDRSeperator,
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   CHECK_EQ(2u, cidr_parts.size());
 
-  parameter_value->SetKey(shill::kAddressParameterThirdPartyVpn,
-                          base::Value(cidr_parts[0]));
+  parameter_value->Set(shill::kAddressParameterThirdPartyVpn,
+                       base::Value(cidr_parts[0]));
 
-  parameter_value->SetKey(shill::kSubnetPrefixParameterThirdPartyVpn,
-                          base::Value(cidr_parts[1]));
+  parameter_value->Set(shill::kSubnetPrefixParameterThirdPartyVpn,
+                       base::Value(cidr_parts[1]));
 
   std::string ip_delimiter(1, shill::kIPDelimiter);
-  parameter_value->SetKey(
+  parameter_value->Set(
       shill::kExclusionListParameterThirdPartyVpn,
       base::Value(base::JoinString(parameters.exclusion_list, ip_delimiter)));
 
-  parameter_value->SetKey(
+  parameter_value->Set(
       shill::kInclusionListParameterThirdPartyVpn,
       base::Value(base::JoinString(parameters.inclusion_list, ip_delimiter)));
 
   if (parameters.mtu) {
-    parameter_value->SetKey(shill::kMtuParameterThirdPartyVpn,
-                            base::Value(*parameters.mtu));
+    parameter_value->Set(shill::kMtuParameterThirdPartyVpn,
+                         base::Value(*parameters.mtu));
   }
 
   if (parameters.broadcast_address) {
-    parameter_value->SetKey(shill::kBroadcastAddressParameterThirdPartyVpn,
-                            base::Value(*parameters.broadcast_address));
+    parameter_value->Set(shill::kBroadcastAddressParameterThirdPartyVpn,
+                         base::Value(*parameters.broadcast_address));
   }
 
   std::string non_ip_delimiter(1, shill::kNonIPDelimiter);
   if (parameters.domain_search) {
-    parameter_value->SetKey(shill::kDomainSearchParameterThirdPartyVpn,
-                            base::Value(base::JoinString(
-                                *parameters.domain_search, non_ip_delimiter)));
+    parameter_value->Set(shill::kDomainSearchParameterThirdPartyVpn,
+                         base::Value(base::JoinString(*parameters.domain_search,
+                                                      non_ip_delimiter)));
   }
 
-  parameter_value->SetKey(
+  parameter_value->Set(
       shill::kDnsServersParameterThirdPartyVpn,
       base::Value(base::JoinString(parameters.dns_servers, ip_delimiter)));
 
   if (parameters.reconnect) {
-    parameter_value->SetKey(shill::kReconnectParameterThirdPartyVpn,
-                            base::Value(*parameters.reconnect));
+    parameter_value->Set(shill::kReconnectParameterThirdPartyVpn,
+                         base::Value(*parameters.reconnect));
   }
 
   return;
@@ -153,24 +152,15 @@ void ConvertParameters(const api_vpn::Parameters& parameters,
 
 }  // namespace
 
-VpnThreadExtensionFunction::~VpnThreadExtensionFunction() {
-}
+VpnThreadExtensionFunction::~VpnThreadExtensionFunction() = default;
 
 void VpnThreadExtensionFunction::SignalCallCompletionSuccess() {
   Respond(NoArguments());
 }
 
 void VpnThreadExtensionFunction::SignalCallCompletionSuccessWithId(
-    const std::string& configuration_id) {
-  Respond(OneArgument(base::Value(configuration_id)));
-}
-
-void VpnThreadExtensionFunction::SignalCallCompletionSuccessWithWarning(
-    const std::string& warning) {
-  if (!warning.empty()) {
-    WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning, warning);
-  }
-  Respond(NoArguments());
+    const std::string& configuration_name) {
+  Respond(OneArgument(base::Value(configuration_name)));
 }
 
 void VpnThreadExtensionFunction::SignalCallCompletionFailure(
@@ -185,8 +175,7 @@ void VpnThreadExtensionFunction::SignalCallCompletionFailure(
   }
 }
 
-VpnProviderCreateConfigFunction::~VpnProviderCreateConfigFunction() {
-}
+VpnProviderCreateConfigFunction::~VpnProviderCreateConfigFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
   std::unique_ptr<api_vpn::CreateConfig::Params> params(
@@ -195,16 +184,14 @@ ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnService* service =
+  chromeos::VpnServiceInterface* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
   }
 
-  // Use the configuration name as ID. In the future, a different ID scheme may
-  // be used, requiring a mapping between the two.
   service->CreateConfiguration(
-      extension_id(), extension()->name(), params->name,
+      extension_id(), params->name,
       base::BindOnce(
           &VpnProviderCreateConfigFunction::SignalCallCompletionSuccessWithId,
           this, params->name),
@@ -215,8 +202,7 @@ ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
   return RespondLater();
 }
 
-VpnProviderDestroyConfigFunction::~VpnProviderDestroyConfigFunction() {
-}
+VpnProviderDestroyConfigFunction::~VpnProviderDestroyConfigFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
   std::unique_ptr<api_vpn::DestroyConfig::Params> params(
@@ -225,7 +211,7 @@ ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnService* service =
+  chromeos::VpnServiceInterface* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
@@ -242,8 +228,7 @@ ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
   return RespondLater();
 }
 
-VpnProviderSetParametersFunction::~VpnProviderSetParametersFunction() {
-}
+VpnProviderSetParametersFunction::~VpnProviderSetParametersFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
   std::unique_ptr<api_vpn::SetParameters::Params> params(
@@ -252,13 +237,13 @@ ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnService* service =
+  chromeos::VpnServiceInterface* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
   }
 
-  base::DictionaryValue parameter_value;
+  base::Value::Dict parameter_value;
   std::string error;
   ConvertParameters(params->parameters, &parameter_value, &error);
   if (!error.empty()) {
@@ -266,10 +251,9 @@ ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
   }
 
   service->SetParameters(
-      extension_id(), parameter_value,
-      base::BindOnce(&VpnProviderSetParametersFunction::
-                         SignalCallCompletionSuccessWithWarning,
-                     this),
+      extension_id(), std::move(parameter_value),
+      base::BindOnce(
+          &VpnProviderSetParametersFunction::SignalCallCompletionSuccess, this),
       base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::
                          SignalCallCompletionFailure,
                      this));
@@ -277,8 +261,7 @@ ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
   return RespondLater();
 }
 
-VpnProviderSendPacketFunction::~VpnProviderSendPacketFunction() {
-}
+VpnProviderSendPacketFunction::~VpnProviderSendPacketFunction() = default;
 
 ExtensionFunction::ResponseAction VpnProviderSendPacketFunction::Run() {
   std::unique_ptr<api_vpn::SendPacket::Params> params(
@@ -287,7 +270,7 @@ ExtensionFunction::ResponseAction VpnProviderSendPacketFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnService* service =
+  chromeos::VpnServiceInterface* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
@@ -306,8 +289,7 @@ ExtensionFunction::ResponseAction VpnProviderSendPacketFunction::Run() {
 }
 
 VpnProviderNotifyConnectionStateChangedFunction::
-    ~VpnProviderNotifyConnectionStateChangedFunction() {
-}
+    ~VpnProviderNotifyConnectionStateChangedFunction() = default;
 
 ExtensionFunction::ResponseAction
 VpnProviderNotifyConnectionStateChangedFunction::Run() {
@@ -317,7 +299,7 @@ VpnProviderNotifyConnectionStateChangedFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnService* service =
+  chromeos::VpnServiceInterface* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
