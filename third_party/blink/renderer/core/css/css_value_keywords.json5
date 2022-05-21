@@ -1493,5 +1493,24 @@
 
     // basic-shape functions.
     "xywh",
+
+    // anchor positioning
+    "anchor",
+    // top,
+    // left,
+    // right,
+    // bottom,
+    // start,
+    // end,
+    // self-start,
+    // self-end,
+    // center,
+    "anchor-size",
+    "width",
+    "height",
+    // block,
+    // inline,
+    "self-block",
+    "self-inline",
   ],
 }

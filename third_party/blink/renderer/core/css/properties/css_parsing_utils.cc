@@ -713,15 +713,18 @@ class MathFunctionParser {
   STACK_ALLOCATED();
 
  public:
-  MathFunctionParser(CSSParserTokenRange& range,
-                     const CSSParserContext& context,
-                     CSSPrimitiveValue::ValueRange value_range)
+  MathFunctionParser(
+      CSSParserTokenRange& range,
+      const CSSParserContext& context,
+      CSSPrimitiveValue::ValueRange value_range,
+      CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone)
       : source_range_(range), range_(range) {
     const CSSParserToken& token = range.Peek();
     if (token.GetType() == kFunctionToken) {
       calc_value_ = CSSMathFunctionValue::Create(
-          CSSMathExpressionNode::ParseMathFunction(token.FunctionId(),
-                                                   ConsumeFunction(range_)),
+          CSSMathExpressionNode::ParseMathFunction(
+              token.FunctionId(), ConsumeFunction(range_), context,
+              allowed_anchor_queries),
           value_range);
     }
     if (calc_value_ && calc_value_->HasComparisons())
@@ -1018,13 +1021,15 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range,
-    UnitlessQuirk unitless) {
+    UnitlessQuirk unitless,
+    CSSAnchorQueryTypes allowed_anchor_queries) {
   const CSSParserToken& token = range.Peek();
   if (token.GetType() == kDimensionToken || token.GetType() == kNumberToken)
     return ConsumeLength(range, context, value_range, unitless);
   if (token.GetType() == kPercentageToken)
     return ConsumePercent(range, context, value_range);
-  MathFunctionParser math_parser(range, context, value_range);
+  MathFunctionParser math_parser(range, context, value_range,
+                                 allowed_anchor_queries);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (CanConsumeCalcValue(calculation->Category(), context.Mode()))
       return math_parser.ConsumeValue();
@@ -5058,7 +5063,8 @@ CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange& range,
       ValidWidthOrHeightKeyword(range.Peek().Id(), context))
     return ConsumeIdent(range);
   return ConsumeLengthOrPercent(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless);
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
@@ -5068,16 +5074,19 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
       ValidWidthOrHeightKeyword(range.Peek().Id(), context))
     return ConsumeIdent(range);
   return ConsumeLengthOrPercent(
-      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless);
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange& range,
                                 const CSSParserContext& context,
-                                UnitlessQuirk unitless) {
+                                UnitlessQuirk unitless,
+                                CSSAnchorQueryTypes allowed_anchor_queries) {
   if (range.Peek().Id() == CSSValueID::kAuto)
     return ConsumeIdent(range);
   return ConsumeLengthOrPercent(range, context,
-                                CSSPrimitiveValue::ValueRange::kAll, unitless);
+                                CSSPrimitiveValue::ValueRange::kAll, unitless,
+                                allowed_anchor_queries);
 }
 
 CSSValue* ConsumeScrollPadding(CSSParserTokenRange& range,

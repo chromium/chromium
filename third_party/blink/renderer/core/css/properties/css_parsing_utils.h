@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_anchor_query_type.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -117,7 +118,8 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSParserTokenRange&,
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange,
-    UnitlessQuirk = UnitlessQuirk::kForbid);
+    UnitlessQuirk = UnitlessQuirk::kForbid,
+    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
 CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(
     CSSParserTokenRange&,
     const CSSParserContext&,
@@ -455,7 +457,8 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange&,
 
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange&,
                                 const CSSParserContext&,
-                                UnitlessQuirk);
+                                UnitlessQuirk,
+                                CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
 CSSValue* ConsumeScrollPadding(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumePathOrNone(CSSParserTokenRange&);

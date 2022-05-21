@@ -4,6 +4,7 @@
 
 #include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
+#include "third_party/blink/renderer/core/css/css_anchor_query_type.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
@@ -1281,8 +1282,8 @@ const CSSValue* Bottom::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context));
+      range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 bool Bottom::IsLayoutDependent(const ComputedStyle* style,
@@ -3662,7 +3663,8 @@ const CSSValue* InsetBlockEnd::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      range, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 const CSSValue* InsetBlockStart::ParseSingleValue(
@@ -3670,7 +3672,8 @@ const CSSValue* InsetBlockStart::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      range, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 const CSSValue* InsetInlineEnd::ParseSingleValue(
@@ -3678,7 +3681,8 @@ const CSSValue* InsetInlineEnd::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      range, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 const CSSValue* InsetInlineStart::ParseSingleValue(
@@ -3686,7 +3690,8 @@ const CSSValue* InsetInlineStart::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      range, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 const blink::Color InternalVisitedBackgroundColor::ColorIncludingFallback(
@@ -4313,8 +4318,8 @@ const CSSValue* Left::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context));
+      range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 bool Left::IsLayoutDependent(const ComputedStyle* style,
@@ -5895,8 +5900,8 @@ const CSSValue* Right::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context));
+      range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 bool Right::IsLayoutDependent(const ComputedStyle* style,
@@ -7325,8 +7330,8 @@ const CSSValue* Top::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      range, context,
-      css_parsing_utils::UnitlessUnlessShorthand(local_context));
+      range, context, css_parsing_utils::UnitlessUnlessShorthand(local_context),
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
 }
 
 bool Top::IsLayoutDependent(const ComputedStyle* style,

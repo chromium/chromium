@@ -67,7 +67,8 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
       CSSParserContext::ParserModeOverridingScope scope(context,
                                                         kHTMLStandardMode);
       return css_parsing_utils::ConsumeLengthOrPercent(
-          range, context, CSSPrimitiveValue::ValueRange::kAll);
+          range, context, CSSPrimitiveValue::ValueRange::kAll,
+          css_parsing_utils::UnitlessQuirk::kForbid, kCSSAnchorQueryTypesAll);
     }
     case CSSSyntaxType::kColor: {
       CSSParserContext::ParserModeOverridingScope scope(context,

@@ -237,4 +237,52 @@ TEST_F(CustomPropertyTest, HasInitialValue) {
   EXPECT_TRUE(length.HasInitialValue());
 }
 
+TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
+  ScopedCSSAnchorPositioningForTest enabled_scope(true);
+
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+  CustomProperty property("--x", GetDocument());
+
+  // We can't parse anchor queries as a <length>, because it can't be resolved
+  // into a pixel value at style time.
+  EXPECT_FALSE(
+      ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
+  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
+                          CSSParserLocalContext()));
+}
+
+TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
+  ScopedCSSAnchorPositioningForTest enabled_scope(true);
+
+  RegisterProperty(GetDocument(), "--x", "<length-percentage>", "0px", false);
+  CustomProperty property("--x", GetDocument());
+
+  {
+    const CSSValue* value =
+        ParseValue(property, "anchor(--foo top)", CSSParserLocalContext());
+    ASSERT_TRUE(value);
+    EXPECT_EQ("anchor(--foo top)", value->CssText());
+  }
+
+  {
+    const CSSValue* value = ParseValue(property, "anchor-size(--foo width)",
+                                       CSSParserLocalContext());
+    ASSERT_TRUE(value);
+    EXPECT_EQ("anchor-size(--foo width)", value->CssText());
+  }
+
+  {
+    // There are no restrictions on what anchor queries are allowed in a custom
+    // property, so mixing anchor() and anchor-size() is also allowed, although
+    // using it in any builtin property via var() makes it invalid at
+    // computed-value time.
+    const CSSValue* value = ParseValue(
+        property, "calc(anchor(--foo top) + anchor-size(--foo width))",
+        CSSParserLocalContext());
+    ASSERT_TRUE(value);
+    EXPECT_EQ("calc(anchor(--foo top) + anchor-size(--foo width))",
+              value->CssText());
+  }
+}
+
 }  // namespace blink

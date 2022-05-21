@@ -34,9 +34,11 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_anchor_query_type.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -46,6 +48,7 @@ namespace blink {
 static const int kMaxExpressionDepth = 100;
 
 class CalculationExpressionNode;
+class CSSCustomIdentValue;
 class CSSNumericLiteralValue;
 
 // The order of this enum should not change since its elements are used as
@@ -54,6 +57,9 @@ enum CalculationCategory {
   kCalcNumber,
   kCalcLength,
   kCalcPercent,
+  // TODO(crbug.com/1309178): We are now using this for all calculated lengths
+  // that can't be resolved at style time, including not only calc(px + %) but
+  // also anchor queries. Rename this category accordingly.
   kCalcPercentLength,
   kCalcAngle,
   kCalcTime,
@@ -68,11 +74,15 @@ class CORE_EXPORT CSSMathExpressionNode
   static CSSMathExpressionNode* Create(PixelsAndPercent pixels_and_percent);
   static CSSMathExpressionNode* Create(const CalculationExpressionNode& node);
 
-  static CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
-                                                  CSSParserTokenRange tokens);
+  static CSSMathExpressionNode* ParseMathFunction(
+      CSSValueID function_id,
+      CSSParserTokenRange tokens,
+      const CSSParserContext&,
+      CSSAnchorQueryTypes allowed_anchor_queries);
 
   virtual bool IsNumericLiteral() const { return false; }
   virtual bool IsOperation() const { return false; }
+  virtual bool IsAnchorQuery() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
@@ -292,6 +302,84 @@ template <>
 struct DowncastTraits<CSSMathExpressionOperation> {
   static bool AllowFrom(const CSSMathExpressionNode& node) {
     return node.IsOperation();
+  }
+};
+
+// anchor() and anchor-size()
+class CORE_EXPORT CSSMathExpressionAnchorQuery final
+    : public CSSMathExpressionNode {
+ public:
+  CSSMathExpressionAnchorQuery(CSSAnchorQueryType type,
+                               const CSSCustomIdentValue& anchor_name,
+                               const CSSValue& value,
+                               const CSSPrimitiveValue* fallback);
+
+  bool IsAnchor() const { return type_ == CSSAnchorQueryType::kAnchor; }
+  bool IsAnchorSize() const { return type_ == CSSAnchorQueryType::kAnchorSize; }
+
+  // TODO(crbug.com/1309178): This is not entirely correct, since "math
+  // function" should refer to functions defined in [1]. We may need to clean up
+  // the terminology in the code.
+  // [1] https://drafts.csswg.org/css-values-4/#math
+  bool IsMathFunction() const final { return true; }
+
+  bool IsAnchorQuery() const final { return true; }
+  bool IsZero() const final { return false; }
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
+    return CSSPrimitiveValue::UnitType::kUnknown;
+  }
+  absl::optional<double> ComputeValueInCanonicalUnit() const final {
+    return absl::nullopt;
+  }
+  absl::optional<PixelsAndPercent> ToPixelsAndPercent(
+      const CSSToLengthConversionData&) const final {
+    return absl::nullopt;
+  }
+  bool AccumulateLengthArray(CSSLengthArray& length_array,
+                             double multiplier) const final {
+    return false;
+  }
+  bool IsComputationallyIndependent() const final { return false; }
+  double DoubleValue() const final {
+    // We can't resolve an anchor query until layout time.
+    NOTREACHED();
+    return 0;
+  }
+  double ComputeLengthPx(
+      const CSSToLengthConversionData& conversion_data) const final {
+    // We can't resolve an anchor query until layout time.
+    NOTREACHED();
+    return 0;
+  }
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const final {
+    // AccumulateLengthUnitTypes() is only used when interpolating the
+    // 'transform' property, where anchor queries are not allowed.
+    NOTREACHED();
+    return;
+  }
+
+  String CustomCSSText() const final;
+  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+      const CSSToLengthConversionData&) const final;
+  bool operator==(const CSSMathExpressionNode& other) const final;
+  void Trace(Visitor* visitor) const final;
+
+#if DCHECK_IS_ON()
+  bool InvolvesPercentageComparisons() const final { return false; }
+#endif
+
+ private:
+  CSSAnchorQueryType type_;
+  Member<const CSSCustomIdentValue> anchor_name_;
+  Member<const CSSValue> value_;
+  Member<const CSSPrimitiveValue> fallback_;
+};
+
+template <>
+struct DowncastTraits<CSSMathExpressionAnchorQuery> {
+  static bool AllowFrom(const CSSMathExpressionNode& node) {
+    return node.IsAnchorQuery();
   }
 };
 

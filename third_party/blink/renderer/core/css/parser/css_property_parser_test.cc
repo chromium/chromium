@@ -833,4 +833,21 @@ TEST(CSSPropertyParserTest, ParseRevertLayer) {
   EXPECT_TRUE(value->IsRevertLayerValue());
 }
 
+// anchor() and anchor-size() shouldn't parse when the feature is disabled.
+TEST(CSSPropertyParserTest, AnchorPositioningDisabled) {
+  ScopedCSSAnchorPositioningForTest disabled_scope(false);
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  EXPECT_FALSE(
+      ParseCSSValue(CSSPropertyID::kTop, "anchor(--foo top)", context));
+  EXPECT_FALSE(
+      ParseCSSValue(CSSPropertyID::kBottom, "anchor(--foo bottom)", context));
+  EXPECT_FALSE(ParseCSSValue(CSSPropertyID::kWidth, "anchor-size(--foo width)",
+                             context));
+  EXPECT_FALSE(ParseCSSValue(CSSPropertyID::kHeight,
+                             "anchor-size(--foo height)", context));
+}
+
 }  // namespace blink

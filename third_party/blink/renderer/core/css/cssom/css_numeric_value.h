@@ -33,7 +33,9 @@ class CORE_EXPORT CSSNumericValue : public CSSStyleValue {
   CSSNumericValue(const CSSNumericValue&) = delete;
   CSSNumericValue& operator=(const CSSNumericValue&) = delete;
 
-  static CSSNumericValue* parse(const String& css_text, ExceptionState&);
+  static CSSNumericValue* parse(const ExecutionContext*,
+                                const String& css_text,
+                                ExceptionState&);
   // Blink-internal ways of creating CSSNumericValues.
   static CSSNumericValue* FromCSSValue(const CSSPrimitiveValue&);
   // https://drafts.css-houdini.org/css-typed-om/#rectify-a-numberish-value

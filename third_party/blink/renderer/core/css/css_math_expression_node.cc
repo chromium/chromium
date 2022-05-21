@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
@@ -1035,11 +1036,68 @@ bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
 
 // ------ End of CSSMathExpressionOperation member functions ------
 
+// ------ Start of CSSMathExpressionAnchorQuery member functions ------
+
+CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
+    CSSAnchorQueryType type,
+    const CSSCustomIdentValue& anchor_name,
+    const CSSValue& value,
+    const CSSPrimitiveValue* fallback)
+    : CSSMathExpressionNode(kCalcPercentLength, false /* has_comparisons */),
+      type_(type),
+      anchor_name_(anchor_name),
+      value_(value),
+      fallback_(fallback) {}
+
+String CSSMathExpressionAnchorQuery::CustomCSSText() const {
+  StringBuilder result;
+  result.Append(IsAnchor() ? "anchor(" : "anchor-size(");
+  result.Append(anchor_name_->CustomCSSText());
+  result.Append(" ");
+  result.Append(value_->CssText());
+  if (fallback_) {
+    result.Append(", ");
+    result.Append(fallback_->CustomCSSText());
+  }
+  result.Append(")");
+  return result.ToString();
+}
+
+bool CSSMathExpressionAnchorQuery::operator==(
+    const CSSMathExpressionNode& other) const {
+  const auto* other_anchor = DynamicTo<CSSMathExpressionAnchorQuery>(other);
+  if (!other_anchor)
+    return false;
+  return type_ == other_anchor->type_ &&
+         base::ValuesEquivalent(anchor_name_, other_anchor->anchor_name_) &&
+         base::ValuesEquivalent(value_, other_anchor->value_) &&
+         base::ValuesEquivalent(fallback_, other_anchor->fallback_);
+}
+
+scoped_refptr<const CalculationExpressionNode>
+CSSMathExpressionAnchorQuery::ToCalculationExpression(
+    const CSSToLengthConversionData&) const {
+  // TODO(crbug.com/1309178): Implement.
+  return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+      PixelsAndPercent(0, 0));
+}
+
+void CSSMathExpressionAnchorQuery::Trace(Visitor* visitor) const {
+  visitor->Trace(anchor_name_);
+  visitor->Trace(value_);
+  visitor->Trace(fallback_);
+  CSSMathExpressionNode::Trace(visitor);
+}
+
+// ------ End of CSSMathExpressionAnchorQuery member functions ------
+
 class CSSMathExpressionNodeParser {
   STACK_ALLOCATED();
 
  public:
-  CSSMathExpressionNodeParser() {}
+  CSSMathExpressionNodeParser(const CSSParserContext& context,
+                              CSSAnchorQueryTypes allowed_anchor_queries)
+      : context_(context), allowed_anchor_queries_(allowed_anchor_queries) {}
 
   bool IsSupportedMathFunction(CSSValueID function_id) {
     switch (function_id) {
@@ -1047,15 +1105,87 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kMax:
       case CSSValueID::kClamp:
         return true;
+      case CSSValueID::kAnchor:
+      case CSSValueID::kAnchorSize:
+        return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled();
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return false;
     }
   }
 
+  CSSMathExpressionNode* ParseAnchorQuery(CSSValueID function_id,
+                                          CSSParserTokenRange& tokens) {
+    DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+    CSSAnchorQueryType anchor_query_type;
+    switch (function_id) {
+      case CSSValueID::kAnchor:
+        anchor_query_type = CSSAnchorQueryType::kAnchor;
+        break;
+      case CSSValueID::kAnchorSize:
+        anchor_query_type = CSSAnchorQueryType::kAnchorSize;
+        break;
+      default:
+        return nullptr;
+    }
+    if (!(static_cast<CSSAnchorQueryTypes>(anchor_query_type) &
+          allowed_anchor_queries_)) {
+      return nullptr;
+    }
+
+    const CSSCustomIdentValue* anchor_name =
+        css_parsing_utils::ConsumeDashedIdent(tokens, context_);
+    if (!anchor_name)
+      return nullptr;
+
+    tokens.ConsumeWhitespace();
+    const CSSValue* value = nullptr;
+    switch (anchor_query_type) {
+      case CSSAnchorQueryType::kAnchor:
+        value = css_parsing_utils::ConsumeIdent<
+            CSSValueID::kTop, CSSValueID::kLeft, CSSValueID::kRight,
+            CSSValueID::kBottom, CSSValueID::kStart, CSSValueID::kEnd,
+            CSSValueID::kSelfStart, CSSValueID::kSelfEnd, CSSValueID::kCenter>(
+            tokens);
+        if (!value) {
+          value = css_parsing_utils::ConsumePercent(
+              tokens, context_, CSSPrimitiveValue::ValueRange::kAll);
+        }
+        break;
+      case CSSAnchorQueryType::kAnchorSize:
+        value = css_parsing_utils::ConsumeIdent<
+            CSSValueID::kWidth, CSSValueID::kHeight, CSSValueID::kBlock,
+            CSSValueID::kInline, CSSValueID::kSelfBlock,
+            CSSValueID::kSelfInline>(tokens);
+        break;
+    }
+    if (!value)
+      return nullptr;
+
+    const CSSPrimitiveValue* fallback = nullptr;
+    if (css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
+      fallback = css_parsing_utils::ConsumeLengthOrPercent(
+          tokens, context_, CSSPrimitiveValue::ValueRange::kAll,
+          css_parsing_utils::UnitlessQuirk::kForbid, allowed_anchor_queries_);
+      if (!fallback)
+        return nullptr;
+    }
+
+    tokens.ConsumeWhitespace();
+    if (!tokens.AtEnd())
+      return nullptr;
+    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
+        anchor_query_type, *anchor_name, *value, fallback);
+  }
+
   CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
                                            CSSParserTokenRange& tokens,
                                            int depth) {
+    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
+      if (auto* anchor_query = ParseAnchorQuery(function_id, tokens))
+        return anchor_query;
+    }
+
     // "arguments" refers to comma separated ones.
     wtf_size_t min_argument_count = 1;
     wtf_size_t max_argument_count = std::numeric_limits<wtf_size_t>::max();
@@ -1252,6 +1382,9 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     return ParseAdditiveValueExpression(tokens, depth);
   }
+
+  const CSSParserContext& context_;
+  const CSSAnchorQueryTypes allowed_anchor_queries_;
 };
 
 scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
@@ -1381,8 +1514,10 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
 // static
 CSSMathExpressionNode* CSSMathExpressionNode::ParseMathFunction(
     CSSValueID function_id,
-    CSSParserTokenRange tokens) {
-  CSSMathExpressionNodeParser parser;
+    CSSParserTokenRange tokens,
+    const CSSParserContext& context,
+    CSSAnchorQueryTypes allowed_anchor_queries) {
+  CSSMathExpressionNodeParser parser(context, allowed_anchor_queries);
   CSSMathExpressionNode* result =
       parser.ParseMathFunction(function_id, tokens, 0);
 
