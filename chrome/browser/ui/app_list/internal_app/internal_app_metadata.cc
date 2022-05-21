@@ -77,7 +77,8 @@ const std::vector<InternalApp>& GetInternalAppList(const Profile* profile) {
 }
 
 bool IsSuggestionChip(const std::string& app_id) {
-  return base::LowerCaseEqualsASCII(app_id, ash::kInternalAppIdContinueReading);
+  return base::EqualsCaseInsensitiveASCII(app_id,
+                                          ash::kInternalAppIdContinueReading);
 }
 
 const InternalApp* FindInternalApp(const std::string& app_id) {
