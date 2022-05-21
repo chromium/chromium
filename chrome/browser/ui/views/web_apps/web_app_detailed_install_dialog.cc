@@ -25,9 +25,9 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace chrome {
@@ -77,10 +77,7 @@ void ShowWebAppDetailedInstallDialog(
           .OverrideShowCloseButton(false)
           .Build();
 
-  auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_CHILD);
-
-  constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
 }
 
 }  // namespace chrome

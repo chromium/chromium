@@ -92,6 +92,10 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
 void ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
                       gfx::NativeWindow parent);
 
+// Shows a web/tab-modal dialog based on `dialog_model`.
+void ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
+                  content::WebContents* web_contents);
+
 }  // namespace constrained_window
 
 #endif  // COMPONENTS_CONSTRAINED_WINDOW_CONSTRAINED_WINDOW_VIEWS_H_
