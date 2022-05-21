@@ -68,6 +68,12 @@ static CompositingReasons CompositingReasonsForWillChange(
 
   if (style.HasWillChangeTransformHint())
     reasons |= CompositingReason::kWillChangeTransform;
+  if (style.HasWillChangeScaleHint())
+    reasons |= CompositingReason::kWillChangeScale;
+  if (style.HasWillChangeRotateHint())
+    reasons |= CompositingReason::kWillChangeRotate;
+  if (style.HasWillChangeTranslateHint())
+    reasons |= CompositingReason::kWillChangeTranslate;
   if (style.HasWillChangeOpacityHint())
     reasons |= CompositingReason::kWillChangeOpacity;
   if (style.HasWillChangeFilterHint())
@@ -309,20 +315,33 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 CompositingReasons
 CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
     const ComputedStyle& style) {
-  // Don't composite "trivial" 3D transforms such as translateZ(0).
+  CompositingReasons reasons = CompositingReason::kNone;
+
   if (Platform::Current()->IsLowEndDevice()) {
-    return style.HasNonTrivial3DTransformOperation()
-               ? CompositingReason::k3DTransform
-               : CompositingReason::kNone;
+    // Don't composite "trivial" 3D transforms such as translateZ(0).
+    if (style.Transform().HasNonTrivial3DComponent())
+      reasons |= CompositingReason::k3DTransform;
+  } else {
+    if (style.Transform().HasNonPerspective3DOperation()) {
+      if (style.Transform().HasNonTrivial3DComponent())
+        reasons |= CompositingReason::k3DTransform;
+      else
+        reasons |= CompositingReason::kTrivial3DTransform;
+    }
   }
 
-  if (style.Has3DTransformOperation()) {
-    return style.HasNonTrivial3DTransformOperation()
-               ? CompositingReason::k3DTransform
-               : CompositingReason::kTrivial3DTransform;
+  if (style.Translate() && style.Translate()->Z() != 0)
+    reasons |= CompositingReason::k3DTranslate;
+
+  if (style.Rotate() &&
+      (style.Rotate()->X() != 0 || style.Rotate()->Y() != 0)) {
+    reasons |= CompositingReason::k3DRotate;
   }
 
-  return CompositingReason::kNone;
+  if (style.Scale() && style.Scale()->Z() != 1)
+    reasons |= CompositingReason::k3DScale;
+
+  return reasons;
 }
 
 static bool ObjectTypeSupportsCompositedTransformAnimation(
@@ -347,6 +366,15 @@ CompositingReasons CompositingReasonFinder::CompositingReasonsForAnimation(
   if (style.HasCurrentTransformAnimation() &&
       ObjectTypeSupportsCompositedTransformAnimation(object))
     reasons |= CompositingReason::kActiveTransformAnimation;
+  if (style.HasCurrentScaleAnimation() &&
+      ObjectTypeSupportsCompositedTransformAnimation(object))
+    reasons |= CompositingReason::kActiveScaleAnimation;
+  if (style.HasCurrentRotateAnimation() &&
+      ObjectTypeSupportsCompositedTransformAnimation(object))
+    reasons |= CompositingReason::kActiveRotateAnimation;
+  if (style.HasCurrentTranslateAnimation() &&
+      ObjectTypeSupportsCompositedTransformAnimation(object))
+    reasons |= CompositingReason::kActiveTranslateAnimation;
   if (style.HasCurrentOpacityAnimation())
     reasons |= CompositingReason::kActiveOpacityAnimation;
   if (style.HasCurrentFilterAnimation())

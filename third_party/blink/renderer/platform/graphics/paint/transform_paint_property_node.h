@@ -333,13 +333,18 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
 
   bool HasDirectCompositingReasonsOtherThan3dTransform() const {
-    return DirectCompositingReasons() & ~CompositingReason::k3DTransform &
-           ~CompositingReason::kTrivial3DTransform;
+    return DirectCompositingReasons() &
+           ~(CompositingReason::k3DTransform | CompositingReason::k3DScale |
+             CompositingReason::k3DRotate | CompositingReason::k3DTranslate |
+             CompositingReason::kTrivial3DTransform);
   }
 
   bool HasActiveTransformAnimation() const {
     return state_.direct_compositing_reasons &
-           CompositingReason::kActiveTransformAnimation;
+           (CompositingReason::kActiveTransformAnimation |
+            CompositingReason::kActiveScaleAnimation |
+            CompositingReason::kActiveRotateAnimation |
+            CompositingReason::kActiveTranslateAnimation);
   }
 
   bool RequiresCompositingForFixedPosition() const {
@@ -369,15 +374,17 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
   bool RequiresCompositingForWillChangeTransform() const {
     return state_.direct_compositing_reasons &
-           CompositingReason::kWillChangeTransform;
+           (CompositingReason::kWillChangeTransform |
+            CompositingReason::kWillChangeScale |
+            CompositingReason::kWillChangeRotate |
+            CompositingReason::kWillChangeTranslate);
   }
 
   // Cull rect expansion is required if the compositing reasons hint requirement
   // of high-performance movement, to avoid frequent change of cull rect.
   bool RequiresCullRectExpansion() const {
     return state_.direct_compositing_reasons &
-           (CompositingReason::kDirectReasonsForTransformProperty |
-            CompositingReason::kDirectReasonsForScrollTranslationProperty);
+           CompositingReason::kRequiresCullRectExpansion;
   }
 
   const CompositorElementId& GetCompositorElementId() const {

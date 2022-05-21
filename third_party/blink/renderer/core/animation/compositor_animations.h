@@ -108,11 +108,17 @@ class CORE_EXPORT CompositorAnimations {
     // Cases where we are animating a property that is marked important.
     kAffectsImportantProperty = 1 << 18,
 
+    kSVGTargetHasIndependentTransformProperty = 1 << 19,
+
+    // When adding new values, update the count below *and* add a description
+    // of the value to CompositorAnimationsFailureReason in
+    // tools/metrics/histograms/enums.xml .
+
     // The maximum number of flags in this enum (excluding itself). New flags
     // should increment this number but it should never be decremented because
     // the values are used in UMA histograms. It should also be noted that it
     // excludes the kNoFailure value.
-    kFailureReasonCount = 19,
+    kFailureReasonCount = 20,
   };
 
   static FailureReasons CheckCanStartAnimationOnCompositor(

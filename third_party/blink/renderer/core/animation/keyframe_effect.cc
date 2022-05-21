@@ -352,6 +352,7 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
 
     // Do not put transforms on compositor if more than one of them are defined
     // in computed style because they need to be explicitly ordered
+    // TODO(https://crbug.com/696374): remove this
     if (HasMultipleTransformProperties())
       reasons |= CompositorAnimations::kTargetHasMultipleTransformProperties;
 

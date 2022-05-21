@@ -209,6 +209,9 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
 
   style->SetSubtreeWillChangeContents(false);
   style->SetHasCurrentTransformAnimation(false);
+  style->SetHasCurrentScaleAnimation(false);
+  style->SetHasCurrentRotateAnimation(false);
+  style->SetHasCurrentTranslateAnimation(false);
   style->SetHasCurrentOpacityAnimation(false);
   style->SetHasCurrentFilterAnimation(false);
   style->SetHasCurrentBackdropFilterAnimation(false);
@@ -218,31 +221,45 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
       CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  CompositingReasons expected_compositing_reason_for_transform_animation =
-      supports_transform_animation
-          ? CompositingReason::kActiveTransformAnimation
-          : CompositingReason::kNone;
+  CompositingReasons expected_reason = CompositingReason::kNone;
 
   style->SetHasCurrentTransformAnimation(true);
-  EXPECT_EQ(expected_compositing_reason_for_transform_animation,
+  if (supports_transform_animation)
+    expected_reason |= CompositingReason::kActiveTransformAnimation;
+  EXPECT_EQ(expected_reason,
+            CompositingReasonFinder::CompositingReasonsForAnimation(*object));
+
+  style->SetHasCurrentScaleAnimation(true);
+  if (supports_transform_animation)
+    expected_reason |= CompositingReason::kActiveScaleAnimation;
+  EXPECT_EQ(expected_reason,
+            CompositingReasonFinder::CompositingReasonsForAnimation(*object));
+
+  style->SetHasCurrentRotateAnimation(true);
+  if (supports_transform_animation)
+    expected_reason |= CompositingReason::kActiveRotateAnimation;
+  EXPECT_EQ(expected_reason,
+            CompositingReasonFinder::CompositingReasonsForAnimation(*object));
+
+  style->SetHasCurrentTranslateAnimation(true);
+  if (supports_transform_animation)
+    expected_reason |= CompositingReason::kActiveTranslateAnimation;
+  EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
   style->SetHasCurrentOpacityAnimation(true);
-  EXPECT_EQ(expected_compositing_reason_for_transform_animation |
-                CompositingReason::kActiveOpacityAnimation,
+  expected_reason |= CompositingReason::kActiveOpacityAnimation;
+  EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
   style->SetHasCurrentFilterAnimation(true);
-  EXPECT_EQ(expected_compositing_reason_for_transform_animation |
-                CompositingReason::kActiveOpacityAnimation |
-                CompositingReason::kActiveFilterAnimation,
+  expected_reason |= CompositingReason::kActiveFilterAnimation;
+  EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
   style->SetHasCurrentBackdropFilterAnimation(true);
-  EXPECT_EQ(expected_compositing_reason_for_transform_animation |
-                CompositingReason::kActiveOpacityAnimation |
-                CompositingReason::kActiveFilterAnimation |
-                CompositingReason::kActiveBackdropFilterAnimation,
+  expected_reason |= CompositingReason::kActiveBackdropFilterAnimation;
+  EXPECT_EQ(expected_reason,
             CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 }
 

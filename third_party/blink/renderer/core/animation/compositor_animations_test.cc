@@ -1317,6 +1317,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   effect2->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
                                                      nullptr);
 
+  UpdateAllLifecyclePhasesForTest();
+
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                               animation2, *effect2) &
               CompositorAnimations::kMultipleTransformAnimationsOnSameTarget);

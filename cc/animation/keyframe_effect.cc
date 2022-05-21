@@ -443,7 +443,8 @@ bool KeyframeEffect::AnimationsPreserveAxisAlignment() const {
   return true;
 }
 
-float KeyframeEffect::MaximumScale(ElementListType list_type) const {
+float KeyframeEffect::MaximumScale(ElementId element_id,
+                                   ElementListType list_type) const {
   float maximum_scale = kInvalidScale;
   for (const auto& keyframe_model : keyframe_models()) {
     if (keyframe_model->is_finished())
@@ -451,6 +452,12 @@ float KeyframeEffect::MaximumScale(ElementListType list_type) const {
 
     auto* cc_keyframe_model =
         KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+
+    ElementId model_element_id = cc_keyframe_model->element_id();
+    if (!model_element_id)
+      model_element_id = element_id_;
+    if (model_element_id != element_id)
+      continue;
 
     if ((list_type == ElementListType::ACTIVE &&
          !cc_keyframe_model->affects_active_elements()) ||

@@ -1964,6 +1964,9 @@ bool PropertyTrees::ElementIsAnimatingChanged(
     const ElementId element_id = it->second;
     switch (property) {
       case TargetProperty::TRANSFORM:
+      case TargetProperty::SCALE:
+      case TargetProperty::ROTATE:
+      case TargetProperty::TRANSLATE:
         if (TransformNode* transform_node =
                 transform_tree_mutable().FindNodeFromElementId(element_id)) {
           if (mask.currently_running[property])

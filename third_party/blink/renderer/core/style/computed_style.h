@@ -1455,7 +1455,27 @@ class ComputedStyle : public ComputedStyleBase,
     return WillChangeProperties().Contains(CSSPropertyID::kOpacity) ||
            WillChangeProperties().Contains(CSSPropertyID::kAliasWebkitOpacity);
   }
+  // Do we have a will-change hint for transform, perspective, or
+  // transform-style?
+  // TODO(dbaron): It's not clear that perspective and transform-style belong
+  // here any more than they belong for scale, rotate, translate, or offset-*.
   bool HasWillChangeTransformHint() const;
+  bool HasWillChangeScaleHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kScale);
+  }
+  bool HasWillChangeRotateHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kRotate);
+  }
+  bool HasWillChangeTranslateHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kTranslate);
+  }
+  bool HasWillChangeOffsetHint() const {
+    return WillChangeProperties().Contains(CSSPropertyID::kOffsetPath) ||
+           WillChangeProperties().Contains(CSSPropertyID::kOffsetPosition);
+  }
+  // The union of the above five functions (but faster).
+  bool HasWillChangeHintForAnyTransformProperty() const;
+
   bool HasWillChangeFilterHint() const {
     return WillChangeProperties().Contains(CSSPropertyID::kFilter) ||
            WillChangeProperties().Contains(CSSPropertyID::kAliasWebkitFilter);
@@ -2335,17 +2355,24 @@ class ComputedStyle : public ComputedStyleBase,
   // Animation utility functions.
   bool HasCurrentCompositableAnimation() const {
     return HasCurrentOpacityAnimation() || HasCurrentTransformAnimation() ||
-           HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation() ||
+           HasCurrentScaleAnimation() || HasCurrentRotateAnimation() ||
+           HasCurrentTranslateAnimation() || HasCurrentFilterAnimation() ||
+           HasCurrentBackdropFilterAnimation() ||
            (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
             HasCurrentBackgroundColorAnimation());
   }
   bool ShouldCompositeForCurrentAnimations() const {
     return HasCurrentOpacityAnimation() || HasCurrentTransformAnimation() ||
-           HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation();
+           HasCurrentScaleAnimation() || HasCurrentRotateAnimation() ||
+           HasCurrentTranslateAnimation() || HasCurrentFilterAnimation() ||
+           HasCurrentBackdropFilterAnimation();
   }
   bool RequiresPropertyNodeForAnimation() const {
     return IsRunningOpacityAnimationOnCompositor() ||
            IsRunningTransformAnimationOnCompositor() ||
+           IsRunningScaleAnimationOnCompositor() ||
+           IsRunningRotateAnimationOnCompositor() ||
+           IsRunningTranslateAnimationOnCompositor() ||
            IsRunningFilterAnimationOnCompositor() ||
            IsRunningBackdropFilterAnimationOnCompositor();
   }
@@ -2378,21 +2405,11 @@ class ComputedStyle : public ComputedStyleBase,
            (Rotate() && (Rotate()->X() != 0 || Rotate()->Y() != 0)) ||
            (Scale() && Scale()->Z() != 1);
   }
-  // Returns true if the computed style contains a 3D transform operation with a
-  // non-trivial component in the Z axis. This can be individual operations from
-  // the transform property, or individual values from translate/rotate/scale
-  // properties. Perspective is omitted since it does not, by itself, specify a
-  // 3D transform.
-  bool HasNonTrivial3DTransformOperation() const {
-    return Transform().HasNonTrivial3DComponent() ||
-           (Translate() && Translate()->Z() != 0) ||
-           (Rotate() && Rotate()->Angle() != 0 &&
-            (Rotate()->X() != 0 || Rotate()->Y() != 0)) ||
-           (Scale() && Scale()->Z() != 1);
-  }
   bool HasTransform() const {
     return HasTransformOperations() || HasOffset() ||
-           HasCurrentTransformAnimation() || Translate() || Rotate() || Scale();
+           HasCurrentTransformAnimation() || HasCurrentScaleAnimation() ||
+           HasCurrentRotateAnimation() || HasCurrentTranslateAnimation() ||
+           Translate() || Rotate() || Scale();
   }
   bool HasTransformOperations() const {
     return !Transform().Operations().IsEmpty();
@@ -2422,13 +2439,19 @@ class ComputedStyle : public ComputedStyleBase,
     kIncludeIndependentTransformProperties,
     kExcludeIndependentTransformProperties
   };
+  enum ApplyTransformOperations {
+    kIncludeTransformOperations,
+    kExcludeTransformOperations
+  };
   void ApplyTransform(TransformationMatrix&,
                       const LayoutSize& border_box_data_size,
+                      ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
   void ApplyTransform(TransformationMatrix&,
                       const gfx::RectF& bounding_box,
+                      ApplyTransformOperations,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
@@ -2514,10 +2537,10 @@ class ComputedStyle : public ComputedStyleBase,
   // position descendants.
   bool HasTransformRelatedProperty() const {
     return HasTransform() || Preserves3D() || HasPerspective() ||
-           HasWillChangeTransformHint();
+           HasWillChangeHintForAnyTransformProperty();
   }
   bool HasTransformRelatedPropertyForSVG() const {
-    return HasTransform() || HasWillChangeTransformHint();
+    return HasTransform() || HasWillChangeHintForAnyTransformProperty();
   }
 
   // Return true if this style has properties ('filter', 'clip-path' and 'mask')
@@ -3145,7 +3168,16 @@ class ComputedStyle : public ComputedStyleBase,
       UpdatePropertySpecificDifferencesRespectsTransformAnimation);
   FRIEND_TEST_ALL_PREFIXES(
       ComputedStyleTest,
-      UpdatePropertySpecificDifferencesCompositingReasonsTransforom);
+      UpdatePropertySpecificDifferencesCompositingReasonsTransform);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComputedStyleTest,
+      UpdatePropertySpecificDifferencesRespectsScaleAnimation);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComputedStyleTest,
+      UpdatePropertySpecificDifferencesRespectsRotateAnimation);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComputedStyleTest,
+      UpdatePropertySpecificDifferencesRespectsTranslateAnimation);
   FRIEND_TEST_ALL_PREFIXES(
       ComputedStyleTest,
       UpdatePropertySpecificDifferencesCompositingReasonsOpacity);

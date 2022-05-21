@@ -360,7 +360,8 @@ void PaintLayer::UpdateTransformationMatrix() {
     DCHECK(box);
     transform->MakeIdentity();
     box->StyleRef().ApplyTransform(
-        *transform, box->Size(), ComputedStyle::kIncludeTransformOrigin,
+        *transform, box->Size(), ComputedStyle::kIncludeTransformOperations,
+        ComputedStyle::kIncludeTransformOrigin,
         ComputedStyle::kIncludeMotionPath,
         ComputedStyle::kIncludeIndependentTransformProperties);
     if (!box->GetDocument().GetSettings()->GetAcceleratedCompositingEnabled())
@@ -1473,13 +1474,11 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
     }
   }
 
-  gfx::Vector2dF offset(-transform_container_fragment.PaintOffset());
-  auto offset_translation = GeometryMapper::SourceToDestinationProjection(
-      local_fragment.PreTransform(), *container_transform);
-  DCHECK(offset_translation.IsIdentityOr2DTranslation());
-  offset += offset_translation.Translation2D();
-  offset += gfx::Vector2dF(local_fragment.PaintOffset());
-  transform_state.Translate(offset);
+  transform_state.Translate(
+      gfx::Vector2dF(-transform_container_fragment.PaintOffset()));
+  transform_state.ApplyTransform(GeometryMapper::SourceToDestinationProjection(
+      local_fragment.PreTransform(), *container_transform));
+  transform_state.Translate(gfx::Vector2dF(local_fragment.PaintOffset()));
 
   if (const auto* properties = local_fragment.PaintProperties()) {
     if (const auto* transform = properties->Transform())

@@ -428,10 +428,12 @@ TEST_F(AnimationTest, AddRemoveAnimationToNonAttachedAnimation) {
   EXPECT_TRUE(animation_->keyframe_effect()->element_animations());
   EXPECT_FALSE(animation_->keyframe_effect()
                    ->element_animations()
-                   ->HasAnyAnimationTargetingProperty(TargetProperty::FILTER));
+                   ->HasAnyAnimationTargetingProperty(TargetProperty::FILTER,
+                                                      element_id_));
   EXPECT_TRUE(animation_->keyframe_effect()
                   ->element_animations()
-                  ->HasAnyAnimationTargetingProperty(TargetProperty::OPACITY));
+                  ->HasAnyAnimationTargetingProperty(TargetProperty::OPACITY,
+                                                     element_id_));
   EXPECT_TRUE(animation_->keyframe_effect()->needs_push_properties());
 
   host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
@@ -552,7 +554,7 @@ TEST_F(AnimationTest, ToString) {
   EXPECT_EQ(
       base::StringPrintf("Animation{id=%d, element_id=%s, "
                          "keyframe_models=[KeyframeModel{id=42, "
-                         "group=73, target_property_type=1, "
+                         "group=73, target_property_type=4, "
                          "custom_property_name=, native_property_type=2, "
                          "run_state=WAITING_FOR_TARGET_AVAILABILITY, "
                          "element_id=(0)}]}",
@@ -565,10 +567,10 @@ TEST_F(AnimationTest, ToString) {
   EXPECT_EQ(base::StringPrintf(
                 "Animation{id=%d, element_id=%s, "
                 "keyframe_models=[KeyframeModel{id=42, "
-                "group=73, target_property_type=1, custom_property_name=, "
+                "group=73, target_property_type=4, custom_property_name=, "
                 "native_property_type=2, "
                 "run_state=WAITING_FOR_TARGET_AVAILABILITY, element_id=(0)}, "
-                "KeyframeModel{id=45, group=76, target_property_type=5, "
+                "KeyframeModel{id=45, group=76, target_property_type=8, "
                 "custom_property_name=, native_property_type=2, "
                 "run_state=WAITING_FOR_TARGET_AVAILABILITY, element_id=(0)}]}",
                 animation_->id(), element_id_.ToString().c_str()),

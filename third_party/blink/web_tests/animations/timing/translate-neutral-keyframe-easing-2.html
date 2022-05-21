@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<style>
+  #target {
+    background: green;
+    height: 100px;
+    width: 100px;
+    will-change: translate;
+  }
+</style>
+<body>
+<div id="target"></div>
+<script>
+target.animate({translate: '100px'}, {duration: 2e10, delay: -1e10});
+</script>
+</body>

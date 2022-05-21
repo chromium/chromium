@@ -4989,23 +4989,18 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformOriginWithAndWithoutMotionPath) {
   )HTML");
 
   auto* motion_path = GetLayoutObjectByElementId("motionPath");
-  EXPECT_EQ(gfx::Vector2dF(50, 150), motion_path->FirstFragment()
-                                         .PaintProperties()
-                                         ->Transform()
-                                         ->Translation2D());
+  auto* motion_path_properties = motion_path->FirstFragment().PaintProperties();
+  EXPECT_EQ(motion_path_properties->Transform(), nullptr);
+  EXPECT_EQ(gfx::Vector2dF(50, 150),
+            motion_path_properties->Offset()->Translation2D());
   // We don't need to store origin for 2d-translation.
-  EXPECT_EQ(
-      gfx::Point3F(),
-      motion_path->FirstFragment().PaintProperties()->Transform()->Origin());
+  EXPECT_EQ(gfx::Point3F(), motion_path_properties->Offset()->Origin());
 
   auto* will_change = GetLayoutObjectByElementId("willChange");
-  EXPECT_TRUE(will_change->FirstFragment()
-                  .PaintProperties()
-                  ->Transform()
-                  ->IsIdentity());
-  EXPECT_EQ(
-      gfx::Point3F(),
-      will_change->FirstFragment().PaintProperties()->Transform()->Origin());
+  auto* will_change_properties = will_change->FirstFragment().PaintProperties();
+  EXPECT_EQ(will_change_properties->Offset(), nullptr);
+  EXPECT_TRUE(will_change_properties->Transform()->IsIdentity());
+  EXPECT_EQ(gfx::Point3F(), will_change_properties->Transform()->Origin());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, ChangePositionUpdateDescendantProperties) {

@@ -143,6 +143,16 @@ bool HasPotentiallyRunningFilterAnimation(const MutatorHost& host,
 }
 
 bool TransformIsAnimating(const MutatorHost& host, Layer* layer) {
+  DCHECK(!host.IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::SCALE) &&
+         !host.IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::ROTATE) &&
+         !host.IsAnimatingProperty(layer->element_id(),
+                                   layer->GetElementTypeForAnimation(),
+                                   TargetProperty::TRANSLATE))
+      << "individual transform properties only supported in layer lists mode";
   return host.IsAnimatingProperty(layer->element_id(),
                                   layer->GetElementTypeForAnimation(),
                                   TargetProperty::TRANSFORM);
@@ -150,6 +160,16 @@ bool TransformIsAnimating(const MutatorHost& host, Layer* layer) {
 
 bool HasPotentiallyRunningTransformAnimation(const MutatorHost& host,
                                              Layer* layer) {
+  DCHECK(!host.HasPotentiallyRunningAnimationForProperty(
+             layer->element_id(), layer->GetElementTypeForAnimation(),
+             TargetProperty::SCALE) &&
+         !host.HasPotentiallyRunningAnimationForProperty(
+             layer->element_id(), layer->GetElementTypeForAnimation(),
+             TargetProperty::ROTATE) &&
+         !host.HasPotentiallyRunningAnimationForProperty(
+             layer->element_id(), layer->GetElementTypeForAnimation(),
+             TargetProperty::TRANSLATE))
+      << "individual transform properties only supported in layer lists mode";
   return host.HasPotentiallyRunningAnimationForProperty(
       layer->element_id(), layer->GetElementTypeForAnimation(),
       TargetProperty::TRANSFORM);
@@ -242,6 +262,13 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   // the Running state right after commit on the compositor thread.
   const bool has_any_transform_animation = HasAnyAnimationTargetingProperty(
       mutator_host_, layer, TargetProperty::TRANSFORM);
+  DCHECK(!HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                           TargetProperty::SCALE) &&
+         !HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                           TargetProperty::ROTATE) &&
+         !HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                           TargetProperty::TRANSLATE))
+      << "individual transform properties only supported in layer lists mode";
 
   const bool has_surface = created_render_surface;
 

@@ -534,7 +534,8 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
   }
 
   bool transform_zoom_changed =
-      old_style->HasCurrentTransformAnimation() &&
+      (old_style->HasCurrentTranslateAnimation() ||
+       old_style->HasCurrentTransformAnimation()) &&
       old_style->EffectiveZoom() != style.EffectiveZoom();
 
   const auto& snapshot = [&](AnimationEffect* effect) {
@@ -879,12 +880,14 @@ void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
                                    ComputedStyle& style) {
   if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
     style.SetHasCurrentOpacityAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyRotate())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyScale())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyTranslate()))) {
+  if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())))
     style.SetHasCurrentTransformAnimation(true);
-  }
+  if (effect.Affects(PropertyHandle(GetCSSPropertyRotate())))
+    style.SetHasCurrentRotateAnimation(true);
+  if (effect.Affects(PropertyHandle(GetCSSPropertyScale())))
+    style.SetHasCurrentScaleAnimation(true);
+  if (effect.Affects(PropertyHandle(GetCSSPropertyTranslate())))
+    style.SetHasCurrentTranslateAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyFilter())))
     style.SetHasCurrentFilterAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
@@ -999,6 +1002,21 @@ void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
       style.SetIsRunningTransformAnimationOnCompositor(
           effect_stack.HasActiveAnimationsOnCompositor(
               PropertyHandle(GetCSSPropertyTransform())));
+    }
+    if (style.HasCurrentScaleAnimation()) {
+      style.SetIsRunningScaleAnimationOnCompositor(
+          effect_stack.HasActiveAnimationsOnCompositor(
+              PropertyHandle(GetCSSPropertyScale())));
+    }
+    if (style.HasCurrentRotateAnimation()) {
+      style.SetIsRunningRotateAnimationOnCompositor(
+          effect_stack.HasActiveAnimationsOnCompositor(
+              PropertyHandle(GetCSSPropertyRotate())));
+    }
+    if (style.HasCurrentTranslateAnimation()) {
+      style.SetIsRunningTranslateAnimationOnCompositor(
+          effect_stack.HasActiveAnimationsOnCompositor(
+              PropertyHandle(GetCSSPropertyTranslate())));
     }
     if (style.HasCurrentFilterAnimation()) {
       style.SetIsRunningFilterAnimationOnCompositor(

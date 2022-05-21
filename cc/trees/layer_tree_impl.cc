@@ -1156,23 +1156,45 @@ void LayerTreeImpl::UpdateTransformAnimation(ElementId element_id,
                                              int transform_node_index) {
   // This includes all animations, even those that are finished but
   // haven't yet been deleted.
-  if (mutator_host()->HasAnyAnimationTargetingProperty(
-          element_id, TargetProperty::TRANSFORM)) {
-    TransformTree& transform_tree = property_trees()->transform_tree_mutable();
-    if (TransformNode* node = transform_tree.Node(transform_node_index)) {
-      ElementListType list_type = GetElementTypeForAnimation();
-      bool has_potential_animation =
-          mutator_host()->HasPotentiallyRunningAnimationForProperty(
-              element_id, list_type, TargetProperty::TRANSFORM);
-      if (node->has_potential_animation != has_potential_animation) {
-        node->has_potential_animation = has_potential_animation;
-        node->maximum_animation_scale =
-            mutator_host()->MaximumScale(element_id, list_type);
-        transform_tree.set_needs_update(true);
-        set_needs_update_draw_properties();
+
+  // A given ElementId should be associated with only a single transform
+  // property.  However, the ElementId is opaque to cc.  (If it comes from
+  // blink, it was constructed with a CompositorElementIdNamespace specific to
+  // the correct property.  Otherwise, only the transform property should be
+  // used.)
+  const TargetProperty::Type transform_properties[] = {
+      TargetProperty::TRANSFORM, TargetProperty::SCALE, TargetProperty::ROTATE,
+      TargetProperty::TRANSLATE};
+#if DCHECK_IS_ON()
+  unsigned property_count = 0u;
+#endif
+
+  for (TargetProperty::Type property : transform_properties) {
+    if (mutator_host()->HasAnyAnimationTargetingProperty(element_id,
+                                                         property)) {
+#if DCHECK_IS_ON()
+      ++property_count;
+#endif
+      TransformTree& transform_tree =
+          property_trees()->transform_tree_mutable();
+      if (TransformNode* node = transform_tree.Node(transform_node_index)) {
+        ElementListType list_type = GetElementTypeForAnimation();
+        bool has_potential_animation =
+            mutator_host()->HasPotentiallyRunningAnimationForProperty(
+                element_id, list_type, property);
+        if (node->has_potential_animation != has_potential_animation) {
+          node->has_potential_animation = has_potential_animation;
+          node->maximum_animation_scale =
+              mutator_host()->MaximumScale(element_id, list_type);
+          transform_tree.set_needs_update(true);
+          set_needs_update_draw_properties();
+        }
       }
     }
   }
+#if DCHECK_IS_ON()
+  DCHECK_LE(property_count, 1u);
+#endif
 }
 
 void LayerTreeImpl::UpdatePageScaleNode() {

@@ -215,8 +215,11 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
     case CSSPropertyID::kBackdropFilter:
       return CompositorElementIdNamespace::kPrimaryEffect;
     case CSSPropertyID::kRotate:
+      return CompositorElementIdNamespace::kRotateTransform;
     case CSSPropertyID::kScale:
+      return CompositorElementIdNamespace::kScaleTransform;
     case CSSPropertyID::kTranslate:
+      return CompositorElementIdNamespace::kTranslateTransform;
     case CSSPropertyID::kTransform:
       return CompositorElementIdNamespace::kPrimaryTransform;
     case CSSPropertyID::kFilter:
@@ -279,6 +282,12 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
       if (const auto* svg_element = DynamicTo<SVGElement>(target_element)) {
         reasons |=
             CheckCanStartTransformAnimationOnCompositorForSVG(*svg_element);
+        // TODO(https://crbug.com/1278452): When we make the transform tree
+        // structure for SVG work like everything else, we should instead
+        // start compositing animations of transform properties other than
+        // transform.
+        if (!property.GetCSSProperty().IDEquals(CSSPropertyID::kTransform))
+          reasons |= kSVGTargetHasIndependentTransformProperty;
       }
       transform_property_count++;
     }
@@ -452,6 +461,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   }
 
   // TODO: Support multiple transform property animations on the compositor
+  // TODO(https://crbug.com/696374): remove this
   if (transform_property_count > 1)
     reasons |= kMultipleTransformAnimationsOnSameTarget;
 
@@ -566,10 +576,16 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
     } else if (const auto* paint_properties =
                    layout_object->FirstFragment().PaintProperties()) {
       const auto* transform = paint_properties->Transform();
+      const auto* scale = paint_properties->Scale();
+      const auto* rotate = paint_properties->Rotate();
+      const auto* translate = paint_properties->Translate();
       const auto* effect = paint_properties->Effect();
       const auto* filter = paint_properties->Filter();
       has_direct_compositing_reasons =
           (transform && transform->HasDirectCompositingReasons()) ||
+          (scale && scale->HasDirectCompositingReasons()) ||
+          (rotate && rotate->HasDirectCompositingReasons()) ||
+          (translate && translate->HasDirectCompositingReasons()) ||
           (effect && effect->HasDirectCompositingReasons()) ||
           (filter && filter->HasDirectCompositingReasons());
     }
@@ -898,7 +914,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
     DCHECK(timing.timing_function);
     absl::optional<cc::KeyframeModel::TargetPropertyId> target_property_id =
         absl::nullopt;
-    switch (property.GetCSSProperty().PropertyID()) {
+    CSSPropertyID css_property_id = property.GetCSSProperty().PropertyID();
+    switch (css_property_id) {
       case CSSPropertyID::kOpacity: {
         auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
         AddKeyframesToCurve(*float_curve, values);
@@ -917,7 +934,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
         filter_curve->set_scaled_duration(scale);
         curve = std::move(filter_curve);
         target_property_id = cc::KeyframeModel::TargetPropertyId(
-            property.GetCSSProperty().PropertyID() == CSSPropertyID::kFilter
+            css_property_id == CSSPropertyID::kFilter
                 ? cc::TargetProperty::FILTER
                 : cc::TargetProperty::BACKDROP_FILTER);
         break;
@@ -934,8 +951,27 @@ void CompositorAnimations::GetAnimationOnCompositor(
         transform_curve->SetTimingFunction(timing.timing_function->CloneToCC());
         transform_curve->set_scaled_duration(scale);
         curve = std::move(transform_curve);
-        target_property_id =
-            cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::TRANSFORM);
+        switch (css_property_id) {
+          case CSSPropertyID::kRotate:
+            target_property_id =
+                cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::ROTATE);
+            break;
+          case CSSPropertyID::kScale:
+            target_property_id =
+                cc::KeyframeModel::TargetPropertyId(cc::TargetProperty::SCALE);
+            break;
+          case CSSPropertyID::kTranslate:
+            target_property_id = cc::KeyframeModel::TargetPropertyId(
+                cc::TargetProperty::TRANSLATE);
+            break;
+          case CSSPropertyID::kTransform:
+            target_property_id = cc::KeyframeModel::TargetPropertyId(
+                cc::TargetProperty::TRANSFORM);
+            break;
+          default:
+            NOTREACHED() << "only possible cases for nested switch";
+            break;
+        }
         break;
       }
       case CSSPropertyID::kBackgroundColor:

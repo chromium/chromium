@@ -159,7 +159,13 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRect() {
     if (properties->Perspective())
       return true;
 
-    if (const auto* transform = properties->Transform()) {
+    const TransformPaintPropertyNode* transform_nodes[] = {
+        properties->Transform(), properties->Offset(), properties->Scale(),
+        properties->Rotate(), properties->Translate()};
+    for (const auto* transform : transform_nodes) {
+      if (!transform)
+        continue;
+
       // A CSS transform can also have perspective like
       // "transform: perspective(100px) rotateY(45deg)". In these cases, we
       // also want to skip cull rect mapping. See http://crbug.com/887558 for

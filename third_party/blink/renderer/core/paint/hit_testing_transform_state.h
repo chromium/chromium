@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIT_TESTING_TRANSFORM_STATE_H_
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -54,6 +55,7 @@ class HitTestingTransformState {
 
   void Translate(const gfx::Vector2dF&);
   void ApplyTransform(const TransformPaintPropertyNode&);
+  void ApplyTransform(const GeometryMapper::Translation2DOrMatrix&);
 
   gfx::PointF MappedPoint() const;
   gfx::QuadF MappedQuad() const;

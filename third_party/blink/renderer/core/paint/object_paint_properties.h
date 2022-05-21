@@ -101,9 +101,36 @@ class CORE_EXPORT ObjectPaintProperties {
   // +-[ StickyTranslation ]
   //  /    This applies the sticky offset induced by position:sticky.
   // |
+  // +-[ Translate ]
+  //   |   The transform from CSS 'translate' (including the effects of
+  //  /    'transform-origin').
+  // |
+  // +-[ Rotate ]
+  //   |   The transform from CSS 'rotate' (including the effects of
+  //  /    'transform-origin').
+  // |
+  // +-[ Scale ]
+  //   |   The transform from CSS 'scale' (including the effects of
+  //  /    'transform-origin').
+  // |
+  // +-[ Offset ]
+  //   |   The transform from the longhand properties that comprise the CSS
+  //  /    'offset' shorthand (including the effects of 'transform-origin').
+  // |
   // +-[ Transform ]
-  //   |   The space created by CSS transform. This is the local border box
-  //   |   space.
+  //   |   The transform from CSS 'transform' (including the effects of
+  //   |   'transform-origin').
+  //   |
+  //   |   For SVG, this also includes 'translate', 'rotate', 'scale',
+  //   |   'offset-*' (instead of the nodes above) and the effects of
+  //   |   some characteristics of the SVG viewport and the "SVG
+  //   |   additional translation" (for the x and y attributes on
+  //   |   svg:use).
+  //   |
+  //   |   This is the local border box space (see
+  //   |   FragmentData::LocalBorderBoxProperties); the nodes below influence
+  //   |   the transform for the children but not the LayoutObject itself.
+  //   |
   //   +-[ Perspective ]
   //     |   The space created by CSS perspective.
   //     +-[ ReplacedContentTransform ]
@@ -127,12 +154,17 @@ class CORE_EXPORT ObjectPaintProperties {
   // https://drafts.csswg.org/css-transforms-2/#accumulated-3d-transformation-matrix-computation
  public:
   bool HasTransformNode() const {
-    return paint_offset_translation_ || sticky_translation_ || transform_ ||
-           perspective_ || replaced_content_transform_ || scroll_translation_ ||
+    return paint_offset_translation_ || sticky_translation_ || translate_ ||
+           rotate_ || scale_ || offset_ || transform_ || perspective_ ||
+           replaced_content_transform_ || scroll_translation_ ||
            transform_isolation_node_;
   }
   ADD_TRANSFORM(PaintOffsetTranslation, paint_offset_translation_);
   ADD_TRANSFORM(StickyTranslation, sticky_translation_);
+  ADD_TRANSFORM(Translate, translate_);
+  ADD_TRANSFORM(Rotate, rotate_);
+  ADD_TRANSFORM(Scale, scale_);
+  ADD_TRANSFORM(Offset, offset_);
   ADD_TRANSFORM(Transform, transform_);
   ADD_TRANSFORM(Perspective, perspective_);
   ADD_TRANSFORM(ReplacedContentTransform, replaced_content_transform_);

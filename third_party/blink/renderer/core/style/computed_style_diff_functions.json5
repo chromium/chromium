@@ -374,8 +374,9 @@
             // from just the matrix, including but not limited to animation state.
             method: "HasTransform()",
             field_dependencies: ["transform", "offset-position",
-                    "HasCurrentTransformAnimation", "translate", "rotate",
-                    "scale"]
+                    "HasCurrentTranslateAnimation", "HasCurrentRotateAnimation",
+                    "HasCurrentScaleAnimation", "HasCurrentTransformAnimation",
+                    "translate", "rotate", "scale"]
           },
         ]
     },

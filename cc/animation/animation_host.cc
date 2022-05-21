@@ -636,7 +636,8 @@ bool AnimationHost::HasAnyAnimationTargetingProperty(
   if (!element_animations)
     return false;
 
-  return element_animations->HasAnyAnimationTargetingProperty(property);
+  return element_animations->HasAnyAnimationTargetingProperty(property,
+                                                              element_id);
 }
 
 bool AnimationHost::AnimationsPreserveAxisAlignment(
@@ -650,7 +651,7 @@ bool AnimationHost::AnimationsPreserveAxisAlignment(
 float AnimationHost::MaximumScale(ElementId element_id,
                                   ElementListType list_type) const {
   if (auto element_animations = GetElementAnimationsForElementId(element_id))
-    return element_animations->MaximumScale(list_type);
+    return element_animations->MaximumScale(element_id, list_type);
   return kInvalidScale;
 }
 

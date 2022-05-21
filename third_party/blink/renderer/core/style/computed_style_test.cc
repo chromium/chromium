@@ -141,7 +141,7 @@ TEST_F(ComputedStyleTest,
 }
 
 TEST_F(ComputedStyleTest,
-       UpdatePropertySpecificDifferencesCompositingReasonsTransforom) {
+       UpdatePropertySpecificDifferencesCompositingReasonsTransform) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
@@ -159,6 +159,36 @@ TEST_F(ComputedStyleTest,
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_FALSE(diff.TransformChanged());
   EXPECT_TRUE(diff.CompositingReasonsChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsScaleAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentScaleAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsRotateAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentRotateAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
+}
+
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsTranslateAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  other->SetHasCurrentTranslateAnimation(true);
+  StyleDifference diff;
+  style->UpdatePropertySpecificDifferences(*other, diff);
+  EXPECT_TRUE(diff.TransformChanged());
 }
 
 TEST_F(ComputedStyleTest,
@@ -429,11 +459,17 @@ TEST_F(ComputedStyleTest, BorderStyle) {
 TEST_F(ComputedStyleTest, AnimationFlags) {
   Persistent<Document> document = Document::CreateForTest();
   TEST_ANIMATION_FLAG(HasCurrentTransformAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentScaleAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentRotateAnimation, kNonInherited);
+  TEST_ANIMATION_FLAG(HasCurrentTranslateAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentBackdropFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kInherited);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTransformAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningScaleAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningRotateAnimationOnCompositor);
+  TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTranslateAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningOpacityAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningFilterAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningBackdropFilterAnimationOnCompositor);

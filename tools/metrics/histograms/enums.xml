@@ -17308,7 +17308,11 @@ Called by update_net_error_codes.py.-->
   <int value="16"
       label="Custom property contains different value types in keyframe
              animation"/>
-  <int value="17" label="Compositor property animations have no effect"/>
+  <int value="17" label="Scroll timeline source is not composited"/>
+  <int value="18" label="Compositor property animations have no effect"/>
+  <int value="19" label="Animation affects an !important property"/>
+  <int value="20"
+      label="Target SVG element uses an individual transform property"/>
 </enum>
 
 <enum name="CompositorFrameSinkSubmitResult">

@@ -429,9 +429,10 @@ BackgroundImageGeometry::BackgroundImageGeometry(
          layer && !layer->IsRootLayer(); layer = layer->Parent()) {
       // Check LayoutObject::HasTransformRelatedProperty() first to exclude
       // non-applicable transforms and will-change: transform.
-      if (layer->GetLayoutObject().HasTransformRelatedProperty() &&
+      LayoutObject& object = layer->GetLayoutObject();
+      if (object.HasTransformRelatedProperty() &&
           (layer->Transform() ||
-           layer->GetLayoutObject().StyleRef().HasWillChangeTransformHint())) {
+           object.StyleRef().HasWillChangeHintForAnyTransformProperty())) {
         has_background_fixed_to_viewport_ = false;
         break;
       }
