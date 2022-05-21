@@ -1616,3 +1616,54 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   EXPECT_EQ(1,
             browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
 }
+
+// Check that window.focus works for cross-process popups.
+IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest, PopupWindowFocus) {
+  GURL main_url(embedded_test_server()->GetURL("/page_with_focus_events.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Set window.name on main page.  This will be used to identify the page
+  // later when it sends messages from its focus/blur events.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(
+      ExecuteScriptWithoutUserGesture(web_contents, "window.name = 'main'"));
+
+  // Open a popup for a cross-site page.
+  GURL popup_url =
+      embedded_test_server()->GetURL("foo.com", "/page_with_focus_events.html");
+  content::TestNavigationObserver popup_observer(nullptr);
+  popup_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecuteScript(web_contents,
+                            "openPopup('" + popup_url.spec() + "','popup')"));
+  popup_observer.Wait();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  content::WebContents* popup =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
+  EXPECT_NE(popup, web_contents);
+
+  // Switch focus to the original tab, since opening a popup also focused it.
+  web_contents->GetDelegate()->ActivateContents(web_contents);
+  EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Focus the popup via window.focus(), this needs user gesture.
+  content::DOMMessageQueue main_queue(web_contents);
+  content::DOMMessageQueue popup_queue(popup);
+  ExecuteScriptAsync(web_contents, "focusPopup()");
+
+  // Wait for main page to lose focus and for popup to gain focus.  Each event
+  // will send a message, and the two messages can arrive in any order.
+  std::string status;
+  while (main_queue.WaitForMessage(&status)) {
+    if (status == "\"main-lost-focus\"")
+      break;
+  }
+  while (popup_queue.WaitForMessage(&status)) {
+    if (status == "\"popup-got-focus\"")
+      break;
+  }
+
+  // The popup should be focused now.
+  EXPECT_EQ(popup, browser()->tab_strip_model()->GetActiveWebContents());
+}
