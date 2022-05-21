@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.language;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +55,6 @@ public class AppLanguagePromoDialog {
     private PropertyModel mLoadingModal;
     private LanguageItemAdapter mAdapter;
     private RestartAction mRestartAction;
-    private long mStartTime;
 
     /** Annotation for row item type. Either a LanguageItem or separator */
     @IntDef({ItemType.LANGUAGE, ItemType.SEPARATOR, ItemType.MORE_LANGUAGES})
@@ -368,26 +366,24 @@ public class AppLanguagePromoDialog {
         });
 
         mAppLanguageModal.set(ModalDialogProperties.CUSTOM_VIEW, customView);
-        mStartTime = SystemClock.elapsedRealtime();
         mModalDialogManager.showDialog(mAppLanguageModal, ModalDialogManager.ModalDialogType.APP);
     }
 
     public void onDismissAppLanguageModal(@DialogDismissalCause int dismissalCause) {
-        long displayTime = SystemClock.elapsedRealtime() - mStartTime;
         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
             String languageCode = mAdapter.getSelectedLanguage().getCode();
             if (AppLocaleUtils.isAppLanguagePref(languageCode)) {
-                recordDismissAction(ActionType.OK_SAME_LANGUAGE, displayTime);
+                recordDismissAction(ActionType.OK_SAME_LANGUAGE);
             } else {
-                recordDismissAction(ActionType.OK_CHANGE_LANGUAGE, displayTime);
+                recordDismissAction(ActionType.OK_CHANGE_LANGUAGE);
             }
             startAppLanguageInstall();
         } else if (dismissalCause == DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
-            recordDismissAction(ActionType.DISMISSED_CANCEL_BUTTON, displayTime);
+            recordDismissAction(ActionType.DISMISSED_CANCEL_BUTTON);
         } else if (dismissalCause == DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
-            recordDismissAction(ActionType.DISMISSED_SYSTEM_BACK, displayTime);
+            recordDismissAction(ActionType.DISMISSED_SYSTEM_BACK);
         } else {
-            recordDismissAction(ActionType.OTHER, displayTime);
+            recordDismissAction(ActionType.OTHER);
         }
         recordOtherLanguagesShown(mAdapter.areOtherLanguagesShown());
         TranslateBridge.setAppLanguagePromptShown();
@@ -587,27 +583,10 @@ public class AppLanguagePromoDialog {
     /**
      * Record the action type when dismissing the dialog and how long the dialog was shown for.
      * @param @ActionType int.
-     * @param displayTime Time in ms that the app language promo dialog is showing for.
      */
-    private static void recordDismissAction(@ActionType int actionType, long displayTime) {
+    private static void recordDismissAction(@ActionType int actionType) {
         RecordHistogram.recordEnumeratedHistogram(
                 "LanguageSettings.AppLanguagePrompt.Action", actionType, ActionType.NUM_ENTRIES);
-        switch (actionType) {
-            case ActionType.DISMISSED_CANCEL_BUTTON:
-                recordOpenDuration("Cancel", displayTime);
-                break;
-            case ActionType.DISMISSED_SYSTEM_BACK:
-                recordOpenDuration("Back", displayTime);
-                break;
-            case ActionType.OK_CHANGE_LANGUAGE:
-                recordOpenDuration("Change", displayTime);
-                break;
-            case ActionType.OK_SAME_LANGUAGE:
-                recordOpenDuration("Same", displayTime);
-                break;
-            default:
-                // Do not record a time for other action types.
-        }
     }
 
     private static void recordOnlineStatus(boolean isOnline) {
@@ -618,11 +597,6 @@ public class AppLanguagePromoDialog {
     private static void recordTopULPMatchStatus(boolean hasMatch) {
         RecordHistogram.recordBooleanHistogram(
                 "LanguageSettings.AppLanguagePrompt.HasTopULPMatch", hasMatch);
-    }
-
-    private static void recordOpenDuration(String type, long displayTime) {
-        RecordHistogram.recordLongTimesHistogram100(
-                "LanguageSettings.AppLanguagePrompt.OpenDuration." + type, displayTime);
     }
 
     private static void recordIsTopLanguage(boolean isTopLanguage) {

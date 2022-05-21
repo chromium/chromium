@@ -148,6 +148,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageSettings.AppLanguagePrompt.OpenDuration.{ActionType}"
     units="ms" expires_after="2022-06-30">
+  <obsolete>
+    Deleted May 2022
+  </obsolete>
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
