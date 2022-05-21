@@ -2786,10 +2786,16 @@ def _ChangeHasSecurityReviewer(input_api, owners_file):
 
 
 @dataclass
+class _SecurityProblemWithItems:
+    problem: str
+    items: Sequence[str]
+
+
+@dataclass
 class _MissingSecurityOwnersResult:
-    owners_file_errors: Sequence[str]
+    owners_file_problems: Sequence[_SecurityProblemWithItems]
     has_security_sensitive_files: bool
-    missing_reviewer_errors: Sequence[str]
+    missing_reviewer_problem: Optional[_SecurityProblemWithItems]
 
 
 def _FindMissingSecurityOwners(input_api,
@@ -2888,52 +2894,66 @@ def _FindMissingSecurityOwners(input_api,
                 break
 
     has_security_sensitive_files = bool(to_check)
-    missing_reviewer_errors = []
-    if files_to_review and not _ChangeHasSecurityReviewer(
+
+    # Check if any newly added lines in OWNERS files intersect with required
+    # per-file OWNERS lines. If so, ensure that a security reviewer is included.
+    # This is a hack, but is needed because the OWNERS check (by design) ignores
+    # new OWNERS entries; otherwise, a non-owner could add someone as a new
+    # OWNER and have that newly-added OWNER self-approve their own addition.
+    newly_covered_files = []
+    for file in input_api.AffectedFiles(include_deletes=False):
+        if not file.LocalPath() in to_check:
+            continue
+        for _, line in file.ChangedContents():
+            for _, entry in to_check[file.LocalPath()].items():
+                if line in entry['rules']:
+                    newly_covered_files.extend(entry['files'])
+
+    missing_reviewer_problems = None
+    if newly_covered_files and not _ChangeHasSecurityReviewer(
             input_api, required_owners_file):
-        joined_files_to_review = '\n'.join(f'  {file}'
-                                           for file in files_to_review)
-        missing_reviewer_errors.append(
-            f'Code review from an owner in //{required_owners_file} is required '
-            'for this change for the following files:\n'
-            f'{joined_files_to_review}')
+        missing_reviewer_problems = _SecurityProblemWithItems(
+            f'Review from an owner in {required_owners_file} is required for '
+            'the following newly-added files:',
+            [f'{file}' for file in sorted(set(newly_covered_files))])
 
     # Go through the OWNERS files to check, filtering out rules that are already
     # present in that OWNERS file.
     for owners_file, patterns in to_check.items():
         try:
-            with open(owners_file) as f:
-                lines = set(f.read().splitlines())
-                for entry in patterns.values():
-                    entry['rules'] = [
-                        rule for rule in entry['rules'] if rule not in lines
-                    ]
+            lines = set(
+                input_api.ReadFile(
+                    input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                           owners_file)).splitlines())
+            for entry in patterns.values():
+                entry['rules'] = [
+                    rule for rule in entry['rules'] if rule not in lines
+                ]
         except IOError:
             # No OWNERS file, so all the rules are definitely missing.
             continue
 
     # All the remaining lines weren't found in OWNERS files, so emit an error.
-    owners_file_errors = []
+    owners_file_problems = []
 
     for owners_file, patterns in to_check.items():
         missing_lines = []
         files = []
         for _, entry in patterns.items():
+            files.extend(f.LocalPath() for f in entry['files'])
             missing_lines.extend(entry['rules'])
-            files.extend(
-                ['  %s' % file.LocalPath() for file in entry['files']])
         if missing_lines:
-            joined_files = '\n'.join(files)
-            joined_missing_lines = '\n'.join(missing_lines)
-            owners_file_errors.append(
-                f'Because of the presence of files:\n{joined_files}\n\n'
-                f'{owners_file} needs the following {len(missing_lines)} '
-                'line(s) added:\n\n'
-                f'{joined_missing_lines}')
+            joined_missing_lines = '\n'.join(line for line in missing_lines)
+            owners_file_problems.append(
+                _SecurityProblemWithItems(
+                    'Found missing OWNERS lines for security-sensitive files. '
+                    f'Please add the following lines to {owners_file}:\n'
+                    f'{joined_missing_lines}\n\nTo ensure security review for:',
+                    files))
 
-    return _MissingSecurityOwnersResult(owners_file_errors,
+    return _MissingSecurityOwnersResult(owners_file_problems,
                                         has_security_sensitive_files,
-                                        missing_reviewer_errors)
+                                        missing_reviewer_problems)
 
 
 def _CheckChangeForIpcSecurityOwners(input_api, output_api):
@@ -3021,46 +3041,39 @@ def CheckSecurityOwners(input_api, output_api):
 
     results = []
 
-    # Ensure that a security reviewer is included as a CL reviewer. This is a
-    # hack, but is needed because the OWNERS check (by design) ignores new
-    # OWNERS entries; otherwise, a non-owner could add someone as a new OWNER
-    # and have that newly-added OWNER self-approve their own addition.
-    missing_reviewer_errors = []
-    missing_reviewer_errors.extend(ipc_results.missing_reviewer_errors)
-    missing_reviewer_errors.extend(fuchsia_results.missing_reviewer_errors)
+    missing_reviewer_problems = []
+    if ipc_results.missing_reviewer_problem:
+        missing_reviewer_problems.append(ipc_results.missing_reviewer_problem)
+    if fuchsia_results.missing_reviewer_problem:
+        missing_reviewer_problems.append(
+            fuchsia_results.missing_reviewer_problem)
 
-    if missing_reviewer_errors:
-        # Missing reviewers are an error unless there's no issue number
-        # associated with this branch; in that case, the presubmit is being run
-        # with --all or --files.
-        #
-        # Note that upload should never be an error; otherwise, it would be
-        # impossible to upload changes at all.
-        if input_api.is_committing and input_api.change.issue:
-            make_presubmit_message = output_api.PresubmitError
-        else:
-            make_presubmit_message = output_api.PresubmitNotifyResult
+    # Missing reviewers are an error unless there's no issue number
+    # associated with this branch; in that case, the presubmit is being run
+    # with --all or --files.
+    #
+    # Note that upload should never be an error; otherwise, it would be
+    # impossible to upload changes at all.
+    if input_api.is_committing and input_api.change.issue:
+        make_presubmit_message = output_api.PresubmitError
+    else:
+        make_presubmit_message = output_api.PresubmitNotifyResult
+    for problem in missing_reviewer_problems:
         results.append(
-            make_presubmit_message(
-                'Found missing security reviewers:',
-                long_text='\n\n'.join(missing_reviewer_errors)))
+            make_presubmit_message(problem.problem, items=problem.items))
 
-    owners_file_errors = []
-    owners_file_errors.extend(ipc_results.owners_file_errors)
-    owners_file_errors.extend(fuchsia_results.owners_file_errors)
+    owners_file_problems = []
+    owners_file_problems.extend(ipc_results.owners_file_problems)
+    owners_file_problems.extend(fuchsia_results.owners_file_problems)
 
-    if owners_file_errors:
+    for problem in owners_file_problems:
         # Missing per-file rules are always an error. While swarming and caching
         # means that uploading a patchset with updated OWNERS files and sending
         # it to the CQ again should not have a large incremental cost, it is
         # still frustrating to discover the error only after the change has
         # already been uploaded.
         results.append(
-            output_api.PresubmitError(
-                'Found OWNERS files with missing per-file rules for '
-                'security-sensitive files.\nPlease update the OWNERS files '
-                'below to add the missing rules:',
-                long_text='\n\n'.join(owners_file_errors)))
+            output_api.PresubmitError(problem.problem, items=problem.items))
 
     return results
 
