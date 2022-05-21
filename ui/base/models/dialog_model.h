@@ -252,9 +252,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     // Adds a custom field. See DialogModel::AddCustomField().
     Builder& AddCustomField(
-        std::unique_ptr<DialogModelCustomField::Factory> factory,
+        std::unique_ptr<DialogModelCustomField::Field> field,
         int unique_id = -1) {
-      model_->AddCustomField(std::move(factory), unique_id);
+      model_->AddCustomField(std::move(field), unique_id);
       return *this;
     }
 
@@ -310,7 +310,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   // Adds a custom field at the end of the dialog model. This is used to inject
   // framework-specific custom UI into dialogs that are otherwise constructed as
   // DialogModels.
-  void AddCustomField(std::unique_ptr<DialogModelCustomField::Factory> factory,
+  void AddCustomField(std::unique_ptr<DialogModelCustomField::Field> field,
                       int unique_id = -1);
 
   // Check for the existence of a field. Should not be used if the code path

@@ -32,16 +32,21 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
  public:
   enum class FieldType { kText, kControl, kMenuItem };
 
-  // TODO(pbos): Reconsider whether this should be generic outside of
-  // BubbleDialogModelHost.
-  // TODO(pbos): Consider making this interface appropriate for all fields (not
-  // just custom ones). If so rename this ViewFactory (not CustomViewFactory).
-  // Interface for adding custom views to a DialogModel. This factory interface
-  // allows constructing views to be hosted in BubbleDialogModelHost.
-  class CustomViewFactory : public ui::DialogModelCustomField::Factory {
+  class VIEWS_EXPORT CustomView : public ui::DialogModelCustomField::Field {
    public:
-    virtual std::unique_ptr<View> CreateView() = 0;
-    virtual FieldType GetFieldType() const = 0;
+    CustomView(std::unique_ptr<View> view, FieldType field_type);
+    CustomView(const CustomView&) = delete;
+    CustomView& operator=(const CustomView&) = delete;
+    ~CustomView() override;
+
+    std::unique_ptr<View> TransferView();
+
+    FieldType field_type() const { return field_type_; }
+
+   private:
+    // `view` is intended to be moved into the View hierarchy.
+    std::unique_ptr<View> view_;
+    const FieldType field_type_;
   };
 
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a

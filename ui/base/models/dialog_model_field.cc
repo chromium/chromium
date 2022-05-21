@@ -316,15 +316,15 @@ void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelHost>,
   text_ = std::move(text);
 }
 
-DialogModelCustomField::Factory::~Factory() = default;
+DialogModelCustomField::Field::~Field() = default;
 
 DialogModelCustomField::DialogModelCustomField(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     int unique_id,
-    std::unique_ptr<DialogModelCustomField::Factory> factory)
+    std::unique_ptr<DialogModelCustomField::Field> field)
     : DialogModelField(pass_key, model, kCustom, unique_id, {}),
-      factory_(std::move(factory)) {}
+      field_(std::move(field)) {}
 
 DialogModelCustomField::~DialogModelCustomField() = default;
 

@@ -57,9 +57,9 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
-      return static_cast<BubbleDialogModelHost::CustomViewFactory*>(
-                 field->AsCustomField(pass_key)->factory(pass_key))
-          ->GetFieldType();
+      return static_cast<BubbleDialogModelHost::CustomView*>(
+                 field->AsCustomField(pass_key)->field(pass_key))
+          ->field_type();
   }
 }
 
@@ -149,6 +149,17 @@ BEGIN_METADATA(CheckboxControl, Checkbox)
 END_METADATA
 
 }  // namespace
+
+BubbleDialogModelHost::CustomView::CustomView(std::unique_ptr<View> view,
+                                              FieldType field_type)
+    : view_(std::move(view)), field_type_(field_type) {}
+
+BubbleDialogModelHost::CustomView::~CustomView() = default;
+
+std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
+  DCHECK(view_);
+  return std::move(view_);
+}
 
 // TODO(pbos): Migrate most code that calls contents_view_->(some View method)
 // into this class. This was done in steps to limit the size of the diff.
@@ -453,9 +464,10 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
       break;
     case ui::DialogModelField::kCustom:
       std::unique_ptr<View> view =
-          static_cast<CustomViewFactory*>(
-              field->AsCustomField(GetPassKey())->factory(GetPassKey()))
-              ->CreateView();
+          static_cast<CustomView*>(
+              field->AsCustomField(GetPassKey())->field(GetPassKey()))
+              ->TransferView();
+      DCHECK(view);
       view->SetID(field->unique_id(GetPassKey()));
       DialogModelHostField info{field, view.get(), nullptr};
       AddDialogModelHostField(std::move(view), info);

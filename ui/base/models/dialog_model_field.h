@@ -466,33 +466,33 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
 class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
     : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Factory {
+  // Base class for fields held by DialogModelField. Calling code is responsible
+  // for providing the subclass expected by the DialogModelHost used.
+  class COMPONENT_EXPORT(UI_BASE) Field {
    public:
-    virtual ~Factory();
+    virtual ~Field();
   };
 
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelCustomField(
-      base::PassKey<DialogModel> pass_key,
-      DialogModel* model,
-      int unique_id,
-      std::unique_ptr<DialogModelCustomField::Factory> factory);
+  DialogModelCustomField(base::PassKey<DialogModel> pass_key,
+                         DialogModel* model,
+                         int unique_id,
+                         std::unique_ptr<DialogModelCustomField::Field> field);
   DialogModelCustomField(const DialogModelCustomField&) = delete;
   DialogModelCustomField& operator=(const DialogModelCustomField&) = delete;
   ~DialogModelCustomField() override;
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
   // by the DialogModelHost implementation.
-  DialogModelCustomField::Factory* factory(
-      base::PassKey<DialogModelHost>) const {
-    return factory_.get();
+  DialogModelCustomField::Field* field(base::PassKey<DialogModelHost>) {
+    return field_.get();
   }
 
  private:
   friend class DialogModel;
 
-  std::unique_ptr<DialogModelCustomField::Factory> factory_;
+  std::unique_ptr<DialogModelCustomField::Field> field_;
 };
 
 }  // namespace ui

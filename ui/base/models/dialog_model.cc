@@ -134,10 +134,10 @@ void DialogModel::AddTextfield(std::u16string label,
 }
 
 void DialogModel::AddCustomField(
-    std::unique_ptr<DialogModelCustomField::Factory> factory,
+    std::unique_ptr<DialogModelCustomField::Field> field,
     int unique_id) {
   AddField(std::make_unique<DialogModelCustomField>(
-      GetPassKey(), this, unique_id, std::move(factory)));
+      GetPassKey(), this, unique_id, std::move(field)));
 }
 
 bool DialogModel::HasField(int unique_id) const {
