@@ -2,26 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PersonalizationHubBrowserProxyImpl, Router, routes, WallpaperBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes, WallpaperBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.js';
 import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.js';
 
 let personalizationPage = null;
-
-/** @type {?TestPersonalizationHubBrowserProxy} */
-let PersonalizationHubBrowserProxy = null;
 
 /** @type {?TestWallpaperBrowserProxy} */
 let WallpaperBrowserProxy = null;
 
 function createPersonalizationPage() {
-  PersonalizationHubBrowserProxy.reset();
   WallpaperBrowserProxy.reset();
   PolymerTest.clearBody();
 
@@ -49,18 +44,15 @@ function createPersonalizationPage() {
 
 suite('PersonalizationHandler', function() {
   suiteSetup(function() {
+    assertFalse(
+        loadTimeData.getBoolean('isPersonalizationHubEnabled'),
+        'this test should only run with PersonalizationHub disabled');
     testing.Test.disableAnimationsAndTransitions();
   });
 
   setup(function() {
-    // Most tests rely on this feature being off. For the few that need it,
-    // explicitly turn it on again.
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
     WallpaperBrowserProxy = new TestWallpaperBrowserProxy();
     WallpaperBrowserProxyImpl.instance_ = WallpaperBrowserProxy;
-    PersonalizationHubBrowserProxy = new TestPersonalizationHubBrowserProxy();
-    PersonalizationHubBrowserProxyImpl.instance_ =
-        PersonalizationHubBrowserProxy;
     createPersonalizationPage();
   });
 
@@ -152,33 +144,5 @@ suite('PersonalizationHandler', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Account picture elem should be focused for settingId=503.');
-  });
-
-  test('Personalization hub feature shows only link to hub', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-    createPersonalizationPage();
-    flush();
-    await waitAfterNextRender(personalizationPage);
-
-    const crLinks =
-        personalizationPage.shadowRoot.querySelectorAll('cr-link-row');
-
-    assertEquals(1, crLinks.length);
-    assertEquals('personalizationHubButton', crLinks[0].id);
-  });
-
-  test('Opens personalization hub when clicked', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-    createPersonalizationPage();
-    flush();
-    await waitAfterNextRender(personalizationPage);
-
-    const hubLink = personalizationPage.shadowRoot.getElementById(
-        'personalizationHubButton');
-    hubLink.click();
-
-    await PersonalizationHubBrowserProxy.whenCalled('openPersonalizationHub');
   });
 });

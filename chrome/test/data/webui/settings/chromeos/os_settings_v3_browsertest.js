@@ -233,38 +233,17 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsAmbientModePageV3Test = class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/ambient_mode_page_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['ash::features::kPersonalizationHub']};
-  }
-};
-
-TEST_F('OSSettingsAmbientModePageV3Test', 'All', () => mocha.run());
-
-var OSSettingsAmbientModePhotosPageV3Test =
-    class extends OSSettingsV3BrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/ambient_mode_photos_page_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['ash::features::kPersonalizationHub']};
-  }
-};
-
-TEST_F('OSSettingsAmbientModePhotosPageV3Test', 'All', () => mocha.run());
-
 [['AccessibilityPage', 'os_a11y_page_tests.js'],
  ['AboutPage', 'os_about_page_tests.js'],
  ['AccountsPage', 'add_users_tests.js'],
+ [
+   'AmbientModePage', 'ambient_mode_page_test.js',
+   {disabled: ['ash::features::kPersonalizationHub']}
+ ],
+ [
+   'AmbientModePhotosPage', 'ambient_mode_photos_page_test.js',
+   {disabled: ['ash::features::kPersonalizationHub']}
+ ],
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],
@@ -397,7 +376,15 @@ TEST_F('OSSettingsAmbientModePhotosPageV3Test', 'All', () => mocha.run());
  ['PeoplePage', 'os_people_page_test.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.js'],
  ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
- ['PersonalizationPage', 'personalization_page_test.js'],
+ [
+   'PersonalizationPage', 'personalization_page_test.js',
+   {disabled: ['ash::features::kPersonalizationHub']}
+ ],
+ [
+   'PersonalizationPageWithPersonalizationHub',
+   'personalization_page_with_personalization_hub_test.js',
+   {enabled: ['ash::features::kPersonalizationHub']}
+ ],
  ['PrintingPage', 'os_printing_page_tests.js'],
  ['PrivacyPage', 'os_privacy_page_test.js'],
  ['ResetPage', 'os_reset_page_test.js'],
@@ -421,7 +408,7 @@ TEST_F('OSSettingsAmbientModePhotosPageV3Test', 'All', () => mocha.run());
  ['UserPage', 'user_page_tests.js'],
 ].forEach(test => registerTest(...test));
 
-function registerTest(testName, module, caseName) {
+function registerTest(testName, module, featureList) {
   const className = `OSSettings${testName}V3Test`;
   this[className] = class extends OSSettingsV3BrowserTest {
     /** @override */
@@ -430,6 +417,14 @@ function registerTest(testName, module, caseName) {
           module}`;
     }
   };
+
+  if (featureList) {
+    Object.defineProperty(this[className].prototype, 'featureList', {
+      get() {
+        return featureList;
+      },
+    });
+  }
 
   // AboutPage has a test suite that can only succeed on official builds where
   // the is_chrome_branded build flag is enabled.
@@ -456,6 +451,6 @@ function registerTest(testName, module, caseName) {
     });
     GEN('#endif');
   } else {
-    TEST_F(className, caseName || 'All', () => mocha.run());
+    TEST_F(className, 'All', () => mocha.run());
   }
 }
