@@ -48,6 +48,7 @@
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#include "chromeos/crosapi/mojom/digital_goods.mojom.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
@@ -204,6 +205,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::DeskTemplate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeviceAttributes>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeviceSettingsService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::DigitalGoodsFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Dlp>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DownloadController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DriveIntegrationService>(),

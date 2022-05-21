@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
@@ -279,6 +280,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/apps/digital_goods/digital_goods_factory_stub.h"
+#include "chrome/browser/apps/digital_goods/digital_goods_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
@@ -718,9 +720,13 @@ void PopulateChromeFrameBinders(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1203666): replace with a real implementation for Lacros.
-  map->Add<payments::mojom::DigitalGoodsFactory>(
-      base::BindRepeating(&apps::DigitalGoodsFactoryStub::Bind));
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    map->Add<payments::mojom::DigitalGoodsFactory>(
+        base::BindRepeating(&apps::DigitalGoodsFactoryLacros::Bind));
+  } else {
+    map->Add<payments::mojom::DigitalGoodsFactory>(
+        base::BindRepeating(&apps::DigitalGoodsFactoryStub::Bind));
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)

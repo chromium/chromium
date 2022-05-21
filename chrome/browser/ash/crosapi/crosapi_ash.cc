@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
+#include "chrome/browser/apps/digital_goods/digital_goods_ash.h"
 #include "chrome/browser/ash/crosapi/arc_ash.h"
 #include "chrome/browser/ash/crosapi/authentication_ash.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
@@ -155,6 +156,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       desk_template_ash_(std::make_unique<DeskTemplateAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_settings_ash_(std::make_unique<DeviceSettingsAsh>()),
+      digital_goods_factory_ash_(
+          std::make_unique<apps::DigitalGoodsFactoryAsh>()),
       dlp_ash_(std::make_unique<DlpAsh>()),
       download_controller_ash_(std::make_unique<DownloadControllerAsh>()),
       drive_integration_service_ash_(
@@ -552,6 +555,11 @@ void CrosapiAsh::BindDeviceAttributes(
 void CrosapiAsh::BindDeviceSettingsService(
     mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) {
   device_settings_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindDigitalGoodsFactory(
+    mojo::PendingReceiver<mojom::DigitalGoodsFactory> receiver) {
+  digital_goods_factory_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) {

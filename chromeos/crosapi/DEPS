@@ -4,6 +4,7 @@
 include_rules = [
   "+components/services/app_service/public",
   "+components/webapps/browser",
+  "+components/digital_goods/mojom",
   "+components/policy/core/common",
 ]
 

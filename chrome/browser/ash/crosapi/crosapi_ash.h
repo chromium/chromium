@@ -24,6 +24,10 @@ class StableVideoDecoderFactoryService;
 }  // namespace media
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
 
+namespace apps {
+class DigitalGoodsFactoryAsh;
+}
+
 namespace crosapi {
 
 class ArcAsh;
@@ -143,6 +147,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindDeviceSettingsService(
       mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) override;
+  void BindDigitalGoodsFactory(
+      mojo::PendingReceiver<mojom::DigitalGoodsFactory> receiver) override;
   void BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) override;
   void BindHoldingSpaceService(
       mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) override;
@@ -366,6 +372,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DeskTemplateAsh> desk_template_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
+  std::unique_ptr<apps::DigitalGoodsFactoryAsh> digital_goods_factory_ash_;
   std::unique_ptr<DlpAsh> dlp_ash_;
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
