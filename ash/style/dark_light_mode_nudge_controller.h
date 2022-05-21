@@ -33,6 +33,10 @@ class ASH_EXPORT DarkLightModeNudgeController : public SystemNudgeController {
   // Called when the feature's state is toggled manually by the user.
   void ToggledByUser();
 
+  void set_show_nudge_for_testing(bool value) {
+    hide_nudge_for_testing_ = !value;
+  }
+
  protected:
   // SystemNudgeController:
   std::unique_ptr<SystemNudge> CreateSystemNudge() override;
@@ -40,6 +44,11 @@ class ASH_EXPORT DarkLightModeNudgeController : public SystemNudgeController {
  private:
   // Returns true if the educational nudge should be shown.
   bool ShouldShowNudge() const;
+
+  // Used to indicate whether to hide the nudge in tests. Will be initialized to
+  // hide for ash tests through `set_show_nudge_for_testing` above. See
+  // AshTestHelper::SetUp for more details.
+  bool hide_nudge_for_testing_ = false;
 };
 
 }  // namespace ash

@@ -60,6 +60,10 @@ bool DarkLightModeNudgeController::ShouldShowNudge() const {
   if (!chromeos::features::IsDarkLightModeEnabled())
     return false;
 
+  // Do not show the nudge if it is set to be hidden in the tests.
+  if (hide_nudge_for_testing_)
+    return false;
+
   auto* session_controller = Shell::Get()->session_controller();
   if (!session_controller->IsActiveUserSessionStarted())
     return false;

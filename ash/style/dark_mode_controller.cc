@@ -66,6 +66,10 @@ void DarkModeController::ToggledByUser() {
   nudge_controller_->ToggledByUser();
 }
 
+void DarkModeController::SetShowNudgeForTesting(bool value) {
+  nudge_controller_->set_show_nudge_for_testing(value);  // IN-TEST
+}
+
 void DarkModeController::RefreshFeatureState() {}
 
 void DarkModeController::OnSessionStateChanged(

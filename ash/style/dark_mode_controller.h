@@ -43,6 +43,8 @@ class ASH_EXPORT DarkModeController : public ScheduledFeature {
   // color mode. Educational nudge will not be shown any more when this happens.
   void ToggledByUser();
 
+  void SetShowNudgeForTesting(bool value);
+
  protected:
   // ScheduledFeature:
   void RefreshFeatureState() override;

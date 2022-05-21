@@ -24,6 +24,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
+#include "ash/style/dark_mode_controller.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
@@ -280,6 +281,15 @@ void AshTestHelper::SetUp(InitParams init_params) {
   Shell::CreateInstance(std::move(shell_init_params));
   Shell* shell = Shell::Get();
 
+  // The dark/light mode educational nudge is expected to be shown when session
+  // state changed to ACTIVE. This means it might be shown above the shelf in
+  // all the tests with an active user session. This setting here make it will
+  // not be shown by default in tests. As keep it shown will change the
+  // operations needed in many of the tests, e.g, when productive launcher is
+  // shown as well, we need one more click outside of the launcher to dismiss
+  // the nudge first before dismissing the launcher.
+  shell->dark_mode_controller()->SetShowNudgeForTesting(false);
+
   // Set up a test wallpaper controller client before signing in any users. At
   // the time a user logs in, Wallpaper controller relies on
   // WallpaperControllerClient to check if user data should be synced.
@@ -341,7 +351,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // Move the mouse cursor to far away so that native events don't interfere
   // with test expectations.
   Shell::GetPrimaryRootWindow()->MoveCursorTo(gfx::Point(-1000, -1000));
-  Shell::Get()->cursor_manager()->EnableMouseEvents();
+  shell->cursor_manager()->EnableMouseEvents();
 
   // Changing GestureConfiguration shouldn't make tests fail. These values
   // prevent unexpected events from being generated during tests. Such as

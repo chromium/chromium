@@ -5,6 +5,8 @@
 #include "ash/style/dark_light_mode_nudge_controller.h"
 
 #include "ash/constants/ash_constants.h"
+#include "ash/shell.h"
+#include "ash/style/dark_mode_controller.h"
 #include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -32,6 +34,12 @@ class DarkLightModeNudgeControllerTest : public NoSessionAshTestBase {
   DarkLightModeNudgeControllerTest& operator=(
       const DarkLightModeNudgeControllerTest&) = delete;
   ~DarkLightModeNudgeControllerTest() override = default;
+
+  // NoSessionAshTestBase:
+  void SetUp() override {
+    NoSessionAshTestBase::SetUp();
+    Shell::Get()->dark_mode_controller()->SetShowNudgeForTesting(true);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
