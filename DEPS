@@ -1786,7 +1786,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/assistant/ambient',
-        'version': 'version:float_on_by_background_color_fix',
+        'version': 'version:feel_the_breeze_swinging_fix',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
