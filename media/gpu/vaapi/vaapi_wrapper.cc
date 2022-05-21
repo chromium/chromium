@@ -3317,14 +3317,14 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
   {
     TRACE_EVENT0("media,gpu",
                  "VaapiWrapper::SubmitBuffer_Locked_vaCreateBuffer");
-    const VAStatus va_res =
-        vaCreateBuffer(va_display_, va_context_id_, va_buffer.type,
-                       va_buffer_size, 1, nullptr, &buffer_id);
+    // The type of |data| in vaCreateBuffer() is void*, though a driver must not
+    // change the |data| buffer. We execute const_cast to limit the type
+    // mismatch. https://github.com/intel/libva/issues/597
+    const VAStatus va_res = vaCreateBuffer(
+        va_display_, va_context_id_, va_buffer.type, va_buffer_size, 1,
+        const_cast<void*>(va_buffer.data), &buffer_id);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateBuffer, false);
   }
-
-  if (!MapAndCopy_Locked(buffer_id, va_buffer))
-    return false;
 
   pending_va_buffers_.push_back(buffer_id);
   pending_buffers_destroyer_on_failure.ReplaceClosure(base::DoNothing());
