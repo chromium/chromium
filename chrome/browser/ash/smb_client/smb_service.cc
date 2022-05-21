@@ -129,11 +129,12 @@ SmbService::SmbService(Profile* profile,
   KerberosCredentialsManager* credentials_manager =
       KerberosCredentialsManagerFactory::GetExisting(profile);
   if (credentials_manager && credentials_manager->IsKerberosEnabled()) {
-    smb_credentials_updater_ = std::make_unique<SmbKerberosCredentialsUpdater>(
-        credentials_manager,
-        base::BindRepeating(&SmbService::UpdateKerberosCredentials,
-                            AsWeakPtr()));
-    SetupKerberos(smb_credentials_updater_->active_account_name());
+    kerberos_credentials_updater_ =
+        std::make_unique<SmbKerberosCredentialsUpdater>(
+            credentials_manager,
+            base::BindRepeating(&SmbService::UpdateKerberosCredentials,
+                                AsWeakPtr()));
+    SetupKerberos(kerberos_credentials_updater_->active_account_name());
     return;
   }
 
@@ -308,7 +309,7 @@ void SmbService::Mount(const std::string& display_name,
 
   std::vector<uint8_t> salt;
   if (save_credentials && !password.empty()) {
-    // Only generate a salt if threre's a password and we've been asked to save
+    // Only generate a salt if there's a password and we've been asked to save
     // credentials. If there is no password, there's nothing for smbfs to store
     // and the salt is unused.
     salt.resize(kSaltLength);
@@ -374,11 +375,11 @@ void SmbService::MountInternal(
           absl::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kActiveDirectory,
               user->GetAccountId().GetObjGuid());
-    } else if (smb_credentials_updater_) {
+    } else if (kerberos_credentials_updater_) {
       smbfs_options.kerberos_options =
           absl::make_optional<SmbFsShare::KerberosOptions>(
               SmbFsShare::KerberosOptions::Source::kKerberos,
-              smb_credentials_updater_->active_account_name());
+              kerberos_credentials_updater_->active_account_name());
     } else {
       LOG(WARNING) << "No Kerberos credential source available";
       std::move(callback).Run(SmbMountResult::kAuthenticationFailed, {});
@@ -491,8 +492,8 @@ void SmbService::OnMountPreconfiguredShareDone(
 }
 
 bool SmbService::IsKerberosEnabledViaPolicy() const {
-  return smb_credentials_updater_ &&
-         smb_credentials_updater_->IsKerberosEnabled();
+  return kerberos_credentials_updater_ &&
+         kerberos_credentials_updater_->IsKerberosEnabled();
 }
 
 void SmbService::SetupKerberos(const std::string& account_identifier) {

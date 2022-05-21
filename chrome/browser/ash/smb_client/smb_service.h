@@ -63,9 +63,9 @@ class SmbService : public KeyedService,
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Starts the process of mounting an SMB file system.
-  // |use_kerberos| indicates whether the share should be mounted with a user's
-  // chromad kerberos tickets.
+  // Starts the process of mounting an SMB file system. |use_kerberos| indicates
+  // whether the share should be mounted with a Kerberos ticket - acquired
+  // though Chromad login or KerberosCredentialsManager.
   void Mount(const std::string& display_name,
              const base::FilePath& share_path,
              const std::string& username,
@@ -235,7 +235,7 @@ class SmbService : public KeyedService,
   std::unordered_map<std::string, std::unique_ptr<SmbFsShare>> smbfs_shares_;
   SmbPersistedShareRegistry registry_;
 
-  std::unique_ptr<SmbKerberosCredentialsUpdater> smb_credentials_updater_;
+  std::unique_ptr<SmbKerberosCredentialsUpdater> kerberos_credentials_updater_;
 
   base::OnceClosure setup_complete_callback_;
   SmbFsShare::MounterCreationCallback smbfs_mounter_creation_callback_;

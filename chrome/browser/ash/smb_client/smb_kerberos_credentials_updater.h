@@ -14,7 +14,7 @@
 namespace ash {
 namespace smb_client {
 
-// Updates Kerberos credentials in SmbService after receiving
+// Updates Kerberos credentials in SmbService after receiving a
 // OnAccountsChanged notification from KerberosCredentialsManager.
 class SmbKerberosCredentialsUpdater
     : public KerberosCredentialsManager::Observer {
@@ -41,7 +41,8 @@ class SmbKerberosCredentialsUpdater
   // KerberosCredentialsManager::Observer:
   void OnAccountsChanged() override;
 
-  KerberosCredentialsManager* credentials_manager_;  // Not owned.
+  // Not owned.
+  KerberosCredentialsManager* credentials_manager_;
   std::string active_account_name_;
   const ActiveAccountChangedCallback active_account_changed_callback_;
 };

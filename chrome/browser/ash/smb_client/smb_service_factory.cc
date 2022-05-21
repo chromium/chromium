@@ -66,7 +66,7 @@ bool SmbServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 KeyedService* SmbServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // Check if service is enabled by feature flag, via policy, and if profile has
-  // a user. Lockscreen is the example of a profile that doesn't have a user -
+  // a user. Lock screen is the example of a profile that doesn't have a user -
   // in this case smb service is not needed.
   Profile* const profile = Profile::FromBrowserContext(context);
   bool service_should_run =
