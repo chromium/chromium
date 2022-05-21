@@ -47,9 +47,9 @@ using StringPieceType = FilePath::StringPieceType;
 
 namespace {
 
-const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2",
-                                                      "z",  "bz", "lzma"};
-const char* const kCommonDoubleExtensions[] = { "user.js" };
+const char* const kCommonDoubleExtensionSuffixes[] = {
+    "bz", "bz2", "gz", "lz", "lzma", "lzo", "xz", "z", "zst"};
+const char* const kCommonDoubleExtensions[] = {"user.js"};
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
 
