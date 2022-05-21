@@ -457,8 +457,8 @@ class Port(object):
             # memory usage may also grow over time, up to a certain point.
             # Relaunching the driver periodically helps keep it under control.
             return 40
-        # The default is infinite batch size.
-        return 0
+        # The default batch size now is 100, to battle against resource leak.
+        return 100
 
     def default_child_processes(self):
         """Returns the number of child processes to use for this port."""
