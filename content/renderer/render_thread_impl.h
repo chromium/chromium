@@ -396,10 +396,6 @@ class CONTENT_EXPORT RenderThreadImpl
   scoped_refptr<base::SingleThreadTaskRunner>
   CreateVideoFrameCompositorTaskRunner();
 
-  void CreateSharedStorageWorkletService(
-      mojo::PendingReceiver<
-          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver);
-
   // The time the run loop started for this thread.
   base::TimeTicks run_loop_start_time() const { return run_loop_start_time_; }
 
