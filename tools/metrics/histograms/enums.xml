@@ -54504,6 +54504,7 @@ from previous Chrome versions.
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
   <int value="-2088472280" label="KeyboardShortcutViewerApp:disabled"/>
   <int value="-2088263177" label="EnableMixedContentDownloadDialog:enabled"/>
+  <int value="-2087724986" label="ShelfPalmRejectionSwipeOffset:enabled"/>
   <int value="-2087444854" label="ThreadWrapperUsesMetronome:disabled"/>
   <int value="-2084849051" label="TabGroupsCollapseFreezing:disabled"/>
   <int value="-2083998415" label="VrLaunchIntent:enabled"/>
@@ -55228,6 +55229,7 @@ from previous Chrome versions.
   <int value="-1620942609" label="MuteCompromisedPasswords:enabled"/>
   <int value="-1620804800" label="NoScriptPreviews:disabled"/>
   <int value="-1620568042" label="FeaturePolicy:disabled"/>
+  <int value="-1620425260" label="ShelfPalmRejectionSwipeOffset:disabled"/>
   <int value="-1620230777" label="StylusBatteryStatus:enabled"/>
   <int value="-1620046590" label="UseMediaHistoryStore:enabled"/>
   <int value="-1619757314" label="touch-scrolling-mode"/>
@@ -56469,6 +56471,7 @@ from previous Chrome versions.
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
   <int value="-844067635" label="InterestFeedV2Autoplay:enabled"/>
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
+  <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
   <int value="-838719204"
@@ -57283,6 +57286,7 @@ from previous Chrome versions.
   <int value="-288316828" label="enable-delegated-renderer"/>
   <int value="-286603268" label="hide-android-files-in-files-app"/>
   <int value="-284547865" label="UnifiedConsent:enabled"/>
+  <int value="-284470280" label="ShelfPalmRejectionTouchArea:enabled"/>
   <int value="-284328071" label="LocalWebApprovals:enabled"/>
   <int value="-284279318" label="LacrosMoveProfileMigration:enabled"/>
   <int value="-283388027" label="ManualFallbacksFilling:disabled"/>

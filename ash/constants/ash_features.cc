@@ -1312,6 +1312,16 @@ const base::Feature kShelfLauncherNudge{"ShelfLauncherNudge",
 const base::Feature kShelfParty{"ShelfParty",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Shelf Palm Rejection in tablet mode by defining a pixel offset for
+// the swipe gesture to show the extended hotseat.
+const base::Feature kShelfPalmRejectionSwipeOffset{
+    "ShelfPalmRejectionSwipeOffset", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables Shelf Palm Rejection in tablet mode by defining a touch area for the
+// swipe gesture to show the extended hotseat.
+const base::Feature kShelfPalmRejectionTouchArea{
+    "ShelfPalmRejectionTouchArea", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the new shimless rma flow.
 const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -2190,6 +2200,14 @@ bool IsSettingsAppThemeChangeAnimationEnabled() {
 bool IsShelfLauncherNudgeEnabled() {
   return IsProductivityLauncherEnabled() &&
          base::FeatureList::IsEnabled(kShelfLauncherNudge);
+}
+
+bool IsShelfPalmRejectionSwipeOffsetEnabled() {
+  return base::FeatureList::IsEnabled(kShelfPalmRejectionSwipeOffset);
+}
+
+bool IsShelfPalmRejectionTouchAreaEnabled() {
+  return base::FeatureList::IsEnabled(kShelfPalmRejectionTouchArea);
 }
 
 bool IsShimlessRMAFlowEnabled() {

@@ -158,6 +158,11 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
 
   metrics_util::ReportCallback GetTranslucentBackgroundReportCallback();
 
+  // Verifies if `screen_location` falls within the hotseat widget bounds' touch
+  // area. `screen_location` is expected to be in screen bounds. The hotseat
+  // touch area is the area of the widget that allows to trigger gesture events.
+  bool IsPointWithinGestureTouchArea(const gfx::Point& screen_location);
+
   void SetState(HotseatState state);
   HotseatState state() const { return state_; }
 

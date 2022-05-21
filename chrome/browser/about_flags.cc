@@ -575,6 +575,44 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      std::size(kForceDark_IncreaseTextContrast), nullptr}};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::FeatureParam kShelfSwipeOffset30[] = {
+    {"shelf_swipe_offset", "30"}};
+const FeatureEntry::FeatureParam kShelfSwipeOffset50[] = {
+    {"shelf_swipe_offset", "50"}};
+const FeatureEntry::FeatureParam kShelfSwipeOffset80[] = {
+    {"shelf_swipe_offset", "80"}};
+const FeatureEntry::FeatureParam kShelfSwipeOffset100[] = {
+    {"shelf_swipe_offset", "100"}};
+
+const FeatureEntry::FeatureVariation
+    kShelfPalmRejectionSwipeOffsetVariations[] = {
+        {"30px offset", kShelfSwipeOffset30, std::size(kShelfSwipeOffset30),
+         nullptr},
+        {"50px offset", kShelfSwipeOffset50, std::size(kShelfSwipeOffset50),
+         nullptr},
+        {"80px offset", kShelfSwipeOffset80, std::size(kShelfSwipeOffset80),
+         nullptr},
+        {"100px offset", kShelfSwipeOffset100, std::size(kShelfSwipeOffset100),
+         nullptr}};
+
+const FeatureEntry::FeatureParam kShelfTouchArea100[] = {
+    {"shelf_touch_area", "100"}};
+const FeatureEntry::FeatureParam kShelfTouchArea150[] = {
+    {"shelf_touch_area", "150"}};
+const FeatureEntry::FeatureParam kShelfTouchArea200[] = {
+    {"shelf_touch_area", "200"}};
+const FeatureEntry::FeatureParam kShelfTouchArea250[] = {
+    {"shelf_touch_area", "250"}};
+
+const FeatureEntry::FeatureVariation kShelfPalmRejectionTouchAreaVariations[] =
+    {{"100px area", kShelfTouchArea100, std::size(kShelfTouchArea100), nullptr},
+     {"150px area", kShelfTouchArea150, std::size(kShelfTouchArea150), nullptr},
+     {"200px area", kShelfTouchArea200, std::size(kShelfTouchArea200), nullptr},
+     {"250px area", kShelfTouchArea250, std::size(kShelfTouchArea250),
+      nullptr}};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 const FeatureEntry::FeatureParam kMBIModeLegacy[] = {{"mode", "legacy"}};
 const FeatureEntry::FeatureParam kMBIModeEnabledPerRenderProcessHost[] = {
     {"mode", "per_render_process_host"}};
@@ -7084,6 +7122,19 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShelfGesturesWithVirtualKeyboardName,
      flag_descriptions::kShelfGesturesWithVirtualKeyboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kShelfGesturesWithVirtualKeyboard)},
+    {"shelf-palm-rejection-swipe-offset",
+     flag_descriptions::kShelfPalmRejectionSwipeOffsetName,
+     flag_descriptions::kShelfPalmRejectionSwipeOffsetDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ash::features::kShelfPalmRejectionSwipeOffset,
+         kShelfPalmRejectionSwipeOffsetVariations,
+         "ShelfPalmRejectionSwipeOffset")},
+    {"shelf-palm-rejection-touch-area",
+     flag_descriptions::kShelfPalmRejectionTouchAreaName,
+     flag_descriptions::kShelfPalmRejectionTouchAreaDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kShelfPalmRejectionTouchArea,
+                                    kShelfPalmRejectionTouchAreaVariations,
+                                    "ShelfPalmRejectionTouchArea")},
     {"force-show-continue-section",
      flag_descriptions::kForceShowContinueSectionName,
      flag_descriptions::kForceShowContinueSectionDescription, kOsCrOS,

@@ -1327,6 +1327,12 @@ extern const char kShelfGesturesWithVirtualKeyboardDescription[];
 extern const char kShelfHoverPreviewsName[];
 extern const char kShelfHoverPreviewsDescription[];
 
+extern const char kShelfPalmRejectionSwipeOffsetName[];
+extern const char kShelfPalmRejectionSwipeOffsetDescription[];
+
+extern const char kShelfPalmRejectionTouchAreaName[];
+extern const char kShelfPalmRejectionTouchAreaDescription[];
+
 extern const char kShowAutofillSignaturesName[];
 extern const char kShowAutofillSignaturesDescription[];
 

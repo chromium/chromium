@@ -516,6 +516,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kShelfGesturesWithVirtualKeyboard;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShelfLauncherNudge;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShelfParty;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kShelfPalmRejectionSwipeOffset;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kShelfPalmRejectionTouchArea;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShimlessRMAFlow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kShimlessRMAEnableStandalone;
@@ -771,6 +775,8 @@ bool IsSettingsAppNotificationSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSettingsAppThemeChangeAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfLauncherNudgeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfPalmRejectionSwipeOffsetEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShelfPalmRejectionTouchAreaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSimLockPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAStandaloneAppEnabled();

@@ -2359,6 +2359,19 @@ const char kShelfHoverPreviewsDescription[] =
     "Shows previews of the open windows for a given running app when hovering "
     "over the shelf.";
 
+const char kShelfPalmRejectionSwipeOffsetName[] =
+    "Shelf Palm Rejection: Swipe Offset";
+const char kShelfPalmRejectionSwipeOffsetDescription[] =
+    "Enables palm rejection in the shelf by setting an offset for the swipe "
+    "gesture that drags the hotseat to a extended state.";
+
+const char kShelfPalmRejectionTouchAreaName[] =
+    "Shelf Palm Rejection: Touch Area";
+const char kShelfPalmRejectionTouchAreaDescription[] =
+    "Enables palm rejection in the shelf by setting the touch area size within "
+    "the shelf for triggering the swipe gesture that drags the hotseat to a "
+    "extended state.";
+
 const char kShowAutofillSignaturesName[] = "Show autofill signatures.";
 const char kShowAutofillSignaturesDescription[] =
     "Annotates web forms with Autofill signatures as HTML attributes. Also "

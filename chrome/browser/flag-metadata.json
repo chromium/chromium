@@ -5432,6 +5432,16 @@
     "expiry_milestone": 84
   },
   {
+    "name": "shelf-palm-rejection-swipe-offset",
+    "owners": ["anasalazar", "//ash/shelf/OWNERS"],
+    "expiry_milestone": 105
+  },
+  {
+    "name": "shelf-palm-rejection-touch-area",
+    "owners": ["anasalazar", "//ash/shelf/OWNERS"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "shimless-rma-enable-standalone",
     "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 108
