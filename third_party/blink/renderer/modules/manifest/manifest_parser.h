@@ -469,7 +469,7 @@ class MODULES_EXPORT ManifestParser {
       const String& preference);
 
   // Parse the 'user_preferences' field of the manifest as defined in:
-  // https://github.com/w3c/manifest/issues/975#issuecomment-960222756
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
   // Returns nullptr if parsing fails.
   mojom::blink::ManifestUserPreferencesPtr ParseUserPreferences(
       const JSONObject* object);

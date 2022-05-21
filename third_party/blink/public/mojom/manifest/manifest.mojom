@@ -119,7 +119,7 @@ struct Manifest {
 
   // TODO(crbug.com/1271804): This field is non-standard and part of a Chrome
   // experiment. See:
-  // https://github.com/w3c/manifest/issues/975#issuecomment-960222756
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
   ManifestUserPreferences? user_preferences;
 
   // TODO(crbug.com/1254457): This field is non-standard and part of a Chrome
