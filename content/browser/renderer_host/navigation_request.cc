@@ -3561,18 +3561,14 @@ void NavigationRequest::OnResponseStarted(
   subresource_loader_params_ = std::move(subresource_loader_params);
 
   if (render_frame_host_) {
-    // For sites that require a dedicated process, set the site URL now if it
-    // hasn't been set already. This will lock the process to that site, which
-    // will prevent other sites from incorrectly reusing this process. See
+    // Set the site URL now if it hasn't been set already. If the site requires
+    // a dedicated process, this will lock the process to that site, which will
+    // prevent other sites from incorrectly reusing this process. See
     // https://crbug.com/738634.
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
-    const IsolationContext& isolation_context = instance->GetIsolationContext();
-    UrlInfo url_info = GetUrlInfo();
-    auto site_info = SiteInfo::Create(isolation_context, url_info);
     if (!instance->HasSite() &&
-        SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url) &&
-        site_info.RequiresDedicatedProcess(isolation_context)) {
-      instance->ConvertToDefaultOrSetSite(url_info);
+        SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
+      instance->ConvertToDefaultOrSetSite(GetUrlInfo());
     }
 
     // Since we've made the final pick for the RenderFrameHost above, the picked
@@ -3602,6 +3598,7 @@ void NavigationRequest::OnResponseStarted(
     // will get a SiteInstance (regardless of process isolation) and tracking
     // will be handled by the existing pathway in
     // SiteInstanceImpl::SetSiteInfoInternal().
+    const IsolationContext& isolation_context = instance->GetIsolationContext();
     AddSameProcessOriginAgentClusterOptInIfNecessary(isolation_context,
                                                      GetURL());
 
@@ -3873,6 +3870,14 @@ void NavigationRequest::OnRequestFailedInternal(
               frame_tree_node_->render_manager()->current_frame_host()
           ? AssociatedSiteInstanceType::CURRENT
           : AssociatedSiteInstanceType::SPECULATIVE);
+
+  // Set the site URL now if it hasn't been set already.  It's possible to get
+  // here if we navigate to an error out of an initial "blank" SiteInstance.
+  // Also mark the process as used, since it will be hosting an error page.
+  SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
+  if (!instance->HasSite())
+    instance->ConvertToDefaultOrSetSite(GetUrlInfo());
+  render_frame_host_->GetProcess()->SetIsUsed();
 
   // The check for WebUI should be performed only if error page isolation is
   // enabled for this failed navigation. It is possible for subframe error page

@@ -503,11 +503,6 @@ void Navigator::DidNavigate(
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
-  // At this point we have already chosen a SiteInstance for this navigation, so
-  // set OriginIsolationRequest to kNone in the conversion to UrlInfo below:
-  // this is done implicitly in the UrlInfoInit constructor.
-  const UrlInfo url_info(UrlInfoInit(params.url));
-
   if (auto& old_page_info = navigation_request->commit_params().old_page_info) {
     // This is a same-site main-frame navigation where we did a proactive
     // BrowsingInstance swap but we're reusing the old page's process, and we
@@ -564,13 +559,20 @@ void Navigator::DidNavigate(
     frame_tree_node->ResetForNavigation();
   }
 
-  // Update the site of the SiteInstance if it doesn't have one yet, unless
-  // assigning a site is not necessary for this URL. In that case, the
-  // SiteInstance can still be considered unused until a navigation to a real
-  // page.
+  // If the committing URL requires the SiteInstance's site to be assigned,
+  // that site assignment should've already happened at ReadyToCommit time. We
+  // should never get here with a SiteInstance that doesn't have a site
+  // assigned in that case.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   if (!site_instance->HasSite() &&
-      SiteInstanceImpl::ShouldAssignSiteForURL(url_info.url)) {
+      SiteInstanceImpl::ShouldAssignSiteForURL(params.url)) {
+    NOTREACHED() << "SiteInstance should have already set a site: "
+                 << params.url;
+    // TODO(alexmos): convert this to a CHECK and remove the fallback call to
+    // ConvertToDefaultOrSetSite() after verifying that this doesn't happen in
+    // practice.
+    base::debug::DumpWithoutCrashing();
+    const UrlInfo url_info(UrlInfoInit(params.url));
     site_instance->ConvertToDefaultOrSetSite(url_info);
   }
 

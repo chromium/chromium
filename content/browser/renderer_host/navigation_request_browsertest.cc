@@ -43,6 +43,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -3275,6 +3276,127 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     CreateSubframe(popup, "popup_subframe", GURL(),
                    /*wait_for_navigation*/ true);
   }
+}
+
+// Verify that when navigating to a site that doesn't require a dedicated
+// process from a initial siteless SiteInstance, the SiteInstance sets its site
+// at ready-to-commit time (rather than at DidCommitNavigation time).
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       SiteIsSetAtResponseTimeWithoutSiteIsolation) {
+  // A custom ContentBrowserClient to turn off strict site isolation.
+  class NoSiteIsolationContentBrowserClient : public ContentBrowserClient {
+   public:
+    bool ShouldEnableStrictSiteIsolation() override { return false; }
+  } no_site_isolation_client;
+
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&no_site_isolation_client);
+
+  // The test should start in a blank shell with a siteless SiteInstance.
+  EXPECT_FALSE(
+      static_cast<SiteInstanceImpl*>(shell()->web_contents()->GetSiteInstance())
+          ->HasSite());
+
+  // Start a navigation and wait for response.  Note that this won't require a
+  // dedicated process due to the custom ContentBrowserClient.
+  GURL main_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
+  TestNavigationManager manager(shell()->web_contents(), main_url);
+  shell()->web_contents()->GetController().LoadURL(
+      main_url, Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+  EXPECT_TRUE(manager.WaitForResponse());
+
+  // At this point, the navigation should be processing the response but not
+  // committed yet. It should have already determined the final
+  // RenderFrameHost, which should just be the initial RenderFrameHost.
+  NavigationRequest* request =
+      static_cast<NavigationRequest*>(manager.GetNavigationHandle());
+  EXPECT_EQ(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+  EXPECT_EQ(shell()->web_contents()->GetMainFrame(),
+            request->GetRenderFrameHost());
+
+  // The navigation will stay in the initial SiteInstance, and that
+  // SiteInstance's site should now be set.
+  EXPECT_TRUE(
+      static_cast<SiteInstanceImpl*>(shell()->web_contents()->GetSiteInstance())
+          ->HasSite());
+
+  // The process should also be considered used at this point.
+  EXPECT_FALSE(
+      shell()->web_contents()->GetMainFrame()->GetProcess()->IsUnused());
+
+  SetBrowserClientForTesting(old_client);
+}
+
+// Verify that when navigation 1, which starts in an initial siteless
+// SiteInstance and results in an error page, races with navigation 2, which
+// requires a dedicated process and wants to reuse an existing process,
+// navigation 2 does not incorrectly reuse navigation 1's process.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       ErrorPageMarksProcessAsUsed) {
+  // The scenario in this test originally led to a site isolation bypass only
+  // when error page isolation for main frames is turned off.  Do this via a
+  // custom ContentBrowserClient.
+  class NoErrorPageIsolationContentBrowserClient : public ContentBrowserClient {
+   public:
+    bool ShouldIsolateErrorPage(bool in_main_frame) override { return false; }
+  } no_error_isolation_client;
+
+  ContentBrowserClient* old_client =
+      SetBrowserClientForTesting(&no_error_isolation_client);
+
+  // Set the process limit to 1.  This will force main frame navigations to
+  // attempt to reuse existing processes.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  // The test should start in a blank shell with a siteless SiteInstance.
+  EXPECT_FALSE(
+      static_cast<SiteInstanceImpl*>(shell()->web_contents()->GetSiteInstance())
+          ->HasSite());
+
+  // Set up a foo.com URL which will fail to load.
+  GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  std::unique_ptr<URLLoaderInterceptor> interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(foo_url,
+                                                   net::ERR_CONNECTION_REFUSED);
+
+  // Set up a throttle that will be used to wait for WillFailRequest() and then
+  // defer the navigation.
+  TestNavigationThrottleInstaller installer(
+      shell()->web_contents(),
+      NavigationThrottle::PROCEED /* will_start_result */,
+      NavigationThrottle::PROCEED /* will_redirect_result */,
+      NavigationThrottle::DEFER /* will_fail_result */,
+      NavigationThrottle::PROCEED /* will_process_result */);
+
+  // Start a navigation to foo.com that will result in an error.
+  shell()->web_contents()->GetController().LoadURL(
+      foo_url, Referrer(), ui::PAGE_TRANSITION_LINK, std::string());
+
+  // Wait for WillFailRequest(). After this point, we will have picked the
+  // final RenderFrameHost for the error page.
+  installer.WaitForThrottleWillFail();
+
+  // Create a new tab and navigate it to a different site.  Ensure this site
+  // requires a dedicated process, even on Android.
+  GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title1.html"));
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      {url::Origin::Create(bar_url)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+  Shell* new_shell = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(new_shell, bar_url));
+
+  // Resume the error page navigation.  It should be able to finish without
+  // crashing.
+  installer.navigation_throttle()->ResumeNavigation();
+  EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_TRUE(shell()->web_contents()->GetMainFrame()->IsErrorDocument());
+
+  // Ensure that bar.com didn't reuse the foo.com error page process.
+  EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(),
+            new_shell->web_contents()->GetMainFrame()->GetProcess());
+
+  SetBrowserClientForTesting(old_client);
 }
 
 using CSPEmbeddedEnforcementBrowserTest = NavigationRequestBrowserTest;
