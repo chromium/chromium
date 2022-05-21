@@ -78,7 +78,21 @@ class WaylandPointer {
                            uint32_t axis,
                            int32_t discrete);
 
+  void SetupStylus();
+
+  static void Tool(void* data, struct zcr_pointer_stylus_v2* x, uint32_t y);
+  static void Force(void* data,
+                    struct zcr_pointer_stylus_v2* x,
+                    uint32_t y,
+                    wl_fixed_t z);
+  static void Tilt(void* data,
+                   struct zcr_pointer_stylus_v2* x,
+                   uint32_t y,
+                   wl_fixed_t z,
+                   wl_fixed_t a);
+
   wl::Object<wl_pointer> obj_;
+  wl::Object<zcr_pointer_stylus_v2> zcr_pointer_stylus_v2_;
   WaylandConnection* const connection_;
   Delegate* const delegate_;
 

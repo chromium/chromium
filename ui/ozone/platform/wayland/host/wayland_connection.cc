@@ -87,6 +87,7 @@ constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
 constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
+constexpr uint32_t kMaxStylusVersion = 2;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -427,7 +428,7 @@ void WaylandConnection::Global(void* data,
       &ClockId,
   };
 
-  WaylandConnection* connection = static_cast<WaylandConnection*>(data);
+  auto* connection = static_cast<WaylandConnection*>(data);
 
   auto factory_it = connection->global_object_factories_.find(interface);
   if (factory_it != connection->global_object_factories_.end()) {
@@ -577,6 +578,14 @@ void WaylandConnection::Global(void* data,
     NOTIMPLEMENTED_LOG_ONCE()
         << interface << " is recognized but not yet supported";
     ReportShellUMA(UMALinuxWaylandShell::kZwlrLayerShellV1);
+  } else if (!connection->zcr_stylus_v2_ &&
+             strcmp(interface, "zcr_stylus_v2") == 0) {
+    connection->zcr_stylus_v2_ = wl::Bind<zcr_stylus_v2>(
+        registry, name, std::min(version, kMaxStylusVersion));
+    if (!connection->zcr_stylus_v2_) {
+      LOG(ERROR) << "Failed to bind to zcr_stylus_v2";
+      return;
+    }
   }
 
   connection->available_globals_.emplace_back(interface, version);

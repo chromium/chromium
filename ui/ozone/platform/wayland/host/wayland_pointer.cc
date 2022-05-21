@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 
 #include <linux/input.h>
+#include <stylus-unstable-v2-client-protocol.h>
 
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -26,6 +27,8 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
       &Frame, &AxisSource, &AxisStop, &AxisDiscrete};
 
   wl_pointer_add_listener(obj_.get(), &listener, this);
+
+  SetupStylus();
 }
 
 WaylandPointer::~WaylandPointer() {
@@ -187,6 +190,44 @@ void WaylandPointer::AxisDiscrete(void* data,
                                   int32_t discrete) {
   // TODO(fukino): Use this events for better handling of mouse wheel events.
   // crbug.com/1129259.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandPointer::SetupStylus() {
+  auto* stylus_v2 = connection_->stylus_v2();
+  if (!stylus_v2)
+    return;
+
+  zcr_pointer_stylus_v2_.reset(
+      zcr_stylus_v2_get_pointer_stylus(stylus_v2, obj_.get()));
+
+  static zcr_pointer_stylus_v2_listener kPointerStylusV2Listener = {
+      &Tool, &Force, &Tilt};
+  zcr_pointer_stylus_v2_add_listener(zcr_pointer_stylus_v2_.get(),
+                                     &kPointerStylusV2Listener, this);
+}
+
+// static
+void WaylandPointer::Tool(void* data,
+                          struct zcr_pointer_stylus_v2* x,
+                          uint32_t y) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandPointer::Force(void* data,
+                           struct zcr_pointer_stylus_v2* x,
+                           uint32_t y,
+                           wl_fixed_t z) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandPointer::Tilt(void* data,
+                          struct zcr_pointer_stylus_v2* x,
+                          uint32_t y,
+                          wl_fixed_t z,
+                          wl_fixed_t a) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
