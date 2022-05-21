@@ -1247,15 +1247,15 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
         request_->ParseResponse(*message_value);
       }
 
-      if (base::LowerCaseEqualsASCII(error_api_error_reason,
-                                     "virtual_card_temporary_error")) {
+      if (base::EqualsCaseInsensitiveASCII(error_api_error_reason,
+                                           "virtual_card_temporary_error")) {
         result =
             AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
-      } else if (base::LowerCaseEqualsASCII(error_api_error_reason,
-                                            "virtual_card_permanent_error")) {
+      } else if (base::EqualsCaseInsensitiveASCII(
+                     error_api_error_reason, "virtual_card_permanent_error")) {
         result =
             AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure;
-      } else if (base::LowerCaseEqualsASCII(error_code, "internal")) {
+      } else if (base::EqualsCaseInsensitiveASCII(error_code, "internal")) {
         result = AutofillClient::PaymentsRpcResult::kTryAgainFailure;
       } else if (!error_code.empty() || !request_->IsResponseComplete()) {
         result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
