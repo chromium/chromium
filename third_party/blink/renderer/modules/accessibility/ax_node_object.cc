@@ -36,6 +36,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -4586,16 +4587,21 @@ bool AXNodeObject::OnNativeFocusAction() {
     return true;
   }
 
-  // If the object is not natively focusable but can be focused using an ARIA
-  // active descendant, perform a native click instead. This will enable Web
-  // apps that set accessibility focus using an active descendant to capture and
-  // act on the click event. Otherwise, there is no other way to inform the app
-  // that an AT has requested the focus to be changed, except if the app is
-  // using AOM. To be extra safe, exclude objects that are clickable themselves.
-  // This won't prevent anyone from having a click handler on the object's
-  // container.
-  if (!IsClickable() && CanBeActiveDescendant()) {
-    return OnNativeClickAction();
+  if (base::FeatureList::IsEnabled(blink::features::kSimulateClickOnAXFocus)) {
+    // If the object is not natively focusable but can be focused using an ARIA
+    // active descendant, perform a native click instead. This will enable Web
+    // apps that set accessibility focus using an active descendant to capture
+    // and act on the click event. Otherwise, there is no other way to inform
+    // the app that an AT has requested the focus to be changed, except if the
+    // app is using AOM. To be extra safe, exclude objects that are clickable
+    // themselves. This won't prevent anyone from having a click handler on the
+    // object's container.
+    //
+    // This code is in the process of being removed. See the comment above
+    // |kSimulateClickOnAXFocus| in `blink/common/features.cc`.
+    if (!IsClickable() && CanBeActiveDescendant()) {
+      return OnNativeClickAction();
+    }
   }
 
   element->Focus();

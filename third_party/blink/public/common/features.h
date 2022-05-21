@@ -757,6 +757,12 @@ BLINK_COMMON_EXPORT extern const base::Feature
 // https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
 BLINK_COMMON_EXPORT extern const base::Feature kPendingBeaconAPI;
 
+// TODO(accessibility): This flag is set to accommodate JAWS on Windows so they
+// can adjust to us not simulating click events on a focus action. It should be
+// disabled by default (and removed) before 5/17/2023.
+// See https://crbug.com/1326622 for more info.
+BLINK_COMMON_EXPORT extern const base::Feature kSimulateClickOnAXFocus;
+
 }  // namespace features
 }  // namespace blink
 

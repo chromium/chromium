@@ -1464,5 +1464,14 @@ const base::Feature kSubstringSetTreeForAttributeBuckets{
 const base::Feature kPendingBeaconAPI{"PendingBeaconAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSimulateClickOnAXFocus {
+  "SimulateClickOnAXFocus",
+#if BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
+
 }  // namespace features
 }  // namespace blink
