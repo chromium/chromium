@@ -1127,9 +1127,6 @@ void ArcAppListPrefs::RecordAppIdsUma() {
   // Sticky apps are the ones in either system or vendor image. They are called
   // "sticky" because uninstalling them is not possible. 0 for opt-out users.
   size_t num_sticky_apps = 0;
-  // Apps that are unknown to this class. The number of such apps should be
-  // zero.
-  size_t num_unknown_apps = 0;
   // "Installed" apps are the ones that the user has manually installed. This
   // includes apps installed by Chrome's app sync feature. 0 for opt-out users.
   size_t num_installed_apps = 0;
@@ -1138,12 +1135,8 @@ void ArcAppListPrefs::RecordAppIdsUma() {
   for (const auto& app_id : app_ids) {
     std::unique_ptr<AppInfo> app_info = GetApp(app_id);
     DCHECK(app_info) << app_id;
-    // TODO(yusukes): Remove the path for handling null |app_info| in M104+.
-    if (!app_info) {
-      LOG(WARNING) << "App ID " << app_id << " is not associated with AppInfo";
-      ++num_unknown_apps;
+    if (!app_info)
       continue;
-    }
     const bool is_default = IsDefault(app_id);
     const bool is_sticky = app_info->sticky;
     DVLOG(1) << "App ID on startup: name=" << app_info->name
@@ -1161,16 +1154,12 @@ void ArcAppListPrefs::RecordAppIdsUma() {
     }
   }
 
-  const bool has_installed_or_unknown_apps =
-      num_installed_apps || num_unknown_apps;
+  const bool has_installed_apps = num_installed_apps;
   VLOG(1) << "Non-PAI (aka non-default) and non-sticky (aka"
           << " not-in-system/vendor-images) ARC app(s) are "
-          << (has_installed_or_unknown_apps ? "" : "not ") << "found.";
+          << (has_installed_apps ? "" : "not ") << "found.";
 
   // Record the UMA. For more context of the metrics, see b/219115916.
-  base::UmaHistogramExactLinear(
-      base::StrCat({kAppCountUmaPrefix, "UnknownApp"}), num_unknown_apps,
-      kAppCountUmaExclusiveMax);
   base::UmaHistogramExactLinear(
       base::StrCat({kAppCountUmaPrefix, "DefaultApp"}), num_default_apps,
       kAppCountUmaExclusiveMax);
@@ -1181,7 +1170,7 @@ void ArcAppListPrefs::RecordAppIdsUma() {
       kAppCountUmaExclusiveMax);
   base::UmaHistogramBoolean(
       base::StrCat({kAppCountUmaPrefix, "HasInstalledOrUnknownApp"}),
-      has_installed_or_unknown_apps);
+      has_installed_apps);
 }
 
 void ArcAppListPrefs::OnPolicySent(const std::string& policy) {
