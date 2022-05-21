@@ -424,6 +424,9 @@ public class ContextualSearchInstrumentationBase {
         mTestServer = sActivityTestRule.getTestServer();
 
         sActivityTestRule.loadUrl(mTestServer.getURL(mTestPage));
+        // DOMUtils sometimes hits the wrong node due to an incorrect page scale factor,
+        // so wait until that is set. https://crbug.com/1327063
+        sActivityTestRule.assertWaitForPageScaleFactorMatch(1.0f);
 
         mManager = sActivityTestRule.getActivity().getContextualSearchManagerSupplier().get();
         mTestHost = new ContextualSearchInstrumentationTestHost();

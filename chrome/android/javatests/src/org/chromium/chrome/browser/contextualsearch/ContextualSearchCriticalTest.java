@@ -344,9 +344,6 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
-        // This flakes when running the Translations Feature, probably due to DOMUtils issues.
-        if (enabledFeature == EnabledFeature.TRANSLATIONS) return;
-
         // This test depends on preloading the content - which is loaded and not made visible.
         // We only preload when the user has decided to accept the privacy opt-in.
         mPolicy.overrideDecidedStateForTesting(true);
