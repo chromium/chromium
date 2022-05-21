@@ -5061,8 +5061,8 @@
   <message name="IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON" desc="Label for the connection lost button of EcheApp to try again.">
     Try again
   </message>
-  <message name="IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON" desc="Help link text in connection lost notification of EcheApp.">
-    Help
+  <message name="IDS_ECHE_APP_NOTIFICATION_LEARN_MORE_BUTTON" desc="Learn more link text in connection lost notification of EcheApp.">
+    Learn more
   </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE" desc="Title for notification shown when screen lock is not enabled while using app stream of EcheApp.">
     Can't open app

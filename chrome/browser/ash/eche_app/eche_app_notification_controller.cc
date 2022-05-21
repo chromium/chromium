@@ -39,9 +39,6 @@ const char kEcheAppFromWebWithoutButtonNotifierId[] =
 // some point.
 const char kEcheAppLearnMoreUrl[] = "https://support.google.com/chromebook";
 
-// TODO(b/193583292): Wait for UX to build help site.
-const char kEcheAppHelpUrl[] = "https://support.google.com/chromebook";
-
 namespace {
 
 // Convenience function for creating a Notification.
@@ -87,11 +84,6 @@ void EcheAppNotificationController::LaunchTryAgain() {
   relaunch_callback_.Run(profile_);
 }
 
-void EcheAppNotificationController::LaunchHelp() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kEcheAppHelpUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction);
-}
-
 void EcheAppNotificationController::ShowNotificationFromWebUI(
     const absl::optional<std::u16string>& title,
     const absl::optional<std::u16string>& message,
@@ -105,9 +97,10 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
       message_center::RichNotificationData rich_notification_data;
       rich_notification_data.buttons.push_back(
           message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_ECHE_APP_NOTIFICATION_LEARN_MORE_BUTTON)));
+      rich_notification_data.buttons.push_back(
+          message_center::ButtonInfo(l10n_util::GetStringUTF16(
               IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON)));
-      rich_notification_data.buttons.push_back(message_center::ButtonInfo(
-          l10n_util::GetStringUTF16(IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON)));
       ShowNotification(CreateNotification(
           kEcheAppRetryConnectionNotifierId,
           NotificationCatalogName::kEcheAppRetryConnection, title.value(),
@@ -205,10 +198,10 @@ void EcheAppNotificationController::NotificationDelegate::Click(
     }
   } else if (notification_id_ == kEcheAppRetryConnectionNotifierId) {
     if (*button_index == 0) {
-      notification_controller_->LaunchTryAgain();
+      notification_controller_->LaunchLearnMore();
     } else {
       DCHECK_EQ(1, *button_index);
-      notification_controller_->LaunchHelp();
+      notification_controller_->LaunchTryAgain();
     }
   } else if (notification_id_ == kEcheAppInactivityNotifierId) {
     if (*button_index == 0) {

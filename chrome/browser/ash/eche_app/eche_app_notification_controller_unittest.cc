@@ -82,14 +82,14 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
     ASSERT_EQ(2u, notification->buttons().size());
     EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
-    // Clicking the first notification button should launch try again.
-    EXPECT_CALL(*notification_controller_, LaunchTryAgain());
+    // Clicking the first notification button should launch learn more.
+    EXPECT_CALL(*new_window_delegate_,
+                OpenUrl(GURL(kEcheAppLearnMoreUrl),
+                        NewWindowDelegate::OpenUrlFrom::kUserInteraction));
     notification->delegate()->Click(0, absl::nullopt);
 
-    // Clicking the second notification button should launch help.
-    EXPECT_CALL(*new_window_delegate_,
-                OpenUrl(GURL(kEcheAppHelpUrl),
-                        NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+    // Clicking the second notification button should launch try again.
+    EXPECT_CALL(*notification_controller_, LaunchTryAgain());
     notification->delegate()->Click(1, absl::nullopt);
   }
 
@@ -112,14 +112,14 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), message);
 
-  // Clicking the first notification button should relaunch again.
-  EXPECT_CALL(*notification_controller_, LaunchTryAgain());
+  // Clicking the first notification button should launch learn more.
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kEcheAppLearnMoreUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   notification->delegate()->Click(0, absl::nullopt);
 
-  // Clicking the second notification button should launch help.
-  EXPECT_CALL(*new_window_delegate_,
-              OpenUrl(GURL(kEcheAppHelpUrl),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+  // Clicking the second notification button should relaunch again.
+  EXPECT_CALL(*notification_controller_, LaunchTryAgain());
   notification->delegate()->Click(1, absl::nullopt);
 
   title = u"Connection Lost Title";
@@ -134,14 +134,14 @@ TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {
   EXPECT_EQ(notification->title(), title);
   EXPECT_EQ(notification->message(), message);
 
-  // Clicking the first notification button should relaunch again.
-  EXPECT_CALL(*notification_controller_, LaunchTryAgain());
+  // Clicking the first notification button should launch learn more.
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kEcheAppLearnMoreUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   notification->delegate()->Click(0, absl::nullopt);
 
-  // Clicking the second notification button should launch help.
-  EXPECT_CALL(*new_window_delegate_,
-              OpenUrl(GURL(kEcheAppHelpUrl),
-                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+  // Clicking the second notification button should relaunch again.
+  EXPECT_CALL(*notification_controller_, LaunchTryAgain());
   notification->delegate()->Click(1, absl::nullopt);
 
   title = u"Inactivity Title";
