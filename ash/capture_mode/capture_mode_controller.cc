@@ -1632,6 +1632,9 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   capture_mode_session_ =
       std::make_unique<CaptureModeSession>(this, for_projector);
   capture_mode_session_->Initialize();
+
+  if (camera_controller_)
+    camera_controller_->OnCaptureSessionStarted();
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(

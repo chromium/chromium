@@ -632,6 +632,10 @@ void CaptureModeCameraController::ToggleCameraPreviewSize() {
   MaybeUpdatePreviewWidget(/*animate=*/true);
 }
 
+void CaptureModeCameraController::OnCaptureSessionStarted() {
+  GetCameraDevices();
+}
+
 void CaptureModeCameraController::OnRecordingStarted(
     bool is_in_projector_mode) {
   // Check if there's a camera disconnection that happened before recording
