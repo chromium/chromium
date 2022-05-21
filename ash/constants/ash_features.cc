@@ -267,7 +267,7 @@ const base::Feature kCameraPrivacySwitchNotifications{
 
 // Controls whether the selfie camera feature is enabled for Capture Mode.
 const base::Feature kCaptureModeSelfieCamera{"CaptureModeSelfieCamera",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.

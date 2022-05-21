@@ -36,6 +36,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/system/system_monitor.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -91,7 +92,8 @@ class AshTestHelper::PowerPolicyControllerInitializer {
 };
 
 AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
-    : AuraTestHelper(context_factory) {
+    : AuraTestHelper(context_factory),
+      system_monitor_(std::make_unique<base::SystemMonitor>()) {
   views::ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(
       &MakeTestViewsDelegate);
 

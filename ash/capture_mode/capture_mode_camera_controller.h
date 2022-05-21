@@ -210,6 +210,12 @@ class ASH_EXPORT CaptureModeCameraController
   // `is_camera_preview_collapsed_` when the resize button is pressed.
   void ToggleCameraPreviewSize();
 
+  // Called when a capture session gets started so we can refresh the cameras
+  // list, since the cros-camera service might have not been running when we
+  // tried to refresh the cameras at the beginning. (See
+  // http://b/230917107#comment12 for more details).
+  void OnCaptureSessionStarted();
+
   void OnRecordingStarted(bool is_in_projector_mode);
   void OnRecordingEnded();
 
