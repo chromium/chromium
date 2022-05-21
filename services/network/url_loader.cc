@@ -12,6 +12,8 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
@@ -21,9 +23,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -398,6 +404,146 @@ T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
   return remote.is_bound() ? remote.get() : fallback;
 }
 
+// Feature configuration for Cache Transparency is expensive to calculate, so it
+// is cached. Not threadsafe.
+class CacheTransparencySettings {
+ public:
+  // This is not threadsafe, but it doesn't need to be.
+  static const CacheTransparencySettings& Get() {
+    if (!singleton_instance_) {
+      singleton_instance_ = new CacheTransparencySettings();
+    }
+    return *singleton_instance_;
+  }
+
+  static void ResetForTesting() {
+    // `singleton_instance_` needs to be leaked at shutdown but not during
+    // tests.
+    delete singleton_instance_;
+    singleton_instance_ = nullptr;
+  }
+
+  CacheTransparencySettings(CacheTransparencySettings&) = delete;
+  CacheTransparencySettings& operator=(const CacheTransparencySettings&) =
+      delete;
+
+  bool enabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return enabled_;
+  }
+
+  absl::optional<std::string> GetChecksumForURL(const GURL& url) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!url.is_valid())
+      return absl::nullopt;
+
+    auto it = map_.find(url.spec());
+    if (it == map_.end()) {
+      return absl::nullopt;
+    }
+    return it->second;
+  }
+
+ private:
+  using PervasivePayloadsMap = base::flat_map<std::string, std::string>;
+
+  CacheTransparencySettings()
+      : enabled_(base::FeatureList::IsEnabled(features::kCacheTransparency)),
+        map_(CreateMap()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  ~CacheTransparencySettings() = default;
+
+  PervasivePayloadsMap CreateMap() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!enabled_)
+      return PervasivePayloadsMap();
+
+    const std::string comma_separated =
+        features::kCacheTransparencyPervasivePayloads.Get();
+    auto split = base::SplitStringPiece(
+        comma_separated, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (split.empty()) {
+      // The code below safely produces an empty map in this case.
+      DLOG(WARNING) << "Pervasive payload list is empty.";
+    } else {
+      const auto version_string = split[0];
+      int version_number = 0;
+      if (StringToInt(version_string, &version_number)) {
+        // TODO(ricea): Do something useful with the version number.
+      } else {
+        LOG(WARNING) << "Could not parse pervasive payload version number";
+      }
+      // The number of items cannot be large, so this O(N) algorithm is
+      // acceptable.
+      split.erase(split.begin());
+    }
+    if (split.size() % 2 == 1) {
+      DLOG(WARNING)
+          << "Pervasive payload list contains an odd number of elements."
+          << comma_separated;
+    }
+    using Container = PervasivePayloadsMap::container_type;
+    Container pairs;
+    pairs.reserve(split.size() / 2);
+    // `split` has to fit in memory, therefore split.size() cannot be the
+    // largest possible value, therefore adding 1 to i will not overflow.
+    for (size_t i = 0; i + 1 < split.size(); i += 2) {
+      pairs.emplace_back(split[i], split[i + 1]);
+    }
+    return PervasivePayloadsMap(std::move(pairs));
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  const bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  const PervasivePayloadsMap map_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // This is normally leaked to avoid running a destructor. It's only
+  // re-allocated in tests.
+  static CacheTransparencySettings* singleton_instance_;
+};
+
+CacheTransparencySettings* CacheTransparencySettings::singleton_instance_ =
+    nullptr;
+
+bool HasFlagsIncompatibleWithSingleKeyedCache(int load_flags) {
+  return load_flags &
+         (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
+          net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
+          net::LOAD_DISABLE_CACHE | net::LOAD_SKIP_VARY_CHECK);
+}
+
+bool HasHeadersIncompatibleWithSingleKeyedCache(
+    const net::HttpRequestHeaders& headers) {
+  // These are lowercase to permit case-insensitive matching.
+  auto incompatible_headers = base::MakeFixedFlatSet<base::StringPiece>({
+      "accept",
+      "accept-charset",
+      "accept-encoding",
+      "authorization",
+      "cache-control",
+      "if-match",
+      "if-modified-since",
+      "if-none-match",
+      "if-range",
+      "if-unmodified-since",
+      "pragma",
+      "range",
+  });
+  // HttpRequestHeaders::FindHeader() would iterate through the headers for each
+  // name in the above list. To reduce the cost of this function, iterate
+  // manually instead
+  net::HttpRequestHeaders::Iterator it(headers);
+  while (it.GetNext()) {
+    if (incompatible_headers.contains(base::ToLowerASCII(it.name()))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -444,7 +590,8 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer)
+    mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
+    bool third_party_cookies_enabled)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -495,6 +642,7 @@ URLLoader::URLLoader(
       allow_http1_for_streaming_upload_(
           request.request_body &&
           request.request_body->AllowHTTP1ForStreamingUpload()),
+      third_party_cookies_enabled_(third_party_cookies_enabled),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)) {
   TRACE_EVENT("loading", "URLLoader::URLLoader",
               perfetto::Flow::FromPointer(this));
@@ -614,7 +762,33 @@ URLLoader::URLLoader(
         net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT);
   }
 
-  url_request_->SetLoadFlags(request.load_flags);
+  int request_load_flags = request.load_flags;
+
+  if (CacheTransparencySettings::Get().enabled() &&
+      ThirdPartyCookiesEnabled()) {
+    auto checksum =
+        CacheTransparencySettings::Get().GetChecksumForURL(request.url);
+    if (checksum.has_value()) {
+      DVLOG(2) << "Found pervasive payload: " << request.url.spec();
+      if (request.method != net::HttpRequestHeaders::kGetMethod) {
+        DVLOG(2) << "Not using single-keyed-cache; method is "
+                 << request.method;
+      } else if (HasFlagsIncompatibleWithSingleKeyedCache(request_load_flags)) {
+        DVLOG(2) << "Not using single-keyed-cache; flags are "
+                 << request_load_flags;
+      } else if (HasHeadersIncompatibleWithSingleKeyedCache(request.headers)) {
+        DVLOG(2) << "Not using single-keyed-cache; headers are\n"
+                 << request.headers.ToString();
+      } else {
+        DVLOG(2) << "Trying single-keyed cache";
+        request_load_flags |= net::LOAD_USE_SINGLE_KEYED_CACHE;
+
+        url_request_->set_expected_response_checksum(checksum.value());
+      }
+    }
+  }
+
+  url_request_->SetLoadFlags(request_load_flags);
   SetRequestCredentials(request.url);
 
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
@@ -1266,6 +1440,11 @@ bool URLLoader::HasFetchStreamingUploadBody(const ResourceRequest* request) {
   const auto& element = elements->front();
   return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
          element.As<network::DataElementChunkedDataPipe>().read_only_once();
+}
+
+// static
+void URLLoader::ResetPervasivePayloadsListForTesting() {
+  CacheTransparencySettings::ResetForTesting();
 }
 
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,
@@ -2506,6 +2685,12 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
 
   // [spec]: 5. Return false.
   return false;
+}
+
+bool URLLoader::ThirdPartyCookiesEnabled() const {
+  return third_party_cookies_enabled_ &&
+         !(options_ & (mojom::kURLLoadOptionBlockThirdPartyCookies |
+                       mojom::kURLLoadOptionBlockAllCookies));
 }
 
 }  // namespace network

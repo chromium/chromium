@@ -88,6 +88,10 @@ struct NET_EXPORT HttpRequestInfo {
   // happen multiple times. It is only safe to enable the 0-RTT if it is known
   // that the request is idempotent.
   net::Idempotency idempotency;
+
+  // Checksum of the request body and selected headers, in upper-case
+  // hexadecimal. Only non-empty if the USE_SINGLE_KEYED_CACHE load flag is set.
+  std::string checksum;
 };
 
 }  // namespace net
