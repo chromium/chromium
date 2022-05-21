@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_GAME_FETCHER_H_
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_GAME_FETCHER_H_
 
+#include <map>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -40,6 +42,10 @@ class GameFetcher : public AppFetcher,
       const proto::AppWithLocaleList& app_data);
 
   std::vector<Result> last_results_;
+
+  // The key for this map is the App ID, while the value is a pointer to a
+  // Result in the last_results_ vector.
+  std::map<std::string, Result*> app_id_to_result_;
 
   raw_ptr<Profile> profile_;
 

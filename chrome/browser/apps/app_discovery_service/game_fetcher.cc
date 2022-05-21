@@ -176,13 +176,14 @@ void GameFetcher::GetIcon(const std::string& app_id,
     return;
   }
 
-  Result* app = nullptr;
-
-  for (Result& candidate : last_results_) {
-    if (candidate.GetAppId() == app_id) {
-      app = &candidate;
-    }
+  auto iterator = app_id_to_result_.find(app_id);
+  if (iterator == app_id_to_result_.end()) {
+    std::move(callback).Run(gfx::ImageSkia(),
+                            DiscoveryError::kErrorRequestFailed);
+    return;
   }
+
+  Result* app = iterator->second;
 
   if (!app) {
     std::move(callback).Run(gfx::ImageSkia(),
@@ -204,6 +205,11 @@ void GameFetcher::GetIcon(const std::string& app_id,
 
 void GameFetcher::OnAppDataUpdated(const proto::AppWithLocaleList& app_data) {
   last_results_ = GetAppsForCurrentLocale(app_data);
+  std::map<std::string, Result*> map;
+  for (auto& result : last_results_) {
+    map.emplace(result.GetAppId(), &result);
+  }
+  app_id_to_result_ = map;
   result_callback_list_.Notify(last_results_);
 }
 
