@@ -22,8 +22,8 @@ WebUIBrowserAsyncGenTest.prototype = {
 
   /** @inheritDoc */
   tearDown: function() {
-    expectFalse(this.tornDown);
-    expectFalse(this.running);
+    assertFalse(this.tornDown);
+    assertFalse(this.running);
     this.tornDown = true;
     chrome.send('tearDown');
     testing.Test.prototype.tearDown.call(this);
@@ -148,12 +148,12 @@ TEST_F('WebUIBrowserAsyncGenTest', 'TestRunAllActionsAsync', function() {
 
   // Check expectations after mocks have been called.
   window.continueTest2 = this.continueTest(WhenTestDone.ALWAYS, function() {
-    expectEquals('passedVal1', var3);
-    expectEquals('passedVal1', var4);
-    expectEquals('passedVal2', var5);
-    expectEquals('val6', var6);
-    expectEquals('passedVal2', var7);
-    expectEquals('val8', var8);
+    assertEquals('passedVal1', var3);
+    assertEquals('passedVal1', var4);
+    assertEquals('passedVal2', var5);
+    assertEquals('val6', var6);
+    assertEquals('passedVal2', var7);
+    assertEquals('val8', var8);
   });
 
   // Kick off the tests asynchronously.
@@ -205,7 +205,7 @@ WebUIBrowserAsyncGenDeferredTest.prototype = {
   /** @inheritDoc */
   setUp: function() {
     continueTest = this.continueTest(WhenTestDone.DEFAULT, function() {
-      expectFalse(this.ranTest_);
+      assertFalse(this.ranTest_);
       chrome.send('callJS', ['deferRunTest']);
     });
     chrome.send('callJS', ['continueTest']);
@@ -213,7 +213,7 @@ WebUIBrowserAsyncGenDeferredTest.prototype = {
 
   /** @inheritDoc */
   tearDown: function() {
-    expectTrue(this.ranTest_);
+    assertTrue(this.ranTest_);
     WebUIBrowserAsyncGenTest.prototype.tearDown.call(this);
   },
 };

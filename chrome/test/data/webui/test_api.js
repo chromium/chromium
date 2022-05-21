@@ -1209,24 +1209,6 @@ function exportChaiAsserts() {
 }
 
 /**
- * Exports expect methods. 'expect*' methods allow tests to run until the end
- * even in the presence of failures.
- */
-function exportExpects() {
-  exports.expectTrue = createExpect(assertTrue);
-  exports.expectFalse = createExpect(assertFalse);
-  exports.expectGE = createExpect(assertGE);
-  exports.expectGT = createExpect(assertGT);
-  exports.expectEquals = createExpect(assertEquals);
-  exports.expectDeepEquals = createExpect(assertDeepEquals);
-  exports.expectLE = createExpect(assertLE);
-  exports.expectLT = createExpect(assertLT);
-  exports.expectNotEquals = createExpect(assertNotEquals);
-  exports.expectNotReached = createExpect(assertNotReached);
-  exports.expectThrows = createExpect(assertThrows);
-}
-
-/**
  * Exports methods related to Mock4JS mocking.
  */
 function exportMock4JsHelpers() {
@@ -1238,7 +1220,6 @@ function exportMock4JsHelpers() {
 testing.Test = Test;
 exports.testDone = testDone;
 exportChaiAsserts();
-exportExpects();
 exportMock4JsHelpers();
 exports.preloadJavascriptLibraries = preloadJavascriptLibraries;
 exports.setWaitUser = setWaitUser;

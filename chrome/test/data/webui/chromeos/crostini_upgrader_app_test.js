@@ -204,22 +204,22 @@ suite('<crostini-upgrader-app>', () => {
     app.$$('#backup-checkbox > cr-checkbox').click();
     await clickAction();
 
-    expectEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 1);
     fakeBrowserProxy.page.precheckStatus(
         chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.NETWORK_FAILURE);
     await clickAction();
 
-    expectEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 2);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 2);
     fakeBrowserProxy.page.precheckStatus(
         chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER);
     await clickAction();
 
-    expectEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 3);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 3);
     fakeBrowserProxy.page.precheckStatus(
         chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
     await clickAction();
 
-    expectEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
   });
 
   test('upgradeFlowFailureOffersRestore', async () => {

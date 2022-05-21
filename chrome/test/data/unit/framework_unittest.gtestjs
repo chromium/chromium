@@ -13,10 +13,6 @@ FrameworkUnitTest.prototype = {
   __proto__: testing.Test.prototype,
 };
 
-TEST_F('FrameworkUnitTest', 'ExpectTrueOk', function() {
-  expectTrue(true);
-});
-
 TEST_F('FrameworkUnitTest', 'AssertTrueOk', function() {
   assertTrue(true);
 });
@@ -34,10 +30,6 @@ FrameworkUnitTestFail.prototype = {
   /** inheritDoc */
   testShouldFail: true,
 };
-
-TEST_F('FrameworkUnitTestFail', 'ExpectFailFails', function() {
-  expectNotReached();
-});
 
 TEST_F('FrameworkUnitTestFail', 'AssertFailFails', function() {
   assertNotReached();

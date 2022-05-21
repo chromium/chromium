@@ -1917,11 +1917,11 @@ suite('SettingsDevicePage', function() {
                   IdleBehavior.SHUT_DOWN.toString(), batteryIdleSelect.value);
               assertTrue(acIdleSelect.disabled);
               assertTrue(batteryIdleSelect.disabled);
-              expectNotEquals(
+              assertNotEquals(
                   null,
                   powerPage.shadowRoot.querySelector(
                       '#acIdleManagedIndicator'));
-              expectNotEquals(
+              assertNotEquals(
                   null,
                   powerPage.shadowRoot.querySelector(
                       '#batteryIdleManagedIndicator'));

@@ -199,15 +199,6 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncFailsAssert) {
       RunJavascriptAsyncTest("startAsyncTest", base::Value("testFailsAssert")));
 }
 
-// Test that expectations continue the function, but fail the test.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncFailsExpect) {
-  ::testing::InSequence s;
-  EXPECT_CALL(message_handler_, HandleTestContinues(::testing::_));
-  EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
-  ASSERT_FALSE(
-      RunJavascriptAsyncTest("startAsyncTest", base::Value("testFailsExpect")));
-}
-
 // Test that test continues and passes. (Sync version).
 IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestSyncPasses) {
   EXPECT_CALL(message_handler_, HandleTestContinues(::testing::_));
@@ -250,18 +241,6 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncPassThenFail) {
   EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
   ASSERT_FALSE(
       RunJavascriptAsyncTest("startAsyncTest", base::Value("testPasses")));
-}
-
-// Test that testDone() with failure first then sync pass still fails.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserAsyncTest, TestAsyncDoneFailFirstSyncPass) {
-  ::testing::InSequence s;
-  EXPECT_CALL(message_handler_, HandleTestContinues(::testing::_));
-  EXPECT_CALL(message_handler_, HandleTestFails(::testing::_));
-
-  // Call runAsync directly instead of deferring through startAsyncTest. It will
-  // call testDone() on failure, then return.
-  ASSERT_FALSE(RunJavascriptAsyncTest(
-      "runAsync", base::Value("testAsyncDoneFailFirstSyncPass")));
 }
 
 // Test that calling testDone during RunJavascriptAsyncTest still completes
