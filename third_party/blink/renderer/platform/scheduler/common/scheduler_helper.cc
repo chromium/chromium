@@ -140,11 +140,14 @@ void SchedulerHelper::ResetTimeDomain() {
 }
 
 void SchedulerHelper::OnBeginNestedRunLoop() {
+  ++nested_runloop_depth_;
   if (observer_)
     observer_->OnBeginNestedRunLoop();
 }
 
 void SchedulerHelper::OnExitNestedRunLoop() {
+  --nested_runloop_depth_;
+  DCHECK_GE(nested_runloop_depth_, 0);
   if (observer_)
     observer_->OnExitNestedRunLoop();
 }

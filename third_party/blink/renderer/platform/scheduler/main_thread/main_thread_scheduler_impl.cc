@@ -462,10 +462,6 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
 
 MainThreadSchedulerImpl::MainThreadOnly::~MainThreadOnly() = default;
 
-bool MainThreadSchedulerImpl::MainThreadOnly::IsInNestedRunloop() {
-  return nested_runloop_depth != 0;
-}
-
 MainThreadSchedulerImpl::AnyThread::AnyThread(
     MainThreadSchedulerImpl* main_thread_scheduler_impl)
     : awaiting_touch_start_response(
@@ -1889,7 +1885,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
   switch (main_thread_only().virtual_time_policy) {
     case VirtualTimePolicy::kAdvance:
       virtual_time_domain_->SetMaxVirtualTimeTaskStarvationCount(
-          main_thread_only().IsInNestedRunloop()
+          helper_.IsInNestedRunloop()
               ? 0
               : main_thread_only().max_virtual_time_task_starvation_count);
       virtual_time_domain_->SetVirtualTimeFence(base::TimeTicks());
@@ -1902,7 +1898,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
       break;
     case VirtualTimePolicy::kDeterministicLoading:
       virtual_time_domain_->SetMaxVirtualTimeTaskStarvationCount(
-          main_thread_only().IsInNestedRunloop()
+          helper_.IsInNestedRunloop()
               ? 0
               : main_thread_only().max_virtual_time_task_starvation_count);
 
@@ -1911,7 +1907,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
       // system. We also pause while the renderer is waiting for various
       // asynchronous things e.g. resource load or navigation.
       SetVirtualTimeStopped(main_thread_only().virtual_time_pause_count != 0 ||
-                            main_thread_only().IsInNestedRunloop());
+                            helper_.IsInNestedRunloop());
       break;
   }
 }
@@ -2390,6 +2386,18 @@ WebThreadScheduler* MainThreadSchedulerImpl::GetWebMainThreadScheduler() {
   return this;
 }
 
+void MainThreadSchedulerImpl::OnBeginNestedRunLoop() {
+  DCHECK(!main_thread_only().running_queues.empty());
+  if (IsVirtualTimeEnabled())
+    ApplyVirtualTimePolicy();
+}
+
+void MainThreadSchedulerImpl::OnExitNestedRunLoop() {
+  DCHECK(!main_thread_only().running_queues.empty());
+  if (IsVirtualTimeEnabled())
+    ApplyVirtualTimePolicy();
+}
+
 const base::TickClock* MainThreadSchedulerImpl::GetTickClock() const {
   return helper_.GetClock();
 }
@@ -2475,7 +2483,7 @@ void MainThreadSchedulerImpl::OnTaskStarted(
   }
 
   main_thread_only().running_queues.push(queue);
-  if (main_thread_only().IsInNestedRunloop())
+  if (helper_.IsInNestedRunloop())
     return;
 
   main_thread_only().current_task_start_time = task_timing.start_time();
@@ -2513,7 +2521,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   if (scheduling_settings().mbi_override_task_runner_handle)
     EndAgentGroupSchedulerScope();
 
-  if (main_thread_only().IsInNestedRunloop())
+  if (helper_.IsInNestedRunloop())
     return;
 
   DispatchOnTaskCompletionCallbacks();
@@ -2653,20 +2661,6 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputePriority(
       NOTREACHED();
       return TaskQueue::QueuePriority::kNormalPriority;
   }
-}
-
-void MainThreadSchedulerImpl::OnBeginNestedRunLoop() {
-  DCHECK(!main_thread_only().running_queues.empty());
-  main_thread_only().nested_runloop_depth++;
-  if (IsVirtualTimeEnabled())
-    ApplyVirtualTimePolicy();
-}
-
-void MainThreadSchedulerImpl::OnExitNestedRunLoop() {
-  DCHECK(!main_thread_only().running_queues.empty());
-  main_thread_only().nested_runloop_depth--;
-  if (IsVirtualTimeEnabled())
-    ApplyVirtualTimePolicy();
 }
 
 void MainThreadSchedulerImpl::AddTaskTimeObserver(

@@ -116,6 +116,10 @@ class PLATFORM_EXPORT SchedulerHelper
   bool ShouldRecordTaskUkm(bool task_has_thread_time) {
     return ukm_task_sampler_.ShouldRecordTaskUkm(task_has_thread_time);
   }
+  bool IsInNestedRunloop() const {
+    CheckOnValidThread();
+    return nested_runloop_depth_ > 0;
+  }
 
   // Test helpers.
   void SetWorkBatchSizeForTesting(int work_batch_size);
@@ -138,6 +142,8 @@ class PLATFORM_EXPORT SchedulerHelper
 
   UkmTaskSampler ukm_task_sampler_;
   absl::optional<base::SimpleTaskExecutor> simple_task_executor_;
+  // Depth of nested_runloop.
+  int nested_runloop_depth_ = 0;
 };
 
 }  // namespace scheduler

@@ -82,7 +82,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerImpl,
       public VirtualTimeController,
       public IdleHelper::Delegate,
-      public MainThreadSchedulerHelper::Observer,
+      public SchedulerHelper::Observer,
       public RenderWidgetSignals::Observer,
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
@@ -258,10 +258,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void SetAllRenderWidgetsHidden(bool hidden) override;
   void SetHasVisibleRenderWidgetWithTouchHandler(
       bool has_visible_render_widget_with_touch_handler) override;
-
-  // SchedulerHelper::Observer implementation:
-  void OnBeginNestedRunLoop() override;
-  void OnExitNestedRunLoop() override;
 
   // ThreadSchedulerImpl implementation:
   scoped_refptr<SingleThreadIdleTaskRunner> IdleTaskRunner() override;
@@ -465,6 +461,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // WebThreadScheduler private implementation:
   WebThreadScheduler* GetWebMainThreadScheduler() override;
+
+  // SchedulerHelper::Observer implementation:
+  void OnBeginNestedRunLoop() override;
+  void OnExitNestedRunLoop() override;
 
   static const char* TimeDomainTypeToString(TimeDomainType domain_type);
 
@@ -888,9 +888,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::stack<scoped_refptr<MainThreadTaskQueue>,
                std::vector<scoped_refptr<MainThreadTaskQueue>>>
         running_queues;
-
-    // Depth of nested_runloop.
-    int nested_runloop_depth = 0;
 
     // High-priority for compositing events after input. This will cause
     // compositing events get a higher priority until the start of the next

@@ -897,10 +897,10 @@ TEST_F(PageSchedulerImplTest, NestedMessageLoop_DETERMINISTIC_LOADING) {
   const base::TimeTicks start = scheduler_->NowTicks();
   scheduler_->OnTaskStarted(nullptr, fake_task,
                             FakeTaskTiming(start, base::TimeTicks()));
-  scheduler_->OnBeginNestedRunLoop();
+  scheduler_->GetSchedulerHelperForTesting()->OnBeginNestedRunLoop();
   EXPECT_FALSE(scheduler_->VirtualTimeAllowedToAdvance());
 
-  scheduler_->OnExitNestedRunLoop();
+  scheduler_->GetSchedulerHelperForTesting()->OnExitNestedRunLoop();
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
   FakeTaskTiming task_timing(start, scheduler_->NowTicks());
   scheduler_->OnTaskCompleted(nullptr, fake_task, &task_timing, nullptr);
@@ -1044,7 +1044,7 @@ TEST_F(PageSchedulerImplTest,
   const base::TimeTicks start = scheduler_->NowTicks();
   scheduler_->OnTaskStarted(nullptr, fake_task,
                             FakeTaskTiming(start, base::TimeTicks()));
-  scheduler_->OnBeginNestedRunLoop();
+  scheduler_->GetSchedulerHelperForTesting()->OnBeginNestedRunLoop();
 
   int count = 0;
   int delayed_task_run_at_count = 0;
