@@ -212,10 +212,14 @@ int64_t SegmentationUkmHelper::FloatToInt64(float f) {
 bool SegmentationUkmHelper::AllowedToUploadData(
     base::TimeDelta signal_storage_length,
     base::Clock* clock) {
-  return LocalStateHelper::GetInstance().GetPrefTime(
-             kSegmentationUkmMostRecentAllowedTimeKey) +
-             signal_storage_length <
-         clock->Now();
+  base::Time most_recent_allowed = LocalStateHelper::GetInstance().GetPrefTime(
+      kSegmentationUkmMostRecentAllowedTimeKey);
+  // If the local state is never set, return false.
+  if (most_recent_allowed.is_null() ||
+      most_recent_allowed == base::Time::Max()) {
+    return false;
+  }
+  return most_recent_allowed + signal_storage_length < clock->Now();
 }
 
 }  // namespace segmentation_platform
