@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
@@ -157,7 +158,7 @@ class BASE_EXPORT ThreadCacheRegistry {
 
   // Not using base::Lock as the object's constructor must be constexpr.
   internal::Lock lock_;
-  ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
+  ThreadCache* list_head_ PA_GUARDED_BY(GetLock()) = nullptr;
   bool periodic_purge_is_initialized_ = false;
   internal::base::TimeDelta periodic_purge_next_interval_ =
       kDefaultPurgeInterval;
@@ -330,11 +331,11 @@ class BASE_EXPORT ThreadCache {
       ThreadCacheLimits::kLargeSizeThreshold;
 
   const ThreadCache* prev_for_testing() const
-      EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
+      PA_EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
     return prev_;
   }
   const ThreadCache* next_for_testing() const
-      EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
+      PA_EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
     return next_;
   }
 
@@ -425,8 +426,8 @@ class BASE_EXPORT ThreadCache {
 
   // Intrusive list since ThreadCacheRegistry::RegisterThreadCache() cannot
   // allocate.
-  ThreadCache* next_ GUARDED_BY(ThreadCacheRegistry::GetLock());
-  ThreadCache* prev_ GUARDED_BY(ThreadCacheRegistry::GetLock());
+  ThreadCache* next_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
+  ThreadCache* prev_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;

@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -40,7 +41,7 @@ namespace {
 template <bool thread_safe>
 [[noreturn]] NOINLINE void PartitionOutOfMemoryMappingFailure(
     PartitionRoot<thread_safe>* root,
-    size_t size) LOCKS_EXCLUDED(root->lock_) {
+    size_t size) PA_LOCKS_EXCLUDED(root->lock_) {
   PA_NO_CODE_FOLDING();
   root->OutOfMemory(size);
   PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
@@ -49,7 +50,7 @@ template <bool thread_safe>
 template <bool thread_safe>
 [[noreturn]] NOINLINE void PartitionOutOfMemoryCommitFailure(
     PartitionRoot<thread_safe>* root,
-    size_t size) LOCKS_EXCLUDED(root->lock_) {
+    size_t size) PA_LOCKS_EXCLUDED(root->lock_) {
   PA_NO_CODE_FOLDING();
   root->OutOfMemory(size);
   PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.

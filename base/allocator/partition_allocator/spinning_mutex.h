@@ -9,12 +9,12 @@
 #include <atomic>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/yield_processor.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -65,18 +65,18 @@ namespace partition_alloc::internal {
 // any awareness of other threads' behavior. One exception: x86 macOS uses
 // os_unfair_lock() if available, which is the case for macOS >= 10.12, that is
 // most clients.
-class LOCKABLE BASE_EXPORT SpinningMutex {
+class PA_LOCKABLE BASE_EXPORT SpinningMutex {
  public:
   inline constexpr SpinningMutex();
-  ALWAYS_INLINE void Acquire() EXCLUSIVE_LOCK_FUNCTION();
-  ALWAYS_INLINE void Release() UNLOCK_FUNCTION();
-  ALWAYS_INLINE bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true);
+  ALWAYS_INLINE void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION();
+  ALWAYS_INLINE void Release() PA_UNLOCK_FUNCTION();
+  ALWAYS_INLINE bool Try() PA_EXCLUSIVE_TRYLOCK_FUNCTION(true);
   void AssertAcquired() const {}  // Not supported.
-  void Reinit() UNLOCK_FUNCTION();
+  void Reinit() PA_UNLOCK_FUNCTION();
 
  private:
-  NOINLINE void AcquireSpinThenBlock() EXCLUSIVE_LOCK_FUNCTION();
-  void LockSlow() EXCLUSIVE_LOCK_FUNCTION();
+  NOINLINE void AcquireSpinThenBlock() PA_EXCLUSIVE_LOCK_FUNCTION();
+  void LockSlow() PA_EXCLUSIVE_LOCK_FUNCTION();
 
   // See below, the latency of PA_YIELD_PROCESSOR can be as high as ~150
   // cycles. Meanwhile, sleeping costs a few us. Spinning 64 times at 3GHz would

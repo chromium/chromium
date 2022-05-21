@@ -10,6 +10,7 @@
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
@@ -42,8 +43,8 @@ internal::Lock& GetReserveLock() {
 std::atomic<size_t> g_total_mapped_address_space;
 
 // We only support a single block of reserved address space.
-uintptr_t s_reservation_address GUARDED_BY(GetReserveLock()) = 0;
-size_t s_reservation_size GUARDED_BY(GetReserveLock()) = 0;
+uintptr_t s_reservation_address PA_GUARDED_BY(GetReserveLock()) = 0;
+size_t s_reservation_size PA_GUARDED_BY(GetReserveLock()) = 0;
 
 uintptr_t AllocPagesIncludingReserved(
     uintptr_t address,

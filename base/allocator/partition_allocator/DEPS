@@ -15,7 +15,6 @@ include_rules = [
     "+base/mac/mac_util.h",
     "+base/mac/scoped_cftyperef.h",
     "+base/process/memory.h",
-    "+base/thread_annotations.h",
     "+base/win/windows_types.h",
     "+build/build_config.h",
     "+build/buildflag.h",

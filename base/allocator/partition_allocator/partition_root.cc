@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -80,7 +81,7 @@ class PartitionRootEnumerator {
 
   void Enumerate(EnumerateCallback callback,
                  bool in_child,
-                 EnumerateOrder order) NO_THREAD_SAFETY_ANALYSIS {
+                 EnumerateOrder order) PA_NO_THREAD_SAFETY_ANALYSIS {
     if (order == kNormal) {
       ThreadSafePartitionRoot* root;
       for (root = Head(partition_roots_); root != nullptr;
@@ -131,7 +132,7 @@ class PartitionRootEnumerator {
   }
 
   ThreadSafePartitionRoot* Tail(ThreadSafePartitionRoot* roots)
-      NO_THREAD_SAFETY_ANALYSIS {
+      PA_NO_THREAD_SAFETY_ANALYSIS {
     if (!roots)
       return nullptr;
     ThreadSafePartitionRoot* node = roots;
@@ -141,7 +142,7 @@ class PartitionRootEnumerator {
   }
 
   ThreadSafePartitionRoot* partition_roots_
-      GUARDED_BY(ThreadSafePartitionRoot::GetEnumeratorLock()) = nullptr;
+      PA_GUARDED_BY(ThreadSafePartitionRoot::GetEnumeratorLock()) = nullptr;
 };
 
 }  // namespace internal
@@ -155,14 +156,14 @@ namespace {
 #if defined(PA_HAS_ATFORK_HANDLER)
 
 void LockRoot(PartitionRoot<internal::ThreadSafe>* root,
-              bool) NO_THREAD_SAFETY_ANALYSIS {
+              bool) PA_NO_THREAD_SAFETY_ANALYSIS {
   PA_DCHECK(root);
   root->lock_.Acquire();
 }
 
-// NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
+// PA_NO_THREAD_SAFETY_ANALYSIS: acquires the lock and doesn't release it, by
 // design.
-void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
+void BeforeForkInParent() PA_NO_THREAD_SAFETY_ANALYSIS {
   // ThreadSafePartitionRoot::GetLock() is private. So use
   // g_root_enumerator_lock here.
   g_root_enumerator_lock.Acquire();
@@ -174,7 +175,7 @@ void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
 }
 
 template <typename T>
-void UnlockOrReinit(T& lock, bool in_child) NO_THREAD_SAFETY_ANALYSIS {
+void UnlockOrReinit(T& lock, bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
   // Only re-init the locks in the child process, in the parent can unlock
   // normally.
   if (in_child)
@@ -184,11 +185,11 @@ void UnlockOrReinit(T& lock, bool in_child) NO_THREAD_SAFETY_ANALYSIS {
 }
 
 void UnlockOrReinitRoot(PartitionRoot<internal::ThreadSafe>* root,
-                        bool in_child) NO_THREAD_SAFETY_ANALYSIS {
+                        bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
   UnlockOrReinit(root->lock_, in_child);
 }
 
-void ReleaseLocks(bool in_child) NO_THREAD_SAFETY_ANALYSIS {
+void ReleaseLocks(bool in_child) PA_NO_THREAD_SAFETY_ANALYSIS {
   // In reverse order, even though there are no lock ordering dependencies.
   UnlockOrReinit(ThreadCacheRegistry::GetLock(), in_child);
   internal::PartitionRootEnumerator::Instance().Enumerate(

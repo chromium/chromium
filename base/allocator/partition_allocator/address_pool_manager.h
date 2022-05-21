@@ -12,13 +12,13 @@
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -137,13 +137,13 @@ class BASE_EXPORT AddressPoolManager {
 
     // The bitset stores the allocation state of the address pool. 1 bit per
     // super-page: 1 = allocated, 0 = free.
-    std::bitset<kMaxSuperPagesInPool> alloc_bitset_ GUARDED_BY(lock_);
+    std::bitset<kMaxSuperPagesInPool> alloc_bitset_ PA_GUARDED_BY(lock_);
 
     // An index of a bit in the bitset before which we know for sure there all
     // 1s. This is a best-effort hint in the sense that there still may be lots
     // of 1s after this index, but at least we know there is no point in
     // starting the search before it.
-    size_t bit_hint_ GUARDED_BY(lock_) = 0;
+    size_t bit_hint_ PA_GUARDED_BY(lock_) = 0;
 
     size_t total_bits_ = 0;
     uintptr_t address_begin_ = 0;

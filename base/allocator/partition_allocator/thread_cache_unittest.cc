@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
@@ -661,7 +662,7 @@ class ThreadDelegateForPurgeAll
         bucket_index_(bucket_index),
         with_denser_bucket_distribution_(with_denser_bucket_distribution) {}
 
-  void ThreadMain() override NO_THREAD_SAFETY_ANALYSIS {
+  void ThreadMain() override PA_NO_THREAD_SAFETY_ANALYSIS {
     FillThreadCacheAndReturnIndex(root_, kSmallSize,
                                   with_denser_bucket_distribution_);
     other_thread_tcache_ = root_->thread_cache_for_testing();
@@ -695,7 +696,7 @@ class ThreadDelegateForPurgeAll
 }  // namespace
 
 TEST_P(PartitionAllocThreadCacheTest, MAYBE_PurgeAll)
-NO_THREAD_SAFETY_ANALYSIS {
+PA_NO_THREAD_SAFETY_ANALYSIS {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> purge_called{false};
 

@@ -43,6 +43,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -294,8 +295,8 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   std::atomic<size_t> max_size_of_committed_pages{0};
   std::atomic<size_t> total_size_of_super_pages{0};
   std::atomic<size_t> total_size_of_direct_mapped_pages{0};
-  size_t total_size_of_allocated_bytes GUARDED_BY(lock_) = 0;
-  size_t max_size_of_allocated_bytes GUARDED_BY(lock_) = 0;
+  size_t total_size_of_allocated_bytes PA_GUARDED_BY(lock_) = 0;
+  size_t max_size_of_allocated_bytes PA_GUARDED_BY(lock_) = 0;
   // Atomic, because system calls can be made without the lock held.
   std::atomic<uint64_t> syscall_count{};
   std::atomic<uint64_t> syscall_total_time_ns{};
@@ -308,7 +309,7 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   // either been used for a memory allocation, and/or contains freelist
   // entries. But it might have been moved to swap. Note that all this memory
   // can be decommitted at any time.
-  size_t empty_slot_spans_dirty_bytes GUARDED_BY(lock_) = 0;
+  size_t empty_slot_spans_dirty_bytes PA_GUARDED_BY(lock_) = 0;
 
   // Only tolerate up to |total_size_of_committed_pages >>
   // max_empty_slot_spans_dirty_bytes_shift| dirty bytes in empty slot
@@ -323,11 +324,12 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   uintptr_t next_partition_page_end = 0;
   SuperPageExtentEntry* current_extent = nullptr;
   SuperPageExtentEntry* first_extent = nullptr;
-  DirectMapExtent* direct_map_list GUARDED_BY(lock_) = nullptr;
-  SlotSpan* global_empty_slot_span_ring[internal::kMaxFreeableSpans] GUARDED_BY(
-      lock_) = {};
-  int16_t global_empty_slot_span_ring_index GUARDED_BY(lock_) = 0;
-  int16_t global_empty_slot_span_ring_size GUARDED_BY(lock_) =
+  DirectMapExtent* direct_map_list PA_GUARDED_BY(lock_) = nullptr;
+  SlotSpan*
+      global_empty_slot_span_ring[internal::kMaxFreeableSpans] PA_GUARDED_BY(
+          lock_) = {};
+  int16_t global_empty_slot_span_ring_index PA_GUARDED_BY(lock_) = 0;
+  int16_t global_empty_slot_span_ring_size PA_GUARDED_BY(lock_) =
       internal::kDefaultEmptySlotSpanRingSize;
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
@@ -380,34 +382,34 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
       uintptr_t address);
 
   ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void IncreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span,
                                                        size_t raw_size)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
                                                        size_t len)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void IncreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
                                                        size_t len,
                                                        size_t raw_size)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecommitSystemPagesForData(
       uintptr_t address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void RecommitSystemPagesForData(
       uintptr_t address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE bool TryRecommitSystemPagesForData(
       uintptr_t address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
-      LOCKS_EXCLUDED(lock_);
+      PA_LOCKS_EXCLUDED(lock_);
 
   [[noreturn]] NOINLINE void OutOfMemory(size_t size);
 
@@ -493,7 +495,8 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
 
   // Reduces the size of the empty slot spans ring, until the dirty size is <=
   // |limit|.
-  void ShrinkEmptySlotSpansRing(size_t limit) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ShrinkEmptySlotSpansRing(size_t limit)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   // The empty slot span ring starts "small", can be enlarged later. This
   // improves performance by performing fewer system calls, at the cost of more
   // memory usage.
@@ -513,17 +516,17 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
                                     bool with_denser_bucket_distribution);
 
   ALWAYS_INLINE void FreeInSlotSpan(uintptr_t slot_start, SlotSpan* slot_span)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Frees memory, with |slot_start| as returned by |RawAlloc()|.
   ALWAYS_INLINE void RawFree(uintptr_t slot_start);
   ALWAYS_INLINE void RawFree(uintptr_t slot_start, SlotSpan* slot_span)
-      LOCKS_EXCLUDED(lock_);
+      PA_LOCKS_EXCLUDED(lock_);
 
   ALWAYS_INLINE void RawFreeBatch(FreeListEntry* head,
                                   FreeListEntry* tail,
                                   size_t size,
-                                  SlotSpan* slot_span) LOCKS_EXCLUDED(lock_);
+                                  SlotSpan* slot_span) PA_LOCKS_EXCLUDED(lock_);
 
   ALWAYS_INLINE void RawFreeWithThreadCache(uintptr_t slot_start,
                                             SlotSpan* slot_span);
@@ -556,13 +559,13 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
   size_t get_total_size_of_allocated_bytes() const {
     // Since this is only used for bookkeeping, we don't care if the value is
     // stale, so no need to get a lock here.
-    return TS_UNCHECKED_READ(total_size_of_allocated_bytes);
+    return PA_TS_UNCHECKED_READ(total_size_of_allocated_bytes);
   }
 
   size_t get_max_size_of_allocated_bytes() const {
     // Since this is only used for bookkeeping, we don't care if the value is
     // stale, so no need to get a lock here.
-    return TS_UNCHECKED_READ(max_size_of_allocated_bytes);
+    return PA_TS_UNCHECKED_READ(max_size_of_allocated_bytes);
   }
 
   internal::pool_handle ChoosePool() const {
@@ -805,25 +808,25 @@ struct ALIGNAS(64) BASE_EXPORT PartitionRoot {
                                           size_t slot_span_alignment,
                                           size_t* usable_size,
                                           bool* is_already_zeroed)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   bool TryReallocInPlaceForNormalBuckets(void* ptr,
                                          SlotSpan* slot_span,
                                          size_t new_size);
   bool TryReallocInPlaceForDirectMap(
       internal::SlotSpanMetadata<thread_safe>* slot_span,
-      size_t requested_size) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void DecommitEmptySlotSpans() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      size_t requested_size) PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void DecommitEmptySlotSpans() PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void RawFreeLocked(uintptr_t slot_start)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   uintptr_t MaybeInitThreadCacheAndAlloc(uint16_t bucket_index,
                                          size_t* slot_size);
 
 #if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
   static internal::Lock& GetEnumeratorLock();
 
-  PartitionRoot* GUARDED_BY(GetEnumeratorLock()) next_root = nullptr;
-  PartitionRoot* GUARDED_BY(GetEnumeratorLock()) prev_root = nullptr;
+  PartitionRoot* PA_GUARDED_BY(GetEnumeratorLock()) next_root = nullptr;
+  PartitionRoot* PA_GUARDED_BY(GetEnumeratorLock()) prev_root = nullptr;
 
   friend class internal::PartitionRootEnumerator;
 #endif  // defined(PA_USE_PARTITION_ROOT_ENUMERATOR)

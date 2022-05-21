@@ -27,6 +27,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/rand_util.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -4371,16 +4372,16 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
     root.Free(ptr);
 
   // Still have some committed empty slot spans.
-  // TS_UNCHECKED_READ() is not an issue here, since everything is
+  // PA_TS_UNCHECKED_READ() is not an issue here, since everything is
   // single-threaded.
-  EXPECT_GT(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
+  EXPECT_GT(PA_TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
   // But not all, as the cap triggered.
-  EXPECT_LT(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+  EXPECT_LT(PA_TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
             single_slot_count * single_slot_size);
 
   // Nothing left after explicit purge.
   root.PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
-  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes), 0u);
 
   for (void* ptr : allocated_memory)
     root.Free(ptr);
@@ -4415,7 +4416,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   single_slot_allocated_memory.clear();
 
   // Some of the free()-s above overflowed the slot span ring.
-  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
             kDefaultEmptySlotSpanRingSize * bucket_size);
 
   // Now can cache more slot spans.
@@ -4432,7 +4433,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   single_slot_allocated_memory.clear();
 
   // No overflow this time.
-  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
             single_slot_large_count * bucket_size);
 
   constexpr size_t single_slot_too_many_count = kMaxFreeableSpans + 10;
@@ -4446,7 +4447,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   single_slot_allocated_memory.clear();
 
   // Overflow still works.
-  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+  EXPECT_EQ(PA_TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
             kMaxFreeableSpans * bucket_size);
 }
 

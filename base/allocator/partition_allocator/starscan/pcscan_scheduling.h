@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
@@ -128,8 +129,8 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   const ScheduleDelayedScanFunc schedule_delayed_scan_;
 
   Lock scheduler_lock_;
-  size_t hard_limit_ GUARDED_BY(scheduler_lock_){0};
-  base::TimeTicks earliest_next_scan_time_ GUARDED_BY(scheduler_lock_);
+  size_t hard_limit_ PA_GUARDED_BY(scheduler_lock_){0};
+  base::TimeTicks earliest_next_scan_time_ PA_GUARDED_BY(scheduler_lock_);
 
   friend class PartitionAllocPCScanMUAwareTaskBasedBackendTest;
 };

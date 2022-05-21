@@ -86,7 +86,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // It is safe to read |regular_pool_bits_| without a lock since the caller
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(
+    return PA_TS_UNCHECKED_READ(
         regular_pool_bits_)[address >> kBitShiftOfRegularPoolBitmap];
   }
 
@@ -99,7 +99,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // It is safe to read |brp_pool_bits_| without a lock since the caller
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(
+    return PA_TS_UNCHECKED_READ(
         brp_pool_bits_)[address >> kBitShiftOfBRPPoolBitmap];
   }
 
@@ -134,8 +134,9 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
   static Lock& GetLock();
 
-  static std::bitset<kRegularPoolBits> regular_pool_bits_ GUARDED_BY(GetLock());
-  static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());
+  static std::bitset<kRegularPoolBits> regular_pool_bits_
+      PA_GUARDED_BY(GetLock());
+  static std::bitset<kBRPPoolBits> brp_pool_bits_ PA_GUARDED_BY(GetLock());
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   static std::array<std::atomic_bool, kAddressSpaceSize / kSuperPageSize>
       brp_forbidden_super_page_map_;

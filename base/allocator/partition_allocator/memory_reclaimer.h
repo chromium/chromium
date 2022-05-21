@@ -9,11 +9,11 @@
 #include <set>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
-#include "base/thread_annotations.h"
 
 namespace partition_alloc {
 
@@ -63,7 +63,7 @@ class BASE_EXPORT MemoryReclaimer {
   void ResetForTesting();
 
   internal::Lock lock_;
-  std::set<PartitionRoot<>*> partitions_ GUARDED_BY(lock_);
+  std::set<PartitionRoot<>*> partitions_ PA_GUARDED_BY(lock_);
 
   friend class internal::base::NoDestructor<MemoryReclaimer>;
   friend class MemoryReclaimerTest;

@@ -8,12 +8,12 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/thread_annotations.h"
 
 namespace partition_alloc::internal {
 
@@ -76,7 +76,7 @@ struct PartitionBucket {
                                                size_t raw_size,
                                                size_t slot_span_alignment,
                                                bool* is_already_zeroed)
-      EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   ALWAYS_INLINE bool CanStoreRawSize() const {
     // For direct-map as well as single-slot slot spans (recognized by checking
@@ -164,14 +164,14 @@ struct PartitionBucket {
   ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
       PartitionRoot<thread_safe>* root,
       unsigned int flags,
-      size_t slot_span_alignment) EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+      size_t slot_span_alignment) PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Allocates a new super page from the current extent, if possible. All
   // slot-spans will be in the decommitted state. Returns the address of the
   // super page's payload, or 0 on error.
   ALWAYS_INLINE uintptr_t AllocNewSuperPage(PartitionRoot<thread_safe>* root,
                                             unsigned int flags)
-      EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Each bucket allocates a slot span when it runs out of slots.
   // A slot span's size is equal to get_pages_per_slot_span() number of
@@ -194,7 +194,7 @@ struct PartitionBucket {
   ALWAYS_INLINE uintptr_t
   ProvisionMoreSlotsAndAllocOne(PartitionRoot<thread_safe>* root,
                                 SlotSpanMetadata<thread_safe>* slot_span)
-      EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 };
 
 }  // namespace partition_alloc::internal

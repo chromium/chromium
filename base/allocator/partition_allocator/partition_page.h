@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
@@ -27,7 +28,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -704,7 +704,7 @@ SlotSpanMetadata<thread_safe>::PopForAlloc(size_t size) {
 
 template <bool thread_safe>
 ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Free(uintptr_t slot_start)
-    EXCLUSIVE_LOCKS_REQUIRED(
+    PA_EXCLUSIVE_LOCKS_REQUIRED(
         PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
@@ -738,7 +738,7 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
     PartitionFreelistEntry* head,
     PartitionFreelistEntry* tail,
     size_t number_of_freed)
-    EXCLUSIVE_LOCKS_REQUIRED(
+    PA_EXCLUSIVE_LOCKS_REQUIRED(
         PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);

@@ -3659,6 +3659,7 @@ test("base_unittests") {
       "allocator/partition_allocator/partition_alloc_base/rand_util_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/sys_byteorder_pa_unittest.cc",
+      "allocator/partition_allocator/partition_alloc_base/thread_annotations_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_unittest.cc",
       "allocator/partition_allocator/partition_lock_unittest.cc",
       "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
@@ -3878,6 +3879,7 @@ action("build_date") {
 if (enable_nocompile_tests) {
   nocompile_test("base_nocompile_tests") {
     sources = [
+      "allocator/partition_allocator/partition_alloc_base/thread_annotations_pa_unittest.nc",
       "bind_unittest.nc",
       "callback_list_unittest.nc",
       "callback_unittest.nc",
