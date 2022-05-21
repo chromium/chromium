@@ -231,9 +231,9 @@ void RegexRulesMatcher::InitializeMatcher() {
                        });
                      }));
 
-  // Convert |strings_to_match| to StringPatterns. This is necessary to use
-  // url_matcher::SubstringSetMatcher.
-  std::vector<base::StringPattern> patterns;
+  // Convert |strings_to_match| to MatcherStringPatterns. This is necessary to
+  // use url_matcher::SubstringSetMatcher.
+  std::vector<base::MatcherStringPattern> patterns;
   patterns.reserve(strings_to_match.size());
 
   for (size_t i = 0; i < strings_to_match.size(); ++i)

@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using base::StringPattern;
+using base::MatcherStringPattern;
 
 namespace url_matcher {
 
@@ -22,7 +22,7 @@ namespace url_matcher {
 //
 
 TEST(URLMatcherConditionTest, Constructors) {
-  StringPattern pattern("example.com", 1);
+  MatcherStringPattern pattern("example.com", 1);
   URLMatcherCondition m1(URLMatcherCondition::HOST_SUFFIX, &pattern);
   EXPECT_EQ(URLMatcherCondition::HOST_SUFFIX, m1.criterion());
   EXPECT_EQ(&pattern, m1.string_pattern());
@@ -68,7 +68,7 @@ TEST(URLMatcherPortFilter, TestMatching) {
 }
 
 TEST(URLMatcherConditionTest, IsFullURLCondition) {
-  StringPattern pattern("example.com", 1);
+  MatcherStringPattern pattern("example.com", 1);
   EXPECT_FALSE(URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, &pattern)
                    .IsFullURLCondition());
 
@@ -93,10 +93,10 @@ TEST(URLMatcherConditionTest, IsMatch) {
   GURL url1("http://www.example.com/www.foobar.com/index.html");
   GURL url2("http://www.foobar.com/example.com/index.html");
 
-  StringPattern pattern("example.com", 1);
+  MatcherStringPattern pattern("example.com", 1);
   URLMatcherCondition m1(URLMatcherCondition::HOST_SUFFIX, &pattern);
 
-  std::set<StringPattern::ID> matching_patterns;
+  std::set<MatcherStringPattern::ID> matching_patterns;
 
   // matches = {0} --> matcher did not indicate that m1 was a match.
   matching_patterns.insert(0);
@@ -115,8 +115,8 @@ TEST(URLMatcherConditionTest, IsMatch) {
 }
 
 TEST(URLMatcherConditionTest, Comparison) {
-  StringPattern p1("foobar.com", 1);
-  StringPattern p2("foobar.com", 2);
+  MatcherStringPattern p1("foobar.com", 1);
+  MatcherStringPattern p2("foobar.com", 2);
   // The first component of each test is expected to be < than the second.
   URLMatcherCondition test_smaller[][2] = {
       {URLMatcherCondition(URLMatcherCondition::HOST_PREFIX, &p1),
@@ -233,11 +233,11 @@ TEST(URLMatcherConditionFactoryTest, TestSingletonProperty) {
   EXPECT_NE(c5.string_pattern(), c4.string_pattern());
   EXPECT_NE(c5.string_pattern()->id(), c4.string_pattern()->id());
 
-  // Check that all StringPattern singletons are freed if we call
+  // Check that all MatcherStringPattern singletons are freed if we call
   // ForgetUnusedPatterns.
-  StringPattern::ID old_id_1 = c1.string_pattern()->id();
-  StringPattern::ID old_id_4 = c4.string_pattern()->id();
-  factory.ForgetUnusedPatterns(std::set<StringPattern::ID>());
+  MatcherStringPattern::ID old_id_1 = c1.string_pattern()->id();
+  MatcherStringPattern::ID old_id_4 = c4.string_pattern()->id();
+  factory.ForgetUnusedPatterns(std::set<MatcherStringPattern::ID>());
   EXPECT_TRUE(factory.IsEmpty());
   URLMatcherCondition c6 = factory.CreateHostEqualsCondition("www.google.com");
   EXPECT_NE(old_id_1, c6.string_pattern()->id());
@@ -489,7 +489,7 @@ TEST(URLMatcherConditionSetTest, Matching) {
   EXPECT_EQ(1, condition_set->id());
   EXPECT_EQ(2u, condition_set->conditions().size());
 
-  std::set<StringPattern::ID> matching_patterns;
+  std::set<MatcherStringPattern::ID> matching_patterns;
   matching_patterns.insert(m1.string_pattern()->id());
   EXPECT_FALSE(condition_set->IsMatch(matching_patterns, url1));
 

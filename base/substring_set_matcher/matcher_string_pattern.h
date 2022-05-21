@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_SUBSTRING_SET_MATCHER_STRING_PATTERN_H_
-#define BASE_SUBSTRING_SET_MATCHER_STRING_PATTERN_H_
+#ifndef BASE_SUBSTRING_SET_MATCHER_MATCHER_STRING_PATTERN_H_
+#define BASE_SUBSTRING_SET_MATCHER_MATCHER_STRING_PATTERN_H_
 
 #include <string>
 
@@ -18,25 +18,25 @@ namespace base {
 // RegexMatcher::MatchURL() to help the caller to figure out what
 // patterns matched a string. All patterns registered to a matcher
 // need to contain unique IDs.
-class BASE_EXPORT StringPattern {
+class BASE_EXPORT MatcherStringPattern {
  public:
   typedef int ID;
 
   // An invalid ID value. Clients must not use this as the id.
   static constexpr ID kInvalidId = -1;
 
-  StringPattern(std::string pattern, ID id);
+  MatcherStringPattern(std::string pattern, ID id);
 
-  StringPattern(const StringPattern&) = delete;
-  StringPattern& operator=(const StringPattern&) = delete;
+  MatcherStringPattern(const MatcherStringPattern&) = delete;
+  MatcherStringPattern& operator=(const MatcherStringPattern&) = delete;
 
-  ~StringPattern();
-  StringPattern(StringPattern&&);
-  StringPattern& operator=(StringPattern&&);
+  ~MatcherStringPattern();
+  MatcherStringPattern(MatcherStringPattern&&);
+  MatcherStringPattern& operator=(MatcherStringPattern&&);
   const std::string& pattern() const { return pattern_; }
   ID id() const { return id_; }
 
-  bool operator<(const StringPattern& rhs) const;
+  bool operator<(const MatcherStringPattern& rhs) const;
 
  private:
   std::string pattern_;
@@ -45,4 +45,4 @@ class BASE_EXPORT StringPattern {
 
 }  // namespace base
 
-#endif  // BASE_SUBSTRING_SET_MATCHER_STRING_PATTERN_H_
+#endif  // BASE_SUBSTRING_SET_MATCHER_MATCHER_STRING_PATTERN_H_

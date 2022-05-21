@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
-using base::StringPattern;
+using base::MatcherStringPattern;
 using base::SubstringSetMatcher;
 
 namespace blink {
@@ -695,7 +695,7 @@ void RuleSet::CreateSubstringMatchers(
     if (ruleset->size() < GetMinimumRulesetSizeForSubstringMatcher()) {
       continue;
     }
-    std::vector<StringPattern> patterns;
+    std::vector<MatcherStringPattern> patterns;
     int rule_index = 0;
     for (const Member<const RuleData>& rule : *ruleset) {
       AtomicString id;
@@ -724,7 +724,7 @@ void RuleSet::CreateSubstringMatchers(
       // use the tree for true/false information anyway, we can remove them.
       bool already_exists =
           any_of(patterns.begin(), patterns.end(),
-                 [&pattern](const StringPattern& existing_pattern) {
+                 [&pattern](const MatcherStringPattern& existing_pattern) {
                    return existing_pattern.pattern() == pattern;
                  });
       if (!already_exists) {

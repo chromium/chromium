@@ -24,17 +24,18 @@ namespace base {
 
 namespace {
 
-// Compare StringPattern instances based on their string patterns.
-bool ComparePatterns(const StringPattern* a, const StringPattern* b) {
+// Compare MatcherStringPattern instances based on their string patterns.
+bool ComparePatterns(const MatcherStringPattern* a,
+                     const MatcherStringPattern* b) {
   return a->pattern() < b->pattern();
 }
 
-std::vector<const StringPattern*> GetVectorOfPointers(
-    const std::vector<StringPattern>& patterns) {
-  std::vector<const StringPattern*> pattern_pointers;
+std::vector<const MatcherStringPattern*> GetVectorOfPointers(
+    const std::vector<MatcherStringPattern>& patterns) {
+  std::vector<const MatcherStringPattern*> pattern_pointers;
   pattern_pointers.reserve(patterns.size());
 
-  for (const StringPattern& pattern : patterns)
+  for (const MatcherStringPattern& pattern : patterns)
     pattern_pointers.push_back(&pattern);
 
   return pattern_pointers;
@@ -42,17 +43,19 @@ std::vector<const StringPattern*> GetVectorOfPointers(
 
 }  // namespace
 
-bool SubstringSetMatcher::Build(const std::vector<StringPattern>& patterns) {
+bool SubstringSetMatcher::Build(
+    const std::vector<MatcherStringPattern>& patterns) {
   return Build(GetVectorOfPointers(patterns));
 }
 
-bool SubstringSetMatcher::Build(std::vector<const StringPattern*> patterns) {
+bool SubstringSetMatcher::Build(
+    std::vector<const MatcherStringPattern*> patterns) {
   // Ensure there are no duplicate IDs and all pattern strings are distinct.
 #if DCHECK_IS_ON()
   {
-    std::set<StringPattern::ID> ids;
+    std::set<MatcherStringPattern::ID> ids;
     std::set<std::string> pattern_strings;
-    for (const StringPattern* pattern : patterns) {
+    for (const MatcherStringPattern* pattern : patterns) {
       CHECK(!base::Contains(ids, pattern->id()));
       CHECK(!base::Contains(pattern_strings, pattern->pattern()));
       ids.insert(pattern->id());
@@ -62,7 +65,7 @@ bool SubstringSetMatcher::Build(std::vector<const StringPattern*> patterns) {
 #endif
 
   // Check that all the match labels fit into an edge.
-  for (const StringPattern* pattern : patterns) {
+  for (const MatcherStringPattern* pattern : patterns) {
     if (pattern->id() < 0 ||
         base::checked_cast<NodeID>(pattern->id()) >= kInvalidNodeID) {
       return false;
@@ -88,8 +91,9 @@ bool SubstringSetMatcher::Build(std::vector<const StringPattern*> patterns) {
 
 SubstringSetMatcher::~SubstringSetMatcher() = default;
 
-bool SubstringSetMatcher::Match(const std::string& text,
-                                std::set<StringPattern::ID>* matches) const {
+bool SubstringSetMatcher::Match(
+    const std::string& text,
+    std::set<MatcherStringPattern::ID>* matches) const {
   const size_t old_number_of_matches = matches->size();
 
   // Handle patterns matching the empty string.
@@ -168,7 +172,7 @@ constexpr SubstringSetMatcher::NodeID SubstringSetMatcher::kInvalidNodeID;
 constexpr SubstringSetMatcher::NodeID SubstringSetMatcher::kRootID;
 
 SubstringSetMatcher::NodeID SubstringSetMatcher::GetTreeSize(
-    const std::vector<const StringPattern*>& patterns) const {
+    const std::vector<const MatcherStringPattern*>& patterns) const {
   DCHECK(std::is_sorted(patterns.begin(), patterns.end(), ComparePatterns));
 
   base::CheckedNumeric<NodeID> result = 1u;  // 1 for the root node.
@@ -209,14 +213,14 @@ void SubstringSetMatcher::BuildAhoCorasickTree(
   tree_.emplace_back();
 
   // Build the initial trie for all the patterns.
-  for (const StringPattern* pattern : patterns)
+  for (const MatcherStringPattern* pattern : patterns)
     InsertPatternIntoAhoCorasickTree(pattern);
 
   CreateFailureAndOutputEdges();
 }
 
 void SubstringSetMatcher::InsertPatternIntoAhoCorasickTree(
-    const StringPattern* pattern) {
+    const MatcherStringPattern* pattern) {
   const std::string& text = pattern->pattern();
   const std::string::const_iterator text_end = text.end();
 
@@ -319,7 +323,7 @@ void SubstringSetMatcher::CreateFailureAndOutputEdges() {
 
 void SubstringSetMatcher::AccumulateMatchesForNode(
     const AhoCorasickNode* node,
-    std::set<StringPattern::ID>* matches) const {
+    std::set<MatcherStringPattern::ID>* matches) const {
   DCHECK(matches);
 
   if (!node->has_outputs()) {
