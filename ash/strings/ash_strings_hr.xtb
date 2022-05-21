@@ -65,6 +65,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1275285675049378717">Napaja <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Lociranje telefona</translation>
+<translation id="1287002645302686982">Već postoji spremljena radna površina pod nazivom <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Vrati se u <ph name="COME_BACK_DAY_OF_WEEK" /> u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1290982764014248209">Premjesti aplikaciju <ph name="DRAGGED_APP" /> u mapu <ph name="FOLDER_NAME" />.</translation>
@@ -269,6 +270,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2586561057878260610">Pritisnite Ctrl + W u kombinaciji s radnom površinom <ph name="DESK_NAME" />. Pritisnite Ctrl + Shift + W da biste zatvorili radnu površinu i prozore.</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
 <translation id="2596078834055697711">Snimanje snimke zaslona prozora</translation>
+<translation id="2598725286293895280">Nepodržane aplikacije na radnoj površini</translation>
 <translation id="2607678425161541573">Potrebna je online prijava</translation>
 <translation id="2620016719323068571">Pretražujte svoje <ph name="CATEGORY" />, datoteke, aplikacije i ostalo...</translation>
 <translation id="2620436844016719705">Sustav</translation>
@@ -644,6 +646,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4735498845456076464">Promijenjen je tipkovni prečac <ph name="LAUNCHER_KEY_NAME" /> + broj. Da biste upotrijebili tipke funkcija, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + tipku u gornjem redu.</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
+<translation id="4740516757091333363">Želite li izbrisati spremljenu radnu površinu?</translation>
 <translation id="4752784485658729358">Dopušteno je samo 6 spremljenih radnih površina. Uklonite jednu radnu površinu da biste spremili novu.</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
 <translation id="4774338217796918551">Vrati se sutra u <ph name="COME_BACK_TIME" />.</translation>
@@ -741,6 +744,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5356963482258194581">Prebacite se na tamnu ili svijetlu temu. Desnim klikom kliknite radnu površinu i odaberite stavku Pozadine i stilovi.</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
+<translation id="5391307769715781764">Želite li zamijeniti spremljenu radnu površinu?</translation>
 <translation id="5393156353051693207">Dodirnite i držite bilo gdje da biste promijenili redoslijed svojih aplikacija</translation>
 <translation id="5395308026110844773">Aplikacija <ph name="DRAGGED_APP_NAME" /> povučena je iznad aplikacije <ph name="IN_PLACE_APP" />. Pustite je da biste izradili mapu.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) može pregledavati upotrebu i povijest tog korisnika na web-lokaciji chrome.com.</translation>
@@ -974,6 +978,7 @@ Novo instaliranje</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6801878137098616817">Nedavno uređivano</translation>
 <translation id="6803622936009808957">Nije bilo moguće zrcaliti zaslone jer nije pronađena nijedna podržana razlučivost. Umjesto toga proširena je radna površina.</translation>
+<translation id="6812232930908427253">Spremanje radne površine nije uspjelo. Previše prozora ili kartica.</translation>
 <translation id="6818242057446442178">Riječ unatrag</translation>
 <translation id="6819327813400217281">Kamera je poravnata s donjim lijevim kutom</translation>
 <translation id="6820676911989879663">Odmorite se!</translation>

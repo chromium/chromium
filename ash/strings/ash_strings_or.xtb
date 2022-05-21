@@ -65,6 +65,7 @@
 <translation id="1275285675049378717">ଚାଲୁ କରୁଛି <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ଫୋନର ଅବସ୍ଥାନ ନିରୂପଣ କରନ୍ତୁ</translation>
+<translation id="1287002645302686982">ପୂର୍ବରୁ <ph name="DESK_TEMPLATE_NAME" /> ନାମରେ ସେଭ କରାଯାଇଥିବା ଏକ ଡେସ୍କ ଅଛି</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" />ବେଳେ ପୁଣି ଆସନ୍ତୁ।</translation>
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />କୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡର୍‍କୁ ନେଇଯାଆନ୍ତୁ।</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> ସହ ଏକତ୍ରିତ କରିବାକୁ Ctrl + W ଦବାନ୍ତୁ। ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ପାଇଁ Ctrl + Shift + W ଦବାନ୍ତୁ।</translation>
 <translation id="2595239820337756193">5K ମାଇଲରେ</translation>
 <translation id="2596078834055697711">ୱିଣ୍ଡୋ ସ୍କ୍ରିନ୍‌ସଟ୍ ନିଅନ୍ତୁ</translation>
+<translation id="2598725286293895280">ଡେସ୍କରେ ଅସମର୍ଥିତ ଆପ୍ସ ଅଛି</translation>
 <translation id="2607678425161541573">ଅନଲାଇନ୍ ସାଇନ୍ ଇନ୍ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="2620016719323068571">ଆପଣଙ୍କ <ph name="CATEGORY" />, ଫାଇଲ, ଆପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସନ୍ଧାନ କରନ୍ତୁ...</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। ଫଙ୍କସନ୍ କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ଶୀର୍ଷ ଧାଡ଼ିରେ ଥିବା ଏକ କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
+<translation id="4740516757091333363">ସେଭ ହୋଇଥିବା ଡେସ୍କକୁ ଡିଲିଟ କରିବେ?</translation>
 <translation id="4752784485658729358">କେବଳ 6ଟି ସେଭ କରାଯାଇଥିବା ଡେସ୍କକୁ ଅନୁମତି ଦିଆଯାଇଛି। ଏକ ନୂଆ ଡେସ୍କ ସେଭ କରିବା ପାଇଁ ଗୋଟିଏ ଡେସ୍କ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
 <translation id="4774338217796918551">ଆସନ୍ତାକାଲି <ph name="COME_BACK_TIME" />ରେ ପୁଣି ଆସନ୍ତୁ।</translation>
@@ -741,6 +744,7 @@
 <translation id="5352250171825660495">ଗାଢ଼ ଥିମ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="5356963482258194581">ଗାଢ଼ା ଏବଂ ହାଲୁକା ଥିମ ମଧ୍ୟରେ ସ୍ୱିଚ କରନ୍ତୁ। ଡେସ୍କଟପରେ ଡାହାଣ-କ୍ଲିକ କରି ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="5379115545237091094">ଅତ୍ୟଧିକ ପ୍ରଚେଷ୍ଟା</translation>
+<translation id="5391307769715781764">ସେଭ ହୋଇଥିବା ଡେସ୍କକୁ ପରିବର୍ତ୍ତନ କରିବେ?</translation>
 <translation id="5393156353051693207">ଆପଣଙ୍କ ଆପଗୁଡ଼ିକୁ ପୁଣି କ୍ରମରେ ରଖିବା ପାଇଁ ଯେ କୌଣସି ସ୍ଥାନରେ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ର ଶୀର୍ଷରେ <ph name="DRAGGED_APP_NAME" />କୁ, ଫୋଲ୍ଡର୍ ତିଆରି କରିବା ପାଇଁ ରିଲିଜ୍ କରନ୍ତୁ।</translation>
 <translation id="5397578532367286026">chrome.com ରେ ପରିଚାଳକ (<ph name="MANAGER_EMAIL" />) ଙ୍କ ଦ୍ଵାରା ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ବ୍ୟବହାର ପ୍ରଣାଳୀ ଓ ଇତିବୃତ୍ତିର ସମୀକ୍ଷା କରାଯାଇପାରିବ।</translation>
@@ -973,6 +977,7 @@
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6801878137098616817">ବର୍ତ୍ତମାନ ଏଡିଟ କରାଯାଇଛି</translation>
 <translation id="6803622936009808957">ଏକାପରି ଡିସ୍‌ପ୍ଲେ କରାଯାଇପାରିଲା ନାହିଁ କାରଣ ସମର୍ଥିତ ରିଜୋଲ୍ୟୁଶନ୍ ମିଳିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ବିସ୍ତାରିତ ଡେସ୍କଟପ୍‍ ଲେଖାଯାଇଛି।</translation>
+<translation id="6812232930908427253">ଡେସ୍କକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଅନେକଗୁଡ଼ିଏ ୱିଣ୍ଡୋ କିମ୍ବା ଟାବ।</translation>
 <translation id="6818242057446442178">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6819327813400217281">କ୍ୟାମେରାକୁ ନିମ୍ନ ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>

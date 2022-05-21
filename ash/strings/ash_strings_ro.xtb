@@ -65,6 +65,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1275285675049378717">Se încarcă <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Găsește telefonul</translation>
+<translation id="1287002645302686982">Există deja un desktop salvat denumit <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Revino <ph name="COME_BACK_DAY_OF_WEEK" /> la <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Semnal slab</translation>
 <translation id="1290982764014248209">Mută <ph name="DRAGGED_APP" /> în dosarul <ph name="FOLDER_NAME" />.</translation>
@@ -196,6 +197,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2079504693865562705">Ascunde aplicațiile din raft</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2083190527011054446">Bună seara, <ph name="GIVEN_NAME" />!</translation>
+<translation id="2088116547584365419">jocuri</translation>
 <translation id="209965399369889474">Fără conexiune la rețea</translation>
 <translation id="2107914222138020205">Cablul USB-C nu acceptă Thunderbolt. Este posibil ca performanța dispozitivului să fie limitată.</translation>
 <translation id="2108303511227308752">Comanda rapidă de la tastatură Alt + Backspace s-a schimbat. Pentru a folosi tasta Delete, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
@@ -268,6 +270,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2586561057878260610">Apasă Ctrl + W ca să combini cu <ph name="DESK_NAME" />. Apasă Ctrl + Shift + W ca să închizi desktopul și ferestrele.</translation>
 <translation id="2595239820337756193">5 km în mile</translation>
 <translation id="2596078834055697711">Realizează o captură de ecran a ferestrei</translation>
+<translation id="2598725286293895280">Aplicații neacceptate pe desktop</translation>
 <translation id="2607678425161541573">Este necesară conectarea online</translation>
 <translation id="2620016719323068571">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele…</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -643,6 +646,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4734965478015604180">Orizontal</translation>
 <translation id="4735498845456076464">Comanda rapidă de la tastatură <ph name="LAUNCHER_KEY_NAME" /> + număr s-a schimbat. Pentru a folosi tastele pentru funcții, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + o tastă de pe rândul de sus.</translation>
 <translation id="473775607612524610">Actualizează</translation>
+<translation id="4740516757091333363">Ștergi desktopul salvat?</translation>
 <translation id="4752784485658729358">Sunt permise numai șase desktopuri salvate. Elimină un desktop pentru a salva altul nou.</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4774338217796918551">Revino mâine la <ph name="COME_BACK_TIME" />.</translation>
@@ -740,6 +744,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5352250171825660495">Tema întunecată este activată</translation>
 <translation id="5356963482258194581">Comută între tema luminoasă și cea întunecată Dă clic dreapta pe desktop și selectează Stil și imagine de fundal.</translation>
 <translation id="5379115545237091094">Prea multe încercări</translation>
+<translation id="5391307769715781764">Înlocuiești desktopul salvat?</translation>
 <translation id="5393156353051693207">Atinge lung oriunde ca să-ți reordonezi aplicațiile</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> deasupra <ph name="IN_PLACE_APP" />, eliberează pentru a crea un dosar.</translation>
 <translation id="5397578532367286026">Datele privind utilizarea și istoricul ale acestui utilizator pot fi examinate de administrator (<ph name="MANAGER_EMAIL" />) pe chrome.com.</translation>
@@ -973,6 +978,7 @@ Instalare nouă</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6801878137098616817">Editat recent</translation>
 <translation id="6803622936009808957">Afișajele nu au putut fi oglindite, deoarece nu au fost găsite rezoluții acceptate. Ați intrat, în schimb, în modul monitor extins.</translation>
+<translation id="6812232930908427253">Nu s-a putut salva desktopul. Prea multe ferestre sau file.</translation>
 <translation id="6818242057446442178">Înapoi cu un cuvânt</translation>
 <translation id="6819327813400217281">Camera foto este aliniată cu colțul din stânga jos</translation>
 <translation id="6820676911989879663">Fă o pauză!</translation>

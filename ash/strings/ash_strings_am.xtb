@@ -62,6 +62,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />ን በማጎላበት ላይ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ስልኩን ያግኙ</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> ተብሎ የተሰየመ የተቀመጠ ዴስክ አስቀድሞ አለ</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" /> ላይ ተመልሰው ይምጡ።</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ን ወደ አቃፊ <ph name="FOLDER_NAME" /> ይውሰዱ።</translation>
@@ -266,6 +267,7 @@
 <translation id="2586561057878260610">ከ<ph name="DESK_NAME" /> ጋር ለማዋሃድ Ctrl + Wን ይጫኑ። ዴስክን እና መስኮቶችን ለመዝጋት Ctrl + Shift + Wን ይጫኑ።</translation>
 <translation id="2595239820337756193">5 ሺሕ በማይሎች</translation>
 <translation id="2596078834055697711">የመስኮት ቅጽበታዊ ገጽ እይታን ያንሱ</translation>
+<translation id="2598725286293895280">በዴስክ ውስጥ የማይደገፉ መተግበሪያዎች</translation>
 <translation id="2607678425161541573">በመስመር ላይ መግባት ያስፈልጋል</translation>
 <translation id="2620016719323068571">የእርስዎን <ph name="CATEGORY" />፣ ፋይሎች፣ መተግበሪያዎች እና ሌሎችን ይፈልጉ...</translation>
 <translation id="2620436844016719705">ስርዓት</translation>
@@ -641,6 +643,7 @@
 <translation id="4734965478015604180">አግድማዊ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + የቁጥር የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የተግባር ቁልፎችን ለመጠቀም በላይኛው ረድፍ ላይ የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + አንድ ቁልፍ ይጫኑ።</translation>
 <translation id="473775607612524610">አዘምን</translation>
+<translation id="4740516757091333363">የተቀመጠ ዴስክ ይሰረዝ?</translation>
 <translation id="4752784485658729358">የተፈቀደው 6 የተቀመጡ ዴስኮች ብቻ ነው። አዲሱን ለማስቀመጥ አንድ ዴስክ ያስወግዱ።</translation>
 <translation id="4759238208242260848">የወረዱ</translation>
 <translation id="4774338217796918551">ነገ <ph name="COME_BACK_TIME" /> ላይ ተመልሰው ይምጡ።</translation>
@@ -738,6 +741,7 @@
 <translation id="5352250171825660495">ጠቆር ያለ ገጽታ በርቷል</translation>
 <translation id="5356963482258194581">ጠቆር ያለ እና ነጣ ያለ ገጽታ ይቀያይሩ። በዴስክቶፕ ላይ የቀኝ ጠቅታ ያድርጉ ከዚያም ልጣፍ እና ቅጥን ይምረጡ።</translation>
 <translation id="5379115545237091094">በጣም ብዙ ሙከራዎች</translation>
+<translation id="5391307769715781764">የተቀመጠ ዴስክ ይተካ?</translation>
 <translation id="5393156353051693207">መተግበሪያዎችዎን እንደገና ለመደርደር የትኛውም ቦታ ላይ ይንኩ እና ይያዙ</translation>
 <translation id="5395308026110844773">በ<ph name="IN_PLACE_APP" /> ላይ <ph name="DRAGGED_APP_NAME" />፣ አቃፊ ለመፍጠር ይልቀቁት።</translation>
 <translation id="5397578532367286026">የዚህ ተጠቃሚ አጠቃቀም እና ታሪክ በchrome.com ላይ በአስተዳዳሪ (<ph name="MANAGER_EMAIL" />) ሊገመገም ይችላል።</translation>
@@ -971,6 +975,7 @@
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6801878137098616817">በቅርቡ አርትዖት የተደረገበት</translation>
 <translation id="6803622936009808957">ምንም የሚደገፉ ጥራቶች ስላልተገኙ ማሳያዎችን ማሳየት አልተቻለም። ይልቁንስ ወደ የተስፋፋ ዴስክቶፕ ሁነታ ተገብቷል።</translation>
+<translation id="6812232930908427253">ዴስክን ማስቀመጥ አልተቻለም። በጣም ብዙ መስኮቶች ወይም ትሮች።</translation>
 <translation id="6818242057446442178">በቃል ይመለሱ</translation>
 <translation id="6819327813400217281">ካሜራ ታችኛው ግራ ጥግ ላይ ገጥሟል</translation>
 <translation id="6820676911989879663">እረፍት ይውሰዱ!</translation>

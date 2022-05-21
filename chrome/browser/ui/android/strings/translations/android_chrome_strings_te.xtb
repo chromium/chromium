@@ -523,6 +523,7 @@
 <translation id="3845098929839618392">అజ్ఞాత ట్యాబ్‌లో తెరువు</translation>
 <translation id="3856096718352044181">దయచేసి ఇది చెల్లుబాటు అయ్యే ప్రొవైడర్ అని వెరిఫై చేయండి లేదా తర్వాత మళ్లీ ట్రై చేయండి</translation>
 <translation id="3858860766373142691">పేరు</translation>
+<translation id="3859206958100234503">మీ పరికరాలన్నిటిలో మీ పాస్‌వర్డ్‌లు, బుక్‌మార్క్‌లు ఇంకా మరిన్నింటిని పొందడానికి సింక్ చేయండి.</translation>
 <translation id="3861633093716975811">జనాదరణ పొందిన వీడియోలు</translation>
 <translation id="3892148308691398805">టెక్స్ట్‌ను కాపీ చేయి</translation>
 <translation id="3894427358181296146">ఫోల్డర్‌ను జోడించండి</translation>
@@ -697,6 +698,7 @@
 <translation id="4842515939542199281">మీ వాయిస్‌తో సెర్చ్ చేయడానికి, మైక్రోఫోన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="4844633725025837809">అదనపు భద్రత కోసం, పాస్‌వర్డ్‌లు Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ కావడానికి ముందు, వాటిని మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
+<translation id="4852014461738377247">సైన్ ఇన్ అవుతోంది\u2026</translation>
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
 <translation id="4864369630010738180">సైన్ ఇన్ అవుతోంది...</translation>
 <translation id="4866368707455379617">Chromeలో <ph name="MODULE" />ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</translation>
@@ -1150,6 +1152,7 @@
 <translation id="7304873321153398381">ఆఫ్‌లైన్‌లో ఉన్నారు. Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు.</translation>
 <translation id="7313188324932846546">సింక్‌ను సెటప్ చేయడానికి ట్యాప్ చేయండి</translation>
 <translation id="7332075081379534664">సైన్ ఇన్ విజయవంతమైంది</translation>
+<translation id="7333232495927792353">Google నుండి అత్యంత సందర్భోచితంగా ఉండే కంటెంట్‌ను పొందడానికి సింక్ చేయండి</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="7340958967809483333">Discover కోసం ఆప్షన్‌లు</translation>
 <translation id="7352339641508007922">పొడవైన స్క్రీన్‌షాట్‌ను తీయడానికి లాగండి</translation>
@@ -1530,6 +1533,7 @@
 <translation id="96681097142096641">సరళంగా తయారయిన పేజీని చూపించాలా?</translation>
 <translation id="968900484120156207">మీరు సందర్శించే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
+<translation id="978443947993957527">మీ కోసం అనుకూలీకరించిన కంటెంట్‌ను చూడండి</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="987264212798334818">సాధారణం</translation>

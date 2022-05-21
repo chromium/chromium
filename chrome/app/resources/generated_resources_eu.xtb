@@ -1792,7 +1792,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2687407218262674387">Google-ren Zerbitzu-baldintzak</translation>
 <translation id="2687621393791886981">Galdetu geroago</translation>
 <translation id="2688196195245426394">Errore bat gertatu da gailua zerbitzariarekin erregistratzean: <ph name="CLIENT_ERROR" />.</translation>
-<translation id="2688734475209947648">Ez duzu pasahitza gogoratu beharko. <ph name="ACCOUNT" /> kontuko Google-ren Pasahitz-kudeatzailea aplikazioan gordeko da.</translation>
+<translation id="2688734475209947648">Ez duzu pasahitza gogoratu beharko. <ph name="ACCOUNT" /> kontuko Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="2690024944919328218">Erakutsi hizkuntza-aukerak</translation>
 <translation id="2691385045260836588">Modeloa</translation>
 <translation id="2691440343905273290">Aldatu idazketa-metodoaren ezarpenak</translation>
@@ -3964,7 +3964,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4841741146571978176">Beharrezkoa den makina birtual bat ez dago. Aurrera egiteko, konfiguratu <ph name="VM_TYPE" />.</translation>
 <translation id="4842976633412754305">Orria autentifikatu gabeko iturburuetako scriptak kargatu nahian dabil.</translation>
 <translation id="4844333629810439236">Bestelako teklatuak</translation>
-<translation id="4844633725025837809">Seguruagoa izan dadin, enkriptatu pasahitzak gailuan bertan Google-ren Pasahitz-kudeatzailea atalean gorde aurretik</translation>
+<translation id="4844633725025837809">Seguruagoa izan dadin, enkriptatu pasahitzak gailuan bertan Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik</translation>
 <translation id="4846628405149428620">Hautatu non gorde ditzakeen aldaketak webguneak</translation>
 <translation id="4846680374085650406">Administratzailearen gomendioa betetzen ari zara ezarpenari dagokionez.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> hautatuta daukazula, sakatu Sartu <ph name="TOPIC_SOURCE" /> zerbitzuko albumak hautatzeko</translation>
@@ -4286,7 +4286,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="5177549709747445269">Mugikorreko datuak erabiltzen ari zara</translation>
 <translation id="5178667623289523808">Bilatu aurrekoa</translation>
 <translation id="5181140330217080051">Deskargatzen</translation>
-<translation id="5181172023548002891">Google-ren Pasahitz-kudeatzailea atalean (<ph name="ACCOUNT" /> kontuan)</translation>
+<translation id="5181172023548002891">Google-ren Pasahitz-kudeatzailea zerbitzuan (<ph name="ACCOUNT" /> kontuan)</translation>
 <translation id="5184063094292164363">&amp;JavaScript kontsola</translation>
 <translation id="5184209580557088469">Bada erabiltzaile-izen hori duen zerbitzu-eskaera bat</translation>
 <translation id="5184662919967270437">Gailua eguneratzen</translation>
@@ -5624,7 +5624,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6520876759015997832"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> bilaketa-emaitza: "<ph name="SEARCH_RESULT_TEXT" />". Atal horretara joateko, sakatu Sartu.</translation>
 <translation id="6521214596282732365">Webguneek zure letrak erabil ohi dituzte goi-fidelitateko edukia sortzeko sareko tresna grafikoak eta diseinuzkoak erabilita.</translation>
 <translation id="6523303810310758032">Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketari buruzko informazio erlazionatua ere ezabatuko duzu. Ikusi <ph name="BEGIN_LINK" />arakatze-historia<ph name="END_LINK" />.</translation>
-<translation id="6523574494641144162">Google-ren Pasahitz-kudeatzailea aplikazioak ezin izan ditu gorde aplikazioak Google-ko kontuan, baina gailuan gorde ditzakezu.</translation>
+<translation id="6523574494641144162">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu gorde aplikazioak Google-ko kontuan, baina gailuan gorde ditzakezu.</translation>
 <translation id="6524735478670290456">Nola erabiltzen ditugu datu horiek?</translation>
 <translation id="652492607360843641">Sare <ph name="NETWORK_TYPE" /> batera zaude konektatuta.</translation>
 <translation id="6527303717912515753">Partekatu</translation>
@@ -5703,9 +5703,9 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6595187330192059106">Blokeatu beti <ph name="HOST" /> ostalariari MIDI gailuak erabat kontrolatzeko aukera.</translation>
 <translation id="6595408197871512625">{COUNT,plural, =1{Aldatu da arriskuan zegoen pasahitza.
 
-Arriskuan dagoen # pasahitz gehiago daukazu. Google-ren Pasahitz-kudeatzailea aplikazioak pasahitz hori orain aldatzea gomendatzen du.}other{Aldatu da arriskuan zegoen pasahitza.
+Arriskuan dagoen # pasahitz gehiago daukazu. Google-ren Pasahitz-kudeatzailea zerbitzuak pasahitz hori orain aldatzea gomendatzen du.}other{Aldatu da arriskuan zegoen pasahitza.
 
-Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea aplikazioak pasahitz horiek orain aldatzea gomendatzen du.}}</translation>
+Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea zerbitzuak pasahitz horiek orain aldatzea gomendatzen du.}}</translation>
 <translation id="6595792813574514527">Arrastatu irudiak <ph name="VISUAL_SEARCH_PROVIDER" /> bidez bilatzeko</translation>
 <translation id="6596325263575161958">Enkriptatze aukerak</translation>
 <translation id="6596816719288285829">IP helbidea</translation>
@@ -6769,7 +6769,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7665082356120621510">Gorde tamaina</translation>
 <translation id="7665369617277396874">Gehitu kontu bat</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Itzuli <ph name="DEVICE_TYPE" /> gailua {NUM_WEEKS} asteko epean}other{Itzuli <ph name="DEVICE_TYPE" /> gailua {NUM_WEEKS} asteko epean}}</translation>
-<translation id="7668423670802040666">Google-ren Pasahitz-kudeatzailea atalean (<ph name="ACCOUNT" /> kontuan)</translation>
+<translation id="7668423670802040666">Google-ren Pasahitz-kudeatzailea zerbitzuan (<ph name="ACCOUNT" /> kontuan)</translation>
 <translation id="7669825497510425694">{NUM_ATTEMPTS,plural, =1{PINa okerra da. Saiakera bakarra geratzen zaizu.}other{PINa okerra da. # saiakera geratzen zaizkizu.}}</translation>
 <translation id="7670434942695515800">Errendimendurik onena lortzeko, berritu azken bertsiora. Fitxategien babeskopiak egitea gomendatzen dugu. Horrela, ez da daturik galduko bertsio-berritzea osatu ezin bada. Bertsio-berritzen hasi ondoren, Linux itzali egingo da. Aurrera egin aurretik, gorde irekita dauden fitxategiak. <ph name="LINK_START" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="7671130400130574146">Erabili sistemaren izenaren barra eta ertzak</translation>
@@ -7164,7 +7164,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8041267120753677077">Igorri zuzenean telefonoko aplikazioak</translation>
 <translation id="8042142357103597104">Testuaren opakutasuna</translation>
-<translation id="8042331986490021244">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea atalean gorde aurretik</translation>
+<translation id="8042331986490021244">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> aplikazioak ez du erantzuten.</translation>
 <translation id="8044899503464538266">Motela</translation>
 <translation id="8045253504249021590">Sinkronizazioa gelditu egin da Google-ren Panela atalean.</translation>

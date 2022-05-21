@@ -55,6 +55,7 @@
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> को 1 हफ़्ते में अपडेट करें}one{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्तों में अपडेट करें}}</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
+<translation id="105822690353767994">यह मैसेज आपको दोबारा न दिखे इसके लिए, इस साइट पर एक्सटेंशन को हमेशा इस्तेमाल करने की अनुमति दें.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{नया पिन डालें. पिन में कम से कम 1 वर्ण होना ज़रूरी है और इसमें अक्षर, अंक, और दूसरे वर्ण डाले जा सकते हैं.}one{नया पिन डालें. पिन में कम से कम # वर्ण होना ज़रूरी है और इसमें अक्षर, अंक, और दूसरे वर्ण डाले जा सकते हैं.}other{नया पिन डालें. पिन में कम से कम # वर्ण होने ज़रूरी हैं और इसमें अक्षर, अंक, और दूसरे वर्ण डाले जा सकते हैं.}}</translation>
 <translation id="1059484610606223931">हाइपरटेक्स्ट ट्रांसपोर्ट प्रोटोकॉल (एचटीटीपीएस)</translation>
@@ -868,6 +869,7 @@
     इससे दूसरे डिवाइस के ऐप्लिकेशन या सामग्री पर कोई असर नहीं पड़ता.</translation>
 <translation id="1809734401532861917">मेरे बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग को <ph name="USER_EMAIL_ADDRESS" /> में जोड़ें</translation>
 <translation id="1810366086647840386">इमेज का सर्वर</translation>
+<translation id="1811908311154949291">गुप्त मोड के लिए Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1813278315230285598">सेवाएं</translation>
 <translation id="18139523105317219">EDI पार्टी नाम</translation>
 <translation id="1815083418640426271">सादे टेक्‍स्‍ट के रूप में चिपकाएं</translation>
@@ -1687,6 +1689,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> से कनेक्‍ट करने में असमर्थ था. कृपया कोई अन्‍य नेटवर्क चुनें या फिर से प्रयास करें.</translation>
 <translation id="2553440850688409052">यह प्लग इन छुपाएं</translation>
 <translation id="2554553592469060349">चुनी गई फ़ाइल बहुत बड़ी है (अधिकतम आकार: 3mb).</translation>
+<translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">आपके ब्राउज़िंग इतिहास का इस बात पर असर पड़ता है कि आपको कौनसे विज्ञापन दिखेंगे</translation>
 <translation id="2558896001721082624">सिस्टम मेन्यू में सुलभता विकल्प हमेशा दिखाएं</translation>
 <translation id="2559889124253841528">डिवाइस में सेव करें</translation>
@@ -2248,6 +2251,7 @@
 <translation id="3101126716313987672">हल्की रोशनी</translation>
 <translation id="3101709781009526431">तारीख और समय</translation>
 <translation id="3103451787721578293">कृपया इस डेटा को अपलोड करने की वजह बताएं:</translation>
+<translation id="3105339775057145050">पिछला अपडेट, जो पूरा नहीं हो सका</translation>
 <translation id="3105796011181310544">इसे बदलकर फिर से Google करें?</translation>
 <translation id="310671807099593501">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="3108931485517391283">फ़ाइल नहीं मिल सकी</translation>
@@ -2550,6 +2554,7 @@
 <translation id="3433621910545056227">ओह!  सिस्टम डिवाइस इंस्टॉलेशन-समय विशेषता लॉक स्थापित नहीं कर पाया.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">अगर आपके बच्चे के लिए 'अन्य वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है. इन सेटिंग के बारे में ज़्यादा जानें. साथ ही, जानें कि families.google.com पर इन्हें कैसे नियंत्रित करें.</translation>
+<translation id="3434475275396485144">इस सेटिंग को आपके फ़ोन का एडमिन मैनेज करता है</translation>
 <translation id="3434512374684753970">ऑडियो और वीडियो</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" आपके <ph name="CODE_TYPE" /> का अनुरोध कर रहा है</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
@@ -3981,6 +3986,7 @@
 <translation id="4842976633412754305">यह पृष्‍ठ अप्रमाणीकृत स्रोतों से स्‍क्रिप्‍ट लोड करने का प्रयास कर रहा है.</translation>
 <translation id="4844333629810439236">अन्य कीबोर्ड</translation>
 <translation id="4844633725025837809">ज़्यादा सुरक्षा के लिए, Google पासवर्ड मैनेजर में पासवर्ड सेव होने से पहले, अपने डिवाइस पर पासवर्ड को एन्क्रिप्ट (सुरक्षित) करें</translation>
+<translation id="4846628405149428620">चुनें कि यह साइट बदलावों को कहां सेव करेगी</translation>
 <translation id="4846680374085650406">आप इस सेटिंग के लिए व्यवस्थापक की अनुशंसा का अनुसरण कर रहे हैं.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> चुनी गई, <ph name="TOPIC_SOURCE" /> एल्बम चुनने के लिए Enter दबाएं</translation>
 <translation id="4848191975108266266">Google Assistant चालू करके "Ok Google" बोलें</translation>
@@ -6385,6 +6391,7 @@
 <translation id="7264695323040866038">क्या इसके साथ काम करने वाले वेब लिंक खोलने के लिए, हमेशा <ph name="APP" /> ऐप्लिकेशन का इस्तेमाल करना है?</translation>
 <translation id="7267044199012331848">वर्चुअल मशीन को इंस्टॉल नहीं किया जा सका. कृपया फिर से कोशिश करें या अपने एडमिन से संपर्क करें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">अपने फ़िंगरप्रिंट के अलग-अलग हिस्सों को कैप्चर करने के लिए, अपनी उंगली को उठाते रहें</translation>
+<translation id="7267898843336437186">कोई ऐसा फ़ोल्डर चुनें जिसे यह साइट देख सके</translation>
 <translation id="7268127947535186412">डिवाइस के मालिक इस सेटिंग का प्रबंधन करते हैं.</translation>
 <translation id="7269736181983384521">आस-पास शेयर करने की सुविधा और डेटा खर्च</translation>
 <translation id="7272674038937250585">कोई विवरण नहीं दिया गया है</translation>
@@ -7985,6 +7992,7 @@
 <translation id="8838770651474809439">हैमबर्गर</translation>
 <translation id="8838778928843281408">फ़ोन मैनेज करें</translation>
 <translation id="8841843049738266382">अनुमित वाले उपयोगकर्ताओं की सूची को देखने और बदलाव करने का ऐक्सेस दें</translation>
+<translation id="8842059467121215385">"<ph name="EXTENSION_NAME" />" का इस्तेमाल करने के लिए, पेज को रीफ़्रेश करें</translation>
 <translation id="8842594465773264717">इस फ़िंगरप्रिंट को मिटाएं</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8846132060409673887">इस कंप्यूटर का निर्माता और मॉडल पढ़ें</translation>
@@ -8140,6 +8148,7 @@
 <translation id="899657321862108550">आपका Chrome, हर जगह</translation>
 <translation id="899676909165543803">आपके कीबोर्ड पर, सबसे नीचे दाईं ओर वाली कुंजी फ़िंगरप्रिंट का सेंसर है. किसी भी उंगली से इसे हल्के से छुएं.</translation>
 <translation id="8999560016882908256">सेक्शन सिंटैक्स गड़बड़ी: <ph name="ERROR_LINE" /></translation>
+<translation id="9003185744423389627"><ph name="FAILURE_TIME" /> पर '<ph name="STATUS_TEXT" />' की वजह से, डिवाइस मैनेजमेंट सर्वर से कनेक्ट नहीं किया जा सका</translation>
 <translation id="9003647077635673607">सभी वेबसाइटों पर अनुमति दें</translation>
 <translation id="9003677638446136377">फिर से जाँचें</translation>
 <translation id="9004754973617721124">क्या आप <ph name="SITE_NAME" /> के तहत आने वाली सभी साइटों, और इंस्टॉल किए गए ऐप्लिकेशन के लिए, साइट डेटा और अनुमतियां मिटाना चाहते हैं?</translation>

@@ -55,6 +55,7 @@
 <translation id="1054153489933238809">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਮੂਲ &amp;ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> ਨੂੰ 1 ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_WEEKS} ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_WEEKS} ਹਫ਼ਤਿਆਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="1056898198331236512">ਚਿਤਾਵਨੀ</translation>
+<translation id="105822690353767994">ਜੇ ਤੁਸੀਂ ਇਸ ਸੁਨੇਹੇ ਨੂੰ ਦੁਬਾਰਾ ਨਹੀਂ ਦੇਖਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਹਮੇਸ਼ਾਂ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਚੱਲਣ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{ਆਪਣਾ ਨਵਾਂ ਪਿੰਨ ਦਾਖਲ ਕਰੋ। ਪਿੰਨ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਅੱਖਰ, ਨੰਬਰ ਅਤੇ ਹੋਰ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਸ਼ਾਮਲ ਹੋ ਸਕਦੇ ਹਨ।}one{ਆਪਣਾ ਨਵਾਂ ਪਿੰਨ ਦਾਖਲ ਕਰੋ। ਪਿੰਨ ਘੱਟੋ-ਘੱਟ # ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਅੱਖਰ, ਨੰਬਰ ਅਤੇ ਹੋਰ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਸ਼ਾਮਲ ਹੋ ਸਕਦੇ ਹਨ।}other{ਆਪਣਾ ਨਵਾਂ ਪਿੰਨ ਦਾਖਲ ਕਰੋ। ਪਿੰਨ ਘੱਟੋ-ਘੱਟ # ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ ਅਤੇ ਇਸ ਵਿੱਚ ਅੱਖਰ, ਨੰਬਰ ਅਤੇ ਹੋਰ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਸ਼ਾਮਲ ਹੋ ਸਕਦੇ ਹਨ।}}</translation>
 <translation id="1059484610606223931">ਹਾਇਪਰਟੈਕਸਟ ਟਰਾਂਸਪੋਰਟ ਪ੍ਰੋਟੋਕੋਲ (HTTPS)</translation>
@@ -868,6 +869,7 @@
     ਇਹ ਹੋਰ ਡੀਵਾਈਸਾਂ ਦੀਆਂ ਐਪਾਂ ਜਾਂ ਸਮੱਗਰੀ 'ਤੇ ਅਸਰ ਨਹੀਂ ਪਾਉਂਦਾ।</translation>
 <translation id="1809734401532861917"><ph name="USER_EMAIL_ADDRESS" /> ਵਿੱਚ ਮੇਰੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1810366086647840386">ਇਮੇਜ ਸਰਵਰ</translation>
+<translation id="1811908311154949291">ਇਨਕੋਗਨਿਟੋ ਫੈਂਸਡ ਫ੍ਰੇਮ: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1813278315230285598">ਸੇਵਾਵਾਂ</translation>
 <translation id="18139523105317219">EDI ਪਾਰਟੀ ਨਾਮ</translation>
 <translation id="1815083418640426271">ਸਰਲ ਲਿਖਤ ਵਜੋਂ ਪੇਸਟ ਕਰੋ</translation>
@@ -1687,6 +1689,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੂਜਾ ਨੈੱਟਵਰਕ ਚੁਣੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2553440850688409052">ਇਹ ਪਲੱਗਇਨ ਲੁਕਾਓ</translation>
 <translation id="2554553592469060349">ਚੁਣੀ ਗਈ ਫਾਈਲ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ (ਅਧਿਕਤਮ ਆਕਾਰ: 3mb).</translation>
+<translation id="25568951186001797">ਫੈਂਸਡ ਫ੍ਰੇਮ: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਨੂੰ ਦਿਸਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰਦਾ ਹੈ</translation>
 <translation id="2558896001721082624">ਸਿਸਟਮ ਮੀਨੂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਪਹੁੰਚਯੋਗਤਾ ਵਿਕਲਪ ਦਿਖਾਓ</translation>
 <translation id="2559889124253841528">ਡੀਵਾਈਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -2248,6 +2251,7 @@
 <translation id="3101126716313987672">ਮੱਧਮ ਲਾਈਟ</translation>
 <translation id="3101709781009526431">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ</translation>
 <translation id="3103451787721578293">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਡਾਟੇ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਦਾ ਕਾਰਨ ਦਾਖਲ ਕਰੋ:</translation>
+<translation id="3105339775057145050">ਪਿਛਲਾ ਅਸਫਲ ਅੱਪਡੇਟ</translation>
 <translation id="3105796011181310544">ਕੀ Google 'ਤੇ ਵਾਪਸ ਜਾਣਾ ਹੈ?</translation>
 <translation id="310671807099593501">ਸਾਈਟ ਬਲੂਟੁੱਥ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="3108931485517391283">ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
@@ -2550,6 +2554,7 @@
 <translation id="3433621910545056227">ਓਹੋ! ਸਿਸਟਮ ਡੀਵਾਈਸ ਸਥਾਪਨਾ-ਸਮਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਾਕ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">ਜੇ ਤੁਹਾਡੇ ਬੱਚੇ ਲਈ ਵਧੀਕ 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਸੈਟਿੰਗ ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਇਹ ਡਾਟਾ ਉਹਨਾਂ ਦੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। families.google.com 'ਤੇ ਇਹਨਾਂ ਸੈਟਿੰਗਾਂ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
+<translation id="3434475275396485144">ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="3434512374684753970">ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" ਵੱਲੋਂ ਤੁਹਾਡੇ <ph name="CODE_TYPE" /> ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
@@ -6388,6 +6393,7 @@
 <translation id="7264695323040866038">ਕੀ ਹਮੇਸ਼ਾਂ ਸਮਰਥਿਤ ਵੈੱਬ ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ <ph name="APP" /> ਐਪ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="7267044199012331848">ਆਭਾਸੀ ਮਸ਼ੀਨ ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
 <translation id="7267875682732693301">ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੇ ਵੱਖ-ਵੱਖ ਭਾਗਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਆਪਣੀ ਉਂਗਲ ਨੂੰ ਰੱਖਣਾ-ਚੁੱਕਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="7267898843336437186">ਕੋਈ ਅਜਿਹਾ ਫੋਲਡਰ ਚੁਣੋ ਜੋ ਇਹ ਸਾਈਟ ਦੇਖ ਸਕੇ</translation>
 <translation id="7268127947535186412">ਇਸ ਸੈਟਿੰਗ ਦਾ ਪ੍ਰਬੰਧਨ ਡੀਵਾਈਸ ਦਾ ਮਾਲਕ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7269736181983384521">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਡਾਟਾ ਵਰਤੋਂ</translation>
 <translation id="7272674038937250585">ਕੋਈ ਵਰਣਨ ਮੁਹੱਈਆ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
@@ -7987,6 +7993,7 @@
 <translation id="8838770651474809439">ਹੈਮਬਰਗਰ</translation>
 <translation id="8838778928843281408">ਫ਼ੋਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8841843049738266382">ਪ੍ਰਵਾਨਗੀ ਲਈ ਸੂਚੀਬੱਧ ਵਰਤੋਂਕਾਰਾਂ ਬਾਰੇ ਪੜ੍ਹੋ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਬਦਲੋ</translation>
+<translation id="8842059467121215385">"<ph name="EXTENSION_NAME" />" ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="8842594465773264717">ਇਸ ਫਿੰਗਰਪ੍ਰਿੰਟ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="8845001906332463065">ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8846132060409673887">ਇਸ ਕੰਪਿਊਟਰ ਦੇ ਨਿਰਮਾਤਾ ਅਤੇ ਮਾਡਲ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਪੜ੍ਹੋ</translation>
@@ -8142,6 +8149,7 @@
 <translation id="899657321862108550">ਤੁਹਾਡਾ Chrome, ਹਰ ਥਾਂ 'ਤੇ</translation>
 <translation id="899676909165543803">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੀ ਹੇਠਲੀ ਸੱਜੇ ਪਾਸੇ ਦੀ ਕੁੰਜੀ ਹੈ। ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਉਂਗਲ ਨਾਲ ਹਲਕਾ ਜਿਹਾ ਸਪਰਸ਼ ਕਰੋ।</translation>
 <translation id="8999560016882908256">ਸੈਕਸ਼ਨ ਦੇ ਸਿਨਟੈਕਸ ਵਿੱਚ ਗੜਬੜ: <ph name="ERROR_LINE" /></translation>
+<translation id="9003185744423389627"><ph name="FAILURE_TIME" /> ਵਜੇ '<ph name="STATUS_TEXT" />' ਸਥਿਤੀ ਕਰਕੇ ਡੀਵਾਈਸ ਪ੍ਰਬੰਧਨ ਸਰਵਰ ਨਾਲ ਕਨੈਕਟ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="9003647077635673607">ਸਾਰੀਆਂ ਵੈਬਸਾਈਟਾਂ ਤੇ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="9003677638446136377">ਦੁਬਾਰਾ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="9004754973617721124">ਕੀ <ph name="SITE_NAME" />, ਇਸਦੇ ਅਧੀਨ ਆਉਂਦੀਆਂ ਸਾਰੀਆਂ ਸਾਈਟਾਂ, ਅਤੇ ਇਸਦੀ ਸਥਾਪਤ ਕੀਤੀ ਐਪ ਲਈ ਸਾਈਟ ਡਾਟਾ ਅਤੇ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>

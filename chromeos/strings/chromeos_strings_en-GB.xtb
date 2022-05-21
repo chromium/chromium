@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Choose screensaver background</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Run charge test</translation>
+<translation id="1631385268983122904">Don't put the device back together yet</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1641857168437328880">Document feeder (one-sided)</translation>
 <translation id="1643449475550628585">Change wallpaper image daily</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Please confirm device information</translation>
 <translation id="1662989795263954667">Stopped – out of ink</translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
+<translation id="1676557873873341166">Taking video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS resolver present</translation>
 <translation id="1715359911173058521">There's an issue communicating with the scanner. Check the network or USB connection and try again.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Turn on Bluetooth to discover nearby devices</translation>
+<translation id="2340422556570134524">Write Protect has been turned on unexpectedly. Please turn off Write Protect manually before trying again.</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Unqualified components<ph name="LINK_END" /> detected. If you choose to confirm this has been installed, please do so now.</translation>
@@ -474,6 +477,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5372659122375744710">Wi-Fi network is not secure</translation>
 <translation id="5376354385557966694">Automatic light mode</translation>
 <translation id="537872351913703572">Device will go to a different user or organisation</translation>
+<translation id="5389159777326897627">Wallpaper and style</translation>
 <translation id="5389224261615877010">Rainbow</translation>
 <translation id="5395600419410242651">Erase all data</translation>
 <translation id="5400907029458559844">Device is connecting.</translation>
@@ -643,6 +647,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6961170852793647506">To get started, place your document on the scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
+<translation id="6995564396478647735">Make sure that Write Protect is on</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Device is not connected.</translation>
@@ -653,6 +658,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Failed – authorisation failed</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> of <ph name="COUNT" /> named <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Write Protect is turned off</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
@@ -744,6 +750,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="80398733265834479">Enable auto colour mode</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8045012663542226664">Microphone mute</translation>
+<translation id="8063022551652308521">Write Protect is still turned off. To proceed, turn on Write Protect.</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
 <translation id="8083281199617904460">This repair process is intended for a trained repair technician. Start only after replacing the malfunctioning components.</translation>
@@ -814,6 +821,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Use the left or right arrow keys to manage this feature.</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="871560550817059752">Failed – Out of ink</translation>
+<translation id="8717030727630712160">Resuming repair process…</translation>
 <translation id="8723108084122415655">Non-default network above latency threshold</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8726019395068607495">Stopped – door open</translation>
@@ -835,6 +843,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Device is a tablet.</translation>
 <translation id="8881098542468797602">Test succeeded</translation>
+<translation id="8897267175591692539">You can put the device back together now</translation>
 <translation id="8898840733695078011">Signal strength</translation>
 <translation id="8910721771319628100">Default network above latency threshold</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>

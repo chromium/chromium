@@ -497,6 +497,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
+<translation id="3697705478071004188">Sort by site</translation>
 <translation id="3699022356773522638">Download file?</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
@@ -523,6 +524,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3845098929839618392">Open in Incognito tab</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="3859206958100234503">Sync to get your passwords, bookmarks and more on all your devices</translation>
 <translation id="3861633093716975811">Popular videos</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3894427358181296146">Add folder</translation>
@@ -697,6 +699,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4842515939542199281">To search with your voice, tap the microphone</translation>
 <translation id="4844633725025837809">For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager</translation>
 <translation id="4850886885716139402">View</translation>
+<translation id="4852014461738377247">Signing in\u2026</translation>
 <translation id="4860895144060829044">Call</translation>
 <translation id="4864369630010738180">Signing in...</translation>
 <translation id="4866368707455379617">Unable to install <ph name="MODULE" /> for Chrome</translation>
@@ -1150,6 +1153,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
 <translation id="7313188324932846546">Tap to set up sync</translation>
 <translation id="7332075081379534664">Sign-in succeeded</translation>
+<translation id="7333232495927792353">Sync to get the most relevant content from Google</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7352339641508007922">Drag to take a long screenshot</translation>
@@ -1305,6 +1309,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8103578431304235997">Incognito Tab</translation>
 <translation id="8105613260829665809">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Close sort options</translation>
 <translation id="8109613176066109935">To get your bookmarks on all your devices, turn on sync</translation>
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>
 <translation id="8110087112193408731">Show your Chrome activity in Digital Wellbeing?</translation>
@@ -1378,6 +1383,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Open the history page</translation>
 <translation id="8493948351860045254">Free up space</translation>
+<translation id="8497242791509864205">Open sort options</translation>
 <translation id="8497480609928300907">Privacy guide explanation</translation>
 <translation id="8497726226069778601">Nothing to see here… yet</translation>
 <translation id="8503559462189395349">Chrome Passwords</translation>
@@ -1530,6 +1536,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="96681097142096641">View simplified page?</translation>
 <translation id="968900484120156207">Pages that you visit appear here</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
+<translation id="978443947993957527">See content for you</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>
 <translation id="987264212798334818">General</translation>

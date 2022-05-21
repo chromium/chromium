@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> चार्ज करत आहे</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">फोन शोधा</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> या नावाचे सेव्ह केलेले डेस्क आधीच अस्तित्वात आहे</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" /> वाजता परत या.</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> फोल्डर <ph name="FOLDER_NAME" /> वर हलवा.</translation>
@@ -196,6 +197,7 @@
 <translation id="2079504693865562705">शेल्फमधील अ‍ॅप्स लपवा</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2083190527011054446">शुभ रात्री <ph name="GIVEN_NAME" />,</translation>
+<translation id="2088116547584365419">गेम</translation>
 <translation id="209965399369889474">नेटवर्कशी कनेक्ट केलेले नाही</translation>
 <translation id="2107914222138020205">तुमची USB-C केबल ही थंडरबोल्टला सपोर्ट करत नाही. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="2108303511227308752">Alt + Backspace कीबोर्ड शॉर्टकट बदलला आहे. डिलीट की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + Backspace दाबा.</translation>
@@ -268,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> सोबत एकत्रित करण्यासाठी Ctrl + W दाबा. डेस्क आणि विंडो बंद करण्यासाठी Ctrl + Shift + W दाबा.</translation>
 <translation id="2595239820337756193">५००० मैल</translation>
 <translation id="2596078834055697711">विंडो स्क्रीनशॉट घ्या</translation>
+<translation id="2598725286293895280">डेस्‍कमधील सपोर्ट नसलेली अ‍ॅप्स</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करणे आवश्यक आहे</translation>
 <translation id="2620016719323068571">तुमचे <ph name="CATEGORY" />, फाइल, अ‍ॅप्स आणि आणखी बरेच काही शोधा...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -643,6 +646,7 @@
 <translation id="4734965478015604180">आडवा</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + नंबर कीबोर्ड शॉर्टकट बदलला आहे. फंक्शन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + सर्वात वरच्या पंक्तीमधील की दाबा.</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
+<translation id="4740516757091333363">सेव्ह केलेले डेस्क हटवायचे आहे का?</translation>
 <translation id="4752784485658729358">फक्त सहा सेव्ह केलेल्या डेस्कना अनुमती आहे. नवीन डेस्‍क सेव्ह करण्यासाठी एखादा डेस्क काढून टाका.</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> वाजता परत या.</translation>
@@ -740,6 +744,7 @@
 <translation id="5352250171825660495">गडद थीम सुरू आहे</translation>
 <translation id="5356963482258194581">गडद आणि फिकट थीमदरम्यान स्विच करा. डेस्कटॉपवर राइट-क्लिक करा आणि वॉलपेपर आणि स्टाइल निवडा.</translation>
 <translation id="5379115545237091094">खूप जास्त प्रयत्न</translation>
+<translation id="5391307769715781764">सेव्ह केलेले डेस्क बदलायचे आहे का?</translation>
 <translation id="5393156353051693207">तुमची ॲप्स पुन्हा क्रमाने लावण्यासाठी कुठेही स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
 <translation id="5397578532367286026">या वापरकर्त्याच्या वापर आणि इतिहासाचे chrome.com वरील व्यवस्थापकाद्वारे (<ph name="MANAGER_EMAIL" />) पुनरावलोकन केले जाऊ शकते.</translation>
@@ -973,6 +978,7 @@
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6801878137098616817">अलीकडे संपादित केलेली</translation>
 <translation id="6803622936009808957">समर्थित रिजोल्यूशन न आढळल्यामुळे प्रदर्शने मिरर करू शकली नाहीत. त्याऐवजी विस्तारित डेस्कटॉप एंटर केला.</translation>
+<translation id="6812232930908427253">डेस्क सेव्ह करता आले नाही. खूप जास्त विंडो किंवा टॅब आहेत.</translation>
 <translation id="6818242057446442178">एक शब्द मागे जा</translation>
 <translation id="6819327813400217281">कॅमेरा सर्वात खालच्या डाव्या कोपऱ्यात स्नॅप केला आहे</translation>
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>

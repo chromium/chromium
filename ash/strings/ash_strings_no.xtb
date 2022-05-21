@@ -65,6 +65,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1275285675049378717">Gir strøm til <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Finn telefonen</translation>
+<translation id="1287002645302686982">Det finnes allerede et lagret skrivebord med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Kom tilbake <ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
 <translation id="1290982764014248209">Flytter <ph name="DRAGGED_APP" /> til mappen <ph name="FOLDER_NAME" />.</translation>
@@ -269,6 +270,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2586561057878260610">Trykk på Ctrl + W for å kombinere med <ph name="DESK_NAME" />. Trykk på Ctrl + Shift + W for å lukke skrivebordet og vinduene.</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
+<translation id="2598725286293895280">Skrivebordet inneholder apper som ikke støttes</translation>
 <translation id="2607678425161541573">Nettbasert pålogging kreves</translation>
 <translation id="2620016719323068571">Søk i <ph name="CATEGORY" />, filer, apper med mer …</translation>
 <translation id="2620436844016719705">System</translation>
@@ -644,6 +646,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4734965478015604180">Horisontal</translation>
 <translation id="4735498845456076464">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + tall er endret. For å bruke funksjonstastene, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + en tast på øverste rad.</translation>
 <translation id="473775607612524610">Oppdater</translation>
+<translation id="4740516757091333363">Vil du slette det lagrede skrivebordet?</translation>
 <translation id="4752784485658729358">Kun 6 lagrede skrivebord er tillatt. Fjern et skrivebord for å lagre et nytt.</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4774338217796918551">Kom tilbake i morgen <ph name="COME_BACK_TIME" />.</translation>
@@ -741,6 +744,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5352250171825660495">Mørkt tema er på</translation>
 <translation id="5356963482258194581">Bytt mellom mørkt og lyst tema. Høyreklikk på skrivebordet, og velg Bakgrunn og stil.</translation>
 <translation id="5379115545237091094">For mange forsøk</translation>
+<translation id="5391307769715781764">Vil du erstatte det lagrede skrivebordet?</translation>
 <translation id="5393156353051693207">Trykk og hold hvor som helst for å endre rekkefølge på appene</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oppå <ph name="IN_PLACE_APP" /> – slipp for å opprette en mappe.</translation>
 <translation id="5397578532367286026">Bruken og loggen for denne brukeren kan gjennomgås av administratoren (<ph name="MANAGER_EMAIL" />) på chrome.com</translation>
@@ -974,6 +978,7 @@ Nylig installert</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6801878137098616817">Redigert nylig</translation>
 <translation id="6803622936009808957">Kunne ikke speile skjermene fordi ingen støttede oppløsninger ble funnet. Utvidet skrivebord ble brukt i stedet.</translation>
+<translation id="6812232930908427253">Kunne ikke lagre skrivebordet. For mange vinduer eller faner.</translation>
 <translation id="6818242057446442178">Ett ord tilbake</translation>
 <translation id="6819327813400217281">Kameraet er festet til nedre venstre hjørne</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>

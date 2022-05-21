@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />ને પાવર સપ્લાય આપી રહ્યું છે</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ફોન શોધો</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> નામની સાચવેલી ડેસ્ક પહેલેથી અસ્તિત્વ ધરાવે છે</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />ના દિવસે <ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવજો.</translation>
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ને <ph name="FOLDER_NAME" /> ફોલ્ડરમાં ખસેડો.</translation>
@@ -196,6 +197,7 @@
 <translation id="2079504693865562705">શેલ્ફમાં ઍપ છુપાવો</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
+<translation id="2088116547584365419">ગેમ</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
 <translation id="2107914222138020205">તમારો USB-C કેબલ Thunderboltને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="2108303511227308752">Alt કી + Backspace કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Delete કીનો ઉપયોગ કરવા માટે <ph name="LAUNCHER_KEY_NAME" /> કી + backspace કી દબાવો.</translation>
@@ -268,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> સાથે ભેગું કરવા માટે Ctrl + W દબાવો. ડેસ્ક અને વિન્ડો બંધ કરવા માટે Ctrl + Shift + W દબાવો.</translation>
 <translation id="2595239820337756193">5,000 કિલોમીટર એટલે કેટલા માઇલ?</translation>
 <translation id="2596078834055697711">વિંડો સ્ક્રીનશૉટ લો</translation>
+<translation id="2598725286293895280">ડેસ્કમાં અનસપોર્ટેડ ઍપ</translation>
 <translation id="2607678425161541573">ઑનલાઇન સાઇન-ઇન કરવું આવશ્યક છે</translation>
 <translation id="2620016719323068571">તમારી <ph name="CATEGORY" />, ફાઇલો, ઍપ અને બીજું ઘણું શોધો…</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
@@ -643,6 +646,7 @@
 <translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. ફંક્શન કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ઉપરની પંક્તિ પરની કોઈ એક કી દબાવો.</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
+<translation id="4740516757091333363">શું સાચવેલી ડેસ્ક ડિલીટ કરીએ?</translation>
 <translation id="4752784485658729358">માત્ર 6 ડેસ્ક સાચવવાની મંજૂરી છે. કોઈ નવી ડેસ્ક સાચવવા માટે, કોઈ એક ડેસ્ક કાઢી નાખો.</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4774338217796918551">આવતી કાલે <ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવજો.</translation>
@@ -740,6 +744,7 @@
 <translation id="5352250171825660495">ઘેરી થીમ ચાલુ છે</translation>
 <translation id="5356963482258194581">ઘેરી અને ઝાંખી થીમ વચ્ચે સ્વિચ કરો. ડેસ્કટૉપ આઇકન પર રાઇટ ક્લિક કરો અને વૉલપેપર અને સ્ટાઇલ પસંદ કરો.</translation>
 <translation id="5379115545237091094">ઘણા બધા પ્રયાસો</translation>
+<translation id="5391307769715781764">શું સાચવેલી ડેસ્ક બદલવી છે?</translation>
 <translation id="5393156353051693207">તમારી ઍપનો ક્રમ બદલવા માટે ગમે ત્યાં ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ની સૌથી ઉપર <ph name="DRAGGED_APP_NAME" /> પર, ફોલ્ડર બનાવવા માટે રિલીઝ કરો.</translation>
 <translation id="5397578532367286026">આ વપરાશકર્તાના ઉપયોગ અને ઇતિહાસની chrome.com પર સંચાલક (<ph name="MANAGER_EMAIL" />) દ્વારા સમીક્ષા કરવામાં આવી શકે છે.</translation>
@@ -973,6 +978,7 @@
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6801878137098616817">તાજેતરમાં ફેરફાર કરવામાં આવ્યો હતો</translation>
 <translation id="6803622936009808957">કોઈ સમર્થિત રિઝોલ્યૂશન મળ્યું ન હોવાથી, પ્રદર્શનોને પ્રતિબિંબિત કરી શકાયા નથી. તેને બદલે વિસ્તૃત ડેસ્કટૉપ દાખલ કર્યું.</translation>
+<translation id="6812232930908427253">ડેસ્ક સાચવી શકાઈ નથી. ઘણી વધુ વિન્ડો કે ટૅબ છે.</translation>
 <translation id="6818242057446442178">એક શબ્દ પાછળ જાઓ</translation>
 <translation id="6819327813400217281">કૅમેરાને નીચેના ડાબા ખૂણામાં સ્નેપ કર્યો</translation>
 <translation id="6820676911989879663">વિરામ લો!</translation>

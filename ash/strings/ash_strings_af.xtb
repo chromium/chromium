@@ -65,6 +65,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1275285675049378717">Gee tans krag aan <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Spoor foon op</translation>
+<translation id="1287002645302686982">’n Gestoorde lessenaar met die naam <ph name="DESK_TEMPLATE_NAME" /> bestaan reeds</translation>
 <translation id="1289185460362160437">Kom <ph name="COME_BACK_DAY_OF_WEEK" /> om <ph name="COME_BACK_TIME" /> terug.</translation>
 <translation id="1290331692326790741">Swak sein</translation>
 <translation id="1290982764014248209">Skuif <ph name="DRAGGED_APP" /> na vouer <ph name="FOLDER_NAME" />.</translation>
@@ -269,6 +270,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2586561057878260610">Druk Ctrl + W om met <ph name="DESK_NAME" /> te kombineer. Druk Ctrl + Shift + W om lessenaar en vensters toe te maak.</translation>
 <translation id="2595239820337756193">5K in myl</translation>
 <translation id="2596078834055697711">Neem vensterskermkiekie</translation>
+<translation id="2598725286293895280">Ongesteunde programme in lessenaar</translation>
 <translation id="2607678425161541573">Aanlyn aanmelding word vereis</translation>
 <translation id="2620016719323068571">Deursoek jou <ph name="CATEGORY" />, lêers, programme en meer …</translation>
 <translation id="2620436844016719705">Stelsel</translation>
@@ -645,6 +647,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4734965478015604180">Horisontaal</translation>
 <translation id="4735498845456076464">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + syfer het verander. Om funksiesleutels te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + 'n sleutel in die boonste ry druk.</translation>
 <translation id="473775607612524610">Dateer op</translation>
+<translation id="4740516757091333363">Vee gestoorde lessenaar uit?</translation>
 <translation id="4752784485658729358">Net 6 gestoorde lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een te stoor.</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
 <translation id="4774338217796918551">Kom môre om <ph name="COME_BACK_TIME" /> terug.</translation>
@@ -742,6 +745,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5352250171825660495">Donkertema is aan</translation>
 <translation id="5356963482258194581">Wissel tussen donker- en ligtema. Regsklik op die werkskerm en kies Muurpapier en Styl.</translation>
 <translation id="5379115545237091094">Te veel pogings</translation>
+<translation id="5391307769715781764">Vervang gestoorde lessenaar?</translation>
 <translation id="5393156353051693207">Raak en hou op enige plek om jou programme te herrangskik</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bo-oor <ph name="IN_PLACE_APP" />; laat los om vouer te skep.</translation>
 <translation id="5397578532367286026">Gebruiker se gebruik en geskiedenis kan op chrome.com deur die bestuurder (<ph name="MANAGER_EMAIL" />) nagegaan word.</translation>
@@ -975,6 +979,7 @@ Nuwe installasie</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6801878137098616817">Dit is onlangs gewysig</translation>
 <translation id="6803622936009808957">Kon nie skerms weerspieël nie, omdat daar geen gesteunde resolusies gevind kon word nie. Het eerder by uitgebreide skerm ingegaan.</translation>
+<translation id="6812232930908427253">Kon nie lessenaar stoor nie. Te veel vensters of oortjies.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6819327813400217281">Kamera is geglip na hoek onder links</translation>
 <translation id="6820676911989879663">Geniet 'n blaaskans!</translation>

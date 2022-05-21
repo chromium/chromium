@@ -55,6 +55,7 @@
 <translation id="1054153489933238809">নতুন টেবত প্ৰকৃত &amp;প্ৰতিচ্ছবি খোলক</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{১ সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}one{{NUM_WEEKS} সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}other{{NUM_WEEKS} সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}}</translation>
 <translation id="1056898198331236512">সতর্কবার্তা</translation>
+<translation id="105822690353767994">যদি আপুনি এই বাৰ্তাটো পুনৰ চাব নিবিচাৰে, তেন্তে এই ছাইটটোত এক্সটেনশ্বনটো সদায় চলাবলৈ অনুমতি দিয়ক।</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{আপোনাৰ নতুন পিনটো দিয়ক। এটা পিনত অতি কমেও এটা বৰ্ণ থাকিবই লাগিব যি এটা আখৰ, সংখ্যা আৰু অন্য বৰ্ণ হ’ব পাৰে।}one{আপোনাৰ নতুন পিনটো দিয়ক। এটা পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব যিকেইটা আখৰ, সংখ্যা আৰু অন্য বৰ্ণ হ’ব পাৰে।}other{আপোনাৰ নতুন পিনটো দিয়ক। এটা পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব যিকেইটা আখৰ, সংখ্যা আৰু অন্য বৰ্ণ হ’ব পাৰে।}}</translation>
 <translation id="1059484610606223931">হাইপাৰটেক্স ট্ৰাঞ্চপ'ৰ্ট প্ৰ’ট’কল (HTTPS)</translation>
@@ -865,6 +866,7 @@
     ই অন্য ডিভাইচসমূহত থকা এপ্‌সমূহ অথবা সমলৰ ওপৰত প্ৰভাৱ নেপেলায়।</translation>
 <translation id="1809734401532861917">মোৰ বুকমাৰ্ক, সন্ধান ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ <ph name="USER_EMAIL_ADDRESS" />ত যোগ কৰক</translation>
 <translation id="1810366086647840386">প্ৰতিচ্ছবিৰ ছাৰ্ভাৰ</translation>
+<translation id="1811908311154949291">ইনক’গনিট’ ফেঞ্চড্‌ ফ্ৰে’ম: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1813278315230285598">সেৱা</translation>
 <translation id="18139523105317219">EDI পাৰ্টিৰ নাম</translation>
 <translation id="1815083418640426271">নিকা পাঠ হিচাপে পে’ষ্ট কৰক</translation>
@@ -1684,6 +1686,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />এ <ph name="NETWORK_ID" />ৰ সৈতে সংযোগ কৰিব নোৱাৰিলে। অনুগ্ৰহ কৰি অন্য কোনো নেটৱৰ্ক বাছনি কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2553440850688409052">এই প্লাগইনটো লুকুৱাওক</translation>
 <translation id="2554553592469060349">বাছনি কৰা ফাইলটোৰ আকাৰ অত্যন্ত ডাঙৰ (সর্বাধিক আকাৰ: ৩এম.বি.)</translation>
+<translation id="25568951186001797">ফেঞ্চড্‌ ফ্ৰে’ম: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসে আপুনি দেখা পোৱা বিজ্ঞাপন প্ৰভাৱিত কৰে</translation>
 <translation id="2558896001721082624">ছিষ্টেম মেনুত সাধ্য সুবিধাসমূহ সদায়েই দেখুৱাওক</translation>
 <translation id="2559889124253841528">ডিভাইচত ছেভ কৰক</translation>
@@ -2245,6 +2248,7 @@
 <translation id="3101126716313987672">ৰাতিৰ পোহৰ</translation>
 <translation id="3101709781009526431">তাৰিখ আৰু সময়</translation>
 <translation id="3103451787721578293">অনুগ্ৰহ কৰি এই ডেটাখিনি আপল’ড কৰাৰ এটা কাৰণ দিয়ক:</translation>
+<translation id="3105339775057145050">অন্তিম অসফল আপডে’ট</translation>
 <translation id="3105796011181310544">পুনৰ Googleলৈ সলনি কৰিবনে?</translation>
 <translation id="310671807099593501">ছাইটটোৱে ব্লুটুথ ব্যৱহাৰ কৰি আছে</translation>
 <translation id="3108931485517391283">লাভ কৰিব নোৱাৰি</translation>
@@ -2547,6 +2551,7 @@
 <translation id="3433621910545056227">আমি দুঃখিত!  ছিষ্টেমটোৱে ডিভাইচটোৰ ইনষ্টলেশ্বনৰ সময়ৰ এট্রিবিউট লক স্থাপন কৰিব নোৱাৰিলে।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">যদি আপোনাৰ শিশুৰ বাবে অতিৰিক্ত ৱেব আৰু এপৰ কার্যকলাপ অন কৰা হয়, তেন্তে এই ডেটা তেওঁৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। এই ছেটিংসমূহৰ বিষয়ে আৰু সেইবোৰ কেনেদৰে মিলাব পাৰি সেই বিষয়ে জানিবলৈ families.google.comলৈ যাওক।</translation>
+<translation id="3434475275396485144">এই ছেটিংটো আপোনাৰ ফ’নটোৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="3434512374684753970">অডিঅ' আৰু ভিডিঅ'</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />"এ আপোনাৰ <ph name="CODE_TYPE" />ৰ বাবে অনুৰোধ কৰিছে</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
@@ -6383,6 +6388,7 @@
 <translation id="7264695323040866038">সমৰ্থিত ৱেব লিংকসমূহ খুলিবলৈ সদায় <ph name="APP" /> এপ্‌টো ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="7267044199012331848">ভাৰ্ছুৱেল মেচিনটো ইনষ্টল কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="7267875682732693301">আপোনাৰ ফিংগাৰপ্ৰিণ্টৰ সকলো অংশ যোগ দিয়া আঙুলিটো কেইবাবাৰো উঠোৱা নমোৱা কৰক</translation>
+<translation id="7267898843336437186">এই ছাইটটোৱে চাব পৰা এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="7268127947535186412">ডিভাইচৰ গৰাকীয়ে এই ছেটিংটো পৰিচালনা কৰে।</translation>
 <translation id="7269736181983384521">Nearby Shareৰ ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="7272674038937250585">কোনো বিৱৰণ নাই</translation>
@@ -7982,6 +7988,7 @@
 <translation id="8838770651474809439">হেমবাৰ্গাৰ</translation>
 <translation id="8838778928843281408">ফ’ন পৰিচালনা কৰক</translation>
 <translation id="8841843049738266382">অনুমতিৰ তালিকাত ৰখা ব্যৱহাৰকাৰীসকল পঢ়ক আৰু সলনি কৰক</translation>
+<translation id="8842059467121215385">"<ph name="EXTENSION_NAME" />" ব্যৱহাৰ কৰিবলৈ পৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="8842594465773264717">এই ফিংগাৰপ্ৰিণ্টটো মচক</translation>
 <translation id="8845001906332463065">সহায় পাওক</translation>
 <translation id="8846132060409673887">এই কম্পিউটাৰটোৰ নিৰ্মাণকাৰী আৰু ম'ডেলৰ তথ্য পঢ়ক</translation>
@@ -8137,6 +8144,7 @@
 <translation id="899657321862108550">আপোনাৰ Chrome সকলোতে ব্যৱহাৰ কৰক</translation>
 <translation id="899676909165543803">আপোনাৰ কীব’ৰ্ডৰ একেবাৰে তলৰ সোঁফালৰ কীটো হৈছে ফিংগাৰপ্ৰিণ্ট ছেন্সৰ। যিকোনো এটা আঙুলিৰে এইটো লাহেকৈ স্পর্শ কৰক।</translation>
 <translation id="8999560016882908256">Section syntax error: <ph name="ERROR_LINE" /></translation>
+<translation id="9003185744423389627"><ph name="FAILURE_TIME" />ত '<ph name="STATUS_TEXT" />' স্থিতিৰ উল্লেখেৰে ডিভাইচ পৰিচালনা ছাৰ্ভাৰৰ সৈতে সংযোগ বিচ্ছিন্ন হ’ল</translation>
 <translation id="9003647077635673607">সকলো ৱেবছাইটতে অনুমতি দিয়ক</translation>
 <translation id="9003677638446136377">পুনৰ পৰীক্ষা কৰক</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> আৰু ইয়াৰ অন্তৰ্গত আটাইবোৰ ছাইটৰ আৰু ইয়াত ইনষ্টল কৰি থোৱা এপৰ বাবে ছাইটৰ ডেটা আৰু অনুমতিসমূহ মচিবনে?</translation>

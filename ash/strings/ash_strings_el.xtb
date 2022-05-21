@@ -65,6 +65,7 @@
 <translation id="1275285675049378717">Ενεργοποίηση <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Εντοπισμός τηλεφώνου</translation>
+<translation id="1287002645302686982">Υπάρχει ήδη ένα γραφείο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Επιστρέψτε ξανά το/τη(ν) <ph name="COME_BACK_DAY_OF_WEEK" /> στις <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Ασθενές σήμα</translation>
 <translation id="1290982764014248209">Μεταφορά της εφαρμογής <ph name="DRAGGED_APP" /> στον φάκελο <ph name="FOLDER_NAME" />.</translation>
@@ -196,6 +197,7 @@
 <translation id="2079504693865562705">Απόκρυψη εφαρμογών στο ράφι</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2083190527011054446">Καληνύχτα <ph name="GIVEN_NAME" />,</translation>
+<translation id="2088116547584365419">παιχνίδια</translation>
 <translation id="209965399369889474">Δεν υπάρχει σύνδεση στο δίκτυο</translation>
 <translation id="2107914222138020205">Το καλώδιο USB-C που έχετε δεν υποστηρίζει συσκευές Thunderbolt. Η απόδοση της συσκευής ενδέχεται να είναι περιορισμένη.</translation>
 <translation id="2108303511227308752">Η συντόμευση πληκτρολογίου Alt + Backspace άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Delete, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + backspace.</translation>
@@ -268,6 +270,7 @@
 <translation id="2586561057878260610">Πατήστε Ctrl + W για συνδυασμό με <ph name="DESK_NAME" />. Πατήστε Ctrl + Shift + W για κλείσιμο γραφείου και παραθύρων.</translation>
 <translation id="2595239820337756193">5 χλμ. σε μίλια</translation>
 <translation id="2596078834055697711">Λήψη στιγμιότυπου οθόνης παραθύρου</translation>
+<translation id="2598725286293895280">Μη υποστηριζόμενες εφαρμογές στο γραφείο</translation>
 <translation id="2607678425161541573">Απαιτείται σύνδεση στο διαδίκτυο</translation>
 <translation id="2620016719323068571">Αναζητήστε <ph name="CATEGORY" />, αρχεία, εφαρμογές και άλλα…</translation>
 <translation id="2620436844016719705">Σύστημα</translation>
@@ -643,6 +646,7 @@
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
 <translation id="4735498845456076464">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + Αριθμός άλλαξε. Για να χρησιμοποιήσετε τα πλήκτρα λειτουργιών, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + ένα πλήκτρο στην επάνω σειρά.</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
+<translation id="4740516757091333363">Διαγραφή αποθηκευμένου γραφείου;</translation>
 <translation id="4752784485658729358">Επιτρέπονται μόνο 6 αποθηκευμένα γραφεία. Αφαιρέστε ένα γραφείο για να αποθηκεύσετε ένα νέο.</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4774338217796918551">Επιστρέψτε ξανά αύριο στις <ph name="COME_BACK_TIME" />.</translation>
@@ -740,6 +744,7 @@
 <translation id="5352250171825660495">Το Σκούρο θέμα είναι ενεργοποιημένο.</translation>
 <translation id="5356963482258194581">Εναλλαγή μεταξύ Σκούρου και Φωτεινού θέματος. Κάντε δεξί κλικ στην επιφάνεια εργασίας και επιλέξτε Ταπετσαρία και στιλ.</translation>
 <translation id="5379115545237091094">Πάρα πολλές προσπάθειες</translation>
+<translation id="5391307769715781764">Αντικατάσταση αποθηκευμένου γραφείου;</translation>
 <translation id="5393156353051693207">Αγγίξτε παρατεταμένα οπουδήποτε για να αναδιατάξετε τις εφαρμογές σας</translation>
 <translation id="5395308026110844773">Η εφαρμογή <ph name="DRAGGED_APP_NAME" /> πάνω από την εφαρμογή <ph name="IN_PLACE_APP" />, αφήστε για να δημιουργήσετε φάκελο.</translation>
 <translation id="5397578532367286026">Ο διαχειριστής (<ph name="MANAGER_EMAIL" />) μπορεί να ελέγξει τη χρήση και το ιστορικό αυτού του χρήστη στη διεύθυνση chrome.com.</translation>
@@ -973,6 +978,7 @@
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6801878137098616817">Έγινε επεξεργασία πρόσφατα</translation>
 <translation id="6803622936009808957">Δεν ήταν δυνατός ο αντικατοπτρισμός των οθονών καθώς δεν βρέθηκαν υποστηριζόμενες αναλύσεις. Έχει ενεργοποιηθεί εναλλακτικά η εκτεταμένη επιφάνεια εργασίας.</translation>
+<translation id="6812232930908427253">Δεν ήταν δυνατή η αποθήκευση του γραφείου. Πάρα πολλά παράθυρα ή καρτέλες.</translation>
 <translation id="6818242057446442178">Πίσω ανά λέξη</translation>
 <translation id="6819327813400217281">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω αριστερή γωνία</translation>
 <translation id="6820676911989879663">Κάντε ένα διάλειμμα!</translation>
