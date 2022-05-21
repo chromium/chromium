@@ -50,7 +50,7 @@
     z-index: 1;
   }
 
-  #addFile {
+  #addFileContainer {
     align-items: center;
     height: 48px;
     margin-inline-start: 12px;
@@ -87,8 +87,9 @@
               src="[[screenshotUrl]]">
         </div>
         <!-- Attach a file -->
-        <!-- TODO(xiangdongkong): Create a polymer element.-->
-        <div id="addFile" class="card-frame">Add file</div>
+        <div id="addFileContainer" class="card-frame">
+          <file-attachment></file-attachment>
+        </div>
       </div>
     </div>
     <!-- User e-mail -->

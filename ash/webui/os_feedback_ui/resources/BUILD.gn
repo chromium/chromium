@@ -18,6 +18,7 @@ preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
 polymer_element_files = [
   "confirmation_page.js",
   "feedback_flow.js",
+  "file_attachment.js",
   "help_content.js",
   "help_resources_icons.js",
   "os_feedback_shared_css.js",
@@ -115,6 +116,12 @@ js_library("feedback_flow") {
   ]
 }
 
+js_library("file_attachment") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("help_resources_icons") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -145,6 +152,7 @@ js_library("share_data_page") {
   deps = [
     ":feedback_flow",
     ":feedback_types",
+    ":file_attachment",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

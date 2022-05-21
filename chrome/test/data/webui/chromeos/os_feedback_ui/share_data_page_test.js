@@ -94,8 +94,8 @@ export function shareDataPageTestSuite() {
     assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
     assertTrue(!!getElement('#screenshotImage'));
 
-    // Add file element.
-    assertEquals('Add file', getElementContent('#addFile'));
+    // Add file attachment element.
+    assertTrue(!!getElement('file-attachment'));
 
     // Email elements.
     assertEquals('Email', getElementContent('#userEmailLabel'));
