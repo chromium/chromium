@@ -1101,23 +1101,29 @@ unsigned long ZEXPORT crc32(crc, buf, len)
     const unsigned char FAR *buf;
     uInt len;
 {
-#if defined(CRC32_ARMV8_CRC32)
-    /* We got to verify ARM CPU features, so exploit the common usage pattern
-     * of calling this function with Z_NULL for an initial valid crc value.
-     * This allows to cache the result of the feature check and avoid extraneous
-     * function calls.
-     * TODO: try to move this to crc32_z if we don't loose performance on ARM.
+    /* Some bots compile with optimizations disabled, others will emulate
+     * ARM on x86 and other weird combinations.
      */
-    if (buf == Z_NULL) {
-        if (!len) /* Assume user is calling crc32(0, NULL, 0); */
-            cpu_check_features();
-        return 0UL;
-    }
+#if defined(CRC32_ARMV8_CRC32)
+    if (arm_cpu_enable_crc32) {
+#if defined(__aarch64__)
+        /* PMULL is 64bit only, plus code needs at least a 64 bytes buffer. */
+        if (arm_cpu_enable_pmull && (len > Z_CRC32_PMULL_MINIMUM_LENGTH)) {
+            const size_t chunk_size = len & ~Z_CRC32_PMULL_CHUNKSIZE_MASK;
+            crc = ~armv8_crc32_pmull_little(buf, chunk_size, ~(uint32_t)crc);
+            /* Check remaining data. */
+            len -= chunk_size;
+            if (!len)
+                return crc;
 
-    if (arm_cpu_enable_crc32)
-        return armv8_crc32_little(crc, buf, len);
+            /* Fall through for the remaining data. */
+            buf += chunk_size;
+        }
 #endif
-    return crc32_z(crc, buf, len);
+        return armv8_crc32_little(buf, len, crc); /* Armv8@32bit or tail. */
+    }
+#endif
+    return crc32_z(crc, buf, len); /* Armv7 or Armv8 w/o crypto extensions. */
 }
 
 /* ========================================================================= */
