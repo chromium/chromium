@@ -97,7 +97,7 @@ class SearchHandler : public mojom::SearchHandler,
 
   mojom::SearchResultPtr ResultToSearchResult(
       const local_search_service::Result& result) const;
-  std::string GetModifiedUrl(const SearchConcept& concept,
+  std::string GetModifiedUrl(const SearchConcept& search_concept,
                              mojom::Section section) const;
 
   // Returns true if |first| should be ranked before |second|.

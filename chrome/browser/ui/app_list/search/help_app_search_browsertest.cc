@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
       .InstallSystemAppsForTesting();
   // Add some searchable content to the help app search handler.
   std::vector<ash::help_app::mojom::SearchConceptPtr> search_concepts;
-  auto concept = ash::help_app::mojom::SearchConcept::New(
+  auto search_concept = ash::help_app::mojom::SearchConcept::New(
       /*id=*/"6318213",
       /*title=*/u"Fix connection problems",
       /*main_category=*/u"Help",
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
       /*tag_locale=*/"en",
       /*url_path_with_parameters=*/"help/id/test",
       /*locale=*/"");
-  search_concepts.push_back(std::move(concept));
+  search_concepts.push_back(std::move(search_concept));
 
   base::RunLoop run_loop;
   ash::help_app::HelpAppManagerFactory::GetForBrowserContext(GetProfile())

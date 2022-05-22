@@ -258,22 +258,23 @@ TEST_F(PersonalizationAppSearchHandlerTest, ObserverFiresWhenResultsUpdated) {
   ClearSearchTagRegistry();
   TestSearchResultsObserver test_observer;
   search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
-  SearchConcept concept = {
+  SearchConcept search_concept = {
       .id = mojom::SearchConceptId::kChangeWallpaper,
       .message_id = IDS_PERSONALIZATION_APP_WALLPAPER_LABEL,
       .relative_url = "testing",
   };
 
   // Add a search concept.
-  search_tag_registry()->UpdateSearchConcepts({{&concept, /*add=*/true}});
+  search_tag_registry()->UpdateSearchConcepts(
+      {{&search_concept, /*add=*/true}});
   test_observer.WaitForSearchResultsChanged();
 
-  EXPECT_EQ(&concept, search_tag_registry()->GetSearchConceptById(
-                          SearchConceptIdToString(concept.id)))
+  EXPECT_EQ(&search_concept, search_tag_registry()->GetSearchConceptById(
+                                 SearchConceptIdToString(search_concept.id)))
       << "Search concept was added";
 
   // Remove the search concept.
-  search_tag_registry()->UpdateSearchConcepts({{&concept, false}});
+  search_tag_registry()->UpdateSearchConcepts({{&search_concept, false}});
   test_observer.WaitForSearchResultsChanged();
 
   EXPECT_EQ(nullptr,
@@ -429,8 +430,8 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
       },
   };
   SearchTagRegistry::SearchConceptUpdates updates;
-  for (const auto& concept : test_search_concepts) {
-    updates.insert(std::make_pair(&concept, true));
+  for (const auto& search_concept : test_search_concepts) {
+    updates.insert(std::make_pair(&search_concept, true));
   }
   search_tag_registry()->UpdateSearchConcepts(updates);
 

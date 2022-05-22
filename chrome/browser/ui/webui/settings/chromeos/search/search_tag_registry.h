@@ -82,7 +82,7 @@ class SearchTagRegistry {
  private:
   FRIEND_TEST_ALL_PREFIXES(SearchTagRegistryTest, AddAndRemove);
 
-  static std::string ToResultId(const SearchConcept& concept);
+  static std::string ToResultId(const SearchConcept& search_concept);
 
   void AddSearchTags(const std::vector<const SearchConcept*>& search_tags);
   void RemoveSearchTags(const std::vector<const SearchConcept*>& search_tags);

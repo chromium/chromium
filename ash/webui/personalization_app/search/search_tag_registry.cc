@@ -288,8 +288,8 @@ SearchTagRegistry::SearchTagRegistry(
       enterprise_policy_delegate_->IsWallpaperEnterpriseManaged()));
 
   if (::ash::features::IsDarkLightModeEnabled()) {
-    for (const auto& concept : GetDarkModeSearchConcepts()) {
-      updates[&concept] = true;
+    for (const auto& search_concept : GetDarkModeSearchConcepts()) {
+      updates[&search_concept] = true;
     }
     updates.merge(GetDarkModePrefChangedUpdates(
         pref_service_->GetBoolean(ash::prefs::kDarkModeEnabled)));
@@ -311,15 +311,16 @@ void SearchTagRegistry::UpdateSearchConcepts(
     const SearchConceptUpdates& search_concept_updates) {
   std::vector<::chromeos::local_search_service::Data> data_vec;
 
-  for (auto& [concept, add] : search_concept_updates) {
-    std::string concept_id = SearchConceptToId(*concept);
+  for (auto& [search_concept, add] : search_concept_updates) {
+    std::string concept_id = SearchConceptToId(*search_concept);
     const auto it = result_id_to_search_concept_.find(concept_id);
     bool found = it != result_id_to_search_concept_.end();
 
     if (!found && add) {
       // Adding a search concept that was missing.
-      data_vec.emplace_back(concept_id, SearchConceptToContentVector(*concept));
-      result_id_to_search_concept_[std::move(concept_id)] = concept;
+      data_vec.emplace_back(concept_id,
+                            SearchConceptToContentVector(*search_concept));
+      result_id_to_search_concept_[std::move(concept_id)] = search_concept;
     }
 
     if (found && !add) {

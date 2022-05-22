@@ -243,13 +243,13 @@ SearchHandler::AddSubpageResultIfPossible(
 
 mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
     const local_search_service::Result& result) const {
-  const SearchConcept* concept =
+  const SearchConcept* search_concept =
       search_tag_registry_->GetTagMetadata(result.id);
 
   // If the concept was not registered, no metadata is available. This can occur
   // if the search tag was dynamically unregistered during the asynchronous
   // Find() call.
-  if (!concept)
+  if (!search_concept)
     return nullptr;
 
   // |result| is expected to have one position, whose ID is a stringified int.
@@ -261,27 +261,28 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
   std::string url;
   mojom::SearchResultIdentifierPtr result_id;
   std::vector<std::u16string> hierarchy_strings;
-  switch (concept->type) {
+  switch (search_concept->type) {
     case mojom::SearchResultType::kSection: {
-      mojom::Section section = concept->id.section;
-      url = GetModifiedUrl(*concept, section);
+      mojom::Section section = search_concept->id.section;
+      url = GetModifiedUrl(*search_concept, section);
       result_id = mojom::SearchResultIdentifier::NewSection(section);
       hierarchy_strings.push_back(
           l10n_util::GetStringUTF16(IDS_INTERNAL_APP_SETTINGS));
       break;
     }
     case mojom::SearchResultType::kSubpage: {
-      mojom::Subpage subpage = concept->id.subpage;
-      url = GetModifiedUrl(*concept,
+      mojom::Subpage subpage = search_concept->id.subpage;
+      url = GetModifiedUrl(*search_concept,
                            hierarchy_->GetSubpageMetadata(subpage).section);
       result_id = mojom::SearchResultIdentifier::NewSubpage(subpage);
       hierarchy_strings = hierarchy_->GenerateAncestorHierarchyStrings(subpage);
       break;
     }
     case mojom::SearchResultType::kSetting: {
-      mojom::Setting setting = concept->id.setting;
-      url = GetModifiedUrl(
-          *concept, hierarchy_->GetSettingMetadata(setting).primary.first);
+      mojom::Setting setting = search_concept->id.setting;
+      url =
+          GetModifiedUrl(*search_concept,
+                         hierarchy_->GetSettingMetadata(setting).primary.first);
       result_id = mojom::SearchResultIdentifier::NewSetting(setting);
       hierarchy_strings = hierarchy_->GenerateAncestorHierarchyStrings(setting);
       break;
@@ -291,16 +292,18 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
   return mojom::SearchResult::New(
       /*text=*/l10n_util::GetStringUTF16(content_id),
       /*canonical_text=*/
-      l10n_util::GetStringUTF16(concept->canonical_message_id), url,
-      concept->icon, result.score, hierarchy_strings, concept->default_rank,
-      /*was_generated_from_text_match=*/true, concept->type,
+      l10n_util::GetStringUTF16(search_concept->canonical_message_id), url,
+      search_concept->icon, result.score, hierarchy_strings,
+      search_concept->default_rank,
+      /*was_generated_from_text_match=*/true, search_concept->type,
       std::move(result_id));
 }
 
-std::string SearchHandler::GetModifiedUrl(const SearchConcept& concept,
+std::string SearchHandler::GetModifiedUrl(const SearchConcept& search_concept,
                                           mojom::Section section) const {
   return sections_->GetSection(section)->ModifySearchResultUrl(
-      concept.type, concept.id, concept.url_path_with_parameters);
+      search_concept.type, search_concept.id,
+      search_concept.url_path_with_parameters);
 }
 
 // static
