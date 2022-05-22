@@ -130444,6 +130444,435 @@
        {}
       ]
      ],
+     "object-view-box-contain-intrinsic-size.html": [
+      "411aff11a49191ed785a937057182e51eff6ea85",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-contain-intrinsic-size-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-empty-bounds.html": [
+      "b793182a9d1fc5bdf37ca1de65a49131536feb68",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-empty-bounds-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-contain-canvas.html": [
+      "ad9b33db85f7717534d72b0cd1753cc9cb00ea3f",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-contain-canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-contain-img.html": [
+      "d2e4c08a0512d3984e5403af9422babf0436264b",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-contain-img-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-contain-svg.html": [
+      "cfe711fb10c088224e5350a1b2f78c864eb5eb2e",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-contain-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-contain-video.html": [
+      "bd4184cc07f7abdb25a3a3b0ffb917009949f309",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-contain-video-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-cover-canvas.html": [
+      "38976c563a3a1b838972f4363f1eb0efcf68114c",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-cover-canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-cover-img.html": [
+      "1103788435ec32dec923a7440267b59f28f51fc7",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-cover-img-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-cover-svg.html": [
+      "4efe28574ca8bac2aeaa1c004f0b82d4d4b663b2",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-cover-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-cover-video.html": [
+      "bc519a68fc6d3904cfe79e17a3e8caaa098e707e",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-cover-video-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-fill-canvas.html": [
+      "4341564195a4ebdc1fbc8129745ab4d23215a87e",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-fill-canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-fill-img.html": [
+      "c9d938bfa3a46e4f586889ac03d2e99897d7a5b0",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-fill-img-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-fill-svg.html": [
+      "38c54e961863132f349eb033b85d0511a7e6c9f6",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-fill-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-fill-video.html": [
+      "c9f91b6e4663f7adc172f1d0f13345a35638b5e4",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-fill-video-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-none-canvas.html": [
+      "6fe8c16efee069f094eed09a2eb59fdcb0637e2e",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-none-canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-none-img.html": [
+      "f4a7412297fc432b535697ab26d41d88477143b7",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-none-img-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-none-svg.html": [
+      "c1036921651d2da738baf33aac781927f578ae7e",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-none-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-fit-none-video.html": [
+      "34b08572e9934ccd2ffafa5ddb0757874bf02426",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-fit-none-video-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-iframe.html": [
+      "a144a8ff316cb4a4a8d33ba55a3297913479e48f",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-iframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-negative-bounds.html": [
+      "34dd6075b40311ff149c6cb596a5ddd3f752750f",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-negative-bounds-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-property-changed.html": [
+      "2574558ea1e5e6b66e3b4b5a1b3e906e1325eb4f",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-property-changed-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-rect-auto.html": [
+      "97f18c781a03514fbec548302016deff80e6b2b1",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-rect-auto-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-rect-percentage.html": [
+      "45f05938d2024bbb062cc16176cb76739d2b4ebc",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-rect-percentage-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-rect.html": [
+      "2a0a8d307bda7c850e330568fdcf76d63548ad07",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-rect-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-same-size.html": [
+      "0daa360155744c17267fbcc4db5a952c150b5017",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-negative-bounds-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-size-containment.html": [
+      "c58e6735bf4070c03336c32a788f7bf0c163624f",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-size-containment-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-svg-img-no-size.html": [
+      "1d1c97a6e5f85cee31dfd47c79fc160f7596957d",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-svg-img-no-size-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-writing-mode-canvas.html": [
+      "8e0aaea2746ef8f1f70228ceb6382e3c74eea815",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-writing-mode-canvas-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-writing-mode-img.html": [
+      "547a2ed331769229bb0df381373a01e3b9b52ed5",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-writing-mode-img-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-writing-mode-svg.html": [
+      "5d90bb6026a3535614551e8170f0d874fea52460",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-writing-mode-svg-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-writing-mode-video.html": [
+      "0dd2e79daef618738200c35aab3f8deb5611afc0",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-writing-mode-video-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-xywh-percentage.html": [
+      "0f1d59343efa29eb048d0ec9dde9c9baf03f7a0d",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-xywh-percentage-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "object-view-box-xywh.html": [
+      "258ff6f083eac3e653a060125aeb81e47d82a862",
+      [
+       null,
+       [
+        [
+         "/css/css-images/object-view-box-xywh-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "out-of-range-color-stop-conic.html": [
       "be0c73a3bac62f5686f255245b080a07331ed48c",
       [
@@ -181691,6 +182120,19 @@
       ]
      ],
      "animation": {
+      "rotate-animation-with-will-change-transform-001.html": [
+       "9d330e1573aa0a7742112371c21498f4d2bcb320",
+       [
+        null,
+        [
+         [
+          "/css/css-transforms/animation/rotate-animation-with-will-change-transform-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "rotate-transform-equivalent.html": [
        "5748d86608d07e31f7ae7aae487217cf4867f7cc",
        [
@@ -192425,6 +192867,19 @@
      ]
     },
     "css-transitions": {
+     "inherit-background-color-transition.html": [
+      "f4dec80fad45af302675efed4b225b46d02492f1",
+      [
+       null,
+       [
+        [
+         "/css/css-transitions/inherit-background-color-transition-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "no-transition-from-ua-to-blocking-stylesheet.html": [
       "4967eabda86bf42be467b826f8782e91a115748e",
       [
@@ -233151,6 +233606,19 @@
          [
           [
            "/html/rendering/replaced-elements/the-option-element/option-with-br-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "select-multiple-covered-by-abspos.html": [
+        "ed290250dabc69ba9082442e54c2d00dc9771b65",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/the-option-element/select-multiple-covered-by-abspos-ref.html",
            "=="
           ]
          ],
@@ -275180,6 +275648,138 @@
       "d75e5edb7cba7640341006645bb278852e365378",
       []
      ],
+     "object-view-box-contain-intrinsic-size-ref.html": [
+      "da77fd4001a141eced2f9224ff44c6fe38a63f1a",
+      []
+     ],
+     "object-view-box-empty-bounds-ref.html": [
+      "9cc48196d81b4ea1143b669e6c41c56a60259a46",
+      []
+     ],
+     "object-view-box-fit-contain-canvas-ref.html": [
+      "b7998653f32a520e5a22342dba7870247f935170",
+      []
+     ],
+     "object-view-box-fit-contain-img-ref.html": [
+      "93624ff0f91b56299616b560c45c71c294512e0c",
+      []
+     ],
+     "object-view-box-fit-contain-svg-ref.html": [
+      "66ba39e5de0548073a51b9f7f2d9726e34c1fdad",
+      []
+     ],
+     "object-view-box-fit-contain-video-ref.html": [
+      "9d33d38417540fe269a3f2e77541b8b6bf5b82b9",
+      []
+     ],
+     "object-view-box-fit-cover-canvas-ref.html": [
+      "cd1902b65a6ee67d550e4b4f24d08081ea090237",
+      []
+     ],
+     "object-view-box-fit-cover-img-ref.html": [
+      "dd52c52e88f3d65fbe1fdc8ecd108b9794cb674e",
+      []
+     ],
+     "object-view-box-fit-cover-svg-ref.html": [
+      "36f1941411d21846dba24b827f27baeb1af8368a",
+      []
+     ],
+     "object-view-box-fit-cover-video-ref.html": [
+      "4ffac13bab50bb4acd4a4c9c52715f53056892fd",
+      []
+     ],
+     "object-view-box-fit-fill-canvas-ref.html": [
+      "88781621ef870042305e89aa67436ba36f7540ad",
+      []
+     ],
+     "object-view-box-fit-fill-img-ref.html": [
+      "f6bf841abe0a1a4a40875867b33213051e41b64d",
+      []
+     ],
+     "object-view-box-fit-fill-svg-ref.html": [
+      "5b0f9a8afccb946b0b5512f6efffad245b35a37c",
+      []
+     ],
+     "object-view-box-fit-fill-video-ref.html": [
+      "6eeb1b29f66eacaf6a1d9b1f752d6fdd7da195bd",
+      []
+     ],
+     "object-view-box-fit-none-canvas-ref.html": [
+      "a1b3f5e349f36f97057154fe5a9c65b8d318f35d",
+      []
+     ],
+     "object-view-box-fit-none-img-ref.html": [
+      "b988298bfae0a94caac24576f205e7ec632d5053",
+      []
+     ],
+     "object-view-box-fit-none-svg-ref.html": [
+      "b15cb6235106cc864c16ff7306d7d30f9b790049",
+      []
+     ],
+     "object-view-box-fit-none-video-ref.html": [
+      "2aacfa8ff7b12a554f347a9d494a291aa2ee4944",
+      []
+     ],
+     "object-view-box-iframe-ref.html": [
+      "e014e1038154ce09343423166c017a7d090f774d",
+      []
+     ],
+     "object-view-box-negative-bounds-ref.html": [
+      "3b4eaac30ee62eae8011070d6f06c6c2ad87a6ed",
+      []
+     ],
+     "object-view-box-property-changed-ref.html": [
+      "8974dfd6630725730444e0bcccb0fd13c95f5b6d",
+      []
+     ],
+     "object-view-box-rect-auto-ref.html": [
+      "54e90777fa8025c2d1de343b78ee18b5595f507d",
+      []
+     ],
+     "object-view-box-rect-percentage-ref.html": [
+      "3d413fb5ce90cb45ed68f1400c8eadc6a51e7b91",
+      []
+     ],
+     "object-view-box-rect-ref.html": [
+      "b27a5b8f83c51b48f3b2008da3ec2ecbea4c1c6d",
+      []
+     ],
+     "object-view-box-same-size-ref.html": [
+      "9e237a82b9d5cc3b7aa478c11c0b86a558172218",
+      []
+     ],
+     "object-view-box-size-containment-ref.html": [
+      "24097c6883aaee85fb2fb99c646273b22d366d9d",
+      []
+     ],
+     "object-view-box-svg-img-no-size-ref.html": [
+      "ca1ea59e278b2fd631d81944dcc5f6541da3780d",
+      []
+     ],
+     "object-view-box-writing-mode-canvas-ref.html": [
+      "56fa32d58ac6fc1f9e7e3a344d7949ad810bfb57",
+      []
+     ],
+     "object-view-box-writing-mode-img-ref.html": [
+      "8db7bc679fc1137d1b9b2517f4feb63725c4519b",
+      []
+     ],
+     "object-view-box-writing-mode-svg-ref.html": [
+      "c15b12a73ff7930e8bb9ff5f1c1f3abf0f08c1e2",
+      []
+     ],
+     "object-view-box-writing-mode-video-ref.html": [
+      "e9b5be9c238770394ce6e0aa783439e358af2d8a",
+      []
+     ],
+     "object-view-box-xywh-percentage-ref.html": [
+      "23d2e063162f63ea603241e0a53a1925504c9c78",
+      []
+     ],
+     "object-view-box-xywh-ref.html": [
+      "85ca9d368a270c45752aaeb43ea336f40da02647",
+      []
+     ],
      "reference": {
       "100x100-blue-green.html": [
        "e4f35c3e430cc2994709f6805576d1fe2c1f9cf3",
@@ -275247,6 +275847,14 @@
        "a0473f5ca26652c1229290bbf1f81eabc1e37280",
        []
       ],
+      "blue-green-red-yellow-50x100.svg": [
+       "325c39362cd218b148d6bcbcff2bff38ba072679",
+       []
+      ],
+      "blue-green-red-yellow-no-size.svg": [
+       "0e0f955c2953a0306fc73d138128f89f71a8f959",
+       []
+      ],
       "c-red.css": [
        "d4ba5c64e95406f541e2f8cc19e192e9f521ed6b",
        []
@@ -275287,6 +275895,10 @@
        "c336e3af1bd640f820cdb83df79c49e3d92df2b7",
        []
       ],
+      "exif-orientation-6-ru.jpg": [
+       "08d03f0a537f8e54ee1edc2f6afcc0d366cd4f46",
+       []
+      ],
       "generate-object-fit-and-position-canvas-tests.sh": [
        "aeeee5284cd71e8c601f8b2420456813ce138344",
        []
@@ -275307,6 +275919,10 @@
        "e00385a4748c535bed5e7af0892d18399db894ce",
        []
       ],
+      "generate_object_view_box_tests.py": [
+       "ccc5e4d14507fd911337f99135aed551ad84665b",
+       []
+      ],
       "import-green.css": [
        "537104e663364492c6ef388e4afce190e9c5bc58",
        []
@@ -275321,6 +275937,46 @@
       ],
       "intrinsic-size.png": [
        "833e6e36cdf316be9e4f54dc68732712afe11ba2",
+       []
+      ],
+      "object-view-box-fit-contain-ref-template.html": [
+       "1277b833c7d83fd0f36a471f4ccf158222cfdb9c",
+       []
+      ],
+      "object-view-box-fit-contain-template.html": [
+       "f874e65b88dd1c48bcc26fdccdabc743156d99cd",
+       []
+      ],
+      "object-view-box-fit-cover-ref-template.html": [
+       "9d1fb74b6dd60b80f6305add7faba6f1b1b441a0",
+       []
+      ],
+      "object-view-box-fit-cover-template.html": [
+       "85664a20b2608e88e284df8d9b8a0ec611d365a9",
+       []
+      ],
+      "object-view-box-fit-fill-ref-template.html": [
+       "b26ce3eacff5b182edf97d967afa1e1a65e8e4d2",
+       []
+      ],
+      "object-view-box-fit-fill-template.html": [
+       "ee2d83e8f201d5eb669ab5a87a5efdc5d952741a",
+       []
+      ],
+      "object-view-box-fit-none-ref-template.html": [
+       "421a4a0a568fde852dce7a905e8cf5fe08de9367",
+       []
+      ],
+      "object-view-box-fit-none-template.html": [
+       "ab0c083d2194289550aeb3909905683792e51956",
+       []
+      ],
+      "object-view-box-writing-mode-ref-template.html": [
+       "2986e5acf2ec3d45a745d45d7562fd4f339c7719",
+       []
+      ],
+      "object-view-box-writing-mode-template.html": [
+       "a8c1189a96c0c5db9b91b7b423b4167cdef1c570",
        []
       ],
       "pattern-grg-rgr-grg.png": [
@@ -275447,6 +276103,10 @@
       ],
       "test-tr.png": [
        "59843ae54b64f6ce4f7e616d4be491c911ea84cf",
+       []
+      ],
+      "testHelper.js": [
+       "e2806336e1b7d020141ca692a74ef5cf5f9834b7",
        []
       ]
      },
@@ -286019,6 +286679,10 @@
       []
      ],
      "animation": {
+      "rotate-animation-with-will-change-transform-001-ref.html": [
+       "0dd93d3f7b5e967c98589394f3a5d8dfd129fdc7",
+       []
+      ],
       "rotate-transform-equivalent-ref.html": [
        "e95e62be888216d9bcd2487c54c1da602973de75",
        []
@@ -287398,6 +288062,10 @@
      ],
      "README.md": [
       "f72f11dccae5e8b63de6148573723f86fbb4c708",
+      []
+     ],
+     "inherit-background-color-transition-ref.html": [
+      "b7a5824836e157f21649fabe12a701b860e04c9f",
       []
      ],
      "no-transition-from-ua-to-blocking-stylesheet-ref.html": [
@@ -309061,6 +309729,10 @@
        "option-with-br-ref.html": [
         "954840f389b00529b3b977aaf23884c59b37c88b",
         []
+       ],
+       "select-multiple-covered-by-abspos-ref.html": [
+        "3cb496ea1bc05f6f682a0a5379a8dc08cea976dd",
+        []
        ]
       },
       "the-select-element": {
@@ -311190,7 +311862,13 @@
       "popup-stacking-context-ref.tentative.html": [
        "a90890bb4e16d09e1e06a47ff25825425922154d",
        []
-      ]
+      ],
+      "resources": {
+       "popup-utils.js": [
+        "36a344b048f65158de6cf93d95bf507e5ce5fbe0",
+        []
+       ]
+      }
      },
      "scripting-1": {
       "META.yml": [
@@ -319213,7 +319891,7 @@
       []
      ],
      "respond_slowly.py": [
-      "efcdefed44dce108d339431b3d4636df69beb545",
+      "e58e16f1f0de754431c71db9d6fbc1e10cc383e0",
       []
      ],
      "secure-connection-interim.html": [
@@ -377780,6 +378458,13 @@
      ],
      "object-position-interpolation.html": [
       "13a1b177c8ac837844567fa95f243a4dd03ed208",
+      [
+       null,
+       {}
+      ]
+     ],
+     "object-view-box-parsing.html": [
+      "da17b7936fb9a3552ce263369c84282df30a4c23",
       [
        null,
        {}
@@ -469830,10 +470515,13 @@
        ]
       ],
       "popup-focus.tentative.html": [
-       "66fd7fbca7acf379f6dd1ed7468dfefc4f1eaa9c",
+       "6fccb0f13bdb489ee8b535267147e6d7a41f5bec",
        [
         null,
-        {}
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
        ]
       ],
       "popup-invoking-attribute.tentative.html": [
@@ -469853,7 +470541,7 @@
        ]
       ],
       "popup-light-dismiss.tentative.html": [
-       "e2a91b54a1ed59b14a283e2523eb3de3f666223a",
+       "e3c05fa530d3f69198771c34fb0d92ad9f5417db",
        [
         null,
         {
@@ -493033,10 +493721,12 @@
      ]
     ],
     "nav2_test_response_end_and_duration_before_during_and_after_load_event.html": [
-     "7fd04d306e483eb6e8d16d46bee598c9d605766c",
+     "35ad4d2a0eca6a5b22b62d1e8194e27a359241a3",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "nav2_test_unique_nav_instances.html": [
@@ -545353,7 +546043,7 @@
       ]
      ],
      "cross-partition.https.tentative.html": [
-      "0d0718bac0ed75d3e3cc36441f885f12f77e7c9b",
+      "3535b9cdf3a5c71ab5ec8b4792bd86847dd25205",
       [
        null,
        {}
