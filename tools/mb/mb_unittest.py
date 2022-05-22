@@ -36,9 +36,9 @@ class FakeMBW(mb.MetaBuildWrapper):
     if win32:
       self.chromium_src_dir = 'c:\\fake_src'
       self.default_config = 'c:\\fake_src\\tools\\mb\\mb_config.pyl'
-
       self.default_isolate_map = ('c:\\fake_src\\testing\\buildbot\\'
                                   'gn_isolate_map.pyl')
+      self.temp = 'c:\\temp'
       self.platform = 'win32'
       self.executable = 'c:\\python\\python.exe'
       self.sep = '\\'
@@ -47,8 +47,9 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.chromium_src_dir = '/fake_src'
       self.default_config = '/fake_src/tools/mb/mb_config.pyl'
       self.default_isolate_map = '/fake_src/testing/buildbot/gn_isolate_map.pyl'
-      self.executable = '/usr/bin/python'
+      self.temp = '/tmp'
       self.platform = 'linux'
+      self.executable = '/usr/bin/python'
       self.sep = '/'
       self.cwd = '/fake_src/out/Default'
 
@@ -111,7 +112,7 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.out += sep.join(args) + end
 
   def TempDir(self):
-    tmp_dir = os.path.join(tempfile.gettempdir(), 'mb_test')
+    tmp_dir = self.temp + self.sep + 'mb_test'
     self.dirs.add(tmp_dir)
     return tmp_dir
 
