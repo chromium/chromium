@@ -346,14 +346,14 @@
     "type": "archive",
     "translationKey": "TAR_BZIP2_ARCHIVE_FILE_TYPE",
     "subtype": "TBZ2",
-    "extensions": [".tar.bz2", ".tbz", ".tbz2"],
+    "extensions": [".tar.bz2", ".tar.bz", ".tbz", ".tbz2", ".tz2", ".tb2"],
     "mime": "application/x-bzip2"
   },
   {
     "type": "archive",
     "translationKey": "BZIP2_ARCHIVE_FILE_TYPE",
     "subtype": "BZ2",
-    "extensions": [".bz2"],
+    "extensions": [".bz2", ".bz"],
     "mime": "application/x-bzip2"
   },
   {
@@ -374,7 +374,7 @@
     "type": "archive",
     "translationKey": "TAR_LZMA_ARCHIVE_FILE_TYPE",
     "subtype": "TLZMA",
-    "extensions": [".tar.lzma", ".tlzma"],
+    "extensions": [".tar.lzma", ".tlzma", ".tlz"],
     "mime": "application/x-lzma"
   },
   {
@@ -397,6 +397,34 @@
     "subtype": "XZ",
     "extensions": [".xz"],
     "mime": "application/x-xz"
+  },
+  {
+    "type": "archive",
+    "translationKey": "TAR_Z_ARCHIVE_FILE_TYPE",
+    "subtype": "TZ",
+    "extensions": [".tar.z", ".taz", ".tz"],
+    "mime": "application/x-compress"
+  },
+  {
+    "type": "archive",
+    "translationKey": "Z_ARCHIVE_FILE_TYPE",
+    "subtype": "Z",
+    "extensions": [".z"],
+    "mime": "application/x-compress"
+  },
+  {
+    "type": "archive",
+    "translationKey": "TAR_ZSTD_ARCHIVE_FILE_TYPE",
+    "subtype": "TZST",
+    "extensions": [".tar.zst", ".tzst"],
+    "mime": "application/zstd"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ZSTD_ARCHIVE_FILE_TYPE",
+    "subtype": "ZST",
+    "extensions": [".zst"],
+    "mime": "application/zstd"
   },
 
   // Hosted docs

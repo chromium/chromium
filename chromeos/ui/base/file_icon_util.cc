@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -137,10 +139,10 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
 namespace internal {
 
 IconType GetIconTypeForPath(const base::FilePath& filepath) {
-  static const base::NoDestructor<base::flat_map<std::string, IconType>>
-      // Changes to this map should be reflected in
-      // ui/file_manager/file_manager/common/js/file_type.js.
-      extension_to_icon({
+  // Changes to this map should be reflected in
+  // ui/file_manager/base/gn/file_types.json5
+  static const auto extension_to_icon =
+      base::MakeFixedFlatMap<base::StringPiece, IconType>({
           // Image
           {".JPEG", IconType::kImage},
           {".JPG", IconType::kImage},
@@ -199,19 +201,23 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".7Z", IconType::kArchive},
           {".CRX", IconType::kArchive},
           {".TAR", IconType::kArchive},
-          {".TAR.BZ2", IconType::kArchive},
           {".TBZ2", IconType::kArchive},
           {".BZ2", IconType::kArchive},
           {".TBZ", IconType::kArchive},
-          {".TAR.GZ", IconType::kArchive},
           {".TGZ", IconType::kArchive},
           {".GZ", IconType::kArchive},
-          {".TAR.LZMA", IconType::kArchive},
           {".TLZMA", IconType::kArchive},
           {".LZMA", IconType::kArchive},
-          {".TAR.XZ", IconType::kArchive},
           {".TXZ", IconType::kArchive},
           {".XZ", IconType::kArchive},
+          {".BZ", IconType::kArchive},
+          {".TAZ", IconType::kArchive},
+          {".TB2", IconType::kArchive},
+          {".TLZ", IconType::kArchive},
+          {".TZ", IconType::kArchive},
+          {".TZ2", IconType::kArchive},
+          {".TZST", IconType::kArchive},
+          {".Z", IconType::kArchive},
 
           // Hosted doc
           {".GDOC", IconType::kGdoc},
@@ -244,10 +250,10 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".TINI", IconType::kTini},
       });
 
-  const auto& icon_it =
-      extension_to_icon->find(base::ToUpperASCII(filepath.Extension()));
-  if (icon_it != extension_to_icon->end()) {
-    return icon_it->second;
+  const auto* const it =
+      extension_to_icon.find(base::ToUpperASCII(filepath.Extension()));
+  if (it != extension_to_icon.end()) {
+    return it->second;
   } else {
     return IconType::kGeneric;
   }

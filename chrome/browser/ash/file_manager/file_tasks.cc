@@ -553,16 +553,28 @@ void PostProcessFoundTasks(
                  ash::features::kFilesArchivemount2)) {
     for (const auto& entry : entries) {
       // Deny-list: various compressed formats.
-      if (entry.path.MatchesFinalExtension(".bz") ||
+      if (entry.path.MatchesFinalExtension(".7z") ||
+          entry.path.MatchesFinalExtension(".bz") ||
           entry.path.MatchesFinalExtension(".bz2") ||
+          entry.path.MatchesFinalExtension(".crx") ||
           entry.path.MatchesFinalExtension(".gz") ||
+          entry.path.MatchesFinalExtension(".iso") ||
           entry.path.MatchesFinalExtension(".lzma") ||
-          entry.path.MatchesFinalExtension(".xz") ||
+          entry.path.MatchesFinalExtension(".tar") ||
+          entry.path.MatchesFinalExtension(".taz") ||
+          entry.path.MatchesFinalExtension(".tb2") ||
           entry.path.MatchesFinalExtension(".tbz") ||
           entry.path.MatchesFinalExtension(".tbz2") ||
           entry.path.MatchesFinalExtension(".tgz") ||
+          entry.path.MatchesFinalExtension(".tlz") ||
           entry.path.MatchesFinalExtension(".tlzma") ||
-          entry.path.MatchesFinalExtension(".txz")) {
+          entry.path.MatchesFinalExtension(".txz") ||
+          entry.path.MatchesFinalExtension(".tz") ||
+          entry.path.MatchesFinalExtension(".tz2") ||
+          entry.path.MatchesFinalExtension(".tzst") ||
+          entry.path.MatchesFinalExtension(".xz") ||
+          entry.path.MatchesFinalExtension(".z") ||
+          entry.path.MatchesFinalExtension(".zst")) {
         disabled_actions.emplace("mount-archive");
         break;
       }
@@ -718,7 +730,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
                              const std::string& suffix,
                              TaskDescriptor* task_out) {
   VLOG(1) << "Looking for default for MIME type: " << mime_type
-      << " and suffix: " << suffix;
+          << " and suffix: " << suffix;
   if (!mime_type.empty()) {
     const base::Value* mime_task_prefs =
         pref_service.GetDictionary(prefs::kDefaultTasksByMimeType);
@@ -753,15 +765,13 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
 std::string MakeTaskID(const std::string& app_id,
                        TaskType task_type,
                        const std::string& action_id) {
-  return base::StringPrintf("%s|%s|%s",
-                            app_id.c_str(),
+  return base::StringPrintf("%s|%s|%s", app_id.c_str(),
                             TaskTypeToString(task_type).c_str(),
                             action_id.c_str());
 }
 
 std::string TaskDescriptorToId(const TaskDescriptor& task_descriptor) {
-  return MakeTaskID(task_descriptor.app_id,
-                    task_descriptor.task_type,
+  return MakeTaskID(task_descriptor.app_id, task_descriptor.task_type,
                     task_descriptor.action_id);
 }
 
@@ -906,10 +916,9 @@ bool ExecuteFileTask(Profile* profile,
   return false;
 }
 
-void FindFileBrowserHandlerTasks(
-    Profile* profile,
-    const std::vector<GURL>& file_urls,
-    std::vector<FullTaskDescriptor>* result_list) {
+void FindFileBrowserHandlerTasks(Profile* profile,
+                                 const std::vector<GURL>& file_urls,
+                                 std::vector<FullTaskDescriptor>* result_list) {
   DCHECK(!file_urls.empty());
   DCHECK(result_list);
 

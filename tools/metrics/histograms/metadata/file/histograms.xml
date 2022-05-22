@@ -110,17 +110,29 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Extension">
     <variant name="7z"/>
+    <variant name="bz"/>
     <variant name="bz2"/>
     <variant name="crx"/>
     <variant name="gz"/>
     <variant name="iso"/>
+    <variant name="lzma"/>
     <variant name="rar"/>
     <variant name="tar"/>
+    <variant name="taz"/>
+    <variant name="tb2"/>
     <variant name="tbz"/>
     <variant name="tbz2"/>
     <variant name="tgz"/>
+    <variant name="tlz"/>
+    <variant name="tlzma"/>
+    <variant name="txz"/>
+    <variant name="tz"/>
+    <variant name="tz2"/>
+    <variant name="tzst"/>
     <variant name="xz"/>
+    <variant name="z"/>
     <variant name="zip"/>
+    <variant name="zst"/>
   </token>
 </histogram>
 

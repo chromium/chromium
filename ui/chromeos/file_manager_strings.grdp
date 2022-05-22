@@ -1336,6 +1336,18 @@
   <message name="IDS_FILE_BROWSER_XZ_ARCHIVE_FILE_TYPE" desc="XZ compressed archive file type">
     XZ compressed archive
   </message>
+  <message name="IDS_FILE_BROWSER_TAR_Z_ARCHIVE_FILE_TYPE" desc="Z compressed tar archive file type">
+    Z compressed tar archive
+  </message>
+  <message name="IDS_FILE_BROWSER_Z_ARCHIVE_FILE_TYPE" desc="Z compressed archive file type">
+    Z compressed archive
+  </message>
+  <message name="IDS_FILE_BROWSER_TAR_ZSTD_ARCHIVE_FILE_TYPE" desc="ZSTD compressed tar archive file type">
+    Zstandard compressed tar archive
+  </message>
+  <message name="IDS_FILE_BROWSER_ZSTD_ARCHIVE_FILE_TYPE" desc="ZSTD compressed archive file type">
+    Zstandard compressed archive
+  </message>
   <message name="IDS_FILE_BROWSER_PLAIN_TEXT_FILE_TYPE" desc="Plain text file type">
     Plain text
   </message>
