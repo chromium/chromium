@@ -72,54 +72,64 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState" enum="GpuImageUsageState"
-    expires_after="2021-08-09">
-  <owner>cblume@chromium.org</owner>
+    expires_after="2022-12-31">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Gpu image decode usage statistics. Images are decoded and locked prior to
     upload; this indicates how that decode is used during tile management.
+    Warning: this histogram was expired from 2021-08-09 to 2022-05-20; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.CachePeakUsagePercent"
-    units="units" expires_after="2021-08-09">
+    units="units" expires_after="2022-12-31">
   <owner>sashamcintosh@chromium.org</owner>
-  <owner>ericrk@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     The current number of bytes locked by the GpuImageDecodeCache compared to
     the maximum allowed number of bytes to lock. This value is recorded every
-    time the tile manager assigns GPU memory to tiles.
+    time the tile manager assigns GPU memory to tiles. Warning: this histogram
+    was expired from 2021-08-09 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2021-06-06">
-  <owner>cblume@chromium.org</owner>
+    enum="BooleanWasted" expires_after="2022-12-31">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Indication whether the first lock of an image decode was wasted (image was
     not used). Images are decoded and locked prior to raster; this indicates
-    whether the decode was used or not during the first lock.
+    whether the decode was used or not during the first lock. Warning: this
+    histogram was expired from 2021-06-06 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState" enum="GpuImageUsageState"
-    expires_after="2021-06-06">
-  <owner>cblume@chromium.org</owner>
+    expires_after="2022-12-31">
   <owner>khushalsagar@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Gpu image upload usage statistics. Images are uploaded and locked prior to
-    use; this indicates how that upload is used during tile management.
+    use; this indicates how that upload is used during tile management. Warning:
+    this histogram was expired from 2021-06-06 to 2022-05-20; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="M77">
-  <owner>ericrk@chromium.org</owner>
+    enum="BooleanWasted" expires_after="2022-12-31">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Indication whether the first lock of an image upload was wasted (image was
     not used). Images are uploaded and locked prior to raster; this indicates
-    whether the upload was used or not during the first lock.
+    whether the upload was used or not during the first lock. Warning: this
+    histogram was expired from M77 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 
@@ -287,23 +297,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.SoftwareImageDecodeState"
-    enum="SoftwareImageDecodeState" expires_after="2021-06-08">
-  <owner>cblume@chromium.org</owner>
+    enum="SoftwareImageDecodeState" expires_after="2022-12-31">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Software image decode usage statistics. Images are decoded and locked prior
     to raster; this indicates how that decode is used during tile management.
+    Warning: this histogram was expired from 2021-06-08 to 2022-05-20; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2021-06-08">
-  <owner>cblume@chromium.org</owner>
+    enum="BooleanWasted" expires_after="2022-12-31">
   <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
   <summary>
     Indication whether the first lock of an image decode was wasted (image was
     not used). Images are decoded and locked prior to raster; this indicates
-    whether the decode was used or not during the first lock.
+    whether the decode was used or not during the first lock. Warning: this
+    histogram was expired from 2021-06-08 to 2022-05-20; data may be missing.
   </summary>
 </histogram>
 
