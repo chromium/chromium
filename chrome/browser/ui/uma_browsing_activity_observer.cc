@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,8 +49,8 @@ void UMABrowsingActivityObserver::Init() {
 UMABrowsingActivityObserver::UMABrowsingActivityObserver() {
   registrar_.Add(this, content::NOTIFICATION_NAV_ENTRY_COMMITTED,
                  content::NotificationService::AllSources());
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  subscription_ = browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+      &UMABrowsingActivityObserver::OnAppTerminating, base::Unretained(this)));
 }
 
 UMABrowsingActivityObserver::~UMABrowsingActivityObserver() {}
@@ -84,11 +85,13 @@ void UMABrowsingActivityObserver::Observe(
 
     LogRenderProcessHostCount();
     LogBrowserTabCount();
-  } else if (type == chrome::NOTIFICATION_APP_TERMINATING) {
-    LogTimeBeforeUpdate();
-    delete g_uma_browsing_activity_observer_instance;
-    g_uma_browsing_activity_observer_instance = NULL;
   }
+}
+
+void UMABrowsingActivityObserver::OnAppTerminating() const {
+  LogTimeBeforeUpdate();
+  delete g_uma_browsing_activity_observer_instance;
+  g_uma_browsing_activity_observer_instance = NULL;
 }
 
 void UMABrowsingActivityObserver::LogTimeBeforeUpdate() const {

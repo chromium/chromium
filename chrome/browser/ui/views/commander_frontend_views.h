@@ -10,12 +10,11 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/commander/commander_handler.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "ui/views/widget/widget_observer.h"
 
 class CommanderFocusLossWatcher;
@@ -38,7 +37,6 @@ struct CommanderViewModel;
 class CommanderFrontendViews : public commander::CommanderFrontend,
                                public CommanderHandler::Delegate,
                                public BrowserListObserver,
-                               public content::NotificationObserver,
                                public views::WidgetObserver {
  public:
   explicit CommanderFrontendViews(commander::CommanderBackend* backend);
@@ -60,11 +58,6 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   // BrowserListObserver overrides
   void OnBrowserClosing(Browser* browser) override;
 
-  // content::NotificationObserver overrides
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // views::WidgetObserver overrides
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
@@ -77,6 +70,8 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   std::unique_ptr<CommanderWebView> CreateWebView(Profile* profile);
 
   bool is_showing() { return widget_ != nullptr; }
+
+  void OnAppTerminating();
 
   // The controller. Must outlive this object.
   raw_ptr<commander::CommanderBackend> backend_;
@@ -91,8 +86,8 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   raw_ptr<Browser> browser_ = nullptr;
   // Whether the web UI interface is loaded and ready to accept view models.
   bool is_handler_enabled_ = false;
-  // Registrar for observing app termination.
-  content::NotificationRegistrar registrar_;
+  // Sbuscription for observing app termination.
+  base::CallbackListSubscription subscription_;
   // Helper to close the commander widget on deactivation.
   std::unique_ptr<CommanderFocusLossWatcher> focus_loss_watcher_;
 
