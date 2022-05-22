@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">স্ক্ৰীন ছেভাৰৰ পটভূমি বাছনি কৰক</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ৰ পৰা হোৱা ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
+<translation id="1631385268983122904">এতিয়ালৈকে ডিভাইচটোৰ পিছফালটো একেলগে নাৰাখিব</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
 <translation id="1641857168437328880">নথি ফীডাৰ (এফাল থকা)</translation>
 <translation id="1643449475550628585">দৈনিক ৱালপেপাৰৰ প্ৰতিচ্ছবি সলনি কৰক</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">অনুগ্ৰহ কৰি ডিভাইচৰ তথ্য নিশ্চিত কৰক</translation>
 <translation id="1662989795263954667">বন্ধ হৈছে - চিয়াঁহী শেষ হৈছে</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
+<translation id="1676557873873341166">ভিডিঅ’ চিত্ৰগ্ৰহণ কৰি থকা হৈছে</translation>
 <translation id="1703835215927279855">লেটাৰ</translation>
 <translation id="1706391837335750954">DNS ৰিজলভাৰ প্ৰেজেণ্ট</translation>
 <translation id="1715359911173058521">স্কেনাৰটোৰ সৈতে যোগাযোগ কৰাত এটা সমস্যা হৈছে। নেটৱৰ্কটো অথবা ইউএছবি সংযোগটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">পাৱাৰৱাশ্ব</translation>
 <translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
+<translation id="2340422556570134524">ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাটো অপ্ৰত্যাশিতভাৱে অন কৰা হৈছে। পুনৰ চেষ্টা কৰাৰ পূৰ্বে অনুগ্ৰহ কৰি ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাটো অফ কৰক।</translation>
 <translation id="2346474577291266260">উত্তম (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />অযোগ্য উপাদান<ph name="LINK_END" /> চিনাক্ত কৰা হৈছে। আপুনি যদি এইটো ইনষ্টল হৈছেনে নাই সেয়া নিশ্চিত কৰিবলৈ বিচাৰে, অনুগ্ৰহ কৰি সেয়া এতিয়াই কৰক।</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">ৱাই-ফাইৰ নেটৱৰ্কটো সুৰক্ষিত নহয়</translation>
 <translation id="5376354385557966694">স্বয়ংক্ৰিয় উজ্জ্বল ম’ড</translation>
 <translation id="537872351913703572">ডিভাইচটো অন্য কোনো ব্যৱহাৰকাৰী অথবা প্ৰতিষ্ঠানলৈ যাব</translation>
+<translation id="5389159777326897627">ৱালপেপাৰ আৰু শৈলী</translation>
 <translation id="5389224261615877010">ৰামধেনু</translation>
 <translation id="5395600419410242651">আটাইবোৰ ডেটা মচক</translation>
 <translation id="5400907029458559844">ডিভাইচটো সংযোগ হৈ আছে।</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">আৰম্ভ কৰিবলৈ আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
+<translation id="6995564396478647735">ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাটো অন হৈ থকাটো নিশ্চিত কৰক</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7040230719604914234">অপাৰেটৰ</translation>
 <translation id="7041549558901442110">ডিভাইচটো সংযোগ কৰা হোৱা নাই।</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">বিফল হৈছে - কৰ্তৃত্ব প্ৰদান কৰাটো বিফল হৈছে</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> টা ডিভাইচৰ ভিতৰত <ph name="INDEX" />তম ডিভাইচ, যাৰ নাম <ph name="NAME" />।</translation>
+<translation id="7126228745139711113">ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাটো অফ কৰা হৈছে</translation>
 <translation id="7134436342991564651">{0,plural, =1{নে'ম ছার্ভাৰ}one{নে'ম ছার্ভাৰ}other{নে'ম ছার্ভাৰ}}</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">স্বয়ংক্ৰিয় ৰঙৰ ম'ডটো সক্ষম কৰক</translation>
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
 <translation id="8045012663542226664">মাইক্ৰ’ফ’ন মিউট কৰক</translation>
+<translation id="8063022551652308521">ৰাইট কৰিব নোৱৰাকৈ সুৰক্ষিত কৰাটো এতিয়াও অফ কৰি থোৱা আছে। আগবাঢ়িবলৈ ইয়াক অন কৰক।</translation>
 <translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="8082366717211101304">Android এপৰ পৰা DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="8083281199617904460">মেৰামতি কৰাৰ প্ৰক্ৰিয়াটো কেৱল প্ৰশিক্ষণপ্ৰাপ্ত মেৰামতি কৰা টেকনিচিয়ানৰ বাবেহে। কাম নকৰা উপাদানসমূহ সলনি কৰাৰ পাছতহে ষ্টাৰ্ট কৰক।</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই সুবিধাটো পৰিচালনা কৰিবলৈ বাওঁমুৱা অথবা সোঁমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="871560550817059752">বিফল হৈছে - চিয়াহী শেষ হৈছে</translation>
+<translation id="8717030727630712160">মেৰামতিৰ প্ৰক্ৰিয়াটো পুনৰ আৰম্ভ কৰি থকা হৈছে…</translation>
 <translation id="8723108084122415655">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্ক বিলম্বতাৰ সীমাৰ ওপৰত আছে</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
 <translation id="8726019395068607495">বন্ধ হৈছে - দুৱাৰ খোল খাই আছে</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ডিভাইচটো এটা টেবলেট।</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
+<translation id="8897267175591692539">আপুনি এতিয়া ডিভাইচৰ পিছফালটো একেলগে ৰাখিব পাৰে</translation>
 <translation id="8898840733695078011">ছিগনেলৰ ক্ষমতা</translation>
 <translation id="8910721771319628100">ডিফ’ল্ট নেটৱৰ্ক বিলম্বতাৰ সীমাৰ ওপৰত আছে</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ৰ <ph name="DEVICE_TYPE" /></translation>

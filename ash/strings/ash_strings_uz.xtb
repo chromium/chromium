@@ -24,6 +24,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="109942774857561566">Men zerikdim</translation>
 <translation id="1104084341931202936">Maxsus imkoniyatlar sozlamalarini ochish</translation>
 <translation id="1104621072296271835">Qurilmalaringiz birgalikda yaxshiroq ishlaydi</translation>
+<translation id="1111021433905331574">Klaviatura orqa chirogʻi rangini Sozlamalar &gt; <ph name="APP_TITLE" /> sahifasidan oʻzgartirish mumkin</translation>
 <translation id="112308213915226829">Javonni avtomatik yashirish</translation>
 <translation id="1142002900084379065">Yaqinda olingan suratlar</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> axborot oynasini ochish</translation>
@@ -65,6 +66,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> quvvatlanmoqda</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Telefonni topish</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> deb nomlangan ish stoli mavjud</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> kuni soat <ph name="COME_BACK_TIME" /> da qayting.</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> ilovasini <ph name="FOLDER_NAME" /> jildiga olish.</translation>
@@ -269,6 +271,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> bilan birlashtirish uchun Ctrl+W tugmalarini bosing. Ish stoli va oynalarni yopish uchun Ctrl+Shift+W tugmalarini bosing.</translation>
 <translation id="2595239820337756193">5 mil kilometrda</translation>
 <translation id="2596078834055697711">Oynadan skrinshot olish</translation>
+<translation id="2598725286293895280">Ish stolida mos kelmaydigan ilovalar bor</translation>
 <translation id="2607678425161541573">Onlayn kirish zarur</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, fayllar, ilovalar va boshqalarni qidirish...</translation>
 <translation id="2620436844016719705">Tizim</translation>
@@ -644,6 +647,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4734965478015604180">Gorizontal</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Raqam tezkor tugmasi oʻzgardi. Funksiya tugmalaridan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + yuqori qatordagi kalitni bosing.</translation>
 <translation id="473775607612524610">Yangilash</translation>
+<translation id="4740516757091333363">Saqlangan ish stoli oʻchirilsinmi?</translation>
 <translation id="4752784485658729358">Faqat 6 tagacha ish stolini saqlash mumkin. Yangisini saqlash uchun eskilarini oʻchiring.</translation>
 <translation id="4759238208242260848">Yuklanmalar</translation>
 <translation id="4774338217796918551">Ertaga soat <ph name="COME_BACK_TIME" /> da qayting.</translation>
@@ -741,6 +745,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5352250171825660495">Tungi mavzu yoniq</translation>
 <translation id="5356963482258194581">Tungi va kunduzni mavzularni almashtirish. Ish stolida oʻng klikni bosib, Fon rasmi va uslub bandini tanlang.</translation>
 <translation id="5379115545237091094">Juda ko‘p urinishlar bo‘ldi</translation>
+<translation id="5391307769715781764">Saqlangan ish stoli almashtirilsinmi?</translation>
 <translation id="5393156353051693207">Ilovalarni qayta saralash uchun istalgan joyni bosib turing</translation>
 <translation id="5395308026110844773">Jild yaratish uchun <ph name="DRAGGED_APP_NAME" /> ilovaisini <ph name="IN_PLACE_APP" /> ustiga sudrang.</translation>
 <translation id="5397578532367286026">Boshqaruvchi (<ph name="MANAGER_EMAIL" />) bu foydalanuvchining brauzerdagi ish tarixini chrome.com saytida ko‘rishi mumkin.</translation>
@@ -974,6 +979,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6801878137098616817">Yaqinda tahrirlangan</translation>
 <translation id="6803622936009808957">Ekran tasvirini nusxalab bo‘lmadi, chunki ko‘rsatilgan ekran sig‘imi qo‘llab-quvvatlanmaydi. Kengaytirilgan ish stoli rejimi yoqildi.</translation>
+<translation id="6812232930908427253">Ish stoli saqlanmadi. Haddan ziyod oynalar yoki varaqlar ochilgan.</translation>
 <translation id="6818242057446442178">Bitta soʻz orqaga</translation>
 <translation id="6819327813400217281">Kamera pastki chap burchakka joylandi</translation>
 <translation id="6820676911989879663">Tanaffus qiling</translation>
