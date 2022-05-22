@@ -31,23 +31,23 @@ constexpr int kSpaceRow = 8;
 }  // namespace
 
 // static
-std::unique_ptr<EditModeExitView> EditModeExitView::BuildView(
+std::unique_ptr<EditFinishView> EditFinishView::BuildView(
     DisplayOverlayController* display_overlay_controller,
     gfx::Point position) {
   auto menu_view_ptr =
-      std::make_unique<EditModeExitView>(display_overlay_controller);
+      std::make_unique<EditFinishView>(display_overlay_controller);
   menu_view_ptr->Init(position);
 
   return menu_view_ptr;
 }
 
-EditModeExitView::EditModeExitView(
+EditFinishView::EditFinishView(
     DisplayOverlayController* display_overlay_controller)
     : display_overlay_controller_(display_overlay_controller) {}
 
-EditModeExitView::~EditModeExitView() {}
+EditFinishView::~EditFinishView() {}
 
-void EditModeExitView::Init(gfx::Point position) {
+void EditFinishView::Init(gfx::Point position) {
   // TODO(djacobo): Set proper fonts, also check if states needs to be manually
   // tuned or if whatever its done by default works fine.
   DCHECK(display_overlay_controller_);
@@ -58,7 +58,7 @@ void EditModeExitView::Init(gfx::Point position) {
   SetSize(gfx::Size(kMenuWidth, kMenuHeight));
 
   reset_button_ = AddChildView(std::make_unique<ash::PillButton>(
-      base::BindRepeating(&EditModeExitView::OnResetButtonPressed,
+      base::BindRepeating(&EditFinishView::OnResetButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MODE_RESET),
       ash::PillButton::Type::kIconless,
@@ -67,7 +67,7 @@ void EditModeExitView::Init(gfx::Point position) {
   reset_button_->SetButtonTextColor(gfx::kGoogleGrey200);
 
   save_button_ = AddChildView(std::make_unique<ash::PillButton>(
-      base::BindRepeating(&EditModeExitView::OnSaveButtonPressed,
+      base::BindRepeating(&EditFinishView::OnSaveButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MODE_SAVE),
       ash::PillButton::Type::kIconless,
@@ -77,7 +77,7 @@ void EditModeExitView::Init(gfx::Point position) {
   save_button_->SetButtonTextColor(gfx::kGoogleGrey900);
 
   cancel_button_ = AddChildView(std::make_unique<ash::PillButton>(
-      base::BindRepeating(&EditModeExitView::OnCancelButtonPressed,
+      base::BindRepeating(&EditFinishView::OnCancelButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL),
       ash::PillButton::Type::kIconless,
@@ -88,21 +88,21 @@ void EditModeExitView::Init(gfx::Point position) {
   SetPosition(position);
 }
 
-void EditModeExitView::OnResetButtonPressed() {
+void EditFinishView::OnResetButtonPressed() {
   DCHECK(display_overlay_controller_);
   if (!display_overlay_controller_)
     return;
   display_overlay_controller_->OnCustomizeRestore();
 }
 
-void EditModeExitView::OnSaveButtonPressed() {
+void EditFinishView::OnSaveButtonPressed() {
   DCHECK(display_overlay_controller_);
   if (!display_overlay_controller_)
     return;
   display_overlay_controller_->OnCustomizeSave();
 }
 
-void EditModeExitView::OnCancelButtonPressed() {
+void EditFinishView::OnCancelButtonPressed() {
   DCHECK(display_overlay_controller_);
   if (!display_overlay_controller_)
     return;

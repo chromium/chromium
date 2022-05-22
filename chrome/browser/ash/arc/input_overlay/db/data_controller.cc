@@ -48,7 +48,7 @@ std::unique_ptr<AppDataProto> DataController::ReadProtoFromFile(
     return nullptr;
   auto file_path = GetFilePathFromPackageName(package_name);
 
-  if (!ProtoFileExits(file_path)) {
+  if (!ProtoFileExists(file_path)) {
     CreateEmptyFile(file_path);
     return nullptr;
   }
@@ -84,7 +84,7 @@ absl::optional<base::FilePath> DataController::CreateOrGetDirectory() {
   return absl::nullopt;
 }
 
-bool DataController::ProtoFileExits(base::FilePath file_path) {
+bool DataController::ProtoFileExists(base::FilePath file_path) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   return base::PathExists(file_path);
 }

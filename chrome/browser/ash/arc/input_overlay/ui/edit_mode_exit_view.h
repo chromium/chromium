@@ -15,7 +15,7 @@ namespace ash {
 class PillButton;
 }  // namespace ash
 
-// View displaying the 3 possible options to exit edit mode.
+// View displaying the 3 possible options to finish edit mode.
 //
 // These actions refer to what the user can do wrt customized key-bindings, they
 // can either reset to a set of default key-bindings or just accept/cancel the
@@ -35,18 +35,17 @@ namespace input_overlay {
 
 class DisplayOverlayController;
 
-class EditModeExitView : public views::View {
+class EditFinishView : public views::View {
  public:
-  static std::unique_ptr<EditModeExitView> BuildView(
+  static std::unique_ptr<EditFinishView> BuildView(
       DisplayOverlayController* display_overlay_controller,
       gfx::Point position);
 
-  explicit EditModeExitView(
-      DisplayOverlayController* display_overlay_controller);
+  explicit EditFinishView(DisplayOverlayController* display_overlay_controller);
 
-  EditModeExitView(const EditModeExitView&) = delete;
-  EditModeExitView& operator=(const EditModeExitView&) = delete;
-  ~EditModeExitView() override;
+  EditFinishView(const EditFinishView&) = delete;
+  EditFinishView& operator=(const EditFinishView&) = delete;
+  ~EditFinishView() override;
 
  private:
   void Init(gfx::Point position);

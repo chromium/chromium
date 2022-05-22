@@ -36,8 +36,8 @@ namespace {
 // UI specs.
 constexpr int kMenuEntrySize = 56;
 constexpr int kMenuEntrySideMargin = 24;
-constexpr int kEditModeExitWidth = 140;
-constexpr int kEditModeExitHeight = 184;
+constexpr int kEditFinishWidth = 140;
+constexpr int kEditFinishHeight = 184;
 constexpr SkColor kMenuEntryBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
 constexpr int kCornerRadius = 8;
 constexpr int kNudgeVerticalAlign = 8;
@@ -227,7 +227,7 @@ void DisplayOverlayController::RemoveInputMappingView() {
   input_mapping_view_ = nullptr;
 }
 
-void DisplayOverlayController::AddEditModeExitView(
+void DisplayOverlayController::AddEditFinishView(
     views::Widget* overlay_widget) {
   DCHECK(overlay_widget);
   auto* parent_view = overlay_widget->GetContentsView();
@@ -235,15 +235,15 @@ void DisplayOverlayController::AddEditModeExitView(
 
   // TODO(djacobo): Undefined vertical position, reusing whatever |entry_menu_|
   // uses for now.
-  edit_mode_view_ = parent_view->AddChildView(
-      EditModeExitView::BuildView(this, CalculateEditModeExitPosition()));
+  edit_finish_view_ = parent_view->AddChildView(
+      EditFinishView::BuildView(this, CalculateEditFinishPosition()));
 }
 
-void DisplayOverlayController::RemoveEditModeExitView() {
-  if (!edit_mode_view_)
+void DisplayOverlayController::RemoveEditFinishView() {
+  if (!edit_finish_view_)
     return;
-  edit_mode_view_->parent()->RemoveChildViewT(edit_mode_view_);
-  edit_mode_view_ = nullptr;
+  edit_finish_view_->parent()->RemoveChildViewT(edit_finish_view_);
+  edit_finish_view_ = nullptr;
 }
 
 void DisplayOverlayController::AddEducationalView() {
@@ -291,7 +291,7 @@ gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
       std::max(0, view->height() / 2 - kMenuEntrySize / 2));
 }
 
-gfx::Point DisplayOverlayController::CalculateEditModeExitPosition() {
+gfx::Point DisplayOverlayController::CalculateEditFinishPosition() {
   auto* overlay_widget = GetOverlayWidget();
   if (!overlay_widget)
     return gfx::Point();
@@ -300,8 +300,8 @@ gfx::Point DisplayOverlayController::CalculateEditModeExitPosition() {
     return gfx::Point();
 
   return gfx::Point(
-      std::max(0, view->width() - kEditModeExitWidth - kMenuEntrySideMargin),
-      std::max(0, view->height() / 2 - kEditModeExitHeight / 2));
+      std::max(0, view->width() - kEditFinishWidth - kMenuEntrySideMargin),
+      std::max(0, view->height() / 2 - kEditFinishHeight / 2));
 }
 
 views::View* DisplayOverlayController::GetParentView() {
@@ -324,7 +324,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     case DisplayMode::kNone:
       RemoveMenuEntryView();
       RemoveInputMappingView();
-      RemoveEditModeExitView();
+      RemoveEditFinishView();
       RemoveNudgeView();
       break;
     case DisplayMode::kEducation:
@@ -334,7 +334,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       break;
     case DisplayMode::kView:
       RemoveInputMenuView();
-      RemoveEditModeExitView();
+      RemoveEditFinishView();
       RemoveEducationalView();
       RemoveNudgeView();
       AddInputMappingView(overlay_widget);
@@ -349,7 +349,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveMenuEntryView();
       RemoveEducationalView();
       RemoveNudgeView();
-      AddEditModeExitView(overlay_widget);
+      AddEditFinishView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
       break;

@@ -33,7 +33,7 @@ class TouchInjector;
 class InputMappingView;
 class InputMenuView;
 class ActionEditMenu;
-class EditModeExitView;
+class EditFinishView;
 class ErrorView;
 class EducationalView;
 
@@ -103,8 +103,8 @@ class DisplayOverlayController : public ui::EventHandler {
   void AddInputMappingView(views::Widget* overlay_widget);
   void RemoveInputMappingView();
 
-  void AddEditModeExitView(views::Widget* overlay_widget);
-  void RemoveEditModeExitView();
+  void AddEditFinishView(views::Widget* overlay_widget);
+  void RemoveEditFinishView();
 
   // Add |EducationalView|.
   void AddEducationalView();
@@ -114,7 +114,7 @@ class DisplayOverlayController : public ui::EventHandler {
 
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();
-  gfx::Point CalculateEditModeExitPosition();
+  gfx::Point CalculateEditFinishPosition();
   views::View* GetParentView();
   bool HasMenuView() const;
   void SetInputMappingVisible(bool visible);
@@ -140,7 +140,7 @@ class DisplayOverlayController : public ui::EventHandler {
   raw_ptr<InputMenuView> input_menu_view_ = nullptr;
   raw_ptr<views::ImageButton> menu_entry_ = nullptr;
   raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
-  raw_ptr<EditModeExitView> edit_mode_view_ = nullptr;
+  raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
   raw_ptr<ErrorView> error_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
   raw_ptr<ash::PillButton> nudge_view_ = nullptr;
