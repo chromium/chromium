@@ -5,6 +5,12 @@ on:
       driver_revision:
         description: "Driver revision to use, if not the latest"
         required: false
+      v8_revision:
+        description: "V8 revision to use, if not the latest"
+        required: false
+      skia_revision:
+        description: "Skia revision to use, if not the latest"
+        required: false
       clobber:
         description: "Build chromium from scratch"
         type: boolean
@@ -31,5 +37,7 @@ jobs:
           BUILD_TEST_PORT: ${{ secrets.BUILD_TEST_PORT }}
           BUILD_TEST_INSECURE: ${{ secrets.BUILD_TEST_INSECURE }}
           INPUT_DRIVER_REVISION: ${{ github.event.inputs.driver_revision }}
+          INPUT_V8_REVISION: ${{ github.event.inputs.v8_revision }}
+          INPUT_SKIA_REVISION: ${{ github.event.inputs.skia_revision }}
           INPUT_CLOBBER: ${{ github.event.inputs.clobber }}
           INPUT_SLOT: ${{ github.event.inputs.slot }}
