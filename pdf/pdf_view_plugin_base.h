@@ -27,7 +27,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -123,7 +122,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
-  SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void EnteredEditMode() override;
@@ -189,7 +187,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
                       base::StringPiece src_url,
                       base::StringPiece original_url,
                       bool full_frame,
-                      SkColor background_color,
                       bool has_edits);
 
   // Creates a new `PDFiumEngine`.
@@ -412,7 +409,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleSaveMessage(const base::Value::Dict& message);
   void HandleSaveAttachmentMessage(const base::Value::Dict& message);
   void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
-  void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
   void HandleSetPresentationModeMessage(const base::Value::Dict& message);
   void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
   void HandleStopScrollingMessage(const base::Value::Dict& /*message*/);
@@ -504,9 +500,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The plugin rectangle in device pixels.
   gfx::Rect plugin_rect_;
-
-  // The background color of the PDF viewer.
-  SkColor background_color_ = SK_ColorTRANSPARENT;
 
   // Current zoom factor.
   double zoom_ = 1.0;

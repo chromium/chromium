@@ -784,6 +784,17 @@ TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithScaleAndTranslate) {
                      /*expected_clipped_rect=*/gfx::Rect(10, 15, 5, 10));
 }
 
+TEST_F(PdfViewWebPluginTest, HandleSetBackgroundColorMessage) {
+  ASSERT_NE(SK_ColorGREEN, plugin_->GetBackgroundColor());
+
+  base::Value::Dict message;
+  message.Set("type", "setBackgroundColor");
+  message.Set("color", static_cast<double>(SK_ColorGREEN));
+  plugin_->OnMessage(message);
+
+  EXPECT_EQ(SK_ColorGREEN, plugin_->GetBackgroundColor());
+}
+
 class PdfViewWebPluginMouseEventsTest : public PdfViewWebPluginTest {
  protected:
   class TestPDFiumEngineForMouseEvents : public TestPDFiumEngine {

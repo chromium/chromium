@@ -53,7 +53,7 @@ bool TestClient::IsPrintPreview() const {
   return false;
 }
 
-SkColor TestClient::GetBackgroundColor() {
+SkColor TestClient::GetBackgroundColor() const {
   return SK_ColorTRANSPARENT;
 }
 

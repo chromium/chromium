@@ -92,6 +92,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
 
+  MOCK_METHOD(SkColor, GetBackgroundColor, (), (const override));
+
   MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
 
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
@@ -595,18 +597,6 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInEditMode) {
   fake_plugin_.HandleMessage(message);
   ASSERT_FALSE(fake_plugin_.sent_messages().empty());
   EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
-}
-
-TEST_F(PdfViewPluginBaseTest, HandleSetBackgroundColorMessage) {
-  const SkColor kNewBackgroundColor = SK_ColorGREEN;
-  ASSERT_NE(kNewBackgroundColor, fake_plugin_.GetBackgroundColor());
-
-  base::Value::Dict message;
-  message.Set("type", "setBackgroundColor");
-  message.Set("color", static_cast<double>(kNewBackgroundColor));
-
-  fake_plugin_.HandleMessage(message);
-  EXPECT_EQ(kNewBackgroundColor, fake_plugin_.GetBackgroundColor());
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest,

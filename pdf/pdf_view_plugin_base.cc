@@ -57,7 +57,6 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -154,10 +153,8 @@ void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
                                        base::StringPiece src_url,
                                        base::StringPiece original_url,
                                        bool full_frame,
-                                       SkColor background_color,
                                        bool has_edits) {
   full_frame_ = full_frame;
-  background_color_ = background_color;
 
   DCHECK(engine);
   engine_ = std::move(engine);
@@ -420,10 +417,6 @@ void PdfViewPluginBase::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
   SetFormTextFieldInFocus(type == PDFEngine::FocusFieldType::kText);
 }
 
-SkColor PdfViewPluginBase::GetBackgroundColor() {
-  return background_color_;
-}
-
 void PdfViewPluginBase::SetIsSelecting(bool is_selecting) {
   base::Value::Dict message;
   message.Set("type", "setIsSelecting");
@@ -524,8 +517,6 @@ void PdfViewPluginBase::HandleMessage(const base::Value::Dict& message) {
           {"save", &PdfViewPluginBase::HandleSaveMessage},
           {"saveAttachment", &PdfViewPluginBase::HandleSaveAttachmentMessage},
           {"selectAll", &PdfViewPluginBase::HandleSelectAllMessage},
-          {"setBackgroundColor",
-           &PdfViewPluginBase::HandleSetBackgroundColorMessage},
           {"setPresentationMode",
            &PdfViewPluginBase::HandleSetPresentationModeMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
@@ -1150,12 +1141,6 @@ void PdfViewPluginBase::HandleSelectAllMessage(
   engine()->SelectAll();
 }
 
-void PdfViewPluginBase::HandleSetBackgroundColorMessage(
-    const base::Value::Dict& message) {
-  background_color_ =
-      base::checked_cast<SkColor>(message.FindDouble("color").value());
-}
-
 void PdfViewPluginBase::HandleSetPresentationModeMessage(
     const base::Value::Dict& message) {
   engine()->SetReadOnly(message.FindBool("enablePresentationMode").value());
@@ -1350,7 +1335,7 @@ void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_rect_.width(), first_page_ypos)));
-      image_data_.erase(background_color_, gfx::RectToSkIRect(region));
+      image_data_.erase(GetBackgroundColor(), gfx::RectToSkIRect(region));
       ready_rects.push_back(region);
     }
 
@@ -1384,7 +1369,7 @@ void PdfViewPluginBase::PrepareForFirstPaint(
 
   // Fill the image data buffer with the background color.
   first_paint_ = false;
-  image_data_.eraseColor(background_color_);
+  image_data_.eraseColor(GetBackgroundColor());
   ready.emplace_back(gfx::SkIRectToRect(image_data_.bounds()),
                      image_data_.asImage(), /*flush_now=*/true);
 }

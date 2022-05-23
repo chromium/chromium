@@ -154,7 +154,7 @@ bool PreviewModeClient::IsPrintPreview() const {
   return true;
 }
 
-SkColor PreviewModeClient::GetBackgroundColor() {
+SkColor PreviewModeClient::GetBackgroundColor() const {
   NOTREACHED();
   return SK_ColorTRANSPARENT;
 }

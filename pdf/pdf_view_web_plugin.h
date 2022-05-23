@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
@@ -268,6 +270,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                                const char16_t* term,
                                                bool case_sensitive) override;
   bool IsPrintPreview() const override;
+  SkColor GetBackgroundColor() const override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void SetSelectedText(const std::string& selected_text) override;
   bool IsValidLink(const std::string& url) override;
@@ -354,6 +357,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Creates a URL loader with universal access.
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal();
+
+  // Message handlers.
+  void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
 
   // Recalculates values that depend on scale factors.
   void UpdateScaledValues();
@@ -460,6 +466,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The plugin rect in CSS pixels.
   gfx::Rect css_plugin_rect_;
+
+  // The background color of the PDF viewer.
+  SkColor background_color_ = SK_ColorTRANSPARENT;
 
   // If true, the render frame has been notified that we're starting a network
   // request so that it can start the throbber. It will be notified again once

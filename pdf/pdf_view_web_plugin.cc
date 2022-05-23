@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/string_search.h"
@@ -22,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -234,11 +236,12 @@ bool PdfViewWebPlugin::InitializeCommon() {
   is_print_preview_ = (embedder_origin == kChromePrintHost);
   CHECK(IsPrintPreview() || embedder_origin == kChromeExtensionHost);
 
+  background_color_ = params->background_color;
+
   InitializeBase(CreateEngine(this, params->script_option),
                  /*src_url=*/params->src_url,
                  /*original_url=*/params->original_url,
                  /*full_frame=*/params->full_frame,
-                 /*background_color=*/params->background_color,
                  /*has_edits=*/params->has_edits);
 
   SendSetSmoothScrolling();
@@ -735,6 +738,10 @@ bool PdfViewWebPlugin::IsPrintPreview() const {
   return is_print_preview_;
 }
 
+SkColor PdfViewWebPlugin::GetBackgroundColor() const {
+  return background_color_;
+}
+
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   selected_text_ = blink::WebString::FromUTF8(selected_text);
   client_->TextSelectionChanged(selected_text_, /*offset=*/0,
@@ -786,7 +793,27 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
 }
 
 void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
+  using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
+  static constexpr auto kMessageHandlers =
+      base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
+          {"setBackgroundColor",
+           &PdfViewWebPlugin::HandleSetBackgroundColorMessage},
+      });
+
+  // Note that `base::fixed_flat_map` uses raw pointers as iterators.
+  const auto* it = kMessageHandlers.find(*message.FindString("type"));
+  if (it != kMessageHandlers.end()) {
+    (this->*(it->second))(message);
+    return;
+  }
+
   PdfViewPluginBase::HandleMessage(message);
+}
+
+void PdfViewWebPlugin::HandleSetBackgroundColorMessage(
+    const base::Value::Dict& message) {
+  background_color_ =
+      base::checked_cast<SkColor>(message.FindDouble("color").value());
 }
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {
