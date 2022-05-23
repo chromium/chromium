@@ -127,11 +127,11 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   UILayoutGuide* widthLayoutGuide = [[UILayoutGuide alloc] init];
   [self.view addLayoutGuide:widthLayoutGuide];
 
-  NSLayoutYAxisAnchor* specificContentViewBottomAnchor =
-      self.scrollContentView.bottomAnchor;
   if (self.disclaimerView) {
-    specificContentViewBottomAnchor = self.disclaimerView.topAnchor;
     [NSLayoutConstraint activateConstraints:@[
+      [self.disclaimerView.topAnchor
+          constraintEqualToAnchor:self.specificContentView.bottomAnchor
+                         constant:kDefaultMargin],
       [self.disclaimerView.leadingAnchor
           constraintEqualToAnchor:self.scrollContentView.leadingAnchor],
       [self.disclaimerView.trailingAnchor
@@ -139,6 +139,10 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
       [self.disclaimerView.bottomAnchor
           constraintEqualToAnchor:self.scrollContentView.bottomAnchor],
     ]];
+  } else {
+    [self.scrollContentView.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.bottomAnchor]
+        .active = YES;
   }
 
   [NSLayoutConstraint activateConstraints:@[
@@ -227,8 +231,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
         constraintEqualToAnchor:self.scrollContentView.leadingAnchor],
     [self.specificContentView.trailingAnchor
         constraintEqualToAnchor:self.scrollContentView.trailingAnchor],
-    [self.specificContentView.bottomAnchor
-        constraintEqualToAnchor:specificContentViewBottomAnchor],
 
     // Action stack view constraints. Constrain the bottom of the action stack
     // view to both the bottom of the screen and the bottom of the safe area, to
