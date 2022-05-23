@@ -96,6 +96,9 @@ void AddEduStrings(content::WebUIDataSource* source,
   source->AddLocalizedString("eduCoexistenceErrorDescription",
                              IDS_EDU_COEXISTENCE_ERROR_DESCRIPTION);
   source->AddLocalizedString("loadingMessage", IDS_LOGIN_GAIA_LOADING_MESSAGE);
+  source->AddLocalizedString(
+      "addSchoolAccountLabel",
+      IDS_ACCOUNT_MANAGER_DIALOG_ADD_SCHOOL_ACCOUNT_LABEL);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -282,6 +285,9 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
                     .spec()),
             ui::GetChromeOSDeviceName()));
   }
+
+  source->AddBoolean("isChild",
+                     user_manager::UserManager::Get()->IsLoggedInAsChildUser());
 
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);

@@ -5625,6 +5625,9 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL" desc="Label of the Add account button on Account picker screen.">
     Add Google Account
   </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ADD_SCHOOL_ACCOUNT_LABEL" desc="Label of the button to add a school/EDU account on Account picker screen.">
+    Add school account
+  </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX" desc="Checkbox text for the Welcome screen in ChromeOS 'Add account' dialog. If user checks this checkbox, this screen will not be shown the next time they open the dialog.">
     Don't remind me next time
   </message>

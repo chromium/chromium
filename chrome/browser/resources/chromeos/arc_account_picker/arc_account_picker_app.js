@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import '../account_manager_shared_css.js';
+import '../strings.m.js';
 
 import {getImage} from '//resources/js/icon.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import {Account, ArcAccountPickerBrowserProxy, ArcAccountPickerBrowserProxyImpl} from './arc_account_picker_browser_proxy.js';
 
 /**
@@ -38,6 +41,23 @@ export class ArcAccountPickerAppElement extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * Whether two column layout should be used.
+       * @public {boolean}
+       */
+      useTwoColumnLayout: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      isChildUser_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isChild');
+        },
+      },
+
       /**
        * Accounts which are not available in ARC and are shown on the ARC picker
        * screen.
@@ -81,6 +101,27 @@ export class ArcAccountPickerAppElement extends PolymerElement {
         resolve(true);
       });
     });
+  }
+
+  /**
+   * @return {string} A class name list for the main container.
+   * @private
+   */
+  getMainContainerClass_() {
+    if (this.useTwoColumnLayout) {
+      return 'main-container use-two-column-layout';
+    }
+
+    return 'main-container';
+  }
+
+  /**
+   * @return {string} A label for 'add account' button.
+   * @private
+   */
+  getAddAccountButtonLabel_() {
+    return loadTimeData.getString(
+        this.isChildUser_ ? 'addSchoolAccountLabel' : 'addAccountLabel');
   }
 
   /**
