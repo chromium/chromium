@@ -37,8 +37,7 @@ if (current_toolchain == default_toolchain &&
 
   if (build_with_internal_optimization_guide) {
     # 000081d1 t _GLOBAL__I_000101
-    # 000081dd t _GLOBAL__sub_I_iostream.cpp
-    expected_static_initializer_count += 2
+    expected_static_initializer_count += 1
   }
 
   if (use_static_angle && !is_official_build &&
