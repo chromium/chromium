@@ -25,9 +25,6 @@ struct SearchConcept {
   static constexpr size_t kMaxAltTagsPerConcept = 5;
   static constexpr int kAltTagEnd = 0;
 
-  SearchConcept(const SearchConcept& other) = default;
-  SearchConcept& operator=(const SearchConcept& other) = default;
-
   // Message ID (from os_settings_search_tag_strings.grdp) corresponding to the
   // canonical search tag for this concept.
   int canonical_message_id;

@@ -46,6 +46,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
@@ -224,7 +225,7 @@ using chromeos::PrinterClass;
 constexpr char kCrostiniNotAvailableForCurrentUserError[] =
     "Crostini is not available for the current user";
 
-int AccessArray(const volatile int arr[], const volatile int* index) {
+NOINLINE int AccessArray(const int arr[], const int* index) {
   return arr[*index];
 }
 
@@ -1492,11 +1493,10 @@ AutotestPrivateSimulateAsanMemoryBugFunction::Run() {
   DVLOG(1) << "AutotestPrivateSimulateAsanMemoryBugFunction";
 
   if (!IsTestMode(browser_context())) {
-    // This array is volatile not to let compiler optimize us out.
-    volatile int testarray[3] = {0, 0, 0};
+    int testarray[3] = {0, 0, 0};
 
     // Cause Address Sanitizer to abort this process.
-    volatile int index = 5;
+    int index = 5;
     AccessArray(testarray, &index);
   }
   return RespondNow(NoArguments());

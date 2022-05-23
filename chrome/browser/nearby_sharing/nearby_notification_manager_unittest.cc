@@ -579,7 +579,7 @@ TEST_P(NearbyNotificationManagerTest, ShowProgress_UpdatesProgress) {
 
 TEST_P(NearbyNotificationManagerTest, ShowProgress_DeviceNameEncoding) {
   ShareTarget share_target;
-  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+  share_target.device_name = "🌵";
   TransferMetadata transfer_metadata =
       TransferMetadataBuilder().set_progress(75.0).build();
 
@@ -869,7 +869,7 @@ INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerConnectionRequestTest,
 TEST_P(NearbyNotificationManagerTest,
        ShowConnectionRequest_DeviceNameEncoding) {
   ShareTarget share_target;
-  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+  share_target.device_name = "🌵";
 
   manager()->ShowConnectionRequest(share_target,
                                    TransferMetadataBuilder().build());
@@ -1017,7 +1017,7 @@ TEST_P(NearbyNotificationManagerTest, ShowSuccess_ShowsNotification) {
 
 TEST_P(NearbyNotificationManagerTest, ShowSuccess_DeviceNameEncoding) {
   ShareTarget share_target;
-  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+  share_target.device_name = "🌵";
 
   manager()->ShowSuccess(share_target);
   std::vector<message_center::Notification> notifications =
@@ -1036,7 +1036,7 @@ TEST_P(NearbyNotificationManagerTest, ShowCancelled_ShowsNotification) {
 
 TEST_P(NearbyNotificationManagerTest, ShowCancelled_DeviceNameEncoding) {
   ShareTarget share_target;
-  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+  share_target.device_name = "🌵";
 
   manager()->ShowCancelled(share_target);
   std::vector<message_center::Notification> notifications =
@@ -1069,7 +1069,7 @@ TEST_P(NearbyNotificationManagerTest, ShowFailure_ShowsNotification) {
 
 TEST_P(NearbyNotificationManagerTest, ShowFailure_DeviceNameEncoding) {
   ShareTarget share_target;
-  share_target.device_name = u8"\xf0\x9f\x8c\xb5";  // Cactus emoji.
+  share_target.device_name = "🌵";
 
   manager()->ShowFailure(share_target, TransferMetadataBuilder().build());
   std::vector<message_center::Notification> notifications =

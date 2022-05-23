@@ -740,7 +740,7 @@ TEST_F(NativeInputMethodEngineTest,
 
     // Each character in "你好" is three UTF-8 code units.
     EXPECT_CALL(mock_input_method,
-                OnSurroundingTextChanged(u8"你好",
+                OnSurroundingTextChanged("你好",
                                          /*offset=*/0,
                                          MojoEq(ime::mojom::SelectionRange(
                                              /*anchor=*/6, /*focus=*/6))));
