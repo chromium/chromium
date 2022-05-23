@@ -101,7 +101,7 @@ export const StateComponentMapping = {
   },
   [State.kSelectComponents]: {
     componentIs: 'onboarding-select-components-page',
-    requiresReloadWhenShown: false,
+    requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonCancel: ButtonState.VISIBLE,
     buttonBack: ButtonState.VISIBLE,
