@@ -586,7 +586,7 @@ bool DumpAccessibilityTestBase::HasHtmlAttribute(
   if (node.GetHtmlAttribute(attr, &result))
     return result == value;
 
-  if (base::LowerCaseEqualsASCII(attr, "class"))
+  if (base::EqualsCaseInsensitiveASCII(attr, "class"))
     return node.GetStringAttribute(ax::mojom::StringAttribute::kClassName) ==
            value;
 
