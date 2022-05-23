@@ -41,6 +41,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "base/debug/stack_trace.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -401,6 +402,11 @@ bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
   return true;
 }
 
+void UnifiedSystemTray::NotifyLeavingCalendarView() {
+  for (auto& observer : observers_)
+    observer.OnLeavingCalendarView();
+}
+
 bool UnifiedSystemTray::IsQuickSettingsExplicitlyExpanded() const {
   return model_->IsExplicitlyExpanded();
 }
@@ -627,11 +633,6 @@ void UnifiedSystemTray::ShowBubbleInternal() {
 }
 
 void UnifiedSystemTray::HideBubbleInternal() {
-  if (IsShowingCalendarView()) {
-    for (auto& observer : observers_)
-      observer.OnLeavingCalendarView();
-  }
-
   DestroyBubbles();
   SetIsActive(false);
 }

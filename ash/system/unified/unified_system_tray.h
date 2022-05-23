@@ -159,6 +159,10 @@ class ASH_EXPORT UnifiedSystemTray
   // is passed in.
   bool FocusQuickSettings(bool reverse);
 
+  // Called by `UnifiedSystemTrayBubble` when it is destroyed with the calendar
+  // view in the foreground.
+  void NotifyLeavingCalendarView();
+
   // Returns true if the user manually expanded the quick settings.
   bool IsQuickSettingsExplicitlyExpanded() const;
 

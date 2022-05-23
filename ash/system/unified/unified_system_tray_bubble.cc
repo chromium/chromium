@@ -76,6 +76,9 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 }
 
 UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
+  if (controller_->showing_calendar_view())
+    tray_->NotifyLeavingCalendarView();
+
   Shell::Get()->activation_client()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller())
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
