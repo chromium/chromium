@@ -35,7 +35,7 @@ public class HostZoomMapImpl {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void setZoomLevel(WebContents webContents, double newZoomLevel);
         double getZoomLevel(WebContents webContents);
     }

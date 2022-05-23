@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
+import org.chromium.chrome.browser.page_zoom.PageZoomCoordinator;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -281,6 +282,8 @@ public class RootUiCoordinator
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Nullable
     private final BackPressManager mBackPressManager;
+    @Nullable
+    private PageZoomCoordinator mPageZoomCoordinator;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -447,6 +450,8 @@ public class RootUiCoordinator
                 mActivity, mStatusBarColorProvider, mLayoutManagerSupplier,
                 mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+
+        mPageZoomCoordinator = new PageZoomCoordinator(mActivity);
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -585,6 +590,11 @@ public class RootUiCoordinator
 
         if (mTabSwitcherCustomViewController != null) {
             mTabSwitcherCustomViewController.destroy();
+        }
+
+        if (mPageZoomCoordinator != null) {
+            mPageZoomCoordinator.destroy();
+            mPageZoomCoordinator = null;
         }
 
         mActivity = null;
@@ -858,6 +868,8 @@ public class RootUiCoordinator
             ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(mActivity,
                     mModalDialogManagerSupplier.get(), mActivityTabProvider.get().getWebContents());
             return true;
+        } else if (id == R.id.page_zoom_id) {
+            mPageZoomCoordinator.show(mActivityTabProvider.get().getWebContents());
         }
 
         return false;

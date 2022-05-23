@@ -1,0 +1,4 @@
+include_rules = [
+  # Needed for mocks in the PageZoomMediatorUnitTest.
+  "+content/public/android/java/src/org/chromium/content/browser/HostZoomMapImpl.java"
+]

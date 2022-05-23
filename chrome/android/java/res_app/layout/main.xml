@@ -172,6 +172,14 @@
             android:visibility="gone"
             android:clipChildren="false"/>
 
+        <ViewStub
+            android:id="@+id/page_zoom_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:inflatedId="@+id/page_zoom_layout"
+            android:layout="@layout/page_zoom_view_new" />
+
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
     <!-- This empty view is used as the anchor for custom menu -->
