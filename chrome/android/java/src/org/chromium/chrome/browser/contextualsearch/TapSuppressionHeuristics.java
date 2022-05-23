@@ -25,10 +25,6 @@ public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
         super();
         mHeuristics.add(new TapFarFromPreviousSuppression(
                 selectionController, previousTapState, x, y, wasSelectionEmptyBeforeTap));
-        // Quick Answer that appears in the Caption via the JS API.
-        QuickAnswersHeuristic quickAnswersHeuristic = new QuickAnswersHeuristic();
-        setQuickAnswersHeuristic(quickAnswersHeuristic);
-        mHeuristics.add(quickAnswersHeuristic);
     }
 
     @Override

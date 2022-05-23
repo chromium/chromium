@@ -76,7 +76,7 @@ class ContextualSearchManager
       const base::android::JavaParamRef<jobject>& j_web_contents);
 
   // ContextualSearchJsApiHandler overrides:
-  void SetCaption(const std::string& caption, bool does_answer) override;
+  void SetCaption(const std::string& caption) override;
   void ChangeOverlayPosition(
       contextual_search::mojom::OverlayPosition desired_position) override;
 

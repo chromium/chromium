@@ -91,9 +91,13 @@ bool ContextualSearchWrapper::EnsureServiceConnected() {
 
 void ContextualSearchWrapper::OnDestruct() {}
 
-void ContextualSearchWrapper::SetCaption(const std::string& caption,
-                                         bool does_answer) {
+void ContextualSearchWrapper::SetCaption(const std::string& caption) {
   if (EnsureServiceConnected()) {
+    // "does_answer" is not used any more, so the value for it does not make any
+    // difference.
+    // TODO(gangwu): Remove does_answer from the API, or even remove the API
+    // #HandleSetCaption from mojom.
+    bool does_answer = true;
     contextual_search_js_api_service_->HandleSetCaption(caption, does_answer);
   }
 }

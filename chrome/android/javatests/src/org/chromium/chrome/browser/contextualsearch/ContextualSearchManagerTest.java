@@ -583,7 +583,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Resolving a German word should trigger translation.
         simulateResolveSearch("german");
         // Simulate a JavaScript translate message from the SERP to the manager
-        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.onSetCaption("caption", true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.onSetCaption("caption"));
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)) {
             Assert.assertFalse(

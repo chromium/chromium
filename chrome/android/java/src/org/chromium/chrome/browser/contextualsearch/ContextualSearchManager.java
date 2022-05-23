@@ -228,9 +228,6 @@ public class ContextualSearchManager
     /** Whether bottom sheet is visible. */
     private boolean mIsBottomSheetVisible;
 
-    /** Tap Experiments and other variable behavior. */
-    private QuickAnswersHeuristic mQuickAnswersHeuristic;
-
     // Counter for how many times we've called SelectAroundCaret without an ACK returned.
     // TODO(donnd): replace with a more systematic approach using the InternalStateController.
     private int mSelectAroundCaretCounter;
@@ -861,12 +858,7 @@ public class ContextualSearchManager
                 spToPx(defaultQueryWidthSpInBar), inPanelRelatedSearches, showDefaultSearchInPanel,
                 spToPx(defaultQueryWidthSpInPanel));
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
-            // For entities the caption should not be regarded as an answer.
-            // TODO(donnd): For Translations and definitions doesAnswer should be set to true
-            // to generate a metrics signal indicating that the caption might be supplying an
-            // an answer that would make opening the panel unnecessary.
-            boolean doesAnswer = false;
-            setCaption(resolvedSearchTerm.caption(), doesAnswer);
+            setCaption(resolvedSearchTerm.caption());
         }
 
         boolean quickActionShown =
@@ -975,13 +967,10 @@ public class ContextualSearchManager
      * Called to set a caption by the Search Result page in the overlay through the CS JavaScript
      * API. This notifies CS that there is a caption to show for the current overlay.
      * @param caption The caption to display.
-     * @param doesAnswer Whether the caption should be regarded as an answer such
-     *        that the user may not need to open the panel, or whether the caption
-     *        is simply informative or descriptive of the answer in the full results.
      */
     @CalledByNative
     @VisibleForTesting
-    void onSetCaption(String caption, boolean doesAnswer) {
+    void onSetCaption(String caption) {
         // If the Partial Translations Feature is enabled we don't want to show these SERP
         // Translations until we can associate the right icon to match what's shown for that
         // Feature (for consistency). See https://crbug.com/1249656 for details.
@@ -989,23 +978,16 @@ public class ContextualSearchManager
                 || TextUtils.isEmpty(caption) || mSearchPanel == null) {
             return;
         }
-        setCaption(caption, doesAnswer);
+        setCaption(caption);
     }
 
     /**
      * Called to set a caption to show in a second line in the Bar.
      * @param caption The caption to display.
-     * @param doesAnswer Whether the caption should be regarded as an answer such
-     *        that the user may not need to open the panel, or whether the caption
-     *        is simply informative or descriptive of the answer in the full results.
      */
-    private void setCaption(String caption, boolean doesAnswer) {
+    private void setCaption(String caption) {
         // Notify the UI of the caption.
         mSearchPanel.setCaption(caption);
-        if (mQuickAnswersHeuristic != null) {
-            mQuickAnswersHeuristic.setConditionSatisfied(true);
-            mQuickAnswersHeuristic.setDoesAnswer(doesAnswer);
-        }
     }
 
     /**
@@ -1637,7 +1619,6 @@ public class ContextualSearchManager
 
     @Override
     public void handleMetricsForWouldSuppressTap(ContextualSearchHeuristics tapHeuristics) {
-        mQuickAnswersHeuristic = tapHeuristics.getQuickAnswersHeuristic();
         if (mSearchPanel != null) {
             mSearchPanel.getPanelMetrics().setResultsSeenExperiments(tapHeuristics);
         }

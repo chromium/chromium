@@ -33,10 +33,8 @@ class ContextualSearchJsApiHandler {
   // JS API
   //=======
 
-  // Set the caption in the Contextual Search Bar, and indicate whether
-  // the caption provides an answer (such as an actual definition), rather than
-  // just general notification of what kind of answer may be available.
-  virtual void SetCaption(const std::string& caption, bool does_answer) = 0;
+  // Set the caption in the Contextual Search Bar.
+  virtual void SetCaption(const std::string& caption) = 0;
 
   // Changes the Overlay position to the desired position.
   // The panel cannot be set to any opened position if it's not already opened.

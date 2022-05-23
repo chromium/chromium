@@ -407,7 +407,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTranslationImpl.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchUma.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/DisableablePromoTapCounter.java",
-  "java/src/org/chromium/chrome/browser/contextualsearch/QuickAnswersHeuristic.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesList.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesStamp.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/RelatedSearchesUma.java",

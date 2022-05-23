@@ -18628,6 +18628,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextualSearchQuickAnswerSeen">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="Activated, answered and seen"/>
   <int value="1" label="Activated and answered but not seen"/>
   <int value="2" label="Activated, not answered but seen"/>

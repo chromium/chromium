@@ -104,23 +104,6 @@ public class ContextualSearchUma {
         int NUM_ENTRIES = 4;
     }
 
-    // Constants used to log UMA "enum" histograms for Quick Answers.
-    @IntDef({QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_SEEN,
-            QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_NOT_SEEN,
-            QuickAnswerSeen.ACTIVATED_NOT_AN_ANSWER_SEEN,
-            QuickAnswerSeen.ACTIVATED_NOT_AN_ANSWER_NOT_SEEN, QuickAnswerSeen.NOT_ACTIVATED_SEEN,
-            QuickAnswerSeen.NOT_ACTIVATED_NOT_SEEN})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface QuickAnswerSeen {
-        int ACTIVATED_WAS_AN_ANSWER_SEEN = 0;
-        int ACTIVATED_WAS_AN_ANSWER_NOT_SEEN = 1;
-        int ACTIVATED_NOT_AN_ANSWER_SEEN = 2;
-        int ACTIVATED_NOT_AN_ANSWER_NOT_SEEN = 3;
-        int NOT_ACTIVATED_SEEN = 4;
-        int NOT_ACTIVATED_NOT_SEEN = 5;
-        int NUM_ENTRIES = 6;
-    }
-
     // Constants for quick action intent resolution histogram.
     @IntDef({QuickActionResolve.FAILED, QuickActionResolve.SINGLE, QuickActionResolve.MULTIPLE})
     @Retention(RetentionPolicy.SOURCE)
@@ -568,22 +551,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs whether a Quick Answer caption was activated, and whether it was an answer (as opposed
-     * to just being informative), and whether the panel was opened anyway.
-     * Logged only for Tap events.
-     * @param didActivate If the Quick Answer caption was shown.
-     * @param didAnswer If the caption was considered an answer (reducing the need to open the
-     *        panel).
-     * @param wasSearchContentViewSeen If the panel was opened.
-     */
-    static void logQuickAnswerSeen(
-            boolean wasSearchContentViewSeen, boolean didActivate, boolean didAnswer) {
-        RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchQuickAnswerSeen",
-                getQuickAnswerSeenValue(didActivate, didAnswer, wasSearchContentViewSeen),
-                QuickAnswerSeen.NUM_ENTRIES);
-    }
-
-    /**
      * Logs a user action for a change to the Panel state, which allows sequencing of actions.
      * @param toState The state to transition to.
      * @param reason The reason for the state transition.
@@ -916,32 +883,6 @@ public class ContextualSearchUma {
             return ContextualSearchPreference.DISABLED;
         }
         return ContextualSearchPreference.ENABLED;
-    }
-
-    /**
-     * Gets the encode value for quick answers seen.
-     * @param didActivate Whether the quick answer was shown.
-     * @param didAnswer Whether the caption was a full answer, not just a hint.
-     * @param wasSeen Whether the search panel was opened.
-     * @return The encoded value.
-     */
-    private static @QuickAnswerSeen int getQuickAnswerSeenValue(
-            boolean didActivate, boolean didAnswer, boolean wasSeen) {
-        if (wasSeen) {
-            if (didActivate) {
-                return didAnswer ? QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_SEEN
-                                 : QuickAnswerSeen.ACTIVATED_NOT_AN_ANSWER_SEEN;
-            } else {
-                return QuickAnswerSeen.NOT_ACTIVATED_SEEN;
-            }
-        } else {
-            if (didActivate) {
-                return didAnswer ? QuickAnswerSeen.ACTIVATED_WAS_AN_ANSWER_NOT_SEEN
-                                 : QuickAnswerSeen.ACTIVATED_NOT_AN_ANSWER_NOT_SEEN;
-            } else {
-                return QuickAnswerSeen.NOT_ACTIVATED_NOT_SEEN;
-            }
-        }
     }
 
     /**

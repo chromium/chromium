@@ -44,10 +44,8 @@ class ContextualSearchWrapper : public gin::Wrappable<ContextualSearchWrapper>,
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 
-  // Called by JavaScript to set the caption , and indicate whether
-  // the caption provides an answer (e.g. an actual definition), rather than
-  // just general notification of what kind of answer may be available.
-  void SetCaption(const std::string& caption, bool does_answer);
+  // Called by JavaScript to set the caption.
+  void SetCaption(const std::string& caption);
 
   // Called by JavaScript to change the Overlay position.
   // The panel cannot be changed to any opened position if it's not already

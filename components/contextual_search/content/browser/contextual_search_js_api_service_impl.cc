@@ -28,7 +28,7 @@ void ContextualSearchJsApiServiceImpl::ShouldEnableJsApi(
 void ContextualSearchJsApiServiceImpl::HandleSetCaption(
     const std::string& caption,
     bool does_answer) {
-  contextual_search_js_api_handler_->SetCaption(caption, does_answer);
+  contextual_search_js_api_handler_->SetCaption(caption);
 }
 
 void ContextualSearchJsApiServiceImpl::HandleChangeOverlayPosition(
