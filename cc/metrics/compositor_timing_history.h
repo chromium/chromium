@@ -145,7 +145,8 @@ class CC_EXPORT CompositorTimingHistory {
   base::TimeDelta begin_main_frame_queue_duration_;
   base::TimeDelta bmf_start_to_ready_to_activate_duration_;
 
-  bool begin_main_frame_on_critical_path_;
+  bool begin_main_frame_on_critical_path_ = false;
+  bool pending_tree_on_critical_path_ = false;
   base::TimeTicks begin_main_frame_sent_time_;
   base::TimeTicks begin_main_frame_start_time_;
   base::TimeTicks commit_start_time_;

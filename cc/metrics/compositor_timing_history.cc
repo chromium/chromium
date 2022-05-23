@@ -466,7 +466,6 @@ CompositorTimingHistory::CompositorTimingHistory(
       bmf_queue_to_activate_critical_history_(kDurationHistorySize),
       bmf_queue_to_activate_critical_percentile_(
           BeginMainFrameQueueToActivateCriticalPercentile()),
-      begin_main_frame_on_critical_path_(false),
       uma_reporter_(CreateUMAReporter(uma_category)),
       rendering_stats_instrumentation_(rendering_stats_instrumentation) {}
 
@@ -662,6 +661,7 @@ void CompositorTimingHistory::DidCommit() {
 
   base::TimeTicks commit_end_time = Now();
   if (enabled_ && duration_estimates_enabled_) {
+    pending_tree_on_critical_path_ = begin_main_frame_on_critical_path_;
     bmf_start_to_ready_to_activate_duration_ =
         commit_end_time - begin_main_frame_start_time_;
   }
@@ -717,6 +717,7 @@ void CompositorTimingHistory::WillInvalidateOnImplSide() {
   DCHECK_EQ(pending_tree_creation_time_, base::TimeTicks());
 
   pending_tree_is_impl_side_ = true;
+  pending_tree_on_critical_path_ = false;
   pending_tree_creation_time_ = base::TimeTicks::Now();
 }
 
@@ -780,8 +781,6 @@ void CompositorTimingHistory::WillActivate() {
 
 void CompositorTimingHistory::DidActivate() {
   DCHECK_NE(base::TimeTicks(), activate_start_time_);
-  // TODO(szager): uncomment this DCHECK after fixing cc_unittests
-  // DCHECK_NE(base::TimeTicks(), pending_tree_ready_to_activate_time_);
   base::TimeTicks activate_end_time = Now();
   base::TimeDelta activate_duration = activate_end_time - activate_start_time_;
 
@@ -789,9 +788,7 @@ void CompositorTimingHistory::DidActivate() {
     activate_duration_history_.InsertSample(activate_duration);
 
     if (duration_estimates_enabled_) {
-      // TODO(szager): MFBA means begin_main_frame_on_critical_path_ may have
-      // been overwritten by a call to WillBeginMainFrame().
-      if (begin_main_frame_on_critical_path_) {
+      if (pending_tree_on_critical_path_) {
         // TODO(szager): MFBA means begin_main_frame_queue_duration_ may have
         // been overwritten by a call to BeginMainFrameAborted().
         base::TimeDelta time_since_ready_to_activate =

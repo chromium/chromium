@@ -29,6 +29,14 @@ class TestCompositorTimingHistory : public CompositorTimingHistory {
   TestCompositorTimingHistory& operator=(const TestCompositorTimingHistory&) =
       delete;
 
+  const RollingTimeDeltaHistory& bmf_start_to_ready_to_commit_critical_history()
+      const {
+    return bmf_start_to_ready_to_commit_critical_history_;
+  }
+  const RollingTimeDeltaHistory&
+  bmf_start_to_ready_to_commit_not_critical_history() const {
+    return bmf_start_to_ready_to_commit_not_critical_history_;
+  }
   const RollingTimeDeltaHistory& bmf_queue_to_activate_critical_history()
       const {
     return bmf_queue_to_activate_critical_history_;
@@ -308,6 +316,72 @@ TEST_F(CompositorTimingHistoryTest, BeginMainFrameToActivateDuration) {
   EXPECT_EQ(
       base::Milliseconds(1 + 2 + 3 + 4 + 5 + 6 + 7),
       timing_history_.bmf_queue_to_activate_critical_history().Percentile(0.));
+}
+
+TEST_F(CompositorTimingHistoryTest, OnCriticalPath) {
+  viz::BeginFrameArgs bmf_args = GetFakeBeginFrameArg(true);
+  timing_history_.WillBeginMainFrame(bmf_args);
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.BeginMainFrameStarted(Now());
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.NotifyReadyToCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.WillCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.DidCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.ReadyToActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // The previous frame should still be treated as on_critical_path
+  bmf_args = GetFakeBeginFrameArg(false);
+  timing_history_.WillBeginMainFrame(bmf_args);
+
+  timing_history_.WillActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.DidActivate();
+
+  EXPECT_EQ(1u, timing_history_.bmf_start_to_ready_to_commit_critical_history()
+                    .sample_count());
+  EXPECT_EQ(base::Milliseconds(1),
+            timing_history_.bmf_start_to_ready_to_commit_critical_history()
+                .Percentile(0.));
+  EXPECT_EQ(0u,
+            timing_history_.bmf_start_to_ready_to_commit_not_critical_history()
+                .sample_count());
+  EXPECT_EQ(
+      1u,
+      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
+  EXPECT_EQ(
+      base::Milliseconds(7),
+      timing_history_.bmf_queue_to_activate_critical_history().Percentile(0.));
+
+  timing_history_.BeginMainFrameStarted(Now());
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.NotifyReadyToCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.WillCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.DidCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.ReadyToActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.WillActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // The previous frame should still be treated as not on_critical_path
+  bmf_args = GetFakeBeginFrameArg(true);
+  timing_history_.WillBeginMainFrame(bmf_args);
+  timing_history_.DidActivate();
+
+  EXPECT_EQ(1u, timing_history_.bmf_start_to_ready_to_commit_critical_history()
+                    .sample_count());
+  EXPECT_EQ(1u,
+            timing_history_.bmf_start_to_ready_to_commit_not_critical_history()
+                .sample_count());
+  EXPECT_EQ(
+      1u,
+      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
 }
 
 }  // namespace
