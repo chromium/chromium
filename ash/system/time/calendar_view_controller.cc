@@ -25,16 +25,15 @@ namespace ash {
 CalendarViewController::CalendarViewController()
     : currently_shown_date_(base::Time::Now()),
       calendar_open_time_(base::TimeTicks::Now()),
-      month_dwell_time_(base::TimeTicks::Now()),
-      time_difference_minutes_(
-          calendar_utils::GetTimeDifference(currently_shown_date_)) {
+      month_dwell_time_(base::TimeTicks::Now()) {
   std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(
-      base::Time::Now() + time_difference_minutes_,
+      base::Time::Now() + base::Minutes(time_difference_minutes_),
       calendar_utils::kNumSurroundingMonthsCached);
   Shell::Get()->system_tray_model()->calendar_model()->AddNonPrunableMonths(
       months);
   Shell::Get()->system_tray_model()->calendar_model()->ResetLifetimeMetrics(
       currently_shown_date_);
+  MaybeUpdateTimeDifference(currently_shown_date_);
 }
 
 CalendarViewController::~CalendarViewController() {
@@ -81,12 +80,24 @@ void CalendarViewController::UpdateMonth(
   }
 }
 
+void CalendarViewController::MaybeUpdateTimeDifference(base::Time date) {
+  // Set the time difference, which is used to generate the exploded everywhere,
+  // since the LocalExplode doesn't use the manually set timezone.
+  int const new_time_difference =
+      calendar_utils::GetTimeDifferenceInMinutes(date);
+  if (time_difference_minutes_ == new_time_difference)
+    return;
+
+  time_difference_minutes_ = new_time_difference;
+  Shell::Get()->system_tray_model()->calendar_model()->RedistributeEvents(
+      time_difference_minutes_);
+}
+
 base::Time CalendarViewController::GetOnScreenMonthFirstDayLocal() {
-  base::TimeDelta time_difference =
-      calendar_utils::GetTimeDifference(currently_shown_date_);
-  return calendar_utils::GetFirstDayOfMonth(currently_shown_date_ +
-                                            time_difference) -
-         time_difference;
+  return calendar_utils::GetFirstDayOfMonth(
+             ApplyTimeDifference(currently_shown_date_)) -
+         base::Minutes(
+             calendar_utils::GetTimeDifferenceInMinutes(currently_shown_date_));
 }
 
 base::Time CalendarViewController::GetPreviousMonthFirstDayLocal(
@@ -100,7 +111,7 @@ base::Time CalendarViewController::GetPreviousMonthFirstDayLocal(
     prev = calendar_utils::GetStartOfPreviousMonthLocal(current);
   }
 
-  return prev - calendar_utils::GetTimeDifference(prev);
+  return prev - base::Minutes(calendar_utils::GetTimeDifferenceInMinutes(prev));
 }
 
 base::Time CalendarViewController::GetNextMonthFirstDayLocal(
@@ -114,7 +125,36 @@ base::Time CalendarViewController::GetNextMonthFirstDayLocal(
     next = calendar_utils::GetStartOfNextMonthLocal(current);
   }
 
-  return next - calendar_utils::GetTimeDifference(next);
+  return next - base::Minutes(calendar_utils::GetTimeDifferenceInMinutes(next));
+}
+
+base::Time CalendarViewController::GetOnScreenMonthFirstDayUTC() const {
+  return calendar_utils::GetStartOfMonthUTC(currently_shown_date_);
+}
+
+base::Time CalendarViewController::GetPreviousMonthFirstDayUTC(
+    unsigned int num_months) const {
+  base::Time prev, current = GetOnScreenMonthFirstDayUTC();
+
+  DCHECK_GE(num_months, 1UL);
+
+  for (unsigned int i = 0; i < num_months; i++, current = prev) {
+    prev = calendar_utils::GetStartOfPreviousMonthUTC(current);
+  }
+
+  return prev;
+}
+
+base::Time CalendarViewController::GetNextMonthFirstDayUTC(
+    unsigned int num_months) const {
+  base::Time next, current = GetOnScreenMonthFirstDayUTC();
+
+  DCHECK_GE(num_months, 1UL);
+
+  for (unsigned int i = 0; i < num_months; i++, current = next) {
+    next = calendar_utils::GetStartOfNextMonthUTC(current);
+  }
+  return next;
 }
 
 std::u16string CalendarViewController::GetPreviousMonthName() {
@@ -140,6 +180,12 @@ int CalendarViewController::GetTodayRowTopHeight() const {
 
 int CalendarViewController::GetTodayRowBottomHeight() const {
   return today_row_ * row_height_;
+}
+
+void CalendarViewController::FetchEvents() {
+  Shell::Get()->system_tray_model()->calendar_model()->FetchEventsSurrounding(
+      calendar_utils::kNumSurroundingMonthsCached,
+      GetOnScreenMonthFirstDayUTC().UTCMidnight());
 }
 
 SingleDayEventList CalendarViewController::SelectedDateEvents() {
@@ -206,7 +252,7 @@ bool CalendarViewController::IsSelectedDateInCurrentMonth() {
 }
 
 base::Time CalendarViewController::ApplyTimeDifference(base::Time date) {
-  return date + calendar_utils::GetTimeDifference(date);
+  return date + base::Minutes(calendar_utils::GetTimeDifferenceInMinutes(date));
 }
 
 }  // namespace ash

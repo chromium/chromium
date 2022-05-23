@@ -15,7 +15,6 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
-#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
@@ -81,6 +80,7 @@ GetOrderedEventList(int num_events) {
 
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
 
   for (int i = 0; i < num_events; ++i) {
     base::Time start_time = start_time_base;
@@ -454,13 +454,13 @@ TEST_F(CalendarModelTest, DayWithEvents_OneDay) {
   // Current date is just `kStartTime`.
   SetFakeNowFromStr(kStartTime);
   calendar_model_ = std::make_unique<TestableCalendarModel>();
-  base::Time month = calendar_utils::GetStartOfMonthUTC(base::Time::Now());
+  std::set<base::Time> months =
+      calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1);
 
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event =
       calendar_test_utils::CreateEvent(kId, kSummary, kStartTime, kEndTime);
   SingleDayEventList events;
@@ -475,7 +475,7 @@ TEST_F(CalendarModelTest, DayWithEvents_OneDay) {
 
   // Now fetch the events, which will get all events from the current month, as
   // well as next/prev months.
-  calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Now we have an event on kStartTime0.
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime, &events));
@@ -487,13 +487,13 @@ TEST_F(CalendarModelTest, DayWithEvents_TwoDays) {
   // Current date is just `kStartTime0`.
   SetFakeNowFromStr(kStartTime0);
   calendar_model_ = std::make_unique<TestableCalendarModel>();
-  base::Time month = calendar_utils::GetStartOfMonthUTC(base::Time::Now());
+  std::set<base::Time> months =
+      calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1);
 
   // Get ready to inject two events.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event13 =
@@ -512,7 +512,7 @@ TEST_F(CalendarModelTest, DayWithEvents_TwoDays) {
   event_list->InjectItemForTesting(std::move(event0));
   event_list->InjectItemForTesting(std::move(event13));
   calendar_model_->InjectEvents(std::move(event_list));
-  calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Now both days should have events.
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
@@ -525,14 +525,13 @@ TEST_F(CalendarModelTest, ChangeTimeDifference) {
   // Current date is just `kStartTime0`.
   SetFakeNowFromStr(kStartTime0);
   calendar_model_ = std::make_unique<TestableCalendarModel>();
-  base::Time month = calendar_utils::GetStartOfMonthUTC(base::Time::Now());
+  std::set<base::Time> months =
+      calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1);
 
   // Get ready to inject two events.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "America/Los_Angeles".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"America/Los_Angeles");
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event13 =
@@ -544,39 +543,28 @@ TEST_F(CalendarModelTest, ChangeTimeDifference) {
   event_list->InjectItemForTesting(std::move(event0));
   event_list->InjectItemForTesting(std::move(event13));
   calendar_model_->InjectEvents(std::move(event_list));
-  calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Based on the tesing timezone "America/Los_Angeles" these 2 events are
   // distributed into 2 days. Each day has one event.
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime13, &events));
 
-  // Sets the timezone to "Pacific/Honolulu" which has -10 hours time
-  // difference.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"Pacific/Honolulu");
-
+  // Adjusts the time with -10 hours.
   // `kStartTime0` "23 Oct 2009 11:30" -> "23 Oct 2009 1:30".
   // `kStartTime1` "24 Oct 2009 07:30" -> "23 Oct 2009 21:30"
   // Both events should be on the 23rd.
-  calendar_model_->RedistributeEvents();
+  calendar_model_->RedistributeEvents(/*time_difference_minutes=*/-10 * 60);
   EXPECT_EQ(2, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_EQ(0, EventsNumberOfDay(kStartTime13, &events));
 
-  // Sets the timezone to "Pacific/Kiritimatis" which has +14 hours time
-  // difference;
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"Pacific/Kiritimati");
-
-  // `kStartTime0` "23 Oct 2009 11:30" -> "24 Oct 2009 1:30".
-  // `kStartTime1` "24 Oct 2009 07:30" -> "24 Oct 2009 21:30"
-  // Both events should be on the 24th.
-  calendar_model_->RedistributeEvents();
+  // Adjusts the time with +15 hours.
+  // `kStartTime0` "23 Oct 2009 11:30" -> "24 Oct 2009 2:30".
+  // `kStartTime1` "24 Oct 2009 07:30" -> "24 Oct 2009 22:30"
+  // Both events should be on the 24rd.
+  calendar_model_->RedistributeEvents(/*time_difference_minutes=*/15 * 60);
   EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_EQ(2, EventsNumberOfDay(kStartTime13, &events));
-
-  // Set back to the default timezone.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"");
 }
 
 TEST_F(CalendarModelTest, EventsDifferentMonths) {
@@ -585,12 +573,11 @@ TEST_F(CalendarModelTest, EventsDifferentMonths) {
   calendar_model_ = std::make_unique<TestableCalendarModel>();
   std::set<base::Time> months =
       calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1);
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
@@ -614,8 +601,7 @@ TEST_F(CalendarModelTest, EventsDifferentMonths) {
   calendar_model_->InjectEvents(std::move(event_list));
 
   // Fetch events (user just opened CrOS calendar).
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Confirm we have all three events.
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
@@ -638,8 +624,6 @@ TEST_F(CalendarModelTest, EventsDifferentMonths) {
 // range that sits between a "prefix" range and a "suffix" range. We also verify
 // the absence of cached events in the "prefix" and "suffix" ranges.
 TEST_F(CalendarModelTest, PruneEvents_SlidingWindow) {
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
   constexpr int kNumAdditionalMonths = 5;
   constexpr int kNumEvents =
       calendar_utils::kMaxNumPrunableMonths + kNumAdditionalMonths;
@@ -678,8 +662,7 @@ TEST_F(CalendarModelTest, PruneEvents_SlidingWindow) {
         on_screen_month, calendar_utils::kNumSurroundingMonthsCached);
 
     // Fetch events.
-    for (auto& month : months)
-      calendar_model_->FetchEvents(month);
+    calendar_model_->FetchEvents(months);
 
     // Construct the testable ranges.
     SlidingWindowRanges ranges(i, kNumEvents);
@@ -742,8 +725,7 @@ TEST_F(CalendarModelTest, PruneEvents_SlidingWindowWithNonPrunableMonths) {
   calendar_model_->InjectEvents(std::move(event_list));
 
   // Fetch the mon-prunable events.
-  for (auto& month : non_prunable_months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(non_prunable_months);
 
   // Injecting the list transferred ownership of the first list we got, so get
   // another one.
@@ -761,8 +743,7 @@ TEST_F(CalendarModelTest, PruneEvents_SlidingWindowWithNonPrunableMonths) {
         on_screen_month, calendar_utils::kNumSurroundingMonthsCached);
 
     // Fetch events.
-    for (auto& month : months)
-      calendar_model_->FetchEvents(month);
+    calendar_model_->FetchEvents(months);
 
     // Construct the testable ranges.
     SlidingWindowRanges ranges(i, kNumEvents);
@@ -800,8 +781,7 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Success) {
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   SingleDayEventList events;
@@ -816,8 +796,7 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Success) {
 
   // Now fetch the events, which will get all events from the current month,
   // as well as next/prev months.
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // We should have recorded "success" for all three fetches (current, prev,
   // and next months).
@@ -841,8 +820,7 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Failure) {
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   SingleDayEventList events;
@@ -862,8 +840,7 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Failure) {
 
   // Now fetch the events, which will get all events from the current month,
   // as well as next/prev months.
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // We should have recorded "success" for no fetches, and one each for the
   // errors we specified.
@@ -891,8 +868,7 @@ TEST_F(CalendarModelTest, SessionStateChange) {
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   SingleDayEventList events;
@@ -907,8 +883,7 @@ TEST_F(CalendarModelTest, SessionStateChange) {
 
   // Now fetch the events, which will get all events from the current month,
   // as well as next/prev months.
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Now we have an event on kStartTime0.
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
@@ -942,8 +917,7 @@ TEST_F(CalendarModelTest, ActiveUserChange) {
   // Set up list of events to inject.
   std::unique_ptr<google_apis::calendar::EventList> event_list =
       std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event =
       calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   SingleDayEventList events;
@@ -958,8 +932,7 @@ TEST_F(CalendarModelTest, ActiveUserChange) {
 
   // Now fetch the events, which will get all events from the current month,
   // as well as next/prev months.
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Now we have an event on kStartTime0.
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
@@ -989,8 +962,7 @@ TEST_F(CalendarModelTest, ClearEvents) {
       calendar_test_utils::CreateEvent(kId5, kSummary5, kStartTime5, kEndTime5);
 
   auto event_list = std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("Greenwich Mean Time");
   event_list->InjectItemForTesting(std::move(event0));
   event_list->InjectItemForTesting(std::move(event1));
   event_list->InjectItemForTesting(std::move(event2));
@@ -1024,8 +996,7 @@ TEST_F(CalendarModelTest, ClearEvents) {
 
   // Fetch events from today's date and two surrounding months, i.e. the
   // non-prunable months.
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Events from non-prunable months should be present, but not the other
   // months.
@@ -1041,8 +1012,7 @@ TEST_F(CalendarModelTest, ClearEvents) {
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 1);
 
   // Fetch events for `kStartTime4` and the two surrounding months.
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Events from all months should now be present.
   EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
@@ -1085,8 +1055,7 @@ TEST_F(CalendarModelTest, ShouldFilterEvents) {
       calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1);
 
   std::unique_ptr<EventList> event_list = std::make_unique<EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("America/Los_Angeles");
   SingleDayEventList events;
 
   // Haven't injected anything yet, so no events on `kStartTime0`.
@@ -1127,8 +1096,7 @@ TEST_F(CalendarModelTest, ShouldFilterEvents) {
         kEndTime0, std::get<1>(event_to_create), std::get<2>(event_to_create)));
   }
   calendar_model_->InjectEvents(std::move(event_list));
-  for (auto& month : months)
-    calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents(months);
 
   // Verify that events were filtered by their statuses.
   EXPECT_EQ(4, EventsNumberOfDay(kStartTime0, &events));
@@ -1221,8 +1189,7 @@ TEST_F(CalendarModelFunctionTest, FindFetchingStatus) {
       calendar_test_utils::CreateEvent(kId3, kSummary3, kStartTime3, kEndTime3);
 
   auto event_list = std::make_unique<google_apis::calendar::EventList>();
-  // Sets the timezone to "GMT".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  event_list->set_time_zone("Greenwich Mean Time");
   event_list->InjectItemForTesting(std::move(event0));
   event_list->InjectItemForTesting(std::move(event1));
   event_list->InjectItemForTesting(std::move(event2));

@@ -69,13 +69,10 @@ class CalendarMonthViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void CreateMonthView(base::Time date, const std::u16string& timezone) {
+  void CreateMonthView(base::Time date) {
     AccountId user_account = AccountId::FromUserEmail("user@test");
     GetSessionControllerClient()->SwitchActiveUser(user_account);
     calendar_month_view_.reset();
-    controller_.reset();
-    ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(timezone);
-    controller_ = std::make_unique<CalendarViewController>();
     controller_->UpdateMonth(date);
     calendar_month_view_ =
         std::make_unique<CalendarMonthView>(date, controller_.get());
@@ -118,7 +115,7 @@ TEST_F(CalendarMonthViewTest, Basics) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  CreateMonthView(date);
 
   // Randomly checks some dates in this month view.
   EXPECT_EQ(
@@ -140,7 +137,7 @@ TEST_F(CalendarMonthViewTest, Basics) {
   base::Time jun_date;
   ASSERT_TRUE(base::Time::FromString("1 Jun 2021 10:00 GMT", &jun_date));
 
-  CreateMonthView(jun_date, u"America/Los_Angeles");
+  CreateMonthView(jun_date);
 
   // Randomly checks some dates in this month view.
   EXPECT_EQ(
@@ -168,7 +165,9 @@ TEST_F(CalendarMonthViewTest, AzoreSummerTime) {
   ASSERT_TRUE(base::Time::FromString("1 Mar 2022 10:00 GMT", &date));
 
   // Sets the timezone to "Azore Summer Time";
-  CreateMonthView(date, u"Atlantic/Azores");
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
+      u"Atlantic/Azores");
+  CreateMonthView(date);
 
   base::Time date_without_DST;
   ASSERT_TRUE(
@@ -178,11 +177,10 @@ TEST_F(CalendarMonthViewTest, AzoreSummerTime) {
   ASSERT_TRUE(base::Time::FromString("28 Mar 2022 10:00 GMT", &date_with_DST));
 
   // Before daylight saving the time difference is 1 hour.
-  EXPECT_EQ(base::Minutes(-60),
-            calendar_utils::GetTimeDifference(date_without_DST));
+  EXPECT_EQ(-60, calendar_utils::GetTimeDifferenceInMinutes(date_without_DST));
 
   // After daylight saving the time difference is 0 hours.
-  EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date_with_DST));
+  EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date_with_DST));
 
   // Randomly checks some dates in this month view.
   EXPECT_EQ(
@@ -207,7 +205,7 @@ TEST_F(CalendarMonthViewTest, TodayNotInMonth) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &CalendarMonthViewTest::FakeTimeNow, nullptr, nullptr);
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  CreateMonthView(date);
 
   // Today's row position is not updated.
   EXPECT_EQ(0, controller()->GetTodayRowTopHeight());
@@ -234,7 +232,7 @@ TEST_F(CalendarMonthViewTest, TodayInMonth) {
       &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  CreateMonthView(date);
 
   // Today's row position is updated because today is in this month.
   int top = controller()->GetTodayRowTopHeight();
@@ -259,7 +257,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
       &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  CreateMonthView(date);
 
   TriggerPaint();
   // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
@@ -327,7 +325,9 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
       /*thread_ticks_override=*/nullptr);
 
   // Sets the timezone to "America/Los_Angeles";
-  CreateMonthView(date, u"America/Los_Angeles");
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
+
+  CreateMonthView(date);
   TriggerPaint();
   UploadEvents();
   month_view()->SchedulePaintChildren();
@@ -335,7 +335,7 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
 
   // August is before the daylight saving, time difference between UTC and PST
   // should be 7 hours.
-  EXPECT_EQ(base::Minutes(-420), controller()->time_difference_minutes());
+  EXPECT_EQ(-420, controller()->time_difference_minutes());
 
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
@@ -377,7 +377,7 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
       &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  CreateMonthView(date);
   TriggerPaint();
   UploadEvents();
   month_view()->SchedulePaintChildren();

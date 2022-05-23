@@ -81,7 +81,8 @@ CalendarDateCellView::CalendarDateCellView(
               base::BindRepeating(&CalendarDateCellView::OnDateCellActivated,
                                   base::Unretained(this))),
           calendar_utils::GetDayIntOfMonth(
-              date + calendar_view_controller->time_difference_minutes()),
+              date + base::Minutes(
+                         calendar_view_controller->time_difference_minutes())),
           CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
@@ -170,7 +171,8 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
     // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
     // date] is currently selected.
     base::Time local_date =
-        date_ + calendar_view_controller_->time_difference_minutes();
+        date_ +
+        base::Minutes(calendar_view_controller_->time_difference_minutes());
     base::Time::Exploded date_exploded =
         calendar_utils::GetExplodedUTC(local_date);
     base::Time first_day_of_week =
@@ -322,18 +324,21 @@ CalendarMonthView::CalendarMonthView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   calendar_utils::SetUpWeekColumns(layout);
-  base::TimeDelta const time_difference =
-      calendar_utils::GetTimeDifference(first_day_of_month);
+  calendar_view_controller_->MaybeUpdateTimeDifference(first_day_of_month);
 
   // Using the time difference to get the local `base::Time`, which is used to
   // generate the exploded.
-  base::Time first_day_of_month_local = first_day_of_month + time_difference;
+  base::Time first_day_of_month_local =
+      first_day_of_month +
+      base::Minutes(calendar_view_controller_->time_difference_minutes());
   base::Time::Exploded first_day_of_month_exploded =
       calendar_utils::GetExplodedUTC(first_day_of_month_local);
   // Find the first day of the week.
   base::Time current_date =
       calendar_utils::GetFirstDayOfWeekLocalMidnight(first_day_of_month);
-  base::Time current_date_local = current_date + time_difference;
+  base::Time current_date_local =
+      current_date +
+      base::Minutes(calendar_view_controller_->time_difference_minutes());
 
   base::Time::Exploded current_date_exploded =
       calendar_utils::GetExplodedUTC(current_date_local);
@@ -397,7 +402,7 @@ CalendarMonthView::CalendarMonthView(
   base::Time end_of_the_last_row_local =
       calendar_utils::GetFirstDayOfWeekLocalMidnight(current_date) +
       base::Days(6) + calendar_utils::kDurationForAdjustingDST +
-      time_difference;
+      base::Minutes(calendar_view_controller_->time_difference_minutes());
   base::Time::Exploded end_of_row_exploded =
       calendar_utils::GetExplodedUTC(end_of_the_last_row_local);
 
@@ -418,7 +423,7 @@ CalendarMonthView::~CalendarMonthView() {
 }
 
 void CalendarMonthView::FetchEvents(const base::Time& month) {
-  calendar_model_->FetchEvents(month);
+  calendar_model_->FetchEvents({month});
 }
 
 void CalendarMonthView::OnEventsFetched(

@@ -37,7 +37,7 @@ class DateHelper : public system::TimezoneSettings::Observer {
 
   // Get the time difference to UTC time based on the time passed in and the
   // system timezone. Daylight saving is considered.
-  base::TimeDelta GetTimeDifference(base::Time date) const;
+  int GetTimeDifferenceInMinutes(base::Time date);
 
   // Gets the local midnight in UTC time of the `date`.
   // e.g. If the `date` is Apr 1st 1:00 (which is Mar 31st 18:00 PST), the

@@ -180,15 +180,19 @@ class CalendarView::MonthHeaderLabelView : public views::View {
     layer()->SetFillsBoundsOpaquely(false);
     switch (type) {
       case PREVIOUS:
+        date_ = calendar_view_controller->GetPreviousMonthFirstDayLocal(1);
         month_name_ = calendar_view_controller->GetPreviousMonthName();
         break;
       case CURRENT:
+        date_ = calendar_view_controller->GetOnScreenMonthFirstDayLocal();
         month_name_ = calendar_view_controller->GetOnScreenMonthName();
         break;
       case NEXT:
+        date_ = calendar_view_controller->GetNextMonthFirstDayLocal(1);
         month_name_ = calendar_view_controller->GetNextMonthName();
         break;
       case NEXTNEXT:
+        date_ = calendar_view_controller->GetNextMonthFirstDayLocal(2);
         month_name_ =
             calendar_view_controller->GetNextMonthName(/*num_months=*/2);
         break;
@@ -221,7 +225,10 @@ class CalendarView::MonthHeaderLabelView : public views::View {
   }
 
  private:
-  // The name of the month.
+  // This `date_`'s month and year is used to create this view.
+  base::Time date_;
+
+  // The name of the `date_` month.
   std::u16string month_name_;
 
   // The month label in the view.

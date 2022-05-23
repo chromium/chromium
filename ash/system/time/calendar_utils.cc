@@ -200,8 +200,8 @@ bool IsActiveUser() {
          !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
-base::TimeDelta GetTimeDifference(base::Time date) {
-  return DateHelper::GetInstance()->GetTimeDifference(date);
+int GetTimeDifferenceInMinutes(base::Time date) {
+  return DateHelper::GetInstance()->GetTimeDifferenceInMinutes(date);
 }
 
 base::Time GetFirstDayOfWeekLocalMidnight(base::Time date) {
@@ -214,12 +214,12 @@ base::Time GetFirstDayOfWeekLocalMidnight(base::Time date) {
 
 ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(
     base::Time start_of_month_local_midnight) {
-  base::Time start = start_of_month_local_midnight -
-                     DateHelper::GetInstance()->GetTimeDifference(
-                         start_of_month_local_midnight);
+  int diff = DateHelper::GetInstance()->GetTimeDifferenceInMinutes(
+      start_of_month_local_midnight);
+  base::Time start = start_of_month_local_midnight - base::Minutes(diff);
   base::Time end =
-      GetStartOfMonthUTC(start_of_month_local_midnight + base::Days(33));
-  end -= DateHelper::GetInstance()->GetTimeDifference(end);
+      GetStartOfMonthUTC(start_of_month_local_midnight + base::Days(33)) -
+      base::Minutes(diff);
   return std::make_pair(start, end);
 }
 

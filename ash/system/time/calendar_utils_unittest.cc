@@ -23,20 +23,20 @@ TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
 
   // Before daylight saving the time difference is 7 hours.
-  EXPECT_EQ(base::Minutes(-420), calendar_utils::GetTimeDifference(date));
+  EXPECT_EQ(-420, calendar_utils::GetTimeDifferenceInMinutes(date));
 
   // Create a date after daylight saving: Dec,1st 2021.
   base::Time date2;
   ASSERT_TRUE(base::Time::FromString("1 Dec 2021 10:00 GMT", &date2));
 
   // After daylight saving the time difference is 8 hours.
-  EXPECT_EQ(base::Minutes(-480), calendar_utils::GetTimeDifference(date2));
+  EXPECT_EQ(-480, calendar_utils::GetTimeDifferenceInMinutes(date2));
 
   // Set the timezone to GMT.
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 
-  EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date));
-  EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date2));
+  EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date));
+  EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date2));
 }
 
 TEST_F(CalendarUtilsUnittest, DateFormatter) {
@@ -182,15 +182,6 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date));
   ASSERT_TRUE(base::Time::FromString("01 Apr 2022 07:00 GMT", &expected_start));
   ASSERT_TRUE(base::Time::FromString("01 May 2022 07:00 GMT", &expected_end));
-  fetch = calendar_utils::GetFetchStartEndTimes(date);
-  EXPECT_EQ(fetch.first, expected_start);
-  EXPECT_EQ(fetch.second, expected_end);
-
-  // The month is with DST ended date. The time difference is changed from -7h
-  // to -8h.
-  ASSERT_TRUE(base::Time::FromString("01 Nov 2022 00:00 GMT", &date));
-  ASSERT_TRUE(base::Time::FromString("01 Nov 2022 07:00 GMT", &expected_start));
-  ASSERT_TRUE(base::Time::FromString("01 Dec 2022 08:00 GMT", &expected_end));
   fetch = calendar_utils::GetFetchStartEndTimes(date);
   EXPECT_EQ(fetch.first, expected_start);
   EXPECT_EQ(fetch.second, expected_end);

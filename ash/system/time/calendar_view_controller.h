@@ -52,6 +52,12 @@ class ASH_EXPORT CalendarViewController {
   // Updates the `currently_shown_date_`.
   void UpdateMonth(const base::Time current_month_first_date);
 
+  // When rendering a view based on a certain date, the time difference might
+  // change due to daylight savings time. This method will compare the current
+  // `time_difference_minutes_` with the new time difference and make an update
+  // if there's a change.
+  void MaybeUpdateTimeDifference(base::Time date);
+
   // Gets the first day of the `currently_shown_date_`'s month, in local time.
   base::Time GetOnScreenMonthFirstDayLocal();
 
@@ -62,6 +68,17 @@ class ASH_EXPORT CalendarViewController {
   // Gets the first day of the nth-next month based on the
   // `currently_shown_date_`'s month, in local time.
   base::Time GetNextMonthFirstDayLocal(unsigned int num_months);
+
+  // Gets the first day of the `currently_shown_date_`'s month, in UTC time.
+  base::Time GetOnScreenMonthFirstDayUTC() const;
+
+  // Gets the first day of the nth-previous month based on the
+  // `currently_shown_date_`'s month, in UTC time.
+  base::Time GetPreviousMonthFirstDayUTC(unsigned int num_months) const;
+
+  // Gets the first day of the nth-next month based on the
+  // `currently_shown_date_`'s month, in UTC time.
+  base::Time GetNextMonthFirstDayUTC(unsigned int num_months) const;
 
   // Gets the month name of the `currently_shown_date_`'s month.
   std::u16string GetOnScreenMonthName() const;
@@ -96,13 +113,14 @@ class ASH_EXPORT CalendarViewController {
   int row_height() const { return row_height_; }
   void set_row_height(int height) { row_height_ = height; }
 
-  base::TimeDelta time_difference_minutes() const {
-    return time_difference_minutes_;
-  }
+  int time_difference_minutes() { return time_difference_minutes_; }
 
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight() const;
   int GetTodayRowBottomHeight() const;
+
+  // Requests more events as needed.
+  void FetchEvents();
 
   // The calendar events of the selected date.
   SingleDayEventList SelectedDateEvents();
@@ -176,8 +194,8 @@ class ASH_EXPORT CalendarViewController {
   // The current row index when the event list view is shown.
   int expanded_row_index_ = 0;
 
-  // The time difference between UTC and local time.
-  const base::TimeDelta time_difference_minutes_;
+  // The time difference between UTC and local time in minutes.
+  int time_difference_minutes_ = 0;
 
   base::ObserverList<Observer> observers_;
 

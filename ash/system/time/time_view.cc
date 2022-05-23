@@ -108,7 +108,9 @@ void VerticalDateView::OnThemeChanged() {
 
 void VerticalDateView::UpdateText() {
   const std::u16string new_text = calendar_utils::GetDayIntOfMonth(
-      base::Time::Now() + calendar_utils::GetTimeDifference(base::Time::Now()));
+      base::Time::Now() +
+      base::Minutes(
+          calendar_utils::GetTimeDifferenceInMinutes(base::Time::Now())));
   if (text_label_->GetText() == new_text)
     return;
   text_label_->SetText(new_text);

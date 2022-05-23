@@ -4,8 +4,6 @@
 
 #include "ash/system/time/date_helper.h"
 
-#include "ash/shell.h"
-#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/unicodestring.h"
 #include "base/time/time.h"
@@ -58,11 +56,11 @@ std::u16string DateHelper::GetFormattedTime(const icu::DateFormat* formatter,
   return base::i18n::UnicodeStringToString16(date_string);
 }
 
-base::TimeDelta DateHelper::GetTimeDifference(base::Time date) const {
+// TODO(https://crbug.com/1316824): Return TimeDelta instead.
+int DateHelper::GetTimeDifferenceInMinutes(base::Time date) {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
-  const base::TimeDelta raw_time_diff =
-      base::Minutes(time_zone.getRawOffset() / kMillisecondsPerMinute);
+  const int raw_time_diff = time_zone.getRawOffset() / kMillisecondsPerMinute;
 
   // Calculates the time difference adjust by the possible daylight savings
   // offset. If the status of any step fails, returns the default time
@@ -86,11 +84,12 @@ base::TimeDelta DateHelper::GetTimeDifference(base::Time date) const {
   if (day_light)
     gmt_offset += time_zone.getDSTSavings();
 
-  return base::Minutes(gmt_offset / kMillisecondsPerMinute);
+  return gmt_offset / kMillisecondsPerMinute;
 }
 
 base::Time DateHelper::GetLocalMidnight(base::Time date) {
-  base::TimeDelta time_difference = GetTimeDifference(date);
+  base::TimeDelta time_difference =
+      base::Minutes(GetTimeDifferenceInMinutes(date));
   return (date + time_difference).UTCMidnight() - time_difference;
 }
 
@@ -169,7 +168,6 @@ void DateHelper::TimezoneChanged(const icu::TimeZone& timezone) {
   ResetFormatters();
   gregorian_calendar_->setTimeZone(
       system::TimezoneSettings::GetInstance()->GetTimezone());
-  Shell::Get()->system_tray_model()->calendar_model()->RedistributeEvents();
 }
 
 }  // namespace ash
