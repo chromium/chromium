@@ -132,10 +132,6 @@ const base::Feature kSuspiciousSiteTriggerQuotaFeature{
 const base::Feature kThreatDomDetailsTagAndAttributeFeature{
     "ThreatDomDetailsTagAttributes", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kTriggerThrottlerDailyQuotaFeature{
-    "SafeBrowsingTriggerThrottlerDailyQuota",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kUseNewDownloadWarnings{"UseNewDownloadWarnings",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -174,7 +170,6 @@ constexpr struct {
     {&kSendSampledPingsForProtegoAllowlistDomains, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
-    {&kTriggerThrottlerDailyQuotaFeature, false},
 };
 
 // Adds the name and the enabled/disabled status of a given feature.

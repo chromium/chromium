@@ -134,16 +134,6 @@ extern const base::Feature kTailoredSecurityIntegration;
 // be lower case.
 extern const base::Feature kThreatDomDetailsTagAndAttributeFeature;
 
-// Controls the daily quota for data collection triggers. It's a single param
-// containing a comma-separated list of pairs. The format of the param is
-// "T1,Q1,T2,Q2,...Tn,Qn", where Tx is a TriggerType and Qx is how many reports
-// that trigger is allowed to send per day.
-// TODO(crbug.com/744869): This param should be deprecated after ad sampler
-// launch in favour of having a unique quota feature and param per trigger.
-// Having a single shared feature makes it impossible to run multiple trigger
-// trials simultaneously.
-extern const base::Feature kTriggerThrottlerDailyQuotaFeature;
-
 // Controls whether Chrome uses new download warning UX.
 extern const base::Feature kUseNewDownloadWarnings;
 

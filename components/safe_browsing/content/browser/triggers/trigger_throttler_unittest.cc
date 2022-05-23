@@ -229,11 +229,6 @@ class TriggerThrottlerTestFinch : public ::testing::Test {
                                     const base::Feature** out_feature,
                                     std::string* out_param) {
     switch (trigger_type) {
-      case TriggerType::AD_SAMPLE:
-        *out_feature = &safe_browsing::kTriggerThrottlerDailyQuotaFeature;
-        *out_param = safe_browsing::kTriggerTypeAndQuotaParam;
-        break;
-
       case TriggerType::SUSPICIOUS_SITE:
         *out_feature = &safe_browsing::kSuspiciousSiteTriggerQuotaFeature;
         *out_param = safe_browsing::kSuspiciousSiteTriggerQuotaParam;
@@ -254,42 +249,12 @@ class TriggerThrottlerTestFinch : public ::testing::Test {
   }
 };
 
-TEST_F(TriggerThrottlerTestFinch, ConfigureQuotaViaFinch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  SetupQuotaParams(TriggerType::AD_SAMPLE, "Group_ConfigureQuotaViaFinch", 3,
-                   &scoped_feature_list);
-  // Make sure that setting the quota param via Finch params works as expected.
-
-  // The throttler has been configured (above) to allow ad samples to fire three
-  // times per day.
-  TriggerThrottler throttler(nullptr);
-
-  // First three triggers should work
-  EXPECT_TRUE(throttler.TriggerCanFire(TriggerType::AD_SAMPLE));
-  throttler.TriggerFired(TriggerType::AD_SAMPLE);
-  EXPECT_TRUE(throttler.TriggerCanFire(TriggerType::AD_SAMPLE));
-  throttler.TriggerFired(TriggerType::AD_SAMPLE);
-  EXPECT_TRUE(throttler.TriggerCanFire(TriggerType::AD_SAMPLE));
-  throttler.TriggerFired(TriggerType::AD_SAMPLE);
-
-  // Fourth attempt will fail since we're out of quota.
-  EXPECT_FALSE(throttler.TriggerCanFire(TriggerType::AD_SAMPLE));
-}
-
 TEST_F(TriggerThrottlerTestFinch, AdSamplerDefaultQuota) {
-  // Make sure that the ad sampler gets its own default quota when no finch
-  // config exists, but the quota can be overwritten through Finch.
+  // Make sure that the ad sampler gets its own default quota.
   TriggerThrottler throttler_default(nullptr);
   EXPECT_EQ(kAdSamplerTriggerDefaultQuota,
             GetDailyQuotaForTrigger(throttler_default, TriggerType::AD_SAMPLE));
   EXPECT_TRUE(throttler_default.TriggerCanFire(TriggerType::AD_SAMPLE));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  SetupQuotaParams(TriggerType::AD_SAMPLE, "Group_AdSamplerDefaultQuota", 4,
-                   &scoped_feature_list);
-  TriggerThrottler throttler_finch(nullptr);
-  EXPECT_EQ(4u,
-            GetDailyQuotaForTrigger(throttler_finch, TriggerType::AD_SAMPLE));
 }
 
 TEST_F(TriggerThrottlerTestFinch, SuspiciousSiteTriggerDefaultQuota) {
