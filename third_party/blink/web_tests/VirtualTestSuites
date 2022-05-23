@@ -844,8 +844,7 @@
       "external/wpt/service-workers/service-worker/partitioned-claim.tentative.https.html",
       "external/wpt/webstorage/localstorage-basic-partitioned.tentative.sub.html",
       "external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html",
-      "external/wpt/IndexedDB/idb-partitioned-basic.tentative.sub.html",
-      "external/wpt/IndexedDB/idb-partitioned-persistence.tentative.sub.html",
+      "external/wpt/IndexedDB",
       "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html"
     ],
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
