@@ -284,6 +284,12 @@ class HistoryClusterElement extends PolymerElement {
   }
 
   private computeLabel_(): string {
+    if (!this.cluster.label) {
+      // This never happens unless we misconfigured our variations config.
+      // This sentinel string matches the Android UI.
+      return 'no_label';
+    }
+
     insertHighlightedTextWithMatchesIntoElement(
         this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
     return this.cluster.label!;
@@ -293,13 +299,6 @@ class HistoryClusterElement extends PolymerElement {
     return this.cluster.visits.filter((visit: URLVisit) => {
       return !visit.hidden;
     });
-  }
-
-  /**
-   * Returns true if this should be considered a top visit.
-   */
-  private isTopVisit_(index: number, label: string): boolean {
-    return index === 0 && !label;
   }
 
   /**

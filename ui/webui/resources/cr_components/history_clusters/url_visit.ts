@@ -56,15 +56,6 @@ class VisitRowElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * Whether this is a top visit.
-       */
-      isTopVisit: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: false,
-      },
-
-      /**
        * The current query for which related clusters are requested and shown.
        */
       query: String,
@@ -116,7 +107,6 @@ class VisitRowElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  isTopVisit: boolean;
   query: string;
   visit: URLVisit;
   private annotations_: Array<string>;
