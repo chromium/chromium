@@ -360,15 +360,7 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     return Difference::kInherited;
   if (!old_style.IndependentInheritedEqual(new_style) ||
       !inherited_variables_equal) {
-    if (old_style.ChildHasExplicitInheritance()) {
-      // If any of our children have explicit inheritance of an otherwise
-      // non-inherited property, we also have to count that as potentially
-      // inheriting non-independent properties, so we turn off that
-      // optimization here.
-      return Difference::kInherited;
-    } else {
-      return Difference::kIndependentInherited;
-    }
+    return Difference::kIndependentInherited;
   }
   if (non_inherited_equal) {
     DCHECK(old_style == new_style);
