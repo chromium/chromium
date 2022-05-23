@@ -292,6 +292,7 @@ enum WriteProtectDisableCompleteAction {
   kSkippedAssembleDevice = 1,
   kCompleteAssembleDevice = 2,
   kCompleteKeepDeviceOpen = 3,
+  kCompleteNoOp = 4,
 };
 
 // Status of device read only firmware reimaging.

@@ -35,11 +35,14 @@ export function onboardingWpDisableCompletePageTest() {
     service.reset();
   });
 
-  /** @return {!Promise} */
-  function initializeOnboardingWpDisableCompletePage() {
+  /**
+   * @param {WriteProtectDisableCompleteAction=} action
+   * @return {!Promise}
+   */
+  function initializeOnboardingWpDisableCompletePage(
+      action = WriteProtectDisableCompleteAction.kCompleteAssembleDevice) {
     assertFalse(!!component);
-    service.setGetWriteProtectDisableCompleteAction(
-        WriteProtectDisableCompleteAction.kCompleteAssembleDevice);
+    service.setGetWriteProtectDisableCompleteAction(action);
 
     component = /** @type {!OnboardingWpDisableCompletePage} */ (
         document.createElement('onboarding-wp-disable-complete-page'));
@@ -66,6 +69,14 @@ export function onboardingWpDisableCompletePageTest() {
     assertEquals(
         loadTimeData.getString('wpDisableReassembleNowText'),
         actionComponent.textContent.trim());
+  });
+
+  test('OnBoardingPageSetsActionKCompleteNoOpMessage', async () => {
+    await initializeOnboardingWpDisableCompletePage(
+        WriteProtectDisableCompleteAction.kCompleteNoOp);
+    const actionComponent =
+        component.shadowRoot.querySelector('#writeProtectAction');
+    assertEquals('', actionComponent.textContent.trim());
   });
 
   test('OnBoardingPageOnNextCallsConfirmManualWpDisableComplete', async () => {

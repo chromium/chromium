@@ -83,7 +83,8 @@ export class OnboardingWpDisableCompletePage extends
    * @protected
    */
   getActionString_() {
-    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown) ?
+    return (this.action_ === WriteProtectDisableCompleteAction.kUnknown ||
+            this.action_ === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
         this.i18n(disableActionTextKeys[this.action_]);
   }

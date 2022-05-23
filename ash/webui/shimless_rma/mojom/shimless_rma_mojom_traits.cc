@@ -706,6 +706,8 @@ EnumTraits<MojomWpDisableAction, ProtoWpDisableAction>::ToMojom(
     case rmad::WriteProtectDisableCompleteState::
         RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN:
       return MojomWpDisableAction::kCompleteKeepDeviceOpen;
+    case rmad::WriteProtectDisableCompleteState::RMAD_WP_DISABLE_COMPLETE_NO_OP:
+      return MojomWpDisableAction::kCompleteNoOp;
     case rmad::WriteProtectDisableCompleteState::RMAD_WP_DISABLE_UNKNOWN:
       return MojomWpDisableAction::kUnknown;
 
@@ -733,6 +735,10 @@ bool EnumTraits<MojomWpDisableAction, ProtoWpDisableAction>::FromMojom(
     case MojomWpDisableAction::kCompleteKeepDeviceOpen:
       *out = rmad::WriteProtectDisableCompleteState::
           RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN;
+      return true;
+    case MojomWpDisableAction::kCompleteNoOp:
+      *out = rmad::WriteProtectDisableCompleteState::
+          RMAD_WP_DISABLE_COMPLETE_NO_OP;
       return true;
 
     case MojomWpDisableAction::kUnknown:
