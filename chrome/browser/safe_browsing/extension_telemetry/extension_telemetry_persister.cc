@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,8 +22,6 @@
 namespace safe_browsing {
 
 namespace {
-// The max number of files that will be stored on disk.
-constexpr int kMaxNumFiles = 10;
 // If a file is older than `kMaxFileAge` it will be deleted instead
 // of read.
 constexpr base::TimeDelta kMaxFileAge = base::Days(3);
@@ -46,8 +45,12 @@ void RecordPersistedFileSize(size_t size) {
 }
 
 void RecordNumberOfFilesInCacheOnStartup(int cache_size) {
+  // `max_cache_size` is based off of a 12 hour reporting interval with a 15
+  // minute write interval. Add 1 to the `max_cache_size` to account for
+  // zero files in the cache.
+  int max_cache_size = 48;
   base::UmaHistogramExactLinear("SafeBrowsing.ExtensionPersister.CacheSize",
-                                cache_size, kMaxNumFiles);
+                                cache_size, max_cache_size + 1);
 }
 
 void RecordAgedFileFound(bool found) {
@@ -58,7 +61,9 @@ void RecordAgedFileFound(bool found) {
 
 ExtensionTelemetryPersister::~ExtensionTelemetryPersister() = default;
 
-ExtensionTelemetryPersister::ExtensionTelemetryPersister() {
+ExtensionTelemetryPersister::ExtensionTelemetryPersister(int max_num_files,
+                                                         Profile* profile)
+    : profile_(profile), max_num_files_(max_num_files) {
   // Shutdown behavior is CONTINUE_ON_SHUTDOWN to ensure tasks
   // are run on the threads they were called on.
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -113,19 +118,27 @@ void ExtensionTelemetryPersister::ClearPersistedFiles() {
 }
 
 void ExtensionTelemetryPersister::InitHelper() {
+  // TODO(https://crbug.com/1325864): Remove old directory clean up code after
+  // launch.
+  base::FilePath old_dir;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &old_dir)) {
+    old_dir = old_dir.AppendASCII("CRXTelemetry");
+    if (base::DirectoryExists(old_dir)) {
+      base::DeletePathRecursively(old_dir);
+    }
+  }
   write_index_ = kInitialWriteIndex;
   read_index_ = kInitialReadIndex;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &dir_path_)) {
-    dir_path_ = dir_path_.AppendASCII("CRXTelemetry");
-    if (!base::DirectoryExists(dir_path_))
-      base::CreateDirectory(dir_path_);
-    while (base::PathExists(dir_path_.AppendASCII(
-               ("CRXTelemetry_" + base::NumberToString(read_index_ + 1)))) &&
-           (read_index_ < kMaxNumFiles - 1)) {
-      read_index_++;
-    }
-    write_index_ = (read_index_ + 1) % kMaxNumFiles;
+  dir_path_ = profile_->GetPath();
+  dir_path_ = dir_path_.AppendASCII("CRXTelemetry");
+  if (!base::DirectoryExists(dir_path_))
+    base::CreateDirectory(dir_path_);
+  while (base::PathExists(dir_path_.AppendASCII(
+             ("CRXTelemetry_" + base::NumberToString(read_index_ + 1)))) &&
+         (read_index_ < max_num_files_ - 1)) {
+    read_index_++;
   }
+  write_index_ = (read_index_ + 1) % max_num_files_;
   initialization_complete_ = true;
   RecordNumberOfFilesInCacheOnStartup(read_index_ + 1);
 }
@@ -158,7 +171,7 @@ void ExtensionTelemetryPersister::SaveFile(std::string write_string) {
     write_index_++;
     if (write_index_ - 1 > read_index_)
       read_index_ = write_index_ - 1;
-    if (write_index_ >= kMaxNumFiles)
+    if (write_index_ >= max_num_files_)
       write_index_ = 0;
   }
   RecordWriteResult(success);
@@ -180,7 +193,7 @@ void ExtensionTelemetryPersister::LoadFile(
     read_index_--;
     write_index_ = read_index_ + 1;
     base::GetFileInfo(path, &info);
-    if (info.creation_time + kMaxFileAge > base::Time::NowFromSystemTime()) {
+    if (info.creation_time + kMaxFileAge > base::Time::Now()) {
       RecordAgedFileFound(false);
       if (base::ReadFileToString(path, &persisted_report))
         read_success = true;

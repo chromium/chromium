@@ -112,6 +112,18 @@ class ExtensionTelemetryService : public KeyedService {
   // Returns nullptr when the user is not signed in.
   std::unique_ptr<SafeBrowsingTokenFetcher> GetTokenFetcher();
 
+  // Called periodically based on the Telemetry Service timer. If time
+  // elapsed since last upload is less than the reporting interval, persists
+  // a new report, else uploads current report and any persisted reports.
+  void PersistOrUploadData();
+
+  // Uploads an extension telemetry report.
+  void UploadReport(std::unique_ptr<std::string> report);
+
+  // Checks the time of the last upload and if enough time has passed,
+  // uploads telemetry data. Runs on a delayed post task on startup.
+  void StartUploadCheck();
+
   std::unique_ptr<safe_browsing::ExtensionTelemetryPersister> persister_;
 
   // The profile with which this instance of the service is associated.

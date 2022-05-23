@@ -11,11 +11,12 @@
 #include "base/path_service.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 namespace safe_browsing {
 
 class ExtensionTelemetryPersisterTest : public ::testing::Test {
@@ -30,7 +31,9 @@ class ExtensionTelemetryPersisterTest : public ::testing::Test {
     success_ = success;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  int kMaxNumFilesPersisted = 10;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
   bool success_;
   std::string read_string_;
   base::WeakPtrFactory<ExtensionTelemetryPersisterTest> weak_factory_{this};
@@ -38,7 +41,8 @@ class ExtensionTelemetryPersisterTest : public ::testing::Test {
 
 ExtensionTelemetryPersisterTest::ExtensionTelemetryPersisterTest()
     : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  persister_ = std::make_unique<ExtensionTelemetryPersister>();
+  persister_ = std::make_unique<ExtensionTelemetryPersister>(
+      kMaxNumFilesPersisted, &profile_);
   persister_->PersisterInit();
   task_environment_.RunUntilIdle();
 }
@@ -124,6 +128,66 @@ TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
   task_environment_.RunUntilIdle();
   // Last read should not happen as all files have been read.
   EXPECT_EQ(success_, false);
+  persister_->ClearPersistedFiles();
+  task_environment_.RunUntilIdle();
+}
+TEST_F(ExtensionTelemetryPersisterTest, MultiProfile) {
+  TestingProfile profile_2;
+  std::unique_ptr<safe_browsing::ExtensionTelemetryPersister> persister_2 =
+      std::make_unique<ExtensionTelemetryPersister>(kMaxNumFilesPersisted,
+                                                    &profile_2);
+  persister_2->PersisterInit();
+  task_environment_.RunUntilIdle();
+  // Perform a simple read write test on two separate profiles.
+  std::string written_string = "Test String 1";
+  std::string written_string_2 = "Test String 2";
+  persister_->WriteReport(written_string);
+  persister_->WriteReport(written_string);
+  persister_2->WriteReport(written_string_2);
+  persister_2->WriteReport(written_string_2);
+  task_environment_.RunUntilIdle();
+  // Read through profile one persisted files
+  for (int i = 0; i < 2; i++) {
+    auto callback = base::BindPostTask(
+        base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
+                       weak_factory_.GetWeakPtr()));
+    // Read report and check its contents.
+    persister_->ReadReport(std::move(callback));
+    task_environment_.RunUntilIdle();
+    EXPECT_EQ(success_, true);
+    EXPECT_EQ(written_string, read_string_);
+  }
+  // Last file read should fail since two files were written per file.
+  auto callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
+                     weak_factory_.GetWeakPtr()));
+  persister_->ReadReport(std::move(callback));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(success_, false);
+  EXPECT_EQ("", read_string_);
+  // Repeat process for profile 2.
+  for (int i = 0; i < 2; i++) {
+    auto callback = base::BindPostTask(
+        base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
+                       weak_factory_.GetWeakPtr()));
+    // Read report and check its contents.
+    persister_2->ReadReport(std::move(callback));
+    task_environment_.RunUntilIdle();
+    EXPECT_EQ(success_, true);
+    EXPECT_EQ(written_string_2, read_string_);
+  }
+  callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
+                     weak_factory_.GetWeakPtr()));
+  persister_2->ReadReport(std::move(callback));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(success_, false);
+  EXPECT_EQ("", read_string_);
+  persister_2->ClearPersistedFiles();
   persister_->ClearPersistedFiles();
   task_environment_.RunUntilIdle();
 }

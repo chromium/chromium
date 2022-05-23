@@ -10,18 +10,19 @@
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 
+class Profile;
+
 namespace base {
 class FilePath;
 }
 namespace safe_browsing {
 
 // The `ExtensionTelemetryPersister` stores data collected by the Extension
-// Telemetry Service to disk. It creates files until `kMaxNumFiles` are on disk
-// and then starts overwriting previously made files. When a file is read it is
-// also deleted.
+// Telemetry Service to disk. It creates files until `max_num_files_` are on
+// disk and then starts overwriting previously made files.
 class ExtensionTelemetryPersister {
  public:
-  ExtensionTelemetryPersister();
+  explicit ExtensionTelemetryPersister(int max_num_files, Profile* profile);
 
   ExtensionTelemetryPersister(const ExtensionTelemetryPersister&) = delete;
   ExtensionTelemetryPersister& operator=(const ExtensionTelemetryPersister&) =
@@ -69,7 +70,8 @@ class ExtensionTelemetryPersister {
                                      base::FilePath dir_path,
                                      int write_index);
 
-  // Reads data from the file represented by `read_index_`.
+  // Reads data from the file represented by `read_index_`. When a
+  // file is read it is also deleted.
   void LoadFile(base::OnceCallback<void(std::string, bool)> callback);
 
   // Deletes the file that the `path` variable points to.
@@ -81,8 +83,14 @@ class ExtensionTelemetryPersister {
 
   friend class ExtensionTelemetryPersisterTest;
 
-  // Stores the directory path.
+  // Stores the directory path of the user's profile.
   base::FilePath dir_path_;
+
+  // The profile with which this instance of the persister is associated.
+  const raw_ptr<Profile> profile_;
+
+  // The maximum number of files that are stored on disk.
+  int max_num_files_;
 
   // The index of which file is next for writing. `write_index_`
   // increments from 0 to `kMaxNumFiles` - 1 and then back around to 0.
@@ -101,7 +109,11 @@ class ExtensionTelemetryPersister {
   // the persister will not post any other tasks.
   bool is_shut_down_ = false;
 
-  // Task runner for read and write operations.
+  // Task runner for read and write operations. Shutdown behavior
+  // is to complete tasks that have started. There is a chance that if Chrome
+  // is performing a lot of tasks during shutdown, persister tasks might
+  // not run. This can most likely occur when Chrome is open and closed
+  // very quickly.  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<ExtensionTelemetryPersister> weak_factory_{this};

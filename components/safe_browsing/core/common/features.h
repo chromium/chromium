@@ -75,6 +75,11 @@ extern const base::Feature kExtensionTelemetryPersistence;
 
 // Specifies the upload interval for extension telemetry reports.
 extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
+
+// Specifies the number of writes the telemetry service will perform during
+// a full upload interval.
+extern const base::FeatureParam<int> kExtensionTelemetryWritesPerInterval;
+
 // Enables collection of telemetry signal whenever an extension invokes the
 // tabs.executeScript API call.
 extern const base::Feature kExtensionTelemetryTabsExecuteScriptSignal;
