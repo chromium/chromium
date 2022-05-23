@@ -162,13 +162,11 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
 bool AttributionFiltersMatch(const AttributionFilterData& source_filter_data,
                              const AttributionFilterData& trigger_filters,
                              const AttributionFilterData& trigger_not_filters) {
-  if (!trigger_filters.filter_values().empty() &&
-      !AttributionFilterDataMatch(source_filter_data, trigger_filters)) {
+  if (!AttributionFilterDataMatch(source_filter_data, trigger_filters)) {
     return false;
   }
 
-  if (!trigger_not_filters.filter_values().empty() &&
-      !AttributionFilterDataMatch(source_filter_data, trigger_not_filters,
+  if (!AttributionFilterDataMatch(source_filter_data, trigger_not_filters,
                                   /*negated=*/true)) {
     return false;
   }
