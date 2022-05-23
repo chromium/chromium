@@ -787,6 +787,12 @@
     "args": [ "--enable-features=DisableDocumentDomainByDefault" ]
   },
   {
+    "prefix": "subresource-web-bundles-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "http/tests/loading/wbn/origin-trial/" ],
+    "args": [ "--disable-blink-features=SubresourceWebBundles" ]
+  },
+  {
     "prefix": "backface-visibility-interop",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [ "external/wpt/css/css-transforms",

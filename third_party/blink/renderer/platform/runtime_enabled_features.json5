@@ -2254,6 +2254,8 @@
     },
     {
       name: "SubresourceWebBundles",
+      origin_trial_feature_name: "SubresourceWebBundles",
+      origin_trial_allows_third_party: true,
       status: "experimental"
     },
     {
