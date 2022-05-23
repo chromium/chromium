@@ -65,6 +65,7 @@ config("xnnpack_config") {
     "XNN_ENABLE_JIT=0",
 
     "XNN_ENABLE_ASSEMBLY=1",
+    "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
     "XNN_ENABLE_MEMOPT=1",
     "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",

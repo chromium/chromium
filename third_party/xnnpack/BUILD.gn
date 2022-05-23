@@ -28,6 +28,7 @@ config("xnnpack_config") {
     "XNN_ENABLE_JIT=0",
 
     "XNN_ENABLE_ASSEMBLY=1",
+    "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
     "XNN_ENABLE_MEMOPT=1",
     "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",
@@ -671,6 +672,7 @@ source_set("subgraph") {
     "src/src/subgraph/static-constant-pad.c",
     "src/src/subgraph/static-reshape.c",
     "src/src/subgraph/static-resize-bilinear-2d.c",
+    "src/src/subgraph/static-transpose.c",
     "src/src/subgraph/subtract.c",
     "src/src/subgraph/unpooling-2d.c",
     "src/src/subgraph/validation.c",
