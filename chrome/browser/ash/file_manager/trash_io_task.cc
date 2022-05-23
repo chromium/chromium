@@ -393,22 +393,56 @@ void TrashIOTask::OnWriteMetadata(size_t source_idx,
     return;
   }
 
-  // TODO(b/231250202): Move the file to trash but on error remove the metadata
-  // file.
-  TrashComplete(source_idx, output_idx, base::File::Error::FILE_OK);
+  progress_.outputs[output_idx].error = base::File::FILE_OK;
+  TrashFile(source_idx, output_idx, destination_url);
+}
+
+void TrashIOTask::TrashFile(size_t source_idx,
+                            size_t output_idx,
+                            const storage::FileSystemURL& destination_url) {
+  DCHECK(source_idx < progress_.sources.size());
+  DCHECK(output_idx < progress_.outputs.size());
+  progress_.outputs.emplace_back(destination_url, absl::nullopt);
+
+  last_progress_size_ = 0;
+
+  const storage::FileSystemURL& source_url = progress_.sources[source_idx].url;
+
+  // File browsers generally default to preserving mtimes on copy/move so we
+  // should do the same.
+  storage::FileSystemOperation::CopyOrMoveOptionSet options(
+      storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified,
+      storage::FileSystemOperation::CopyOrMoveOption::
+          kRemovePartiallyCopiedFilesOnError);
+
+  auto complete_callback =
+      base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                         base::BindOnce(&TrashIOTask::TrashComplete,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        source_idx, output_idx + 1));
+
+  // For move operations that occur on the same file system, the progress
+  // callback is never invoked.
+  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&StartMoveOnIOThread, file_system_context_, source_url,
+                     destination_url, options, base::DoNothing(),
+                     std::move(complete_callback)),
+      base::BindOnce(&TrashIOTask::SetCurrentOperationID,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrashIOTask::TrashComplete(size_t source_idx,
                                 size_t output_idx,
                                 base::File::Error error) {
   DCHECK(source_idx < progress_.sources.size());
-  DCHECK(source_idx < trash_entries_.size());
   DCHECK(output_idx < progress_.outputs.size());
   operation_id_.reset();
   progress_.sources[source_idx].error = error;
   progress_.outputs[output_idx].error = error;
   progress_.bytes_transferred +=
-      trash_entries_[source_idx].trash_info_contents.size();
+      trash_entries_[source_idx].trash_info_contents.size() +
+      (trash_entries_[source_idx].source_file_size - last_progress_size_);
 
   if (source_idx < progress_.sources.size() - 1) {
     progress_callback_.Run(progress_);

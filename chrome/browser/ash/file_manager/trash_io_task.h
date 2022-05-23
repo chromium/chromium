@@ -12,7 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/speedometer.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -163,6 +165,11 @@ class TrashIOTask : public IOTask {
   void TrashComplete(size_t source_idx,
                      size_t output_idx,
                      base::File::Error error);
+  // Move a file from it's location to the final .Trash/files destination with
+  // a unique name determined by `GenerateDestinationURL`.
+  void TrashFile(size_t source_idx,
+                 size_t output_idx,
+                 const storage::FileSystemURL& destination_url);
 
   raw_ptr<Profile> profile_;
 
@@ -175,6 +182,14 @@ class TrashIOTask : public IOTask {
   // Maintains the free space required to write all the metadata files along
   // with the underlying locations of the .Trash/{files,info} directories.
   FreeSpaceMap free_space_map_;
+
+  // Stores the size reported by the last progress update so we can compute the
+  // delta on the next progress update.
+  int64_t last_progress_size_;
+
+  // Speedometer for this operation, used to calculate the remaining time to
+  // finish the operation.
+  Speedometer speedometer_;
 
   // Stores the id of the operations currently behind undertaken by Trash,
   // including directory creation. Enables cancelling an inflight operation.

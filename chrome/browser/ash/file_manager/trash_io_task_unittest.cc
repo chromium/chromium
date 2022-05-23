@@ -32,6 +32,7 @@ namespace {
 
 using ::base::test::RunClosure;
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Return;
@@ -105,6 +106,11 @@ class TrashIOTaskTest : public testing::Test {
   const base::FilePath GenerateInfoPath(const std::string& file_name) {
     return GenerateTrashPath(downloads_dir_.Append(kTrashFolderName),
                              kInfoFolderName, file_name);
+  }
+
+  const base::FilePath GenerateFilesPath(const std::string& file_name) {
+    return GenerateTrashPath(downloads_dir_.Append(kTrashFolderName),
+                             kFilesFolderName, file_name);
   }
 
   const std::string CreateTrashInfoContentsFromPath(
@@ -271,17 +277,15 @@ TEST_F(TrashIOTaskTest, OrphanedFilesAreOverwritten) {
   // Completion callback should contain the one metadata file written with the
   // `total_expected_bytes` containing the size of both the file to trash and
   // the size of the metadata.
-  // TODO(b/231250202): Once trash has implemented, the `bytes_transferred`
-  // should be updated to the `total_expected_bytes`.
   EXPECT_CALL(
       complete_callback,
       Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
-                Field(&ProgressStatus::bytes_transferred,
-                      file_trashinfo_contents.size()),
+                Field(&ProgressStatus::bytes_transferred, total_expected_bytes),
                 Field(&ProgressStatus::total_bytes, total_expected_bytes),
                 Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
                 Field(&ProgressStatus::outputs,
-                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))))))
+                      EntryStatusErrors(ElementsAre(base::File::FILE_OK,
+                                                    base::File::FILE_OK))))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   {
@@ -297,6 +301,7 @@ TEST_F(TrashIOTaskTest, OrphanedFilesAreOverwritten) {
 
   AssertTrashSetup(downloads_dir_);
   ExpectFileContents(GenerateInfoPath(file_name), file_trashinfo_contents);
+  ExpectFileContents(GenerateFilesPath(file_name), foo_contents);
 }
 
 TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
@@ -309,10 +314,9 @@ TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
   const base::FilePath file_path_2 = downloads_dir_.Append(file_name_2);
   const std::string file_trashinfo_contents_2 =
       CreateTrashInfoContentsFromPath(file_path_2);
-  const size_t expected_bytes_transferred =
-      file_trashinfo_contents_1.size() + file_trashinfo_contents_2.size();
-  const size_t expected_total_bytes =
-      (kTestFileSize * 2) + expected_bytes_transferred;
+  const size_t expected_total_bytes = (kTestFileSize * 2) +
+                                      file_trashinfo_contents_1.size() +
+                                      file_trashinfo_contents_2.size();
   ASSERT_TRUE(base::WriteFile(file_path_1, foo_contents));
   ASSERT_TRUE(base::WriteFile(file_path_2, foo_contents));
 
@@ -331,28 +335,38 @@ TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
       AllOf(Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
             Field(&ProgressStatus::total_bytes, expected_total_bytes));
 
-  // Expect the `progress_callback` to be invoked after the first metadata file
-  // has been written with the size contents and
-  EXPECT_CALL(
-      progress_callback,
-      Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
-                Field(&ProgressStatus::bytes_transferred,
-                      file_trashinfo_contents_1.size()),
-                Field(&ProgressStatus::outputs,
-                      EntryStatusErrors(ElementsAre(base::File::FILE_OK))),
-                base_matcher)))
-      .Times(1);
+  // Progress callback may be called any number of times, so this expectation
+  // catches extra calls.
+  EXPECT_CALL(progress_callback,
+              Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
+                        base_matcher)))
+      .Times(AnyNumber());
 
-  // Expect the completion callback to be invoked after the final metadata file
-  // is written out.
-  EXPECT_CALL(complete_callback,
-              Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
+  // Expect the `progress_callback` to be invoked after the first metadata and
+  // trash file have been written and moved with their size in the
+  // `bytes_transferred`.
+  EXPECT_CALL(progress_callback,
+              Run(AllOf(Field(&ProgressStatus::state, State::kInProgress),
                         Field(&ProgressStatus::bytes_transferred,
-                              expected_bytes_transferred),
+                              file_trashinfo_contents_1.size() + kTestFileSize),
                         Field(&ProgressStatus::outputs,
                               EntryStatusErrors(ElementsAre(
                                   base::File::FILE_OK, base::File::FILE_OK))),
                         base_matcher)))
+      .Times(1);
+
+  // Completion callback should contain 4 files successfully being written. Each
+  // `base::File::FILE_OK` in the outputs field corresponds to a successful
+  // write or move of the file and associated metadata.
+  EXPECT_CALL(
+      complete_callback,
+      Run(AllOf(Field(&ProgressStatus::state, State::kSuccess),
+                Field(&ProgressStatus::bytes_transferred, expected_total_bytes),
+                Field(&ProgressStatus::outputs,
+                      EntryStatusErrors(ElementsAre(
+                          base::File::FILE_OK, base::File::FILE_OK,
+                          base::File::FILE_OK, base::File::FILE_OK))),
+                base_matcher)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   {
@@ -367,6 +381,8 @@ TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
   AssertTrashSetup(downloads_dir_);
   ExpectFileContents(GenerateInfoPath(file_name_1), file_trashinfo_contents_1);
   ExpectFileContents(GenerateInfoPath(file_name_2), file_trashinfo_contents_2);
+  ExpectFileContents(GenerateFilesPath(file_name_1), foo_contents);
+  ExpectFileContents(GenerateFilesPath(file_name_2), foo_contents);
 }
 
 }  // namespace
