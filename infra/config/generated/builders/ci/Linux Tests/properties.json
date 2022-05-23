@@ -96,6 +96,10 @@
           "group": "tryserver.chromium.linux"
         },
         {
+          "builder": "linux-rel-ml",
+          "group": "tryserver.chromium.linux"
+        },
+        {
           "builder": "linux-rel-warmed",
           "group": "tryserver.chromium.linux"
         },

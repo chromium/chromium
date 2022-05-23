@@ -496,6 +496,9 @@ as required builders.
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
+* [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-ml""))
+  * Experiment percentage: 5.0
+
 * [mac11-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac11-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac11-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac11-arm64-rel""))
   * Experiment percentage: 100.0
 

@@ -664,3 +664,21 @@ try_.gpu.optional_tests_builder(
         ],
     ),
 )
+
+# RTS builders
+
+# ML experimental builder, modifies RTS itself to use a ml model
+try_.builder(
+    name = "linux-rel-ml",
+    mirrors = builder_config.copy_from("linux-rel"),
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.ALWAYS,
+        ),
+    ),
+    builderless = False,
+    experiments = {"chromium_rts.ml_model": 100},
+)
