@@ -10,7 +10,7 @@ package reporting;
 
 import "components/reporting/proto/synced/record_constants.proto";
 import "components/reporting/proto/synced/record.proto";
-import "components/reporting/status/status.proto";
+import "components/reporting/util/status.proto";
 
 // ------------ CLIENT/USER REQUEST AND RESPONSES -----------------
 // EnqueueRecordRequest enqueues records for encryption,
@@ -91,10 +91,10 @@ message UploadEncryptedRecordRequest {
   optional bool need_encryption_keys = 2;
 
   // The remaining storage capacity in bytes.
-  optional uint64_t remaining_storage_capacity = 3;
+  optional uint64 remaining_storage_capacity = 3;
 
   // The rate (bytes/sec) at which new events are added to the storage.
-  optional uint64_t new_events_rate = 4;
+  optional uint64 new_events_rate = 4;
 }
 
 message UploadEncryptedRecordResponse {

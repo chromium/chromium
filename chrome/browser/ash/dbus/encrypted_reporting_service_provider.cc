@@ -18,7 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chromeos/dbus/missive/missive_client.h"
-#include "components/reporting/proto/interface.pb.h"
+#include "components/reporting/proto/synced/interface.pb.h"
 #include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status.pb.h"
