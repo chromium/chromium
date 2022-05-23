@@ -7,6 +7,7 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/base/assistant_button_listener.h"
 #include "ash/assistant/util/histogram_util.h"
+#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "base/bind.h"
@@ -44,10 +45,9 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
                                              base::Unretained(this))),
       listener_(listener),
       id_(button_id) {
-  SetFocusBehavior(FocusBehavior::ALWAYS);
-
-  // Avoid drawing default dashed focus and draw customized focus.
+  // Avoid drawing default focus ring and draw customized focus instead.
   SetInstallFocusRingOnFocus(false);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
 
   // Inkdrop only on click.
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -122,7 +122,15 @@ void AssistantButton::OnFocus() {
 }
 
 void AssistantButton::OnPaintBackground(gfx::Canvas* canvas) {
-  if (HasFocus()) {
+  // Hide focus ring when keyboard traversal is not enabled.
+  // This is specifically applicable to tablet mode when
+  // keyboard traversal may be off.
+  const bool hide_focus_ring_when_not_keyboard_traversal =
+      !AssistantUiController::Get()->GetModel()->keyboard_traversal_mode();
+  const bool should_show_focus_ring =
+      HasFocus() && !hide_focus_ring_when_not_keyboard_traversal;
+
+  if (should_show_focus_ring) {
     cc::PaintFlags circle_flags;
     circle_flags.setAntiAlias(true);
     circle_flags.setColor(ColorProvider::Get()->GetControlsLayerColor(

@@ -86,11 +86,18 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   // Returns the UI entry point. Only valid while UI is visible.
   AssistantEntryPoint entry_point() const { return entry_point_; }
 
+  // Sets the current keyboard traversal mode.
+  void SetKeyboardTraversalMode(bool keyboard_traversal_mode);
+
+  // Returns the current keyboard traversal mode.
+  bool keyboard_traversal_mode() const { return keyboard_traversal_mode_; }
+
  private:
   void SetVisibility(AssistantVisibility visibility,
                      absl::optional<AssistantEntryPoint> entry_point,
                      absl::optional<AssistantExitPoint> exit_point);
 
+  void NotifyKeyboardTraversalModeChanged();
   void NotifyUiModeChanged(bool due_to_interaction);
   void NotifyUiVisibilityChanged(
       AssistantVisibility old_visibility,
@@ -107,6 +114,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   // Usable work area for Assistant. Value is only meaningful when Assistant
   // UI exists.
   gfx::Rect usable_work_area_;
+
+  // Whether or not keyboard traversal is currently enabled.
+  // Used for updating the Assistant UI when it exists.
+  bool keyboard_traversal_mode_ = false;
 };
 
 }  // namespace ash

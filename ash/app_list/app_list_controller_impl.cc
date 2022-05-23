@@ -1166,6 +1166,7 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
     return;
 
   keyboard_traversal_engaged_ = engaged;
+  AssistantUiController::Get()->SetKeyboardTraversalMode(engaged);
 
   // No need to schedule paint for bubble presenter.
   if (features::IsProductivityLauncherEnabled() &&

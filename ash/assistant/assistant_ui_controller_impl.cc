@@ -99,6 +99,11 @@ bool AssistantUiControllerImpl::HasShownOnboarding() const {
   return has_shown_onboarding_;
 }
 
+void AssistantUiControllerImpl::SetKeyboardTraversalMode(
+    bool keyboard_traversal_mode) {
+  model_.SetKeyboardTraversalMode(keyboard_traversal_mode);
+}
+
 void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
   // Skip if the opt-in window is active.
   auto* assistant_setup = AssistantSetup::GetInstance();

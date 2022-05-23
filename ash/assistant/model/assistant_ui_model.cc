@@ -64,6 +64,14 @@ void AssistantUiModel::SetUsableWorkArea(const gfx::Rect& usable_work_area) {
   NotifyUsableWorkAreaChanged();
 }
 
+void AssistantUiModel::SetKeyboardTraversalMode(bool keyboard_traversal_mode) {
+  if (keyboard_traversal_mode == keyboard_traversal_mode_)
+    return;
+
+  keyboard_traversal_mode_ = keyboard_traversal_mode;
+  NotifyKeyboardTraversalModeChanged();
+}
+
 void AssistantUiModel::SetVisibility(
     AssistantVisibility visibility,
     absl::optional<AssistantEntryPoint> entry_point,
@@ -85,6 +93,11 @@ void AssistantUiModel::SetVisibility(
   }
 
   NotifyUiVisibilityChanged(old_visibility, entry_point, exit_point);
+}
+
+void AssistantUiModel::NotifyKeyboardTraversalModeChanged() {
+  for (AssistantUiModelObserver& observer : observers_)
+    observer.OnKeyboardTraversalModeChanged(keyboard_traversal_mode_);
 }
 
 void AssistantUiModel::NotifyUiModeChanged(bool due_to_interaction) {

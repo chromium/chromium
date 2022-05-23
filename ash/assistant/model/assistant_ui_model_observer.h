@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
   AssistantUiModelObserver(const AssistantUiModelObserver&) = delete;
   AssistantUiModelObserver& operator=(const AssistantUiModelObserver&) = delete;
 
+  // Invoked when keyboard traversal mode is changed (enabled/disabled).
+  virtual void OnKeyboardTraversalModeChanged(bool keyboard_traversal_mode) {}
+
   // Invoked when the UI mode is changed. If |due_to_interaction| is true, the
   // UI mode was changed as a result of an Assistant interaction.
   virtual void OnUiModeChanged(AssistantUiMode ui_mode,
