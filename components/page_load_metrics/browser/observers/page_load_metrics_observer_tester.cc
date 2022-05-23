@@ -279,7 +279,7 @@ void PageLoadMetricsObserverTester::SimulateLoadedResource(
   }
 
   blink::mojom::ResourceLoadInfo resource_load_info;
-  resource_load_info.final_url = info.origin_of_final_url.GetURL();
+  resource_load_info.final_url = info.final_url.GetURL();
   resource_load_info.was_cached = info.was_cached;
   resource_load_info.raw_body_bytes = info.raw_body_bytes;
   resource_load_info.total_received_bytes =

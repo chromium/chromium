@@ -1305,8 +1305,8 @@ TEST_F(MetricsWebContentsObserverTest, OnLoadedResource_MainFrame) {
       *CreateResourceLoadInfo(main_resource_url,
                               network::mojom::RequestDestination::kFrame));
   EXPECT_EQ(1u, loaded_resources().size());
-  EXPECT_EQ(url::Origin::Create(main_resource_url),
-            loaded_resources().back().origin_of_final_url);
+  EXPECT_EQ(url::SchemeHostPort(main_resource_url),
+            loaded_resources().back().final_url);
 
   NavigateToUntrackedUrl();
 
@@ -1317,8 +1317,8 @@ TEST_F(MetricsWebContentsObserverTest, OnLoadedResource_MainFrame) {
       *CreateResourceLoadInfo(main_resource_url,
                               network::mojom::RequestDestination::kFrame));
   EXPECT_EQ(1u, loaded_resources().size());
-  EXPECT_EQ(url::Origin::Create(main_resource_url),
-            loaded_resources().back().origin_of_final_url);
+  EXPECT_EQ(url::SchemeHostPort(main_resource_url),
+            loaded_resources().back().final_url);
 }
 
 TEST_F(MetricsWebContentsObserverTest, OnLoadedResource_Subresource) {
@@ -1331,8 +1331,8 @@ TEST_F(MetricsWebContentsObserverTest, OnLoadedResource_Subresource) {
                               network::mojom::RequestDestination::kScript));
 
   EXPECT_EQ(1u, loaded_resources().size());
-  EXPECT_EQ(url::Origin::Create(loaded_resource_url),
-            loaded_resources().back().origin_of_final_url);
+  EXPECT_EQ(url::SchemeHostPort(loaded_resource_url),
+            loaded_resources().back().final_url);
 }
 
 TEST_F(MetricsWebContentsObserverTest,

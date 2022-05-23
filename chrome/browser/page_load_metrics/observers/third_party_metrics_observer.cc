@@ -93,9 +93,8 @@ void ThirdPartyMetricsObserver::OnLoadedResource(
     return;
   }
 
-  third_party_font_loaded_ =
-      !IsSameSite(GetDelegate().GetUrl(),
-                  extra_request_complete_info.origin_of_final_url.GetURL());
+  third_party_font_loaded_ = !IsSameSite(
+      GetDelegate().GetUrl(), extra_request_complete_info.final_url.GetURL());
 }
 
 void ThirdPartyMetricsObserver::OnCookiesRead(
