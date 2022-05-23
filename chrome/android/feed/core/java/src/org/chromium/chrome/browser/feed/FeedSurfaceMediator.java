@@ -294,7 +294,7 @@ public class FeedSurfaceMediator
     /** Update the content based on supervised user or enterprise policy. */
     void updateContent() {
         mFeedEnabled = FeedFeatures.isFeedEnabled();
-        if (mFeedEnabled == !mTabToStreamMap.isEmpty()) {
+        if (mFeedEnabled && !mTabToStreamMap.isEmpty()) {
             return;
         }
 
