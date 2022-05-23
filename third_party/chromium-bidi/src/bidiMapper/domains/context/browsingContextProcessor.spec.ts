@@ -25,6 +25,7 @@ import { Context } from './context';
 import { BrowsingContext } from '../protocol/bidiProtocolTypes';
 import { BidiServer, IBidiServer } from '../../utils/bidiServer';
 import { EventManager, IEventManager } from '../events/EventManager';
+import { BrowsingContextParser } from '../protocol/parsers/browsingContextParser';
 
 describe('BrowsingContextProcessor', function () {
   let mockCdpServer: StubTransport;
@@ -89,9 +90,8 @@ describe('BrowsingContextProcessor', function () {
   });
 
   describe('handle `process_PROTO_browsingContext_create`', async function () {
-    const BROWSING_CONTEXT_CREATE_COMMAND: BrowsingContext.CreateCommand = {
-      method: 'browsingContext.create',
-      params: {},
+    const BROWSING_CONTEXT_CREATE_PARAMS: BrowsingContext.CreateParameters = {
+      type: BrowsingContext.CreateParametersType.tab,
     };
 
     const EXPECTED_TARGET_CREATE_TARGET_CALL = {
@@ -113,7 +113,7 @@ describe('BrowsingContextProcessor', function () {
     it('Target.attachedToTarget before command finished', async function () {
       const createResultPromise =
         browsingContextProcessor.process_browsingContext_create(
-          BROWSING_CONTEXT_CREATE_COMMAND
+          BROWSING_CONTEXT_CREATE_PARAMS
         );
 
       sinon.assert.calledOnceWithExactly(
@@ -133,7 +133,7 @@ describe('BrowsingContextProcessor', function () {
     it('Target.attachedToTarget after command finished', async function () {
       const createResultPromise =
         browsingContextProcessor.process_browsingContext_create(
-          BROWSING_CONTEXT_CREATE_COMMAND
+          BROWSING_CONTEXT_CREATE_PARAMS
         );
 
       sinon.assert.calledOnceWithExactly(

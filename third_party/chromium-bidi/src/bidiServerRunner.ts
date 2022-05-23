@@ -20,6 +20,7 @@ import http from 'http';
 import { ITransport } from './utils/transport';
 
 import debug from 'debug';
+
 const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ►');
 const debugRecv = debug('bidiServer:RECV ◀');
@@ -39,13 +40,17 @@ export class BidiServerRunner {
   ) {
     const self = this;
 
-    const server = http.createServer(function (request, response) {
-      debugInternal(new Date() + ' Received request for ' + request.url);
-
+    const server = http.createServer(async function (
+      request: http.IncomingMessage,
+      response: http.ServerResponse
+    ) {
+      debugInternal(
+        `${new Date()} Received ${request.method} request for ${request.url}`
+      );
       if (!request.url) return response.end(404);
 
       // https://w3c.github.io/webdriver-bidi/#transport, step 2.
-      if (request.url.startsWith('/session')) {
+      if (request.url === '/session') {
         response.writeHead(200, {
           'Content-Type': 'application/json;charset=utf-8',
           'Cache-Control': 'no-cache',
@@ -60,7 +65,36 @@ export class BidiServerRunner {
             },
           })
         );
+      } else if (request.url.startsWith('/session')) {
+        debugInternal(
+          `Unknown session command ${JSON.stringify(
+            request.method
+          )} request for ${JSON.stringify(
+            request.url
+          )} with payload ${JSON.stringify(
+            await BidiServerRunner.#getHttpRequestPayload(request)
+          )}. 200 returned.`
+        );
+
+        response.writeHead(200, {
+          'Content-Type': 'application/json;charset=utf-8',
+          'Cache-Control': 'no-cache',
+        });
+        response.write(
+          JSON.stringify({
+            value: {},
+          })
+        );
       } else {
+        debugInternal(
+          `Unknown ${JSON.stringify(
+            request.method
+          )} request for ${JSON.stringify(
+            request.url
+          )} with payload ${JSON.stringify(
+            await BidiServerRunner.#getHttpRequestPayload(request)
+          )}. 404 returned.`
+        );
         response.writeHead(404);
       }
       response.end();
@@ -69,13 +103,15 @@ export class BidiServerRunner {
       console.log(`Server is listening on port ${bidiPort}`);
     });
 
-    const wsServer = new websocket.server({
+    const wsServer: websocket.server = new websocket.server({
       httpServer: server,
       autoAcceptConnections: false,
     });
 
-    wsServer.on('request', async function (request) {
-      debugInternal('request received');
+    wsServer.on('request', async function (request: websocket.request) {
+      debugInternal(
+        `new WS request received: ${JSON.stringify(request.resourceURL.path)}`
+      );
 
       const bidiServer = new BidiServer();
 
@@ -86,7 +122,7 @@ export class BidiServerRunner {
       connection.on('message', function (message) {
         // 1. If |type| is not text, return.
         if (message.type !== 'utf8') {
-          self._respondWithError(
+          self.#respondWithError(
             connection,
             {},
             'invalid argument',
@@ -110,12 +146,26 @@ export class BidiServerRunner {
       });
 
       bidiServer.initialise((messageStr) => {
-        return self._sendClientMessageStr(messageStr, connection);
+        return self.#sendClientMessageStr(messageStr, connection);
       });
     });
   }
 
-  private static _sendClientMessageStr(
+  static async #getHttpRequestPayload(
+    request: http.IncomingMessage
+  ): Promise<string> {
+    return new Promise((resolve) => {
+      let data = '';
+      request.on('data', (chunk) => {
+        data += chunk;
+      });
+      request.on('end', () => {
+        resolve(data);
+      });
+    });
+  }
+
+  static #sendClientMessageStr(
     messageStr: string,
     connection: websocket.connection
   ): Promise<void> {
@@ -123,29 +173,30 @@ export class BidiServerRunner {
     connection.sendUTF(messageStr);
     return Promise.resolve();
   }
-  private static _sendClientMessage(
+
+  static #sendClientMessage(
     messageObj: any,
     connection: websocket.connection
   ): Promise<void> {
     const messageStr = JSON.stringify(messageObj);
-    return this._sendClientMessageStr(messageStr, connection);
+    return this.#sendClientMessageStr(messageStr, connection);
   }
 
-  private static _respondWithError(
+  static #respondWithError(
     connection: websocket.connection,
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
   ) {
-    const errorResponse = this._getErrorResponse(
+    const errorResponse = this.#getErrorResponse(
       plainCommandData,
       errorCode,
       errorMessage
     );
-    this._sendClientMessage(errorResponse, connection);
+    this.#sendClientMessage(errorResponse, connection);
   }
 
-  private static _getErrorResponse(
+  static #getErrorResponse(
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
@@ -170,27 +221,27 @@ export class BidiServerRunner {
 }
 
 class BidiServer implements ITransport {
-  private _handlers: ((messageStr: string) => void)[] = new Array();
-  private _sendBidiMessage: ((messageStr: string) => Promise<void>) | null =
-    null;
+  #handlers: ((messageStr: string) => void)[] = [];
+  #sendBidiMessage: ((messageStr: string) => Promise<void>) | null = null;
 
   setOnMessage(handler: (messageStr: string) => Promise<void>): void {
-    this._handlers.push(handler);
+    this.#handlers.push(handler);
   }
+
   sendMessage(messageStr: any): Promise<void> {
-    if (!this._sendBidiMessage)
+    if (!this.#sendBidiMessage)
       throw new Error('Bidi connection is not initialised yet');
 
-    return this._sendBidiMessage(messageStr);
+    return this.#sendBidiMessage(messageStr);
   }
 
   close() {}
 
   initialise(sendBidiMessage: (messageStr: string) => Promise<void>): void {
-    this._sendBidiMessage = sendBidiMessage;
+    this.#sendBidiMessage = sendBidiMessage;
   }
 
   onMessage(messageStr: string): void {
-    for (let handler of this._handlers) handler(messageStr);
+    for (let handler of this.#handlers) handler(messageStr);
   }
 }

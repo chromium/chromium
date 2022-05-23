@@ -265,18 +265,18 @@ add a new command, add it to `_processCommand`, write and call processor for it.
 
 1. On the `main` branch, bump the chromium-bidi version number in `package.json`:
 
-    ```sh
-    npm version patch -m 'Release v%s'
-    ```
+   ```sh
+   npm version patch -m 'Release v%s'
+   ```
 
-    Instead of `patch`, use `minor` or `major` [as needed](https://semver.org/).
+   Instead of `patch`, use `minor` or `major` [as needed](https://semver.org/).
 
-    Note that this produces a Git commit + tag.
+   Note that this produces a Git commit + tag.
 
 1. Push the release commit and tag:
 
-    ```sh
-    git push && git push --tags
-    ```
+   ```sh
+   git push && git push --tags
+   ```
 
-    Our CI then automatically publishes the new release to npm.
+   Our CI then automatically publishes the new release to npm.

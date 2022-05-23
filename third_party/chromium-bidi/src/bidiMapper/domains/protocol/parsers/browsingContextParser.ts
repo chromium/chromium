@@ -16,24 +16,50 @@
  */
 
 import { InvalidArgumentErrorResponse } from '../error';
-import { BrowsingContext } from '../bidiProtocolTypes';
+import { BrowsingContext as BrowsingContextType } from '../bidiProtocolTypes';
 import { TypeHelper } from '../../../utils/typeHelper';
 
 export namespace BrowsingContextParser {
-  export class BrowsingContextParser {
-    public static parseOptionalList(
+  export namespace CreateCommand {
+    export function parseParams(
+      params: any
+    ): BrowsingContextType.CreateParameters {
+      if (!params)
+        throw new InvalidArgumentErrorResponse(`'params' should be defined.`);
+      if (!params.type)
+        throw new InvalidArgumentErrorResponse(
+          `'params.type' should be defined.`
+        );
+      // Parse `params.type` to `BrowsingContextType.CreateParametersType`.
+      const type: BrowsingContextType.CreateParametersType = (<any>(
+        BrowsingContextType.CreateParametersType
+      ))[params.type.toString()];
+      if (type === undefined)
+        throw new InvalidArgumentErrorResponse(
+          `Unknown 'params.type': ${JSON.stringify(params.type.toString())}.`
+        );
+
+      return {
+        type,
+      };
+    }
+  }
+  export namespace BrowsingContext {
+    export function parseOptionalList(
       contexts: any
-    ): BrowsingContext.BrowsingContext[] | undefined {
+    ): BrowsingContextType.BrowsingContext[] | undefined {
       if (contexts === undefined) return undefined;
       if (!Array.isArray(contexts))
         throw new InvalidArgumentErrorResponse(
           "Wrong format parameter 'contexts'. Not an array."
         );
 
-      return contexts.map((c) => this.parse(c));
+      return contexts.map((c) =>
+        BrowsingContextParser.BrowsingContext.parse(c)
+      );
     }
 
-    public static parse(context: any): BrowsingContext.BrowsingContext {
+    export function parse(context: any): BrowsingContextType.BrowsingContext {
       if (context === undefined)
         throw new InvalidArgumentErrorResponse(
           'BrowsingContext should not be undefined'

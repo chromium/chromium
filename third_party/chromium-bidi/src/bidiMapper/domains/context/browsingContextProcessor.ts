@@ -166,10 +166,10 @@ export class BrowsingContextProcessor {
   ): BrowsingContext.BrowsingContextInfo {
     return {
       context: target.targetId,
-      parent: target.openerId ? target.openerId : undefined,
+      parent: target.openerId ? target.openerId : null,
       url: target.url,
       // TODO sadym: implement.
-      children: [],
+      children: null,
     };
   }
 
@@ -190,10 +190,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_browsingContext_create(
-    commandData: BrowsingContext.CreateCommand
+    params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
-    const params = commandData.params;
-
     return new Promise(async (resolve) => {
       const browserCdpClient = this._cdpConnection.browserClient();
 

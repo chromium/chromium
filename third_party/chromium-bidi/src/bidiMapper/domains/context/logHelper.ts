@@ -138,6 +138,8 @@ export function getRemoteValuesText(
 
   // if args[0] is not a format specifier, just join the args with \u0020
   return args
-    .map((arg) => (arg as { type: string; value: any }).value.toString())
+    .map((arg: any) => {
+      return arg.hasOwnProperty('value') ? arg.value.toString() : arg.type;
+    })
     .join('\u0020');
 }

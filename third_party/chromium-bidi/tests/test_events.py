@@ -57,6 +57,45 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
 
 
 @pytest.mark.asyncio
+async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
+      websocket, context_id):
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 33,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "console.log(null, undefined)",
+            "target": {"context": context_id}}})
+
+    # Wait for responses
+    event_response = await wait_for_event(websocket, "log.entryAdded")
+
+    # Assert "log.entryAdded" event emitted.
+    recursiveCompare({
+        "method": "log.entryAdded",
+        "params": {
+            # BaseLogEntry
+            "level": "info",
+            "text": "null\u0020undefined",
+            "timestamp": "__any_value__",
+            "stackTrace": {
+                "callFrames": [{
+                    "url": "",
+                    "functionName": "",
+                    "lineNumber": 0,
+                    "columnNumber": 8}]},
+            # ConsoleLogEntry
+            "type": "console",
+            "method": "log",
+            "realm": context_id,
+            "args": [
+                {"type": "null"},
+                {"type": "undefined"}]}},
+        event_response,
+        ["timestamp"])
+
+
+@pytest.mark.asyncio
 async def test_consoleInfo_logEntryWithMethodInfoEmitted(websocket, context_id):
     # Send command.
     await send_JSON_command(websocket, {

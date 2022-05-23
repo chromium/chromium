@@ -32,6 +32,7 @@ import {
   UnknownErrorResponse,
 } from './domains/protocol/error';
 import { SessionParser } from './domains/protocol/parsers/sessionParser';
+import { BrowsingContextParser } from './domains/protocol/parsers/browsingContextParser';
 
 export class CommandProcessor {
   #contextProcessor: BrowsingContextProcessor;
@@ -111,17 +112,16 @@ export class CommandProcessor {
         );
       case 'session.subscribe':
         return await this.#process_session_subscribe(
-          SessionParser.SubscribeParamsParser.parse(commandData.params)
+          SessionParser.SubscribeCommand.parseParams(commandData.params)
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
-          SessionParser.SubscribeParamsParser.parse(commandData.params)
+          SessionParser.SubscribeCommand.parseParams(commandData.params)
         );
 
       case 'browsingContext.create':
         return await this.#contextProcessor.process_browsingContext_create(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.CreateCommand
+          BrowsingContextParser.CreateCommand.parseParams(commandData.params)
         );
       case 'browsingContext.getTree':
         return await this.#contextProcessor.process_browsingContext_getTree(

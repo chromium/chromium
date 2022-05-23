@@ -17,89 +17,140 @@
 
 import * as chai from 'chai';
 import { BrowsingContextParser } from './browsingContextParser';
+import { BrowsingContext } from '../bidiProtocolTypes';
 
 const expect = chai.expect;
 
 describe('test BrowsingContextParser', function () {
-  describe('parseOptionalList', function () {
-    it('array of strings should be parsed', async function () {
-      const arrayOfStrings = [
-        'some_browsing_context',
-        new String('another_browsing_context'),
-      ];
-      expect(
-        BrowsingContextParser.BrowsingContextParser.parseOptionalList(
-          arrayOfStrings
+  describe('CreateCommand', function () {
+    describe('parseParams', function () {
+      it('window type should be parsed', async function () {
+        expect(
+          BrowsingContextParser.CreateCommand.parseParams({
+            type: 'window',
+          })
+        ).to.deep.equal({
+          type: BrowsingContext.CreateParametersType.window,
+        });
+      });
+      it('tab type should be parsed', async function () {
+        expect(
+          BrowsingContextParser.CreateCommand.parseParams({
+            type: 'tab',
+          })
+        ).to.deep.equal({
+          type: BrowsingContext.CreateParametersType.tab,
+        });
+      });
+      it('unknown type should not be parsed', async function () {
+        expect(() =>
+          BrowsingContextParser.CreateCommand.parseParams({
+            type: 'unknown',
+          })
         )
-      ).to.deep.equal(arrayOfStrings);
-    });
-
-    it('empty array should be parsed', async function () {
-      expect(
-        BrowsingContextParser.BrowsingContextParser.parseOptionalList([])
-      ).to.deep.equal([]);
-    });
-
-    it('undefined should be parsed', async function () {
-      expect(
-        BrowsingContextParser.BrowsingContextParser.parseOptionalList(undefined)
-      ).to.equal(undefined);
-    });
-
-    it('array of numbers should throw error', async function () {
-      expect(() =>
-        BrowsingContextParser.BrowsingContextParser.parseOptionalList([42])
-      )
-        .to.throw()
-        .with.property('error', 'invalid argument');
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+      it('number type should not be parsed', async function () {
+        expect(() =>
+          BrowsingContextParser.CreateCommand.parseParams({
+            type: 42,
+          })
+        )
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+      it('missing type should not be parsed', async function () {
+        expect(() => BrowsingContextParser.CreateCommand.parseParams({}))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+      it('undefined params should not be parsed', async function () {
+        expect(() => BrowsingContextParser.CreateCommand.parseParams(undefined))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
     });
   });
+  describe('BrowsingContext', function () {
+    describe('parseOptionalList', function () {
+      it('array of strings should be parsed', async function () {
+        const arrayOfStrings = [
+          'some_browsing_context',
+          new String('another_browsing_context'),
+        ];
+        expect(
+          BrowsingContextParser.BrowsingContext.parseOptionalList(
+            arrayOfStrings
+          )
+        ).to.deep.equal(arrayOfStrings);
+      });
 
-  describe('parse', function () {
-    it('undefined should throw error', async function () {
-      expect(() => BrowsingContextParser.BrowsingContextParser.parse(undefined))
-        .to.throw()
-        .with.property('error', 'invalid argument');
-    });
+      it('empty array should be parsed', async function () {
+        expect(
+          BrowsingContextParser.BrowsingContext.parseOptionalList([])
+        ).to.deep.equal([]);
+      });
 
-    it('number should throw error', async function () {
-      expect(() => BrowsingContextParser.BrowsingContextParser.parse(42))
-        .to.throw()
-        .with.property('error', 'invalid argument');
-    });
+      it('undefined should be parsed', async function () {
+        expect(
+          BrowsingContextParser.BrowsingContext.parseOptionalList(undefined)
+        ).to.equal(undefined);
+      });
 
-    it('bool should throw error', async function () {
-      expect(() => BrowsingContextParser.BrowsingContextParser.parse(true))
-        .to.throw()
-        .with.property('error', 'invalid argument');
-    });
-
-    it('object should throw error', async function () {
-      expect(() => BrowsingContextParser.BrowsingContextParser.parse({}))
-        .to.throw()
-        .with.property('error', 'invalid argument');
-    });
-
-    it('array should throw error', async function () {
-      expect(() => BrowsingContextParser.BrowsingContextParser.parse([]))
-        .to.throw()
-        .with.property('error', 'invalid argument');
-    });
-
-    it('`new String()` should be parsed', async function () {
-      expect(
-        BrowsingContextParser.BrowsingContextParser.parse(
-          new String('some_browsing_context')
+      it('array of numbers should throw error', async function () {
+        expect(() =>
+          BrowsingContextParser.BrowsingContext.parseOptionalList([42])
         )
-      ).to.deep.equal(new String('some_browsing_context'));
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
     });
 
-    it('string literal should be parsed', async function () {
-      expect(
-        BrowsingContextParser.BrowsingContextParser.parse(
-          'some_browsing_context'
-        )
-      ).to.equal('some_browsing_context');
+    describe('parse', function () {
+      it('undefined should throw error', async function () {
+        expect(() => BrowsingContextParser.BrowsingContext.parse(undefined))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+
+      it('number should throw error', async function () {
+        expect(() => BrowsingContextParser.BrowsingContext.parse(42))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+
+      it('bool should throw error', async function () {
+        expect(() => BrowsingContextParser.BrowsingContext.parse(true))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+
+      it('object should throw error', async function () {
+        expect(() => BrowsingContextParser.BrowsingContext.parse({}))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+
+      it('array should throw error', async function () {
+        expect(() => BrowsingContextParser.BrowsingContext.parse([]))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+
+      it('`new String()` should be parsed', async function () {
+        expect(
+          BrowsingContextParser.BrowsingContext.parse(
+            new String('some_browsing_context')
+          )
+        ).to.deep.equal(new String('some_browsing_context'));
+      });
+
+      it('string literal should be parsed', async function () {
+        expect(
+          BrowsingContextParser.BrowsingContext.parse('some_browsing_context')
+        ).to.equal('some_browsing_context');
+      });
     });
   });
 });

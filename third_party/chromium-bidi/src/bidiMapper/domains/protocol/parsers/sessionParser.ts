@@ -21,31 +21,32 @@ import { BrowsingContextParser } from './browsingContextParser';
 import { TypeHelper } from '../../../utils/typeHelper';
 
 export namespace SessionParser {
-  export class SubscribeParamsParser {
-    static parse(params: any): SessionType.SubscribeParameters {
+  export namespace SubscribeCommand {
+    export function parseParams(params: any): SessionType.SubscribeParameters {
       return {
-        events: this.parseEventsList(params.events),
+        events: SessionParser.Events.parseList(params.events),
         // Don't add `contexts` if it's not defined.
         ...(params.contexts !== undefined && {
-          contexts:
-            BrowsingContextParser.BrowsingContextParser.parseOptionalList(
-              params.contexts
-            ),
+          contexts: BrowsingContextParser.BrowsingContext.parseOptionalList(
+            params.contexts
+          ),
         }),
       };
     }
+  }
 
-    public static parseEventsList(events: any): string[] {
+  export namespace Events {
+    export function parseList(events: any): string[] {
       if (events === undefined)
         throw new InvalidArgumentErrorResponse('EventsList should be defined.');
       if (!Array.isArray(events))
         throw new InvalidArgumentErrorResponse(
           `EventsList should be an array. ${JSON.stringify(events)}.`
         );
-      return events.map((e) => this.parseEvent(e));
+      return events.map((e) => SessionParser.Events.parse(e));
     }
 
-    public static parseEvent(event: any): string {
+    export function parse(event: any): string {
       if (event === undefined)
         throw new InvalidArgumentErrorResponse(
           `Event should not be undefined.`

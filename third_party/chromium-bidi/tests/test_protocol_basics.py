@@ -132,7 +132,7 @@ async def test_sessionSubscribeWithContext_doesNotSubscribeToEventsInAnotherCont
 
     result = await execute_command(websocket, {
         "method": "browsingContext.create",
-        "params": {}})
+        "params": {"type": "tab"}})
     second_context_id = result["context"]
 
     await subscribe(websocket, ["browsingContext.load"], [first_context_id])
