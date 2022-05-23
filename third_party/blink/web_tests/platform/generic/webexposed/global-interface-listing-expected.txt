@@ -11535,6 +11535,7 @@ namespace CSS
     getter clientInformation
     getter closed
     getter cookieStore
+    getter crossOriginEmbedderPolicy
     getter crossOriginIsolated
     getter crypto
     getter customElements

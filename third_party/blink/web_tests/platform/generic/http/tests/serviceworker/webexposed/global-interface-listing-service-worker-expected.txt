@@ -2984,6 +2984,7 @@ interface WindowClient : Client
 interface WorkerGlobalScope : EventTarget
     attribute @@toStringTag
     getter caches
+    getter crossOriginEmbedderPolicy
     getter crossOriginIsolated
     getter crypto
     getter fonts

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_POLICY_CONTAINER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_POLICY_CONTAINER_H_
 
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-shared.h"
@@ -17,6 +18,7 @@ namespace blink {
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled
 // directly in blink.
 struct WebPolicyContainerPolicies {
+  network::mojom::CrossOriginEmbedderPolicyValue cross_origin_embedder_policy;
   network::mojom::ReferrerPolicy referrer_policy;
   network::mojom::IPAddressSpace ip_address_space;
   WebVector<WebContentSecurityPolicy> content_security_policies;

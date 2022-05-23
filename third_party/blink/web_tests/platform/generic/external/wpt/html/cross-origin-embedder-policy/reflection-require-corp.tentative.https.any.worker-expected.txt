@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL reflection-require-corp assert_equals: expected "require-corp" but got "unsafe-none"
+Harness: the test ran to completion.
+

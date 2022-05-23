@@ -1131,6 +1131,7 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
 
   return std::make_unique<blink::WebPolicyContainer>(
       blink::WebPolicyContainerPolicies{
+          in->policies->cross_origin_embedder_policy,
           in->policies->referrer_policy,
           in->policies->ip_address_space,
           ToWebContentSecurityPolicies(

@@ -312,6 +312,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
   PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
+  const PolicyContainer* GetPolicyContainer() const {
+    return policy_container_.get();
+  }
   void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
   std::unique_ptr<PolicyContainer> TakePolicyContainer();
 

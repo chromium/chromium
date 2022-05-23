@@ -3226,6 +3226,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter caches
+[Worker]     getter crossOriginEmbedderPolicy
 [Worker]     getter crossOriginIsolated
 [Worker]     getter crypto
 [Worker]     getter fonts

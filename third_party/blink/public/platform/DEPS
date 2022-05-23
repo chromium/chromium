@@ -58,6 +58,7 @@ include_rules = [
     "+services/network/public/mojom/blocked_by_response_reason.mojom-shared.h",
     "+services/network/public/mojom/content_security_policy.mojom-shared.h",
     "+services/network/public/mojom/cors.mojom-shared.h",
+    "+services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h",
     "+services/network/public/mojom/data_pipe_getter.mojom-shared.h",
     "+services/network/public/mojom/fetch_api.mojom-forward.h",
     "+services/network/public/mojom/fetch_api.mojom-shared.h",

@@ -5,12 +5,17 @@
 module blink.mojom;
 
 import "services/network/public/mojom/content_security_policy.mojom";
+import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 
 struct PolicyContainerPolicies {
-  network.mojom.ReferrerPolicy referrer_policy = network.mojom.ReferrerPolicy.kDefault;
-  network.mojom.IPAddressSpace ip_address_space = network.mojom.IPAddressSpace.kUnknown;
+  network.mojom.CrossOriginEmbedderPolicyValue cross_origin_embedder_policy =
+    network.mojom.CrossOriginEmbedderPolicyValue.kNone;
+  network.mojom.ReferrerPolicy referrer_policy =
+    network.mojom.ReferrerPolicy.kDefault;
+  network.mojom.IPAddressSpace ip_address_space =
+    network.mojom.IPAddressSpace.kUnknown;
   array<network.mojom.ContentSecurityPolicy> content_security_policies;
 };
 

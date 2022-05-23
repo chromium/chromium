@@ -216,6 +216,7 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
 
   return blink::mojom::PolicyContainer::New(
       blink::mojom::PolicyContainerPolicies::New(
+          policies_.cross_origin_embedder_policy.value,
           policies_.referrer_policy, policies_.ip_address_space,
           mojo::Clone(policies_.content_security_policies)),
       std::move(remote));
