@@ -192,8 +192,8 @@
      * Other foundational colors.
      */
     focus_ring_color: {
-      light: "$color_prominent",
-      dark: "$color_prominent",
+      light: "$color_prominent_light",
+      dark: "$color_prominent_dark",
       generate_per_mode: true,
     },
     focus_ring_color_inactive: "$icon_color_secondary",
