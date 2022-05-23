@@ -2205,11 +2205,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
             web_contents->GetLastCommittedURL());
 
-  histograms.ExpectTotalCount(kDelayedWarningsWithElisionDisabledHistogram, 2);
-  histograms.ExpectBucketCount(kDelayedWarningsWithElisionDisabledHistogram,
-                               DelayedWarningEvent::kPageLoaded, 1);
-  histograms.ExpectBucketCount(kDelayedWarningsWithElisionDisabledHistogram,
-                               DelayedWarningEvent::kWarningShownOnKeypress, 1);
   histograms.ExpectUniqueTimeSample(
       kDelayedWarningsTimeOnPageWithElisionDisabledHistogram,
       base::Seconds(kTimeOnPage), 1);
@@ -2237,11 +2232,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL());
 
-  histograms.ExpectTotalCount(kDelayedWarningsWithElisionDisabledHistogram, 2);
-  histograms.ExpectBucketCount(kDelayedWarningsWithElisionDisabledHistogram,
-                               DelayedWarningEvent::kPageLoaded, 1);
-  histograms.ExpectBucketCount(kDelayedWarningsWithElisionDisabledHistogram,
-                               DelayedWarningEvent::kWarningShownOnKeypress, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,

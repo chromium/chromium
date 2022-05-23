@@ -66,7 +66,6 @@ extern const char kDelayedWarningsHistogram[];
 extern const char kDelayedWarningsTimeOnPageHistogram[];
 
 // Same as above but only recorded if the user disabled URL elision.
-extern const char kDelayedWarningsWithElisionDisabledHistogram[];
 extern const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[];
 
 // Observes user interactions and shows an interstitial if necessary.

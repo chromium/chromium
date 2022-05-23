@@ -934,17 +934,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.DelayedWarnings.Event_UrlElisionDisabled"
-    enum="SafeBrowsingDelayedWarningEvent" expires_after="M91">
-  <owner>meacer@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Same as SafeBrowsing.DelayedWarnings.Event but only recorded when user has
-    disabled URL elision via &quot;Always Show Full URLs&quot; context menu
-    item, or by installing the Suspicious Site Reporter extension.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.DelayedWarnings.TimeOnPage" units="ms"
     expires_after="M89">
   <owner>meacer@chromium.org</owner>

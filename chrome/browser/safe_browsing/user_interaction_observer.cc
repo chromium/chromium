@@ -37,8 +37,6 @@ const char kDelayedWarningsHistogram[] = "SafeBrowsing.DelayedWarnings.Event";
 const char kDelayedWarningsTimeOnPageHistogram[] =
     "SafeBrowsing.DelayedWarnings.TimeOnPage";
 
-const char kDelayedWarningsWithElisionDisabledHistogram[] =
-    "SafeBrowsing.DelayedWarnings.Event_UrlElisionDisabled";
 const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[] =
     "SafeBrowsing.DelayedWarnings.TimeOnPage_UrlElisionDisabled";
 
@@ -309,10 +307,7 @@ base::Time SafeBrowsingUserInteractionObserver::GetCreationTimeForTesting()
 void SafeBrowsingUserInteractionObserver::RecordUMA(DelayedWarningEvent event) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (IsUrlElisionDisabled(profile, suspicious_site_reporter_extension_id_)) {
-    base::UmaHistogramEnumeration(kDelayedWarningsWithElisionDisabledHistogram,
-                                  event);
-  } else {
+  if (!IsUrlElisionDisabled(profile, suspicious_site_reporter_extension_id_)) {
     base::UmaHistogramEnumeration(kDelayedWarningsHistogram, event);
   }
 }
