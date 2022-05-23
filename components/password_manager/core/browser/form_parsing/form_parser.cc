@@ -64,16 +64,18 @@ AutocompleteFlag ExtractAutocompleteFlag(const std::string& attribute) {
     return AutocompleteFlag::kNone;
 
   const base::StringPiece& field_type = tokens.back();
-  if (base::LowerCaseEqualsASCII(field_type, kAutocompleteUsername))
+  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteUsername))
     return AutocompleteFlag::kUsername;
-  if (base::LowerCaseEqualsASCII(field_type, kAutocompleteCurrentPassword))
+  if (base::EqualsCaseInsensitiveASCII(field_type,
+                                       kAutocompleteCurrentPassword))
     return AutocompleteFlag::kCurrentPassword;
-  if (base::LowerCaseEqualsASCII(field_type, kAutocompleteNewPassword))
+  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteNewPassword))
     return AutocompleteFlag::kNewPassword;
-  if (base::LowerCaseEqualsASCII(field_type, kAutocompleteWebAuthn))
+  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteWebAuthn))
     return AutocompleteFlag::kWebAuthn;
 
-  if (base::LowerCaseEqualsASCII(field_type, kAutocompleteOneTimePassword) ||
+  if (base::EqualsCaseInsensitiveASCII(field_type,
+                                       kAutocompleteOneTimePassword) ||
       base::StartsWith(field_type, kAutocompleteCreditCardPrefix,
                        base::CompareCase::SENSITIVE)) {
     return AutocompleteFlag::kNonPassword;
