@@ -2778,6 +2778,28 @@
             ]
         }
     ],
+    "DecodeScriptSourceOffThread": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220428",
+                    "enable_features": [
+                        "DecodeScriptSourceOffThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeferBeginMainFrameDuringLoading": [
         {
             "platforms": [
@@ -5542,6 +5564,28 @@
             ]
         }
     ],
+    "OptimizeDataUrls": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OptimizeDataUrls"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeNetworkBuffers": [
         {
             "platforms": [
@@ -7366,6 +7410,21 @@
                         "AppendFrameOriginToNetworkIsolationKey",
                         "SplitCacheByNetworkIsolationKey",
                         "UseRegistrableDomainInNetworkIsolationKey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SplitCompositorTask": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SplitCompositorTask"
                     ]
                 }
             ]
