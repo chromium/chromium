@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 class Browser;
+@class UpgradeCenter;
 
 // Browser agent that handles informing the update center of new tabs.
 class UpgradeCenterBrowserAgent
@@ -17,6 +18,9 @@ class UpgradeCenterBrowserAgent
       public WebStateListObserver,
       public BrowserUserData<UpgradeCenterBrowserAgent> {
  public:
+  // Creates an UpgradeCenterBrowserAgent scoped to |browser|.
+  static void CreateForBrowser(Browser* browser, UpgradeCenter* upgradeCenter);
+
   UpgradeCenterBrowserAgent(const UpgradeCenterBrowserAgent&) = delete;
   UpgradeCenterBrowserAgent& operator=(const UpgradeCenterBrowserAgent&) =
       delete;
@@ -24,9 +28,10 @@ class UpgradeCenterBrowserAgent
   ~UpgradeCenterBrowserAgent() override;
 
  private:
-  explicit UpgradeCenterBrowserAgent(Browser* browser);
   friend class BrowserUserData<UpgradeCenterBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  UpgradeCenterBrowserAgent(Browser* browser, UpgradeCenter* upgradeCenter);
 
   // BrowserObserver methods
   void BrowserDestroyed(Browser* browser) override;
@@ -41,7 +46,7 @@ class UpgradeCenterBrowserAgent
                             web::WebState* web_state,
                             int index) override;
 
-  Browser* browser_ = nullptr;
+  __strong UpgradeCenter* upgrade_center_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CENTER_BROWSER_AGENT_H_

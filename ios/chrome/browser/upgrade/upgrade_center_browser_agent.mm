@@ -15,8 +15,24 @@
 
 BROWSER_USER_DATA_KEY_IMPL(UpgradeCenterBrowserAgent)
 
-UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(Browser* browser) {
+// static
+void UpgradeCenterBrowserAgent::CreateForBrowser(
+    Browser* browser,
+    UpgradeCenter* upgrade_center) {
   DCHECK(browser);
+  if (!FromBrowser(browser)) {
+    browser->SetUserData(UserDataKey(),
+                         base::WrapUnique(new UpgradeCenterBrowserAgent(
+                             browser, upgrade_center)));
+  }
+}
+
+UpgradeCenterBrowserAgent::UpgradeCenterBrowserAgent(
+    Browser* browser,
+    UpgradeCenter* upgrade_center)
+    : upgrade_center_(upgrade_center) {
+  DCHECK(browser);
+  DCHECK(upgrade_center);
   browser->AddObserver(this);
   browser->GetWebStateList()->AddObserver(this);
 }
@@ -47,10 +63,7 @@ void UpgradeCenterBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
       InfoBarManagerImpl::FromWebState(web_state);
   NSString* tabID = web_state->GetStableIdentifier();
 
-  // TODO(crbug.com/1324514): Replace [UpgradeCenter sharedInstance] with a
-  // dependency
-  [[UpgradeCenter sharedInstance] addInfoBarToManager:infoBarManager
-                                             forTabId:tabID];
+  [upgrade_center_ addInfoBarToManager:infoBarManager forTabId:tabID];
 }
 
 void UpgradeCenterBrowserAgent::WillDetachWebStateAt(
@@ -59,8 +72,5 @@ void UpgradeCenterBrowserAgent::WillDetachWebStateAt(
     int index) {
   DCHECK(web_state);
 
-  // TODO(crbug.com/1324514): Replace [UpgradeCenter sharedInstance] with a
-  // dependency
-  [[UpgradeCenter sharedInstance]
-      tabWillClose:web_state->GetStableIdentifier()];
+  [upgrade_center_ tabWillClose:web_state->GetStableIdentifier()];
 }

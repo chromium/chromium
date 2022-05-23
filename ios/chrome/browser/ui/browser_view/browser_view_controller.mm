@@ -134,7 +134,6 @@
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #include "ios/chrome/browser/upgrade/upgrade_center.h"
-#import "ios/chrome/browser/upgrade/utils/features.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
@@ -4015,12 +4014,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (webState == self.currentWebState) {
     self.browserContainerViewController.contentView = nil;
   }
-
-  if (!IsUpgradeCenterRefactorEnabled()) {
-    // TODO(crbug.com/1272546): Move UpgradeCenter updates into a browser agent.
-    [[UpgradeCenter sharedInstance]
-        tabWillClose:webState->GetStableIdentifier()];
-  }
 }
 
 // Observer method, WebState replaced in |webStateList|.
@@ -4051,23 +4044,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (SessionRestorationBrowserAgent::FromBrowser(self.browser)
           ->IsRestoringSession()) {
     return;
-  }
-
-  if (!IsUpgradeCenterRefactorEnabled()) {
-    // When adding new tabs, check what kind of reminder infobar should
-    // be added to the new tab. Try to add only one of them.
-    // This check is done when a new tab is added either through the Tools Menu
-    // "New Tab", through a long press on the Tab Switcher button "New Tab", and
-    // through creating a New Tab from the Tab Switcher. This logic needs to
-    // happen after a new WebState has added and finished initial navigation. If
-    // this happens earlier, the initial navigation may end up clearing the
-    // infobar(s) that are just added.
-    // TODO(crbug.com/1272546): Move UpgradeCenter updates into a browser agent.
-    infobars::InfoBarManager* infoBarManager =
-        InfoBarManagerImpl::FromWebState(webState);
-    NSString* tabID = webState->GetStableIdentifier();
-    [[UpgradeCenter sharedInstance] addInfoBarToManager:infoBarManager
-                                               forTabId:tabID];
   }
 
   if (!IsDisplaySyncErrorsRefactorEnabled()) {

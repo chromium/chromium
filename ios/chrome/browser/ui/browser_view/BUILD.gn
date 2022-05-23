@@ -186,7 +186,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/ui/webui",
     "//ios/chrome/browser/upgrade",
-    "//ios/chrome/browser/upgrade/utils:features",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/voice:voice",
     "//ios/chrome/browser/web",
