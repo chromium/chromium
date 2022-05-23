@@ -125,8 +125,12 @@ enum class FeedUserActionType {
   kTappedManageHidden = 43,
   // User tapped the "Follow" button on the main menu.
   kTappedFollowButton = 44,
+  // User tapped on the Discover feed from the feed header.
+  kDiscoverFeedSelected = 45,
+  // User tapped on the Following feed from the feed header.
+  kFollowingFeedSelected = 46,
 
-  kMaxValue = kTappedFollowButton,
+  kMaxValue = kFollowingFeedSelected,
 };
 
 // For testing and debugging only.

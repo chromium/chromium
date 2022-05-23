@@ -40616,6 +40616,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="43"
       label="User tapped &quot;Hidden&quot; in the feed management
              interstitial."/>
+  <int value="45"
+      label="User selected the Discover feed from the feed header."/>
+  <int value="46"
+      label="User selected the Following feed from the feed header."/>
 </enum>
 
 <enum name="FeedUserCommandType">
