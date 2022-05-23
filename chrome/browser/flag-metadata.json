@@ -1160,7 +1160,7 @@
   {
     "name": "desktop-detailed-language-settings",
     "owners": [ "chrome-language@google.com" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 106
   },
   {
     "name": "desktop-restructured-language-settings",
