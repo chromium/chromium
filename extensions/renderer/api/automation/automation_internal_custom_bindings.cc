@@ -1867,12 +1867,7 @@ void AutomationInternalCustomBindings::DestroyAccessibilityTree(
   if (tree_id == accessibility_focused_tree_id_)
     accessibility_focused_tree_id_ = ui::AXTreeIDUnknown();
 
-  auto it = tree_id_to_tree_wrapper_map_.find(tree_id);
-  if (it == tree_id_to_tree_wrapper_map_.end())
-    return;
-
-  TreeEventListenersChanged(it->second.get(), /* is_deleting=*/true);
-  tree_id_to_tree_wrapper_map_.erase(it);
+  tree_id_to_tree_wrapper_map_.erase(tree_id);
 }
 
 void AutomationInternalCustomBindings::AddTreeChangeObserver(
@@ -2973,9 +2968,8 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
 }
 
 void AutomationInternalCustomBindings::TreeEventListenersChanged(
-    AutomationAXTreeWrapper* tree_wrapper,
-    bool is_deleting) {
-  if (!is_deleting && tree_wrapper->EventListenerCount() != 0) {
+    AutomationAXTreeWrapper* tree_wrapper) {
+  if (tree_wrapper->EventListenerCount() != 0) {
     trees_with_event_listeners_.insert(tree_wrapper->GetTreeID());
     return;
   }

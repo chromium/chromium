@@ -271,8 +271,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
                                     bool* offscreen = nullptr,
                                     bool clip_bounds = true) const;
 
-  void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper,
-                                 bool is_deleting = false);
+  void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper);
 
   std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
