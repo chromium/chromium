@@ -55220,6 +55220,8 @@ from previous Chrome versions.
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
   <int value="-1637552275" label="NtpRealboxUseGoogleGIcon:disabled"/>
   <int value="-1636188191" label="IncognitoNtpRevamp:enabled"/>
+  <int value="-1635872214"
+      label="AutofillConsiderPlaceholderForParsing:disabled"/>
   <int value="-1635048938" label="DetectFormSubmissionOnFormClear:disabled"/>
   <int value="-1634878515" label="ChromeHomeModernLayout:enabled"/>
   <int value="-1634490190"
@@ -58875,6 +58877,8 @@ from previous Chrome versions.
   <int value="761770770"
       label="OverrideLanguagePrefsForHrefTranslate:disabled"/>
   <int value="762700519" label="enable-checker-imaging"/>
+  <int value="763667542"
+      label="AutofillFillCreditCardAsPerFormatString:enabled"/>
   <int value="763947368" label="HomepageLocationPolicy:disabled"/>
   <int value="764508124" label="NavigationNetworkResponseQueue:disabled"/>
   <int value="765266228" label="TabGroupsCollapse:disabled"/>
@@ -58913,6 +58917,7 @@ from previous Chrome versions.
   <int value="781785788" label="ClipboardSuggestionContentHidden:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
+  <int value="783502146" label="AutofillConsiderPlaceholderForParsing:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>
   <int value="787385958" label="RegionalLocalesAsDisplayUI:enabled"/>
@@ -60098,6 +60103,8 @@ from previous Chrome versions.
   <int value="1594993731" label="BluetoothRevamp:enabled"/>
   <int value="1595208893" label="AudioWorkletRealtimeThread:enabled"/>
   <int value="1596407332" label="EnableSavedDesks:enabled"/>
+  <int value="1596615083"
+      label="AutofillFillCreditCardAsPerFormatString:disabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
   <int value="1600850069" label="MobileIdentityConsistency:disabled"/>
   <int value="1600926040" label="TranslateCompactUI:enabled"/>
