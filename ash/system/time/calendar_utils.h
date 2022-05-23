@@ -174,7 +174,7 @@ bool IsActiveUser();
 
 // Get the time difference to UTC time based on the time passed in and the
 // system timezone. Daylight saving is considered.
-ASH_EXPORT int GetTimeDifferenceInMinutes(base::Time date);
+ASH_EXPORT base::TimeDelta GetTimeDifference(base::Time date);
 
 // Gets the first day's local midnight of the week based on the `date`.
 base::Time GetFirstDayOfWeekLocalMidnight(base::Time date);

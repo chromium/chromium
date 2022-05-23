@@ -207,16 +207,9 @@ void CalendarModel::UploadLifetimeMetrics() {
       "Ash.Calendar.FetchEvents.TotalCacheSizeMonths", event_months_.size());
 }
 
-void CalendarModel::FetchEvents(const std::set<base::Time>& months) {
-  for (auto& month : months)
-    MaybeFetchMonth(month.UTCMidnight());
-}
-
-void CalendarModel::FetchEventsSurrounding(int num_months,
-                                           const base::Time day) {
-  std::set<base::Time> months =
-      calendar_utils::GetSurroundingMonthsUTC(day, num_months);
-  FetchEvents(months);
+// TODO(https://crbug.com/1327553): Should remove `MaybeFetchMonth` method.
+void CalendarModel::FetchEvents(base::Time start_of_month) {
+  MaybeFetchMonth(start_of_month);
 }
 
 void CalendarModel::CancelFetch(const base::Time& start_of_month) {
@@ -411,20 +404,14 @@ void CalendarModel::InsertEventInMonth(
 
 base::Time CalendarModel::GetStartTimeAdjusted(
     const google_apis::calendar::CalendarEvent* event) const {
-  if (time_difference_minutes_.has_value()) {
-    return event->start_time().date_time() +
-           base::Minutes(time_difference_minutes_.value());
-  }
-  return event->start_time().date_time();
+  base::Time start_time = event->start_time().date_time();
+  return start_time + calendar_utils::GetTimeDifference(start_time);
 }
 
 base::Time CalendarModel::GetEndTimeAdjusted(
     const google_apis::calendar::CalendarEvent* event) const {
-  if (time_difference_minutes_.has_value()) {
-    return event->end_time().date_time() +
-           base::Minutes(time_difference_minutes_.value());
-  }
-  return event->end_time().date_time();
+  base::Time end_time = event->end_time().date_time();
+  return end_time + calendar_utils::GetTimeDifference(end_time);
 }
 
 base::Time CalendarModel::GetStartTimeMidnightAdjusted(
@@ -585,23 +572,9 @@ void CalendarModel::DebugDump() {
   VLOG(1) << out.str();
 }
 
-void CalendarModel::RedistributeEvents(int time_difference_minutes) {
-  // Early returns if the time difference is not changed.
-  if (time_difference_minutes_.has_value() &&
-      time_difference_minutes == time_difference_minutes_.value()) {
-    return;
-  }
-
-  // Early returns if the `time_difference_minutes_` is not assigned and the
-  // difference is 0.
-  if (!time_difference_minutes_.has_value() && time_difference_minutes == 0) {
-    time_difference_minutes_ = time_difference_minutes;
-    return;
-  }
-
+void CalendarModel::RedistributeEvents() {
   // Redistributes all the fetched events to the date map with the
-  // `time_difference_minutes_`.
-  time_difference_minutes_ = time_difference_minutes;
+  // time difference.
   SingleDayEventList to_be_redistributed_events;
   for (auto month = event_months_.begin(); month != event_months_.end();
        month++) {

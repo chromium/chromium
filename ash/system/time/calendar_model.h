@@ -86,11 +86,8 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // Adds every month in `months` to the set of non-prunable months.
   void AddNonPrunableMonths(const std::set<base::Time>& months);
 
-  // Requests events that fall in `months`.
-  void FetchEvents(const std::set<base::Time>& months);
-
-  // Requests events that fall in `num_months` months surrounding `day`.
-  void FetchEventsSurrounding(int num_months, const base::Time day);
+  // Requests events that of the passed in `start_of_month`.
+  void FetchEvents(base::Time start_of_month);
 
   // Cancels any pending event fetch for `start_of_month`.
   void CancelFetch(const base::Time& start_of_month);
@@ -114,9 +111,8 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   void DebugDump();
 
   // Redistributes all the fetched events to the date map with the
-  // `time_difference_minutes_`. This only happens once per calendar view's life
-  // cycle.
-  void RedistributeEvents(int time_difference_minutes);
+  // time difference. This method is only called when there's a timezone change.
+  void RedistributeEvents();
 
   // Updates the time difference in minutes.
   void set_time_difference_minutes(int minutes) {
