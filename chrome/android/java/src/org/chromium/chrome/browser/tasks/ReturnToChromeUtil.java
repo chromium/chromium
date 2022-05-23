@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -33,6 +34,8 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
@@ -50,6 +53,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -912,6 +916,33 @@ public final class ReturnToChromeUtil {
                 LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
                 SharedPreferencesManager.getInstance().readBoolean(
                         ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
+    }
+
+    /**
+     * Add an observer to keep {@link ChromePreferenceKeys#FEED_ARTICLES_LIST_VISIBLE} consistent
+     * with {@link Pref#ARTICLES_LIST_VISIBLE}.
+     */
+    public static void addFeedVisibilityObserver() {
+        updateFeedVisibility();
+        PrefChangeRegistrar prefChangeRegistrar = new PrefChangeRegistrar();
+        prefChangeRegistrar.addObserver(
+                Pref.ARTICLES_LIST_VISIBLE, ReturnToChromeUtil::updateFeedVisibility);
+    }
+
+    private static void updateFeedVisibility() {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE,
+                FeedFeatures.isFeedEnabled()
+                        && UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                   .getBoolean(Pref.ARTICLES_LIST_VISIBLE));
+    }
+
+    /**
+     * @return Whether the Feed articles are visible.
+     */
+    public static boolean getFeedArticlesVisibility() {
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
     }
 
     @VisibleForTesting

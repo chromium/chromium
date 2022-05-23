@@ -20,14 +20,11 @@ import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * Flag configuration for Start Surface. Source of truth for whether it should be enabled and
@@ -206,32 +203,6 @@ public class StartSurfaceConfiguration {
     public static int getPageClassificationForNewTab() {
         return SHOW_NTP_TILES_ON_OMNIBOX.getValue() ? PageClassification.START_SURFACE_NEW_TAB_VALUE
                                                     : PageClassification.NTP_VALUE;
-    }
-
-    /**
-     * Add an observer to keep {@link ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE} consistent
-     * with {@link Pref.ARTICLES_LIST_VISIBLE}.
-     */
-    public static void addFeedVisibilityObserver() {
-        updateFeedVisibility();
-        PrefChangeRegistrar prefChangeRegistrar = new PrefChangeRegistrar();
-        prefChangeRegistrar.addObserver(
-                Pref.ARTICLES_LIST_VISIBLE, StartSurfaceConfiguration::updateFeedVisibility);
-    }
-
-    private static void updateFeedVisibility() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE,
-                UserPrefs.get(Profile.getLastUsedRegularProfile())
-                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE));
-    }
-
-    /**
-     * @return Whether the Feed articles are visible.
-     */
-    public static boolean getFeedArticlesVisibility() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
     }
 
     /**

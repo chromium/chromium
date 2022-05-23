@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -128,27 +129,27 @@ public class InstantStartFeedTest {
         CriteriaHelper.pollUiThread(()
                                             -> UserPrefs.get(Profile.getLastUsedRegularProfile())
                                                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE)
-                        == StartSurfaceConfiguration.getFeedArticlesVisibility());
+                        == ReturnToChromeUtil.getFeedArticlesVisibility());
 
         // Hide articles and verify that FEED_ARTICLES_LIST_VISIBLE and ARTICLES_LIST_VISIBLE are
         // both false.
         toggleHeader(false);
-        CriteriaHelper.pollUiThread(() -> !StartSurfaceConfiguration.getFeedArticlesVisibility());
+        CriteriaHelper.pollUiThread(() -> !ReturnToChromeUtil.getFeedArticlesVisibility());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertEquals(UserPrefs.get(Profile.getLastUsedRegularProfile())
                                                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
-                                StartSurfaceConfiguration.getFeedArticlesVisibility()));
+                                ReturnToChromeUtil.getFeedArticlesVisibility()));
 
         // Show articles and verify that FEED_ARTICLES_LIST_VISIBLE and ARTICLES_LIST_VISIBLE are
         // both true.
         toggleHeader(true);
-        CriteriaHelper.pollUiThread(StartSurfaceConfiguration::getFeedArticlesVisibility);
+        CriteriaHelper.pollUiThread(ReturnToChromeUtil::getFeedArticlesVisibility);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertEquals(UserPrefs.get(Profile.getLastUsedRegularProfile())
                                                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
-                                StartSurfaceConfiguration.getFeedArticlesVisibility()));
+                                ReturnToChromeUtil.getFeedArticlesVisibility()));
     }
 
     @Test

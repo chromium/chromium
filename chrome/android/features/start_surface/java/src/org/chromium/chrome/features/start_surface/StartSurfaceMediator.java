@@ -872,12 +872,12 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     public boolean shouldShowFeedPlaceholder() {
         if (mFeedVisibilityInSharedPreferenceOnStartUp == null) {
             mFeedVisibilityInSharedPreferenceOnStartUp =
-                    StartSurfaceConfiguration.getFeedArticlesVisibility();
+                    ReturnToChromeUtil.getFeedArticlesVisibility();
         }
 
         return mIsStartSurfaceEnabled
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                && StartSurfaceConfiguration.getFeedArticlesVisibility() && !mHadWarmStart
+                && ReturnToChromeUtil.getFeedArticlesVisibility() && !mHadWarmStart
                 && !mHasFeedPlaceholderShown;
     }
 
