@@ -1680,7 +1680,8 @@ class DesktopAuraTestValidPaintWidget : public Widget, public WidgetObserver {
     quit_closure_.Reset();
   }
 
-  void OnWidgetClosing(Widget* widget) override { expect_paint_ = false; }
+  // WidgetObserver:
+  void OnWidgetDestroying(Widget* widget) override { expect_paint_ = false; }
 
   void OnNativeWidgetPaint(const ui::PaintContext& context) override {
     received_paint_ = true;
@@ -1692,7 +1693,6 @@ class DesktopAuraTestValidPaintWidget : public Widget, public WidgetObserver {
       std::move(quit_closure_).Run();
   }
 
-  // WidgetObserver:
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
     expect_paint_ = visible;
   }
