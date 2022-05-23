@@ -52,6 +52,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 
 @property(nonatomic, strong) UIView* separator;
+@property(nonatomic, assign) CGFloat scrollViewBottomOffsetY;
 
 // Read/Write override.
 @property(nonatomic, assign, readwrite) BOOL didReachBottom;
@@ -236,15 +237,15 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
         constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
     [self.actionStackView.trailingAnchor
         constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
-    [self.actionStackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                 constant:-kActionsBottomMargin * 2],
   ]];
 
   self.buttonsVerticalAnchorConstraints = @[
     [self.scrollView.bottomAnchor
         constraintEqualToAnchor:self.actionStackView.topAnchor
                        constant:-kDefaultMargin],
+    [self.actionStackView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
+                                 constant:-kActionsBottomMargin * 2],
     [self.actionStackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                               .bottomAnchor
@@ -316,15 +317,16 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     // fully visible (scrolled), set |didReachBottom| to YES. Otherwise, replace
     // the primary button's label with the read more label to indicate that more
     // scrolling is required.
+    self.scrollViewBottomOffsetY = self.scrollView.contentSize.height -
+                                   self.scrollView.bounds.size.height +
+                                   self.scrollView.contentInset.bottom;
+
     BOOL isScrolledToBottom = [self isScrolledToBottom];
     self.separator.hidden = isScrolledToBottom;
-    if (isScrolledToBottom) {
-      self.didReachBottom = YES;
-    } else if (!self.didReachBottom) {
+    if (self.didReachBottom || isScrolledToBottom) {
+      [self updateActionButtonsAndPushUpScrollView];
+    } else {
       [self setReadMoreText];
-    }
-    if (self.didReachBottom) {
-      [self showSecondaryAndTertiaryButtons];
     }
   });
 }
@@ -350,8 +352,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-  // Update the primary button once the layout changes take effect to have the
-  // right measurements to evaluate the scroll position.
+  // Update the buttons once the layout changes take effect to have the right
+  // measurements to evaluate the scroll position.
   void (^transition)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
         [self updateViewsOnScrollViewUpdate];
@@ -732,9 +734,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 }
 
 // If scrolling to the end of the content is mandatory, this method updates the
-// primary button's label based on whether the scroll view is currently scrolled
-// to the end. If the scroll view has scrolled to the end, also sets
-// |didReachBottom|.
+// action buttons based on whether the scroll view is currently scrolled to the
+// end. If the scroll view has scrolled to the end, also sets |didReachBottom|.
 // It also updates the separator visibility based on scroll position.
 - (void)updateViewsOnScrollViewUpdate {
   if (!self.canUpdateViewsOnScroll) {
@@ -742,20 +743,78 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   }
 
   BOOL isScrolledToBottom = [self isScrolledToBottom];
-
   self.separator.hidden = isScrolledToBottom;
-
   if (self.scrollToEndMandatory && !self.didReachBottom && isScrolledToBottom) {
-    self.didReachBottom = YES;
-    [self.primaryActionButton setAttributedTitle:nil
-                                        forState:UIControlStateNormal];
-    [self.primaryActionButton setTitle:self.primaryActionString
-                              forState:UIControlStateNormal];
-    // Reset the font to make sure it is properly scaled.
-    [self setPrimaryActionButtonFont:self.primaryActionButton];
-    // Add other buttons with the correct margins.
-    [self showSecondaryAndTertiaryButtons];
+    [self updateActionButtonsAndPushUpScrollView];
   }
+}
+
+// This method should be called right before the view is scrolled to the bottom.
+// It updates the primary button's label and adds secondary and/or tertiary
+// buttons, and as a result, pushing the scroll view up by updating the bottom
+// offset of the scroll view and scroll to the new offset. It also sets
+// |didReachBottom| to YES.
+- (void)updateActionButtonsAndPushUpScrollView {
+  [self.primaryActionButton setAttributedTitle:nil
+                                      forState:UIControlStateNormal];
+  [self.primaryActionButton setTitle:self.primaryActionString
+                            forState:UIControlStateNormal];
+  // Reset the font to make sure it is properly scaled.
+  [self setPrimaryActionButtonFont:self.primaryActionButton];
+
+  CGFloat originalHeightForActionStack =
+      self.primaryActionButton.bounds.size.height;
+  for (NSLayoutConstraint* constraint in self
+           .buttonsVerticalAnchorConstraints) {
+    originalHeightForActionStack += constraint.constant;
+  }
+  CGFloat newEstimatedHeightForActionStack =
+      self.primaryActionButton.bounds.size.height;
+  // Add other buttons with the correct margins.
+  if (self.secondaryActionString) {
+    [self.actionStackView insertArrangedSubview:self.secondaryActionButton
+                                        atIndex:1];
+    newEstimatedHeightForActionStack +=
+        self.secondaryActionButton.intrinsicContentSize.height;
+  }
+  if (self.tertiaryActionString) {
+    [self.actionStackView insertArrangedSubview:self.tertiaryActionButton
+                                        atIndex:0];
+    newEstimatedHeightForActionStack +=
+        self.tertiaryActionButton.intrinsicContentSize.height;
+  }
+  for (NSLayoutConstraint* constraint in self
+           .buttonsVerticalAnchorConstraints) {
+    newEstimatedHeightForActionStack += constraint.constant;
+  }
+  CGFloat estimatedHeightDifference =
+      newEstimatedHeightForActionStack - originalHeightForActionStack;
+  CGPoint updatedBottomOffset =
+      CGPointMake(0, self.scrollViewBottomOffsetY + estimatedHeightDifference);
+
+  if (self.secondaryActionString || self.tertiaryActionString) {
+    // Update constraints.
+    [NSLayoutConstraint
+        deactivateConstraints:self.buttonsVerticalAnchorConstraints];
+    self.buttonsVerticalAnchorConstraints = @[
+      [self.scrollView.bottomAnchor
+          constraintEqualToAnchor:self.actionStackView.topAnchor
+                         constant:self.tertiaryActionString ? 0
+                                                            : -kDefaultMargin],
+      [self.actionStackView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
+                                   constant:-kActionsBottomMargin],
+      [self.actionStackView.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                                .bottomAnchor],
+    ];
+    [NSLayoutConstraint
+        activateConstraints:self.buttonsVerticalAnchorConstraints];
+  }
+  if (![self isScrolledToBottom]) {
+    [self.scrollView setContentOffset:updatedBottomOffset animated:YES];
+  }
+  self.didReachBottom = YES;
 }
 
 - (void)didTapPrimaryActionButton {
@@ -766,16 +825,13 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     CGPoint targetOffset = CGPointMake(
         0, currentOffsetY + self.scrollView.bounds.size.height *
                                 (1.0 - kPreviousContentVisibleOnScroll));
-    // Calculate the maximum possible offset. Add one point to work around some
-    // issues when the fonts are increased.
-    CGPoint bottomOffset =
-        CGPointMake(0, self.scrollView.contentSize.height -
-                           self.scrollView.bounds.size.height +
-                           self.scrollView.contentInset.bottom + 1);
-    // Scroll to the smaller of the two offsets.
-    CGPoint newOffset =
-        targetOffset.y < bottomOffset.y ? targetOffset : bottomOffset;
-    [self.scrollView setContentOffset:newOffset animated:YES];
+    // Add one point to maximum possible offset to work around some issues when
+    // the fonts are increased.
+    if (targetOffset.y < self.scrollViewBottomOffsetY + 1) {
+      [self.scrollView setContentOffset:targetOffset animated:YES];
+    } else {
+      [self updateActionButtonsAndPushUpScrollView];
+    }
   } else if ([self.delegate
                  respondsToSelector:@selector(didTapPrimaryActionButton)]) {
     [self.delegate didTapPrimaryActionButton];
@@ -842,49 +898,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     index += 1;
   }
   return attributedText;
-}
-
-// Function to show secondary and tertiary action buttons in the view. Called
-// when |self.scrollToEndMandatory| is false or when the user has scrolled to
-// the end.
-- (void)showSecondaryAndTertiaryButtons {
-  if (self.secondaryActionString) {
-    [self.actionStackView insertArrangedSubview:self.secondaryActionButton
-                                        atIndex:1];
-  }
-  if (self.tertiaryActionString) {
-    [self.actionStackView insertArrangedSubview:self.tertiaryActionButton
-                                        atIndex:0];
-  }
-
-  if (self.secondaryActionString || self.tertiaryActionString) {
-    // Update constraints.
-    [NSLayoutConstraint
-        deactivateConstraints:self.buttonsVerticalAnchorConstraints];
-    self.buttonsVerticalAnchorConstraints = @[
-      [self.scrollView.bottomAnchor
-          constraintEqualToAnchor:self.actionStackView.topAnchor
-                         constant:self.tertiaryActionString ? 0
-                                                            : -kDefaultMargin],
-      [self.actionStackView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                   constant:-kActionsBottomMargin],
-    ];
-    [NSLayoutConstraint
-        activateConstraints:self.buttonsVerticalAnchorConstraints];
-
-    // Handles the edge case that when the new buttons hide the end of the
-    // content, keep scrolling until the end is visible.
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)),
-        dispatch_get_main_queue(), ^{
-          CGPoint bottomOffset =
-              CGPointMake(0, self.scrollView.contentSize.height -
-                                 self.scrollView.bounds.size.height +
-                                 self.scrollView.contentInset.bottom + 1);
-          [self.scrollView setContentOffset:bottomOffset animated:YES];
-        });
-  }
 }
 
 #pragma mark - UIScrollViewDelegate
