@@ -3455,6 +3455,10 @@ String AXNodeObject::TextFromDescendants(
   ax::mojom::blink::NameFrom last_used_name_from =
       ax::mojom::blink::NameFrom::kUninitialized;
 
+  // Ensure that if this node needs to invalidate its children (e.g. due to
+  // included in tree status change), that we do it now, rather than while
+  // traversing the children.
+  UpdateCachedAttributeValuesIfNeeded();
 #if defined(AX_FAIL_FAST_BUILD)
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
