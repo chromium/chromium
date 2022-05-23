@@ -87,3 +87,15 @@ function createTabAndWaitUntilLoaded(url, callback) {
     });
   });
 }
+
+async function pollUntil(predicate, pollEveryMs) {
+  return new Promise(r => {
+    const id = setInterval(() => {
+      let ret;
+      if (ret = predicate()) {
+        clearInterval(id);
+        r(ret);
+      }
+    }, pollEveryMs);
+  });
+}

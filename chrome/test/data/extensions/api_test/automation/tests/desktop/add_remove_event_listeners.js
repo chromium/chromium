@@ -21,13 +21,7 @@ var allTests = [
     desktop.removeEventListener(EventType.FOCUS, focusHandler);
     desktop.firstChild.removeEventListener(EventType.FOCUS, focusHandler);
 
-    await new Promise(r => {
-      setInterval(() => {
-        if (desktop.role === undefined) {
-          r();
-        }
-      }, 100);
-    });
+    await pollUntil(() => desktop.role === undefined, 100);
 
     // Re-requesting desktop should just work.
     const newDesktop = await new Promise(r => chrome.automation.getDesktop(r));
@@ -60,13 +54,7 @@ var allTests = [
 
     // Finally, the disabling above (from removing the event listeners) comes
     // some time later. Wait for it so that it does not impact other tests.
-    await new Promise(r => {
-      setInterval(() => {
-        if (desktop.role === undefined) {
-          r();
-        }
-      }, 100);
-    });
+    await pollUntil(() => desktop.role === undefined, 100);
 
     chrome.test.succeed();
   },
@@ -93,14 +81,7 @@ var allTests = [
 
     // Remove the event listener, and wait for the desktop to be destroyed.
     desktop.removeEventListener(EventType.FOCUS, handler);
-    await new Promise(r => {
-      setInterval(() => {
-        if (desktop.role === undefined) {
-          r();
-        }
-      }, 100);
-    });
-
+    await pollUntil(() => desktop.role === undefined, 100);
     chrome.test.succeed();
   },
 
@@ -108,14 +89,9 @@ var allTests = [
     const desktop = await new Promise(r => chrome.automation.getDesktop(r));
     assertTrue(!!desktop);
 
-    const button = await new Promise(r => {
-      setInterval(() => {
-        let node;
-        if (node = findAutomationNode(desktop, n => n.name === 'remove')) {
-          r(node);
-        }
-      }, 100);
-    });
+    const button = await pollUntil(
+        () => findAutomationNode(desktop, n => n.name === 'remove'), 100);
+
     assertTrue(!!button);
     assertEq('remove', button.name);
 
@@ -129,15 +105,7 @@ var allTests = [
 
     // We can't add event listeners to observe the deletions as to not trigger
     // adds, so poll for the change.
-    await new Promise(r => {
-      const checkForButton = () => {
-        if (button.role === undefined) {
-          r();
-          clearInterval(id);
-        }
-      };
-      const id = setInterval(checkForButton, 10);
-    });
+    await pollUntil(() => button.role === undefined, 10);
 
     // The tree is completely cleared.
     assertEq(undefined, desktop.role);
@@ -150,14 +118,8 @@ var allTests = [
     const desktop = await new Promise(r => chrome.automation.getDesktop(r));
     assertTrue(!!desktop);
 
-    const button = await new Promise(r => {
-      setInterval(() => {
-        let node;
-        if (node = findAutomationNode(desktop, n => n.name === 'close')) {
-          r(node);
-        }
-      }, 100);
-    });
+    const button = await pollUntil(
+        () => findAutomationNode(desktop, n => n.name === 'close'), 100);
     assertTrue(!!button);
     assertEq('close', button.name);
 
@@ -171,15 +133,7 @@ var allTests = [
 
     // We can't add event listeners to observe the deletions as to not trigger
     // adds, so poll for the change.
-    await new Promise(r => {
-      const checkForButton = () => {
-        if (button.role === undefined) {
-          r();
-          clearInterval(id);
-        }
-      };
-      const id = setInterval(checkForButton, 10);
-    });
+    await pollUntil(() => button.role === undefined, 10);
 
     // The tree should not be cleared.
     await new Promise(r => {
