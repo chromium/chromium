@@ -17,6 +17,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <ostream>
+
+#include "base/check.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "util/ios/raw_logging.h"
@@ -50,6 +53,10 @@ bool RawLoggingCloseFile(int fd) {
   return rv == 0;
 }
 
+IOSIntermediateDumpWriter::~IOSIntermediateDumpWriter() {
+  DCHECK_EQ(fd_, -1) << "Call Close() before this object is destroyed.";
+}
+
 bool IOSIntermediateDumpWriter::Open(const base::FilePath& path) {
   // Set data protection class D (No protection). A file with this type of
   // protection can be read from or written to at any time.
@@ -71,7 +78,12 @@ bool IOSIntermediateDumpWriter::Open(const base::FilePath& path) {
 }
 
 bool IOSIntermediateDumpWriter::Close() {
-  return RawLoggingCloseFile(fd_);
+  if (fd_ < 0) {
+    return true;
+  }
+  int fd = fd_;
+  fd_ = -1;
+  return RawLoggingCloseFile(fd);
 }
 
 bool IOSIntermediateDumpWriter::ArrayMapStart() {

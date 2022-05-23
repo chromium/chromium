@@ -147,9 +147,10 @@ bool MinidumpAnnotationListWriter::WriteObject(
     FileWriterInterface* file_writer) {
   DCHECK_EQ(state(), kStateWritable);
 
-  std::vector<WritableIoVec> iov(1 + objects_.size());
-  iov[0].iov_base = minidump_list_.get();
-  iov[0].iov_len = sizeof(*minidump_list_);
+  std::vector<WritableIoVec> iov;
+  iov.reserve(1 + objects_.size());
+  iov.emplace_back(
+      WritableIoVec{minidump_list_.get(), sizeof(*minidump_list_)});
 
   for (const auto& object : objects_) {
     iov.emplace_back(WritableIoVec{object->minidump_annotation(),

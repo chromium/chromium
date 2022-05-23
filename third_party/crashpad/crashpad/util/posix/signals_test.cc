@@ -166,7 +166,7 @@ void CauseSignal(int sig, int code) {
 #if defined(ARCH_CPU_X86_FAMILY)
       [[maybe_unused]] volatile int a = 42;
       volatile int b = 0;
-      a /= b;
+      a = a / b;
 #endif
       break;
     }

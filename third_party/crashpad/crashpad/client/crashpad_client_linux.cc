@@ -253,7 +253,12 @@ class SignalHandler {
   ExceptionInformation exception_information_ = {};
   CrashpadClient::FirstChanceHandler first_chance_handler_ = nullptr;
   int32_t dump_done_futex_ = kDumpNotDone;
+#if !defined(__cpp_lib_atomic_value_initialization) || \
+    __cpp_lib_atomic_value_initialization < 201911L
   std::atomic_flag disabled_ = ATOMIC_FLAG_INIT;
+#else
+  std::atomic_flag disabled_;
+#endif
 
   static SignalHandler* handler_;
 };

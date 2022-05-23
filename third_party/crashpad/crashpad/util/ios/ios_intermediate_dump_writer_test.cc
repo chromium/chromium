@@ -41,6 +41,7 @@ class IOSIntermediateDumpWriterTest : public testing::Test {
   }
 
   void TearDown() override {
+    EXPECT_TRUE(writer_->Close());
     writer_.reset();
     EXPECT_EQ(unlink(path_.value().c_str()), 0) << ErrnoMessage("unlink");
   }

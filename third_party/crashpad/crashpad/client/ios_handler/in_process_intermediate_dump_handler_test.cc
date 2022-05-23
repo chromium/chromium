@@ -49,6 +49,7 @@ class InProcessIntermediateDumpHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
+    EXPECT_TRUE(writer_->Close());
     writer_.reset();
     EXPECT_FALSE(IsRegularFile(path_));
   }
