@@ -572,6 +572,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_APK_INSTALL_SERVICE = "WebApkInstallService";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
+    public static final String FEED_ABLATION = "FeedAblation";
 
     @NativeMethods
     interface Natives {

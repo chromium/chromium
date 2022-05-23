@@ -394,6 +394,7 @@ class FeedStream : public FeedApi,
   void ClearAll();
 
   bool IsFeedEnabledByEnterprisePolicy();
+  bool IsFeedEnabled();
 
   bool HasReachedConditionsToUploadActionsWithNoticeCard();
 
@@ -440,7 +441,7 @@ class FeedStream : public FeedApi,
   base::TimeTicks signed_out_for_you_refreshes_until_;
 
   BooleanPrefMember has_stored_data_;
-  BooleanPrefMember enable_snippets_;
+  BooleanPrefMember snippets_enabled_by_policy_;
   BooleanPrefMember articles_list_visible_;
 
   // State loaded at startup:

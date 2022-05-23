@@ -2662,6 +2662,19 @@ TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabled) {
                                 1);
 }
 
+TEST_F(FeedApiTest, FeedIsAblated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  scoped_feature_list.InitAndEnableFeature(kIsAblated);
+
+  base::HistogramTester histograms;
+  CreateStream();
+  histograms.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kFeedNotEnabled, 1);
+
+  ASSERT_FALSE(network_.query_request_sent.has_value());
+}
+
 TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOnDpOff) {
   // Fetch a feed, so that there's stored data.
   {

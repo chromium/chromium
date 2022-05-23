@@ -1808,6 +1808,9 @@ extern const char kFeedLoadingPlaceholderDescription[];
 extern const char kFeedStampName[];
 extern const char kFeedStampDescription[];
 
+extern const char kFeedIsAblatedName[];
+extern const char kFeedIsAblatedDescription[];
+
 extern const char kGridTabSwitcherForTabletsName[];
 extern const char kGridTabSwitcherForTabletsDescription[];
 

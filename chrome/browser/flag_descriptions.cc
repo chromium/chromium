@@ -3210,6 +3210,9 @@ const char kFeedLoadingPlaceholderDescription[] =
 const char kFeedStampName[] = "StAMP cards in the feed";
 const char kFeedStampDescription[] = "Enables StAMP cards in the feed.";
 
+const char kFeedIsAblatedName[] = "Feed ablation";
+const char kFeedIsAblatedDescription[] = "Enables feed ablation.";
+
 const char kGridTabSwitcherForTabletsName[] = "Grid tab switcher for tablets";
 const char kGridTabSwitcherForTabletsDescription[] =
     "Enable grid tab switcher for tablets, replacing the tab strip.";

@@ -113,4 +113,6 @@ const base::Feature kPersonalizeFeedUnsignedUsers{
 const base::Feature kInfoCardAcknowledgementTracking{
     "InfoCardAcknowledgementTracking", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIsAblated{"FeedAblation",
+                               base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace feed

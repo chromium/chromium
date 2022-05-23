@@ -57,6 +57,7 @@ class MetricsReporter {
   void OnMetadataInitialized(bool isEnabledByEnterprisePolicy,
                              bool isFeedVisible,
                              bool isSignedIn,
+                             bool isEnabled,
                              const feedstore::Metadata& metadata);
 
   // User interactions. See |FeedApi| for definitions.

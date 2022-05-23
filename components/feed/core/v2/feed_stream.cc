@@ -35,6 +35,7 @@
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
@@ -149,8 +150,8 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
   base::RepeatingClosure preference_change_callback =
       base::BindRepeating(&FeedStream::EnabledPreferencesChanged, GetWeakPtr());
-  enable_snippets_.Init(prefs::kEnableSnippets, profile_prefs,
-                        preference_change_callback);
+  snippets_enabled_by_policy_.Init(prefs::kEnableSnippets, profile_prefs,
+                                   preference_change_callback);
   articles_list_visible_.Init(prefs::kArticlesListVisible, profile_prefs,
                               preference_change_callback);
   has_stored_data_.Init(feed::prefs::kHasStoredData, profile_prefs);
@@ -243,9 +244,9 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
     }
   }
   metadata_populated_ = true;
-  metrics_reporter_->OnMetadataInitialized(IsFeedEnabledByEnterprisePolicy(),
-                                           IsArticlesListVisible(),
-                                           IsSignedIn(), metadata_);
+  metrics_reporter_->OnMetadataInitialized(
+      IsFeedEnabledByEnterprisePolicy(), IsArticlesListVisible(), IsSignedIn(),
+      IsFeedEnabled(), metadata_);
 
   web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
 
@@ -482,11 +483,15 @@ bool FeedStream::IsArticlesListVisible() {
 }
 
 bool FeedStream::IsFeedEnabledByEnterprisePolicy() {
-  return enable_snippets_.GetValue();
+  return snippets_enabled_by_policy_.GetValue();
+}
+
+bool FeedStream::IsFeedEnabled() {
+  return FeedService::IsEnabled(*profile_prefs());
 }
 
 bool FeedStream::IsEnabledAndVisible() {
-  return IsArticlesListVisible() && IsFeedEnabledByEnterprisePolicy();
+  return IsArticlesListVisible() && IsFeedEnabled();
 }
 
 void FeedStream::EnabledPreferencesChanged() {
@@ -815,6 +820,11 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
     return {LoadStreamStatus::kLoadNotAllowedDisabledByEnterprisePolicy,
             feedwire::DiscoverLaunchResult::
                 INELIGIBLE_DISCOVER_DISABLED_BY_ENTERPRISE_POLICY};
+  }
+
+  if (!IsFeedEnabled()) {
+    return {LoadStreamStatus::kLoadNotAllowedDisabled,
+            feedwire::DiscoverLaunchResult::INELIGIBLE_DISCOVER_DISABLED};
   }
 
   if (!delegate_->IsEulaAccepted()) {

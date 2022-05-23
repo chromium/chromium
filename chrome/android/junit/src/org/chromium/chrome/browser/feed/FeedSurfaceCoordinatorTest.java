@@ -246,6 +246,9 @@ public class FeedSurfaceCoordinatorTest {
         // Preferences to enable feed.
         FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
         FeedFeatures.setFakePrefsForTest(mPrefService);
+        // We want to make the feed service bridge ignore the ablation flag.
+        when(mFeedServiceBridgeJniMock.isEnabled())
+                .thenAnswer(invocation -> mPrefService.getBoolean(Pref.ENABLE_SNIPPETS));
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mUrlService);

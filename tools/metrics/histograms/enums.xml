@@ -17932,6 +17932,7 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Visible"/>
   <int value="1" label="Collapsed"/>
   <int value="2" label="Disabled by policy"/>
+  <int value="3" label="Disabled"/>
 </enum>
 
 <enum name="ContentSuggestionsNotificationsAction">
@@ -40644,6 +40645,7 @@ Called by update_permissions_policy_enum.py.-->
       label="Feed enabled, user signed in, WAA off, Discover Personalization
              off"/>
   <int value="8" label="Feed enabled, user signed in, no recent Feed data"/>
+  <int value="9" label="The Feed is disabled by flag"/>
 </enum>
 
 <enum name="FeedVideoInitializationError">
@@ -54793,6 +54795,7 @@ from previous Chrome versions.
   <int value="-1907342706" label="ReadItLaterInMenu:disabled"/>
   <int value="-1906427432" label="WallpaperFastRefresh:disabled"/>
   <int value="-1905470520" label="FirmwareUpdaterApp:enabled"/>
+  <int value="-1905351186" label="FeedAblation:disabled"/>
   <int value="-1903365454" label="SyncPseudoUSSPreferences:disabled"/>
   <int value="-1902142840" label="CalendarModelDebugMode:enabled"/>
   <int value="-1899715534" label="GamepadPollingInterval:enabled"/>
@@ -57559,6 +57562,7 @@ from previous Chrome versions.
   <int value="-70595606" label="ash-enable-unified-desktop"/>
   <int value="-70434056" label="UseGles2ForOopR:enabled"/>
   <int value="-69427025" label="OfflinePagesPrefetchingUI:enabled"/>
+  <int value="-69224661" label="FeedAblation:enabled"/>
   <int value="-68877684" label="BackgroundVideoTrackOptimization:enabled"/>
   <int value="-68619312" label="PassiveDocumentWheelEventListeners:disabled"/>
   <int value="-68613812" label="DarkLightMode:disabled"/>

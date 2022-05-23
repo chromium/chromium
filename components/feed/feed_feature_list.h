@@ -111,6 +111,9 @@ extern const base::Feature kPersonalizeFeedUnsignedUsers;
 // Feature that enables tracking the acknowledgement state for the info cards.
 extern const base::Feature kInfoCardAcknowledgementTracking;
 
+// Feature that when enabled completely removes all Feeds from chrome.
+extern const base::Feature kIsAblated;
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_
