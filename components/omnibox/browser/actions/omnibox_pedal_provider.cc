@@ -416,7 +416,11 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
   StringTokenizer16 tokenizer(synonyms_csv, u",،、");
   while (tokenizer.GetNext()) {
     OmniboxPedal::TokenSequence sequence(0);
-    TokenizeAndExpandDictionary(sequence, tokenizer.token());
+    // In some languages where whitespace is significant but not a token
+    // delimiter, we want to trim and normalize whitespace that might be
+    // added by translators for reading convenience in translation console.
+    TokenizeAndExpandDictionary(
+        sequence, base::CollapseWhitespace(tokenizer.token(), false));
     group.AddSynonym(std::move(sequence));
   }
   return group;
