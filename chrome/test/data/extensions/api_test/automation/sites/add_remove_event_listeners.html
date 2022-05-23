@@ -8,11 +8,17 @@
     <title>Automation Tests - Add Remove Event Listeners</title>
   </head>
   <body>
-    <button></button>
+    <button id="remove">remove</button>
+    <button id="close">close</button>
     <script>
-      const button = document.querySelector('button');
-      button.addEventListener('click', () => {
-        button.setAttribute('aria-hidden', true);
+      const removeButton = document.getElementById('remove');
+      removeButton.addEventListener('click', () => {
+          removeButton.remove();
+      });
+
+      const closeButton = document.getElementById('close');
+      closeButton.addEventListener('click', () => {
+        window.close();
       });
     </script>
   </body>

@@ -1868,6 +1868,7 @@ void AutomationInternalCustomBindings::DestroyAccessibilityTree(
     accessibility_focused_tree_id_ = ui::AXTreeIDUnknown();
 
   tree_id_to_tree_wrapper_map_.erase(tree_id);
+  trees_with_event_listeners_.erase(tree_id);
 }
 
 void AutomationInternalCustomBindings::AddTreeChangeObserver(
