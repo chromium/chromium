@@ -5,6 +5,7 @@
 import {assert} from './assert.js';
 import {cssStyle} from './css.js';
 import * as dom from './dom.js';
+import * as state from './state.js';
 import {getStyleValueInPx} from './util.js';
 
 /**
@@ -85,11 +86,23 @@ function setupForNodes(nodes: NodeList): void {
 }
 
 /**
+ * Check visibility of the focus ring.
+ */
+export function checkFocusRingVisibility(): void {
+  const showFocusRing =
+      document.activeElement?.hasAttribute('tabindex') === true &&
+      state.get(state.State.KEYBOARD_NAVIGATION);
+  state.set(state.State.SHOW_FOCUS_RING, showFocusRing);
+}
+
+/**
  * Initializes DOM elements and observers used for focus ring.
  */
 export function initialize(): void {
   ring = dom.get('#focus-ring', HTMLElement);
   ringCSSStyle = cssStyle('#focus-ring');
+
+  window.addEventListener('focus', checkFocusRingVisibility, true);
 
   for (const el of dom.getAll('[tabindex]', HTMLElement)) {
     setup(el);
