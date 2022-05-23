@@ -706,13 +706,13 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   const auto& help_task = std::find_if(
       tasks.begin(), tasks.end(),
       [&bg_task_url](
-          const std::unique_ptr<web_app::SystemAppBackgroundTask>& x) {
+          const std::unique_ptr<ash::SystemWebAppBackgroundTask>& x) {
         return x->url_for_testing() == bg_task_url;
       });
   ASSERT_NE(help_task, tasks.end());
 
   auto* timer = help_task->get()->get_timer_for_testing();
-  EXPECT_EQ(web_app::SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             help_task->get()->get_state_for_testing());
   // The "Immediate" timer waits for several minutes, and it's hard to mock time
   // properly in a browser test, so just fire the timer now. We're not testing

@@ -21,12 +21,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -450,7 +450,7 @@ void SystemWebAppManager::SetSystemAppsForTesting(
   system_app_delegates_ = std::move(system_apps);
 }
 
-const std::vector<std::unique_ptr<SystemAppBackgroundTask>>&
+const std::vector<std::unique_ptr<ash::SystemWebAppBackgroundTask>>&
 SystemWebAppManager::GetBackgroundTasksForTesting() {
   return tasks_;
 }
@@ -568,7 +568,7 @@ void SystemWebAppManager::OnAppsSynchronized(
     absl::optional<ash::SystemWebAppBackgroundTaskInfo> background_info =
         it.second->GetTimerInfo();
     if (background_info && it.second->IsAppEnabled()) {
-      tasks_.push_back(std::make_unique<SystemAppBackgroundTask>(
+      tasks_.push_back(std::make_unique<ash::SystemWebAppBackgroundTask>(
           profile_, background_info.value()));
     }
   }

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_SAMPLE_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_SAMPLE_SYSTEM_WEB_APP_INFO_H_
 
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 
 struct WebAppInstallInfo;
 

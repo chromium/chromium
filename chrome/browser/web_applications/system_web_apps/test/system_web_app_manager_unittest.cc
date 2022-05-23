@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
@@ -1177,19 +1177,19 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimer) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0u, timers[0]->timer_activated_count_for_testing());
-  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             timers[0]->get_state_for_testing());
   EXPECT_EQ(0u, timers[0]->opened_count_for_testing());
   // Fast forward until the timer fires.
   task_environment()->FastForwardBy(base::Seconds(
-      SystemAppBackgroundTask::kInitialWaitForBackgroundTasksSeconds));
+      ash::SystemWebAppBackgroundTask::kInitialWaitForBackgroundTasksSeconds));
   EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
 
   loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
 
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_PERIOD,
             timers[0]->get_state_for_testing());
 
   task_environment()->FastForwardBy(base::Seconds(60));
@@ -1233,7 +1233,7 @@ TEST_F(SystemWebAppManagerTimerTest,
   waiter.Wait();
 
   auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
-  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             timers[0]->get_state_for_testing());
   task_environment()->FastForwardBy(base::Seconds(121));
   EXPECT_EQ(1u, timers.size());
@@ -1241,7 +1241,7 @@ TEST_F(SystemWebAppManagerTimerTest,
   EXPECT_EQ(base::Seconds(300), timers[0]->period_for_testing());
   EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_PERIOD,
             timers[0]->get_state_for_testing());
   loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
@@ -1276,7 +1276,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
   waiter.Wait();
 
   auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
-  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             timers[0]->get_state_for_testing());
   task_environment()->FastForwardBy(base::Seconds(121));
   EXPECT_EQ(1u, timers.size());
@@ -1288,7 +1288,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
   timers[0]->web_contents_for_testing()->Close();
 
   EXPECT_EQ(nullptr, timers[0]->web_contents_for_testing());
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_PERIOD,
             timers[0]->get_state_for_testing());
   loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
   loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
@@ -1324,16 +1324,16 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
   waiter.Wait();
 
   auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
-  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             timers[0]->get_state_for_testing());
   task_environment()->FastForwardBy(base::Seconds(
-      SystemAppBackgroundTask::kInitialWaitForBackgroundTasksSeconds));
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_IDLE,
+      ash::SystemWebAppBackgroundTask::kInitialWaitForBackgroundTasksSeconds));
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_IDLE,
             timers[0]->get_state_for_testing());
   EXPECT_EQ(1u, timers.size());
   EXPECT_EQ(true, timers[0]->open_immediately_for_testing());
   EXPECT_EQ(base::Seconds(300), timers[0]->period_for_testing());
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_IDLE,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_IDLE,
             timers[0]->get_state_for_testing());
   EXPECT_EQ(0u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(0u, timers[0]->opened_count_for_testing());
@@ -1342,7 +1342,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
   {
     ui::ScopedSetIdleState scoped_idle(ui::IDLE_STATE_IDLE);
     task_environment()->FastForwardBy(base::Seconds(30));
-    EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+    EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_PERIOD,
               timers[0]->get_state_for_testing());
     EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
     EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
@@ -1361,7 +1361,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {
     loader->SetNextLoadUrlResult(AppUrl1(),
                                  WebAppUrlLoader::Result::kUrlLoaded);
     task_environment()->FastForwardBy(base::Seconds(300));
-    EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+    EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_PERIOD,
               timers[0]->get_state_for_testing());
     EXPECT_EQ(3u, timers[0]->timer_activated_count_for_testing());
     EXPECT_EQ(3u, timers[0]->opened_count_for_testing());
@@ -1393,14 +1393,14 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerRunsAfterIdleLimitReached) {
   waiter.Wait();
 
   auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
-  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             timers[0]->get_state_for_testing());
   task_environment()->FastForwardBy(base::Seconds(
-      SystemAppBackgroundTask::kInitialWaitForBackgroundTasksSeconds));
+      ash::SystemWebAppBackgroundTask::kInitialWaitForBackgroundTasksSeconds));
   EXPECT_EQ(1u, timers.size());
   EXPECT_EQ(true, timers[0]->open_immediately_for_testing());
   EXPECT_EQ(base::Seconds(300), timers[0]->period_for_testing());
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_IDLE,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_IDLE,
             timers[0]->get_state_for_testing());
   EXPECT_EQ(0u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(0u, timers[0]->opened_count_for_testing());
@@ -1408,8 +1408,8 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerRunsAfterIdleLimitReached) {
   base::Time polling_since(timers[0]->polling_since_time_for_testing());
   // Poll up to not quite the maximum.
   task_environment()->FastForwardBy(base::Seconds(
-      SystemAppBackgroundTask::kIdlePollMaxTimeToWaitSeconds - 1));
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_IDLE,
+      ash::SystemWebAppBackgroundTask::kIdlePollMaxTimeToWaitSeconds - 1));
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_IDLE,
             timers[0]->get_state_for_testing());
   EXPECT_EQ(polling_since, timers[0]->polling_since_time_for_testing());
   EXPECT_EQ(0u, timers[0]->timer_activated_count_for_testing());
@@ -1417,7 +1417,7 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerRunsAfterIdleLimitReached) {
 
   // Poll to the maximum wait.
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_PERIOD,
             timers[0]->get_state_for_testing());
   EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(base::Time(), timers[0]->polling_since_time_for_testing());

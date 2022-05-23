@@ -16,11 +16,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -161,7 +161,7 @@ class SystemWebAppManager {
   void Shutdown();
 
   // Get the timers. Only use this for testing.
-  const std::vector<std::unique_ptr<SystemAppBackgroundTask>>&
+  const std::vector<std::unique_ptr<ash::SystemWebAppBackgroundTask>>&
   GetBackgroundTasksForTesting();
 
   const Profile* profile() const { return profile_; }
@@ -228,7 +228,7 @@ class SystemWebAppManager {
 
   raw_ptr<WebAppPolicyManager> web_app_policy_manager_ = nullptr;
 
-  std::vector<std::unique_ptr<SystemAppBackgroundTask>> tasks_;
+  std::vector<std::unique_ptr<ash::SystemWebAppBackgroundTask>> tasks_;
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
 };

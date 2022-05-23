@@ -7,6 +7,9 @@ import("//chrome/browser/buildflags.gni")
 
 source_set("web_applications") {
   sources = [
+    # TODO(crbug.com/1321984): Extract it to ash/system_web_apps/
+    "../ash/system_web_apps/system_web_app_background_task.cc",
+    "../ash/system_web_apps/system_web_app_background_task.h",
     "app_registrar_observer.h",
     "commands/callback_command.cc",
     "commands/callback_command.h",
@@ -91,8 +94,6 @@ source_set("web_applications") {
     "preinstalled_web_apps/preinstalled_web_app_definition_utils.h",
     "preinstalled_web_apps/preinstalled_web_apps.cc",
     "preinstalled_web_apps/preinstalled_web_apps.h",
-    "system_web_apps/system_web_app_background_task.cc",
-    "system_web_apps/system_web_app_background_task.h",
     "system_web_apps/system_web_app_manager.cc",
     "system_web_apps/system_web_app_manager.h",
     "user_display_mode.cc",

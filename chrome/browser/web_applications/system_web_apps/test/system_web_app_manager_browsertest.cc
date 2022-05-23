@@ -1591,7 +1591,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
   auto& tasks = GetManager().GetBackgroundTasksForTesting();
   auto* timer = tasks[0]->get_timer_for_testing();
   EXPECT_EQ(base::Seconds(120), timer->GetCurrentDelay());
-  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::INITIAL_WAIT,
             tasks[0]->get_state_for_testing());
   // The "Immediate" timer waits for 2 minutes, and it's really hard to mock
   // time properly in a browser test, so just fire the thing now. We're not
@@ -1604,7 +1604,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBackgroundTaskTest, TimerFires) {
   EXPECT_TRUE(tasks[0]->open_immediately_for_testing());
   EXPECT_EQ(base::Days(1), tasks[0]->period_for_testing());
   EXPECT_EQ(1u, tasks[0]->timer_activated_count_for_testing());
-  EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+  EXPECT_EQ(ash::SystemWebAppBackgroundTask::WAIT_PERIOD,
             tasks[0]->get_state_for_testing());
   EXPECT_EQ(base::Days(1), timer->GetCurrentDelay());
 }

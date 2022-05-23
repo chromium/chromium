@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_BACKGROUND_TASK_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_BACKGROUND_TASK_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_BACKGROUND_TASK_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_BACKGROUND_TASK_H_
 
 #include <memory.h>
 
@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_background_task_info.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
@@ -26,10 +25,10 @@
 
 class Profile;
 
-namespace web_app {
+namespace ash {
 
 // Used to manage a running periodic background task for a SWA.
-class SystemAppBackgroundTask {
+class SystemWebAppBackgroundTask {
  public:
   enum TimerState {
     INITIAL_WAIT = 0,
@@ -53,9 +52,9 @@ class SystemAppBackgroundTask {
   // For up to an hour.
   static const int kIdlePollMaxTimeToWaitSeconds = 3600;
 
-  SystemAppBackgroundTask(Profile* profile,
-                          const ash::SystemWebAppBackgroundTaskInfo& info);
-  ~SystemAppBackgroundTask();
+  SystemWebAppBackgroundTask(Profile* profile,
+                             const SystemWebAppBackgroundTaskInfo& info);
+  ~SystemWebAppBackgroundTask();
 
   // Start the timer, at the specified period. This will also run immediately if
   // needed
@@ -66,7 +65,7 @@ class SystemAppBackgroundTask {
 
   bool open_immediately_for_testing() const { return open_immediately_; }
 
-  ash::SystemWebAppType app_type_for_testing() const { return app_type_; }
+  SystemWebAppType app_type_for_testing() const { return app_type_; }
 
   GURL url_for_testing() const { return url_; }
 
@@ -86,10 +85,13 @@ class SystemAppBackgroundTask {
     return polling_since_time_;
   }
 
-  WebAppUrlLoader* UrlLoaderForTesting() { return web_app_url_loader_.get(); }
+  web_app::WebAppUrlLoader* UrlLoaderForTesting() {
+    return web_app_url_loader_.get();
+  }
 
   // Set the url loader for testing. Takes ownership of the argument.
-  void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> loader) {
+  void SetUrlLoaderForTesting(
+      std::unique_ptr<web_app::WebAppUrlLoader> loader) {
     web_app_url_loader_ = std::move(loader);
   }
 
@@ -102,26 +104,26 @@ class SystemAppBackgroundTask {
   // up the resources. Called when the page calls window.close() to exit.
   class CloseDelegate : public content::WebContentsDelegate {
    public:
-    explicit CloseDelegate(SystemAppBackgroundTask* task) : task_(task) {}
+    explicit CloseDelegate(SystemWebAppBackgroundTask* task) : task_(task) {}
     void CloseContents(content::WebContents* contents) override;
 
    private:
-    raw_ptr<SystemAppBackgroundTask> task_;
+    raw_ptr<SystemWebAppBackgroundTask> task_;
   };
   // A state machine to either poll and fail, stop polling and succeed, or stop
   // polling and fail
   void MaybeOpenPage();
 
   void NavigateBackgroundPage();
-  void OnLoaderReady(WebAppUrlLoader::Result);
-  void OnPageReady(WebAppUrlLoader::Result);
+  void OnLoaderReady(web_app::WebAppUrlLoader::Result);
+  void OnPageReady(web_app::WebAppUrlLoader::Result);
 
   void CloseWebContents(content::WebContents* contents);
 
   raw_ptr<Profile> profile_;
-  ash::SystemWebAppType app_type_;
+  SystemWebAppType app_type_;
   std::unique_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<WebAppUrlLoader> web_app_url_loader_;
+  std::unique_ptr<web_app::WebAppUrlLoader> web_app_url_loader_;
   std::unique_ptr<base::OneShotTimer> timer_;
   TimerState state_;
   GURL url_;
@@ -132,9 +134,9 @@ class SystemAppBackgroundTask {
   base::Time polling_since_time_;
   CloseDelegate delegate_;
 
-  base::WeakPtrFactory<SystemAppBackgroundTask> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SystemWebAppBackgroundTask> weak_ptr_factory_{this};
 };
 
-}  // namespace web_app
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_BACKGROUND_TASK_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_BACKGROUND_TASK_H_

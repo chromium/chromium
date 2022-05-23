@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -15,44 +15,44 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/idle/idle.h"
 
-namespace web_app {
+namespace ash {
 
-SystemAppBackgroundTask::SystemAppBackgroundTask(
+SystemWebAppBackgroundTask::SystemWebAppBackgroundTask(
     Profile* profile,
-    const ash::SystemWebAppBackgroundTaskInfo& info)
+    const SystemWebAppBackgroundTaskInfo& info)
     : profile_(profile),
       web_contents_(nullptr),
-      web_app_url_loader_(std::make_unique<WebAppUrlLoader>()),
+      web_app_url_loader_(std::make_unique<web_app::WebAppUrlLoader>()),
       timer_(std::make_unique<base::OneShotTimer>()),
       url_(info.url),
       period_(info.period),
       open_immediately_(info.open_immediately),
       delegate_(this) {}
 
-SystemAppBackgroundTask::~SystemAppBackgroundTask() = default;
+SystemWebAppBackgroundTask::~SystemWebAppBackgroundTask() = default;
 
-void SystemAppBackgroundTask::StartTask() {
+void SystemWebAppBackgroundTask::StartTask() {
   if (open_immediately_ ||
       period_ < base::Seconds(kInitialWaitForBackgroundTasksSeconds)) {
     timer_->Start(FROM_HERE,
                   base::Seconds(kInitialWaitForBackgroundTasksSeconds),
-                  base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
+                  base::BindOnce(&SystemWebAppBackgroundTask::MaybeOpenPage,
                                  weak_ptr_factory_.GetWeakPtr()));
     state_ = INITIAL_WAIT;
   } else if (period_) {
     timer_->Start(FROM_HERE, period_.value(),
-                  base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
+                  base::BindOnce(&SystemWebAppBackgroundTask::MaybeOpenPage,
                                  weak_ptr_factory_.GetWeakPtr()));
     state_ = WAIT_PERIOD;
   }
 }
 
-void SystemAppBackgroundTask::StopTask() {
+void SystemWebAppBackgroundTask::StopTask() {
   timer_.reset();
   web_contents_.reset();
 }
 
-void SystemAppBackgroundTask::MaybeOpenPage() {
+void SystemWebAppBackgroundTask::MaybeOpenPage() {
   ui::IdleState idle_state = ui::CalculateIdleState(kIdleThresholdSeconds);
   base::Time now = base::Time::Now();
   // Start polling
@@ -69,7 +69,7 @@ void SystemAppBackgroundTask::MaybeOpenPage() {
     // time and stop polling.
     if (polling_duration < base::Seconds(0) && period_) {
       timer_->Start(FROM_HERE, period_.value(),
-                    base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
+                    base::BindOnce(&SystemWebAppBackgroundTask::MaybeOpenPage,
                                    weak_ptr_factory_.GetWeakPtr()));
       state_ = WAIT_PERIOD;
       polling_since_time_ = base::Time();
@@ -77,7 +77,7 @@ void SystemAppBackgroundTask::MaybeOpenPage() {
     }
     // Poll
     timer_->Start(FROM_HERE, base::Seconds(kIdlePollIntervalSeconds),
-                  base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
+                  base::BindOnce(&SystemWebAppBackgroundTask::MaybeOpenPage,
                                  weak_ptr_factory_.GetWeakPtr()));
     state_ = WAIT_IDLE;
     return;
@@ -85,7 +85,7 @@ void SystemAppBackgroundTask::MaybeOpenPage() {
 
   if (period_) {
     timer_->Start(FROM_HERE, period_.value(),
-                  base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
+                  base::BindOnce(&SystemWebAppBackgroundTask::MaybeOpenPage,
                                  weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -94,17 +94,18 @@ void SystemAppBackgroundTask::MaybeOpenPage() {
   NavigateBackgroundPage();
 }
 
-void SystemAppBackgroundTask::CloseDelegate::CloseContents(
+void SystemWebAppBackgroundTask::CloseDelegate::CloseContents(
     content::WebContents* contents) {
   task_->CloseWebContents(contents);
 }
 
-void SystemAppBackgroundTask::CloseWebContents(content::WebContents* contents) {
+void SystemWebAppBackgroundTask::CloseWebContents(
+    content::WebContents* contents) {
   DCHECK(contents == web_contents_.get());
   web_contents_.reset();
 }
 
-void SystemAppBackgroundTask::NavigateBackgroundPage() {
+void SystemWebAppBackgroundTask::NavigateBackgroundPage() {
   if (!web_contents_) {
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -118,22 +119,25 @@ void SystemAppBackgroundTask::NavigateBackgroundPage() {
   web_contents_->SetWebPreferences(prefs);
   web_app_url_loader_->PrepareForLoad(
       web_contents_.get(),
-      base::BindOnce(&SystemAppBackgroundTask::OnLoaderReady,
+      base::BindOnce(&SystemWebAppBackgroundTask::OnLoaderReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SystemAppBackgroundTask::OnLoaderReady(WebAppUrlLoader::Result result) {
+void SystemWebAppBackgroundTask::OnLoaderReady(
+    web_app::WebAppUrlLoader::Result result) {
   if (web_contents_) {
     web_app_url_loader_->LoadUrl(
-        url_, web_contents_.get(), WebAppUrlLoader::UrlComparison::kExact,
-        base::BindOnce(&SystemAppBackgroundTask::OnPageReady,
+        url_, web_contents_.get(),
+        web_app::WebAppUrlLoader::UrlComparison::kExact,
+        base::BindOnce(&SystemWebAppBackgroundTask::OnPageReady,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void SystemAppBackgroundTask::OnPageReady(WebAppUrlLoader::Result result) {
-  if (result == WebAppUrlLoader::Result::kUrlLoaded)
+void SystemWebAppBackgroundTask::OnPageReady(
+    web_app::WebAppUrlLoader::Result result) {
+  if (result == web_app::WebAppUrlLoader::Result::kUrlLoaded)
     opened_count_++;
 }
 
-}  // namespace web_app
+}  // namespace ash
