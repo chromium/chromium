@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 #include <queue>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -43,6 +44,72 @@ std::u16string UrlDomainReduction(const GURL& url) {
   std::u16string url_domain;
   url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
   return url_domain;
+}
+
+// This utility function prepares input text for fuzzy matching, or returns
+// an empty string in cases unlikely to be worth a fuzzy matching search.
+// Note, this is intended to be a fast way to improve matching and eliminate
+// likely-unfruitful searches. It could make use of `SplitHost` as above, or
+// `url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains`,
+// which uses `FormatUrlWithAdjustments` under the hood, but all that URL
+// processing for input text that may not even be a URL seems like overkill,
+// so this simple direct method is used instead.
+std::u16string ReduceInputTextForMatching(const std::u16string& input) {
+  constexpr size_t kMaximumFuzzyMatchInputLength = 32;
+  constexpr size_t kPathCharacterCountToStopSearch = 6;
+  constexpr size_t kPostDotCharacterCountHintingSubdomain = 4;
+
+  // Long inputs are not fuzzy matched; doing so could be costly, and the
+  // length of input itself is a signal that it may not have been typed but
+  // simply pasted or edited in place.
+  // TODO(orinj): Consider tracking trie depth for use as maximum here.
+  if (input.length() > kMaximumFuzzyMatchInputLength) {
+    return std::u16string();
+  }
+
+  // Spaces hint that the input may be a search, not a URL.
+  if (input.find(u' ') != std::u16string::npos) {
+    return std::u16string();
+  }
+
+  // Inputs containing anything that looks like a scheme are a hint that this
+  // is an existing URL or an edit that's likely to be handled deliberately,
+  // not a messy human input that may need fuzzy matching.
+  if (input.find(u"://") != std::u16string::npos) {
+    return std::u16string();
+  }
+
+  std::u16string remaining;
+  // While typing a URL, the user may typo the domain but then continue on to
+  // the path; keeping input up to the path separator keeps the window open
+  // for fuzzy matching the domain as they continue to type, but we don't want
+  // to keep it open forever (doing so could result in potentially sticky false
+  // positives).
+  size_t index = input.find(u'/');
+  if (index != std::u16string::npos) {
+    if (index + kPathCharacterCountToStopSearch < input.length()) {
+      // User has moved well beyond typing domain and hasn't taken any fuzzy
+      // suggestions provided so far, and they won't get better, so we can
+      // save compute and suggestion results space by stopping the search.
+      return std::u16string();
+    }
+    remaining = input.substr(0, index);
+  } else {
+    remaining = input;
+  }
+
+  index = remaining.find(u'.');
+  if (index != std::u16string::npos &&
+      index + kPostDotCharacterCountHintingSubdomain < remaining.length()) {
+    // Keep input with dot if near the end (within range of .com, .org, .edu).
+    // With a dot earlier in the string, the user might be typing a subdomain
+    // and we only have the TLD+1 stored in the trie, so skip the dot and match
+    // against the remaining text. This may be helpful in common cases like
+    // typing an unnecessary "www." before the domain name.
+    remaining = remaining.substr(index + 1);
+  }
+
+  return remaining;
 }
 
 }  // namespace
@@ -446,8 +513,11 @@ void HistoryFuzzyProvider::DoAutocomplete() {
       .limit = 3,
   };
 
-  const std::u16string& text = autocomplete_input_.text();
+  const std::u16string& text =
+      ReduceInputTextForMatching(autocomplete_input_.text());
   if (text.length() == 0) {
+    DVLOG(1) << "Skipping fuzzy for input '" << autocomplete_input_.text()
+             << "'";
     return;
   }
   if (text[text.length() - 1] == u'!') {
@@ -501,8 +571,12 @@ void HistoryFuzzyProvider::DoAutocomplete() {
           match.allowed_to_be_default_match = false;
           // TODO(orinj): Determine suitable relevance penalty; it should
           //  likely take into account the edit distance or size of correction.
-          //  Using 9/10 reasonably took a 1334 relevance match down to 1200.
-          match.relevance = match.relevance * 9 / 10;
+          //  Using 9/10 reasonably took a 1334 relevance match down to 1200,
+          //  but was harmful to HQP suggestions: as soon as a '.' was
+          //  appended, a bunch of ~800 navsuggest results overtook a better
+          //  HQP result that was bumped down to ~770. Using 95/100 lets this
+          //  result compete in the navsuggest range.
+          match.relevance = match.relevance * 95 / 100;
           match.contents_class.clear();
           match.contents_class.push_back(
               {0, AutocompleteMatch::ACMatchClassification::DIM});
