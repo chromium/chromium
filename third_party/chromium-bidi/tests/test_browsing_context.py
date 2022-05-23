@@ -214,47 +214,48 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket,
             "context": context_id}})
 
     recursiveCompare({
-        "type": "node",
-        "value": {
-            "nodeType": 1,
-            "nodeValue": "",
-            "nodeName": "",
-            "localName": "div",
-            "namespaceURI": "http://www.w3.org/1999/xhtml",
-            "childNodeCount": 3,
-            "attributes": {
-                "class": "container"},
-            "children": [{
-                "type": "node",
-                "value": {
-                    "nodeType": 3,
-                    "nodeValue": "container text",
-                    "nodeName": "container text"}
-            }, {
-                "type": "node",
-                "value": {
-                    "nodeType": 1,
-                    "nodeValue": "",
-                    "nodeName": "",
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "childNodeCount": 1,
-                    "attributes": {
-                        "class": "child_1"}}
-            }, {
-                "type": "node",
-                "value": {
-                    "nodeType": 1,
-                    "nodeValue": "",
-                    "nodeName": "",
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "childNodeCount": 1,
-                    "attributes": {
-                        "class": "child_2"}}
-            }]
-        }, "objectId": "__SOME_OBJECT_ID_1__"
-    }, result, ["objectId"])
+        "result": {
+            "type": "node",
+            "value": {
+                "nodeType": 1,
+                "nodeValue": "",
+                "nodeName": "",
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodeCount": 3,
+                "attributes": {
+                    "class": "container"},
+                "children": [{
+                    "type": "node",
+                    "value": {
+                        "nodeType": 3,
+                        "nodeValue": "container text",
+                        "nodeName": "container text"}
+                }, {
+                    "type": "node",
+                    "value": {
+                        "nodeType": 1,
+                        "nodeValue": "",
+                        "nodeName": "",
+                        "localName": "h2",
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodeCount": 1,
+                        "attributes": {
+                            "class": "child_1"}}
+                }, {
+                    "type": "node",
+                    "value": {
+                        "nodeType": 1,
+                        "nodeValue": "",
+                        "nodeName": "",
+                        "localName": "h2",
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodeCount": 1,
+                        "attributes": {
+                            "class": "child_2"}}
+                }]
+            }, "objectId": "__SOME_OBJECT_ID_1__"
+        }}, result, ["objectId"])
 
 
 @pytest.mark.asyncio
@@ -269,7 +270,7 @@ async def test_PROTO_browsingContext_findElementMissingElement_missingElement(
             "selector": "body > h3",
             "context": context_id}})
 
-    assert result == {"type": "null"}
+    assert result == {"result": {"type": "null"}}
 
 
 @pytest.mark.asyncio

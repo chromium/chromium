@@ -17,11 +17,7 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import {
-  CommonDataTypes,
-  Message,
-  Script,
-} from '../protocol/bidiProtocolTypes';
+import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
 
 export class ScriptEvaluator {
   #cdpClient: CdpClient;
@@ -95,7 +91,7 @@ export class ScriptEvaluator {
     _this: Script.ArgumentValue,
     args: Script.ArgumentValue[],
     awaitPromise: boolean
-  ): Promise<Script.CallFunctionResult> {
+  ): Promise<Script.ScriptResult> {
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -122,10 +118,12 @@ export class ScriptEvaluator {
 
     if (cdpCallFunctionResult.exceptionDetails) {
       // Serialize exception details.
-      return await this.#serializeCdpExceptionDetails(
-        cdpCallFunctionResult.exceptionDetails,
-        this.#callFunctionStacktraceLineOffset
-      );
+      return {
+        exceptionDetails: await this.#serializeCdpExceptionDetails(
+          cdpCallFunctionResult.exceptionDetails,
+          this.#callFunctionStacktraceLineOffset
+        ),
+      };
     }
 
     return { result: ScriptEvaluator.#cdpToBidiValue(cdpCallFunctionResult) };
@@ -134,7 +132,7 @@ export class ScriptEvaluator {
   async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number
-  ): Promise<Message.ExceptionResult> {
+  ): Promise<Script.ExceptionDetails> {
     const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
       (frame) => ({
         url: frame.url,
@@ -154,17 +152,15 @@ export class ScriptEvaluator {
     const text = await this.stringifyObject(cdpExceptionDetails.exception!);
 
     return {
-      exceptionDetails: {
-        exception,
-        columnNumber: cdpExceptionDetails.columnNumber,
-        // As `script.evaluate` wraps call into serialization script, so
-        // `lineNumber` should be adjusted.
-        lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
-        stackTrace: {
-          callFrames: callFrames || [],
-        },
-        text: text || cdpExceptionDetails.text,
+      exception,
+      columnNumber: cdpExceptionDetails.columnNumber,
+      // As `script.evaluate` wraps call into serialization script, so
+      // `lineNumber` should be adjusted.
+      lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
+      stackTrace: {
+        callFrames: callFrames || [],
       },
+      text: text || cdpExceptionDetails.text,
     };
   }
 
@@ -194,14 +190,20 @@ export class ScriptEvaluator {
 
     if (cdpEvaluateResult.exceptionDetails) {
       // Serialize exception details.
-      return await this.#serializeCdpExceptionDetails(
-        cdpEvaluateResult.exceptionDetails,
-        this.#evaluateStacktraceLineOffset
-      );
+      return {
+        result: {
+          exceptionDetails: await this.#serializeCdpExceptionDetails(
+            cdpEvaluateResult.exceptionDetails,
+            this.#evaluateStacktraceLineOffset
+          ),
+        },
+      };
     }
 
     return {
-      result: ScriptEvaluator.#cdpToBidiValue(cdpEvaluateResult),
+      result: {
+        result: ScriptEvaluator.#cdpToBidiValue(cdpEvaluateResult),
+      },
     };
   }
 

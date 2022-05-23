@@ -25,12 +25,7 @@ export namespace Message {
     | Script.CommandResult
     | Session.CommandResult
     | CDP.CommandResult
-    | ExceptionResult
     | ErrorResult;
-
-  export type ExceptionResult = {
-    exceptionDetails: CommonDataTypes.ExceptionDetails;
-  };
 
   export type EventMessage = BrowsingContext.Event | Log.Event | CDP.Event;
 
@@ -254,6 +249,22 @@ export namespace CommonDataTypes {
   export type WindowProxyRemoteValue = RemoteReference & {
     type: 'window';
   };
+}
+
+export namespace Script {
+  export type Command = EvaluateCommand | CallFunctionCommand;
+  export type CommandResult = EvaluateResult | CallFunctionResult;
+
+  export type Realm = string;
+
+  export type ScriptResult = ScriptResultSuccess | ScriptResultException;
+  export type ScriptResultSuccess = {
+    result: CommonDataTypes.RemoteValue;
+  };
+
+  export type ScriptResultException = {
+    exceptionDetails: ExceptionDetails;
+  };
 
   export type ExceptionDetails = {
     columnNumber: number;
@@ -262,12 +273,6 @@ export namespace CommonDataTypes {
     stackTrace: Script.StackTrace;
     text: string;
   };
-}
-
-export namespace Script {
-  export type Command = EvaluateCommand | CallFunctionCommand;
-  export type CommandResult = EvaluateResult | CallFunctionResult;
-  export type Realm = string;
 
   export type RealmTarget = {
     // TODO sadym: implement.
@@ -281,18 +286,17 @@ export namespace Script {
 
   export type EvaluateCommand = {
     method: 'script.evaluate';
-    params: ScriptEvaluateParameters;
+    params: EvaluateParameters;
   };
 
-  export type ScriptEvaluateParameters = {
+  export type EvaluateParameters = {
     expression: string;
     awaitPromise?: boolean;
     target: Target;
   };
 
-  export type EvaluateResult = EvaluateSuccessResult | Message.ExceptionResult;
-  export type EvaluateSuccessResult = {
-    result: CommonDataTypes.RemoteValue;
+  export type EvaluateResult = {
+    result: ScriptResult;
   };
 
   export type CallFunctionCommand = {
@@ -308,11 +312,8 @@ export namespace Script {
     target: Target;
   };
 
-  export type CallFunctionResult =
-    | CallFunctionSuccessResult
-    | Message.ExceptionResult;
-  export type CallFunctionSuccessResult = {
-    result: CommonDataTypes.RemoteValue;
+  export type CallFunctionResult = {
+    result: ScriptResult;
   };
 
   export type ArgumentValue =
@@ -469,9 +470,7 @@ export namespace BrowsingContext {
       context: BrowsingContext;
     };
 
-    export type FindElementResult =
-      | FindElementSuccessResult
-      | Message.ExceptionResult;
+    export type FindElementResult = FindElementSuccessResult;
 
     export type FindElementSuccessResult = {
       result: CommonDataTypes.NodeRemoteValue;

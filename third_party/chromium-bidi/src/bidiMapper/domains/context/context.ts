@@ -143,12 +143,14 @@ export class Context {
     args: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult> {
-    return this.#scriptEvaluator.callFunction(
-      functionDeclaration,
-      _this,
-      args,
-      awaitPromise
-    );
+    return {
+      result: await this.#scriptEvaluator.callFunction(
+        functionDeclaration,
+        _this,
+        args,
+        awaitPromise
+      ),
+    };
   }
 
   public async findElement(
@@ -159,14 +161,18 @@ export class Context {
     );
     const args: Script.ArgumentValue[] = [{ type: 'string', value: selector }];
 
-    return (await this.#scriptEvaluator.callFunction(
+    // TODO(sadym): handle not found exception.
+    const result = await this.#scriptEvaluator.callFunction(
       functionDeclaration,
       {
         type: 'undefined',
       },
       args,
       true
-    )) as BrowsingContext.PROTO.FindElementResult;
+    );
+
+    // TODO(sadym): handle type properly.
+    return { result } as any as BrowsingContext.PROTO.FindElementResult;
   }
 
   async #initialize() {

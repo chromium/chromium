@@ -27,7 +27,7 @@ async def assertSerialization(websocket, context_id, js_str_object,
             "awaitPromise": False, }})
 
     # Compare ignoring `objectId`.
-    recursiveCompare(expected_serialized_object, result, ["objectId"])
+    recursiveCompare(expected_serialized_object, result["result"], ["objectId"])
 
 
 # Testing serialization.
@@ -47,7 +47,7 @@ async def assertDeserializationAndSerialization(websocket, context_id,
             "awaitPromise": False,
             "target": {"context": context_id}}})
     # Compare ignoring `objectId`.
-    recursiveCompare(expected_serialized_object, result, ["objectId"])
+    recursiveCompare(expected_serialized_object, result["result"], ["objectId"])
 
 
 @pytest.mark.asyncio
@@ -378,7 +378,7 @@ async def test_deserialization_serialization_date(websocket, context_id):
     # TODO(sadym): Add value check after date format is fixed.
     # https://github.com/w3c/webdriver-bidi/issues/202
     # assert result["value"] == "__some_specific_result__"
-    assert result["type"] == "date"
+    assert result["result"]["type"] == "date"
 
 
 @pytest.mark.asyncio
@@ -412,34 +412,35 @@ async def test_serialization_node(websocket, context_id):
             "context": context_id}})
 
     recursiveCompare({
-        "type": "node",
-        "value": {
-            "nodeType": 1,
-            "nodeValue": "",
-            "nodeName": "",
-            "localName": "div",
-            "namespaceURI": "http://www.w3.org/1999/xhtml",
-            "childNodeCount": 2,
-            "attributes": {
-                "some_attr_name": "some_attr_value"},
-            "children": [{
-                "type": "node",
-                "value": {
-                    "nodeType": 3,
-                    "nodeValue": "some text",
-                    "nodeName": "some text"}
-            }, {
-                "type": "node",
-                "value": {
-                    "nodeType": 1,
-                    "nodeValue": "",
-                    "nodeName": "",
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "childNodeCount": 1,
-                    "attributes": {}}}]},
-        "objectId": "__any_value__"},
-        result, ["objectId"])
+        "result": {
+            "type": "node",
+            "value": {
+                "nodeType": 1,
+                "nodeValue": "",
+                "nodeName": "",
+                "localName": "div",
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "childNodeCount": 2,
+                "attributes": {
+                    "some_attr_name": "some_attr_value"},
+                "children": [{
+                    "type": "node",
+                    "value": {
+                        "nodeType": 3,
+                        "nodeValue": "some text",
+                        "nodeName": "some text"}
+                }, {
+                    "type": "node",
+                    "value": {
+                        "nodeType": 1,
+                        "nodeValue": "",
+                        "nodeName": "",
+                        "localName": "h2",
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "childNodeCount": 1,
+                        "attributes": {}}}]},
+            "objectId": "__any_value__"
+        }}, result, ["objectId"])
 
 
 @pytest.mark.asyncio

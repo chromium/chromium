@@ -143,18 +143,20 @@ async def main():
     # {
     #     "id": 1002,
     #     "result": {
-    #         "objectId": "__SOME_OBJECT_ID__",
-    #         "type": "array",
-    #         "value": [
-    #             {
-    #                 "type": "string",
-    #                 "value": "__SOME_STRING_VALUE__"
-    #             },
-    #             ... // other values
-    #         ]
+    #         "result": {
+    #             "objectId": "__SOME_OBJECT_ID__",
+    #             "type": "array",
+    #             "value": [
+    #                 {
+    #                     "type": "string",
+    #                     "value": "__SOME_STRING_VALUE__"
+    #                 },
+    #                 ... // other values
+    #             ]
+    #         }
     #     }
     # }
-    links = command_result["result"]
+    links = command_result["result"]["result"]
 
     # Puppeteer:
     # console.log(links.join('\n'));
