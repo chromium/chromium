@@ -205,10 +205,12 @@ vars = {
   # 1 Choose a version that's not newer than the Ash side so it's thoroughly
   #   tested:
   #   https://chromium-review.googlesource.com/q/%2522Automated+Commit:+LKGM%2522+status:merged
-  # 2 Run additional a few optional tryjobs:
-  #   lacros-amd64-generic-chrome-skylab
-  #   lacros-arm-generic-chrome-skylab
-  'lacros_sdk_version': '14803.0.0',
+  # 2 CL description:
+  # Lacros SDK: Update version <version>
+  #
+  # CQ_INCLUDE_TRYBOTS=luci.chrome.try:lacros-amd64-generic-chrome-skylab
+  # CQ_INCLUDE_TRYBOTS=luci.chrome.try:lacros-arm-generic-chrome-skylab
+  'lacros_sdk_version': '14844.0.0',
 
   # Generate location tag metadata to include in tests result data uploaded
   # to ResultDB. This isn't needed on some configs and the tool that generates
