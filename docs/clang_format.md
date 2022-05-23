@@ -44,6 +44,7 @@ For further guidance on editor integration, see these specific pages:
 
 *   [Sublime Text](https://www.chromium.org/developers/sublime-text#TOC-Format-selection-or-area-around-cursor-using-clang-format)
 *   [llvm's guidelines for vim, emacs, and bbedit](http://clang.llvm.org/docs/ClangFormat.html)
+*   [Visual Studio Code](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/vscode.md#useful-extensions)
 *   For vim, `:so tools/vim/clang-format.vim` and then hit cmd-shift-i (mac)
     ctrl-shift-i (elsewhere) to indent the current line or current selection.
 
