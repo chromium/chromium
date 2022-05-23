@@ -37,6 +37,7 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/linux/gbm_defines.h"
 
@@ -644,8 +645,11 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   const gfx::Size resolution = std::get<2>(GetParam());
 
   // TODO(b/187852384): enable the other backends.
-  if (VaapiWrapper::GetImplementationType() != VAImplementation::kIntelIHD)
+  const auto backend = VaapiWrapper::GetImplementationType();
+  if (!(backend == VAImplementation::kIntelIHD ||
+        backend == VAImplementation::kMesaGallium)) {
     GTEST_SKIP() << "backend not supported";
+  }
 
   ASSERT_NE(va_rt_format, kInvalidVaRtFormat);
   if (!VaapiWrapper::IsDecodeSupported(va_profile))
@@ -654,6 +658,11 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   if (!VaapiWrapper::IsDecodingSupportedForInternalFormat(va_profile,
                                                           va_rt_format)) {
     GTEST_SKIP() << VARTFormatToString(va_rt_format) << " not supported.";
+  }
+  // TODO(b/200817282): Fix high-bit depth formats on AMD Gallium impl.
+  if (backend == VAImplementation::kMesaGallium &&
+      va_rt_format == VA_RT_FORMAT_YUV420_10) {
+    GTEST_SKIP() << vaProfileStr(va_profile) << " fails on AMD, skipping.";
   }
 
   gfx::Size minimum_supported_size;
@@ -704,8 +713,8 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
     ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
   }
 
-  // Verify some expected properties of the allocated VASurface. We expect a
-  // single |object|, with a number of |layers| of the same |pitch|.
+  // Verify some expected properties of the allocated VASurface. We expect one
+  // or two |object|s, with a number of |layers| of the same |pitch|.
   EXPECT_EQ(scoped_va_surface->size(),
             gfx::Size(base::checked_cast<int>(va_descriptor.width),
                       base::checked_cast<int>(va_descriptor.height)));
@@ -715,18 +724,28 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   EXPECT_EQ(va_descriptor.fourcc, va_fourcc)
       << FourccToString(va_descriptor.fourcc)
       << " != " << FourccToString(va_fourcc);
-  EXPECT_EQ(va_descriptor.num_objects, 1u);
+  EXPECT_THAT(va_descriptor.num_objects, ::testing::AnyOf(1, 2));
   // TODO(mcasas): consider comparing |size| with a better estimate of the
   // |scoped_va_surface| memory footprint (e.g. including planes and format).
   EXPECT_GE(va_descriptor.objects[0].size,
             base::checked_cast<uint32_t>(scoped_va_surface->size().GetArea()));
+  if (va_descriptor.num_objects == 2) {
+    const int uv_width = (scoped_va_surface->size().width() + 1) / 2;
+    const int uv_height = (scoped_va_surface->size().height() + 1) / 2;
+    EXPECT_GE(va_descriptor.objects[1].size,
+              base::checked_cast<uint32_t>(2 * uv_width * uv_height));
+  }
+  const auto expected_drm_modifier =
+      backend == VAImplementation::kIntelIHD ? I915_FORMAT_MOD_Y_TILED : 0x0;
   EXPECT_EQ(va_descriptor.objects[0].drm_format_modifier,
-            I915_FORMAT_MOD_Y_TILED);
+            expected_drm_modifier);
   // TODO(mcasas): |num_layers| actually depends on |va_descriptor.va_fourcc|.
   EXPECT_EQ(va_descriptor.num_layers, 2u);
   for (uint32_t i = 0; i < va_descriptor.num_layers; ++i) {
     EXPECT_EQ(va_descriptor.layers[i].num_planes, 1u);
-    EXPECT_EQ(va_descriptor.layers[i].object_index[0], 0u);
+    const uint32_t expected_object_index =
+        (va_descriptor.num_objects == 1) ? 0 : i;
+    EXPECT_EQ(va_descriptor.layers[i].object_index[0], expected_object_index);
 
     DVLOG(2) << "plane " << i
              << ", pitch: " << va_descriptor.layers[i].pitch[0];
