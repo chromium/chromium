@@ -107,6 +107,10 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   // owned pointer to an Overlay.
   std::unique_ptr<Overlay> CreateOverlay(int32_t stacking_index);
 
+  // Getter for `format_`. Returns the pixel format set by the last call to
+  // `SetFormat()`, or nullopt if the format was not yet set.
+  absl::optional<media::VideoPixelFormat> GetFormat() const { return format_; }
+
  private:
   struct ResolutionConstraints {
     ResolutionConstraints(const gfx::Size& min_size,
