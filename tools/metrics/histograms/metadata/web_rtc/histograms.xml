@@ -2064,6 +2064,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Screenshare.ZeroHz.TimeUntilFirstFrameMs" units="ms"
+    expires_after="2023-05-22">
+  <owner>handellm@google.com</owner>
+  <owner>ilnik@chromium.org</owner>
+  <summary>
+    The number of milliseconds from the point a zero-Hz frame cadence adapter is
+    created until the first frame arrives from a connected source.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.SentAudioTrackDuration" units="ms"
     expires_after="2022-10-09">
   <owner>perkj@chromium.org</owner>
