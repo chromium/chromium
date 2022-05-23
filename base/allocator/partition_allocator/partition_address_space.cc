@@ -12,12 +12,12 @@
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -35,18 +35,18 @@ namespace partition_alloc::internal {
 namespace {
 
 #if BUILDFLAG(IS_WIN)
-NOINLINE void HandleGigaCageAllocFailureOutOfVASpace() {
+PA_NOINLINE void HandleGigaCageAllocFailureOutOfVASpace() {
   PA_NO_CODE_FOLDING();
   PA_CHECK(false);
 }
 
-NOINLINE void HandleGigaCageAllocFailureOutOfCommitCharge() {
+PA_NOINLINE void HandleGigaCageAllocFailureOutOfCommitCharge() {
   PA_NO_CODE_FOLDING();
   PA_CHECK(false);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-NOINLINE void HandleGigaCageAllocFailure() {
+PA_NOINLINE void HandleGigaCageAllocFailure() {
   PA_NO_CODE_FOLDING();
   uint32_t alloc_page_error_code = GetAllocPageErrorCode();
   PA_DEBUG_DATA_ON_STACK("error", static_cast<size_t>(alloc_page_error_code));
@@ -109,18 +109,18 @@ bool IsIOSTestProcess() {
 }
 }  // namespace
 
-ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
+PA_ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
   return IsIOSTestProcess() ? kRegularPoolSizeForIOSTestProcess
                             : kRegularPoolSize;
 }
-ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
+PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
   return IsIOSTestProcess() ? kBRPPoolSizeForIOSTestProcess : kBRPPoolSize;
 }
 #else
-ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
+PA_ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
   return kRegularPoolSize;
 }
-ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
+PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
   return kBRPPoolSize;
 }
 #endif  // BUILDFLAG(IS_IOS)

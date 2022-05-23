@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -20,7 +21,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -36,31 +36,31 @@ class BASE_EXPORT PartitionAddressSpace {
  public:
   // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
   // supports BackupRefPtr and one that doesn't.
-  static ALWAYS_INLINE internal::pool_handle GetRegularPool() {
+  static PA_ALWAYS_INLINE internal::pool_handle GetRegularPool() {
     return setup_.regular_pool_;
   }
 
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
-  static ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
+  static PA_ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
   }
 #else
-  static ALWAYS_INLINE constexpr uintptr_t RegularPoolBaseMask() {
+  static PA_ALWAYS_INLINE constexpr uintptr_t RegularPoolBaseMask() {
     return kRegularPoolBaseMask;
   }
 #endif
 
-  static ALWAYS_INLINE internal::pool_handle GetBRPPool() {
+  static PA_ALWAYS_INLINE internal::pool_handle GetBRPPool() {
     return setup_.brp_pool_;
   }
 
   // The Configurable Pool can be created inside an existing mapping and so will
   // be located outside PartitionAlloc's GigaCage.
-  static ALWAYS_INLINE internal::pool_handle GetConfigurablePool() {
+  static PA_ALWAYS_INLINE internal::pool_handle GetConfigurablePool() {
     return setup_.configurable_pool_;
   }
 
-  static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+  static PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       uintptr_t address) {
     address = ::partition_alloc::internal::UnmaskPtr(address);
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
@@ -85,10 +85,10 @@ class BASE_EXPORT PartitionAddressSpace {
     }
     return std::make_pair(pool, address - base);
   }
-  static ALWAYS_INLINE constexpr size_t ConfigurablePoolMaxSize() {
+  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMaxSize() {
     return kConfigurablePoolMaxSize;
   }
-  static ALWAYS_INLINE constexpr size_t ConfigurablePoolMinSize() {
+  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMinSize() {
     return kConfigurablePoolMinSize;
   }
 
@@ -103,7 +103,7 @@ class BASE_EXPORT PartitionAddressSpace {
   static void UninitForTesting();
   static void UninitConfigurablePoolForTesting();
 
-  static ALWAYS_INLINE bool IsInitialized() {
+  static PA_ALWAYS_INLINE bool IsInitialized() {
     // Either neither or both regular and BRP pool are initialized. The
     // configurable pool is initialized separately.
     if (setup_.regular_pool_) {
@@ -115,13 +115,13 @@ class BASE_EXPORT PartitionAddressSpace {
     return false;
   }
 
-  static ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
+  static PA_ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
     return setup_.configurable_pool_base_address_ !=
            kUninitializedPoolBaseAddress;
   }
 
   // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
+  static PA_ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
     const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
 #else
@@ -131,12 +131,12 @@ class BASE_EXPORT PartitionAddressSpace {
            setup_.regular_pool_base_address_;
   }
 
-  static ALWAYS_INLINE uintptr_t RegularPoolBase() {
+  static PA_ALWAYS_INLINE uintptr_t RegularPoolBase() {
     return setup_.regular_pool_base_address_;
   }
 
   // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
+  static PA_ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
     const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
 #else
@@ -145,16 +145,16 @@ class BASE_EXPORT PartitionAddressSpace {
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
   // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInConfigurablePool(uintptr_t address) {
+  static PA_ALWAYS_INLINE bool IsInConfigurablePool(uintptr_t address) {
     return (address & setup_.configurable_pool_base_mask_) ==
            setup_.configurable_pool_base_address_;
   }
 
-  static ALWAYS_INLINE uintptr_t ConfigurablePoolBase() {
+  static PA_ALWAYS_INLINE uintptr_t ConfigurablePoolBase() {
     return setup_.configurable_pool_base_address_;
   }
 
-  static ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+  static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
     return ::partition_alloc::internal::UnmaskPtr(address) -
            setup_.brp_pool_base_address_;
@@ -168,14 +168,16 @@ class BASE_EXPORT PartitionAddressSpace {
 
  private:
 #if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
-  static ALWAYS_INLINE size_t RegularPoolSize();
-  static ALWAYS_INLINE size_t BRPPoolSize();
+  static PA_ALWAYS_INLINE size_t RegularPoolSize();
+  static PA_ALWAYS_INLINE size_t BRPPoolSize();
 #else
   // The pool sizes should be as large as maximum whenever possible.
-  constexpr static ALWAYS_INLINE size_t RegularPoolSize() {
+  constexpr static PA_ALWAYS_INLINE size_t RegularPoolSize() {
     return kRegularPoolSize;
   }
-  constexpr static ALWAYS_INLINE size_t BRPPoolSize() { return kBRPPoolSize; }
+  constexpr static PA_ALWAYS_INLINE size_t BRPPoolSize() {
+    return kBRPPoolSize;
+  }
 #endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
 
   // On 64-bit systems, GigaCage is split into disjoint pools. The BRP pool, is
@@ -295,23 +297,23 @@ class BASE_EXPORT PartitionAddressSpace {
   alignas(kPartitionCachelineSize) static GigaCageSetup setup_;
 };
 
-ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
     uintptr_t address) {
   return PartitionAddressSpace::GetPoolAndOffset(address);
 }
 
-ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
+PA_ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
   return std::get<0>(GetPoolAndOffset(address));
 }
 
-ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
   return PartitionAddressSpace::OffsetInBRPPool(address);
 }
 
 }  // namespace internal
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
+PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
@@ -324,22 +326,22 @@ ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(uintptr_t address) {
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInRegularPool(address);
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
 
 // Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
     uintptr_t address) {
   return internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 
-ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
+PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
   return internal::PartitionAddressSpace::IsConfigurablePoolInitialized();
 }
 
