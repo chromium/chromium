@@ -926,29 +926,13 @@ ci.builder(
 ci.builder(
     name = "Win x64 Builder (py2 less)",
     description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Win%20x64%20Builder\">Win x64 Builder</a>, but runs on bots not having python2.",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "use_clang_coverage",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.WIN,
-        ),
-    ),
+    builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "py3",
     ),
-    cores = 32,
+    cores = 8,
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     os = os.WINDOWS_DEFAULT,
