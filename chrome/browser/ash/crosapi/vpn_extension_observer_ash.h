@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_VPN_EXTENSION_OBSERVER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_VPN_EXTENSION_OBSERVER_ASH_H_
 
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -16,19 +15,18 @@ namespace crosapi {
 // Lacros Vpn extensions.
 class VpnExtensionObserverAsh : public crosapi::mojom::VpnExtensionObserver {
  public:
-  class Observer : public base::CheckedObserver {
+  class Delegate {
    public:
-    virtual void OnLacrosVpnExtensionLoaded(const std::string& extension_id,
-                                            const std::string& extension_name) {
-    }
+    virtual ~Delegate() = default;
 
-    virtual void OnLacrosVpnExtensionUnloaded(const std::string& extension_id) {
-    }
+    virtual void OnLacrosVpnExtensionLoaded(
+        const std::string& extension_id,
+        const std::string& extension_name) = 0;
 
-    virtual void OnLacrosVpnExtensionObserverDisconnected() {}
+    virtual void OnLacrosVpnExtensionUnloaded(
+        const std::string& extension_id) = 0;
 
-   protected:
-    ~Observer() override = default;
+    virtual void OnLacrosVpnExtensionObserverDisconnected() = 0;
   };
 
   VpnExtensionObserverAsh();
@@ -40,8 +38,7 @@ class VpnExtensionObserverAsh : public crosapi::mojom::VpnExtensionObserver {
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver);
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void SetDelegate(Delegate* delegate);
 
   // crosapi::mojom::VpnExtensionObserver:
   void OnLacrosVpnExtensionLoaded(const std::string& extension_id,
@@ -52,7 +49,7 @@ class VpnExtensionObserverAsh : public crosapi::mojom::VpnExtensionObserver {
   void OnLacrosVpnExtensionObserverDisconnected();
 
   mojo::ReceiverSet<crosapi::mojom::VpnExtensionObserver> receivers_;
-  base::ObserverList<Observer> observers_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace crosapi

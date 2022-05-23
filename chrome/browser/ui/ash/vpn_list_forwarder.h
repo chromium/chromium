@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -27,7 +26,7 @@ class VpnListForwarder
     : public app_list::ArcVpnProviderManager::Observer,
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
-      public crosapi::VpnExtensionObserverAsh::Observer {
+      public crosapi::VpnExtensionObserverAsh::Delegate {
  public:
   VpnListForwarder();
 
@@ -53,7 +52,7 @@ class VpnListForwarder
                            extensions::UnloadedExtensionReason reason) override;
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
-  // crosapi::VpnExtensionObserverAsh::Observer:
+  // crosapi::VpnExtensionObserverAsh::Delegate:
   void OnLacrosVpnExtensionLoaded(const std::string& extension_id,
                                   const std::string& extension_name) override;
   void OnLacrosVpnExtensionUnloaded(const std::string& extension_id) override;
@@ -103,10 +102,6 @@ class VpnListForwarder
   // extensions.
   base::flat_map<std::string, chromeos::network_config::mojom::VpnProviderPtr>
       lacros_vpn_providers_;
-
-  base::ScopedObservation<crosapi::VpnExtensionObserverAsh,
-                          crosapi::VpnExtensionObserverAsh::Observer>
-      vpn_extension_observer_{this};
 
   base::WeakPtrFactory<VpnListForwarder> weak_factory_{this};
 };

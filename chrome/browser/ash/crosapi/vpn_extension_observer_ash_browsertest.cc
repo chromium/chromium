@@ -4,13 +4,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
-#include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
@@ -61,25 +59,14 @@ class VpnExtensionObserverBrowserTest : public InProcessBrowserTest {
 };
 
 class ExtensionEventWaiter
-    : public crosapi::VpnExtensionObserverAsh::Observer,
-      public cros_network::CrosNetworkConfigTestObserver {
+    : public cros_network::CrosNetworkConfigTestObserver {
  public:
   using VpnProviders = std::vector<cros_network::mojom::VpnProviderPtr>;
 
   void StartObserving() {
-    observer_.Observe(crosapi::CrosapiManager::Get()
-                          ->crosapi_ash()
-                          ->vpn_extension_observer_ash());
-
     ash::GetNetworkConfigService(
         cros_network_config_.BindNewPipeAndPassReceiver());
     cros_network_config_->AddObserver(GenerateRemote());
-  }
-
-  // crosapi::VpnExtensionObserverAsh::Observer:
-  void OnLacrosVpnExtensionLoaded(const std::string& extension_id,
-                                  const std::string& extension_name) override {
-    loaded_extension_id_.SetValue(extension_id);
   }
 
   // cros_network::mojom::CrosNetworkConfigObserver:
@@ -92,17 +79,10 @@ class ExtensionEventWaiter
         vpn_providers_.GetCallback<VpnProviders>()));
   }
 
-  std::string GetLoadedExtensionId() { return loaded_extension_id_.Get(); }
-
   VpnProviders GetVpnProviders() { return vpn_providers_.Take(); }
 
  private:
-  base::test::TestFuture<std::string> loaded_extension_id_;
   base::test::TestFuture<VpnProviders> vpn_providers_;
-
-  base::ScopedObservation<crosapi::VpnExtensionObserverAsh,
-                          crosapi::VpnExtensionObserverAsh::Observer>
-      observer_{this};
 
   mojo::Remote<cros_network::mojom::CrosNetworkConfig> cros_network_config_;
 };
@@ -119,10 +99,6 @@ IN_PROC_BROWSER_TEST_F(VpnExtensionObserverBrowserTest, LoadVpnExtension) {
 
   // Send load extension request to Lacros.
   const std::string extension_id = LoadVpnExtension(kVpnExtensionName);
-
-  // Should receive an event |OnLacrosVpnExtensionLoaded| from
-  // crosapi::VpnExtensionObserverAsh.
-  ASSERT_EQ(extension_id, waiter->GetLoadedExtensionId());
 
   // Should receive an event |OnVpnProvidersChanged| from
   // cros_network::mojom::CrosNetworkConfigObserver.

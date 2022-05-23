@@ -98,6 +98,10 @@ VpnListForwarder::~VpnListForwarder() {
     extension_registry_->RemoveObserver(this);
   if (arc_vpn_provider_manager_)
     arc_vpn_provider_manager_->RemoveObserver(this);
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->vpn_extension_observer_ash()
+      ->SetDelegate(nullptr);
 }
 
 void VpnListForwarder::OnArcVpnProvidersRefreshed(
@@ -226,7 +230,8 @@ void VpnListForwarder::AttachToPrimaryUserArcVpnProviderManager() {
 
 void VpnListForwarder::AttachToVpnExtensionObserverAsh() {
   DCHECK(crosapi::CrosapiManager::IsInitialized());
-  vpn_extension_observer_.Observe(crosapi::CrosapiManager::Get()
-                                      ->crosapi_ash()
-                                      ->vpn_extension_observer_ash());
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->vpn_extension_observer_ash()
+      ->SetDelegate(this);
 }
