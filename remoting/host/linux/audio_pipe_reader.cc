@@ -20,7 +20,7 @@ namespace remoting {
 
 namespace {
 
-const int kSampleBytesPerSecond = AudioPipeReader::kSamplingRate *
+const int kSampleBytesPerSecond = int{AudioPipeReader::kSamplingRate} *
                                   AudioPipeReader::kChannels *
                                   AudioPipeReader::kBytesPerSample;
 
@@ -175,7 +175,7 @@ void AudioPipeReader::DoCapture() {
 
   // Save any incomplete samples we've read for later. Each packet should
   // contain integer number of samples.
-  int incomplete_samples_bytes = pos % (kChannels * kBytesPerSample);
+  int incomplete_samples_bytes = pos % (int{kChannels} * kBytesPerSample);
   left_over_bytes_.assign(data, pos - incomplete_samples_bytes,
                           incomplete_samples_bytes);
   data.resize(pos - incomplete_samples_bytes);
