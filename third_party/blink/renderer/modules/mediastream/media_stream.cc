@@ -39,10 +39,10 @@
 
 namespace blink {
 
-static bool ContainsSource(MediaStreamTrackVector& track_vector,
-                           MediaStreamSource* source) {
+static bool ContainsTrack(MediaStreamTrackVector& track_vector,
+                          MediaStreamTrack* media_stream_track) {
   for (MediaStreamTrack* track : track_vector) {
-    if (source->Id() == track->Component()->Source()->Id())
+    if (media_stream_track->id() == track->id())
       return true;
   }
   return false;
@@ -50,8 +50,7 @@ static bool ContainsSource(MediaStreamTrackVector& track_vector,
 
 static void ProcessTrack(MediaStreamTrack* track,
                          MediaStreamTrackVector& track_vector) {
-  MediaStreamSource* source = track->Component()->Source();
-  if (!ContainsSource(track_vector, source))
+  if (!ContainsTrack(track_vector, track))
     track_vector.push_back(track);
 }
 
