@@ -408,9 +408,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Some legacy APIs do rely on it though, like webstorePrivate.
   ResponseValue ErrorWithArguments(std::vector<base::Value> args,
                                    const std::string& error);
-  // TODO(crbug.com/1139221): Deprecate this in favor of the variant above.
-  ResponseValue ErrorWithArguments(std::unique_ptr<base::ListValue> args,
-                                   const std::string& error);
   // Bad message. A ResponseValue equivalent to EXTENSION_FUNCTION_VALIDATE(),
   // so this will actually kill the renderer and not respond at all.
   ResponseValue BadMessage();
