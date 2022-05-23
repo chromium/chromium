@@ -220,8 +220,8 @@ class WallpaperChangeWaiter : public ash::WallpaperControllerObserver {
 class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   PersonalizationAppIntegrationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kWallpaperWebUI);
+    scoped_feature_list_.InitWithFeatures({ash::features::kWallpaperWebUI},
+                                          {ash::features::kPersonalizationHub});
   }
 
   // SystemWebAppIntegrationTest:
@@ -278,9 +278,7 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                        PersonalizationAppInstalls) {
   const GURL url(kChromeUIPersonalizationAppURL);
-  std::string appTitle = (chromeos::features::IsPersonalizationHubEnabled())
-                             ? "Personalization"
-                             : "Wallpaper";
+  std::string appTitle = "Wallpaper";
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       ash::SystemWebAppType::PERSONALIZATION, url, appTitle));
 }
@@ -383,6 +381,32 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     PersonalizationAppIntegrationTest);
+
+class PersonalizationAppWithHubIntegrationTest
+    : public PersonalizationAppIntegrationTest {
+ public:
+  PersonalizationAppWithHubIntegrationTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kWallpaperWebUI, ash::features::kPersonalizationHub},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that the Personalization App installs correctly with PersonalizationHub
+// feature on.
+IN_PROC_BROWSER_TEST_P(PersonalizationAppWithHubIntegrationTest,
+                       PersonalizationAppInstalls) {
+  const GURL url(kChromeUIPersonalizationAppURL);
+  std::string appTitle = "Wallpaper & style";
+  EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
+      ash::SystemWebAppType::PERSONALIZATION, url, appTitle));
+}
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    PersonalizationAppWithHubIntegrationTest);
 
 }  // namespace personalization_app
 }  // namespace ash
