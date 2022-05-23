@@ -231,9 +231,9 @@ base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type) {
 }
 
 apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type) {
-  if (base::LowerCaseEqualsASCII(menu_type, "shelf"))
+  if (base::EqualsCaseInsensitiveASCII(menu_type, "shelf"))
     return apps::mojom::MenuType::kShelf;
-  if (base::LowerCaseEqualsASCII(menu_type, "applist"))
+  if (base::EqualsCaseInsensitiveASCII(menu_type, "applist"))
     return apps::mojom::MenuType::kAppList;
   return apps::mojom::MenuType::kShelf;
 }
