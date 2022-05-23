@@ -8,21 +8,18 @@ var allTests = [
 
     // |desktop| at this point has no listeners. A shutdown of the automation
     // tree is not triggered for this case. To do so now would be too strict.
-    assertEq(chrome.automation.RoleType.DESKTOP, desktop.role);
+    assertEq(RoleType.DESKTOP, desktop.role);
 
     // Adding a listener should have no effect.
     const focusHandler = () => {};
-    desktop.addEventListener(chrome.automation.EventType.FOCUS, focusHandler);
-    desktop.firstChild.addEventListener(
-        chrome.automation.EventType.FOCUS, focusHandler);
-    assertEq(chrome.automation.RoleType.DESKTOP, desktop.role);
+    desktop.addEventListener(EventType.FOCUS, focusHandler);
+    desktop.firstChild.addEventListener(EventType.FOCUS, focusHandler);
+    assertEq(RoleType.DESKTOP, desktop.role);
 
     // Removing the listener, though, clears the automation tree as signified by
     // the lack of node data.
-    desktop.removeEventListener(
-        chrome.automation.EventType.FOCUS, focusHandler);
-    desktop.firstChild.removeEventListener(
-        chrome.automation.EventType.FOCUS, focusHandler);
+    desktop.removeEventListener(EventType.FOCUS, focusHandler);
+    desktop.firstChild.removeEventListener(EventType.FOCUS, focusHandler);
 
     await new Promise(r => {
       setInterval(() => {
@@ -35,7 +32,7 @@ var allTests = [
     // Re-requesting desktop should just work.
     const newDesktop = await new Promise(r => chrome.automation.getDesktop(r));
     assertTrue(!!newDesktop);
-    assertEq(chrome.automation.RoleType.DESKTOP, newDesktop.role);
+    assertEq(RoleType.DESKTOP, newDesktop.role);
 
     chrome.test.succeed();
   },
@@ -43,12 +40,11 @@ var allTests = [
   async function testGetDesktopWhileDisabling() {
     const desktop = await new Promise(r => chrome.automation.getDesktop(r));
     const focusHandler = () => {};
-    desktop.addEventListener(chrome.automation.EventType.FOCUS, focusHandler);
+    desktop.addEventListener(EventType.FOCUS, focusHandler);
 
     // A disableDesktop call is sent and in-flight. Getting a new desktop should
     // queue up and work after that.
-    desktop.removeEventListener(
-        chrome.automation.EventType.FOCUS, focusHandler);
+    desktop.removeEventListener(EventType.FOCUS, focusHandler);
 
     // This does get the current desktop as well, prior to disabling. Doing this
     // checks that repeated calls still work prior to the disable coming
@@ -60,10 +56,43 @@ var allTests = [
     assertTrue(!!desktop);
     assertTrue(!!newDesktop);
     assertEq(newDesktop, desktop);
-    assertEq(chrome.automation.RoleType.DESKTOP, newDesktop.role);
+    assertEq(RoleType.DESKTOP, newDesktop.role);
 
     // Finally, the disabling above (from removing the event listeners) comes
     // some time later. Wait for it so that it does not impact other tests.
+    await new Promise(r => {
+      setInterval(() => {
+        if (desktop.role === undefined) {
+          r();
+        }
+      }, 100);
+    });
+
+    chrome.test.succeed();
+  },
+
+  async function testUnbalancedAddRemoveEventListeners() {
+    const desktop = await new Promise(r => chrome.automation.getDesktop(r));
+    assertTrue(!!desktop);
+
+    // Intentionally unbalanced add to remove below.
+    const handler = () => {};
+    desktop.addEventListener(EventType.FOCUS, handler);
+    desktop.removeEventListener(EventType.FOCUS, handler);
+    desktop.addEventListener(EventType.FOCUS, handler);
+
+    // Unfortunately, we have to introduce timing here to not manipulate the
+    // very event state that is being tested.
+    await new Promise(r => {
+      setTimeout(() => {
+        // If a disable occurred, the desktop would have been destroyed.
+        assertEq(RoleType.DESKTOP, desktop.role);
+        r();
+      }, 100);
+    });
+
+    // Remove the event listener, and wait for the desktop to be destroyed.
+    desktop.removeEventListener(EventType.FOCUS, handler);
     await new Promise(r => {
       setInterval(() => {
         if (desktop.role === undefined) {
@@ -92,8 +121,8 @@ var allTests = [
 
     // Adding a listener should have no effect.
     const focusHandler = () => {};
-    button.addEventListener(chrome.automation.EventType.FOCUS, focusHandler);
-    assertEq(chrome.automation.RoleType.DESKTOP, desktop.role);
+    button.addEventListener(EventType.FOCUS, focusHandler);
+    assertEq(RoleType.DESKTOP, desktop.role);
 
     // The click/do default action triggers removal of the button.
     button.doDefault();
@@ -134,8 +163,8 @@ var allTests = [
 
     // Adding a listener should have no effect.
     const focusHandler = () => {};
-    button.addEventListener(chrome.automation.EventType.FOCUS, focusHandler);
-    assertEq(chrome.automation.RoleType.DESKTOP, desktop.role);
+    button.addEventListener(EventType.FOCUS, focusHandler);
+    assertEq(RoleType.DESKTOP, desktop.role);
 
     // The click/do default action triggers the window to close.
     button.doDefault();

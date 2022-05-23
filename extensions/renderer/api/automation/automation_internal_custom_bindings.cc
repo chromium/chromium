@@ -2982,6 +2982,20 @@ void AutomationInternalCustomBindings::TreeEventListenersChanged(
   if (!trees_with_event_listeners_.empty())
     return;
 
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      context()->web_frame()->GetTaskRunner(blink::TaskType::kInternalDefault);
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AutomationInternalCustomBindings::
+                         MaybeSendOnAllAutomationEventListenersRemoved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AutomationInternalCustomBindings::
+    MaybeSendOnAllAutomationEventListenersRemoved() {
+  if (!trees_with_event_listeners_.empty())
+    return;
+
   bindings_system_->DispatchEventInContext(
       "automationInternal.onAllAutomationEventListenersRemoved",
       base::Value::List(), nullptr, context());

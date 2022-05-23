@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
@@ -273,6 +274,8 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   void TreeEventListenersChanged(AutomationAXTreeWrapper* tree_wrapper);
 
+  void MaybeSendOnAllAutomationEventListenersRemoved();
+
   std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
   scoped_refptr<AutomationMessageFilter> message_filter_;
@@ -298,6 +301,9 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   // Keeps track of all trees with event listeners.
   std::set<ui::AXTreeID> trees_with_event_listeners_;
+
+  base::WeakPtrFactory<AutomationInternalCustomBindings> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace extensions
