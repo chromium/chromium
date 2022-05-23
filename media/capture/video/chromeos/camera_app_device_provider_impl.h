@@ -37,19 +37,19 @@ class CAPTURE_EXPORT CameraAppDeviceProviderImpl
   void GetCameraAppDevice(const std::string& source_id,
                           GetCameraAppDeviceCallback callback) override;
   void IsSupported(IsSupportedCallback callback) override;
-  void SetMultipleStreamsEnabled(
+  void SetVirtualDeviceEnabled(
       const std::string& device_id,
       bool enabled,
-      SetMultipleStreamsEnabledCallback callback) override;
+      SetVirtualDeviceEnabledCallback callback) override;
 
  private:
   void GetCameraAppDeviceWithDeviceId(
       GetCameraAppDeviceCallback callback,
       const absl::optional<std::string>& device_id);
 
-  void SetMultipleStreamsEnabledWithDeviceId(
+  void SetVirtualDeviceEnabledWithDeviceId(
       bool enable,
-      SetMultipleStreamsEnabledCallback callback,
+      SetVirtualDeviceEnabledCallback callback,
       const absl::optional<std::string>& device_id);
 
   mojo::Remote<cros::mojom::CameraAppDeviceBridge> bridge_;

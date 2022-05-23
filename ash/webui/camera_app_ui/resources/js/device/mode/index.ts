@@ -157,6 +157,9 @@ export class Modes {
           const deviceId = constraints.deviceId;
           await deviceOperator.setCaptureIntent(
               deviceId, CaptureIntent.VIDEO_RECORD);
+          await deviceOperator.setMultipleStreamsEnabled(
+              deviceId, state.get(state.State.ENABLE_MULTISTREAM_RECORDING));
+
           if (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId)) {
             await deviceOperator.setStillCaptureResolution(
                 deviceId,

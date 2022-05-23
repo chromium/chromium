@@ -648,18 +648,28 @@ export class DeviceOperator {
   }
 
   /**
-   * Enables/Disables multiple streams on target camera device. The extra
+   * Enables/Disables virtual device on target camera device. The extra
    * stream will be reported as virtual video device from
    * navigator.mediaDevices.enumerateDevices().
    *
    * @param deviceId The id of target camera device.
-   * @param enabled True for enabling multiple streams.
+   * @param enabled True for enabling virtual device.
+   */
+  async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
+      Promise<void> {
+    if (deviceId) {
+      await this.deviceProvider.setVirtualDeviceEnabled(deviceId, enabled);
+    }
+  }
+
+  /**
+   * Enable/Disables the multiple streams feature for video recording on the
+   * target camera device.
    */
   async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
       Promise<void> {
-    if (deviceId) {
-      await this.deviceProvider.setMultipleStreamsEnabled(deviceId, enabled);
-    }
+    const device = await this.getDevice(deviceId);
+    await device.setMultipleStreamsEnabled(enabled);
   }
 
   /**

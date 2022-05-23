@@ -128,7 +128,7 @@ export class StreamManager {
     const realDeviceId = constraints.deviceId;
     if (await DeviceOperator.isSupported()) {
       try {
-        await this.setMultipleStreamsEnabled(realDeviceId, true);
+        await this.setVirtualDeviceEnabled(realDeviceId, true);
         assert(this.virtualMap !== null);
         constraints.deviceId = this.virtualMap.virtualId;
       } catch (e) {
@@ -153,7 +153,7 @@ export class StreamManager {
       assert(this.virtualMap !== null);
       const virtualId = this.virtualMap.virtualId;
       try {
-        await this.setMultipleStreamsEnabled(this.virtualMap.realId, false);
+        await this.setVirtualDeviceEnabled(this.virtualMap.realId, false);
       } catch (e) {
         reportError(ErrorType.MULTIPLE_STREAMS_FAILURE, ErrorLevel.ERROR, e);
       }
@@ -274,14 +274,14 @@ export class StreamManager {
   }
 
   /**
-   * Enables/Disables multiple streams on target camera device. The extra
+   * Enables/Disables virtual device on target camera device. The extra
    * stream will be reported as virtual video device from
    * navigator.mediaDevices.enumerateDevices().
    *
    * @param deviceId The id of target camera device.
-   * @param enabled True for enabling multiple streams.
+   * @param enabled True for enabling virtual device.
    */
-  async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
+  async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
       Promise<void> {
     const deviceOperator = await DeviceOperator.getInstance();
     assert(deviceOperator !== null);
@@ -290,7 +290,7 @@ export class StreamManager {
       const waitEvent = new WaitableEvent<string>();
       this.waitVirtual = waitEvent;
 
-      await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+      await deviceOperator.setVirtualDeviceEnabled(deviceId, enabled);
       await this.deviceUpdate();
 
       const virtualId = await waitEvent.timedWait(3000);
@@ -299,7 +299,7 @@ export class StreamManager {
       const waitEvent = new WaitableEvent();
       this.waitVirtualRemoved = waitEvent;
 
-      await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+      await deviceOperator.setVirtualDeviceEnabled(deviceId, enabled);
       await this.deviceUpdate();
 
       await waitEvent.timedWait(3000);

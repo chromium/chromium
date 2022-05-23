@@ -906,10 +906,10 @@ void CameraDeviceDelegate::ConfigureStreams(
     switch (param.first) {
       case ClientType::kPreviewClient:
         usage = cros::mojom::GRALLOC_USAGE_HW_COMPOSER;
-        // TODO(henryhsu): PreviewClient should remove HW_VIDEO_ENCODER usage
-        // when multiple streams enabled.
-        if (camera_app_device && camera_app_device->GetCaptureIntent() ==
-                                     cros::mojom::CaptureIntent::VIDEO_RECORD) {
+        if (camera_app_device &&
+            camera_app_device->GetCaptureIntent() ==
+                cros::mojom::CaptureIntent::VIDEO_RECORD &&
+            !camera_app_device->IsMultipleStreamsEnabled()) {
           usage |= cros::mojom::GRALLOC_USAGE_HW_VIDEO_ENCODER;
         }
         break;
