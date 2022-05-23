@@ -3804,6 +3804,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4648491805942548247">Недостатъчни разрешения</translation>
 <translation id="4650591383426000695">Прекратяване на връзката между телефона ви и вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Онлайн компонентът с ресурси за демонстрационен режим не можа да бъде зареден.</translation>
+<translation id="4651921906638302153">Не може да се влезе с този профил</translation>
 <translation id="4652935475563630866">Промяната в настройката за камерата изисква повторно стартиране на Parallels Desktop. За да продължите, стартирайте отново Parallels Desktop.</translation>
 <translation id="4653405415038586100">Грешка при конфигурирането на Linux</translation>
 <translation id="465406513924180949">Показват се кошници, с чиято помощ лесно да се върнете към артикулите, които сте оставили в различни пазарски кошници в мрежата.
@@ -5465,6 +5466,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6327785803543103246">Автоматично откриване на уеб прокси сървъра</translation>
 <translation id="6331818708794917058">Сайтовете могат да извеждат запитвания за свързване с MIDI устройства</translation>
 <translation id="6333064448949140209">Файлът ще бъде изпратен до Google за отстраняване на грешки</translation>
+<translation id="6333170995003625229">Имейл адресът или паролата ви не бяха потвърдени. Опитайте да влезете отново.</translation>
 <translation id="6335920438823100346">За да стартирате Linux, <ph name="MANAGER" /> изисква да създадете резервно копие на данните си и да възстановите фабричните настройки на този Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> деактивира отстраняването на грешки през ADB. Това действие ще нулира устройството ви <ph name="DEVICE_TYPE" /> след 24 часа. Създайте резервно копие на файловете, които искате да запазите.</translation>
 <translation id="6338981933082930623">Всички сайтове могат да ви показват всякакви реклами</translation>
@@ -5873,6 +5875,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6735304988756581115">Показване на „бисквитките“ и другите данни за сайтове...</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737663862851963468">Премахване на пропуск за Kerberos</translation>
+<translation id="6738430949033571771">Профилът се потвърждава...</translation>
 <translation id="6739923123728562974">Показване на прекия път на работния плот</translation>
 <translation id="6740234557573873150">„<ph name="FILE_NAME" />“ е на пауза</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Администраторът ви<ph name="END_LINK" /> е изключил „Безопасно сърфиране“</translation>
@@ -7695,6 +7698,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8546306075665861288">Кеш за изображения</translation>
 <translation id="8546930481464505581">Персонализиране на лентата за докосване</translation>
 <translation id="8547013269961688403">Активиране на лупата за увеличаване на целия екран</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> се управлява от <ph name="MANAGER" />. Не можете да добавите този имейл като допълнителен профил.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />За да използвате <ph name="USER_EMAIL" />, първо излезте от профила си на <ph name="DEVICE_TYPE" />. След това в долната част на екрана за вход изберете „Добавяне на човек“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="85486688517848470">Задръжте клавиша „търсене“, за да промените поведението на клавишите от най-горния ред</translation>
 <translation id="8549316893834449916">За вход в Chromebook ще използвате профила си в Google, същия, с който работите в Gmail, Диск, YouTube и др.</translation>
 <translation id="8551388862522347954">Лицензи</translation>
