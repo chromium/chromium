@@ -183,7 +183,7 @@ void OpenInBrowser(const GURL& event_url) {
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
     policy::BrowserPolicyConnectorAsh* connector) {
-  if (connector->IsDeviceEnterpriseManaged())
+  if (!connector->IsDeviceEnterpriseManaged())
     return ash::ManagementDeviceMode::kNone;
 
   if (connector->IsKioskEnrolled())

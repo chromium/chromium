@@ -656,16 +656,8 @@ LoginShelfView::LoginShelfView(
       lock_screen_action_background);
   login_data_dispatcher_observation_.Observe(
       Shell::Get()->login_screen_controller()->data_dispatcher());
-
-  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
-  // it's false by default.
-  if (features::IsKioskEnrollmentInOobeEnabled()) {
-    kiosk_license_mode_ =
-        Shell::Get()
-            ->system_tray_model()
-            ->enterprise_domain()
-            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
-  }
+  enterprise_domain_model_observation_.Observe(
+      Shell::Get()->system_tray_model()->enterprise_domain());
 }
 
 LoginShelfView::~LoginShelfView() = default;
@@ -880,6 +872,21 @@ void LoginShelfView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
 void LoginShelfView::OnOobeDialogStateChanged(OobeDialogState state) {
   SetLoginDialogState(state);
 }
+
+void LoginShelfView::OnDeviceEnterpriseInfoChanged() {
+  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
+  // it's false by default.
+  if (features::IsKioskEnrollmentInOobeEnabled()) {
+    kiosk_license_mode_ =
+        Shell::Get()
+            ->system_tray_model()
+            ->enterprise_domain()
+            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
+    UpdateUi();
+  }
+}
+
+void LoginShelfView::OnEnterpriseAccountDomainChanged() {}
 
 void LoginShelfView::HandleLocaleChange() {
   for (views::View* child : children()) {
