@@ -777,8 +777,6 @@ export class DirectoryModel extends EventTarget {
   scan_(
       dirContents, refresh, invalidateCache, successCallback, failureCallback,
       updatedCallback, cancelledCallback) {
-    const self = this;
-
     /**
      * Runs pending scan if there is one.
      *
