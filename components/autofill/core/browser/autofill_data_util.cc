@@ -109,7 +109,7 @@ bool ContainsString(const char* const set[],
       base::TrimString(element, u".", base::TRIM_ALL);
 
   for (size_t i = 0; i < set_size; ++i) {
-    if (base::LowerCaseEqualsASCII(trimmed_element, set[i]))
+    if (base::EqualsCaseInsensitiveASCII(trimmed_element, set[i]))
       return true;
   }
 

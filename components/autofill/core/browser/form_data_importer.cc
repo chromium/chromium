@@ -1154,7 +1154,7 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
       types_seen.insert(server_field_type);
     }
     // If |field| is an HTML5 month input, handle it as a special case.
-    if (base::LowerCaseEqualsASCII(field->form_control_type, "month")) {
+    if (base::EqualsCaseInsensitiveASCII(field->form_control_type, "month")) {
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, server_field_type);
       candidate_credit_card.SetInfoForMonthInputType(value);
       continue;
