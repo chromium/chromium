@@ -4,6 +4,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
 #include <stddef.h>
 
 #include <string>
