@@ -7,12 +7,17 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using optimization_guide::proto::OptimizationTarget;
+
+namespace base {
+class Clock;
+}
 
 namespace ukm::builders {
 class Segmentation_ModelExecution;
@@ -51,6 +56,11 @@ class SegmentationUkmHelper {
 
   // Helper method to encode a float number into int64.
   static int64_t FloatToInt64(float f);
+
+  // Helper method to check if data is allowed to upload through ukm
+  // given a clock and the signal storage length.
+  static bool AllowedToUploadData(base::TimeDelta signal_storage_length,
+                                  base::Clock* clock);
 
   // Gets a set of segment IDs that are allowed to upload metrics.
   const base::flat_set<OptimizationTarget>& allowed_segment_ids() {

@@ -8,9 +8,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/time/clock.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -198,6 +201,16 @@ bool SegmentationUkmHelper::AddOutputsToUkm(
 int64_t SegmentationUkmHelper::FloatToInt64(float f) {
   // Encode the float number in IEEE754 double precision.
   return base::bit_cast<int64_t>(static_cast<double>(f));
+}
+
+// static
+bool SegmentationUkmHelper::AllowedToUploadData(
+    base::TimeDelta signal_storage_length,
+    base::Clock* clock) {
+  return LocalStateHelper::GetInstance().GetPrefTime(
+             kSegmentationUkmMostRecentAllowedTimeKey) +
+             signal_storage_length <
+         clock->Now();
 }
 
 }  // namespace segmentation_platform
