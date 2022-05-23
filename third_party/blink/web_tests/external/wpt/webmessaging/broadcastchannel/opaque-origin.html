@@ -99,7 +99,9 @@ self.addEventListener("message", () => handler(self.postMessage));
 // For shared workers:
 self.addEventListener("connect", (e) => {
   var port = e.ports[0];
-  handler(msg => port.postMessage(msg));
+  port.onmessage = () => handler(msg => port.postMessage(msg));
+  port.start();
+
 });
 `;
   return "data:,".concat(encodeURIComponent(source));
