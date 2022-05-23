@@ -720,25 +720,21 @@ base::debug::CrashKeyString* GetNavigationRequestIsSameDocumentCrashKey() {
 }
 
 // Start a new nested async event with the given name.
-void EnterChildTraceEvent(const char* name, NavigationRequest* request) {
-  // Tracing no longer outputs the end event name, so we can simply pass an
-  // empty string here.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "", request->GetNavigationId());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", name,
-                                    request->GetNavigationId());
+void EnterChildTraceEvent(perfetto::StaticString name,
+                          NavigationRequest* request) {
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(request));
+  TRACE_EVENT_BEGIN("navigation", name, perfetto::Track::FromPointer(request));
 }
 
 // Start a new nested async event with the given name and args.
 template <typename ArgType>
-void EnterChildTraceEvent(const char* name,
+void EnterChildTraceEvent(perfetto::StaticString name,
                           NavigationRequest* request,
                           const char* arg_name,
                           ArgType arg_value) {
-  // Tracing no longer outputs the end event name, so we can simply pass an
-  // empty string here.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "", request->GetNavigationId());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "navigation", name, request->GetNavigationId(), arg_name, arg_value);
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(request));
+  TRACE_EVENT_BEGIN("navigation", name, perfetto::Track::FromPointer(request),
+                    arg_name, arg_value);
 }
 
 network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
@@ -1474,10 +1470,11 @@ NavigationRequest::NavigationRequest(
     base::debug::DumpWithoutCrashing();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "NavigationRequest",
-                                    navigation_id_, "navigation_request", this);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
-                                    navigation_id_);
+  TRACE_EVENT_BEGIN("navigation", "NavigationRequest",
+                    perfetto::Track::FromPointer(this),
+                    ChromeTrackEvent::kNavigationWhenCreated, this);
+  TRACE_EVENT_BEGIN("navigation", "Initializing",
+                    perfetto::Track::FromPointer(this));
 
   if (GetInitiatorFrameToken().has_value()) {
     RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
@@ -1716,11 +1713,12 @@ NavigationRequest::~NavigationRequest() {
   DCHECK(is_safe_to_delete_);
 #endif
 
-  // Close the last child event. Tracing no longer outputs the end event name,
-  // so we can simply pass an empty string here.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "", navigation_id_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "NavigationRequest",
-                                  navigation_id_);
+  // Close the events corresponding to the "NavigationRequest" slice (started
+  // from the constructor) and its child slice corresponding to the
+  // NavigationRequest's state.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+
   if (loading_mem_tracker_)
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
@@ -2353,6 +2351,7 @@ void NavigationRequest::StartNavigation() {
 
 void NavigationRequest::ResetForCrossDocumentRestart() {
   DCHECK(IsSameDocument());
+  EnterChildTraceEvent("ResetForCrossDocumentRestart", this);
 
   // TODO(crbug.com/1188513): A same document history navigation was performed
   // but the renderer thinks there's a different document loaded. Where did
@@ -6292,9 +6291,60 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
   return origin;
 }
 
+namespace {
+
+using NavigationType = blink::mojom::NavigationType;
+using NavigationProto = perfetto::protos::pbzero::NavigationHandle;
+using NavigationTypeProto =
+    perfetto::protos::pbzero::NavigationHandle::NavigationType;
+using FrameTypeProto = perfetto::protos::pbzero::NavigationHandle::FrameType;
+
+NavigationTypeProto NavigationTypeToProto(NavigationType navigation_type) {
+  switch (navigation_type) {
+    case NavigationType::RELOAD:
+      return NavigationProto::RELOAD;
+    case NavigationType::RELOAD_BYPASSING_CACHE:
+      return NavigationProto::RELOAD_BYPASSING_CACHE;
+    case NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
+      return NavigationProto::RELOAD_ORIGINAL_REQUEST_URL;
+    case NavigationType::RESTORE:
+      return NavigationProto::RESTORE;
+    case NavigationType::RESTORE_WITH_POST:
+      return NavigationProto::RESTORE_WITH_POST;
+    case NavigationType::HISTORY_SAME_DOCUMENT:
+      return NavigationProto::HISTORY_SAME_DOCUMENT;
+    case NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+      return NavigationProto::HISTORY_DIFFERENT_DOCUMENT;
+    case NavigationType::SAME_DOCUMENT:
+      return NavigationProto::SAME_DOCUMENT;
+    case NavigationType::DIFFERENT_DOCUMENT:
+      return NavigationProto::DIFFERENT_DOCUMENT;
+  }
+  return NavigationProto::NAVIGATION_TYPE_UNSPECIFIED;
+}
+
+FrameTypeProto FrameTypeToProto(FrameType frame_type) {
+  switch (frame_type) {
+    case FrameType::kSubframe:
+      return NavigationProto::SUBFRAME;
+    case FrameType::kPrimaryMainFrame:
+      return NavigationProto::PRIMARY_MAIN_FRAME;
+    case FrameType::kPrerenderMainFrame:
+      return NavigationProto::PRERENDER_MAIN_FRAME;
+    case FrameType::kFencedFrameRoot:
+      return NavigationProto::FENCED_FRAME_ROOT;
+  }
+  return NavigationProto::FRAME_TYPE_UNSPECIFIED;
+}
+
+}  // namespace
+
 void NavigationRequest::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> ctx) const {
   ctx->set_navigation_id(navigation_id_);
+  ctx->set_navigation_type(
+      NavigationTypeToProto(common_params_->navigation_type));
+  ctx->set_frame_type(FrameTypeToProto(GetNavigatingFrameType()));
   ctx->set_has_committed(HasCommitted());
   ctx->set_is_error_page(IsErrorPage());
   ctx.Set(TraceProto::kFrameTreeNode, frame_tree_node_);
