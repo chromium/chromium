@@ -68,9 +68,6 @@ MATCHER_P(ResponseEquals,
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
-// TODO(https://crbug.com/1297261): Change the various out params in the helper
-// functions below to return by value instead.
-
 class RecordHandlerImplTest : public ::testing::TestWithParam<
                                   ::testing::tuple</*need_encryption_key*/ bool,
                                                    /*force_confirm*/ bool>> {
