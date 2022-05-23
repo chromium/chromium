@@ -50,8 +50,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
         @TabCreationMode
         int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
-        if (initialTabCreationMode == TabCreationMode.HIDDEN
-                || initialTabCreationMode == TabCreationMode.FROM_STARTUP_TAB_PRELOADER) {
+        if (initialTabCreationMode == TabCreationMode.HIDDEN) {
             handleInitialLoadForHiddenTab(initialTabCreationMode, intentDataProvider);
         } else {
             LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
@@ -100,17 +99,11 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
         // No actual load to do if the hidden tab already has the exact correct url.
         String speculatedUrl = mTabProvider.getSpeculatedUrl();
-        if (TextUtils.equals(speculatedUrl, url)
-                || initialTabCreationMode == TabCreationMode.FROM_STARTUP_TAB_PRELOADER) {
-            // In the TabCreationMode.FROM_STARTUP_TAB_PRELOADER case:
-            // - CustomActivityTabProvider#getSpeculatedUrl() is not set.
-            // - The tab creation mode is only set in CustomTabActivityTabController if the URL
-            // being loaded is the one we want.
-
+        if (TextUtils.equals(speculatedUrl, url)) {
             if (tab.isLoading()) {
                 // CustomTabObserver and CustomTabActivityNavigationObserver are attached
                 // as observers in CustomTabActivityTabController, not when the navigation is
-                // initiated in HiddenTabHolder or StartupTabPreloader.
+                // initiated in HiddenTabHolder.
                 mCustomTabObserver.get().onPageLoadStarted(tab, gurl);
                 mNavigationEventObserver.onPageLoadStarted(tab, gurl);
             }

@@ -862,10 +862,8 @@ public class CustomTabActivityTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS,
-            ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP})
-    public void
-    testNavigationHistogramsRecorded() throws Exception {
+    @EnableFeatures({ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS})
+    public void testNavigationHistogramsRecorded() throws Exception {
         String startHistogramPrefix = "CustomTabs.IntentToFirstNavigationStartTime";
         String commitHistogramPrefix = "CustomTabs.IntentToFirstCommitNavigationTime3";
         assertSuffixedHistogramTotalCount(0, startHistogramPrefix);

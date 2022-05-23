@@ -184,12 +184,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         BaseCustomTabActivityModule baseCustomTabsModule = overridenBaseCustomTabFactory != null
                 ? overridenBaseCustomTabFactory.create(mIntentDataProvider,
-                        getStartupTabPreloader(), mNightModeStateController,
-                        intentIgnoringCriterion, getTopUiThemeColorProvider(),
-                        new DefaultBrowserProviderImpl())
-                : new BaseCustomTabActivityModule(mIntentDataProvider, getStartupTabPreloader(),
                         mNightModeStateController, intentIgnoringCriterion,
-                        getTopUiThemeColorProvider(), new DefaultBrowserProviderImpl());
+                        getTopUiThemeColorProvider(), new DefaultBrowserProviderImpl())
+                : new BaseCustomTabActivityModule(mIntentDataProvider, mNightModeStateController,
+                        intentIgnoringCriterion, getTopUiThemeColorProvider(),
+                        new DefaultBrowserProviderImpl());
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent().createBaseCustomTabActivityComponent(
                         commonsModule, baseCustomTabsModule);

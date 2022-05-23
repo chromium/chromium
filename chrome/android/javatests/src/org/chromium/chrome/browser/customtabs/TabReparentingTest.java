@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
-import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -76,17 +75,16 @@ public class TabReparentingTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
-    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
-            BaseCustomTabActivityModule.Factory.class,
-            (BrowserServicesIntentDataProvider intentDataProvider,
-                    StartupTabPreloader startupTabPreloader,
-                    CustomTabNightModeStateController nightModeController,
-                    CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
-                    TopUiThemeColorProvider topUiThemeColorProvider,
-                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
-                    -> new BaseCustomTabActivityModule(intentDataProvider, startupTabPreloader,
-                            nightModeController, intentIgnoringCriterion, topUiThemeColorProvider,
-                            new FakeDefaultBrowserProviderImpl()));
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
+                    (BrowserServicesIntentDataProvider intentDataProvider,
+                            CustomTabNightModeStateController nightModeController,
+                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                            TopUiThemeColorProvider topUiThemeColorProvider,
+                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                            -> new BaseCustomTabActivityModule(intentDataProvider,
+                                    nightModeController, intentIgnoringCriterion,
+                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
 
     @Rule
     public RuleChain mRuleChain = RuleChain.emptyRuleChain()

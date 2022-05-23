@@ -123,7 +123,6 @@ import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
-import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentFactory;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
@@ -380,9 +379,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Nullable
     private BottomContainer mBottomContainer;
-
-    @Nullable
-    private StartupTabPreloader mStartupTabPreloader;
 
     private LaunchCauseMetrics mLaunchCauseMetrics;
 
@@ -836,19 +832,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 postDeferredStartupIfNeeded();
             }
         };
-    }
-
-    /**
-     * @return The {@link StartupTabPreloader} associated with this ChromeActivity. If there isn't
-     *         one it creates it.
-     */
-    protected StartupTabPreloader getStartupTabPreloader() {
-        if (mStartupTabPreloader == null) {
-            mStartupTabPreloader = new StartupTabPreloader(this::getIntent,
-                    getLifecycleDispatcher(), getWindowAndroid(), this, mIntentHandler,
-                    getActivityTabStartupMetricsTracker());
-        }
-        return mStartupTabPreloader;
     }
 
     /**

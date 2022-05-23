@@ -383,13 +383,6 @@ const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks = {
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Under this flag tab preloading at startup will be elided (i.e., not
-// performed).
-const base::Feature kElideTabPreloadAtStartup = {
-    "ElideTabPreloadAtStartup", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // Enables all registered system web apps, regardless of their respective
 // feature flags.
 const base::Feature kEnableAllSystemWebApps{"EnableAllSystemWebApps",

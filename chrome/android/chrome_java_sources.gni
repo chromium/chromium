@@ -712,7 +712,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
   "java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java",
   "java/src/org/chromium/chrome/browser/init/SingleWindowKeyboardVisibilityDelegate.java",
-  "java/src/org/chromium/chrome/browser/init/StartupTabPreloader.java",
   "java/src/org/chromium/chrome/browser/installedapp/InstalledAppProviderFactory.java",
   "java/src/org/chromium/chrome/browser/instantapps/AuthenticatedProxyActivity.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsBannerData.java",

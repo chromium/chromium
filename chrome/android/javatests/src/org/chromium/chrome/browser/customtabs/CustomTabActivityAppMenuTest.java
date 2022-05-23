@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -76,17 +75,16 @@ public class CustomTabActivityAppMenuTest {
 
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
-    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
-            BaseCustomTabActivityModule.Factory.class,
-            (BrowserServicesIntentDataProvider intentDataProvider,
-                    StartupTabPreloader startupTabPreloader,
-                    CustomTabNightModeStateController nightModeController,
-                    CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
-                    TopUiThemeColorProvider topUiThemeColorProvider,
-                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
-                    -> new BaseCustomTabActivityModule(intentDataProvider, startupTabPreloader,
-                            nightModeController, intentIgnoringCriterion, topUiThemeColorProvider,
-                            new FakeDefaultBrowserProviderImpl()));
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
+                    (BrowserServicesIntentDataProvider intentDataProvider,
+                            CustomTabNightModeStateController nightModeController,
+                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                            TopUiThemeColorProvider topUiThemeColorProvider,
+                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                            -> new BaseCustomTabActivityModule(intentDataProvider,
+                                    nightModeController, intentIgnoringCriterion,
+                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
 
     @Rule
     public RuleChain mRuleChain = RuleChain.emptyRuleChain()

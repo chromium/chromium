@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -71,7 +70,6 @@ public class ChromeTabCreator extends TabCreator {
     private static final String TAG = "ChromeTabCreator";
 
     private final Activity mActivity;
-    private final StartupTabPreloader mStartupTabPreloader;
     private final boolean mIncognito;
 
     private WindowAndroid mNativeWindow;
@@ -85,13 +83,11 @@ public class ChromeTabCreator extends TabCreator {
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
 
     public ChromeTabCreator(Activity activity, WindowAndroid nativeWindow,
-            StartupTabPreloader startupTabPreloader,
             Supplier<TabDelegateFactory> tabDelegateFactory, boolean incognito,
             OverviewNTPCreator overviewNTPCreator, AsyncTabParamsManager asyncTabParamsManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
-        mStartupTabPreloader = startupTabPreloader;
         mNativeWindow = nativeWindow;
         mTabDelegateFactorySupplier = tabDelegateFactory;
         mIncognito = incognito;
@@ -222,31 +218,24 @@ public class ChromeTabCreator extends TabCreator {
                               .build();
                 creationState = TabCreationState.FROZEN_FOR_LAZY_LOAD;
             } else {
-                tab = (mStartupTabPreloader != null)
-                        ? mStartupTabPreloader.takeTabIfMatchingOrDestroy(loadUrlParams, type)
-                        : null;
-
-                if (tab == null) {
-                    TraceEvent.begin("ChromeTabCreator.loadUrl");
-                    Callback<Tab> action = null;
-                    if (mOverviewNTPCreator != null) {
-                        action = (newTab) -> {
-                            mOverviewNTPCreator.preTabInitialization(
-                                    newTab, loadUrlParams.getUrl());
-                        };
-                    }
-                    tab = TabBuilder.createLiveTab(!openInForeground)
-                                  .setParent(parent)
-                                  .setIncognito(mIncognito)
-                                  .setWindow(mNativeWindow)
-                                  .setLaunchType(type)
-                                  .setDelegateFactory(delegateFactory)
-                                  .setInitiallyHidden(!openInForeground)
-                                  .setPreInitializeAction(action)
-                                  .build();
-                    tab.loadUrl(loadUrlParams);
-                    TraceEvent.end("ChromeTabCreator.loadUrl");
+                TraceEvent.begin("ChromeTabCreator.loadUrl");
+                Callback<Tab> action = null;
+                if (mOverviewNTPCreator != null) {
+                    action = (newTab) -> {
+                        mOverviewNTPCreator.preTabInitialization(newTab, loadUrlParams.getUrl());
+                    };
                 }
+                tab = TabBuilder.createLiveTab(!openInForeground)
+                              .setParent(parent)
+                              .setIncognito(mIncognito)
+                              .setWindow(mNativeWindow)
+                              .setLaunchType(type)
+                              .setDelegateFactory(delegateFactory)
+                              .setInitiallyHidden(!openInForeground)
+                              .setPreInitializeAction(action)
+                              .build();
+                tab.loadUrl(loadUrlParams);
+                TraceEvent.end("ChromeTabCreator.loadUrl");
             }
             // When tab reparenting the |intent| is the reparenting intent, not the intent that
             // created the tab.

@@ -260,11 +260,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks;
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kElideTabPreloadAtStartup;
-#endif
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableAllSystemWebApps;
 
