@@ -723,10 +723,10 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     if (!is_keyword_generated && request.consider_for_ntp_most_visited) {
       UpdateSegments(request.url, from_visit_id, last_visit_id, t,
                      request.time);
-
-      // Update the referrer's duration.
-      UpdateVisitDuration(from_visit_id, request.time);
     }
+
+    // Update the referrer's duration.
+    UpdateVisitDuration(from_visit_id, request.time);
   } else {
     // Redirect case. Add the redirect chain.
 
@@ -850,7 +850,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                          last_visit_id, t, request.time);
         }
 
-        // Update the visit_details for this visit.
+        // Update the referrer's duration.
         UpdateVisitDuration(from_visit_id, request.time);
       }
 
@@ -872,6 +872,10 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
   // views can keep in sync.
 
   // Add the last visit to the tracker so we can get outgoing transitions.
+  // Keyword-generated visits are artificially generated. They duplicate the
+  // real navigation, and are added to ensure autocompletion in the omnibox
+  // works. As they are artificial they shouldn't be tracked for referral
+  // chains.
   // TODO(evanm): Due to http://b/1194536 we lose the referrers of a subframe
   // navigation anyway, so last_visit_id is always zero for them.  But adding
   // them here confuses main frame history, so we skip them for now.

@@ -2863,6 +2863,51 @@ TEST_F(HistoryBackendTest, UpdateVisitDuration) {
   ASSERT_TRUE(backend_->RemoveVisits(visits1));
 }
 
+TEST_F(HistoryBackendTest, UpdateVisitDurationForReferrer) {
+  const ContextID context_id = reinterpret_cast<ContextID>(0x1);
+  base::Time start_ts = base::Time::Now() - base::Days(1);
+  base::Time end_ts = start_ts + base::Seconds(2);
+
+  // Add two visits, the first referring to the second. Adding the second visit
+  // should populate the visit_duration for the first one.
+
+  GURL referrer_url("https://referrer.url");
+  GURL second_url("https://other.url");
+
+  HistoryAddPageArgs referrer_args(referrer_url, start_ts, context_id,
+                                   /*nav_entry_id=*/0, GURL(), RedirectList(),
+                                   ui::PAGE_TRANSITION_TYPED, false,
+                                   SOURCE_BROWSED,
+                                   /*did_replace_entry=*/false,
+                                   /*consider_for_ntp_most_visited=*/false,
+                                   /*floc_allowed=*/false);
+  backend_->AddPage(referrer_args);
+
+  // So far, the visit duration should be empty.
+  URLRow row;
+  URLID referrer_url_id = backend_->db()->GetRowForURL(referrer_url, &row);
+  VisitVector visits;
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(referrer_url_id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  ASSERT_EQ(0, visits[0].visit_duration.ToInternalValue());
+
+  HistoryAddPageArgs second_args(second_url, end_ts, context_id,
+                                 /*nav_entry_id=*/0, referrer_url,
+                                 RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                                 false, SOURCE_BROWSED,
+                                 /*did_replace_entry=*/false,
+                                 /*consider_for_ntp_most_visited=*/false,
+                                 /*floc_allowed=*/false);
+  backend_->AddPage(second_args);
+
+  // Adding the second visit should have populated the visit duration for the
+  // first one.
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(referrer_url_id, &visits));
+  base::TimeDelta expected_duration = end_ts - start_ts;
+  EXPECT_EQ(expected_duration.ToInternalValue(),
+            visits[0].visit_duration.ToInternalValue());
+}
+
 // Test for migration of adding visit_duration column.
 TEST_F(HistoryBackendTest, MigrationVisitDuration) {
   ASSERT_TRUE(backend_.get());
