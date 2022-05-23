@@ -6176,25 +6176,31 @@ void RenderFrameHostImpl::SetIsXrOverlaySetup() {
 void RenderFrameHostImpl::EnterFullscreen(
     blink::mojom::FullscreenOptionsPtr options,
     EnterFullscreenCallback callback) {
-  // Consume the user activation when entering fullscreen mode in the browser
-  // side when the renderer is compromised and the fullscreen request is denied.
-  // Fullscreen can only be triggered by: a user activation, a user-generated
-  // screen orientation change, or another feature-specific transient allowance.
+  const bool had_fullscreen_token = fullscreen_request_token_.IsActive();
+
+  // Entering fullscreen requires a transient user activation, a fullscreen
+  // capability delegation token, a user-generated screen orientation change, or
+  // another feature-specific transient allowance.
   // CanEnterFullscreenWithoutUserActivation is only ever true in tests, to
   // allow fullscreen when mocking screen orientation changes.
-  // TODO(lanwei): Investigate whether we can terminate the renderer when the
-  // user activation has already been consumed.
   if (!delegate_->HasSeenRecentScreenOrientationChange() &&
       !WindowPlacementAllowsFullscreen() && !HasSeenRecentXrOverlaySetup() &&
       !GetContentClient()
            ->browser()
            ->CanEnterFullscreenWithoutUserActivation()) {
-    bool is_consumed = frame_tree_node_->UpdateUserActivationState(
-        blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
-        blink::mojom::UserActivationNotificationType::kNone);
-    if (!is_consumed) {
+    // Consume any transient user activation and delegated fullscreen token.
+    // Reject requests made without transient user activation or a token.
+    // TODO(lanwei): Investigate whether we can terminate the renderer when
+    // transient user activation and the delegated token are both inactive.
+    const bool consumed_activation =
+        frame_tree_node_->UpdateUserActivationState(
+            blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+            blink::mojom::UserActivationNotificationType::kNone);
+    const bool consumed_token = fullscreen_request_token_.ConsumeIfActive();
+    if (!consumed_activation && !consumed_token) {
       DLOG(ERROR) << "Cannot enter fullscreen because there is no transient "
-                  << "user activation, orientation change, or XR overlay.";
+                  << "user activation, orientation change, XR overlay, nor "
+                  << "capability delegation.";
       std::move(callback).Run(/*granted=*/false);
       return;
     }
@@ -6250,6 +6256,9 @@ void RenderFrameHostImpl::EnterFullscreen(
     notified_instances.insert(parent_site_instance);
   }
 
+  // Focus the window if another frame may have delegated the capability.
+  if (had_fullscreen_token && !GetView()->HasFocus())
+    GetView()->Focus();
   delegate_->EnterFullscreenMode(this, *options);
   delegate_->FullscreenStateChanged(this, /*is_fullscreen=*/true,
                                     std::move(options));
@@ -7286,6 +7295,14 @@ void RenderFrameHostImpl::DidChangeSrcDoc(
     return;
 
   child->SetSrcdocValue(srcdoc_value);
+}
+
+void RenderFrameHostImpl::ReceivedDelegatedCapability(
+    blink::mojom::DelegatedCapability delegated_capability) {
+  if (delegated_capability ==
+      blink::mojom::DelegatedCapability::kFullscreenRequest) {
+    fullscreen_request_token_.Activate();
+  }
 }
 
 // TODO(ahemery): Move checks to mojo bad message reporting.
@@ -11884,6 +11901,9 @@ void RenderFrameHostImpl::PostMessageEvent(
     const std::u16string& target_origin,
     blink::TransferableMessage message) {
   DCHECK(is_render_frame_created());
+
+  if (message.delegated_capability != blink::mojom::DelegatedCapability::kNone)
+    ReceivedDelegatedCapability(message.delegated_capability);
 
   GetAssociatedLocalFrame()->PostMessageEvent(
       source_token, source_origin, target_origin, std::move(message));

@@ -1058,6 +1058,15 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
                                       source->GetStorageKey(), UkmSourceID(),
                                       GetStorageKey(), UkmRecorder());
 
+  // Notify the host if the message contained a delegated capability. That state
+  // should be tracked by the browser, and messages from remote hosts already
+  // signal the browser via RemoteFrameHost's RouteMessageEvent.
+  if (posted_message->delegated_capability !=
+      mojom::blink::DelegatedCapability::kNone) {
+    GetFrame()->GetLocalFrameHostRemote().ReceivedDelegatedCapability(
+        posted_message->delegated_capability);
+  }
+
   // Convert the posted message to a MessageEvent so it can be unpacked for
   // local dispatch.
   MessageEvent* event = MessageEvent::Create(
@@ -1185,7 +1194,6 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
           mojom::blink::DelegatedCapability::kFullscreenRequest) {
     UseCounter::Count(this,
                       WebFeature::kCapabilityDelegationOfFullscreenRequest);
-    // TODO(crbug.com/1293083): Activate a corresponding token in the browser.
     fullscreen_request_token_.Activate();
   }
 

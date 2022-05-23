@@ -53,6 +53,7 @@ import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom"
 import "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
+import "third_party/blink/public/mojom/messaging/delegated_capability.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
@@ -571,6 +572,12 @@ interface LocalFrameHost {
   // sends the new value to the browser. Also sent when a subframe's content
   // frame is changed.
   DidChangeSrcDoc(blink.mojom.FrameToken child_frame_token, string srcdoc_value);
+
+  // Notifies the browser that this frame received a message from a local frame
+  // with a delegated capability (https://wicg.github.io/capability-delegation).
+  // `delegated_capability` is the capability delegated via postMessage().
+  // RemoteFrameHost messages already signal the browser via RouteMessageEvent.
+  ReceivedDelegatedCapability(DelegatedCapability delegated_capability);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

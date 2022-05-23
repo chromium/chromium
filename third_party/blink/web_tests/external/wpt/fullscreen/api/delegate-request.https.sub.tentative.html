@@ -14,6 +14,11 @@
   Verifies that element.requestFullscreen() call from a cross-origin subframe without user
   activation works if and only if the top frame has user activation and it delegates the capability
   to the subframe.
+
+  https://wicg.github.io/capability-delegation/spec.html
+
+  See wpt/html/user-activation/propagation*.html for child->parent user activation visibility tests.
+  TODO: Check same-origin iframes, sibling frames, and popup<->opener delegation.
 </div>
 
 <iframe allow="fullscreen" width="300px" height="50px"
