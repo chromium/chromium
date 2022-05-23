@@ -16,6 +16,8 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_codecs.h"
@@ -265,12 +267,14 @@ HRESULT CreateDummyMediaFoundationCdm(
   DLOG_IF(ERROR, FAILED(hr)) << __func__ << ": Failed for " << key_system;
   mf_cdm.Reset();
 
-  // Delete the dummy CDM store folder so we don't leave files behind.
-  // This may fail since the CDM and related objects may still have the file
-  // open. But it will be cleaned next time so files will not accumulate.
-  // TODO(crbug.com/1309741): Consider update GetDeletePathRecursivelyCallback()
-  // to support retry and use it here.
-  std::ignore = base::DeletePathRecursively(dummy_cdm_store_path_root);
+  // Delete the dummy CDM store folder so we don't leave files behind. This may
+  // fail since the CDM and related objects may have the files open longer than
+  // the total delete retry period or before the process terminates. This is
+  // fine since they will be cleaned next time so files will not accumulate.
+  // Ignore the `reply_callback` since nothing can be done with the result.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::GetDeletePathRecursivelyCallback(dummy_cdm_store_path_root));
 
   return hr;
 }
