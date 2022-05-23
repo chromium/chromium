@@ -42,11 +42,20 @@ ThemeSelectionScreen::ThemeSelectionScreen(
 ThemeSelectionScreen::~ThemeSelectionScreen() = default;
 
 bool ThemeSelectionScreen::MaybeSkip(WizardContext* context) {
-  if (context->skip_post_login_screens_for_tests ||
+  if (context->skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  const PrefService::Preference* pref =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
+          prefs::kDarkModeScheduleType);
+  if (pref->IsManaged() || pref->IsRecommended() ||
       !chromeos::features::IsOobeThemeSelectionEnabled()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
+
   return false;
 }
 
@@ -65,21 +74,19 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
     const SelectedTheme selected_theme =
         static_cast<SelectedTheme>(args[1].GetInt());
 
-    profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled,
-                                    selected_theme == SelectedTheme::kDark);
-
     if (selected_theme == SelectedTheme::kAuto) {
+      profile->GetPrefs()->ClearPref(prefs::kDarkModeEnabled);
       profile->GetPrefs()->SetInteger(
           prefs::kDarkModeScheduleType,
           static_cast<int>(ScheduleType::kSunsetToSunrise));
     } else {
       profile->GetPrefs()->SetInteger(prefs::kDarkModeScheduleType,
                                       static_cast<int>(ScheduleType::kNone));
+      profile->GetPrefs()->SetBoolean(prefs::kDarkModeEnabled,
+                                      selected_theme == SelectedTheme::kDark);
     }
-
   } else if (action_id == kUserActionNext) {
     exit_callback_.Run(Result::kProceed);
-
   } else {
     BaseScreen::OnUserAction(args);
   }

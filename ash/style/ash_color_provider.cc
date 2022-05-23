@@ -355,6 +355,17 @@ void AshColorProvider::SetDarkModeEnabledForTest(bool enabled) {
 
 void AshColorProvider::OnOobeDialogStateChanged(OobeDialogState state) {
   auto closure = GetNotifyOnDarkModeChangeClosure();
+  // Managed users do not see the theme selection screen, so to avoid confusion
+  // they should always see light colors during OOBE
+  if (state != OobeDialogState::HIDDEN && active_user_pref_service_) {
+    const PrefService::Preference* pref =
+        active_user_pref_service_->FindPreference(prefs::kDarkModeScheduleType);
+    if (pref->IsManaged() || pref->IsRecommended()) {
+      force_oobe_light_mode_ = true;
+      return;
+    }
+  }
+
   force_oobe_light_mode_ = !base::Contains(kStatesSupportingDarkTheme, state);
 }
 

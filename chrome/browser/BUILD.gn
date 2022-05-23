@@ -1885,6 +1885,13 @@ static_library("browser") {
     "webid/federated_identity_sharing_permission_context_factory.h",
   ]
 
+  if (is_chromeos_ash) {
+    sources += [
+      "policy/os_color_mode_policy_handler.cc",
+      "policy/os_color_mode_policy_handler.h",
+    ]
+  }
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",

@@ -18438,5 +18438,65 @@
       }
     }
   ]
-}
+  },
+  "OsColorMode": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+        },
+        "prefs": {
+          "ash.dark_mode.enabled": {
+            "check_for_mandatory": true,
+            "check_for_recommended": false,
+            "value": false
+          },
+          "ash.dark_mode.schedule_type": {
+            "check_for_mandatory": true,
+            "check_for_recommended": false,
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "OsColorMode": "dark"
+        },
+        "prefs": {
+          "ash.dark_mode.enabled": {
+            "value": true
+          },
+          "ash.dark_mode.schedule_type": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "OsColorMode": "light"
+        },
+        "prefs": {
+          "ash.dark_mode.enabled": {
+            "value": false
+          },
+          "ash.dark_mode.schedule_type": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "OsColorMode": "auto"
+        },
+        "prefs": {
+          "ash.dark_mode.schedule_type": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
 }
