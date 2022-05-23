@@ -207,41 +207,31 @@ views::Widget* TabGroupEditorBubbleView::Show(
 
     dialog_builder.OverrideShowCloseButton(false)
         .AddSeparator()
-        .AddCustomField(
-            CreateMenuItemCustomView(
-                l10n_util::GetStringUTF16(
-                    IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::NewTabInGroupPressed,
-                    base::Unretained(bubble_delegate)),
-                &kNewTabInGroupIcon),
-            TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP)
-        .AddCustomField(
-            CreateMenuItemCustomView(
-                l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::UngroupPressed,
-                    base::Unretained(bubble_delegate), header_view),
-                &kUngroupIcon),
-            TAB_GROUP_HEADER_CXMENU_UNGROUP)
-        .AddCustomField(
-            CreateMenuItemCustomView(
-                l10n_util::GetStringUTF16(
-                    IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::CloseGroupPressed,
-                    base::Unretained(bubble_delegate)),
-                &kCloseGroupIcon),
-            TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
-        .AddCustomField(
-            CreateMenuItemCustomView(
-                l10n_util::GetStringUTF16(
-                    IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
-                base::BindRepeating(
-                    &TabGroupEditorBubbleDelegate::MoveGroupToNewWindowPressed,
-                    base::Unretained(bubble_delegate)),
-                &kMoveGroupToNewWindowIcon),
-            TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW);
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(
+                IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
+            base::BindRepeating(
+                &TabGroupEditorBubbleDelegate::NewTabInGroupPressed,
+                base::Unretained(bubble_delegate)),
+            &kNewTabInGroupIcon))
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
+            base::BindRepeating(&TabGroupEditorBubbleDelegate::UngroupPressed,
+                                base::Unretained(bubble_delegate), header_view),
+            &kUngroupIcon))
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
+            base::BindRepeating(
+                &TabGroupEditorBubbleDelegate::CloseGroupPressed,
+                base::Unretained(bubble_delegate)),
+            &kCloseGroupIcon))
+        .AddCustomField(CreateMenuItemCustomView(
+            l10n_util::GetStringUTF16(
+                IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
+            base::BindRepeating(
+                &TabGroupEditorBubbleDelegate::MoveGroupToNewWindowPressed,
+                base::Unretained(bubble_delegate)),
+            &kMoveGroupToNewWindowIcon));
 
     // TODO(pbos): Add enabling/disabling of
     // TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW item.

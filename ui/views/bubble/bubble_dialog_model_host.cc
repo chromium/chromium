@@ -389,13 +389,16 @@ View* BubbleDialogModelHost::GetInitiallyFocusedView() {
   if (!model_)
     return BubbleDialogDelegate::GetInitiallyFocusedView();
 
-  absl::optional<int> unique_id = model_->initially_focused_field(GetPassKey());
+  // TODO(pbos): Reconsider the uniqueness requirement, maybe this should select
+  // the first one? If so add corresponding GetFirst query to DialogModel.
+  ui::ElementIdentifier unique_id =
+      model_->initially_focused_field(GetPassKey());
 
   if (!unique_id)
     return BubbleDialogDelegate::GetInitiallyFocusedView();
 
   return GetTargetView(
-      FindDialogModelHostField(model_->GetFieldByUniqueId(unique_id.value())));
+      FindDialogModelHostField(model_->GetFieldByUniqueId(unique_id)));
 }
 
 void BubbleDialogModelHost::OnWidgetInitialized() {
@@ -468,7 +471,7 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
               field->AsCustomField(GetPassKey())->field(GetPassKey()))
               ->TransferView();
       DCHECK(view);
-      view->SetID(field->unique_id(GetPassKey()));
+      view->SetProperty(kElementIdentifierKey, field->id(GetPassKey()));
       DialogModelHostField info{field, view.get(), nullptr};
       AddDialogModelHostField(std::move(view), info);
       break;
@@ -638,10 +641,12 @@ void BubbleDialogModelHost::AddOrUpdateTextfield(
 
   // If this textfield is initially focused the text should be initially
   // selected as well.
-  absl::optional<int> initially_focused_field_id =
+  // TODO(pbos): Fix this for non-unique IDs. This should not select all text
+  // for all textfields with that ID.
+  ui::ElementIdentifier initially_focused_field_id =
       model_->initially_focused_field(GetPassKey());
   if (initially_focused_field_id &&
-      model_field->unique_id(GetPassKey()) == initially_focused_field_id) {
+      model_field->id(GetPassKey()) == initially_focused_field_id) {
     textfield->SelectAll(true);
   }
 

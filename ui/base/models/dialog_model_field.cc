@@ -54,14 +54,12 @@ DialogModelLabel DialogModelLabel::CreateWithLinks(int message_id,
 DialogModelField::DialogModelField(base::PassKey<DialogModel>,
                                    DialogModel* model,
                                    Type type,
-                                   int unique_id,
+                                   ElementIdentifier id,
                                    base::flat_set<Accelerator> accelerators)
     : model_(model),
       type_(type),
-      unique_id_(unique_id),
-      accelerators_(std::move(accelerators)) {
-  // TODO(pbos): Assert that unique_id_ is unique.
-}
+      id_(id),
+      accelerators_(std::move(accelerators)) {}
 
 DialogModelField::~DialogModelField() = default;
 
@@ -142,10 +140,11 @@ DialogModelCustomField* DialogModelField::AsCustomField() {
 DialogModelButton::Params::Params() = default;
 DialogModelButton::Params::~Params() = default;
 
-DialogModelButton::Params& DialogModelButton::Params::SetUniqueId(
-    int unique_id) {
-  DCHECK_GE(unique_id, 0);
-  unique_id_ = unique_id;
+DialogModelButton::Params& DialogModelButton::Params::SetId(
+    ElementIdentifier id) {
+  DCHECK(!id_);
+  DCHECK(id);
+  id_ = id;
   return *this;
 }
 
@@ -164,7 +163,7 @@ DialogModelButton::DialogModelButton(
     : DialogModelField(pass_key,
                        model,
                        kButton,
-                       params.unique_id_,
+                       params.id_,
                        params.accelerators_),
       label_(std::move(label)),
       callback_(std::move(callback)) {
@@ -181,17 +180,18 @@ void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
 DialogModelBodyText::DialogModelBodyText(base::PassKey<DialogModel> pass_key,
                                          DialogModel* model,
                                          const DialogModelLabel& label)
-    : DialogModelField(pass_key, model, kBodyText, -1, {}), label_(label) {}
+    : DialogModelField(pass_key, model, kBodyText, ElementIdentifier(), {}),
+      label_(label) {}
 
 DialogModelBodyText::~DialogModelBodyText() = default;
 
 DialogModelCheckbox::DialogModelCheckbox(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
-    int unique_id,
+    ElementIdentifier id,
     const DialogModelLabel& label,
     const DialogModelCheckbox::Params& params)
-    : DialogModelField(pass_key, model, kCheckbox, unique_id, {}),
+    : DialogModelField(pass_key, model, kCheckbox, id, {}),
       label_(label),
       is_checked_(params.is_checked_) {}
 
@@ -205,10 +205,11 @@ void DialogModelCheckbox::OnChecked(base::PassKey<DialogModelHost>,
 DialogModelCombobox::Params::Params() = default;
 DialogModelCombobox::Params::~Params() = default;
 
-DialogModelCombobox::Params& DialogModelCombobox::Params::SetUniqueId(
-    int unique_id) {
-  DCHECK_GE(unique_id, 0);
-  unique_id_ = unique_id;
+DialogModelCombobox::Params& DialogModelCombobox::Params::SetId(
+    ElementIdentifier id) {
+  DCHECK(!id_);
+  DCHECK(id);
+  id_ = id;
   return *this;
 }
 
@@ -233,7 +234,7 @@ DialogModelCombobox::DialogModelCombobox(
     : DialogModelField(pass_key,
                        model,
                        kCombobox,
-                       params.unique_id_,
+                       params.id_,
                        params.accelerators_),
       label_(std::move(label)),
       accessible_name_(params.accessible_name_),
@@ -259,7 +260,7 @@ DialogModelMenuItem::DialogModelMenuItem(
     ImageModel icon,
     std::u16string label,
     base::RepeatingCallback<void(int)> callback)
-    : DialogModelField(pass_key, model, kMenuItem, -1, {}),
+    : DialogModelField(pass_key, model, kMenuItem, ElementIdentifier(), {}),
       icon_(std::move(icon)),
       label_(std::move(label)),
       callback_(std::move(callback)) {}
@@ -274,17 +275,18 @@ void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelHost> pass_key,
 
 DialogModelSeparator::DialogModelSeparator(base::PassKey<DialogModel> pass_key,
                                            DialogModel* model)
-    : DialogModelField(pass_key, model, kSeparator, -1, {}) {}
+    : DialogModelField(pass_key, model, kSeparator, ElementIdentifier(), {}) {}
 
 DialogModelSeparator::~DialogModelSeparator() = default;
 
 DialogModelTextfield::Params::Params() = default;
 DialogModelTextfield::Params::~Params() = default;
 
-DialogModelTextfield::Params& DialogModelTextfield::Params::SetUniqueId(
-    int unique_id) {
-  DCHECK_GE(unique_id, 0);
-  unique_id_ = unique_id;
+DialogModelTextfield::Params& DialogModelTextfield::Params::SetId(
+    ElementIdentifier id) {
+  DCHECK(!id_);
+  DCHECK(id);
+  id_ = id;
   return *this;
 }
 
@@ -303,7 +305,7 @@ DialogModelTextfield::DialogModelTextfield(
     : DialogModelField(pass_key,
                        model,
                        kTextfield,
-                       params.unique_id_,
+                       params.id_,
                        params.accelerators_),
       label_(label),
       accessible_name_(params.accessible_name_),
@@ -321,9 +323,9 @@ DialogModelCustomField::Field::~Field() = default;
 DialogModelCustomField::DialogModelCustomField(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
-    int unique_id,
+    ElementIdentifier id,
     std::unique_ptr<DialogModelCustomField::Field> field)
-    : DialogModelField(pass_key, model, kCustom, unique_id, {}),
+    : DialogModelField(pass_key, model, kCustom, id, {}),
       field_(std::move(field)) {}
 
 DialogModelCustomField::~DialogModelCustomField() = default;

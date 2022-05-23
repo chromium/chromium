@@ -21,6 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/compositor/compositor.h"
@@ -39,7 +40,7 @@
 
 namespace {
 
-constexpr int kCheckboxId = 1;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
 
 // Views implementation of the uninstall dialog.
 class ExtensionUninstallDialogViews

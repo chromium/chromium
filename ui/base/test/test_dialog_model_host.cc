@@ -84,9 +84,9 @@ const std::u16string& TestDialogModelHost::GetLabel(ButtonId button_id) {
       ->label(GetPassKey());
 }
 
-int TestDialogModelHost::GetUniqueId(ButtonId button_id) {
+ElementIdentifier TestDialogModelHost::GetId(ButtonId button_id) {
   return GetButton(dialog_model_.get(), button_id, GetPassKey())
-      ->unique_id(GetPassKey());
+      ->id(GetPassKey());
 }
 
 void TestDialogModelHost::Close() {

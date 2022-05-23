@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 
@@ -101,9 +102,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
 
 // These "field" classes represent entries in a DialogModel. They are owned
 // by the model and either created through the model or DialogModel::Builder.
-// These entries can be referred to by setting the field's unique id in
-// construction parameters (::Params::SetUniqueId()). They can then later be
-// acquired through DialogModel::GetFieldByUniqueId() methods.
+// These entries can be referred to by setting the field's ElementIdentifier in
+// construction parameters (::Params::SetId()). They can then
+// later be acquired through DialogModel::GetFieldByUniqueId() methods.
 // These fields own the data corresponding to their field. For instance, the
 // text of a textfield in a model is read using DialogModelTextfield::text() and
 // stays in sync with the visible dialog (through DialogModelHosts).
@@ -131,7 +132,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
       base::PassKey<DialogModelHost>) const {
     return accelerators_;
   }
-  int unique_id(base::PassKey<DialogModelHost>) const { return unique_id_; }
+  ElementIdentifier id(base::PassKey<DialogModelHost>) const { return id_; }
   DialogModelButton* AsButton(base::PassKey<DialogModelHost>);
   DialogModelBodyText* AsBodyText(base::PassKey<DialogModelHost>);
   DialogModelCheckbox* AsCheckbox(base::PassKey<DialogModelHost>);
@@ -147,7 +148,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   DialogModelField(base::PassKey<DialogModel>,
                    DialogModel* model,
                    Type type,
-                   int unique_id,
+                   ElementIdentifier id,
                    base::flat_set<Accelerator> accelerators);
 
   DialogModelButton* AsButton();
@@ -164,7 +165,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
 
   const raw_ptr<DialogModel> model_;
   const Type type_;
-  const int unique_id_;
+  const ElementIdentifier id_;
 
   const base::flat_set<Accelerator> accelerators_;
 };
@@ -179,14 +180,14 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetUniqueId(int unique_id);
+    Params& SetId(ElementIdentifier id);
 
     Params& AddAccelerator(Accelerator accelerator);
 
    private:
     friend class DialogModelButton;
 
-    int unique_id_ = -1;
+    ElementIdentifier id_;
     base::flat_set<Accelerator> accelerators_;
   };
 
@@ -263,7 +264,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
   // fields.
   DialogModelCheckbox(base::PassKey<DialogModel> pass_key,
                       DialogModel* model,
-                      int unique_id,
+                      ElementIdentifier id,
                       const DialogModelLabel& label,
                       const Params& params);
   DialogModelCheckbox(const DialogModelCheckbox&) = delete;
@@ -296,7 +297,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetUniqueId(int unique_id);
+    Params& SetId(ElementIdentifier id);
 
     Params& AddAccelerator(Accelerator accelerator);
 
@@ -315,7 +316,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
    private:
     friend class DialogModelCombobox;
 
-    int unique_id_ = -1;
+    ElementIdentifier id_;
     std::u16string accessible_name_;
     base::RepeatingClosure callback_;
     base::flat_set<Accelerator> accelerators_;
@@ -413,7 +414,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetUniqueId(int unique_id);
+    Params& SetId(ElementIdentifier id);
 
     Params& AddAccelerator(Accelerator accelerator);
 
@@ -425,7 +426,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
    private:
     friend class DialogModelTextfield;
 
-    int unique_id_ = -1;
+    ElementIdentifier id_;
     std::u16string accessible_name_;
     base::flat_set<Accelerator> accelerators_;
   };
@@ -477,7 +478,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
   // fields.
   DialogModelCustomField(base::PassKey<DialogModel> pass_key,
                          DialogModel* model,
-                         int unique_id,
+                         ElementIdentifier id,
                          std::unique_ptr<DialogModelCustomField::Field> field);
   DialogModelCustomField(const DialogModelCustomField&) = delete;
   DialogModelCustomField& operator=(const DialogModelCustomField&) = delete;

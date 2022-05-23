@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/test/test_dialog_model_host.h"
 #include "ui/events/event.h"
 
@@ -20,15 +21,15 @@ namespace ui {
 class DialogModelButtonTest : public testing::Test {};
 
 TEST_F(DialogModelButtonTest, UsesParamsUniqueId) {
-  constexpr int kUniqueId = 42;
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUniqueId);
   // TODO(pbos): Replace AddOkButton() with AddButton() once buttons in dialogs
   // are supported.
   auto host = std::make_unique<TestDialogModelHost>(
       DialogModel::Builder()
           .AddOkButton(base::OnceClosure(), std::u16string(),
-                       DialogModelButton::Params().SetUniqueId(kUniqueId))
+                       DialogModelButton::Params().SetId(kUniqueId))
           .Build());
-  EXPECT_EQ(kUniqueId, host->GetUniqueId(TestDialogModelHost::ButtonId::kOk));
+  EXPECT_EQ(kUniqueId, host->GetId(TestDialogModelHost::ButtonId::kOk));
 }
 
 TEST_F(DialogModelButtonTest, UsesParamsAccelerators) {

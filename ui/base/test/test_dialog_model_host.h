@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
 
@@ -47,7 +48,7 @@ class TestDialogModelHost final : public DialogModelHost {
 
   const base::flat_set<Accelerator>& GetAccelerators(ButtonId button_id);
   const std::u16string& GetLabel(ButtonId button_id);
-  int GetUniqueId(ButtonId button_id);
+  ElementIdentifier GetId(ButtonId button_id);
 
  private:
   // DialogModelHost:

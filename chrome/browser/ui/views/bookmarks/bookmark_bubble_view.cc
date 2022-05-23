@@ -22,6 +22,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -39,8 +40,8 @@ using bookmarks::BookmarkNode;
 views::BubbleDialogDelegate* BookmarkBubbleView::bookmark_bubble_ = nullptr;
 
 namespace {
-constexpr int kBookmarkName = 1;
-constexpr int kBookmarkFolder = 2;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkName);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolder);
 }
 
 class BookmarkBubbleView::BookmarkBubbleDelegate
@@ -206,7 +207,7 @@ void BookmarkBubbleView::ShowBubble(
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_NAME_LABEL),
               bookmark_node->GetTitle(),
               ui::DialogModelTextfield::Params()
-                  .SetUniqueId(kBookmarkName)
+                  .SetId(kBookmarkName)
                   .SetAccessibleName(l10n_util::GetStringUTF16(
                       IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL)))
           .AddCombobox(
@@ -215,7 +216,7 @@ void BookmarkBubbleView::ShowBubble(
                   bookmark_model,
                   bookmark_model->GetMostRecentlyAddedUserNodeForURL(url)),
               ui::DialogModelCombobox::Params()
-                  .SetUniqueId(kBookmarkFolder)
+                  .SetId(kBookmarkFolder)
                   .SetCallback(base::BindRepeating(
                       &BookmarkBubbleDelegate::OnComboboxAction,
                       base::Unretained(bubble_delegate))))

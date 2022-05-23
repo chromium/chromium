@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -30,7 +31,7 @@ void ShowBlockedActionDialog(Browser* browser,
 
 namespace {
 
-constexpr int kCheckboxId = 1;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
 
 // TODO(crbug.com/1325171): Use extensions::IconImage instead of getting the
 // action's image. The icon displayed should be the "product" icon and not the

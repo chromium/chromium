@@ -8,13 +8,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 
 namespace chrome {
 namespace {
 
-constexpr int kWindowNameFieldId = 1;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWindowNameFieldId);
 
 void SetBrowserTitleFromTextfield(Browser* browser,
                                   ui::DialogModel* dialog_model) {
@@ -39,7 +40,7 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModel(
           // Deliberately use no label - the dialog contains only this
           // textfield, and its title serves as a label for the textfield.
           {}, base::UTF8ToUTF16(browser->user_title()),
-          ui::DialogModelTextfield::Params().SetUniqueId(kWindowNameFieldId))
+          ui::DialogModelTextfield::Params().SetId(kWindowNameFieldId))
       .SetInitiallyFocusedField(kWindowNameFieldId)
       .Build();
 }
