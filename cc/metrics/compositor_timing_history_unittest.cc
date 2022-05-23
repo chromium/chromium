@@ -343,7 +343,7 @@ TEST_F(CompositorTimingHistoryTest, OnCriticalPath) {
 
   EXPECT_EQ(1u, timing_history_.bmf_start_to_ready_to_commit_critical_history()
                     .sample_count());
-  EXPECT_EQ(base::Milliseconds(1),
+  EXPECT_EQ(base::Milliseconds(2),
             timing_history_.bmf_start_to_ready_to_commit_critical_history()
                 .Percentile(0.));
   EXPECT_EQ(0u,
@@ -382,6 +382,38 @@ TEST_F(CompositorTimingHistoryTest, OnCriticalPath) {
   EXPECT_EQ(
       1u,
       timing_history_.bmf_queue_to_activate_critical_history().sample_count());
+}
+
+TEST_F(CompositorTimingHistoryTest, BeginMainFrameQueueDuration) {
+  viz::BeginFrameArgs args_ = GetFakeBeginFrameArg(true);
+  timing_history_.WillBeginMainFrame(args_);
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.BeginMainFrameStarted(Now());
+  AdvanceNowBy(base::Milliseconds(2));
+  timing_history_.NotifyReadyToCommit();
+  AdvanceNowBy(base::Milliseconds(3));
+  timing_history_.WillCommit();
+  AdvanceNowBy(base::Milliseconds(4));
+  timing_history_.DidCommit();
+  AdvanceNowBy(base::Milliseconds(5));
+  timing_history_.ReadyToActivate();
+  AdvanceNowBy(base::Milliseconds(6));
+  timing_history_.WillBeginMainFrame(args_);
+  AdvanceNowBy(base::Milliseconds(7));
+  timing_history_.BeginMainFrameStarted(Now());
+  AdvanceNowBy(base::Milliseconds(8));
+  timing_history_.BeginMainFrameAborted();
+  AdvanceNowBy(base::Milliseconds(9));
+  timing_history_.WillActivate();
+  AdvanceNowBy(base::Milliseconds(10));
+  timing_history_.DidActivate();
+  EXPECT_EQ(
+      1u,
+      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
+  // The bmf queueing duration should be 1ms, not the 7ms for the aborted frame.
+  EXPECT_EQ(
+      base::Milliseconds(1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10),
+      timing_history_.bmf_queue_to_activate_critical_history().Percentile(0.));
 }
 
 }  // namespace
