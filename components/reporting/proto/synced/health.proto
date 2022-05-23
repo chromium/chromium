@@ -46,14 +46,14 @@ message FlushPriorityCall {
 
 // Data about the UploadEncryptedRecord dBus call.
 message UploadEncryptedRecordCall {
-  optional int32 sequencing_id = 1;
+  optional int64 sequencing_id = 1;
   optional bool encryption_key_requested = 2;
   optional StatusProto status = 3;
 }
 
 // Data about the ConfirmRecordUpload dBus call.
 message ConfirmRecordUploadCall {
-  optional int32 sequencing_id = 1;
+  optional int64 sequencing_id = 1;
   optional bool force_confirm = 2;
 }
 
