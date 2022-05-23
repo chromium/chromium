@@ -353,7 +353,6 @@ group("closure_compile") {
     ":closure_compile_local",
     "inline_login:closure_compile",
     "js/cr/ui:closure_compile",
-    "media_router:closure_compile",
 
     # TODO(crbug.com/1000989): Add page specific targets here.
   ]
@@ -530,6 +529,11 @@ generate_grd("build_grd") {
       "$target_gen_dir/whats_new/resources.grdp",
       "$target_gen_dir/support_tool/resources.grdp",
     ]
+
+    if (is_chrome_branded) {
+      deps += [ "media_router:build_grdp" ]
+      grdp_files += [ "$target_gen_dir/media_router/resources.grdp" ]
+    }
   }
 
   if (!is_chromeos_ash && !is_android) {

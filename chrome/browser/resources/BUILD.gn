@@ -52,7 +52,7 @@ group("resources") {
       "whats_new:resources",
     ]
     if (is_chrome_branded) {
-      public_deps += [ "media_router:cast_feedback_ui_resources" ]
+      public_deps += [ "media_router/cast_feedback:resources" ]
     }
   }
 
@@ -129,7 +129,6 @@ if (enable_js_type_check) {
         "gaia_auth_host:closure_compile",
         "image_editor:closure_compile",
         "inline_login:closure_compile",
-        "media_router:closure_compile",
         "nearby_internals:closure_compile",
         "ntp4:closure_compile",
         "omnibox:closure_compile",

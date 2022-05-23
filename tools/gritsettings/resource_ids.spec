@@ -224,7 +224,7 @@
     "META": {"sizes": {"includes": [100]}},
     "includes": [1760],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/media_router/media_router_feedback_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/media_router/cast_feedback/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [1780],
   },

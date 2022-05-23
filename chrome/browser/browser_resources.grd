@@ -303,9 +303,9 @@
         <include name="IDR_BRAILLE_MANIFEST" file="resources\chromeos\accessibility\braille_ime\manifest.json" type="BINDATA" />
       </if>
       <if expr="not is_android">
-        <include name="IDR_MEDIA_ROUTER_INTERNALS_HTML" file="resources\media_router\media_router_internals.html" type="BINDATA" />
-        <include name="IDR_MEDIA_ROUTER_INTERNALS_CSS" file="resources\media_router\media_router_internals.css" type="BINDATA" />
-        <include name="IDR_MEDIA_ROUTER_INTERNALS_JS" file="resources\media_router\media_router_internals.js" type="BINDATA" />
+        <include name="IDR_MEDIA_ROUTER_INTERNALS_HTML" file="resources\media_router\internals\media_router_internals.html" type="BINDATA" />
+        <include name="IDR_MEDIA_ROUTER_INTERNALS_CSS" file="resources\media_router\internals\media_router_internals.css" type="BINDATA" />
+        <include name="IDR_MEDIA_ROUTER_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\media_router\internals\tsc\media_router_internals.js" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <include name="IDR_IME_WINDOW_CLOSE" file="resources\input_ime\ime_window_close.png" type="BINDATA" />

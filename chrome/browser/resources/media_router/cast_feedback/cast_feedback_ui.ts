@@ -12,152 +12,126 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @enum {string} */
-const FeedbackType = {
-  BUG: 'Bug',
-  FEATURE_REQUEST: 'FeatureRequest',
-  MIRRORING_QUALITY: 'MirroringQuality',
-  DISCOVERY: 'Discovery',
-  OTHER: 'Other'
-};
+import {getTemplate} from './cast_feedback_ui.html.js';
+
+enum FeedbackType {
+  BUG = 'Bug',
+  FEATURE_REQUEST = 'FeatureRequest',
+  MIRRORING_QUALITY = 'MirroringQuality',
+  DISCOVERY = 'Discovery',
+  OTHER = 'Other',
+}
 
 /**
  * Keep in sync with MediaRouterCastFeedbackEvent in enums.xml.
- * @enum {number}
  */
-export const FeedbackEvent = {
-  OPENED: 0,
-  SENDING: 1,
-  RESENDING: 2,
-  SUCCEEDED: 3,
-  FAILED: 4,
-  MAX_VALUE: 4,
-};
+export enum FeedbackEvent {
+  OPENED = 0,
+  SENDING = 1,
+  RESENDING = 2,
+  SUCCEEDED = 3,
+  FAILED = 4,
+  MAX_VALUE = 4,
+}
 
 /**
  * See
  * https://docs.google.com/document/d/1c20VYdwpUPyBRQeAS0CMr6ahwWnb0s26gByomOwqDjk
- * @interface
  */
-export class FeedbackUiBrowserProxy {
+export interface FeedbackUiBrowserProxy {
   /**
    * Records an event using Chrome Metrics.
-   * @param {FeedbackEvent} event
    */
-  recordEvent(event) {}
+  recordEvent(event: FeedbackEvent): void;
 
   /**
    * Proxy for chrome.feedbackPrivate.sendFeedback().
-   * @param {chrome.feedbackPrivate.FeedbackInfo} info
-   * @return {!Promise<chrome.feedbackPrivate.Status>}
    */
-  sendFeedback(info) {}
+  sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo):
+      Promise<chrome.feedbackPrivate.Status>;
 }
 
-/** @implements {FeedbackUiBrowserProxy} */
-export class FeedbackUiBrowserProxyImpl {
-  /** @override */
-  recordEvent(event) {
+export class FeedbackUiBrowserProxyImpl implements FeedbackUiBrowserProxy {
+  recordEvent(event: FeedbackEvent) {
     chrome.send(
         'metricsHandler:recordInHistogram',
         ['MediaRouter.Cast.Feedback.Event', event, FeedbackEvent.MAX_VALUE]);
   }
 
-  /** @override */
-  sendFeedback(info) {
-    return new Promise(
+  sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo) {
+    return new Promise<chrome.feedbackPrivate.Status>(
         resolve => chrome.feedbackPrivate.sendFeedback(
-            info, /*loadSystemInfo=*/ null, /*formOpenTime=*/ null, resolve));
+            info, /*loadSystemInfo=*/ undefined, /*formOpenTime=*/ undefined,
+            resolve));
+  }
+
+  static getInstance(): FeedbackUiBrowserProxy {
+    return instance || (instance = new FeedbackUiBrowserProxyImpl());
+  }
+
+  static setInstance(obj: FeedbackUiBrowserProxy) {
+    instance = obj;
   }
 }
 
-addSingletonGetter(FeedbackUiBrowserProxyImpl);
+let instance: FeedbackUiBrowserProxy|null = null;
+
+// Define static map of local DOM elements that have IDs.
+// https://polymer-library.polymer-project.org/3.0/docs/devguide/dom-template#node-finding
+export interface FeedbackUiElement {
+  $: {
+    logsDialog: CrDialogElement,
+    sendDialog: CrDialogElement,
+  };
+}
 
 export class FeedbackUiElement extends PolymerElement {
-  constructor() {
-    super();
-
-    /** @private {FeedbackUiBrowserProxy} */
-    this.browserProxy_ = FeedbackUiBrowserProxyImpl.getInstance();
-
-    /**
-     * Public/mutable for testing.
-     * @type {number}
-     */
-    this.resendDelayMs = 10000;
-
-    /**
-     * Public/mutable for testing.
-     * @type {number}
-     */
-    this.maxResendAttempts = 4;
-
-    /**
-     * Public for testing.
-     * @type {boolean}
-     */
-    this.feedbackSent = false;
-
-    chrome.feedbackPrivate.getUserEmail(email => {
-      this.userEmail_ = email;
-    });
-
-    this.browserProxy_.recordEvent(FeedbackEvent.OPENED);
-  }
-
   static get is() {
     return 'feedback-ui';
   }
 
+  static get template() {
+    return getTemplate();
+  }
+
   static get properties() {
     return {
-      /** @private */
       allowContactByEmail_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       attachLogs_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private */
       audioQuality_: String,
-
-      /** @private */
       comments_: String,
 
       /**
-       * Possible values of |feedbackType_| for use in HTML.
-       * @private @const {!Object<string, string>}
+       * Possible values of |FeedbackType| for use in HTML.
        */
-      FeedbackType_: {
+      feedbackTypeEnum_: {
         type: Object,
         value: FeedbackType,
       },
 
       /**
        * Controls which set of UI elements is displayed to the user.
-       * @private {FeedbackType}
        */
       feedbackType_: {
         type: String,
         value: FeedbackType.BUG,
       },
 
-      /** @private */
       hasNetworkSoftware_: String,
-
-      /** @private */
       networkDescription_: String,
 
-      /** @private */
       logData_: {
         type: String,
         value() {
@@ -165,7 +139,6 @@ export class FeedbackUiElement extends PolymerElement {
         }
       },
 
-      /** @private */
       categoryTag_: {
         type: String,
         value() {
@@ -173,19 +146,13 @@ export class FeedbackUiElement extends PolymerElement {
         }
       },
 
-      /** @private */
       projectedContentUrl_: String,
-
-      /** @private */
       sendDialogText_: String,
-
-      /** @private */
       sendDialogIsInteractive_: Boolean,
 
       /**
        * Set by onFeedbackChanged_() to control whether the "submit" button is
        * active.
-       * @private
        */
       sufficientFeedback_: {
         type: Boolean,
@@ -194,32 +161,60 @@ export class FeedbackUiElement extends PolymerElement {
             'videoQuality_, audioQuality_, comments_, visibleInSetup_)',
       },
 
-      /** @private */
       userEmail_: String,
-
-      /** @private */
       videoQuality_: String,
-
-      /** @private */
       videoSmoothness_: String,
-
-      /** @private */
       visibleInSetup_: String,
     };
   }
 
-  /** @override */
-  ready() {
+  private allowContactByEmail_: boolean;
+  private attachLogs_: boolean;
+  private audioQuality_: string;
+  private comments_: string;
+  private feedbackType_: FeedbackType;
+  private hasNetworkSoftware_: string;
+  private networkDescription_: string;
+  private logData_: string;
+  private categoryTag_: string;
+  private projectedContentUrl_: string;
+  private sendDialogText_: string;
+  private sendDialogIsInteractive_: boolean;
+  private sufficientFeedback_: boolean;
+  private userEmail_: string;
+  private videoQuality_: string;
+  private videoSmoothness_: string;
+  private visibleInSetup_: string;
+
+  private browserProxy_: FeedbackUiBrowserProxy =
+      FeedbackUiBrowserProxyImpl.getInstance();
+
+  // Public/mutable for testing.
+  resendDelayMs: number = 10000;
+  maxResendAttempts: number = 4;
+  feedbackSent: boolean = false;
+
+  constructor() {
+    super();
+
+    chrome.feedbackPrivate.getUserEmail(email => {
+      this.userEmail_ = email;
+    });
+
+    this.browserProxy_.recordEvent(FeedbackEvent.OPENED);
+  }
+
+
+  override ready() {
     super.ready();
-    this.shadowRoot.querySelector('#send-logs a')
-        .addEventListener('click', event => {
+    this.shadowRoot!.querySelector('#send-logs a')!.addEventListener(
+        'click', event => {
           event.preventDefault();
-          this.logsDialog_.showModal();
+          this.$.logsDialog.showModal();
         });
   }
 
-  /** @private */
-  computeSufficientFeedback_() {
+  private computeSufficientFeedback_() {
     switch (this.feedbackType_) {
       case FeedbackType.MIRRORING_QUALITY:
         return Boolean(
@@ -232,11 +227,7 @@ export class FeedbackUiElement extends PolymerElement {
     }
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  showDefaultSection_() {
+  private showDefaultSection_(): boolean {
     switch (this.feedbackType_) {
       case FeedbackType.MIRRORING_QUALITY:
       case FeedbackType.DISCOVERY:
@@ -246,29 +237,22 @@ export class FeedbackUiElement extends PolymerElement {
     }
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  showMirroringQualitySection_() {
+  private showMirroringQualitySection_(): boolean {
     return this.feedbackType_ === FeedbackType.MIRRORING_QUALITY;
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  showDiscoverySection_() {
+  private showDiscoverySection_(): boolean {
     return this.feedbackType_ === FeedbackType.DISCOVERY;
   }
 
-  onSubmit_() {
+  private onSubmit_() {
     const parts = [`Type: ${this.feedbackType_}`, ''];
-    const append = (label, value) => {
+
+    function append(label: string, value: string) {
       if (value) {
         parts.push(`${label}: ${value}`);
       }
-    };
+    }
 
     switch (this.feedbackType_) {
       case FeedbackType.MIRRORING_QUALITY:
@@ -290,7 +274,7 @@ export class FeedbackUiElement extends PolymerElement {
         break;
     }
 
-    const feedback = {
+    const feedback: chrome.feedbackPrivate.FeedbackInfo = {
       productId: 85561,
       description: parts.join('\n'),
       email: this.allowContactByEmail_ ? this.userEmail_ : '',
@@ -312,12 +296,10 @@ export class FeedbackUiElement extends PolymerElement {
 
   /**
    * Schedules an attempt to send feedback after |delayMs| milliseconds.
-   * @param {!chrome.feedbackPrivate.FeedbackInfo} feedback
-   * @param {number} failureCount
-   * @param {number} delayMs
-   * @private
    */
-  trySendFeedback_(feedback, failureCount, delayMs) {
+  private trySendFeedback_(
+      feedback: chrome.feedbackPrivate.FeedbackInfo, failureCount: number,
+      delayMs: number) {
     setTimeout(() => {
       const sendStartTime = Date.now();
       this.browserProxy_.sendFeedback(feedback).then(status => {
@@ -339,19 +321,15 @@ export class FeedbackUiElement extends PolymerElement {
 
   /**
    * Updates the status of the "send" dialog and records the event.
-   * @param {FeedbackEvent} event
-   * @param {string} stringKey
-   * @param {boolean} isInteractive
-   * @private
    */
-  updateSendDialog_(event, stringKey, isInteractive) {
+  private updateSendDialog_(
+      event: FeedbackEvent, stringKey: string, isInteractive: boolean) {
     this.browserProxy_.recordEvent(event);
     this.sendDialogText_ = loadTimeData.getString(stringKey);
     this.sendDialogIsInteractive_ = isInteractive;
   }
 
-  /** @private */
-  onSendDialogOk_() {
+  private onSendDialogOk_() {
     if (this.feedbackSent) {
       chrome.send('close');
     } else {
@@ -359,21 +337,18 @@ export class FeedbackUiElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_() {
     if (!this.comments_ ||
         confirm(loadTimeData.getString('discardConfirmation'))) {
       chrome.send('close');
     }
   }
 
-  /** @private */
-  onLogsDialogOk_() {
-    this.logsDialog_.close();
+  private onLogsDialogOk_() {
+    this.$.logsDialog.close();
   }
 
-  /** @private */
-  getProductSpecificData_() {
+  private getProductSpecificData_(): Array<{key: string, value: string}> {
     const data = [
       {
         key: 'global_media_controls_cast_start_stop',
@@ -387,20 +362,11 @@ export class FeedbackUiElement extends PolymerElement {
     ];
     return data;
   }
+}
 
-  /**
-   * @private
-   * @return {!CrDialogElement}
-   */
-  get logsDialog_() {
-    return /** @type {!CrDialogElement} */ (this.$.logsDialog);
-  }
-
-  static get template() {
-    // This gets expanded to include the contents of feedback_ui.html by the
-    // html_to_js build rule.  It's at the end of the class so line numbers
-    // reported in the debugger match the action line numbers in this file.
-    return html`{__html_template__}`;
+declare global {
+  interface HTMLElementTagNameMap {
+    'feedback-ui': FeedbackUiElement;
   }
 }
 

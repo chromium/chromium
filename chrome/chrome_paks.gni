@@ -211,7 +211,7 @@ template("chrome_extra_paks") {
         ]
         deps += [
           "//chrome/browser/resources:preinstalled_web_apps_resources",
-          "//chrome/browser/resources/media_router:cast_feedback_ui_resources",
+          "//chrome/browser/resources/media_router/cast_feedback:resources",
         ]
       }
     }

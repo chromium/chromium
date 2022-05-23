@@ -2,34 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FeedbackEvent, FeedbackUiBrowserProxy, FeedbackUiBrowserProxyImpl} from 'chrome://cast-feedback/cast_feedback_ui.js';
+import {FeedbackEvent, FeedbackUiBrowserProxy, FeedbackUiBrowserProxyImpl, FeedbackUiElement} from 'chrome://cast-feedback/cast_feedback_ui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+class TestFeedbackUiBrowserProxy extends TestBrowserProxy implements
+    FeedbackUiBrowserProxy {
+  timesToFail: number = 0;
+  resolver: PromiseResolver<void> = new PromiseResolver();
 
-/** @implements {FeedbackUiBrowserProxy} */
-class TestFeedbackUiBrowserProxy extends TestBrowserProxy {
   constructor() {
     super(['recordEvent', 'sendFeedback']);
-
-    /** @type {number} */
-    this.timesToFail = 0;
-
-    /** @const {!PromiseResolver} */
-    this.resolver = new PromiseResolver();
   }
 
-  /** @override */
-  recordEvent(event) {
+  recordEvent(event: FeedbackEvent) {
     this.methodCalled('recordEvent', event);
     if (event === FeedbackEvent.SUCCEEDED || event === FeedbackEvent.FAILED) {
       this.resolver.resolve();
     }
   }
 
-  /** @override */
-  sendFeedback(info) {
+  sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo) {
     this.methodCalled('sendFeedback', info);
     return Promise.resolve(
         this.getCallCount('sendFeedback') > this.timesToFail ?
@@ -39,24 +33,27 @@ class TestFeedbackUiBrowserProxy extends TestBrowserProxy {
 }
 
 suite('Suite', function() {
-  let browserProxy;
-  let ui;
-  const TEST_COMMENT = 'test comment';
+  let browserProxy: TestFeedbackUiBrowserProxy;
+  let ui: FeedbackUiElement;
+  const TEST_COMMENT: string = 'test comment';
 
   function submit() {
-    const textArea = ui.shadowRoot.querySelector('textarea');
+    const textArea = ui.shadowRoot!.querySelector('textarea');
+    assertTrue(!!textArea);
     textArea.value = TEST_COMMENT;
     textArea.dispatchEvent(new CustomEvent('input'));
 
-    const submitButton = ui.shadowRoot.querySelector('.action-button');
+    const submitButton =
+        ui.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!submitButton);
     submitButton.click();
   }
 
   setup(function() {
+    document.body.innerHTML = '';
     browserProxy = new TestFeedbackUiBrowserProxy();
-    FeedbackUiBrowserProxyImpl.instance_ = browserProxy;
+    FeedbackUiBrowserProxyImpl.setInstance(browserProxy);
     ui = document.createElement('feedback-ui');
-    document.body.innerHtml = '';
     document.body.appendChild(ui);
   });
 
