@@ -99522,6 +99522,7 @@ Called by update_scheduler_enums.py.-->
   <int value="683177973" label="/cupsPrinters"/>
   <int value="754547746" label="/help/details"/>
   <int value="805959528" label="/security"/>
+  <int value="834907708" label="/privacy/guide"/>
   <int value="838443004" label="/safetyCheck"/>
   <int value="856943564" label="/content/siteDetails"/>
   <int value="868952532" label="/pointer-overlay"/>
