@@ -4,18 +4,25 @@
 
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 
-#include "base/feature_list.h"
+#include <atomic>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/metrics/histogram_macros_internal.h"
+#include "base/one_shot_event.h"
+#include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_base.h"
-#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -29,20 +36,25 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/common/chrome_features.h"
-#include "components/omnibox/browser/location_bar_model.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -112,11 +124,6 @@ absl::optional<AppId> GetWebAppForActiveTab(Browser* browser) {
 
   return provider->registrar().FindInstalledAppWithUrlInScope(
       web_contents->GetMainFrame()->GetLastCommittedURL());
-}
-
-bool IsInScope(const GURL& url, const GURL& scope) {
-  return base::StartsWith(url.spec(), scope.spec(),
-                          base::CompareCase::SENSITIVE);
 }
 
 void PrunePreScopeNavigationHistory(const GURL& scope,

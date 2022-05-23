@@ -387,6 +387,12 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   if (install_info_->url_handlers != app->url_handlers())
     return true;
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppManifestLockScreen) &&
+      install_info_->lock_screen_start_url != app->lock_screen_start_url()) {
+    return true;
+  }
+
   if (install_info_->note_taking_new_note_url !=
       app->note_taking_new_note_url()) {
     return true;

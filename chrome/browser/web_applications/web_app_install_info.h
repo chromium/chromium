@@ -294,6 +294,10 @@ struct WebAppInstallInfo {
   // information.
   apps::UrlHandlers url_handlers;
 
+  // URL within scope to launch on the lock screen for a "show on lock screen"
+  // action. Valid iff this is considered a lock-screen-capable app.
+  GURL lock_screen_start_url;
+
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
   GURL note_taking_new_note_url;

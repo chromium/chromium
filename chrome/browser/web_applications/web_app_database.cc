@@ -603,6 +603,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     url_handler_proto->set_has_origin_wildcard(url_handler.has_origin_wildcard);
   }
 
+  if (web_app.lock_screen_start_url().is_valid()) {
+    local_data->set_lock_screen_start_url(
+        web_app.lock_screen_start_url().spec());
+  }
+
   if (web_app.note_taking_new_note_url().is_valid()) {
     local_data->set_note_taking_new_note_url(
         web_app.note_taking_new_note_url().spec());
@@ -1138,6 +1143,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     url_handlers.push_back(std::move(url_handler));
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
+
+  if (local_data.has_lock_screen_start_url()) {
+    web_app->SetLockScreenStartUrl(GURL(local_data.lock_screen_start_url()));
+  }
 
   if (local_data.has_note_taking_new_note_url()) {
     web_app->SetNoteTakingNewNoteUrl(

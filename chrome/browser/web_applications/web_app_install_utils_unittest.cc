@@ -96,8 +96,10 @@ GURL StartUrl() {
 }  // namespace
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
-  base::test::ScopedFeatureList feature_list(
-      blink::features::kFileHandlingIcons);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kFileHandlingIcons,
+                                 blink::features::kWebAppManifestLockScreen},
+                                /*disabled_features=*/{});
 
   WebAppInstallInfo web_app_info;
   web_app_info.title = kAlternativeAppTestTitle;
@@ -113,7 +115,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = kAppTestShortName;
 
-  const GURL kFileHandlingIcon("fav1.png");
   {
     auto handler = blink::mojom::ManifestFileHandler::New();
     handler->action = GURL("http://example.com/open-files");
@@ -121,7 +122,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
     handler->name = u"Images";
     {
       blink::Manifest::ImageResource icon;
-      icon.src = kFileHandlingIcon;
+      icon.src = GURL("fav1.png");
       icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
       handler->icons.push_back(icon);
     }
@@ -155,7 +156,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
-    // Ensure an empty NoteTaking struct is ignored.
+    // Ensure empty structs are ignored.
+    manifest.lock_screen = blink::mojom::ManifestLockScreen::New();
     manifest.note_taking = blink::mojom::ManifestNoteTaking::New();
   }
 
@@ -167,6 +169,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
   EXPECT_TRUE(web_app_info.display_override.empty());
   EXPECT_EQ(kAppManifestUrl, web_app_info.manifest_url);
+  EXPECT_TRUE(web_app_info.lock_screen_start_url.is_empty());
   EXPECT_TRUE(web_app_info.note_taking_new_note_url.is_empty());
 
   // The icon info from |web_app_info| should be left as is, since the manifest
@@ -199,9 +202,16 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   manifest.display_override.push_back(DisplayMode::kStandalone);
 
   {
+    auto lock_screen = blink::mojom::ManifestLockScreen::New();
+    lock_screen->start_url =
+        GURL("http://www.chromium.org/lock-screen-start-url");
+    manifest.lock_screen = std::move(lock_screen);
+  }
+
+  {
     // Update with a valid new_note_url.
     auto note_taking = blink::mojom::ManifestNoteTaking::New();
-    note_taking->new_note_url = GURL("http://example.com/new-note-url");
+    note_taking->new_note_url = GURL("http://www.chromium.org/new-note-url");
     manifest.note_taking = std::move(note_taking);
   }
 
@@ -240,7 +250,11 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(url_handler.origin,
             url::Origin::Create(GURL("https://url_handlers_origin.com/")));
   EXPECT_FALSE(url_handler.has_origin_wildcard);
-  EXPECT_EQ(GURL("http://example.com/new-note-url"),
+
+  EXPECT_EQ(GURL("http://www.chromium.org/lock-screen-start-url"),
+            web_app_info.lock_screen_start_url);
+
+  EXPECT_EQ(GURL("http://www.chromium.org/new-note-url"),
             web_app_info.note_taking_new_note_url);
 
   // Check permissions policy was updated.
@@ -391,8 +405,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
 
 // Tests that WebAppInfo is correctly updated when Manifest contains Shortcuts.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kFileHandlingIcons);
 
   WebAppInstallInfo web_app_info;
   web_app_info.title = kAlternativeAppTestTitle;
@@ -408,7 +422,6 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = kAppTestShortName;
 
-  const GURL kFileHandlingIcon("fav1.png");
   {
     auto handler = blink::mojom::ManifestFileHandler::New();
     handler->action = GURL("http://example.com/open-files");
@@ -416,7 +429,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
     handler->name = u"Images";
     {
       blink::Manifest::ImageResource icon;
-      icon.src = kFileHandlingIcon;
+      icon.src = GURL("fav1.png");
       icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
       handler->icons.push_back(icon);
     }
@@ -692,6 +705,67 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestShortcutIconsTooLarge) {
   EXPECT_EQ(2U, all_icons.size());
 }
 
+TEST(WebAppInstallUtils,
+     UpdateWebAppInfoFromManifest_CrossOriginUrls_DropsFields) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kWebAppManifestLockScreen);
+
+  WebAppInstallInfo install_info;
+
+  blink::mojom::Manifest manifest;
+  const GURL kAppUrl("http://www.chromium.org/index.html");
+  manifest.start_url = kAppUrl;
+  manifest.scope = kAppUrl.GetWithoutFilename();
+
+  {
+    auto lock_screen = blink::mojom::ManifestLockScreen::New();
+    lock_screen->start_url =
+        GURL("http://www.some-other-origin.com/lock-screen-start-url");
+    manifest.lock_screen = std::move(lock_screen);
+  }
+
+  {
+    auto note_taking = blink::mojom::ManifestNoteTaking::New();
+    note_taking->new_note_url =
+        GURL("http://www.some-other-origin.com/new-note-url");
+    manifest.note_taking = std::move(note_taking);
+  }
+
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &install_info);
+
+  EXPECT_EQ(kAppUrl, install_info.start_url);
+  EXPECT_TRUE(install_info.lock_screen_start_url.is_empty());
+  EXPECT_TRUE(install_info.note_taking_new_note_url.is_empty());
+}
+
+TEST(WebAppInstallUtils,
+     UpdateWebAppInfoFromManifest_WithoutLockscreenFlag_DropsField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kWebAppManifestLockScreen);
+
+  WebAppInstallInfo install_info;
+
+  blink::mojom::Manifest manifest;
+  const GURL kAppUrl("http://www.chromium.org/index.html");
+  manifest.start_url = kAppUrl;
+  manifest.scope = kAppUrl.GetWithoutFilename();
+
+  {
+    auto lock_screen = blink::mojom::ManifestLockScreen::New();
+    lock_screen->start_url =
+        GURL("http://www.chromium.org/lock-screen-start-url");
+    manifest.lock_screen = std::move(lock_screen);
+  }
+
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &install_info);
+
+  EXPECT_EQ(kAppUrl, install_info.start_url);
+  EXPECT_TRUE(install_info.lock_screen_start_url.is_empty());
+}
+
 // Tests that SkBitmaps associated with shortcut item icons are populated in
 // their own map in web_app_info.
 TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
@@ -951,7 +1025,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_Translations) {
 class FileHandlersFromManifestTest : public ::testing::TestWithParam<bool> {
  public:
   FileHandlersFromManifestTest() {
-    feature_list_.InitWithFeatures({blink::features::kFileHandlingIcons}, {});
+    feature_list_.InitAndEnableFeature(blink::features::kFileHandlingIcons);
     WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(GetParam());
   }
 
@@ -1137,8 +1211,8 @@ INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 class RegisterOsSettingsTest : public testing::Test {
  public:
   RegisterOsSettingsTest() {
-    feature_list_.InitWithFeatures(
-        {features::kEnableWebAppUninstallFromOsSettings}, {});
+    feature_list_.InitAndEnableFeature(
+        features::kEnableWebAppUninstallFromOsSettings);
   }
   ~RegisterOsSettingsTest() override = default;
 

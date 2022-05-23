@@ -35,7 +35,10 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
@@ -542,7 +545,19 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 
   web_app_info->url_handlers = ToWebAppUrlHandlers(manifest.url_handlers);
 
-  if (manifest.note_taking && manifest.note_taking->new_note_url.is_valid()) {
+  GURL inferred_scope = web_app_info->scope.is_valid() ? web_app_info->scope
+                        : web_app_info->start_url.is_valid()
+                            ? web_app_info->start_url.GetWithoutFilename()
+                            : GURL();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppManifestLockScreen) &&
+      manifest.lock_screen && manifest.lock_screen->start_url.is_valid() &&
+      IsInScope(manifest.lock_screen->start_url, inferred_scope)) {
+    web_app_info->lock_screen_start_url = manifest.lock_screen->start_url;
+  }
+
+  if (manifest.note_taking && manifest.note_taking->new_note_url.is_valid() &&
+      IsInScope(manifest.note_taking->new_note_url, inferred_scope)) {
     web_app_info->note_taking_new_note_url = manifest.note_taking->new_note_url;
   }
 
@@ -952,6 +967,10 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetShareTarget(web_app_info.share_target);
   web_app.SetProtocolHandlers(web_app_info.protocol_handlers);
   web_app.SetUrlHandlers(web_app_info.url_handlers);
+
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppManifestLockScreen))
+    web_app.SetLockScreenStartUrl(web_app_info.lock_screen_start_url);
+
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 
   web_app.SetCaptureLinks(web_app_info.capture_links);

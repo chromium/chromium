@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -38,6 +37,7 @@ namespace web_app {
 
 class WebApp;
 class WebAppRegistrar;
+struct WebAppInstallParams;
 
 enum class ForInstallableSite {
   kYes,

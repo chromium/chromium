@@ -180,6 +180,10 @@ class WebApp {
     return disallowed_launch_protocols_;
   }
 
+  // URL within scope to launch for a "show on lock screen" action. Valid iff
+  // this is considered a lock-screen-capable app.
+  const GURL& lock_screen_start_url() const { return lock_screen_start_url_; }
+
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
   const GURL& note_taking_new_note_url() const {
@@ -350,6 +354,7 @@ class WebApp {
   void SetDisallowedLaunchProtocols(
       base::flat_set<std::string> disallowed_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
+  void SetLockScreenStartUrl(const GURL& lock_screen_start_url);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
@@ -434,6 +439,7 @@ class WebApp {
   base::flat_set<std::string> allowed_launch_protocols_;
   base::flat_set<std::string> disallowed_launch_protocols_;
   apps::UrlHandlers url_handlers_;
+  GURL lock_screen_start_url_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
   base::Time last_launch_time_;
@@ -485,7 +491,9 @@ class WebApp {
   //  - WebAppDatabase::CreateWebApp()
   //  - WebAppDatabase::CreateWebAppProto()
   //  - CreateRandomWebApp()
+  // If parsed from manifest, also add to:
   //  - ManifestUpdateTask::IsUpdateNeededForManifest()
+  //  - SetWebAppManifestFields()
 };
 
 // For logging and debug purposes.

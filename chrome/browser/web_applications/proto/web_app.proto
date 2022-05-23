@@ -346,4 +346,7 @@ message WebAppProto {
   // The amount of storage (in bytes) used by the app and its related data.
   optional uint64 app_size_in_bytes = 54;
   optional uint64 data_size_in_bytes = 55;
+
+  // If present, the URL to use to launch the app on the lock screen.
+  optional string lock_screen_start_url = 56;
 }

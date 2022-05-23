@@ -286,6 +286,11 @@ void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
   url_handlers_ = std::move(url_handlers);
 }
 
+void WebApp::SetLockScreenStartUrl(const GURL& lock_screen_start_url) {
+  DCHECK(lock_screen_start_url.is_empty() || lock_screen_start_url.is_valid());
+  lock_screen_start_url_ = lock_screen_start_url;
+}
+
 void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
   DCHECK(note_taking_new_note_url.is_empty() ||
          note_taking_new_note_url.is_valid());
@@ -507,6 +512,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.allowed_launch_protocols_,
         app.disallowed_launch_protocols_,
         app.url_handlers_,
+        app.lock_screen_start_url_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,
         app.last_launch_time_,
@@ -730,6 +736,9 @@ base::Value WebApp::AsDebugValue() const {
                     ConvertToString(manifest_update_time_));
 
   root.SetStringKey("manifest_url", ConvertToString(manifest_url_));
+
+  root.SetStringKey("lock_screen_start_url",
+                    ConvertToString(lock_screen_start_url_));
 
   root.SetStringKey("note_taking_new_note_url",
                     ConvertToString(note_taking_new_note_url_));
