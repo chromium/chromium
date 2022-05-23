@@ -529,8 +529,7 @@ Status IsDocumentTypeXml(
                                "document.contentType", false, &contentType);
   if (status.IsError())
           return status;
-  if (base::LowerCaseEqualsASCII(contentType->GetString(),
-                                 "text/xml"))
+  if (base::EqualsCaseInsensitiveASCII(contentType->GetString(), "text/xml"))
     *is_xml_document = true;
   else
     *is_xml_document = false;
@@ -567,7 +566,7 @@ Status IsElementAttributeEqualToIgnoreCase(
     return status;
   if (result->is_string()) {
     *is_equal =
-        base::LowerCaseEqualsASCII(result->GetString(), attribute_value);
+        base::EqualsCaseInsensitiveASCII(result->GetString(), attribute_value);
   } else {
     *is_equal = false;
   }
