@@ -97,6 +97,20 @@ TEST(AttributionInteropParserTest, ValidOutput) {
           "source_type": "navigation",
           "trigger_data": "7"
         }
+      }],
+      "aggregatable_reports": [{
+        "report_time": "1643235573123",
+        "report_url": "https://r.example/path",
+        "report": {
+          "attribution_destination": "https://d.test",
+          "source_site": "https://s.test"
+        },
+        "test_info": {
+          "histograms": [{
+            "key": "key",
+            "value": "0x159"
+          }]
+        }
       }]
     })json";
 
@@ -110,6 +124,18 @@ TEST(AttributionInteropParserTest, ValidOutput) {
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "7"
+        }
+      }],
+      "aggregatable_results": [{
+        "report_time": "1643235573123",
+        "report_url": "https://r.example/path",
+        "payload": {
+          "attribution_destination": "https://d.test",
+          "source_site": "https://s.test",
+          "histograms": [{
+            "key": "key",
+            "value": "0x159"
+          }]
         }
       }]
     })json";
@@ -445,7 +471,74 @@ const ParseErrorTestCase kParseOutputErrorTestCases[] = {
           "event_level_reports": [{}]
         })json",
     },
-};
+    {
+        R"(["aggregatable_reports"]: must be a list)",
+        R"json({
+          "aggregatable_reports": ""
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]: must be a dictionary)",
+        R"json({
+          "aggregatable_reports": [""]
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]["report_url"]: must be present)",
+        R"json({
+          "aggregatable_reports": [{}]
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]["report_time"]: must be present)",
+        R"json({
+          "aggregatable_reports": [{}]
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]["test_info"]: must be present)",
+        R"json({
+          "aggregatable_reports": [{}]
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]["test_info"]: must be a dictionary)",
+        R"json({
+          "aggregatable_reports": [{
+            "test_info": ""
+          }]
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]["report"]: must be present)",
+        R"json({
+          "aggregatable_reports": [{
+            "test_info": {}
+          }]
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]["report"]: must be a dictionary)",
+        R"json({
+          "aggregatable_reports": [{
+            "test_info": {},
+            "report": ""
+          }]
+        })json",
+    },
+    {
+        R"(["aggregatable_reports"][0]["report"]["histograms"]: must not be present)",
+        R"json({
+          "aggregatable_reports": [{
+            "report": {
+              "histograms": ""
+            },
+            "test_info": {
+              "histograms": []
+            }
+          }]
+        })json",
+    }};
 
 INSTANTIATE_TEST_SUITE_P(AttributionInteropParserInvalidOutputs,
                          AttributionInteropParseOutputErrorTest,

@@ -41,7 +41,5 @@
       }
     ]
   },
-  "output": {
-    "event_level_results": []
-  }
+  "output": {}
 }

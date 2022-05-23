@@ -275,6 +275,58 @@ base::Value::List AttributionInteropParser::ParseEventLevelReports(
   return event_level_results;
 }
 
+base::Value::List AttributionInteropParser::ParseAggregatableReports(
+    base::Value::Dict& output) {
+  static constexpr char kKey[] = "aggregatable_reports";
+
+  base::Value::List aggregatable_results;
+
+  base::Value* value = output.Find(kKey);
+  if (!value)
+    return aggregatable_results;
+
+  auto context = PushContext(kKey);
+  ParseList(output.Find(kKey),
+            base::BindLambdaForTesting([&](base::Value value) {
+              if (!EnsureDictionary(&value))
+                return;
+
+              base::Value::Dict result;
+
+              base::Value::Dict& value_dict = value.GetDict();
+              MoveValue(value_dict, "report_url", result);
+              MoveValue(value_dict, "report_time", result);
+
+              static constexpr char kKeyTestInfo[] = "test_info";
+              base::Value* test_info;
+              {
+                auto test_info_context = PushContext(kKeyTestInfo);
+                test_info = value_dict.Find(kKeyTestInfo);
+                if (!EnsureDictionary(test_info))
+                  return;
+              }
+
+              static constexpr char kKeyReport[] = "report";
+              {
+                auto report_context = PushContext(kKeyReport);
+                base::Value* report = value_dict.Find(kKeyReport);
+                if (!EnsureDictionary(report))
+                  return;
+
+                MoveDictValues(test_info->GetDict(), report->GetDict());
+              }
+
+              MoveValue(value_dict, "report", result, "payload");
+
+              if (has_error())
+                return;
+
+              aggregatable_results.Append(std::move(result));
+            }));
+
+  return aggregatable_results;
+}
+
 absl::optional<base::Value>
 AttributionInteropParser::InteropOutputFromSimulatorOutput(base::Value output) {
   if (!EnsureDictionary(&output))
@@ -283,11 +335,18 @@ AttributionInteropParser::InteropOutputFromSimulatorOutput(base::Value output) {
   base::Value::List event_level_results =
       ParseEventLevelReports(output.GetDict());
 
+  base::Value::List aggregatable_results =
+      ParseAggregatableReports(output.GetDict());
+
   if (has_error())
     return absl::nullopt;
 
   base::Value::Dict dict;
-  dict.Set("event_level_results", std::move(event_level_results));
+  if (!event_level_results.empty())
+    dict.Set("event_level_results", std::move(event_level_results));
+
+  if (!aggregatable_results.empty())
+    dict.Set("aggregatable_results", std::move(aggregatable_results));
 
   return base::Value(std::move(dict));
 }

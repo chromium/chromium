@@ -14,7 +14,6 @@ they can be shared by non-web-based platforms.
 The tests here cover how the browser will handle various series of sources and
 triggers with different configurations, but does not rely on any blink APIs.
 
-<!-- TODO(crbug.com/1318118): Add aggregatable reports -->
 Note that currently only event-level reports are covered.
 
 # Test case format
@@ -81,7 +80,18 @@ The JSON schema is as follows.
                 // Optional uint64 formatted as a base-10 string. Defaults to
                 // null.
                 "debug_key": "987"
-              }
+              },
+
+              // Optional list of zero or more aggregatable keys.
+              "Attribution-Reporting-Register-Aggregatable-Source": [
+                {
+                  // Required string to identify the key.
+                  "id": "a",
+
+                  // Required uint128 formatted as a base-16 string.
+                  "key_piece": "0x1"
+                }
+              ]
             }
           }
         ]
@@ -142,6 +152,37 @@ The JSON schema is as follows.
                 }
               ],
 
+              // Optional list of zero or more aggregatable trigger data.
+              "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [
+                {
+                  // Required uint128 formatted as a base-16 string.
+                  "key_piece": "0x10",
+
+                  // Required list of key identifiers.
+                  "source_keys": ["a"],
+
+                  // Optional dictionary of filters and corresponding values.
+                  // Defaults to empty.
+                  "filters": {
+                    "a": ["b", "c"],
+                    "d": []
+                  },
+
+                  // Optional dictionary of negated filters and corresponding
+                  // values. Defaults to empty.
+                  "not_filters": {
+                    "x": ["y"],
+                    "z": []
+                  }
+                }
+              ],
+
+              // Optional dictionary of key identifiers and corresponding
+              // values.
+              "Attribution-Reporting-Register-Aggregatable-Values": {
+                "a": 123
+              },
+
               // Optional uint64 formatted as a base-10 string. Defaults to
               // null.
               "Attribution-Reporting-Trigger-Debug-Key": "789",
@@ -161,7 +202,7 @@ The JSON schema is as follows.
 
   // Expected output.
   "output": {
-    // List of event-level results.
+    // Optional list of event-level results. Omitted if empty.
     "event_level_results": [
       {
         // URL to which the report would have been sent.
@@ -188,6 +229,43 @@ The JSON schema is as follows.
           // Decimal number between 0 and 1 indicating how often noise is
           // applied.
           "randomized_trigger_rate": 0.0024,
+
+          // Debug key set on the source. Omitted if not set.
+          "source_debug_key": "123",
+
+          // Debug key set on the trigger. Omitted if not set.
+          "trigger_debug_key": "789"
+        }
+      }
+    ],
+
+    // Optional list of aggregatable results. Omitted if empty.
+    "aggregatable_results": [
+      {
+        // Time at which the report would have been sent in milliseconds since
+        // the UNIX epoch.
+        "report_time": "123",
+
+        // URL to which the report would have been sent.
+        "report_url": "https://reporting.example/.well-known/attribution-reporting/report-aggregate-attribution",
+
+        "payload": {
+          // The source site on which the source was registered.
+          "source_site": "https://source.example",
+
+          // The attribution destination on which the trigger was registered.
+          "attribution_destination": "https://destination.example",
+
+          // List of aggregatable histograms.
+          "histograms": [
+            {
+              // uint128 formatted as a base-16 string.
+              "key": "0x1",
+
+              // uint32 value.
+              "value": 123
+            }
+          ],
 
           // Debug key set on the source. Omitted if not set.
           "source_debug_key": "123",
