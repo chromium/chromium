@@ -57,7 +57,7 @@ struct VideoEncoderClientConfig {
   // without waiting for the result of the previous encodes requests.
   size_t max_outstanding_encode_requests = 1;
   // The desired bitrate in bits/second.
-  media::VideoBitrateAllocation bitrate;
+  media::VideoBitrateAllocation bitrate_allocation;
   // The desired framerate in frames/second.
   uint32_t framerate = 30.0;
   // The interval of calling VideoEncodeAccelerator::Encode(). If this is

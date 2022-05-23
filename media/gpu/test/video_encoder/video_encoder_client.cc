@@ -52,7 +52,7 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
     VideoCodecProfile output_profile,
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
-    const VideoBitrateAllocation& bitrate,
+    const VideoBitrateAllocation& bitrate_allocation,
     bool reverse)
     : output_profile(output_profile),
       output_resolution(video->Resolution()),
@@ -62,7 +62,7 @@ VideoEncoderClientConfig::VideoEncoderClientConfig(
       num_spatial_layers(
           std::max(spatial_layers.size(), static_cast<size_t>(1u))),
       spatial_layers(spatial_layers),
-      bitrate(bitrate),
+      bitrate_allocation(bitrate_allocation),
       framerate(video->FrameRate()),
       num_frames_to_encode(video->NumFrames()),
       reverse(reverse) {}
@@ -475,7 +475,7 @@ void VideoEncoderClient::CreateEncoderTask(const Video* video,
   const VideoEncodeAccelerator::Config config(
       video_->PixelFormat(), encoder_client_config_.output_resolution,
       encoder_client_config_.output_profile,
-      Bitrate::ConstantBitrate(encoder_client_config_.bitrate.GetSumBps()),
+      encoder_client_config_.bitrate_allocation.GetSumBitrate(),
       encoder_client_config_.framerate, absl::nullopt /* gop_length */,
       absl::nullopt /* h264_output_level*/, false /* is_constrained_h264 */,
       encoder_client_config_.input_storage_type,

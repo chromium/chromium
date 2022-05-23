@@ -507,8 +507,9 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate.GetSumBps(),
-              kBitrateTolerance * config.bitrate.GetSumBps());
+  EXPECT_NEAR(encoder->GetStats().Bitrate(),
+              config.bitrate_allocation.GetSumBps(),
+              kBitrateTolerance * config.bitrate_allocation.GetSumBps());
 }
 
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
@@ -523,7 +524,7 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   encoder->SetEventWaitTimeout(kBitrateCheckEventTimeout);
 
   // Encode the video with the first bitrate.
-  const uint32_t first_bitrate = config.bitrate.GetSumBps();
+  const uint32_t first_bitrate = config.bitrate_allocation.GetSumBps();
   encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                        kNumFramesToEncodeForBitrateCheck);
   EXPECT_TRUE(encoder->WaitUntilIdle());
@@ -566,17 +567,19 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
   encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                        kNumFramesToEncodeForBitrateCheck);
   EXPECT_TRUE(encoder->WaitUntilIdle());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate.GetSumBps(),
-              kBitrateTolerance * config.bitrate.GetSumBps());
+  EXPECT_NEAR(encoder->GetStats().Bitrate(),
+              config.bitrate_allocation.GetSumBps(),
+              kBitrateTolerance * config.bitrate_allocation.GetSumBps());
 
   // Encode the video with the second framerate.
   const uint32_t second_framerate = first_framerate * 3 / 2;
   encoder->ResetStats();
-  encoder->UpdateBitrate(config.bitrate, second_framerate);
+  encoder->UpdateBitrate(config.bitrate_allocation, second_framerate);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate.GetSumBps(),
-              kBitrateTolerance * config.bitrate.GetSumBps());
+  EXPECT_NEAR(encoder->GetStats().Bitrate(),
+              config.bitrate_allocation.GetSumBps(),
+              kBitrateTolerance * config.bitrate_allocation.GetSumBps());
 
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
