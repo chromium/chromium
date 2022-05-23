@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/event.h"
@@ -521,10 +522,13 @@ TEST_F(PhoneHubNotificationControllerTest,
        MonochromeIconNotificationRefreshFeatureOff) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
-       chromeos::features::kPhoneHubCameraRoll},
-      {chromeos::features::kPhoneHubMonochromeNotificationIcons,
-       chromeos::features::kNotificationsRefresh});
+      /*enabled_features=*/{chromeos::features::kPhoneHub,
+                            chromeos::features::kEcheSWA,
+                            chromeos::features::kPhoneHubCameraRoll},
+      /*disabled_features=*/{
+          chromeos::features::kPhoneHubMonochromeNotificationIcons,
+          chromeos::features::kNotificationsRefresh,
+          chromeos::features::kDarkLightMode});
   notification_manager_->SetNotificationsInternal(fake_notifications_);
 
   phonehub::Notification updated_notification(

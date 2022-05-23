@@ -463,11 +463,14 @@ void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
   }
 
   // Color
-  if (features::IsProductivityLauncherEnabled()) {
-    layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
+  const auto* color_provider = ColorProvider::Get();
+  // ColorProvide might be nullptr in tests as shell might not has an instance
+  // in tests.
+  if (color_provider && features::IsProductivityLauncherEnabled()) {
+    layer()->SetColor(color_provider->GetBaseLayerColor(
         ColorProvider::BaseLayerType::kTransparent80));
-  } else if (features::IsDarkLightModeEnabled()) {
-    layer()->SetColor(ColorProvider::Get()->GetShieldLayerColor(
+  } else if (color_provider && features::IsDarkLightModeEnabled()) {
+    layer()->SetColor(color_provider->GetShieldLayerColor(
         features::IsBackgroundBlurEnabled()
             ? ColorProvider::ShieldLayerType::kShield80
             : ColorProvider::ShieldLayerType::kShield95));

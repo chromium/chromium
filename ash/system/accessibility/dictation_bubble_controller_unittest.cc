@@ -155,6 +155,9 @@ TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
 
 // Verifies text and icon colors when the dark light mode feature is disabled.
 TEST_F(DictationBubbleControllerTest, NoDarkMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+
   // Show bubble UI.
   EXPECT_FALSE(GetView());
   Show(DictationBubbleIconType::kHidden,

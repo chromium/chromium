@@ -81,7 +81,8 @@ TEST_F(AssistantButtonTest, IconColor) {
 }
 
 TEST_F(AssistantButtonTest, IconColorTypeDefaultLight) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
 
   AssistantButton::InitParams params;
   params.size_in_dip = kSizeInDip;
@@ -151,7 +152,8 @@ TEST_F(AssistantButtonTest, IconColorType) {
 }
 
 TEST_F(AssistantButtonTest, FocusAndHoverColor) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
 
   AssistantButton::InitParams params;
   params.size_in_dip = kSizeInDip;

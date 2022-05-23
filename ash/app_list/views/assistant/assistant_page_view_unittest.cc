@@ -921,7 +921,8 @@ TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
 }
 
 TEST_F(AssistantPageNonBubbleTest, Theme) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
 
   ShowAssistantUi();
 
