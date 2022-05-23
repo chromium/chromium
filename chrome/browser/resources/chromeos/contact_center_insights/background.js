@@ -90,6 +90,7 @@ function reportTelemetryData(telemetryData) {
   const record = new proto.reporting.Record();
   record.setDestination(proto.reporting.Destination.TELEMETRY_METRIC);
   record.setData(metricData.serializeBinary());
+  record.setTimestampUs(Date.now() * 1000);
 
   // Prepare enqueue record request
   const request = {
