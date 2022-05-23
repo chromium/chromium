@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERAND_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERAND_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -13,16 +13,16 @@ namespace blink {
 
 class MLGraphBuilder;
 
-class MLOperand final : public ScriptWrappable {
+class MLOperator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit MLOperand(MLGraphBuilder* graph_builder);
+  explicit MLOperator(MLGraphBuilder* graph_builder);
 
-  MLOperand(const MLOperand&) = delete;
-  MLOperand& operator=(const MLOperand&) = delete;
+  MLOperator(const MLOperator&) = delete;
+  MLOperator& operator=(const MLOperator&) = delete;
 
-  ~MLOperand() override;
+  ~MLOperator() override;
 
   void Trace(Visitor* visitor) const override;
 
@@ -32,4 +32,4 @@ class MLOperand final : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERAND_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_

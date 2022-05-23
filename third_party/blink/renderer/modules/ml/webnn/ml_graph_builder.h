@@ -15,12 +15,17 @@
 namespace blink {
 
 class MLContext;
+class MLClampOptions;
+class MLConv2dOptions;
+class MLGemmOptions;
+class MLPool2dOptions;
 class MLOperand;
 class MLOperandDescriptor;
+class MLOperator;
 
 typedef HeapVector<std::pair<String, Member<MLOperand>>> MLNamedOperands;
 
-class MLGraphBuilder : public ScriptWrappable {
+class MLGraphBuilder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -40,10 +45,25 @@ class MLGraphBuilder : public ScriptWrappable {
   MLOperand* constant(const MLOperandDescriptor* desc,
                       NotShared<DOMArrayBufferView> buffer_view);
 
-  MLOperand* add(const MLOperand* a, const MLOperand* b);
+  // The order of operations declaration is the same as spec.
+  MLOperand* clamp(const MLOperand*, const MLClampOptions*);
+  MLOperator* clamp(const MLClampOptions*);
+
+  MLOperand* conv2d(const MLOperand*, const MLOperand*, const MLConv2dOptions*);
+
+  // Element-wise binary operations
+  MLOperand* add(const MLOperand*, const MLOperand*);
+
+  MLOperand* gemm(const MLOperand*, const MLOperand*, const MLGemmOptions*);
+
+  // Pooling operations
+  MLOperand* averagePool2d(const MLOperand*, const MLPool2dOptions*);
+
+  MLOperand* reshape(const MLOperand*, const Vector<int32_t>&);
+
+  MLOperand* softmax(const MLOperand*);
 
  private:
-  MLContext* GetContext() const;
   Member<MLContext> ml_context_;
 };
 

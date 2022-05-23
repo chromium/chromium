@@ -5070,14 +5070,23 @@ interface MLContext
 interface MLGraphBuilder
     attribute @@toStringTag
     method add
+    method averagePool2d
+    method clamp
     method constant
     method constructor
+    method conv2d
+    method gemm
     method input
+    method reshape
+    method softmax
 interface MLModelLoader
     attribute @@toStringTag
     method constructor
     method load
 interface MLOperand
+    attribute @@toStringTag
+    method constructor
+interface MLOperator
     attribute @@toStringTag
     method constructor
 interface Magnetometer : Sensor
