@@ -608,6 +608,15 @@ public class StartSurfaceLayout extends Layout {
         forceAnimationToFinish();
         showBrowserScrim();
 
+        if (!animate) {
+            mController.getTabSwitcherContainer().setVisibility(View.VISIBLE);
+            mController.showOverview(false);
+            mController.setSnackbarParentView(mController.getTabSwitcherContainer());
+            mController.getTabSwitcherContainer().setY(0);
+            doneShowing();
+            return;
+        }
+
         Animator translateUp = ObjectAnimator.ofFloat(mController.getTabSwitcherContainer(),
                 View.TRANSLATION_Y, mController.getTabSwitcherContainer().getHeight(), 0f);
         translateUp.setInterpolator(AnimationUtilsCompat.loadInterpolator(
