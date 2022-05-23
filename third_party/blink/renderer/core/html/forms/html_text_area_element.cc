@@ -439,6 +439,19 @@ String HTMLTextAreaElement::value() const {
   return value_;
 }
 
+void HTMLTextAreaElement::setValueForBinding(const String& value) {
+  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+    setValue(value);
+  } else {
+    String old_value = this->value();
+    setValue(value);
+    if (Page* page = GetDocument().GetPage()) {
+      page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
+                                                               old_value);
+    }
+  }
+}
+
 void HTMLTextAreaElement::setValue(const String& value,
                                    TextFieldEventBehavior event_behavior,
                                    TextControlSetValueSelection selection) {

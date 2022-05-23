@@ -283,6 +283,19 @@ String HTMLSelectElement::value() const {
   return "";
 }
 
+void HTMLSelectElement::setValueForBinding(const String& value) {
+  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+    setValue(value);
+  } else {
+    String old_value = this->value();
+    setValue(value);
+    if (Page* page = GetDocument().GetPage()) {
+      page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
+                                                               old_value);
+    }
+  }
+}
+
 void HTMLSelectElement::setValue(const String& value, bool send_events) {
   HTMLOptionElement* option = nullptr;
   // Find the option with value() matching the given parameter and make it the

@@ -1176,6 +1176,12 @@ void AutofillAgent::AjaxSucceeded() {
   SendPotentiallySubmittedFormToBrowser();
 }
 
+void AutofillAgent::JavaScriptChangedAutofilledValue(
+    const blink::WebFormControlElement& element,
+    const blink::WebString& old_value) {
+  // TODO(crbug.com/1314360): Send event to browser.
+}
+
 void AutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form,
     const WebFormControlElement& element,

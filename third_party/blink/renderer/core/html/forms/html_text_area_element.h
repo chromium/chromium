@@ -50,6 +50,8 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
           TextControlSetValueSelection::kSetSelectionToEnd) override;
+  String valueForBinding() const { return value(); }
+  void setValueForBinding(const String&);
   String defaultValue() const;
   void setDefaultValue(const String&);
   int textLength() const { return value().length(); }

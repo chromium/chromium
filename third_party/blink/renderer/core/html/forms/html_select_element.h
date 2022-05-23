@@ -94,6 +94,8 @@ class CORE_EXPORT HTMLSelectElement final
 
   String value() const;
   void setValue(const String&, bool send_events = false);
+  String valueForBinding() const { return value(); }
+  void setValueForBinding(const String&);
   String SuggestedValue() const;
   void SetSuggestedValue(const String&);
 

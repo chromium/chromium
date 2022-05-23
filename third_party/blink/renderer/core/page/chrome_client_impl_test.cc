@@ -38,6 +38,7 @@
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/language.h"
 
@@ -64,6 +66,20 @@
 #undef CreateWindow
 
 namespace blink {
+
+namespace {
+class FakeChromeClientForAutofill : public EmptyChromeClient {
+ public:
+  void JavaScriptChangedAutofilledValue(HTMLFormControlElement&,
+                                        const String& old_value) override {
+    last_old_value_ = old_value;
+  }
+  const String& last_old_value() const { return last_old_value_; }
+
+ private:
+  String last_old_value_;
+};
+}  // namespace
 
 class ViewCreatingClient : public frame_test_helpers::TestWebViewClient {
  public:
@@ -369,6 +385,66 @@ TEST_F(FileChooserQueueTest, DerefQueuedChooser) {
   run_loop_for_chooser2.Run();
 
   chooser.ResponseOnOpenFileChooser(FileChooserFileInfoList());
+}
+
+class AutofillChromeClientTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    chrome_client_ = MakeGarbageCollected<FakeChromeClientForAutofill>();
+    SetupPageWithClients(chrome_client_);
+    GetFrame().GetSettings()->SetScriptEnabled(true);
+  }
+
+  void ExecuteScript(const char* script) {
+    ClassicScript::CreateUnspecifiedScript(script)->RunScript(
+        GetFrame().DomWindow());
+  }
+
+  Persistent<FakeChromeClientForAutofill> chrome_client_;
+};
+
+TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChanges) {
+  SetHtmlInnerHTML(R"HTML(
+    <!DOCTYPE HTML>
+    <form id='form' method='GET' action='https://internal.test/'
+        target='_blank'>
+      <input id='text' value='old_text'>
+      <textarea id='textarea'>old_textarea</textarea>
+      <select id='select'>
+        <option value='select_a'>a</option>
+        <option value='select_b' selected>b</option>
+      </select>
+      <selectmenu id='selectmenu'>
+        <option value='selectmenu_a'>a</option>
+        <option value='selectmenu_b' selected>b</option>
+      </select>
+      <input id='not_autofilled_text' value='old_text'>
+    </form>
+  )HTML");
+
+  for (const char* id : {"text", "textarea", "select", "selectmenu"}) {
+    To<HTMLFormControlElement>(GetElementById(id))
+        ->SetAutofillState(WebAutofillState::kAutofilled);
+  }
+
+  ExecuteScript("document.getElementById('text').value = 'new_text';");
+  EXPECT_EQ(String("old_text"), chrome_client_->last_old_value());
+
+  ExecuteScript("document.getElementById('textarea').value = 'new_text';");
+  EXPECT_EQ(String("old_textarea"), chrome_client_->last_old_value());
+
+  ExecuteScript("document.getElementById('select').value = 'select_a';");
+  EXPECT_EQ(String("select_b"), chrome_client_->last_old_value());
+
+  ExecuteScript(
+      "document.getElementById('selectmenu').value = 'selectmenu_a';");
+  EXPECT_EQ(String("selectmenu_b"), chrome_client_->last_old_value());
+
+  // Because this is not in state "autofilled", the chrome client is not
+  // informed about the change.
+  ExecuteScript(
+      "document.getElementById('not_autofilled_text').value = 'new_text';");
+  EXPECT_EQ(String("selectmenu_b"), chrome_client_->last_old_value());
 }
 
 }  // namespace blink

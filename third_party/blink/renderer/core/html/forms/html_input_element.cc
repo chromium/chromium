@@ -1181,9 +1181,8 @@ void HTMLInputElement::SetInnerEditorValue(const String& value) {
   needs_to_update_view_value_ = false;
 }
 
-void HTMLInputElement::setValue(const String& value,
-                                ExceptionState& exception_state,
-                                TextFieldEventBehavior event_behavior) {
+void HTMLInputElement::setValueForBinding(const String& value,
+                                          ExceptionState& exception_state) {
   // FIXME: Remove type check.
   if (type() == input_type_names::kFile && !value.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -1192,7 +1191,17 @@ void HTMLInputElement::setValue(const String& value,
                                       "to the empty string.");
     return;
   }
-  setValue(value, event_behavior);
+
+  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+    setValue(value);
+  } else {
+    String old_value = this->value();
+    setValue(value);
+    if (Page* page = GetDocument().GetPage()) {
+      page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
+                                                               old_value);
+    }
+  }
 }
 
 void HTMLInputElement::setValue(const String& value,

@@ -7,7 +7,7 @@ interface HTMLSelectMenuElement : HTMLElement {
   readonly attribute boolean open;
 
   [SameObject] readonly attribute HTMLOptionElement? selectedOption;
-  attribute DOMString value;
+  [ImplementedAs=valueForBinding] attribute DOMString value;
   // TODO(crbug.com/1121840) Fill this out.
   // Open question: do we want to replicate the interface of
   // <select> as closely as possible?
