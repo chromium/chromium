@@ -2905,9 +2905,6 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
         pipeline_param->rotation_state = VA_ROTATION_270;
         break;
     }
-
-    const VAStatus va_res = mapping.Unmap();
-    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAUnmapBuffer, false);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
