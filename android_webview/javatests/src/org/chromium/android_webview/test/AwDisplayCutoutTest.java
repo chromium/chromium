@@ -9,6 +9,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -32,6 +33,7 @@ import org.chromium.net.test.util.TestWebServer;
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_DISPLAY_CUTOUT})
+@RequiresApi(Build.VERSION_CODES.P)
 public class AwDisplayCutoutTest {
     private static final String TEST_HTML = "<html><head><style>\n"
             + "body {\n"
