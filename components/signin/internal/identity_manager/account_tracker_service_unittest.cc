@@ -374,8 +374,10 @@ class AccountTrackerServiceTest : public testing::Test {
     DCHECK(!account_tracker_);
     DCHECK(!account_fetcher_);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     pref_service_.SetInteger(prefs::kAccountIdMigrationState,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
+#endif
 
     account_tracker_ = std::make_unique<AccountTrackerService>();
     account_fetcher_ = std::make_unique<AccountFetcherService>();
@@ -1202,6 +1204,7 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AccountTrackerServiceTest, LegacyDottedAccountIds) {
   // Force legacy of non-normalized email as account_id.
   base::AutoReset<bool> force_account_id_to_email_for_legacy_test(
@@ -1238,10 +1241,8 @@ TEST_F(AccountTrackerServiceTest, LegacyDottedAccountIds) {
 }
 
 TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
-#endif
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
@@ -1287,10 +1288,8 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
-#endif
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
@@ -1335,10 +1334,8 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
 }
 
 TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
-#endif
 
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
@@ -1410,6 +1407,7 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
   accounts = account_tracker()->GetAccounts();
   EXPECT_EQ(2u, accounts.size());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
   SimulateTokenAvailable(kAccountKeyChild);
@@ -1676,7 +1674,6 @@ TEST_F(AccountTrackerServiceTest, AdvancedProtectionAccountBasic) {
 
   SimulateTokenRevoked(kAccountKeyAdvancedProtection);
 }
-
 #endif
 
 TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_NoAccount) {
@@ -1689,6 +1686,40 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_NoAccount) {
 }
 
 TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  prefs()->SetInteger(prefs::kAccountIdMigrationState,
+                      AccountTrackerService::MIGRATION_DONE);
+#endif
+
+  const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
+  const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
+  const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
+  const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
+
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", gaia_alpha);
+  dict.SetStringKey("email", email_alpha);
+  dict.SetStringKey("gaia", gaia_alpha);
+  update->Append(std::move(dict));
+
+  dict = base::Value(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("account_id", gaia_beta);
+  dict.SetStringKey("email", email_beta);
+  dict.SetStringKey("gaia", gaia_beta);
+  update->Append(std::move(dict));
+
+  base::HistogramTester tester;
+  ResetAccountTracker();
+
+  EXPECT_THAT(
+      tester.GetAllSamples("Signin.AccountTracker.CountOfLoadedAccounts"),
+      testing::ElementsAre(base::Bucket(2, 1)));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(AccountTrackerServiceTest, Migrate_CountOfLoadedAccounts_TwoAccounts) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
@@ -1716,7 +1747,8 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
       testing::ElementsAre(base::Bucket(2, 1)));
 }
 
-TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccountsOneInvalid) {
+TEST_F(AccountTrackerServiceTest,
+       Migrate_CountOfLoadedAccounts_TwoAccountsOneInvalid) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_foobar = AccountKeyToEmail(kAccountKeyFooDotBar);
@@ -1745,6 +1777,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccountsOneInvalid) {
       tester.GetAllSamples("Signin.AccountTracker.CountOfLoadedAccounts"),
       testing::ElementsAre(base::Bucket(1, 1)));
 }
+#endif
 
 TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

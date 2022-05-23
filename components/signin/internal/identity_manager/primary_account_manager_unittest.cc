@@ -293,11 +293,10 @@ TEST_F(PrimaryAccountManagerTest,
   EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 }
 
-TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
-#endif
 
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
@@ -327,10 +326,8 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
 }
 
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
-#endif
 
   ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
@@ -358,38 +355,6 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   EXPECT_EQ(gaia_id, user_prefs_.GetString(prefs::kGoogleServicesAccountId));
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(AccountTrackerService::MIGRATION_DONE,
-            account_tracker()->GetMigrationState());
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Test that force migrating the account id to Gaia ID is finished.
-TEST_F(PrimaryAccountManagerTest, GaiaIdMigration_ForceAllAccounts) {
-  ASSERT_EQ(AccountTrackerService::MIGRATION_DONE,
-            account_tracker()->GetMigrationState());
-  std::string email = "user@gmail.com";
-  std::string gaia_id = "account_gaia_id";
-
-  PrefService* client_prefs = signin_client()->GetPrefs();
-  client_prefs->SetInteger(prefs::kAccountIdMigrationState,
-                           AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
-  update->ClearList();
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("account_id", email);
-  dict.SetStringKey("email", email);
-  update->Append(std::move(dict));
-
-  account_tracker()->ResetForTesting();
-
-  client_prefs->SetString(prefs::kGoogleServicesAccountId, email);
-
-  CreatePrimaryAccountManager();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_EQ("", user_prefs_.GetString(prefs::kGoogleServicesAccountId));
-  EXPECT_TRUE(account_tracker()->GetAccounts().empty());
   EXPECT_EQ(AccountTrackerService::MIGRATION_DONE,
             account_tracker()->GetMigrationState());
 }

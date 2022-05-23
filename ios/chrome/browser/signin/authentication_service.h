@@ -174,10 +174,6 @@ class AuthenticationService : public KeyedService,
       ios::ChromeIdentityCapabilityResult result,
       ProceduralBlock completion);
 
-  // Migrates the token service accounts stored in prefs from emails to account
-  // ids.
-  void MigrateAccountsStoredInPrefsIfNeeded();
-
   // Returns the cached MDM infos associated with |identity|. If the cache
   // is stale for |identity|, the entry might be removed.
   NSDictionary* GetCachedMDMInfo(ChromeIdentity* identity) const;

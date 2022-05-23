@@ -148,6 +148,10 @@ const char kOptimizationGuideRemoteFetchingEnabled[] =
 
 // Deprecated 05/2022.
 const char kTrialGroupV3PrefName[] = "fre_refactoringV3.trial_group";
+
+// Deprecated 05/2022.
+extern const char kAccountIdMigrationState[] = "account_id_migration_state";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -345,6 +349,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // already shown.
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserPolicyNotificationWasShown, false);
+
+  registry->RegisterIntegerPref(kAccountIdMigrationState, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -427,4 +433,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 4/2022.
   prefs->ClearPref(kOptimizationGuideRemoteFetchingEnabled);
+
+  // Added 05/2022
+  prefs->ClearPref(kAccountIdMigrationState);
 }

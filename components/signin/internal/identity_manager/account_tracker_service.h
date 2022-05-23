@@ -208,14 +208,17 @@ class AccountTrackerService {
                              bool success);
   void RemoveAccountImageFromDisk(const CoreAccountId& account_id);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Migrate accounts to be keyed by gaia id instead of normalized email.
   // Requires that the migration state is set to MIGRATION_IN_PROGRESS.
   void MigrateToGaiaId();
+#endif
 
   // Returns whether the accounts are all keyed by gaia id. This should
   // be the case when the migration state is set to MIGRATION_DONE.
   bool AreAllAccountsMigrated() const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Computes the new migration state. The state is saved to preference
   // before performing the migration in order to support resuming the
   // migration if necessary during the next load.
@@ -223,6 +226,7 @@ class AccountTrackerService {
 
   // Updates the migration state in the preferences.
   void SetMigrationState(AccountIdMigrationState state);
+#endif
 
   // Returns the saved migration state in the preferences.
   static AccountIdMigrationState GetMigrationState(

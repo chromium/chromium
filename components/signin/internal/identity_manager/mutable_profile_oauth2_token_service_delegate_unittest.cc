@@ -1035,6 +1035,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ResetBackoff) {
   EXPECT_EQ(1, access_token_failure_count_);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, CanonicalizeAccountId) {
   pref_service_.SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
@@ -1225,6 +1226,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     EXPECT_EQ(2u, accounts.size());
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadPrimaryAccountOnlyWhenAccountConsistencyDisabled) {

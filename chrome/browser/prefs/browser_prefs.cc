@@ -740,6 +740,11 @@ const char kAccessCodeCastDiscoveredNetworks[] =
     "media_router.access_code_cast.discovered_networks";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated on non-ChromeOS on 05/2022.
+extern const char kAccountIdMigrationState[] = "account_id_migration_state";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -964,6 +969,10 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(kAccessCodeCastDiscoveredNetworks);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterIntegerPref(kAccountIdMigrationState, 0);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1886,6 +1895,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 05/2022.
   // TODO(crbug.com/1028898): Remove after M110.
   crostini::RemoveTerminalFromRegistry(profile_prefs);
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 05/2022
+  profile_prefs->ClearPref(kAccountIdMigrationState);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

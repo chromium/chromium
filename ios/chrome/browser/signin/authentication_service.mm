@@ -65,10 +65,6 @@ enum class IOSDeviceRestoreSignedinState : int {
   kMaxValue = kUserSignedInBeforeAndAfterDeviceRestore,
 };
 
-// A fake account id used in the list of last signed in accounts when migrating
-// an email for which the corresponding account was removed.
-constexpr char kFakeAccountIdForRemovedAccount[] = "0000000000000";
-
 // Returns the account id associated with |identity|.
 CoreAccountId ChromeIdentityToAccountID(
     signin::IdentityManager* identity_manager,
@@ -123,7 +119,8 @@ void AuthenticationService::Initialize(
   signin::Tribool device_restore_session = IsFirstSessionAfterDeviceRestore();
   initialized_ = true;
 
-  MigrateAccountsStoredInPrefsIfNeeded();
+  DCHECK_EQ(identity_manager_->GetAccountIdMigrationState(),
+            signin::IdentityManager::AccountIdMigrationState::MIGRATION_DONE);
 
   identity_manager_observation_.Observe(identity_manager_);
   HandleForgottenIdentity(nil, /*should_prompt=*/true,
@@ -296,37 +293,6 @@ void AuthenticationService::ApproveAccountList() {
       identity_manager_->GetAccountsWithRefreshTokens();
   user_approved_account_list_manager_.SetApprovedAccountList(
       current_accounts_info);
-}
-
-void AuthenticationService::MigrateAccountsStoredInPrefsIfNeeded() {
-  if (identity_manager_->GetAccountIdMigrationState() ==
-      signin::IdentityManager::AccountIdMigrationState::MIGRATION_NOT_STARTED) {
-    return;
-  }
-  DCHECK_EQ(signin::IdentityManager::AccountIdMigrationState::MIGRATION_DONE,
-            identity_manager_->GetAccountIdMigrationState());
-  if (pref_service_->GetBoolean(prefs::kSigninLastAccountsMigrated)) {
-    // Already migrated.
-    return;
-  }
-
-  std::vector<CoreAccountId> account_ids =
-      user_approved_account_list_manager_.GetApprovedAccountIDList();
-  std::vector<base::Value> accounts_pref_value;
-  for (const auto& account_id : account_ids) {
-    if (identity_manager_->HasAccountWithRefreshToken(account_id)) {
-      accounts_pref_value.emplace_back(account_id.ToString());
-    } else {
-      // The account for |email| was removed since the last application cold
-      // start. Insert |kFakeAccountIdForRemovedAccount| to ensure the user
-      // account list has to be approved by the user and the removal won't be
-      // silently ignored.
-      accounts_pref_value.emplace_back(kFakeAccountIdForRemovedAccount);
-    }
-  }
-  pref_service_->Set(prefs::kSigninLastAccounts,
-                     base::Value(std::move(accounts_pref_value)));
-  pref_service_->SetBoolean(prefs::kSigninLastAccountsMigrated, true);
 }
 
 bool AuthenticationService::HasPrimaryIdentity(

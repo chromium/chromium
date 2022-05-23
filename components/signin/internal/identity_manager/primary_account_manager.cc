@@ -385,26 +385,4 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
       }
     }
   }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // On non-ChromeOS platforms, account ID migration started in 2015. Data is
-  // most probably corrupted for profiles that were not migrated. Clear all
-  // accounts to fix this state.
-
-  // TODO(crbug.com/1224899): This code should be removed once migration
-  // finishes.
-  if (account_tracker_service_->GetMigrationState() ==
-      AccountTrackerService::MIGRATION_NOT_STARTED) {
-    // Clear the primary account if any.
-    ClearPrimaryAccount(signin_metrics::ACCOUNT_ID_MIGRATION,
-                        signin_metrics::SignoutDelete::kIgnoreMetric);
-    // Clean all remaining account information from the account tracker.
-    for (const auto& account : account_tracker_service_->GetAccounts())
-      account_tracker_service_->RemoveAccount(account.account_id);
-    account_tracker_service_->SetMigrationDone();
-    client_->GetPrefs()->CommitPendingWrite();
-  }
-  DCHECK_EQ(AccountTrackerService::MIGRATION_DONE,
-            account_tracker_service_->GetMigrationState());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
