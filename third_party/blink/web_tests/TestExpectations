@@ -3192,11 +3192,6 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Linux ] external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
-crbug.com/626703 [ Win ] external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
@@ -4161,6 +4156,9 @@ crbug.com/713094 [ Win ] fast/css/fontfaceset-check-platform-fonts.html [ Failur
 
 # Image decode failures due to document destruction.
 crbug.com/721435 external/wpt/html/semantics/embedded-content/the-img-element/decode/image-decode-iframe.html [ Skip ]
+
+# Test times out for unknown reasons on chromium-based browsers and Safari.
+crbug.com/1328330 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
 
 # Sheriff failures 2017-05-23
 crbug.com/725470 editing/shadow/doubleclick-on-meter-in-shadow-crash.html [ Crash Failure Pass ]
