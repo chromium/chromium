@@ -49,7 +49,7 @@ class WebAppInstallCommand : public WebAppCommand {
   ~WebAppInstallCommand() override;
 
   void Start() override;
-  void OnBeforeForcedUninstallFromSync() override;
+  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   content::WebContents* GetInstallingWebContents() override;

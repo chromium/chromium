@@ -39,7 +39,7 @@ class InstallWebAppWithParamsCommand : public WebAppCommand {
   ~InstallWebAppWithParamsCommand() override;
 
   void Start() override;
-  void OnBeforeForcedUninstallFromSync() override;
+  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   base::Value ToDebugValue() const override;

@@ -53,7 +53,7 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
   ~FetchManifestAndInstallCommand() override;
 
   void Start() override;
-  void OnBeforeForcedUninstallFromSync() override;
+  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   content::WebContents* GetInstallingWebContents() override;

@@ -90,7 +90,7 @@ void WebAppInstallCommand::OnInstallCompleted(const AppId& app_id,
       base::BindOnce(std::move(install_callback_), app_id, code));
 }
 
-void WebAppInstallCommand::OnBeforeForcedUninstallFromSync() {
+void WebAppInstallCommand::OnSyncSourceRemoved() {
   // TODO(crbug.com/1320086): remove after uninstall from sync is async.
   Abort(webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
   return;

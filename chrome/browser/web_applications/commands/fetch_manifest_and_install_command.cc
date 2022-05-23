@@ -83,7 +83,7 @@ void FetchManifestAndInstallCommand::Start() {
   }
 }
 
-void FetchManifestAndInstallCommand::OnBeforeForcedUninstallFromSync() {
+void FetchManifestAndInstallCommand::OnSyncSourceRemoved() {
   // TODO(crbug.com/1320086): remove after uninstall from sync is async.
   Abort(webapps::InstallResultCode::kAppNotInRegistrarAfterCommit);
 }

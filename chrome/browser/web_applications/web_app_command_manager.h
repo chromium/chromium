@@ -57,10 +57,11 @@ class WebAppCommandManager {
   // have been `Start()`ed.
   void Shutdown();
 
-  // Called by the sync integration when a list of apps are going to be deleted
-  // from the registry. Any commands that whose `queue_id()`s match an id in
-  // `app_id` who have also been `Start()`ed will also be notified.
-  void NotifyBeforeSyncUninstalls(const std::vector<AppId>& app_ids);
+  // Called by the sync integration when a list of apps have had their sync
+  // sources removed and `is_uninstalling()` set to true. Any commands that
+  // whose `queue_id()`s match an id in `app_id` who have also been `Start()`ed
+  // will also be notified.
+  void NotifySyncSourceRemoved(const std::vector<AppId>& app_ids);
 
   // Outputs a debug value of the state of the commands system, including
   // running and queued commands.

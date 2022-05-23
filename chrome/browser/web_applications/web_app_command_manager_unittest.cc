@@ -45,7 +45,7 @@ class MockCommand : public WebAppCommand {
   ~MockCommand() override { OnDestruction(); }
 
   MOCK_METHOD(void, Start, (), (override));
-  MOCK_METHOD(void, OnBeforeForcedUninstallFromSync, (), (override));
+  MOCK_METHOD(void, OnSyncSourceRemoved, (), (override));
   MOCK_METHOD(void, OnShutdown, (), (override));
 
   base::WeakPtr<MockCommand> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
@@ -421,17 +421,15 @@ TEST_F(WebAppCommandManagerTest, NotifySyncCallsCompleteAndDestruct) {
   }
   {
     testing::InSequence in_sequence;
-    EXPECT_CALL(*command_ptr, OnBeforeForcedUninstallFromSync())
-        .Times(1)
-        .WillOnce([&]() {
-          ASSERT_TRUE(command_ptr);
-          command_ptr->CallSignalCompletionAndSelfDestruct(
-              CommandResult::kSuccess, mock_closure.Get());
-        });
+    EXPECT_CALL(*command_ptr, OnSyncSourceRemoved()).Times(1).WillOnce([&]() {
+      ASSERT_TRUE(command_ptr);
+      command_ptr->CallSignalCompletionAndSelfDestruct(CommandResult::kSuccess,
+                                                       mock_closure.Get());
+    });
     EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
     EXPECT_CALL(mock_closure, Run()).Times(1);
   }
-  manager().NotifyBeforeSyncUninstalls({kTestAppId});
+  manager().NotifySyncSourceRemoved({kTestAppId});
 }
 
 TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {

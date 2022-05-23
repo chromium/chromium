@@ -89,7 +89,7 @@ void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id) {
   // Start is called in a new task to avoid re-entry issues with started tasks
   // calling back into Enqueue/Destroy. This can especially be an issue if
   // this task is being run in response to a call to
-  // NotifyBeforeSyncUninstalls.
+  // NotifySyncSourceRemoved.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&WebAppCommandManager::StartCommand,
                                 weak_ptr_factory_.GetWeakPtr(),
@@ -137,7 +137,7 @@ void WebAppCommandManager::Shutdown() {
   commands_.clear();
 }
 
-void WebAppCommandManager::NotifyBeforeSyncUninstalls(
+void WebAppCommandManager::NotifySyncSourceRemoved(
     const std::vector<AppId>& app_ids) {
   if (is_in_shutdown_)
     return;
@@ -145,7 +145,7 @@ void WebAppCommandManager::NotifyBeforeSyncUninstalls(
   // To prevent map modification-during-iteration, make a copy of relevant
   // commands. The main complications that can occur are a command calling
   // `CompleteAndDestruct` or `ScheduleCommand` inside of the
-  // `OnBeforeForcedUninstallFromSync` call. Because all commands are
+  // `OnSyncSourceRemoved` call. Because all commands are
   // `Start()`ed asynchronously, we will never have to notify any commands that
   // are newly scheduled. So at most one command needs to be notified per queue,
   // and that command can be destroyed before we notify it.
@@ -162,7 +162,7 @@ void WebAppCommandManager::NotifyBeforeSyncUninstalls(
   for (const auto& command_ptr : commands_to_notify) {
     if (!command_ptr)
       continue;
-    command_ptr->OnBeforeForcedUninstallFromSync();
+    command_ptr->OnSyncSourceRemoved();
   }
 }
 
