@@ -13,6 +13,8 @@
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
+#include "google_apis/google_api_keys.h"
+#include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -25,6 +27,7 @@ namespace {
 
 constexpr char kCloudTranslationApiRequest[] =
     "https://translation.googleapis.com/language/translate/v2";
+constexpr char kApiKeyName[] = "key";
 
 constexpr char kValidResponse[] = R"(
   {
@@ -43,6 +46,11 @@ constexpr char kTestTranslationResult[] = "prueba";
 
 const auto kTestTranslationIntent =
     IntentInfo("test", IntentType::kTranslation, "es", "en");
+
+GURL CreateTranslationRequest() {
+  return net::AppendQueryParameter(GURL(kCloudTranslationApiRequest),
+                                   kApiKeyName, google_apis::GetAPIKey());
+}
 
 }  // namespace
 
@@ -85,13 +93,9 @@ TEST_F(TranslationResultLoaderTest, Success) {
       std::make_unique<QuickAnswerResultText>(kTestTranslationResult));
   expected_quick_answer->title.push_back(
       std::make_unique<QuickAnswerText>(kTestTranslationTitle));
-  test_url_loader_factory_.AddResponse(kCloudTranslationApiRequest,
+  test_url_loader_factory_.AddResponse(CreateTranslationRequest().spec(),
                                        kValidResponse);
 
-  EXPECT_CALL(*mock_delegate_, RequestAccessToken)
-      .WillOnce(testing::Invoke([](AccessTokenCallback callback) {
-        std::move(callback).Run(std::string());
-      }));
   EXPECT_CALL(
       *mock_delegate_,
       OnQuickAnswerReceived(QuickAnswerEqual(expected_quick_answer.get())));
@@ -102,12 +106,8 @@ TEST_F(TranslationResultLoaderTest, Success) {
 
 TEST_F(TranslationResultLoaderTest, NetworkError) {
   test_url_loader_factory_.AddResponse(
-      GURL(kCloudTranslationApiRequest), network::mojom::URLResponseHead::New(),
+      CreateTranslationRequest(), network::mojom::URLResponseHead::New(),
       std::string(), network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
-  EXPECT_CALL(*mock_delegate_, RequestAccessToken)
-      .WillOnce(testing::Invoke([](AccessTokenCallback callback) {
-        std::move(callback).Run(std::string());
-      }));
   EXPECT_CALL(*mock_delegate_, OnNetworkError());
   EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::_)).Times(0);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
@@ -115,12 +115,8 @@ TEST_F(TranslationResultLoaderTest, NetworkError) {
 }
 
 TEST_F(TranslationResultLoaderTest, EmptyResponse) {
-  test_url_loader_factory_.AddResponse(kCloudTranslationApiRequest,
+  test_url_loader_factory_.AddResponse(CreateTranslationRequest().spec(),
                                        std::string());
-  EXPECT_CALL(*mock_delegate_, RequestAccessToken)
-      .WillOnce(testing::Invoke([](AccessTokenCallback callback) {
-        std::move(callback).Run(std::string());
-      }));
   EXPECT_CALL(*mock_delegate_, OnQuickAnswerReceived(testing::Eq(nullptr)));
   EXPECT_CALL(*mock_delegate_, OnNetworkError()).Times(0);
   loader_->Fetch(PreprocessRequest(kTestTranslationIntent));
