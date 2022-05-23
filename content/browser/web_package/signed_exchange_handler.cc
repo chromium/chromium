@@ -812,8 +812,8 @@ SignedExchangeHandler::CreateResponseBodyStream() {
         "Signed exchange has no Content-Encoding: header");
     return nullptr;
   }
-  if (!base::LowerCaseEqualsASCII(content_encoding_iter->second,
-                                  "mi-sha256-03")) {
+  if (!base::EqualsCaseInsensitiveASCII(content_encoding_iter->second,
+                                        "mi-sha256-03")) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy_.get(),
         "Exchange's Content-Encoding must be \"mi-sha256-03\".");
