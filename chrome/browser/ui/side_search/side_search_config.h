@@ -78,11 +78,9 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // changes.
   void ResetStateAndNotifyConfigChanged();
 
-  bool should_show_page_action_label() const {
-    return should_show_page_action_label_;
-  }
-  void set_should_show_page_action_label(bool should_show_page_action_label) {
-    should_show_page_action_label_ = should_show_page_action_label;
+  bool page_action_label_shown() const { return page_action_label_shown_; }
+  void set_page_action_label_shown(bool label_shown) {
+    page_action_label_shown_ = label_shown;
   }
 
   // TODO(crbug.com/1304513): Allow tests to specify the Google Search
@@ -96,7 +94,7 @@ class SideSearchConfig : public base::SupportsUserData::Data,
 
   // Tracks whether the page action icon has animated-in its label text. Track
   // this to ensure we only show this at most once per profile per session.
-  bool should_show_page_action_label_ = true;
+  bool page_action_label_shown_ = false;
 
   raw_ptr<Profile> const profile_;
 

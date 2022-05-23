@@ -72,6 +72,16 @@ extern const base::Feature kSideSearchFeedback;
 extern const base::Feature kSideSearchDSESupport;
 extern const base::Feature kClobberAllSideSearchSidePanels;
 
+extern const base::Feature kSideSearchPageActionLabelAnimation;
+
+enum class kSideSearchLabelAnimationFrequencyOption {
+  kOncePerProfile,
+  kOncePerWindow,
+  kOncePerTab,
+};
+extern const base::FeatureParam<kSideSearchLabelAnimationFrequencyOption>
+    kSideSearchPageActionLabelAnimationFrequency;
+
 extern const base::Feature kTabGroupsNewBadgePromo;
 
 extern const base::Feature kTabGroupsSave;

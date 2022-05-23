@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,11 +71,8 @@ void SideSearchIconView::UpdateImpl() {
       !tab_contents_helper->toggled_open();
   SetVisible(should_show);
 
-  auto* side_search_config =
-      SideSearchConfig::Get(active_contents->GetBrowserContext());
-  if (should_show && !was_visible &&
-      side_search_config->should_show_page_action_label()) {
-    side_search_config->set_should_show_page_action_label(false);
+  if (should_show && !was_visible && ShouldShowPageActionLabel()) {
+    SetPageActionLabelShown();
     should_extend_label_shown_duration_ = true;
     AnimateIn(absl::nullopt);
   }
@@ -86,6 +84,11 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
   RecordSideSearchPageActionLabelVisibilityOnToggle(
       label()->GetVisible() ? SideSearchPageActionLabelVisibility::kVisible
                             : SideSearchPageActionLabelVisibility::kNotVisible);
+
+  // Reset the slide animation if in progress.
+  UnpauseAnimation();
+  ResetSlideAnimation(false);
+
   side_search_browser_controller->ToggleSidePanel();
 }
 
@@ -127,6 +130,53 @@ void SideSearchIconView::AnimationProgressed(const gfx::Animation* animation) {
         base::BindOnce(&SideSearchIconView::UnpauseAnimation,
                        base::Unretained(this)));
   }
+}
+
+bool SideSearchIconView::ShouldShowPageActionLabel() const {
+  content::WebContents* active_contents = GetWebContents();
+  DCHECK(active_contents);
+
+  auto* tab_contents_helper =
+      SideSearchTabContentsHelper::FromWebContents(active_contents);
+  DCHECK(tab_contents_helper);
+
+  switch (features::kSideSearchPageActionLabelAnimationFrequency.Get()) {
+    case features::kSideSearchLabelAnimationFrequencyOption::kOncePerProfile: {
+      // Only checking the per-profile bit in the config is necessary.
+      auto* side_search_config =
+          SideSearchConfig::Get(active_contents->GetBrowserContext());
+      return !side_search_config->page_action_label_shown();
+    }
+    case features::kSideSearchLabelAnimationFrequencyOption::kOncePerWindow: {
+      // Show the label for the current window only if it hasn't been shown
+      // already for the active tab. This covers the case where the user drags
+      // a tab with the side search page action icon active into a new window.
+      return !page_action_label_shown_ &&
+             !tab_contents_helper->page_action_label_shown();
+    }
+    case features::kSideSearchLabelAnimationFrequencyOption::kOncePerTab:
+      // Only checking the per-tab bit is necessary.
+      return !tab_contents_helper->page_action_label_shown();
+  }
+}
+
+void SideSearchIconView::SetPageActionLabelShown() {
+  content::WebContents* active_contents = GetWebContents();
+  DCHECK(active_contents);
+
+  // Set the shown bit at the profile level.
+  auto* side_search_config =
+      SideSearchConfig::Get(active_contents->GetBrowserContext());
+  side_search_config->set_page_action_label_shown(true);
+
+  // Set the shown bit at the browser level.
+  page_action_label_shown_ = true;
+
+  // Set the shown bit at the tab level.
+  auto* tab_contents_helper =
+      SideSearchTabContentsHelper::FromWebContents(active_contents);
+  DCHECK(tab_contents_helper);
+  tab_contents_helper->set_page_action_label_shown(true);
 }
 
 BEGIN_METADATA(SideSearchIconView, PageActionIconView)

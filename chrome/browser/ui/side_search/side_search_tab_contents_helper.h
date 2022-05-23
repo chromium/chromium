@@ -113,6 +113,11 @@ class SideSearchTabContentsHelper
   bool toggled_open() const { return toggled_open_; }
   void set_toggled_open(bool toggled_open) { toggled_open_ = toggled_open; }
 
+  bool page_action_label_shown() const { return page_action_label_shown_; }
+  void set_page_action_label_shown(bool was_shown) {
+    page_action_label_shown_ = was_shown;
+  }
+
   void SetSidePanelContentsForTesting(
       std::unique_ptr<content::WebContents> side_panel_contents);
 
@@ -186,6 +191,10 @@ class SideSearchTabContentsHelper
   // True if the side panel could be shown for the previously committed
   // navigation.
   bool could_show_for_last_committed_navigation_ = false;
+
+  // Tracks whether the page action icon has animated-in its label text. Track
+  // this to ensure we only show the label at most once per tab.
+  bool page_action_label_shown_ = false;
 
   base::ScopedObservation<SideSearchConfig, SideSearchConfig::Observer>
       config_observation_{this};

@@ -107,6 +107,28 @@ const base::Feature kSideSearchFeedback{"SideSearchFeedback",
 const base::Feature kSideSearchDSESupport{"SideSearchDSESupport",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the side search icon animates-in its label when the side
+// panel is made available for the active tab.
+const base::Feature kSideSearchPageActionLabelAnimation{
+    "SideSearchPageActionLabelAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls the frequency that the Side Search page action's label is shown. If
+// enabled the label text is shown one per window.
+const base::FeatureParam<kSideSearchLabelAnimationFrequencyOption>::Option
+    kSideSearchPageActionLabelAnimationFrequencyParamOptions[] = {
+        {kSideSearchLabelAnimationFrequencyOption::kOncePerProfile,
+         "OncePerProfile"},
+        {kSideSearchLabelAnimationFrequencyOption::kOncePerWindow,
+         "OncePerWindow"},
+        {kSideSearchLabelAnimationFrequencyOption::kOncePerTab, "OncePerTab"}};
+
+const base::FeatureParam<kSideSearchLabelAnimationFrequencyOption>
+    kSideSearchPageActionLabelAnimationFrequency{
+        &kSideSearchPageActionLabelAnimation,
+        "SideSearchPageActionLabelAnimationFrequency",
+        kSideSearchLabelAnimationFrequencyOption::kOncePerWindow,
+        &kSideSearchPageActionLabelAnimationFrequencyParamOptions};
+
 // Whether to clobber all side search side panels in the current browser window
 // or only the side search in the current tab before read later or lens side
 // panel is open.
