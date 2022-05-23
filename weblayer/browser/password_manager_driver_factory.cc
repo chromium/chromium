@@ -124,7 +124,7 @@ PasswordManagerDriverFactory::GetDriverForFrame(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_EQ(web_contents(),
             content::WebContents::FromRenderFrameHost(render_frame_host));
-  DCHECK(render_frame_host->IsRenderFrameCreated());
+  DCHECK(render_frame_host->IsRenderFrameLive());
 
   auto [it, inserted] =
       frame_driver_map_.try_emplace(render_frame_host, render_frame_host);
