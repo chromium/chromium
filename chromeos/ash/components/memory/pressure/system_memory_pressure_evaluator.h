@@ -21,7 +21,7 @@ namespace memory {
 // A class to handle the observation of our free memory. It notifies the
 // MemoryPressureListener of memory fill level changes, so that it can take
 // action to reduce memory resources accordingly.
-class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
+class COMPONENT_EXPORT(ASH_MEMORY) SystemMemoryPressureEvaluator
     : public memory_pressure::SystemMemoryPressureEvaluator,
       public chromeos::ResourcedClient::Observer {
  public:

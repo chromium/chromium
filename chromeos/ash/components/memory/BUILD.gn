@@ -14,7 +14,7 @@ config("chromeos_implementation") {
 }
 
 component("memory") {
-  defines = [ "IS_CHROMEOS_MEMORY_IMPL" ]
+  defines = [ "IS_ASH_MEMORY_IMPL" ]
   configs += [ ":chromeos_implementation" ]
   deps = [
     "//base",
