@@ -507,8 +507,8 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
     LookupAndApplyDeclaration(property, p, resolver);
   }
 
-  for (const auto& [name, priority_list] : map_.GetCustomMap()) {
-    CascadePriority* p = map_.Find(name);
+  for (auto& [name, priority_list] : map_.GetCustomMap()) {
+    CascadePriority* p = &map_.Top(priority_list);
     CascadePriority priority = *p;
     if (priority.GetGeneration() >= resolver.generation_) {
       continue;
