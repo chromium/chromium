@@ -35,6 +35,7 @@ const char kRequiredExtension[] = "GL_ANGLE_texture_rectangle";
 const char kRequiredExtension[] = "GL_OES_EGL_image_external";
 #else
 const char kRequiredExtension[] = "";
+#define NO_REQUIRED_EXTENSIONS
 #endif
 
 void GetMediaTaskRunnerAndGpuFactoriesOnMainThread(
@@ -219,9 +220,9 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   WebGLWebCodecsVideoFrameHandle* video_frame_handle =
       MakeGarbageCollected<WebGLWebCodecsVideoFrameHandle>();
   video_frame_handle->setTextureInfoArray(info_array);
-  if (std::string(kRequiredExtension) != "") {
-    video_frame_handle->setRequiredExtension(kRequiredExtension);
-  }
+#ifndef NO_REQUIRED_EXTENSIONS
+  video_frame_handle->setRequiredExtension(kRequiredExtension);
+#endif
   // Remove "PIXEL_FORMAT_" prefix
   auto&& video_pixel_format =
       V8VideoPixelFormat::Create(&VideoPixelFormatToString(pixel_format)[13]);
