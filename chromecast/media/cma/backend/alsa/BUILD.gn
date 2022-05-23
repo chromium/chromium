@@ -46,6 +46,8 @@ cast_source_set("volume_control") {
   sources = [
     "alsa_volume_control.cc",
     "alsa_volume_control.h",
+    "scoped_alsa_mixer.cc",
+    "scoped_alsa_mixer.h",
   ]
 
   libs = [ "asound" ]

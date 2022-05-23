@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -15,6 +16,7 @@
 #include "base/task/current_thread.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
+#include "chromecast/media/cma/backend/alsa/scoped_alsa_mixer.h"
 #include "media/base/media_switches.h"
 
 #define ALSA_ASSERT(func, ...)                                        \
@@ -35,76 +37,6 @@ const char kAlsaMuteMixerElementName[] = "Mute";
 constexpr base::TimeDelta kPowerSaveCheckTime = base::Minutes(5);
 
 }  // namespace
-
-class AlsaVolumeControl::ScopedAlsaMixer {
- public:
-  ScopedAlsaMixer(::media::AlsaWrapper* alsa,
-                  const std::string& mixer_device_name,
-                  const std::string& mixer_element_name)
-      : alsa_(alsa),
-        mixer_device_name_(mixer_device_name),
-        mixer_element_name_(mixer_element_name) {
-    DCHECK(alsa_);
-    Refresh();
-  }
-
-  ~ScopedAlsaMixer() {
-    if (mixer) {
-      alsa_->MixerClose(mixer);
-    }
-  }
-
-  void Refresh() {
-    if (mixer) {
-      alsa_->MixerClose(mixer);
-      DVLOG(2) << "Reopening mixer element \"" << mixer_element_name_
-               << "\" on device \"" << mixer_device_name_ << "\"";
-    } else {
-      LOG(INFO) << "Opening mixer element \"" << mixer_element_name_
-                << "\" on device \"" << mixer_device_name_ << "\"";
-    }
-
-    int alsa_err = alsa_->MixerOpen(&mixer, 0);
-    if (alsa_err < 0) {
-      LOG(ERROR) << "MixerOpen error: " << alsa_->StrError(alsa_err);
-      mixer = nullptr;
-      return;
-    }
-    alsa_err = alsa_->MixerAttach(mixer, mixer_device_name_.c_str());
-    if (alsa_err < 0) {
-      LOG(ERROR) << "MixerAttach error: " << alsa_->StrError(alsa_err);
-      alsa_->MixerClose(mixer);
-      mixer = nullptr;
-      return;
-    }
-    ALSA_ASSERT(MixerElementRegister, mixer, NULL, NULL);
-    alsa_err = alsa_->MixerLoad(mixer);
-    if (alsa_err < 0) {
-      LOG(ERROR) << "MixerLoad error: " << alsa_->StrError(alsa_err);
-      alsa_->MixerClose(mixer);
-      mixer = nullptr;
-      return;
-    }
-    snd_mixer_selem_id_t* sid = NULL;
-    ALSA_ASSERT(MixerSelemIdMalloc, &sid);
-    alsa_->MixerSelemIdSetIndex(sid, 0);
-    alsa_->MixerSelemIdSetName(sid, mixer_element_name_.c_str());
-    element = alsa_->MixerFindSelem(mixer, sid);
-    if (!element) {
-      LOG(ERROR) << "Simple mixer control element \"" << mixer_element_name_
-                 << "\" not found.";
-    }
-    alsa_->MixerSelemIdFree(sid);
-  }
-
-  snd_mixer_elem_t* element = nullptr;
-  snd_mixer_t* mixer = nullptr;
-
- private:
-  ::media::AlsaWrapper* const alsa_;
-  const std::string mixer_device_name_;
-  const std::string mixer_element_name_;
-};
 
 // static
 std::string AlsaVolumeControl::GetVolumeElementName() {
@@ -270,7 +202,8 @@ AlsaVolumeControl::AlsaVolumeControl(Delegate* delegate)
       mute_mixer_ptr_ = mute_mixer_.get();
 
       alsa_->MixerElemSetCallback(
-          mute_mixer_->element, &AlsaVolumeControl::VolumeOrMuteChangeCallback);
+          mute_mixer_->element,
+          &AlsaVolumeControl::VolumeOrMuteChangeCallback);
       alsa_->MixerElemSetCallbackPrivate(mute_mixer_->element,
                                          reinterpret_cast<void*>(this));
       RefreshMixerFds(mute_mixer_.get());
