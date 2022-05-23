@@ -26,6 +26,7 @@ class TemplateURLService;
 class UrlLoadingBrowserAgent;
 class WebStateList;
 class BrowserPolicyConnectorIOS;
+@class FeedMetricsRecorder;
 
 // Mediator for the popup menu. This object is in charge of creating and
 // updating the items of the popup menu.
@@ -68,6 +69,8 @@ class BrowserPolicyConnectorIOS;
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 // The URL loading service, used to load the reverse image search.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoadingBrowserAgent;
+// The metrics recorder to record follow related metrics.
+@property(nonatomic, assign) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Disconnect the mediator.
 - (void)disconnect;

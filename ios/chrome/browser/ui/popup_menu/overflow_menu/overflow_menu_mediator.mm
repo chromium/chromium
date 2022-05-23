@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/follow/follow_web_page_urls.h"
 #import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -1174,9 +1175,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                             : @"overflow_menu_action_follow"];
   __weak __typeof(self) weakSelf = self;
   self.followAction.handler = ^{
-    RecordAction(status ? UserMetricsAction("MobileMenuUnfollow")
-                        : UserMetricsAction("MobileMenuFollow"));
-    // TODO(crbug.com/1324452): Record histogram.
+    if (status) {
+      [weakSelf.feedMetricsRecorder recordUnfollowFromMenu];
+    } else {
+      [weakSelf.feedMetricsRecorder recordFollowFromMenu];
+    }
     [weakSelf updateFollowStatus:!status withFollowWebPageURLs:webPageURLs];
   };
 }
