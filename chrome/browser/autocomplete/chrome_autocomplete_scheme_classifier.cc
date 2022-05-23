@@ -57,9 +57,9 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
   }
   if (base::IsStringASCII(scheme) &&
       (ProfileIOData::IsHandledProtocol(scheme) ||
-       base::LowerCaseEqualsASCII(scheme, content::kViewSourceScheme) ||
-       base::LowerCaseEqualsASCII(scheme, url::kJavaScriptScheme) ||
-       base::LowerCaseEqualsASCII(scheme, url::kDataScheme))) {
+       base::EqualsCaseInsensitiveASCII(scheme, content::kViewSourceScheme) ||
+       base::EqualsCaseInsensitiveASCII(scheme, url::kJavaScriptScheme) ||
+       base::EqualsCaseInsensitiveASCII(scheme, url::kDataScheme))) {
     return metrics::OmniboxInputType::URL;
   }
 
