@@ -101,10 +101,6 @@ const char kArcDisableMediaStoreMaintenance[] =
 // apps silently. Used in autotests to resolve racy conditions.
 const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 
-// Used for development of Android app that are included into ARC as system
-// default apps in order to be able to install them via adb.
-const char kArcDisableSystemDefaultApps[] = "arc-disable-system-default-apps";
-
 // Flag that disables ureadahead completely, including host and guest parts.
 // See also |kArcVmUreadaheadMode|.
 const char kArcDisableUreadahead[] = "arc-disable-ureadahead";

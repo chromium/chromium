@@ -1313,17 +1313,6 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DemoMode) {
                              "ro.boot.arc_demo_mode=1"));
 }
 
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_DisableSystemDefaultApp) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.arc_disable_system_default_app = true;
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
-  EXPECT_FALSE(is_system_shutdown().has_value());
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.disable_system_default_app=1"));
-}
-
 TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DisableMediaStoreMaintenance) {
   StartParams start_params(GetPopulatedStartParams());
   start_params.disable_media_store_maintenance = true;
@@ -1543,28 +1532,6 @@ TEST_F(ArcVmClientAdapterTest, TestCreateArcVmClientAdapter) {
   CreateArcVmClientAdapter();
 }
 
-TEST_F(ArcVmClientAdapterTest, ChromeOsChannelStable) {
-  base::test::ScopedChromeOSVersionInfo info(
-      "CHROMEOS_RELEASE_TRACK=stable-channel", base::Time::Now());
-
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.chromeos_channel=stable"));
-}
-
-TEST_F(ArcVmClientAdapterTest, ChromeOsChannelUnknown) {
-  base::test::ScopedChromeOSVersionInfo info("CHROMEOS_RELEASE_TRACK=invalid",
-                                             base::Time::Now());
-
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.chromeos_channel=unknown"));
-}
-
 TEST_F(ArcVmClientAdapterTest, DefaultBlockSize) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatureState(arc::kUseDefaultBlockSize, true /* use */);
@@ -1667,18 +1634,6 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
   EXPECT_TRUE(HasDiskImage(req, kCreatedDiskImagePath));
   EXPECT_TRUE(
       base::Contains(req.params(), "androidboot.arcvm_virtio_blk_data=1"));
-}
-
-TEST_F(ArcVmClientAdapterTest, VshdForTest) {
-  base::test::ScopedChromeOSVersionInfo info(
-      "CHROMEOS_RELEASE_TRACK=testimage-channel", base::Time::Now());
-
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  UpgradeArc(true);
-  EXPECT_TRUE(
-      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
-                     "androidboot.vshd_service_override=vshd_for_test"));
 }
 
 TEST_F(ArcVmClientAdapterTest, VshdForRelease) {

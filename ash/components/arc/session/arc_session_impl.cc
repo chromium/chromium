@@ -489,12 +489,6 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
     }
   }
 
-  params.arc_disable_system_default_app =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcDisableSystemDefaultApps);
-  if (params.arc_disable_system_default_app)
-    VLOG(1) << "System default app(s) are disabled";
-
   params.disable_media_store_maintenance =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kArcDisableMediaStoreMaintenance);

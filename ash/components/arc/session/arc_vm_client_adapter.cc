@@ -115,21 +115,6 @@ chromeos::DebugDaemonClient* GetDebugDaemonClient() {
   return chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
 }
 
-std::string GetChromeOsChannelFromLsbRelease() {
-  constexpr const char kChromeOsReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
-  constexpr const char kUnknown[] = "unknown";
-  const std::string kChannelSuffix = "-channel";
-
-  std::string value;
-  base::SysInfo::GetLsbReleaseValue(kChromeOsReleaseTrack, &value);
-
-  if (!base::EndsWith(value, kChannelSuffix, base::CompareCase::SENSITIVE)) {
-    LOG(ERROR) << "Unknown ChromeOS channel: \"" << value << "\"";
-    return kUnknown;
-  }
-  return value.erase(value.find(kChannelSuffix), kChannelSuffix.size());
-}
-
 ArcBinaryTranslationType IdentifyBinaryTranslationType(
     const StartParams& start_params) {
   const auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -195,9 +180,7 @@ std::vector<std::string> GenerateUpgradeProps(
 std::vector<std::string> GenerateKernelCmdline(
     const StartParams& start_params,
     const FileSystemStatus& file_system_status,
-    bool is_dev_mode,
-    bool is_host_on_vm,
-    const std::string& channel) {
+    bool is_host_on_vm) {
   std::string native_bridge;
   switch (IdentifyBinaryTranslationType(start_params)) {
     case ArcBinaryTranslationType::NONE:
@@ -216,8 +199,6 @@ std::vector<std::string> GenerateKernelCmdline(
 
   std::vector<std::string> result = {
       base::StringPrintf("androidboot.native_bridge=%s", native_bridge.c_str()),
-      base::StringPrintf("androidboot.dev_mode=%d", is_dev_mode),
-      base::StringPrintf("androidboot.disable_runas=%d", !is_dev_mode),
       base::StringPrintf("androidboot.host_is_in_vm=%d", is_host_on_vm),
       base::StringPrintf("androidboot.lcd_density=%d",
                          start_params.lcd_density),
@@ -228,9 +209,6 @@ std::vector<std::string> GenerateKernelCmdline(
       base::StringPrintf(
           "androidboot.keyboard_shortcut_helper_integration=%d",
           start_params.enable_keyboard_shortcut_helper_integration),
-      base::StringPrintf("androidboot.disable_system_default_app=%d",
-                         start_params.arc_disable_system_default_app),
-      "androidboot.chromeos_channel=" + channel,
       base::StringPrintf("androidboot.iioservice_present=%d",
                          BUILDFLAG(USE_IIOSERVICE)),
       base::StringPrintf("androidboot.enable_notifications_refresh=%d",
@@ -253,11 +231,6 @@ std::vector<std::string> GenerateKernelCmdline(
     case ArcVmUreadaheadMode::DISABLED:
       break;
   }
-
-  // We run vshd under a restricted domain on non-test images.
-  // (go/arcvm-android-sh-restricted)
-  if (channel == "testimage")
-    result.push_back("androidboot.vshd_service_override=vshd_for_test");
 
   // Only add boot property if flag to disable media store maintenance is set.
   if (start_params.disable_media_store_maintenance)
@@ -632,7 +605,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                            public ash::ConciergeClient::Observer,
                            public ConnectionObserver<arc::mojom::AppInstance> {
  public:
-  // Initializing |is_host_on_vm_| and |is_dev_mode_| is not always very fast.
+  // Initializing |is_host_on_vm_| is not always very fast.
   // Try to initialize them in the constructor and in StartMiniArc respectively.
   // They usually run when the system is not busy.
   ArcVmClientAdapter() : ArcVmClientAdapter(FileSystemStatusRewriter{}) {}
@@ -702,12 +675,26 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     start_params_ = std::move(params);
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+    std::vector<std::string> enviroment;
+    if (start_params_.disable_ureadahead)
+      enviroment.emplace_back("DISABLE_UREADAHEAD=1");
+    std::deque<JobDesc> jobs{
+        // Note: the first Upstart job is a task, and the callback for the start
+        // request won't be called until the task finishes. When the callback is
+        // called with true, it is ensured that the per-board features files
+        // exist.
+        JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
+        JobDesc{
+            kArcVmPostVmStartServicesJobName, UpstartOperation::JOB_STOP, {}},
+        JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_STOP, {}},
+        JobDesc{kArcVmPreLoginServicesJobName,
+                UpstartOperation::JOB_STOP_AND_START, std::move(enviroment)},
+    };
+    ConfigureUpstartJobs(
+        std::move(jobs),
         base::BindOnce(
-            []() { return GetSystemPropertyInt("cros_debug") == 1; }),
-        base::BindOnce(&ArcVmClientAdapter::OnIsDevMode,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
+            &ArcVmClientAdapter::OnConfigureUpstartJobsOnStartMiniArc,
+            weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void UpgradeArc(UpgradeParams params,
@@ -853,31 +840,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     GetConciergeClient()->StopVm(
         request, base::BindOnce(&ArcVmClientAdapter::OnStopVmReply,
                                 weak_factory_.GetWeakPtr()));
-  }
-
-  void OnIsDevMode(chromeos::VoidDBusMethodCallback callback,
-                   bool is_dev_mode) {
-    is_dev_mode_ = is_dev_mode;
-    std::vector<std::string> enviroment;
-    if (start_params_.disable_ureadahead)
-      enviroment.emplace_back("DISABLE_UREADAHEAD=1");
-    std::deque<JobDesc> jobs{
-        // Note: the first Upstart job is a task, and the callback for the start
-        // request won't be called until the task finishes. When the callback is
-        // called with true, it is ensured that the per-board features files
-        // exist.
-        JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
-        JobDesc{
-            kArcVmPostVmStartServicesJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcVmPreLoginServicesJobName,
-                UpstartOperation::JOB_STOP_AND_START, std::move(enviroment)},
-    };
-    ConfigureUpstartJobs(
-        std::move(jobs),
-        base::BindOnce(
-            &ArcVmClientAdapter::OnConfigureUpstartJobsOnStartMiniArc,
-            weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void OnConfigureUpstartJobsOnStartMiniArc(
@@ -1055,8 +1017,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     DCHECK_LT(0, cpus);
 
     std::vector<std::string> kernel_cmdline = GenerateKernelCmdline(
-        start_params_, file_system_status, *is_dev_mode_, is_host_on_vm_,
-        GetChromeOsChannelFromLsbRelease());
+        start_params_, file_system_status, is_host_on_vm_);
     auto start_request = CreateStartArcVmRequest(
         user_id_hash_, cpus, demo_session_apps_path, data_image_path,
         file_system_status, use_per_vm_core_scheduling,
@@ -1249,7 +1210,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   std::unique_ptr<ArcVmClientAdapterDelegate> delegate_;
 
-  absl::optional<bool> is_dev_mode_;
   // True when the *host* is running on a VM.
   const bool is_host_on_vm_;
   // A cryptohome ID of the primary profile.

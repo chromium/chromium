@@ -122,8 +122,6 @@ class ArcContainerClientAdapter
     request.set_dalvik_memory_profile(
         ToLoginManagerDalvikMemoryProfile(params.dalvik_memory_profile));
     request.set_arc_custom_tabs_experiment(params.arc_custom_tabs_experiment);
-    request.set_disable_system_default_app(
-        params.arc_disable_system_default_app);
     request.set_disable_media_store_maintenance(
         params.disable_media_store_maintenance);
     request.set_disable_download_provider(params.disable_download_provider);

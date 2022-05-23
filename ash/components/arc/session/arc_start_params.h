@@ -69,9 +69,6 @@ struct StartParams {
   // Experiment flag for ARC Custom Tabs.
   bool arc_custom_tabs_experiment = false;
 
-  // Flag to disable system default apps.
-  bool arc_disable_system_default_app = false;
-
   // Flag to disable scheduling of media store periodic maintenance tasks.
   bool disable_media_store_maintenance = false;
 
