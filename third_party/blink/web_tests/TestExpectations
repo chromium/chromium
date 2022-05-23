@@ -7690,7 +7690,7 @@ crbug.com/1203491 [ Win ] fast/events/touch/gesture/touch-gesture-scroll-listbox
 crbug.com/1313282 inspector-protocol/input/dispatchMouseEvent.js [ Skip ]
 crbug.com/1313331 [ Mac10.13 ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/subpixel-overflow-mouse-drag.html [ Failure Pass ]
 crbug.com/1313331 [ Debug Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/subpixel-overflow-mouse-drag.html [ Failure Pass ]
-crbug.com/1095540 [ Mac11-arm64 ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
+crbug.com/1095540 [ Mac ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
 crbug.com/1254163 [ Mac10.12 ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure ]
 crbug.com/1254163 [ Mac10.13 ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure ]
 crbug.com/1313396 [ Linux ] external/wpt/dom/events/Event-dispatch-on-disabled-elements.html [ Failure Pass ]
