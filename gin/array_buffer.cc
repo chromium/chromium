@@ -45,7 +45,7 @@ void* ArrayBufferAllocator::AllocateUninitialized(size_t length) {
 
 void* ArrayBufferAllocator::AllocateInternal(size_t length,
                                              unsigned int flags) {
-#ifdef V8_SANDBOX
+#ifdef V8_ENABLE_SANDBOX
   // The V8 sandbox requires all ArrayBuffer backing stores to be allocated
   // inside the sandbox address space. This isn't guaranteed if allocation
   // override hooks (which are e.g. used by GWP-ASan) are enabled or if a
@@ -58,7 +58,7 @@ void* ArrayBufferAllocator::AllocateInternal(size_t length,
 
 void ArrayBufferAllocator::Free(void* data, size_t length) {
   unsigned int flags = 0;
-#ifdef V8_SANDBOX
+#ifdef V8_ENABLE_SANDBOX
   // See |AllocateInternal|.
   flags |= partition_alloc::FreeFlags::kNoMemoryToolOverride;
 #endif
@@ -142,7 +142,7 @@ bool Converter<ArrayBufferView>::FromV8(v8::Isolate* isolate,
 // ArrayBufferSharedMemoryMapper ---------------------------------------------
 
 namespace {
-#ifdef V8_SANDBOX
+#ifdef V8_ENABLE_SANDBOX
 // When the V8 sandbox is enabled, shared memory backing ArrayBuffers must be
 // mapped into the sandbox address space. This custom SharedMemoryMapper
 // implements this.
@@ -201,10 +201,10 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
     address_space->FreeSharedPages(address, mapping_size);
   }
 };
-#endif  // V8_SANDBOX
+#endif  // V8_ENABLE_SANDBOX
 
 base::SharedMemoryMapper* CreateSharedMemoryMapperForArrayBuffers() {
-#if V8_SANDBOX
+#if V8_ENABLE_SANDBOX
   static ArrayBufferSharedMemoryMapper instance;
   // Currently, it is still possible for the sandbox to be disabled at runtime
   // (by not initializing it), in which case the default shared memory mapper

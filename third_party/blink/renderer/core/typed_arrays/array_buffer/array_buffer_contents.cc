@@ -161,7 +161,7 @@ void* ArrayBufferContents::AllocateMemoryWithFlags(size_t size,
     }
   }
 
-#ifdef V8_SANDBOX
+#ifdef V8_ENABLE_SANDBOX
   // The V8 sandbox requires all ArrayBuffer backing stores to be allocated
   // inside the sandbox address space. This isn't guaranteed if allocation
   // override hooks (which are e.g. used by GWP-ASan) are enabled or if a
@@ -197,7 +197,7 @@ void ArrayBufferContents::FreeMemory(void* data) {
   InstanceCounters::DecrementCounter(
       InstanceCounters::kArrayBufferContentsCounter);
   unsigned int flags = 0;
-#ifdef V8_SANDBOX
+#ifdef V8_ENABLE_SANDBOX
   // See |AllocateMemoryWithFlags|.
   flags |= partition_alloc::FreeFlags::kNoMemoryToolOverride;
 #endif

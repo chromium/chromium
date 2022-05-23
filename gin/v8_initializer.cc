@@ -373,11 +373,11 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   // of the virtual memory cage, already use V8's random number generator.
   v8::V8::SetEntropySource(&GenerateEntropy);
 
-#if defined(V8_SANDBOX)
+#if defined(V8_ENABLE_SANDBOX)
   static_assert(ARCH_CPU_64_BITS, "V8 sandbox can only work in 64-bit builds");
   // For now, initializing the sandbox is optional, and we only do it if the
   // correpsonding feature is enabled. In the future, it will be mandatory when
-  // compiling with V8_SANDBOX.
+  // compiling with V8_ENABLE_SANDBOX.
   // However, if V8 uses sandboxed pointers, then the sandbox must be
   // initialized as sandboxed pointers are simply offsets inside the sandbox.
 #if defined(V8_SANDBOXED_POINTERS)
@@ -406,7 +406,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     // TODO(1218005) remove this once the finch trial has ended.
     base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
   }
-#endif  // V8_SANDBOX
+#endif  // V8_ENABLE_SANDBOX
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   if (g_mapped_snapshot) {
@@ -420,7 +420,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
 
   v8_is_initialized = true;
 
-#if defined(V8_SANDBOX)
+#if defined(V8_ENABLE_SANDBOX)
   if (v8_sandbox_is_initialized) {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused. This should match enum
@@ -486,7 +486,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     // once sandbox initialization is mandatory.
     CHECK_NE(nullptr, GetSharedMemoryMapperForArrayBuffers());
   }
-#endif  // V8_SANDBOX
+#endif  // V8_ENABLE_SANDBOX
 
   // Initialize the partition used by gin::ArrayBufferAllocator instances. This
   // needs to happen now, after the V8 sandbox has been initialized, so that
