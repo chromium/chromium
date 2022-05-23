@@ -178,7 +178,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:inflatedId="@+id/page_zoom_layout"
-            android:layout="@layout/page_zoom_view_new" />
+            android:layout="@layout/page_zoom_view" />
 
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

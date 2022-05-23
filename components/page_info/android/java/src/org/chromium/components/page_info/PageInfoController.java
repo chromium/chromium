@@ -39,7 +39,6 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -129,11 +128,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
 
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
-
-    // The controller for the page zoom section of the page info. Instantiated only when
-    // {@link ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM} is enabled.
-    @Nullable
-    private PageInfoPageZoomController mPageZoomController;
 
     // All subpage controllers.
     private Collection<PageInfoSubpageController> mSubpageControllers;
@@ -267,23 +261,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mCookiesController =
                 new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
         mSubpageControllers.add(mCookiesController);
-
-        // Only create the controller for Page Zoom if feature flag is enabled.
-        if (ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
-            mPageZoomController = new PageInfoPageZoomController(this, mView.getPageZoomRowView(),
-                    mWebContents, new PageInfoPageZoomController.PageZoomControllerObserver() {
-                        @Override
-                        public void onSubpageCreated() {
-                            mDialog.reduceWindowDim();
-                        }
-
-                        @Override
-                        public void onSubpageRemoved() {
-                            mDialog.resetWindowDimToDefault();
-                        }
-                    });
-            mSubpageControllers.add(mPageZoomController);
-        }
 
         // TODO(crbug.com/1173154): Setup forget this site button after history delete is
         // implemented.

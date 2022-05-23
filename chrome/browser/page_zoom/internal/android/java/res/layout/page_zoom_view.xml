@@ -9,8 +9,6 @@
     android:layout_height="wrap_content"
     android:background="@drawable/page_zoom_background"
     android:gravity="center"
-    android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
-    android:layout_marginVertical="@dimen/page_info_popup_padding_vertical"
     android:orientation="horizontal" >
 
     <org.chromium.ui.widget.ChromeImageButton

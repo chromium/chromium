@@ -212,7 +212,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_warning_red_16dp.xml",
     "java/res/drawable/ic_warning_red_24dp.xml",
     "java/res/drawable/ic_web_asset_24dp.xml",
-    "java/res/drawable/ic_zoom_in.xml",
     "java/res/drawable/smartphone_black_24dp.xml",
     "java/res/drawable/toolbar_hairline.xml",
     "java/res/values-night/colors.xml",

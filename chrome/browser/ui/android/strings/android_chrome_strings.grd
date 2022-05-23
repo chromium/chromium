@@ -5407,6 +5407,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Image descriptions will resume when you connect to Wi-Fi
       </message>
 
+      <!-- Page Zoom -->
+      <message name="IDS_PAGE_ZOOM_TITLE" desc="Title of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
+        Zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom" translateable="false">
+        Decrease zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_INCREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to increase page zoom" translateable="false">
+        Increase zoom
+      </message>
+
       <!-- Assistant voice search consent ui. -->
       <message name="IDS_AVS_CONSENT_UI_TITLE" desc="Title for a dialog asking the user's permission to use Assistant for voice search.">
       Get a better voice experience on the web

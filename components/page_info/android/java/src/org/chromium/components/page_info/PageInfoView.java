@@ -22,7 +22,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
     private PageInfoRowView mCookiesRow;
-    private PageInfoRowView mPageZoomRow;
     private Button mForgetSiteButton;
     private TextView mHttpsImageCompressionMessage;
     private Button mInstantAppButton;
@@ -50,7 +49,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         initConnection();
         initPermissions();
         initCookies(params);
-        initPageZoom();
         initForgetSiteButton();
         initHttpsImageCompression(params);
         initInstantApp(params);
@@ -73,10 +71,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
     private void initCookies(Params params) {
         mCookiesRow = findViewById(R.id.page_info_cookies_row);
         mOnUiClosingCallback = params.onUiClosingCallback;
-    }
-
-    private void initPageZoom() {
-        mPageZoomRow = findViewById(R.id.page_info_page_zoom_row);
     }
 
     private void initForgetSiteButton() {
@@ -114,10 +108,6 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
 
     public PageInfoRowView getCookiesRowView() {
         return mCookiesRow;
-    }
-
-    public PageInfoRowView getPageZoomRowView() {
-        return mPageZoomRow;
     }
 
     public ViewGroup getRowWrapper() {

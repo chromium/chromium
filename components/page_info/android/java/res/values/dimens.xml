@@ -13,8 +13,4 @@
 
     <!-- Page Info Background Elevation -->
     <dimen name="page_info_bg_elev">@dimen/default_elevation_0</dimen>
-
-    <!-- Page Zoom dimensions -->
-    <dimen name="page_zoom_min_touch_target_size">48dp</dimen>
-    <dimen name="page_zoom_control_spacing">10dp</dimen>
 </resources>

@@ -10,7 +10,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -254,26 +253,5 @@ public class PageInfoDialog {
         if (mCurrentAnimation != null) mCurrentAnimation.cancel();
         mCurrentAnimation = dialogAnimation;
         return dialogAnimation;
-    }
-
-    /**
-     * Set a smaller dim amount so web contents are easier to see for certain page controls
-     * (e.g. while changing zoom). Value is arbitrarily chosen to be closer to 0 than the default.
-     */
-    public void reduceWindowDim() {
-        mSheetDialog.getWindow().setDimAmount(0.10f);
-    }
-
-    /**
-     * Reset dim amount to the standard set in the Theme.
-     */
-    public void resetWindowDimToDefault() {
-        // Fetch the dim amount from styles.xml and default to 0.65 if not found.
-        int[] attrs = {android.R.attr.backgroundDimAmount};
-        TypedArray typedArray = mSheetDialog.getContext().obtainStyledAttributes(
-                R.style.ThemeOverlay_BrowserUI_ModalDialog, attrs);
-        float dimAmount = typedArray.getFloat(0, 0.65f);
-
-        mSheetDialog.getWindow().setDimAmount(dimAmount);
     }
 }

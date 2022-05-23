@@ -31,8 +31,9 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "android/java/res/drawable/ic_zoom.xml",
     "android/java/res/drawable/page_zoom_background.xml",
-    "android/java/res/layout/page_zoom_view_new.xml",
+    "android/java/res/layout/page_zoom_view.xml",
   ]
 
   deps = [ "//chrome/android:chrome_app_java_resources" ]
