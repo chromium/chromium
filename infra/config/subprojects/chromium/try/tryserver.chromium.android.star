@@ -72,6 +72,9 @@ try_.builder(
 
 try_.builder(
     name = "android-bfcache-rel",
+    mirrors = [
+        "ci/android-bfcache-rel",
+    ],
 )
 
 try_.builder(
