@@ -35,6 +35,9 @@ try_.builder(
 
 try_.builder(
     name = "android-11-x86-rel",
+    mirrors = [
+        "ci/android-11-x86-rel",
+    ],
 )
 
 try_.builder(
