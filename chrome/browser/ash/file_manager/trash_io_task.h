@@ -170,6 +170,9 @@ class TrashIOTask : public IOTask {
   void TrashFile(size_t source_idx,
                  size_t output_idx,
                  const storage::FileSystemURL& destination_url);
+  void OnMoveComplete(size_t source_idx,
+                      size_t output_idx,
+                      base::File::Error error);
 
   raw_ptr<Profile> profile_;
 
@@ -186,6 +189,10 @@ class TrashIOTask : public IOTask {
   // Stores the size reported by the last progress update so we can compute the
   // delta on the next progress update.
   int64_t last_progress_size_;
+
+  // Stores the last url for the most recently updated metadata file, in the
+  // event of a move failure this file is removed.
+  storage::FileSystemURL last_metadata_url_;
 
   // Speedometer for this operation, used to calculate the remaining time to
   // finish the operation.

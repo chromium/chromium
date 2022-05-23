@@ -393,6 +393,7 @@ void TrashIOTask::OnWriteMetadata(size_t source_idx,
     return;
   }
 
+  last_metadata_url_ = progress_.outputs[output_idx].url;
   progress_.outputs[output_idx].error = base::File::FILE_OK;
   TrashFile(source_idx, output_idx, destination_url);
 }
@@ -430,6 +431,30 @@ void TrashIOTask::TrashFile(size_t source_idx,
                      std::move(complete_callback)),
       base::BindOnce(&TrashIOTask::SetCurrentOperationID,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TrashIOTask::OnMoveComplete(size_t source_idx,
+                                 size_t output_idx,
+                                 base::File::Error error) {
+  DCHECK(source_idx < progress_.sources.size());
+  DCHECK(output_idx < progress_.outputs.size());
+  if (error != base::File::FILE_OK) {
+    LOG(ERROR) << "Failed to move the file to trash folder: " << error;
+    auto complete_callback = base::BindPostTask(
+        base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(&TrashIOTask::TrashComplete,
+                       weak_ptr_factory_.GetWeakPtr(), source_idx, output_idx));
+
+    content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&StartDeleteOnIOThread, file_system_context_,
+                       last_metadata_url_, std::move(complete_callback)),
+        base::BindOnce(&TrashIOTask::SetCurrentOperationID,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  TrashComplete(source_idx, output_idx, error);
 }
 
 void TrashIOTask::TrashComplete(size_t source_idx,

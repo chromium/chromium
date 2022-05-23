@@ -37,5 +37,14 @@ void GetFileMetadataOnIOThread(
                                                        std::move(callback));
 }
 
+storage::FileSystemOperationRunner::OperationID StartDeleteOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL& file_url,
+    storage::FileSystemOperation::StatusCallback status_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  return file_system_context->operation_runner()->Remove(
+      file_url, /*recursive=*/true, std::move(status_callback));
+}
+
 }  // namespace io_task
 }  // namespace file_manager
