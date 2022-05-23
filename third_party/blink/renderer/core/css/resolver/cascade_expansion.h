@@ -33,7 +33,7 @@ inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
 
 // Used by the -inl.h file.
 CORE_EXPORT CascadeFilter
-AmendFilter(CascadeFilter filter, const MatchedProperties& matched_properties);
+CreateExpansionFilter(const MatchedProperties& matched_properties);
 CORE_EXPORT bool IsInAllExpansion(CSSPropertyID id);
 
 // CascadeExpansion objects which exceed these limits will emit nothing.
@@ -85,7 +85,6 @@ constexpr wtf_size_t kMaxMatchedPropertiesIndex =
 template <class Callback>
 void ExpandCascade(const MatchedProperties& matched_properties,
                    const Document& document,
-                   CascadeFilter upstream_filter,
                    wtf_size_t matched_properties_index,
                    Callback&& callback);
 

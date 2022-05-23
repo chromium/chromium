@@ -48,9 +48,10 @@ CascadeFilter AddLinkFilter(CascadeFilter filter,
 }  // anonymous namespace
 
 CORE_EXPORT CascadeFilter
-AmendFilter(CascadeFilter filter, const MatchedProperties& matched_properties) {
-  return AddLinkFilter(AddValidPropertiesFilter(filter, matched_properties),
-                       matched_properties);
+CreateExpansionFilter(const MatchedProperties& matched_properties) {
+  return AddLinkFilter(
+      AddValidPropertiesFilter(CascadeFilter(), matched_properties),
+      matched_properties);
 }
 
 CORE_EXPORT bool IsInAllExpansion(CSSPropertyID id) {

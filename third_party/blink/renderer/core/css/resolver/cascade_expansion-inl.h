@@ -17,10 +17,9 @@ namespace blink {
 template <class Callback>
 void ExpandCascade(const MatchedProperties& matched_properties,
                    const Document& document,
-                   CascadeFilter upstream_filter,
                    wtf_size_t matched_properties_index,
                    Callback&& callback) {
-  CascadeFilter filter = AmendFilter(upstream_filter, matched_properties);
+  CascadeFilter filter = CreateExpansionFilter(matched_properties);
 
   // We can't handle a MatchResult with more than 0xFFFF MatchedProperties,
   // or a MatchedProperties object with more than 0xFFFF declarations. If this

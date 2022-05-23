@@ -338,7 +338,7 @@ void StyleCascade::AnalyzeMatchResult() {
   int index = 0;
   for (const MatchedProperties& properties :
        match_result_.GetMatchedProperties()) {
-    ExpandCascade(properties, GetDocument(), CascadeFilter(), index++,
+    ExpandCascade(properties, GetDocument(), index++,
                   [this](CascadePriority cascade_priority,
                          const CSSProperty& css_property,
                          const CSSValue& css_value [[maybe_unused]],
