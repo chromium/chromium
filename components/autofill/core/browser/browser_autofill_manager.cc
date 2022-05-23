@@ -420,6 +420,7 @@ BrowserAutofillManager::BrowserAutofillManager(
                       enable_download_manager),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
+      touch_to_fill_delegate_(std::make_unique<TouchToFillDelegate>()),
       app_locale_(app_locale),
       personal_data_(client->GetPersonalDataManager()),
       field_filler_(app_locale, client->GetAddressNormalizer()),
@@ -1053,9 +1054,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         field.form_control_type, weak_ptr_factory_.GetWeakPtr(), context);
     return;
   }
-  // TODO(crbug.com/1247698): Try to show TTF if |touch_to_fill_eligible|.
-  // Send Autofill suggestions (could be an empty list).
+
   single_field_form_fill_router_->CancelPendingQueries(this);
+  if (touch_to_fill_eligible &&
+      touch_to_fill_delegate_->TryToShowTouchToFill(query_id, form, field)) {
+    // Touch To Fill is shown.
+    return;
+  }
+  // Send Autofill suggestions (could be an empty list).
   external_delegate_->OnSuggestionsReturned(query_id, suggestions,
                                             autoselect_first_suggestion,
                                             context.should_display_gpay_logo);

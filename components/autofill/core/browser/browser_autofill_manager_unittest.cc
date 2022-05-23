@@ -162,6 +162,19 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
               (override));
 };
 
+class MockTouchToFillDelegate : public TouchToFillDelegate {
+ public:
+  MockTouchToFillDelegate() = default;
+  MockTouchToFillDelegate(const MockTouchToFillDelegate&) = delete;
+  MockTouchToFillDelegate& operator=(const MockTouchToFillDelegate&) = delete;
+  ~MockTouchToFillDelegate() override = default;
+
+  MOCK_METHOD(bool,
+              TryToShowTouchToFill,
+              (int query_id, const FormData& form, const FormFieldData& field),
+              (override));
+};
+
 void ExpectFilledField(const char* expected_label,
                        const char* expected_name,
                        const char* expected_value,
@@ -410,6 +423,11 @@ class BrowserAutofillManagerTest : public testing::Test {
     browser_autofill_manager_->SetExternalDelegateForTest(
         std::move(external_delegate));
 
+    auto touch_to_fill_delegate = std::make_unique<MockTouchToFillDelegate>();
+    touch_to_fill_delegate_ = touch_to_fill_delegate.get();
+    browser_autofill_manager_->SetTouchToFillDelegateForTest(
+        std::move(touch_to_fill_delegate));
+
     auto test_strike_database = std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
@@ -487,6 +505,15 @@ class BrowserAutofillManagerTest : public testing::Test {
   void GetAutofillSuggestions(const FormData& form,
                               const FormFieldData& field) {
     GetAutofillSuggestions(kDefaultPageID, form, field);
+  }
+
+  void TryToShowTouchToFill(int query_id,
+                            const FormData& form,
+                            const FormFieldData& field,
+                            TouchToFillEligible touch_to_fill_eligible) {
+    browser_autofill_manager_->OnAskForValuesToFill(
+        query_id, form, field, gfx::RectF(),
+        /*autoselect_first_suggestion=*/false, touch_to_fill_eligible);
   }
 
   void AutocompleteSuggestionsReturned(
@@ -728,6 +755,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TestAutofillExternalDelegate> external_delegate_;
+  raw_ptr<MockTouchToFillDelegate> touch_to_fill_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
@@ -9360,6 +9388,35 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
   EXPECT_EQ(response_data.fields[3].value, u"Test Country");
+}
+
+// Tests that Autofill suggestions are not shown if TTF is eligible and shown.
+TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
+  FormData form;
+  CreateTestCreditCardFormData(&form, /*is_https=*/true,
+                               /*use_month_type=*/false);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+  const FormFieldData& field = form.fields[1];
+  int query_id = 1;
+
+  // TTF not eligible, Autofill suggestions shown.
+  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
+      .Times(0);
+  TryToShowTouchToFill(query_id++, form, field, TouchToFillEligible(false));
+  EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
+
+  // TTF not shown, Autofill suggestions shown.
+  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
+      .WillOnce(Return(false));
+  TryToShowTouchToFill(query_id++, form, field, TouchToFillEligible(true));
+  EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
+
+  // TTF eligible and shown, Autofill suggestions not shown
+  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
+      .WillOnce(Return(true));
+  TryToShowTouchToFill(query_id++, form, field, TouchToFillEligible(true));
+  EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
 // Desktop only tests.

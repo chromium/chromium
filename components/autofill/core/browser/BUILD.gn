@@ -332,6 +332,8 @@ static_library("browser") {
     "suggestions_context.cc",
     "suggestions_context.h",
     "sync_utils.h",
+    "touch_to_fill_delegate.cc",
+    "touch_to_fill_delegate.h",
     "ui/accessory_sheet_data.cc",
     "ui/accessory_sheet_data.h",
     "ui/accessory_sheet_enums.h",

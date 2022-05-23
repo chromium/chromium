@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/sync_utils.h"
+#include "components/autofill/core/browser/touch_to_fill_delegate.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -299,6 +300,11 @@ class BrowserAutofillManager : public AutofillManager,
   void SetExternalDelegateForTest(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
     external_delegate_ = std::move(external_delegate);
+  }
+
+  void SetTouchToFillDelegateForTest(
+      std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate) {
+    touch_to_fill_delegate_ = std::move(touch_to_fill_delegate);
   }
 
   // A public wrapper that calls |DeterminePossibleFieldTypesForUpload| for
@@ -627,9 +633,10 @@ class BrowserAutofillManager : public AutofillManager,
   void SetDataList(const std::vector<std::u16string>& values,
                    const std::vector<std::u16string>& labels);
 
-  // Delegate to perform external processing (display, selection) on
+  // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
+  std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate_;
 
   std::string app_locale_;
 
