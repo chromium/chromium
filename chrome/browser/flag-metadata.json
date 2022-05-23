@@ -226,11 +226,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "arc-mouse-wheel-smooth-scroll",
-    "owners": [ "yhanada", "mduggan" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "arc-native-bridge-64bit-support-experiment",
     "owners": [ "jhorwich" ],
     // Used on ChromeOS to experimentally enable 64-bit ARC native-bridge
