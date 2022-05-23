@@ -41,13 +41,13 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_FALSE(ns_window.visible);
 
   // Verify fullscreen state.
-  chrome::ToggleFullscreenMode(browser());
+  ToggleFullscreenModeSync(browser());
   ASSERT_TRUE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(ns_window.visible);
 
   // Verify back to normal state.
-  chrome::ToggleFullscreenMode(browser());
+  ToggleFullscreenModeSync(browser());
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(ns_window.visible);
