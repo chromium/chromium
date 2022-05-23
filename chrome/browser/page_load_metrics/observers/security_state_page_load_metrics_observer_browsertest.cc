@@ -665,11 +665,8 @@ class SecurityStatePageLoadMetricsFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1301880): This test will be enabled after toyoshim@'s CL
-// restricts call to SecurityStatePageLoadMetricsObserver::OnCommit for fenced
-// frames"
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsFencedFrameBrowserTest,
-                       DISABLED_DoNotRecordOnCommitSecurityLevelHistogram) {
+                       DoNotRecordOnCommitSecurityLevelHistogram) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
 
   GURL https_url = https_test_server()->GetURL("/title1.html");
