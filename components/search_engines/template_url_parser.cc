@@ -232,7 +232,7 @@ void SafeTemplateURLParser::ParseURLs(
         data_decoder::GetXmlElementAttribute(*url_value, kURLTemplateAttribute);
     std::string type =
         data_decoder::GetXmlElementAttribute(*url_value, kURLTypeAttribute);
-    bool is_post = base::LowerCaseEqualsASCII(
+    bool is_post = base::EqualsCaseInsensitiveASCII(
         data_decoder::GetXmlElementAttribute(*url_value, kParamMethodAttribute),
         "post");
     bool is_html_url = (type == kHTMLType);
