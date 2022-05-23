@@ -27,9 +27,8 @@
 namespace blink {
 
 namespace {
-void GetYUVToRGBMatrix(gfx::ColorSpace colorSpace,
-                       size_t bitDepth,
-                       float matrix[12]) {
+std::array<float, 12> GetYUVToRGBMatrix(gfx::ColorSpace colorSpace,
+                                        size_t bitDepth) {
   // Get the appropriate YUV to RGB conversion matrix.
   SkYUVColorSpace srcSkColorSpace;
   colorSpace.ToSkYUVColorSpace(static_cast<int>(bitDepth), &srcSkColorSpace);
@@ -37,25 +36,21 @@ void GetYUVToRGBMatrix(gfx::ColorSpace colorSpace,
   float yuvM[20];
   skColorMatrix.getRowMajor(yuvM);
   // Only use columns 1-3 (3x3 conversion matrix) and column 5 (bias values)
-  matrix[0] = yuvM[0];
-  matrix[1] = yuvM[1];
-  matrix[2] = yuvM[2];
-  matrix[3] = yuvM[4];
-  matrix[4] = yuvM[5];
-  matrix[5] = yuvM[6];
-  matrix[6] = yuvM[7];
-  matrix[7] = yuvM[9];
-  matrix[8] = yuvM[10];
-  matrix[9] = yuvM[11];
-  matrix[10] = yuvM[12];
-  matrix[11] = yuvM[14];
+  return std::array<float, 12>{yuvM[0],  yuvM[1],  yuvM[2],  yuvM[4],
+                               yuvM[5],  yuvM[6],  yuvM[7],  yuvM[9],
+                               yuvM[10], yuvM[11], yuvM[12], yuvM[14]};
 }
 
-void GetColorSpaceConversionConstants(gfx::ColorSpace srcColorSpace,
-                                      gfx::ColorSpace dstColorSpace,
-                                      float gamutMatrix[9],
-                                      float srcTransferConstants[7],
-                                      float dstTransferConstants[7]) {
+struct ColorSpaceConversionConstants {
+  std::array<float, 9> gamutConversionMatrix;
+  std::array<float, 7> srcTransferConstants;
+  std::array<float, 7> dstTransferConstants;
+};
+
+ColorSpaceConversionConstants GetColorSpaceConversionConstants(
+    gfx::ColorSpace srcColorSpace,
+    gfx::ColorSpace dstColorSpace) {
+  ColorSpaceConversionConstants colorSpaceConversionConstants;
   // Get primary matrices for the source and destination color spaces.
   // Multiply the source primary matrix with the inverse destination primary
   // matrix to create a single transformation matrix.
@@ -71,37 +66,28 @@ void GetColorSpaceConversionConstants(gfx::ColorSpace srcColorSpace,
   skcms_Matrix3x3 transformM = skcms_Matrix3x3_concat(
       &srcPrimaryMatrixToXYZD50, &dstPrimaryMatrixFromXYZD50);
   // From row major matrix to col major matrix
-  gamutMatrix[0] = transformM.vals[0][0];
-  gamutMatrix[1] = transformM.vals[1][0];
-  gamutMatrix[2] = transformM.vals[2][0];
-  gamutMatrix[3] = transformM.vals[0][1];
-  gamutMatrix[4] = transformM.vals[1][1];
-  gamutMatrix[5] = transformM.vals[2][1];
-  gamutMatrix[6] = transformM.vals[0][2];
-  gamutMatrix[7] = transformM.vals[1][2];
-  gamutMatrix[8] = transformM.vals[2][2];
+  colorSpaceConversionConstants.gamutConversionMatrix = std::array<float, 9>{
+      transformM.vals[0][0], transformM.vals[1][0], transformM.vals[2][0],
+      transformM.vals[0][1], transformM.vals[1][1], transformM.vals[2][1],
+      transformM.vals[0][2], transformM.vals[1][2], transformM.vals[2][2]};
 
   // Set constants for source transfer function.
   skcms_TransferFunction src_transfer_fn;
   srcColorSpace.GetInverseTransferFunction(&src_transfer_fn);
-  srcTransferConstants[0] = src_transfer_fn.g;
-  srcTransferConstants[1] = src_transfer_fn.a;
-  srcTransferConstants[2] = src_transfer_fn.b;
-  srcTransferConstants[3] = src_transfer_fn.c;
-  srcTransferConstants[4] = src_transfer_fn.d;
-  srcTransferConstants[5] = src_transfer_fn.e;
-  srcTransferConstants[6] = src_transfer_fn.f;
+  colorSpaceConversionConstants.srcTransferConstants = std::array<float, 7>{
+      src_transfer_fn.g, src_transfer_fn.a, src_transfer_fn.b,
+      src_transfer_fn.c, src_transfer_fn.d, src_transfer_fn.e,
+      src_transfer_fn.f};
 
   // Set constants for destination transfer function.
   skcms_TransferFunction dst_transfer_fn;
   dstColorSpace.GetTransferFunction(&dst_transfer_fn);
-  dstTransferConstants[0] = dst_transfer_fn.g;
-  dstTransferConstants[1] = dst_transfer_fn.a;
-  dstTransferConstants[2] = dst_transfer_fn.b;
-  dstTransferConstants[3] = dst_transfer_fn.c;
-  dstTransferConstants[4] = dst_transfer_fn.d;
-  dstTransferConstants[5] = dst_transfer_fn.e;
-  dstTransferConstants[6] = dst_transfer_fn.f;
+  colorSpaceConversionConstants.dstTransferConstants = std::array<float, 7>{
+      dst_transfer_fn.g, dst_transfer_fn.a, dst_transfer_fn.b,
+      dst_transfer_fn.c, dst_transfer_fn.d, dst_transfer_fn.e,
+      dst_transfer_fn.f};
+
+  return colorSpaceConversionConstants;
 }
 
 struct ExternalTextureSource {
@@ -235,22 +221,19 @@ GPUExternalTexture* GPUExternalTexture::Create(
     external_texture_desc.plane1 = plane1;
     external_texture_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
 
-    float yuvToRgbMatrix[12];
-    GetYUVToRGBMatrix(srcColorSpace, source.media_video_frame->BitDepth(),
-                      yuvToRgbMatrix);
-    external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix;
+    std::array<float, 12> yuvToRgbMatrix =
+        GetYUVToRGBMatrix(srcColorSpace, source.media_video_frame->BitDepth());
+    external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix.data();
 
-    float gamutConversionMatrix[9];
-    float srcTransferFn[7];
-    float dstTransferFn[7];
+    ColorSpaceConversionConstants colorSpaceConversionConstants =
+        GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace);
 
-    GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace,
-                                     gamutConversionMatrix, srcTransferFn,
-                                     dstTransferFn);
-
-    external_texture_desc.gamutConversionMatrix = gamutConversionMatrix;
-    external_texture_desc.srcTransferFunctionParameters = srcTransferFn;
-    external_texture_desc.dstTransferFunctionParameters = dstTransferFn;
+    external_texture_desc.gamutConversionMatrix =
+        colorSpaceConversionConstants.gamutConversionMatrix.data();
+    external_texture_desc.srcTransferFunctionParameters =
+        colorSpaceConversionConstants.srcTransferConstants.data();
+    external_texture_desc.dstTransferFunctionParameters =
+        colorSpaceConversionConstants.dstTransferConstants.data();
 
     GPUExternalTexture* external_texture =
         MakeGarbageCollected<GPUExternalTexture>(
@@ -327,16 +310,15 @@ GPUExternalTexture* GPUExternalTexture::Create(
   dawn_desc.plane0 = plane0;
   dawn_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
 
-  float gamutMatrix[9];
-  float srcTransferFn[7];
-  float dstTransferFn[7];
+  ColorSpaceConversionConstants colorSpaceConversionConstants =
+      GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace);
 
-  GetColorSpaceConversionConstants(srcColorSpace, dstColorSpace, gamutMatrix,
-                                   srcTransferFn, dstTransferFn);
-
-  dawn_desc.gamutConversionMatrix = gamutMatrix;
-  dawn_desc.srcTransferFunctionParameters = srcTransferFn;
-  dawn_desc.dstTransferFunctionParameters = dstTransferFn;
+  dawn_desc.gamutConversionMatrix =
+      colorSpaceConversionConstants.gamutConversionMatrix.data();
+  dawn_desc.srcTransferFunctionParameters =
+      colorSpaceConversionConstants.srcTransferConstants.data();
+  dawn_desc.dstTransferFunctionParameters =
+      colorSpaceConversionConstants.dstTransferConstants.data();
 
   GPUExternalTexture* external_texture =
       MakeGarbageCollected<GPUExternalTexture>(
