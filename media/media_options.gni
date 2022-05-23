@@ -79,16 +79,16 @@ declare_args() {
   # Enable HLS manifest parser and demuxer.
   enable_hls_demuxer = false
 
-  # Enable HEVC/H265 decoding with hardware acceleration assist. Enabled by
-  # default for fuzzer builds, ChromeOS builds with protected content support
-  # and Windows.
-  enable_platform_hevc_decoding =
+  # Enable inclusion of the HEVC/H265 parser and also enable HEVC/H265 decoding
+  # with hardware acceleration assist. Enabled by default for fuzzer builds,
+  # ChromeOS builds with protected content support and Windows.
+  enable_hevc_parser_and_hw_decoder =
       proprietary_codecs &&
       (use_fuzzing_engine || use_chromeos_protected_media || is_win)
 }
 
 # Use another declare_args() to allow dependence on
-# |enable_platform_hevc_decoding|.
+# |enable_hevc_parser_and_hw_decoder|.
 declare_args() {
   enable_av1_decoder = enable_dav1d_decoder || enable_libgav1_decoder
 
@@ -96,7 +96,7 @@ declare_args() {
   # platform.
   # TODO(b/194429120): Enable this for Lacros builds.
   enable_platform_hevc =
-      proprietary_codecs && (is_chromecast || enable_platform_hevc_decoding)
+      proprietary_codecs && (is_chromecast || enable_hevc_parser_and_hw_decoder)
 }
 
 assert(
@@ -111,8 +111,8 @@ assert(!enable_platform_hevc || proprietary_codecs,
        "proprietary_codecs=true is required for enable_platform_hevc=true.")
 
 assert(
-    !enable_platform_hevc_decoding || enable_platform_hevc,
-    "enable_platform_hevc=true is required for enable_platform_hevc_decoding=true.")
+    !enable_hevc_parser_and_hw_decoder || enable_platform_hevc,
+    "enable_platform_hevc=true is required for enable_hevc_parser_and_hw_decoder=true.")
 
 # Use another declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {

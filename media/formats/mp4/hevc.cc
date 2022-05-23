@@ -15,11 +15,11 @@
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/video/h265_parser.h"
 #else
 #include "media/video/h265_nalu_parser.h"
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 namespace media {
 namespace mp4 {
@@ -158,7 +158,7 @@ VideoCodecProfile HEVCDecoderConfigurationRecord::GetVideoProfile() const {
   return VIDEO_CODEC_PROFILE_UNKNOWN;
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 VideoColorSpace HEVCDecoderConfigurationRecord::GetColorSpace() {
   if (!arrays.size()) {
     DVLOG(1) << "HVCCNALArray not found, fallback to default colorspace";
@@ -197,7 +197,7 @@ VideoColorSpace HEVCDecoderConfigurationRecord::GetColorSpace() {
   }
   NOTREACHED();
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // static
 bool HEVC::InsertParamSetsAnnexB(

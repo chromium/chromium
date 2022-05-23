@@ -130,12 +130,12 @@ constexpr int kNumPictureBuffers = limits::kMaxVideoFrames * 4;
 // minimum safe (static) size of the reorder queue.
 constexpr int kMaxReorderQueueSize = 17;
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 // If videotoolbox total output picture count is lower than
 // kMinOutputsBeforeRASL, then we should skip the RASL frames
 // to avoid kVTVideoDecoderBadDataErr
 constexpr int kMinOutputsBeforeRASL = 5;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // Build an |image_config| dictionary for VideoToolbox initialization.
 base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
@@ -171,7 +171,7 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
   return image_config;
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 // Create a CMFormatDescription using the provided |pps|, |sps| and |vps|.
 base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
     const std::vector<uint8_t>& vps,
@@ -212,7 +212,7 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
   }
   return format;
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // Create a CMFormatDescription using the provided |pps| and |sps|.
 base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
@@ -394,7 +394,7 @@ bool InitializeVideoToolboxInternal() {
     }
   }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
     // Only macOS >= 11.0 will support hevc if we use
     // CMVideoFormatDescriptionCreateFromHEVCParameterSets
@@ -459,7 +459,7 @@ bool InitializeVideoToolboxInternal() {
       }
     }
   }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   return true;
 }
 
@@ -491,12 +491,12 @@ int32_t ComputeH264ReorderWindow(const H264SPS* sps) {
   return max_dpb_frames;
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 int32_t ComputeHEVCReorderWindow(const H265VPS* vps) {
   int32_t vps_max_sub_layers_minus1 = vps->vps_max_sub_layers_minus1;
   return vps->vps_max_num_reorder_pics[vps_max_sub_layers_minus1];
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // Route decoded frame callbacks back into the VTVideoDecodeAccelerator.
 void OutputThunk(void* decompression_output_refcon,
@@ -756,14 +756,14 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
     case H264PROFILE_HIGH:
       codec_ = VideoCodec::kH264;
       break;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case HEVCPROFILE_MAIN:
     case HEVCPROFILE_MAIN10:
     case HEVCPROFILE_MAIN_STILL_PICTURE:
     case HEVCPROFILE_REXT:
       codec_ = VideoCodec::kHEVC;
       break;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VP9PROFILE_PROFILE0:
     case VP9PROFILE_PROFILE2:
       codec_ = VideoCodec::kVP9;
@@ -802,11 +802,11 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
     case VideoCodec::kH264:
       format = CreateVideoFormatH264(active_sps_, active_spsext_, active_pps_);
       break;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VideoCodec::kHEVC:
       format = CreateVideoFormatHEVC(active_vps_, active_sps_, active_pps_);
       break;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VideoCodec::kVP9:
       format = CreateVideoFormatVP9(
           cc_detector_->GetColorSpace(config_.container_color_space),
@@ -867,9 +867,9 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
     vp9_bsf_ = std::make_unique<VP9SuperFrameBitstreamFilter>();
 
   // Record that the configuration change is complete.
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   configured_vps_ = active_vps_;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   configured_sps_ = active_sps_;
   configured_spsext_ = active_spsext_;
   configured_pps_ = active_pps_;
@@ -1300,7 +1300,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   }
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 void VTVideoDecodeAccelerator::DecodeTaskHEVC(
     scoped_refptr<DecoderBuffer> buffer,
     Frame* frame) {
@@ -1659,7 +1659,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
     return;
   }
 }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // This method may be called on any VideoToolbox thread.
 void VTVideoDecodeAccelerator::Output(void* source_frame_refcon,
@@ -1788,13 +1788,13 @@ void VTVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
         FROM_HERE,
         base::BindOnce(&VTVideoDecodeAccelerator::DecodeTaskVp9,
                        decoder_weak_this_, std::move(buffer), frame));
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else if (codec_ == VideoCodec::kHEVC) {
     decoder_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VTVideoDecodeAccelerator::DecodeTaskHEVC,
                        decoder_weak_this_, std::move(buffer), frame));
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else {
     decoder_task_runner_->PostTask(
         FROM_HERE,
@@ -2339,7 +2339,7 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
         supported_profile == HEVCPROFILE_MAIN10 ||
         supported_profile == HEVCPROFILE_MAIN_STILL_PICTURE ||
         supported_profile == HEVCPROFILE_REXT) {
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       if (!workarounds.disable_accelerated_hevc_decode &&
           base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
         if (__builtin_available(macOS 11.0, *)) {
@@ -2353,7 +2353,7 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
           profiles.push_back(profile);
         }
       }
-#endif  //  BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  //  BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       continue;
     }
 

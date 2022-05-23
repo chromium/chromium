@@ -237,7 +237,7 @@ component("gpu") {
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
     ]
-    if (enable_platform_hevc_decoding) {
+    if (enable_hevc_parser_and_hw_decoder) {
       sources += [
         "windows/d3d11_h265_accelerator.cc",
         "windows/d3d11_h265_accelerator.h",
@@ -297,7 +297,7 @@ source_set("common") {
     "vp9_reference_frame_vector.h",
   ]
 
-  if (enable_platform_hevc_decoding) {
+  if (enable_hevc_parser_and_hw_decoder) {
     sources += [
       "h265_decoder.cc",
       "h265_decoder.h",
@@ -535,7 +535,7 @@ source_set("unit_tests") {
     "//ui/gl:test_support",
   ]
   sources = [ "h264_decoder_unittest.cc" ]
-  if (enable_platform_hevc_decoding) {
+  if (enable_hevc_parser_and_hw_decoder) {
     sources += [ "h265_decoder_unittest.cc" ]
   }
   if (is_linux || is_chromeos) {
@@ -665,7 +665,7 @@ if (use_v4l2_codec || use_vaapi) {
   }
 }
 
-if (enable_platform_hevc_decoding) {
+if (enable_hevc_parser_and_hw_decoder) {
   fuzzer_test("media_h265_decoder_fuzzer") {
     sources = [ "h265_decoder_fuzzertest.cc" ]
     deps = [

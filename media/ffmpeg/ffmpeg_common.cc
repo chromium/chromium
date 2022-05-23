@@ -564,7 +564,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         if (hevc_config.Parse(codec_context->extradata,
                               codec_context->extradata_size)) {
           hevc_profile = hevc_config.general_profile_idc;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
           if (!color_space.IsSpecified()) {
             // We should try to parsed color space from SPS if the
             // result from libavcodec is not specified in case
@@ -572,7 +572,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
             // the container
             color_space = hevc_config.GetColorSpace();
           }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         }
       }
       // The values of general_profile_idc are taken from the HEVC standard, see

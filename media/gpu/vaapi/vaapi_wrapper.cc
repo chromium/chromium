@@ -439,15 +439,15 @@ const ProfileCodecMap& GetProfileCodecMap() {
           // VaapiWrapper does not support VP9 Profile 1, see b/153680337.
           // {VP9PROFILE_PROFILE1, VAProfileVP9Profile1},
           {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
-      // VaapiWrapper does not support Profile 3.
-      //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
+          // VaapiWrapper does not support Profile 3.
+          //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
           {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
         // VaapiWrapper does not support AV1 Profile 1.
         // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
           {HEVCPROFILE_MAIN, VAProfileHEVCMain},
           {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
-#endif
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   });
   return *kMediaToVAProfileMap;
 }
