@@ -74,6 +74,7 @@ NSString* const kArrowDownCircleFillSymbol = @"arrow.down.circle.fill";
 NSString* const kWarningSymbol = @"exclamationmark.triangle";
 NSString* const kWarningFillSymbol = @"exclamationmark.triangle.fill";
 NSString* const kHelpFillSymbol = @"questionmark.circle";
+NSString* const kCheckMarkCircleSymbol = @"checkmark.circle";
 NSString* const kCheckMarkCircleFillSymbol = @"checkmark.circle.fill";
 NSString* const kFailMarkCircleFillSymbol = @"exclamationmark.circle.fill";
 NSString* const kTrashSymbol = @"trash";

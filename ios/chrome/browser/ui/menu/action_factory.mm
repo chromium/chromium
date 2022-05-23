@@ -288,7 +288,7 @@ NSInteger kSymbolToolbarPointSize = 18;
 
 - (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block {
   UIImage* image = UseSymbols()
-                       ? DefaultSymbolWithPointSize(kCheckMarkCircleFillSymbol,
+                       ? DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
                                                     kSymbolActionPointSize)
                        : [UIImage imageNamed:@"select"];
   UIAction* action = [self

@@ -36,6 +36,7 @@ extern NSString* const kArrowDownCircleFillSymbol;
 extern NSString* const kWarningSymbol;
 extern NSString* const kWarningFillSymbol;
 extern NSString* const kHelpFillSymbol;
+extern NSString* const kCheckMarkCircleSymbol;
 extern NSString* const kCheckMarkCircleFillSymbol;
 extern NSString* const kFailMarkCircleFillSymbol;
 extern NSString* const kTrashSymbol;
