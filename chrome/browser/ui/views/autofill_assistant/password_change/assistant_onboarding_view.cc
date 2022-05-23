@@ -10,22 +10,34 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
+
 // Ratios of element width and dialog width.
 constexpr double kAssistantLogoScaleFactor = 0.2;
+constexpr double kTitleScaleFactor = 0.8;
+constexpr double kDescriptionScaleFactor = 0.7;
+constexpr double kConsentTestScaleFactor = 1.0;
+
+// Spacing between children.
+constexpr int kChildSpacing = 10;
+
 }  // namespace
 
 // Factory function to create onboarding prompts on desktop platforms.
@@ -94,11 +106,14 @@ void AssistantOnboardingView::InitDialog() {
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  // TODO(crbug.com/1322387): Set spacing between children.
+  layout->set_between_child_spacing(kChildSpacing);
 
   const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+
+  auto ConvertScaleFactorToMargin = [dialog_width](double scale_factor) -> int {
+    return static_cast<int>((1.0 - scale_factor) * dialog_width / 2.0);
+  };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const gfx::VectorIcon& assistant_icon = kAssistantIcon;
@@ -107,13 +122,76 @@ void AssistantOnboardingView::InitDialog() {
   // `FromVectorIcon` below.
   const gfx::VectorIcon& assistant_icon = kProductIcon;
 #endif
-  AddChildView(std::make_unique<views::ImageView>())
-      ->SetImage(
-          gfx::CreateVectorIcon(assistant_icon, gfx::kPlaceholderColor,
-                                kAssistantLogoScaleFactor * dialog_width));
+  AddChildView(views::Builder<views::ImageView>()
+                   .SetImage(gfx::CreateVectorIcon(
+                       assistant_icon, kAssistantLogoScaleFactor * dialog_width,
+                       gfx::kPlaceholderColor))
+                   .SetID(static_cast<int>(DialogViewID::HEADER_ICON))
+                   .Build());
 
-  // TODO(crbug.com/1322387): Populate dialog with views for texts and the
-  // learn more link.
+  // The title.
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(controller_->GetOnboardingInformation().title)
+          .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_TITLE)
+          .SetTextStyle(views::style::TextStyle::STYLE_PRIMARY)
+          .SetMultiLine(true)
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(
+                  /*top=*/0,
+                  /*left=*/ConvertScaleFactorToMargin(kTitleScaleFactor),
+                  /*bottom=*/0,
+                  /*right=*/ConvertScaleFactorToMargin(kTitleScaleFactor)))
+          .SetID(static_cast<int>(DialogViewID::TITLE))
+          .Build());
+
+  // The description.
+  AddChildView(
+      views::Builder<views::Label>()
+          .SetText(controller_->GetOnboardingInformation().description)
+          .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::TextStyle::STYLE_PRIMARY)
+          .SetMultiLine(true)
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(
+                  0, ConvertScaleFactorToMargin(kDescriptionScaleFactor), 0,
+                  ConvertScaleFactorToMargin(kDescriptionScaleFactor)))
+          .SetID(static_cast<int>(DialogViewID::DESCRIPTION))
+          .Build());
+
+  // TODO(crbug.com/1322387): Add a separator. `views::Separator` currently
+  // does not support horizontal lines.
+
+  // Get the offset of the "Learn more" text to create a link style.
+  size_t offset = 0;
+  std::u16string consent_text = base::ReplaceStringPlaceholders(
+      controller_->GetOnboardingInformation().consent_text,
+      controller_->GetOnboardingInformation().learn_more_title, &offset);
+  // TODO(crbug.com/1322387): Add proper callback to controller.
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::DoNothingAs<void()>());
+
+  // The actual consent text with the "Learn more" link.
+  AddChildView(
+      views::Builder<views::StyledLabel>()
+          .SetText(consent_text)
+          .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
+          .SetDefaultTextStyle(views::style::TextStyle::STYLE_HINT)
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(
+                  0, ConvertScaleFactorToMargin(kConsentTestScaleFactor), 0,
+                  ConvertScaleFactorToMargin(kConsentTestScaleFactor)))
+          .SetID(static_cast<int>(DialogViewID::CONSENT_TEXT))
+          .AddStyleRange(
+              gfx::Range(offset,
+                         offset + controller_->GetOnboardingInformation()
+                                      .learn_more_title.length()),
+              link_style)
+          .Build());
 }
 
 base::WeakPtr<AssistantOnboardingView> AssistantOnboardingView::GetWeakPtr() {

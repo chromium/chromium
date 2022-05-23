@@ -30,6 +30,16 @@ class AssistantOnboardingView : public views::DialogDelegateView,
                                 public AssistantOnboardingPrompt {
  public:
   METADATA_HEADER(AssistantOnboardingView);
+
+  // IDs that identify a view within the dialog that was used in browsertests.
+  enum class DialogViewID : int {
+    VIEW_ID_NONE = 0,
+    HEADER_ICON,
+    TITLE,
+    DESCRIPTION,
+    CONSENT_TEXT,
+  };
+
   AssistantOnboardingView(
       base::WeakPtr<AssistantOnboardingController> controller,
       content::WebContents* web_contents);
