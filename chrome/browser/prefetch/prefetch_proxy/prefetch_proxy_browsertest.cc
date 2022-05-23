@@ -4246,11 +4246,14 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
                          ukm::builders::PrefetchProxy_AfterSRPClick::
                              kSRPClickPrefetchStatusName));
 
+  // In addition to "prefetch.js" and "prefetch-redirect-start.js",
+  // "favicon.ico" is also counted here, because the favicon loading is
+  // triggered from `FrameLoader::DidFinishNavigation()` at the end of NSP.
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Subresources.NetError", net::OK, 2);
+      "PrefetchProxy.Prefetch.Subresources.NetError", net::OK, 3);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Subresources.Quantity", 4, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "PrefetchProxy.Prefetch.Subresources.RespCode", 200, 2);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 2);

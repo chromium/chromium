@@ -1164,11 +1164,13 @@ bool Resource::IsLoadEventBlockingResourceType() const {
   switch (type_) {
     case ResourceType::kImage:
     case ResourceType::kCSSStyleSheet:
-    case ResourceType::kScript:
     case ResourceType::kFont:
     case ResourceType::kSVGDocument:
     case ResourceType::kXSLStyleSheet:
       return true;
+    case ResourceType::kScript:
+      // <script> elements delay the load event in core/script (e.g. in
+      // ScriptRunner) and no longer need the delaying in platform/loader side.
     case ResourceType::kRaw:
     case ResourceType::kLinkPrefetch:
     case ResourceType::kTextTrack:
