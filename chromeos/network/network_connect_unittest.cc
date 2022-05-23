@@ -74,15 +74,25 @@ class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
   void ConnectToNetwork(const std::string& tether_network_guid,
                         base::OnceClosure success_callback,
                         StringErrorCallback error_callback) override {
-    last_connected_tether_network_guid_ = tether_network_guid;
-    std::move(success_callback).Run();
+    if (should_connect_to_network_id_succeed_) {
+      last_connected_tether_network_guid_ = tether_network_guid;
+      std::move(success_callback).Run();
+    } else {
+      std::move(error_callback)
+          .Run(NetworkConnectionHandler::kErrorConnectFailed);
+    }
   }
   void DisconnectFromNetwork(const std::string& tether_network_guid,
                              base::OnceClosure success_callback,
                              StringErrorCallback error_callback) override {}
 
+  void ShouldConnectToNetworkIdSucceed(bool success) {
+    should_connect_to_network_id_succeed_ = success;
+  }
+
  private:
   std::string last_connected_tether_network_guid_;
+  bool should_connect_to_network_id_succeed_ = true;
 };
 
 }  // namespace
@@ -264,6 +274,16 @@ TEST_F(NetworkConnectTest, ConnectToTetherNetwork_HasNotConnectedToHost) {
 
   AddTetherNetwork(false /* has_connected_to_host */);
 
+  NetworkConnect::Get()->ConnectToNetworkId(kTetherGuid);
+  EXPECT_TRUE(
+      fake_tether_delegate_->last_connected_tether_network_guid().empty());
+}
+
+TEST_F(NetworkConnectTest, ConnectToTetherNetwork_ConnectError) {
+  EXPECT_CALL(*mock_delegate_, ShowNetworkConfigure(_)).Times(0);
+
+  AddTetherNetwork(/*has_connected_to_host=*/true);
+  fake_tether_delegate_->ShouldConnectToNetworkIdSucceed(/*success=*/false);
   NetworkConnect::Get()->ConnectToNetworkId(kTetherGuid);
   EXPECT_TRUE(
       fake_tether_delegate_->last_connected_tether_network_guid().empty());

@@ -158,6 +158,19 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
       delegate_->ShowNetworkSettings(network_id);
     return;
   }
+
+  // If a tether network is unconfigured, do nothing, as this is handled by
+  // TetherNotificationPresenter. A tether network is unconfigured when it
+  // is connected via Bluetooth to the phone, but the phone has not yet
+  // allowed mobile data to be used as a hotspot for the Chromebook. This
+  // code path is run when the request to use the phone's mobile data
+  // times out. We handle all tether request errors with
+  // TetherNotificationPresenter, because there is no user action on the
+  // Chromebook.
+  if (network->type() == kTypeTether) {
+    return;
+  }
+
   NOTREACHED();
 }
 
