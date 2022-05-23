@@ -38,13 +38,7 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
   }
 };
 
-// This times out regularly on debug builds, see https://crbug.com/1304295
-GEN('#if !defined(NDEBUG)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-TEST_F('PolymerSecurityTokenPinTest', 'MAYBE_All', function() {
+TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
   const DEFAULT_PARAMETERS = {
     enableUserInput: true,
     hasError: false,
