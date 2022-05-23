@@ -202,10 +202,6 @@ bool IsValidClassicScriptTypeAndLanguage(
     // attribute.</spec>
     if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType("text/" + language))
       return true;
-
-    // Not spec'ed.
-    if (MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(language))
-      return true;
   } else if (type.IsEmpty()) {
     // <spec step="8">the script element has a type attribute and its value is
     // the empty string, or</spec>
