@@ -316,8 +316,6 @@ KerberosCredentialsManager::KerberosCredentialsManager(PrefService* local_state,
   principal_expander_ = std::make_unique<VariableExpander>(substitutions);
 
   // Connect to a signal that indicates when Kerberos files change.
-  // TODO(https://crbug.com/963824): Make sure no code inside this constructor
-  // causes the daemon to start.
   KerberosClient::Get()->ConnectToKerberosFileChangedSignal(
       base::BindRepeating(&KerberosCredentialsManager::OnKerberosFilesChanged,
                           weak_factory_.GetWeakPtr()));
@@ -821,9 +819,8 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     VLOG(1) << "No or empty KerberosAccounts policy";
     NotifyRequiresLoginPassword(false);
 
-    // https://crbug.com/963824: The active principal is empty if there are no
-    // accounts, so no need to remove accounts. It would just start up the
-    // daemon unnecessarily.
+    // The active principal is empty if there are no accounts, so no need to
+    // remove accounts. It would just start up the daemon unnecessarily.
     if (!GetActivePrincipalName().empty())
       RemoveAllManagedAccountsExcept({});
     return;
