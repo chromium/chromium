@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -119,6 +120,8 @@ void FCMHandler::OnMessage(const std::string& app_id,
   DCHECK_EQ(app_id, app_id_);
   DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
 
+  base::UmaHistogramBoolean("Sync.FCMMessageDeliveredToListeners",
+                            !listeners_.empty());
   for (InvalidationsListener& listener : listeners_) {
     listener.OnInvalidationReceived(message.raw_data);
   }
