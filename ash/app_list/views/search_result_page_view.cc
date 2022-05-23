@@ -390,9 +390,14 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SearchResultPageView::OnThemeChanged() {
-  AppListPage::OnThemeChanged();
   GetBackground()->SetNativeControlColor(
-      AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
+      features::IsProductivityLauncherEnabled()
+          ? ColorProvider::Get()->GetBaseLayerColor(
+                ColorProvider::BaseLayerType::kTransparent80)
+          : AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
+  // SchedulePaint() marks the entire SearchResultPageView's bounds as dirty.
+  SchedulePaint();
+  AppListPage::OnThemeChanged();
 }
 
 void SearchResultPageView::UpdateResultContainersVisibility() {
