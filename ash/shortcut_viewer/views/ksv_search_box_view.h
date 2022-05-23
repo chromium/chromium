@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/search_box/search_box_view_base.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 class SearchBoxViewDelegate;
@@ -29,6 +30,7 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
+  void OnThemeChanged() override;
 
   void SetAccessibleValue(const std::u16string& value);
 
@@ -40,6 +42,17 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
 
  private:
   void SetPlaceholderTextAttributes();
+
+  SkColor GetBackgroundColor();
+  SkColor GetBackButtonColor();
+  SkColor GetBorderColor();
+  SkColor GetCloseButtonColor();
+  SkColor GetPlaceholderTextColor();
+  SkColor GetPrimaryIconColor();
+  SkColor GetPrimaryTextColor();
+
+  bool ShouldUseFocusedColors();
+  bool ShouldUseDarkThemeColors();
 
   // Accessibility data value. Used to pronounce the number of search results.
   std::u16string accessible_value_;
