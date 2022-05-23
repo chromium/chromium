@@ -293,7 +293,7 @@ class Writer(object):
 
         # Only write the file if the contents have changed. This allows ninja to
         # skip rebuilding targets which depend on the output.
-        with open(path, "a+") as output_file:
+        with open(path, "a+", newline='') as output_file:
             output_file.seek(0)
             if output_file.read() != contents:
                 output_file.truncate(0)
