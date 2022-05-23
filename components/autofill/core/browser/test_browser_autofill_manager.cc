@@ -150,6 +150,18 @@ const std::string TestBrowserAutofillManager::GetSubmittedFormSignature() {
   return submitted_form_signature_;
 }
 
+void TestBrowserAutofillManager::OnAskForValuesToFillTest(
+    const FormData& form,
+    const FormFieldData& field,
+    int query_id,
+    const gfx::RectF& bounding_box,
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
+  BrowserAutofillManager::OnAskForValuesToFill(
+      query_id, form, field, bounding_box, autoselect_first_suggestion,
+      touch_to_fill_eligible);
+}
+
 void TestBrowserAutofillManager::SetAutofillProfileEnabled(
     bool autofill_profile_enabled) {
   autofill_profile_enabled_ = autofill_profile_enabled;

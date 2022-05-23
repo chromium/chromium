@@ -309,16 +309,18 @@ void AutofillManager::OnSelectControlDidChange(const FormData& form,
     observer.OnSelectControlDidChange();
 }
 
-void AutofillManager::OnAskForValuesToFill(int query_id,
-                                           const FormData& form,
-                                           const FormFieldData& field,
-                                           const gfx::RectF& bounding_box,
-                                           bool autoselect_first_suggestion) {
+void AutofillManager::OnAskForValuesToFill(
+    int query_id,
+    const FormData& form,
+    const FormFieldData& field,
+    const gfx::RectF& bounding_box,
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
   OnAskForValuesToFillImpl(query_id, form, field, bounding_box,
-                           autoselect_first_suggestion);
+                           autoselect_first_suggestion, touch_to_fill_eligible);
 }
 
 void AutofillManager::OnFocusOnFormField(const FormData& form,

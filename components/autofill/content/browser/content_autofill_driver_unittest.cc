@@ -166,14 +166,14 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerReparse() override {}
 
-  void FillOrPreviewForm(int32_t id,
+  void FillOrPreviewForm(int32_t query_id,
                          const FormData& form,
                          mojom::RendererFormDataAction action) override {
     if (action == mojom::RendererFormDataAction::kPreview) {
-      preview_form_id_ = id;
+      preview_form_id_ = query_id;
       preview_form_form_ = form;
     } else {
-      fill_form_id_ = id;
+      fill_form_id_ = query_id;
       fill_form_form_ = form;
     }
     CallDone();

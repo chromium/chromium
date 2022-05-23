@@ -52,12 +52,16 @@ interface AutofillDriver {
 
   // Queries the browser for Autofill suggestions for a form input field.
   // For autofill this means asking the user which values to fill.
-  // |id| is the request ID which is used to map responses correctly.
-  AskForValuesToFill(int32 id,
-                         FormData form,
-                         FormFieldData field,
-                         gfx.mojom.RectF bounding_box,
-                         bool autoselect_first_suggestion);
+  // |query_id| is the request ID which is used to map responses correctly.
+  // |touch_to_fill_eligible| indicates if the Touch To Fill surface could
+  // be used for showing suggestions (e.g. when the user taps an input element
+  // but not on text change).
+  AskForValuesToFill(int32 query_id,
+                     FormData form,
+                     FormFieldData field,
+                     gfx.mojom.RectF bounding_box,
+                     bool autoselect_first_suggestion,
+                     TouchToFillEligible touch_to_fill_eligible);
 
   // Instructs the browser to hide the Autofill popup if it is open.
   HidePopup();

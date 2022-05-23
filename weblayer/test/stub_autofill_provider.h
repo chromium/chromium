@@ -30,11 +30,12 @@ class StubAutofillProvider : public autofill::TestAutofillProvider {
   // AutofillProvider:
   void OnAskForValuesToFill(
       autofill::AndroidAutofillManager* manager,
-      int32_t id,
+      int32_t query_id,
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
       const gfx::RectF& bounding_box,
-      bool /*unused_autoselect_first_suggestion*/) override;
+      bool /*unused_autoselect_first_suggestion*/,
+      autofill::TouchToFillEligible /*unused_touch_to_fill_eligible*/) override;
 
  private:
   base::RepeatingCallback<void(const autofill::FormData&)>

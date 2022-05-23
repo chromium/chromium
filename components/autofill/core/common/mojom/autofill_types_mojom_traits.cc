@@ -311,4 +311,12 @@ bool StructTraits<
          data.ReadConfirmPasswordRendererId(&out->confirm_password_renderer_id);
 }
 
+bool StructTraits<autofill::mojom::TouchToFillEligibleDataView,
+                  autofill::TouchToFillEligible>::
+    Read(autofill::mojom::TouchToFillEligibleDataView data,
+         autofill::TouchToFillEligible* out) {
+  *out = autofill::TouchToFillEligible(data.eligible());
+  return true;
+}
+
 }  // namespace mojo

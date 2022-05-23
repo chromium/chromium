@@ -96,11 +96,12 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
     select_control_changed_ = std::make_unique<FormFieldData>(field);
   }
 
-  void AskForValuesToFill(int32_t id,
+  void AskForValuesToFill(int32_t query_id,
                           const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
-                          bool autoselect_first_field) override {}
+                          bool autoselect_first_field,
+                          TouchToFillEligible touch_to_fill_eliible) override {}
 
   void HidePopup() override {}
 

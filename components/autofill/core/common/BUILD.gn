@@ -4,6 +4,7 @@
 
 static_library("common") {
   sources = [
+    "aliases.h",
     "autofill_clock.cc",
     "autofill_clock.h",
     "autofill_constants.cc",

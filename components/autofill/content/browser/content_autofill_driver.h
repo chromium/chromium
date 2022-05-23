@@ -221,11 +221,12 @@ class ContentAutofillDriver : public AutofillDriver,
   void SelectControlDidChange(const FormData& form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box) override;
-  void AskForValuesToFill(int32_t id,
+  void AskForValuesToFill(int32_t query_id,
                           const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
-                          bool autoselect_first_suggestion) override;
+                          bool autoselect_first_suggestion,
+                          TouchToFillEligible touch_to_fill_eligible) override;
   void HidePopup() override;
   void FocusNoLongerOnForm(bool had_interacted_form) override;
   void FocusOnFormField(const FormData& form,
@@ -255,11 +256,12 @@ class ContentAutofillDriver : public AutofillDriver,
   void SelectControlDidChangeImpl(const FormData& form,
                                   const FormFieldData& field,
                                   const gfx::RectF& bounding_box);
-  void AskForValuesToFillImpl(int32_t id,
+  void AskForValuesToFillImpl(int32_t query_id,
                               const FormData& form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box,
-                              bool autoselect_first_suggestion);
+                              bool autoselect_first_suggestion,
+                              TouchToFillEligible touch_to_fill_eligible);
   void HidePopupImpl();
   void FocusNoLongerOnFormImpl(bool had_interacted_form);
   void FocusOnFormFieldImpl(const FormData& form,

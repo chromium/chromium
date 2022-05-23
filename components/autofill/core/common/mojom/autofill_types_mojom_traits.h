@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -537,6 +538,15 @@ struct StructTraits<autofill::mojom::ParsingResultDataView,
 
   static bool Read(autofill::mojom::ParsingResultDataView data,
                    autofill::ParsingResult* out);
+};
+
+template <>
+struct StructTraits<autofill::mojom::TouchToFillEligibleDataView,
+                    autofill::TouchToFillEligible> {
+  static bool eligible(autofill::TouchToFillEligible r) { return r.value(); }
+
+  static bool Read(autofill::mojom::TouchToFillEligibleDataView data,
+                   autofill::TouchToFillEligible* out);
 };
 
 }  // namespace mojo

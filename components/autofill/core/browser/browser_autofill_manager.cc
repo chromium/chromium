@@ -949,7 +949,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& transformed_box,
-    bool autoselect_first_suggestion) {
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
   }
@@ -1052,7 +1053,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         field.form_control_type, weak_ptr_factory_.GetWeakPtr(), context);
     return;
   }
-
+  // TODO(crbug.com/1247698): Try to show TTF if |touch_to_fill_eligible|.
   // Send Autofill suggestions (could be an empty list).
   single_field_form_fill_router_->CancelPendingQueries(this);
   external_delegate_->OnSuggestionsReturned(query_id, suggestions,

@@ -34,12 +34,14 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   static bool is_download_manager_disabled_for_testing();
   static void set_is_download_manager_disabled_for_testing();
 
-  virtual void OnAskForValuesToFill(AndroidAutofillManager* manager,
-                                    int32_t id,
-                                    const FormData& form,
-                                    const FormFieldData& field,
-                                    const gfx::RectF& bounding_box,
-                                    bool autoselect_first_suggestion) = 0;
+  virtual void OnAskForValuesToFill(
+      AndroidAutofillManager* manager,
+      int32_t query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) = 0;
 
   virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
                                     const FormData& form,

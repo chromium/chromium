@@ -70,6 +70,15 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   const std::string GetSubmittedFormSignature();
 
+  // Helper to skip irrelevant params.
+  void OnAskForValuesToFillTest(
+      const FormData& form,
+      const FormFieldData& field,
+      int query_id = 0,
+      const gfx::RectF& bounding_box = {},
+      bool autoselect_first_suggestion = false,
+      TouchToFillEligible touch_to_fill_eligible = TouchToFillEligible(false));
+
   void SetAutofillProfileEnabled(bool profile_enabled);
 
   void SetAutofillCreditCardEnabled(bool credit_card_enabled);

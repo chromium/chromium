@@ -176,13 +176,14 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void SelectFieldOptionsDidChange(const FormData& form) override {
     DeferMsg(&mojom::AutofillDriver::SelectFieldOptionsDidChange, form);
   }
-  void AskForValuesToFill(int32_t id,
+  void AskForValuesToFill(int32_t query_id,
                           const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
-                          bool autoselect_first_suggestion) override {
-    DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, id, form, field,
-             bounding_box, autoselect_first_suggestion);
+                          bool autoselect_first_suggestion,
+                          TouchToFillEligible touch_to_fill_eligible) override {
+    DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, query_id, form, field,
+             bounding_box, autoselect_first_suggestion, touch_to_fill_eligible);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
   void FocusNoLongerOnForm(bool had_interacted_form) override {
@@ -208,12 +209,6 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   AutofillAgent* agent_ = nullptr;
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
 };
-
-AutofillAgent::ShowSuggestionsOptions::ShowSuggestionsOptions()
-    : autofill_on_empty_values(false),
-      requires_caret_at_end(false),
-      show_full_suggestion_list(false),
-      autoselect_first_suggestion(false) {}
 
 AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
                              PasswordAutofillAgent* password_autofill_agent,
@@ -443,9 +438,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebInputElement& element) {
     return;
   }
 
-  ShowSuggestionsOptions options;
-  options.requires_caret_at_end = true;
-  ShowSuggestions(element, options);
+  ShowSuggestions(element, {.requires_caret_at_end = true});
 
   FormData form;
   FormFieldData field;
@@ -465,21 +458,17 @@ void AutofillAgent::TextFieldDidReceiveKeyDown(const WebInputElement& element,
 
   if (event.windows_key_code == ui::VKEY_DOWN ||
       event.windows_key_code == ui::VKEY_UP) {
-    ShowSuggestionsOptions options;
-    options.autofill_on_empty_values = true;
-    options.requires_caret_at_end = true;
-    options.autoselect_first_suggestion =
-        ShouldAutoselectFirstSuggestionOnArrowDown();
-    ShowSuggestions(element, options);
+    ShowSuggestions(element,
+                    {.autofill_on_empty_values = true,
+                     .requires_caret_at_end = true,
+                     .autoselect_first_suggestion =
+                         ShouldAutoselectFirstSuggestionOnArrowDown()});
   }
 }
 
 void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
   DCHECK(IsOwnedByFrame(element, render_frame()));
-
-  ShowSuggestionsOptions options;
-  options.autofill_on_empty_values = true;
-  ShowSuggestions(element, options);
+  ShowSuggestions(element, {.autofill_on_empty_values = true});
 }
 
 // Notifies the AutofillDriver about changes in the <datalist> options in
@@ -538,14 +527,14 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 }
 
 // mojom::AutofillAgent:
-void AutofillAgent::FillOrPreviewForm(int32_t id,
+void AutofillAgent::FillOrPreviewForm(int32_t query_id,
                                       const FormData& form,
                                       mojom::RendererFormDataAction action) {
   // If |element_| is null or not focused, a Autofill was triggered from another
   // frame. In this case, set |element_| to some form field as if Autofill had
   // been triggered from that field. This is necessary because currently
   // AutofillAgent's relies on |elemet_| in many places.
-  if (id == kCrossFrameFill && !form.fields.empty() &&
+  if (query_id == kCrossFrameFill && !form.fields.empty() &&
       (element_.IsNull() || !element_.Focused())) {
     WebDocument document = render_frame()->GetWebFrame()->GetDocument();
     element_ = form_util::FindFormControlElementByUniqueRendererId(
@@ -555,8 +544,9 @@ void AutofillAgent::FillOrPreviewForm(int32_t id,
   if (element_.IsNull())
     return;
 
-  if (id != autofill_query_id_ && id != kCrossFrameFill &&
-      (action == mojom::RendererFormDataAction::kPreview || id != kNoQueryId)) {
+  if (query_id != autofill_query_id_ && query_id != kCrossFrameFill &&
+      (action == mojom::RendererFormDataAction::kPreview ||
+       query_id != kNoQueryId)) {
     return;
   }
 
@@ -571,7 +561,7 @@ void AutofillAgent::FillOrPreviewForm(int32_t id,
     was_last_action_fill_ = true;
 
     // If this is a re-fill, replace the triggering element if it's invalid.
-    if (id == kNoQueryId)
+    if (query_id == kNoQueryId)
       ReplaceElementIfNowInvalid(form);
 
     query_node_autofill_state_ = element_.GetAutofillState();
@@ -835,7 +825,8 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
     return;
   }
 
-  QueryAutofillSuggestions(element, options.autoselect_first_suggestion);
+  QueryAutofillSuggestions(element, options.autoselect_first_suggestion,
+                           options.touch_to_fill_eligible);
 }
 
 void AutofillAgent::SetQueryPasswordSuggestion(bool query) {
@@ -902,7 +893,8 @@ void AutofillAgent::SetFieldsEligibleForManualFilling(
 
 void AutofillAgent::QueryAutofillSuggestions(
     const WebFormControlElement& element,
-    bool autoselect_first_suggestion) {
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
   blink::WebLocalFrame* frame = element.GetDocument().GetFrame();
   if (!frame)
     return;
@@ -947,9 +939,9 @@ void AutofillAgent::QueryAutofillSuggestions(
   }
 
   is_popup_possibly_visible_ = true;
-  GetAutofillDriver().AskForValuesToFill(autofill_query_id_, form, field,
-                                         field.bounds,
-                                         autoselect_first_suggestion);
+  GetAutofillDriver().AskForValuesToFill(
+      autofill_query_id_, form, field, field.bounds,
+      autoselect_first_suggestion, touch_to_fill_eligible);
 }
 
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
@@ -1137,16 +1129,15 @@ void AutofillAgent::FormControlElementClicked(
   password_autofill_agent_->TryToShowTouchToFill(element);
 #endif
 
-  ShowSuggestionsOptions options;
-  options.autofill_on_empty_values = true;
-  // Even if the user has not edited an input element, it may still contain a
-  // value: A default value filled by the website. In that case, we don't want
-  // to elide suggestions that don't have a common prefix with the default
-  // value.
-  options.show_full_suggestion_list =
-      element.IsAutofilled() || !element.UserHasEditedTheField();
-
-  ShowSuggestions(element, options);
+  ShowSuggestions(
+      element, {.autofill_on_empty_values = true,
+                // Even if the user has not edited an input element, it may
+                // still contain a value: A default value filled by the website.
+                // In that case, we don't want to elide suggestions that don't
+                // have a common prefix with the default value.
+                .show_full_suggestion_list =
+                    element.IsAutofilled() || !element.UserHasEditedTheField(),
+                .touch_to_fill_eligible = TouchToFillEligible(true)});
 
   SendPotentiallySubmittedFormToBrowser();
 }

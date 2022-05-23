@@ -362,11 +362,13 @@ class BrowserAutofillManager : public AutofillManager,
   void OnTextFieldDidScrollImpl(const FormData& form,
                                 const FormFieldData& field,
                                 const gfx::RectF& bounding_box) override {}
-  void OnAskForValuesToFillImpl(int query_id,
-                                const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& transformed_box,
-                                bool autoselect_first_suggestion) override;
+  void OnAskForValuesToFillImpl(
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& transformed_box,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) override;

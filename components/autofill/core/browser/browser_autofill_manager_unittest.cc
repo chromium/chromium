@@ -481,7 +481,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                               const FormFieldData& field) {
     browser_autofill_manager_->OnAskForValuesToFill(
         query_id, form, field, gfx::RectF(),
-        /*autoselect_first_suggestion=*/false);
+        /*autoselect_first_suggestion=*/false, TouchToFillEligible(false));
   }
 
   void GetAutofillSuggestions(const FormData& form,

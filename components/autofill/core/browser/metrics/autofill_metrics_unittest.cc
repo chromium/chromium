@@ -4076,8 +4076,7 @@ TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
   {
     // Simulate activating the autofill popup for the phone field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 2,
                                         1);
   }
@@ -4087,8 +4086,7 @@ TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
     // No new metric should be logged, since we're still on the same page.
     test::CreateTestFormField("Email", "email", "b", "email", &field);
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectTotalCount("Autofill.AddressSuggestionsCount", 0);
   }
 
@@ -4099,8 +4097,7 @@ TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
   {
     // Simulate activating the autofill popup for the email field after typing.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 1,
                                         1);
   }
@@ -4113,8 +4110,7 @@ TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
     // Simulate activating the autofill popup for the email field after a fill.
     form.fields[0].is_autofilled = true;
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectTotalCount("Autofill.AddressSuggestionsCount", 1);
   }
 }
@@ -4150,9 +4146,7 @@ TEST_F(AutofillMetricsTest, CompanyNameSuggestions) {
   {
     // Simulate activating the autofill popup for the phone field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
-
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 2,
                                         1);
   }
@@ -4193,8 +4187,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Simulate an Autofill query on a credit card field.
   {
     base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_PolledCreditCardSuggestions"));
   }
@@ -4291,8 +4284,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Simulate submitting the credit card form.
   {
     base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     EXPECT_EQ(1,
@@ -4419,8 +4411,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
   // Simulate an Autofill query on a profile field.
   {
     base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_PolledProfileSuggestions"));
   }
@@ -4472,8 +4463,7 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
   // Simulate submitting the profile form.
   {
     base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     EXPECT_EQ(1,
@@ -4563,32 +4553,24 @@ TEST_F(AutofillMetricsTest, PolledCreditCardSuggestions_DebounceLogs) {
 
   // Simulate an Autofill query on a credit card field. A poll should be logged.
   base::UserActionTester user_action_tester;
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Autofill_PolledCreditCardSuggestions"));
 
   // Simulate a second query on the same field. There should still only be one
   // logged poll.
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Autofill_PolledCreditCardSuggestions"));
 
   // Simulate a query to another field. There should be a second poll logged.
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[1], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[1]);
   EXPECT_EQ(2, user_action_tester.GetActionCount(
                    "Autofill_PolledCreditCardSuggestions"));
 
   // Simulate a query back to the initial field. There should be a third poll
   // logged.
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   EXPECT_EQ(3, user_action_tester.GetActionCount(
                    "Autofill_PolledCreditCardSuggestions"));
 }
@@ -4643,9 +4625,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     // Simulate an Autofill query on a credit card field (HTTP, non-secure
     // form).
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, form.fields[1], gfx::RectF(),
-        /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields[1]);
     histogram_tester.ExpectUniqueSample(
         "Autofill.QueriedCreditCardFormIsSecure", false, 1);
     // Reset the main frame origin to secure for other tests
@@ -4665,9 +4645,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
 
     // Simulate an Autofill query on a credit card field (HTTPS form).
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, form.fields[1], gfx::RectF(),
-        /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields[1]);
     histogram_tester.ExpectUniqueSample(
         "Autofill.QueriedCreditCardFormIsSecure", true, 1);
   }
@@ -4705,32 +4683,24 @@ TEST_F(AutofillMetricsTest, PolledProfileSuggestions_DebounceLogs) {
 
   // Simulate an Autofill query on a profile field. A poll should be logged.
   base::UserActionTester user_action_tester;
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Autofill_PolledProfileSuggestions"));
 
   // Simulate a second query on the same field. There should still only be poll
   // logged.
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Autofill_PolledProfileSuggestions"));
 
   // Simulate a query to another field. There should be a second poll logged.
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[1], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[1]);
   EXPECT_EQ(2, user_action_tester.GetActionCount(
                    "Autofill_PolledProfileSuggestions"));
 
   // Simulate a query back to the initial field. There should be a third poll
   // logged.
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   EXPECT_EQ(3, user_action_tester.GetActionCount(
                    "Autofill_PolledProfileSuggestions"));
 }
@@ -4800,8 +4770,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardInteractedFormEvents) {
   {
     // Simulate activating the autofill popup for the credit card field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample("Autofill.FormEvents.CreditCard",
                                         FORM_EVENT_INTERACTED_ONCE, 1);
     histogram_tester.ExpectUniqueSample(
@@ -4816,10 +4785,8 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardInteractedFormEvents) {
   {
     // Simulate activating the autofill popup for the credit card field twice.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
-    autofill_manager().OnAskForValuesToFill(
-        1, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field, /*query_id=*/0);
+    autofill_manager().OnAskForValuesToFillTest(form, field, /*query_id=*/1);
     histogram_tester.ExpectUniqueSample("Autofill.FormEvents.CreditCard",
                                         FORM_EVENT_INTERACTED_ONCE, 1);
     histogram_tester.ExpectUniqueSample(
@@ -5009,8 +4976,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
   {
     // Simulate new popup being shown.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
                                        FORM_EVENT_SUGGESTIONS_SHOWN, 1);
@@ -5041,8 +5007,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
   {
     // Simulating two popups in the same page load.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
@@ -5074,8 +5039,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
   {
     // Simulating same popup being refreshed.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(false /* is_new_popup */, form,
                                           field);
     histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
@@ -5114,8 +5078,7 @@ TEST_P(AutofillMetricsIFrameTest, VirtualCreditCardShownFormEvents) {
     // Simulating two popups in the same page load. Suggestions shown should be
     // logged, but suggestions shown with virtual card should not.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
@@ -5822,8 +5785,7 @@ TEST_F(AutofillMetricsTest,
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectBucketCount(
@@ -5866,8 +5828,7 @@ TEST_P(AutofillMetricsIFrameTest,
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectBucketCount(
@@ -5914,8 +5875,7 @@ TEST_P(AutofillMetricsIFrameTest,
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectBucketCount(
@@ -5963,8 +5923,7 @@ TEST_P(AutofillMetricsIFrameTest,
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectBucketCount(
@@ -6012,8 +5971,7 @@ TEST_P(AutofillMetricsIFrameTest,
   // Simulating submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
   autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectBucketCount(
@@ -6061,8 +6019,7 @@ TEST_P(AutofillMetricsIFrameTest,
   // Simulating submission with suggestion shown and selected.
   base::HistogramTester histogram_tester;
   autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   std::string guid("10000000-0000-0000-0000-000000000001");
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, 0, form, form.fields.back(),
@@ -6122,8 +6079,7 @@ TEST_F(AutofillMetricsTest, ShouldNotLogFormEventNoCardForAddressForm) {
   // Simulating submission with no filled data.
   base::HistogramTester histogram_tester;
   autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                      SubmissionSource::FORM_SUBMISSION);
   histogram_tester.ExpectBucketCount(
@@ -6166,8 +6122,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
   {
     // Simulating submission with no filled data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
 
@@ -6200,8 +6155,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     // Simulating submission with suggestion shown.
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -6246,8 +6200,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     // triggered.
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     // Trigger UploadFormDataAsyncCallback.
@@ -6291,8 +6244,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
   {
     // Simulating submission with filled local data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
@@ -6339,8 +6291,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
     // Simulating submission with filled virtual card data by selecting the
     // option based on the enrolled masked card.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     std::string guid("10000000-0000-0000-0000-000000000002");  // masked card
     autofill_manager().FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
@@ -6387,8 +6338,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
   {
     // Simulating submission with filled server data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     std::string guid(
         "10000000-0000-0000-0000-000000000003");  // full server card
     autofill_manager().FillOrPreviewForm(
@@ -6491,8 +6441,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardSubmittedFormEvents) {
   {
     // Simulating multiple submissions.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
 
@@ -6722,8 +6671,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   {
     // Simulating submission with no filled data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -6748,8 +6696,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     // Simulating submission with suggestion shown.
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -6773,8 +6720,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   {
     // Simulating submission with filled local data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
@@ -6804,8 +6750,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
     // Simulating submission with filled virtual card data by selecting the
     // option based on the enrolled masked card.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     std::string guid("10000000-0000-0000-0000-000000000002");  // masked card
     autofill_manager().FillOrPreviewVirtualCardInformation(
         mojom::RendererFormDataAction::kFill, guid, kDefaultPageID, form,
@@ -6835,8 +6780,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   {
     // Simulating submission with filled server data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     // Full server card.
     std::string guid("10000000-0000-0000-0000-000000000003");
     autofill_manager().FillOrPreviewForm(
@@ -6901,8 +6845,7 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
   {
     // Simulating multiple submissions.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
@@ -7077,8 +7020,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // Simulating activating the autofill popup for the credit card field, new
     // popup being shown and filling a local card suggestion.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     autofill_manager().FillOrPreviewForm(
@@ -7127,8 +7069,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // submitting the form. Verify that all related form events are correctly
     // logged to offer sub-histogram.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     // Select the masked server card with the linked offer.
     autofill_manager().FillOrPreviewForm(
@@ -7175,8 +7116,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // submitting the form. Verify that all related form events are correctly
     // logged to offer sub-histogram.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     // Select another card, and still log to offer
     // sub-histogram because user has another masked server card with offer.
@@ -7241,8 +7181,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // Simulating activating the autofill popup for the credit card field,
     // new popup being shown and filling a local card suggestion.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     // Select the card with linked offer, though metrics should not record it
     // since the offer is expired.
@@ -7318,8 +7257,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // sub-histogram. Making suggestions reappear tests confirmation of a fix
     // for crbug/1198751.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     // Select the masked server card with the linked offer.
     autofill_manager().FillOrPreviewForm(
@@ -7331,8 +7269,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
 
     // Simulate user showing suggestions but then submitting form with
     // previously filled card info.
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
@@ -7381,8 +7318,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     // failing the CVC check and submitting the form anyways. Verify that all
     // related form events are correctly logged to offer sub-histogram.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     // Select the masked server card with the linked offer, but fail the CVC
     // check.
@@ -7443,8 +7379,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
     base::HistogramTester histogram_tester;
 
     // Show suggestions and select the card with offer.
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.back(),
@@ -7454,8 +7389,7 @@ TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
                     "6011000990139424");
 
     // Show suggestions again, and select a local card instead.
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
     guid = "10000000-0000-0000-0000-000000000001";
     autofill_manager().FillOrPreviewForm(
@@ -7612,8 +7546,7 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
   {
     // Simulate activating the autofill popup for the street field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample("Autofill.FormEvents.Address",
                                         FORM_EVENT_INTERACTED_ONCE, 1);
 
@@ -7638,10 +7571,8 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
   {
     // Simulate activating the autofill popup for the street field twice.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
-    autofill_manager().OnAskForValuesToFill(
-        1, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field, /*query_id=*/0);
+    autofill_manager().OnAskForValuesToFillTest(form, field, /*query_id=*/1);
     histogram_tester.ExpectUniqueSample("Autofill.FormEvents.Address",
                                         FORM_EVENT_INTERACTED_ONCE, 1);
     // Check if FormEvent UKM is logged properly
@@ -8025,8 +7956,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   {
     // Simulating submission with no filled data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -8052,8 +7982,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
     // autofill manager is reset before UploadFormDataAsyncCallback is
     // triggered.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     // Trigger UploadFormDataAsyncCallback.
@@ -8080,8 +8009,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
     // Simulating submission with suggestion shown.
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -8100,8 +8028,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   {
     // Simulating submission with filled local data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     std::string guid(kTestGuid);  // local profile
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
@@ -8124,8 +8051,7 @@ TEST_F(AutofillMetricsTest, AddressSubmittedFormEvents) {
   {
     // Simulating multiple submissions.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
@@ -8211,8 +8137,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   {
     // Simulating submission with no filled data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -8232,8 +8157,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
     // Simulating submission with suggestion shown.
     base::HistogramTester histogram_tester;
     autofill_manager().DidShowSuggestions(true /* is_new_popup */, form, field);
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     histogram_tester.ExpectBucketCount(
@@ -8252,8 +8176,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   {
     // Simulating submission with filled local data.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     std::string guid(kTestGuid);  // local profile
     autofill_manager().FillOrPreviewForm(
         mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
@@ -8277,8 +8200,7 @@ TEST_F(AutofillMetricsTest, AddressWillSubmitFormEvents) {
   {
     // Simulating multiple submissions.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
                                        SubmissionSource::FORM_SUBMISSION);
     autofill_manager().OnFormSubmitted(form, /*known_success=*/false,
@@ -8357,8 +8279,7 @@ TEST_F(AutofillMetricsTest, RecordStandalonePhoneField) {
   autofill_manager().AddSeenForm(form, field_types, field_types);
 
   base::HistogramTester histogram_tester;
-  autofill_manager().OnAskForValuesToFill(
-      0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, field);
   histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.PhoneOnly",
                                      FORM_EVENT_INTERACTED_ONCE, 1);
 }
@@ -8397,8 +8318,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   {
     // Simulate activating the autofill popup for the credit card field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.CreditCard.WithNoData", FORM_EVENT_INTERACTED_ONCE,
         1);
@@ -8416,8 +8336,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   {
     // Simulate activating the autofill popup for the credit card field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.CreditCard.WithOnlyLocalData",
         FORM_EVENT_INTERACTED_ONCE, 1);
@@ -8435,8 +8354,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   {
     // Simulate activating the autofill popup for the credit card field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.CreditCard.WithOnlyServerData",
         FORM_EVENT_INTERACTED_ONCE, 1);
@@ -8454,8 +8372,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   {
     // Simulate activating the autofill popup for the credit card field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.CreditCard.WithOnlyServerData",
         FORM_EVENT_INTERACTED_ONCE, 1);
@@ -8473,8 +8390,7 @@ TEST_F(AutofillMetricsTest, CreditCardFormEventsAreSegmented) {
   {
     // Simulate activating the autofill popup for the credit card field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.CreditCard.WithBothServerAndLocalData",
         FORM_EVENT_INTERACTED_ONCE, 1);
@@ -8512,8 +8428,7 @@ TEST_F(AutofillMetricsTest, AddressFormEventsAreSegmented) {
   {
     // Simulate activating the autofill popup for the street field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.Address.WithNoData", FORM_EVENT_INTERACTED_ONCE,
         1);
@@ -8527,8 +8442,7 @@ TEST_F(AutofillMetricsTest, AddressFormEventsAreSegmented) {
   {
     // Simulate activating the autofill popup for the street field.
     base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     histogram_tester.ExpectUniqueSample(
         "Autofill.FormEvents.Address.WithOnlyLocalData",
         FORM_EVENT_INTERACTED_ONCE, 1);
@@ -10331,8 +10245,7 @@ TEST_F(AutofillMetricsTest, NonsecureCreditCardForm) {
   // Simulate an Autofill query on a credit card field.
   {
     base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_PolledCreditCardSuggestions"));
   }
@@ -10393,8 +10306,7 @@ TEST_F(AutofillMetricsTest,
   // Simulate an Autofill query on a credit card field.
   {
     base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFill(
-        0, form, field, gfx::RectF(), /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, field);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_PolledCreditCardSuggestions"));
   }
@@ -11607,9 +11519,7 @@ TEST_P(AutofillMetricsFunnelTest, LogFunnelMetrics) {
 
   // Simulate interacting with the form.
   if (user_interacted_with_form) {
-    autofill_manager().OnAskForValuesToFill(
-        /*query_id=*/0, form, form.fields[0], gfx::RectF(),
-        /*autoselect_first_suggestion=*/false);
+    autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   }
 
   // Simulate seeing a suggestion.
@@ -11750,9 +11660,7 @@ TEST_F(AutofillMetricsFunnelTest, AblationState) {
                                  /*removed_forms=*/{});
 
   // Simulate interacting with the form.
-  autofill_manager().OnAskForValuesToFill(
-      /*query_id=*/0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
 
   // Don't simulate a suggestion but simulate the user typing.
   autofill_manager().OnTextFieldDidChange(form, form.fields[0], gfx::RectF(),
@@ -11835,9 +11743,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogEmptyForm) {
   // Simulate page load.
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form_},
                                  /*removed_forms=*/{});
-  autofill_manager().OnAskForValuesToFill(
-      0, form_, form_.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
 
   // Simulate form submission.
   autofill_manager().OnFormSubmitted(form_, false,
@@ -11866,9 +11772,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogNoProfile) {
   personal_data().ClearProfiles();
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form_},
                                  /*removed_forms=*/{});
-  autofill_manager().OnAskForValuesToFill(
-      0, form_, form_.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
 
   // Simulate user typing the address.
   autofill_manager().OnTextFieldDidChange(form_, form_.fields[0], gfx::RectF(),
@@ -11901,9 +11805,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   // Simulate that suggestion is shown but user does not accept it.
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form_},
                                  /*removed_forms=*/{});
-  autofill_manager().OnAskForValuesToFill(
-      0, form_, form_.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
   autofill_manager().DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form_, form_.fields[0]);
 
@@ -11938,9 +11840,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledData) {
   // Simulate that suggestion is shown and user accepts it.
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form_},
                                  /*removed_forms=*/{});
-  autofill_manager().OnAskForValuesToFill(
-      0, form_, form_.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
   autofill_manager().DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form_, form_.fields[0]);
   autofill_manager().FillOrPreviewForm(
@@ -11978,9 +11878,7 @@ TEST_F(AutofillMetricsKeyMetricsTest, LogUserFixesFilledDataButDoesNotSubmit) {
   // Simulate that suggestion is shown and user accepts it.
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form_},
                                  /*removed_forms=*/{});
-  autofill_manager().OnAskForValuesToFill(
-      0, form_, form_.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form_, form_.fields[0]);
   autofill_manager().DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form_, form_.fields[0]);
   autofill_manager().FillOrPreviewForm(
@@ -12168,9 +12066,7 @@ TEST_F(AutofillMetricsTest,
   // Simulate having seen this form on page load.
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
 
-  autofill_manager().OnAskForValuesToFill(
-      0, form, form.fields[0], gfx::RectF(),
-      /*autoselect_first_suggestion=*/false);
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
   autofill_manager().DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
 

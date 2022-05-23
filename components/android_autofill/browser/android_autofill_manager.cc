@@ -94,10 +94,12 @@ void AndroidAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    bool autoselect_first_suggestion) {
+    bool autoselect_first_suggestion,
+    TouchToFillEligible touch_to_fill_eligible) {
   if (auto* provider = GetAutofillProvider()) {
     provider->OnAskForValuesToFill(this, query_id, form, field, bounding_box,
-                                   autoselect_first_suggestion);
+                                   autoselect_first_suggestion,
+                                   touch_to_fill_eligible);
   }
 }
 

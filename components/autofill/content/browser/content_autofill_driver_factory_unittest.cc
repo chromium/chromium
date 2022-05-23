@@ -49,7 +49,7 @@ class MockAutofillAgent : public mojom::AutofillAgent {
   MOCK_METHOD(void, TriggerReparse, (), (override));
   MOCK_METHOD(void,
               FillOrPreviewForm,
-              (int32_t id,
+              (int32_t query_id,
                const FormData& form,
                mojom::RendererFormDataAction action),
               (override));

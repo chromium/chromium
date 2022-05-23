@@ -135,11 +135,15 @@ class AutofillManager
   // Invoked when the |form| needs to be autofilled, the |bounding_box| is
   // a window relative value of |field|.
   // |bounding_box| are viewport coordinates.
+  // |touch_to_fill_eligible| indicates if the Touch To Fill surface could be
+  // used for showing suggestion. Note that it doesn't guarantee the given form
+  // input field is eligible for autofilling.
   void OnAskForValuesToFill(int query_id,
                             const FormData& form,
                             const FormFieldData& field,
                             const gfx::RectF& bounding_box,
-                            bool autoselect_first_suggestion);
+                            bool autoselect_first_suggestion,
+                            TouchToFillEligible touch_to_fill_eligible);
 
   // Invoked when |form|'s |field| has focus.
   // |bounding_box| are viewport coordinates.
@@ -313,11 +317,13 @@ class AutofillManager
                                         const FormFieldData& field,
                                         const gfx::RectF& bounding_box) = 0;
 
-  virtual void OnAskForValuesToFillImpl(int query_id,
-                                        const FormData& form,
-                                        const FormFieldData& field,
-                                        const gfx::RectF& bounding_box,
-                                        bool autoselect_first_suggestion) = 0;
+  virtual void OnAskForValuesToFillImpl(
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      bool autoselect_first_suggestion,
+      TouchToFillEligible touch_to_fill_eligible) = 0;
 
   virtual void OnFocusOnFormFieldImpl(const FormData& form,
                                       const FormFieldData& field,

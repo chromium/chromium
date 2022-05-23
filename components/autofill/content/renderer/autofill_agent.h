@@ -92,7 +92,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // mojom::AutofillAgent:
   void TriggerReparse() override;
-  void FillOrPreviewForm(int32_t id,
+  void FillOrPreviewForm(int32_t query_id,
                          const FormData& form,
                          mojom::RendererFormDataAction action) override;
   void FieldTypePredictionsAvailable(
@@ -162,25 +162,26 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Flags passed to ShowSuggestions.
   struct ShowSuggestionsOptions {
-    // All fields are default initialized to false.
-    ShowSuggestionsOptions();
-
     // Specifies that suggestions should be shown when |element| contains no
     // text.
-    bool autofill_on_empty_values;
+    bool autofill_on_empty_values{false};
 
     // Specifies that suggestions should be shown when the caret is not
     // after the last character in the element.
-    bool requires_caret_at_end;
+    bool requires_caret_at_end{false};
 
     // Specifies that all autofill suggestions should be shown and none should
     // be elided because of the current value of |element| (relevant for inline
     // autocomplete).
-    bool show_full_suggestion_list;
+    bool show_full_suggestion_list{false};
 
     // Specifies that the first suggestion must be auto-selected when the
     // dropdown is shown. Enabled when the user presses ARROW_DOWN on a field.
-    bool autoselect_first_suggestion;
+    bool autoselect_first_suggestion{false};
+
+    // Specifies that suggestions are triggered in a way it makes sense to
+    // prompt the Touch To Fill surface first (e.g. on click).
+    TouchToFillEligible touch_to_fill_eligible{false};
   };
 
   // content::RenderFrameObserver:
@@ -248,7 +249,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Queries the browser for Autocomplete and Autofill suggestions for the given
   // |element|.
   void QueryAutofillSuggestions(const blink::WebFormControlElement& element,
-                                bool autoselect_first_suggestion);
+                                bool autoselect_first_suggestion,
+                                TouchToFillEligible touch_to_fill_eligible);
 
   // Sets the selected value of the the field identified by |field_id| to
   // |suggested_value|.

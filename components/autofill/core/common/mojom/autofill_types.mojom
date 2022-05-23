@@ -309,3 +309,8 @@ enum RendererFormDataAction {
   kFill,     // The renderer should fill the form data.
   kPreview,  // The renderer should preview the form data.
 };
+
+// autofill::TouchToFillEligible
+struct TouchToFillEligible {
+  bool eligible;
+};
