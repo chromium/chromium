@@ -49,11 +49,12 @@ SessionRestorePageLoadMetricsObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SessionRestorePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // This class is interested only in preprocessed lifecycle events that are
+  // already dispatched also to the outermost page observer.
   return STOP_OBSERVING;
 }
 
