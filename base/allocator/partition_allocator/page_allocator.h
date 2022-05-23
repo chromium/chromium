@@ -9,8 +9,8 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -260,7 +260,7 @@ BASE_EXPORT void DiscardSystemPages(void* address, size_t length);
 
 // Rounds up |address| to the next multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundUpToSystemPage(uintptr_t address) {
   return (address + internal::SystemPageOffsetMask()) &
          internal::SystemPageBaseMask();
@@ -268,14 +268,14 @@ RoundUpToSystemPage(uintptr_t address) {
 
 // Rounds down |address| to the previous multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundDownToSystemPage(uintptr_t address) {
   return address & internal::SystemPageBaseMask();
 }
 
 // Rounds up |address| to the next multiple of |PageAllocationGranularity()|.
 // Returns 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundUpToPageAllocationGranularity(uintptr_t address) {
   return (address + internal::PageAllocationGranularityOffsetMask()) &
          internal::PageAllocationGranularityBaseMask();
@@ -283,7 +283,7 @@ RoundUpToPageAllocationGranularity(uintptr_t address) {
 
 // Rounds down |address| to the previous multiple of
 // |PageAllocationGranularity()|. Returns 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE uintptr_t
+PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
 RoundDownToPageAllocationGranularity(uintptr_t address) {
   return address & internal::PageAllocationGranularityBaseMask();
 }

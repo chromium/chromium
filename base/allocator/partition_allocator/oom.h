@@ -8,15 +8,15 @@
 #include <cstddef>
 
 #include "base/allocator/partition_allocator/allocation_guard.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 
-// The crash is generated in a NOINLINE function so that we can classify the
+// The crash is generated in a PA_NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as
-// NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
-[[noreturn]] BASE_EXPORT void NOT_TAIL_CALLED OnNoMemory(size_t size);
+// PA_NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
+[[noreturn]] BASE_EXPORT void PA_NOT_TAIL_CALLED OnNoMemory(size_t size);
 
 // OOM_CRASH(size) - Specialization of IMMEDIATE_CRASH which will raise a custom
 // exception on Windows to signal this is OOM and not a normal assert.
