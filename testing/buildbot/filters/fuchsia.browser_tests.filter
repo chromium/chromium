@@ -520,27 +520,9 @@
 -RssLinksFetcherTest.FetchSuccessfulFromHead
 -StartupMetricsTest.ReportsValues
 
-# TODO(crbug.com/1316456): Capture not yet supported
--All/CastV2PerformanceTest.Performance/0
--All/CastV2PerformanceTest.Performance/1
--All/CastV2PerformanceTest.Performance/2
--All/CastV2PerformanceTest.Performance/3
--All/CastV2PerformanceTest.Performance/4
--All/CastV2PerformanceTest.Performance/5
--All/TabCapturePerformanceTest.Performance/0
--All/TabCapturePerformanceTest.Performance/1
--All/TabCapturePerformanceTest.Performance/2
--All/TabCapturePerformanceTest.Performance/3
--CastMirroringServiceHostBrowserTest.CaptureTabVideo
+# TODO(crbug.com/1322341): Desktop capture not yet supported
 -DesktopCaptureApiTest.ChooseDesktopMedia
 -DesktopCaptureApiTest.Delegation
--TabCaptureApiTest.ActiveTabPermission
--TabCaptureApiTest.ApiTests
--TabCaptureApiTest.CaptureInSplitIncognitoMode
--TabCaptureApiTest.Constraints
--TabCaptureApiTest.FullscreenEvents
--TabCaptureApiTest.GrantForChromePages
--TabCaptureApiTest.TabIndicator
 
 # TODO(crbug.com/1251347): Bluetooth not yet supported
 -BluetoothApiTest.DeviceEvents
