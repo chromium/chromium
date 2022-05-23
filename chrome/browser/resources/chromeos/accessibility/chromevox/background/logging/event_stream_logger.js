@@ -6,19 +6,11 @@
  * @fileoverview Creates event stream logger.
  */
 
-goog.provide('EventStreamLogger');
-
-goog.require('BridgeAction');
-goog.require('BridgeHelper');
-goog.require('BridgeTarget');
-goog.require('LogStore');
-goog.require('EventLog');
-
-goog.scope(function() {
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
-EventStreamLogger = class {
+
+export class EventStreamLogger {
   constructor(node) {
     /**
      * @type {!chrome.automation.AutomationNode}
@@ -94,7 +86,7 @@ EventStreamLogger = class {
           localStorage['enableEventStreamLogging'] === 'true');
     });
   }
-};
+}
 
 
 /**
@@ -112,4 +104,3 @@ BridgeHelper.registerHandler(
     ({name, enabled}) =>
         EventStreamLogger.instance.notifyEventStreamFilterChanged(
             name, enabled));
-});  // goog.scope

@@ -8,6 +8,7 @@
  *
  */
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
+import {EventStreamLogger} from '/chromevox/background/logging/event_stream_logger.js';
 
 /**
  * This object has default values of preferences and contains the common
