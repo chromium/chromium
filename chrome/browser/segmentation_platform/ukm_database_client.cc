@@ -44,13 +44,10 @@ segmentation_platform::UkmDataManager* UkmDatabaseClient::GetUkmDataManager() {
 
 void UkmDatabaseClient::PreProfileInit() {
   if (ukm_recorder_for_testing_) {
-    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_for_testing_,
-                                                  /*is_ukm_allowed=*/true);
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_for_testing_);
   } else {
     ukm_observer_ = std::make_unique<UkmObserver>(
-        g_browser_process->GetMetricsServicesManager()->GetUkmService(),
-        g_browser_process->GetMetricsServicesManager()
-            ->IsUkmAllowedForAllProfiles());
+        g_browser_process->GetMetricsServicesManager()->GetUkmService());
   }
 
   // Path service is setup at early startup.

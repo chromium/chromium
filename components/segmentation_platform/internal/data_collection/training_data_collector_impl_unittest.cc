@@ -61,6 +61,10 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     LocalStateHelper::GetInstance().Initialize(&prefs_);
     LocalStateHelper::GetInstance().SetPrefTime(
         kSegmentationLastCollectionTimePref, base::Time::Now());
+    // Set UKM allowed 30 days ago
+    LocalStateHelper::GetInstance().SetPrefTime(
+        kSegmentationUkmMostRecentAllowedTimeKey,
+        base::Time::Now() - base::Days(30));
     clock_.SetNow(base::Time::Now());
     test_recorder_.Purge();
 
@@ -365,6 +369,21 @@ TEST_F(TrainingDataCollectorImplTest,
   clock()->Advance(base::Hours(24));
   WaitForContinousCollection();
   ExpectUkmCount(1u);
+}
+
+// Tests that if UKM allowed timestamp is not set in local state, data
+// collection won't happen.
+TEST_F(TrainingDataCollectorImplTest, NoDataCollectionIfUkmAllowedPrefNotSet) {
+  ON_CALL(*feature_list_processor(), ProcessFeatureList(_, _, _, _, _))
+      .WillByDefault(RunOnceCallback<4>(true, std::vector<float>{1.f},
+                                        std::vector<float>{2.f, 3.f}));
+  LocalStateHelper::GetInstance().SetPrefTime(
+      kSegmentationUkmMostRecentAllowedTimeKey, base::Time());
+  CreateSegmentInfo();
+  Init();
+  collector()->ReportCollectedContinuousTrainingData();
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0u);
 }
 
 }  // namespace

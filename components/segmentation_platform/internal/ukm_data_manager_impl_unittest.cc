@@ -166,8 +166,7 @@ class UkmDataManagerImplTest : public testing::Test {
     ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
     auto ukm_db = std::make_unique<MockUkmDatabase>();
     ukm_database_ = ukm_db.get();
-    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get(),
-                                                  true /*is_ukm_allowed*/);
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
     data_manager_->InitializeForTesting(std::move(ukm_db), ukm_observer_.get());
   }
 

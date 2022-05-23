@@ -94,8 +94,8 @@ class UkmObserverTest : public testing::Test {
   }
 
   void InitializeUkmObserver(bool is_ukm_allowed) {
-    ukm_observer_ =
-        std::make_unique<UkmObserver>(ukm_recorder_.get(), is_ukm_allowed);
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
+    ukm_observer_->OnUkmAllowedStateChanged(is_ukm_allowed);
     auto ukm_database = std::make_unique<MockUkmDatabase>();
     ukm_database_ = ukm_database.get();
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();

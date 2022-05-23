@@ -257,9 +257,13 @@ TEST_F(SegmentationUkmHelperTest, AllowedToUploadData) {
   TestingPrefServiceSimple prefs;
   SegmentationPlatformService::RegisterLocalStatePrefs(prefs.registry());
   LocalStateHelper::GetInstance().Initialize(&prefs);
-
   base::SimpleTestClock clock;
   clock.SetNow(base::Time::Now());
+
+  // If pref is not initialized, AllowedToUploadData() always return false.
+  ASSERT_FALSE(
+      SegmentationUkmHelper::AllowedToUploadData(base::Seconds(1), &clock));
+
   LocalStateHelper::GetInstance().SetPrefTime(
       kSegmentationUkmMostRecentAllowedTimeKey, clock.Now());
 

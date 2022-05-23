@@ -67,7 +67,7 @@ class SegmentationPlatformServiceImplTest
     LocalStateHelper::GetInstance().Initialize(&prefs_);
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get(), true);
+    ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
     auto ukm_database = std::make_unique<MockUkmDatabase>();
     static_cast<UkmDataManagerImpl*>(ukm_data_manager_.get())
         ->InitializeForTesting(std::move(ukm_database), ukm_observer_.get());

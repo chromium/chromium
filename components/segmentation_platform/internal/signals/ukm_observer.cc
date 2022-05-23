@@ -15,11 +15,9 @@
 
 namespace segmentation_platform {
 
-UkmObserver::UkmObserver(ukm::UkmRecorderImpl* ukm_recorder,
-                         bool is_ukm_allowed)
+UkmObserver::UkmObserver(ukm::UkmRecorderImpl* ukm_recorder)
     : ukm_recorder_(ukm_recorder), ukm_data_manager_(nullptr) {
   // Listen to |OnUkmAllowedStateChanged| event.
-  OnUkmAllowedStateChanged(is_ukm_allowed);
   ukm_recorder_->AddUkmRecorderObserver(base::flat_set<uint64_t>(), this);
 }
 
