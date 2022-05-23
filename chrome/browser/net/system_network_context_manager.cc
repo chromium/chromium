@@ -124,7 +124,7 @@ enum class NetworkSandboxState {
   kMaxValue = kDisabledBecauseOfFailedLaunch
 };
 
-// The global instance of the SystemNetworkContextmanager.
+// The global instance of the SystemNetworkContextManager.
 SystemNetworkContextManager* g_system_network_context_manager = nullptr;
 
 // Whether or not any instance of the system network context manager has
@@ -216,7 +216,7 @@ bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
 #endif
   // Note: intentionally checking the feature state here rather than falling
   // back to CertVerifierImpl::kDefault, as browser-side network context
-  // initializition for TrialComparisonCertVerifier depends on knowing which
+  // initialization for TrialComparisonCertVerifier depends on knowing which
   // verifier will be used.
   return base::FeatureList::IsEnabled(
       net::features::kCertVerifierBuiltinFeature);
@@ -229,7 +229,7 @@ bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
 bool ShouldUseChromeRootStore(PrefService* local_state) {
   // Note: intentionally checking the feature state here rather than falling
   // back to ChromeRootImpl::kRootDefault, as browser-side network context
-  // initializition for TrialComparisonCertVerifier depends on knowing which
+  // initialization for TrialComparisonCertVerifier depends on knowing which
   // verifier will be used.
   return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
 }
