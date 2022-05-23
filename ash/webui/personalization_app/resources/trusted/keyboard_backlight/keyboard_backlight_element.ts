@@ -218,6 +218,30 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     return this.i18n(presetColorId);
   }
 
+  private getWallpaperColorContainerClass_(selectedColor: BacklightColor):
+      string {
+    return this.getColorContainerClass_(
+        this.getWallpaperColorAriaSelected_(selectedColor));
+  }
+
+  private getPresetColorContainerClass_(
+      colorId: string, colors: Record<string, ColorInfo>,
+      selectedColor: BacklightColor) {
+    return this.getColorContainerClass_(
+        this.getPresetColorAriaSelected_(colorId, colors, selectedColor));
+  }
+
+  private getRainbowColorContainerClass_(selectedColor: BacklightColor) {
+    return this.getColorContainerClass_(
+        this.getRainbowColorAriaSelected_(selectedColor));
+  }
+
+  private getColorContainerClass_(isSelected: string) {
+    const defaultClassName = 'color-container';
+    return isSelected === 'true' ? `${defaultClassName} tast-selected-color` :
+                                   defaultClassName;
+  }
+
   private getWallpaperColorAriaSelected_(selectedColor: BacklightColor) {
     return (selectedColor === BacklightColor.kWallpaper).toString();
   }
@@ -231,7 +255,7 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     return (colors[colorId].enumVal === selectedColor).toString();
   }
 
-  private getRainbowColorAriaSelected(selectedColor: BacklightColor) {
+  private getRainbowColorAriaSelected_(selectedColor: BacklightColor) {
     return (selectedColor === BacklightColor.kRainbow).toString();
   }
 }

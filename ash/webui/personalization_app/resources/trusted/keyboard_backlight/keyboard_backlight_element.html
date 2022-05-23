@@ -92,7 +92,7 @@
   </iron-a11y-keys>
   <iron-selector id="selector" selected="0" selectable=".color-container"
       selected-item="{{ironSelectedColor_}}">
-    <div id$="[[wallpaperColorId_]]" class="color-container" tabindex="0"
+    <div id$="[[wallpaperColorId_]]" class$="[[getWallpaperColorContainerClass_(backlightColor_)]]" tabindex="0"
         on-click="onWallpaperColorSelected_"
         on-keypress="onWallpaperColorSelected_"
         aria-label="$i18n{wallpaperColor}"
@@ -105,7 +105,7 @@
     </div>
     <div class="divider"></div>
     <template is="dom-repeat" items="[[presetColorIds_]]" as="presetColorId">
-      <div id$="[[presetColorId]]" class="color-container"
+      <div id$="[[presetColorId]]" class$="[[getPresetColorContainerClass_(presetColorId, presetColors_, backlightColor_)]]"
           on-click="onPresetColorSelected_" on-keypress="onPresetColorSelected_"
           aria-label$="[[getPresetColorAriaLabel_(presetColorId)]]"
           aria-selected$="[[getPresetColorAriaSelected_(presetColorId, presetColors_, backlightColor_)]]">
@@ -116,10 +116,10 @@
         </div>
       </div>
     </template>
-    <div id$="[[rainbowColorId_]]" class="color-container" tabindex="0"
+    <div id$="[[rainbowColorId_]]" class$="[[getRainbowColorContainerClass_(backlightColor_)]]" tabindex="0"
         on-click="onRainbowColorSelected_" on-keypress="onRainbowColorSelected_"
         aria-label="$i18n{rainbowColor}"
-        aria-selected$="[[getRainbowColorAriaSelected(backlightColor_)]]">
+        aria-selected$="[[getRainbowColorAriaSelected_(backlightColor_)]]">
       <div class="color-inner-container"
           style$="[[getColorInnerContainerStyle_(rainbowColorId_, presetColors_)]]">
         <paper-ripple class="circle"></paper-ripple>
