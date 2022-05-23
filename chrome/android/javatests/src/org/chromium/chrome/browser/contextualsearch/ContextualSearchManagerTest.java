@@ -749,7 +749,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    // Previously disabled: https://crbug.com/1291558
+    @DisabledTest(message = "https://crbug.com/1291558")
     public void testQuickActionCaptionAndImage(@EnabledFeature int enabledFeature)
             throws Exception {
         CompositorAnimationHandler.setTestingMode(true);
