@@ -1810,6 +1810,10 @@ bool IsFileManagerFuseBoxEnabled() {
   return base::FeatureList::IsEnabled(kFuseBox);
 }
 
+bool IsFileManagerFuseBoxDebugEnabled() {
+  return base::FeatureList::IsEnabled(kFuseBoxDebug);
+}
+
 bool IsFileManagerSwaEnabled() {
   return base::FeatureList::IsEnabled(kFilesSWA);
 }
