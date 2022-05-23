@@ -132,9 +132,9 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     )
 
     for t in tests:
-      yield (t[0], t[1], tuple(['_' + t[0]]))
+      yield (t[0], t[1], ['_' + t[0]])
 
-  def RunActualGpuTest(self, test_path: str, *args) -> None:
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     test_name = args[0]
     getattr(self, test_name)(test_path)
 

@@ -28,8 +28,11 @@ import os
 import posixpath
 import sys
 import time
+import typing
+import unittest
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import ipg_utils
 
@@ -239,11 +242,11 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _url_mode = None
 
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     return 'power'
 
   @classmethod
-  def AddCommandlineArgs(cls, parser):
+  def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(PowerMeasurementIntegrationTest, cls).AddCommandlineArgs(parser)
     parser.add_option(
         '--duration',
@@ -307,63 +310,73 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'convenience on machines where Intel Power Gadget does not work.')
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     if options.url is not None:
       # This is for local testing convenience only and is not to be added to
       # any bots.
       cls._url_mode = True
-      yield ('URL', options.url,
-             _PowerMeasurementTestArguments(test_func='URL',
-                                            repeat=options.repeat,
-                                            outliers=options.outliers,
-                                            fullscreen=options.fullscreen,
-                                            underlay=options.underlay,
-                                            ipg_logdir=options.logdir,
-                                            ipg_duration=options.duration,
-                                            ipg_delay=options.delay,
-                                            ipg_resolution=options.resolution,
-                                            bypass_ipg=options.bypass_ipg))
+      yield ('URL', options.url, [
+          _PowerMeasurementTestArguments(test_func='URL',
+                                         repeat=options.repeat,
+                                         outliers=options.outliers,
+                                         fullscreen=options.fullscreen,
+                                         underlay=options.underlay,
+                                         ipg_logdir=options.logdir,
+                                         ipg_duration=options.duration,
+                                         ipg_delay=options.delay,
+                                         ipg_resolution=options.resolution,
+                                         bypass_ipg=options.bypass_ipg)
+      ])
     else:
       cls._url_mode = False
-      yield ('Basic', '-',
-             _PowerMeasurementTestArguments(test_func='Basic',
-                                            repeat=options.repeat,
-                                            bypass_ipg=options.bypass_ipg))
+      yield ('Basic', '-', [
+          _PowerMeasurementTestArguments(test_func='Basic',
+                                         repeat=options.repeat,
+                                         bypass_ipg=options.bypass_ipg)
+      ])
       yield ('Video_720_MP4',
              posixpath.join(_GPU_RELATIVE_PATH,
                             'power_video_bear_1280x720_mp4.html'),
-             _PowerMeasurementTestArguments(test_func='Video',
-                                            repeat=options.repeat,
-                                            bypass_ipg=options.bypass_ipg,
-                                            underlay=False,
-                                            fullscreen=False))
+             [
+                 _PowerMeasurementTestArguments(test_func='Video',
+                                                repeat=options.repeat,
+                                                bypass_ipg=options.bypass_ipg,
+                                                underlay=False,
+                                                fullscreen=False)
+             ])
       yield ('Video_720_MP4_Underlay',
              posixpath.join(_GPU_RELATIVE_PATH,
                             'power_video_bear_1280x720_mp4.html'),
-             _PowerMeasurementTestArguments(test_func='Video',
-                                            repeat=options.repeat,
-                                            bypass_ipg=options.bypass_ipg,
-                                            underlay=True,
-                                            fullscreen=False))
+             [
+                 _PowerMeasurementTestArguments(test_func='Video',
+                                                repeat=options.repeat,
+                                                bypass_ipg=options.bypass_ipg,
+                                                underlay=True,
+                                                fullscreen=False)
+             ])
       yield ('Video_720_MP4_Fullscreen',
              posixpath.join(_GPU_RELATIVE_PATH,
                             'power_video_bear_1280x720_mp4.html'),
-             _PowerMeasurementTestArguments(test_func='Video',
-                                            repeat=options.repeat,
-                                            bypass_ipg=options.bypass_ipg,
-                                            underlay=False,
-                                            fullscreen=True))
+             [
+                 _PowerMeasurementTestArguments(test_func='Video',
+                                                repeat=options.repeat,
+                                                bypass_ipg=options.bypass_ipg,
+                                                underlay=False,
+                                                fullscreen=True)
+             ])
       yield ('Video_720_MP4_Underlay_Fullscreen',
              posixpath.join(_GPU_RELATIVE_PATH,
                             'power_video_bear_1280x720_mp4.html'),
-             _PowerMeasurementTestArguments(test_func='Video',
-                                            repeat=options.repeat,
-                                            bypass_ipg=options.bypass_ipg,
-                                            underlay=True,
-                                            fullscreen=True))
+             [
+                 _PowerMeasurementTestArguments(test_func='Video',
+                                                repeat=options.repeat,
+                                                bypass_ipg=options.bypass_ipg,
+                                                underlay=True,
+                                                fullscreen=True)
+             ])
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     super(cls, PowerMeasurementIntegrationTest).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
@@ -371,14 +384,15 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not cls._url_mode:
       cls.SetStaticServerDirs(_DATA_PATHS)
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     test_params = args[0]
     assert test_params is not None
     prefixed_test_func_name = '_RunTest_%s' % test_params.test_func
     getattr(self, prefixed_test_func_name)(test_path, test_params)
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args):
+  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
+                          ) -> typing.List[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -389,7 +403,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return default_args
 
   @staticmethod
-  def _MeasurePowerWithIPG(bypass_ipg):
+  def _MeasurePowerWithIPG(bypass_ipg: bool) -> dict:
     total_time = _POWER_MEASUREMENT_DURATION + _POWER_MEASUREMENT_DELAY
     if bypass_ipg:
       logging.info('Bypassing Intel Power Gadget')
@@ -401,7 +415,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return results
 
   @staticmethod
-  def _AppendResults(results_sum, results):
+  def _AppendResults(results_sum: dict, results: dict) -> dict:
     assert isinstance(results_sum, dict) and isinstance(results, dict)
     assert results
     first_append = not results_sum
@@ -415,12 +429,12 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return results_sum
 
   @staticmethod
-  def _LogResults(results):
+  def _LogResults(results: dict) -> None:
     # TODO(zmo): output in a way that the results can be tracked at
     # chromeperf.appspot.com.
     logging.info('Results: %s', str(results))
 
-  def _SetupVideo(self, fullscreen, underlay):
+  def _SetupVideo(self, fullscreen: bool, underlay: bool) -> None:
     self.tab.action_runner.WaitForJavaScriptCondition(
         'waitForVideoToPlay()', timeout=30)
     if fullscreen:
@@ -438,7 +452,8 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   #########################################
   # Actual test functions
 
-  def _RunTest_Basic(self, test_path, params):
+  def _RunTest_Basic(self, test_path: str,
+                     params: _PowerMeasurementTestArguments) -> None:
     del test_path  # Unused in this particular test.
 
     results_sum = {}
@@ -453,7 +468,8 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           results_sum, results)
     PowerMeasurementIntegrationTest._LogResults(results_sum)
 
-  def _RunTest_Video(self, test_path, params):
+  def _RunTest_Video(self, test_path: str,
+                     params: _PowerMeasurementTestArguments) -> None:
     disabled_features = ['D3D11VideoDecoder']
 
     results_sum = {}
@@ -477,7 +493,8 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           results_sum, results)
     PowerMeasurementIntegrationTest._LogResults(results_sum)
 
-  def _RunTest_URL(self, test_path, params):
+  def _RunTest_URL(self, test_path: str,
+                   params: _PowerMeasurementTestArguments) -> None:
     repeat = params.repeat
     ipg_logdir = params.ipg_logdir
     ipg_duration = params.ipg_duration
@@ -529,7 +546,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       logging.info('Summary: %s', str(summary))
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
@@ -537,6 +554,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

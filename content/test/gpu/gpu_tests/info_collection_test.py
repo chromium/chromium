@@ -44,17 +44,20 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    yield ('InfoCollection_basic', '_',
-           ('_RunBasicTest',
-            InfoCollectionTestArgs(
-                expected_vendor_id_str=options.expected_vendor_id,
-                expected_device_id_strs=options.expected_device_ids)))
+    yield ('InfoCollection_basic', '_', [
+        '_RunBasicTest',
+        InfoCollectionTestArgs(
+            expected_vendor_id_str=options.expected_vendor_id,
+            expected_device_id_strs=options.expected_device_ids)
+    ])
     yield ('InfoCollection_direct_composition', '_',
-           ('_RunDirectCompositionTest', InfoCollectionTestArgs()))
-    yield ('InfoCollection_dx12_vulkan', '_', ('_RunDX12VulkanTest',
-                                               InfoCollectionTestArgs()))
-    yield ('InfoCollection_asan_info_surfaced', '_', ('_RunAsanInfoTest',
-                                                      InfoCollectionTestArgs()))
+           ['_RunDirectCompositionTest',
+            InfoCollectionTestArgs()])
+    yield ('InfoCollection_dx12_vulkan', '_',
+           ['_RunDX12VulkanTest',
+            InfoCollectionTestArgs()])
+    yield ('InfoCollection_asan_info_surfaced', '_',
+           ['_RunAsanInfoTest', InfoCollectionTestArgs()])
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -62,7 +65,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
 
-  def RunActualGpuTest(self, test_path: str, *args) -> None:
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     del test_path  # Unused in this particular GPU test.
     # Make sure the GPU process is started
     self.tab.action_runner.Navigate('chrome:gpu')

@@ -9,7 +9,7 @@ import typing
 from telemetry.internal.browser import tab
 from telemetry.internal.browser import browser
 
-TestArgs = tuple
+TestArgs = list
 GeneratedTest = typing.Tuple[str, str, TestArgs]
 TestGenerator = typing.Generator[GeneratedTest, None, None]
 

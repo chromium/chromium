@@ -49,9 +49,9 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     for entry in os.scandir(_DATA_PATH):
       if entry.is_dir():
         yield ('MediaPipe_mediapipe_%s' % entry.name,
-               _get_test_html(entry.name), ())
+               _get_test_html(entry.name), [])
 
-  def RunActualGpuTest(self, test_path: str, *args) -> None:
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     action_runner = self.tab.action_runner
     action_runner.Navigate(self.UrlOfStaticFilePath(test_path))
     action_runner.WaitForJavaScriptCondition('window.runTest !== undefined')

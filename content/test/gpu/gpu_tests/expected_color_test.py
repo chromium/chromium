@@ -25,7 +25,7 @@ class ExpectedColorTest(
   Gold normally for the test.
   """
 
-  def RunActualGpuTest(self, test_path: str, *args) -> None:
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     raise NotImplementedError(
         'RunActualGpuTest must be overridden in a subclass')
 

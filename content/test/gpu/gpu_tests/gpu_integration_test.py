@@ -394,7 +394,7 @@ class GpuIntegrationTest(
     if os_name == 'android':
       self.browser.platform.android_action_runner.TurnScreenOn()
 
-  def _RunGpuTest(self, url: str, test_name: str, *args) -> None:
+  def _RunGpuTest(self, url: str, test_name: str, args: ct.TestArgs) -> None:
     expected_results, should_retry_on_failure = (
         self.GetExpectationsForTest()[:2])
     should_retry_on_failure = (
@@ -402,17 +402,11 @@ class GpuIntegrationTest(
         or self._DetermineFirstTestRetryWorkaround(test_name))
     expected_crashes = {}
     try:
-      # TODO(nednguyen): For some reason the arguments are getting wrapped
-      # in another tuple sometimes (like in the WebGL extension tests).
-      # Perhaps only if multiple arguments are yielded in the test
-      # generator?
-      if len(args) == 1 and isinstance(args[0], tuple):
-        args = args[0]
       expected_crashes = self.GetExpectedCrashes(args)
       # The GPU tests don't function correctly if the screen is not on, so
       # ensure that this is the case.
       self._EnsureScreenOn()
-      self.RunActualGpuTest(url, *args)
+      self.RunActualGpuTest(url, args)
     except unittest.SkipTest:
       # pylint: disable=attribute-defined-outside-init
       self.programmaticSkipIsExpected = True
@@ -590,7 +584,7 @@ class GpuIntegrationTest(
     available.
 
     Args:
-      args: The list passed to _RunGpuTest()
+      args: The tuple passed to _RunGpuTest()
 
     Returns:
       A dictionary mapping crash types as strings to the number of expected
@@ -608,7 +602,7 @@ class GpuIntegrationTest(
     tuples of tests to run."""
     raise NotImplementedError
 
-  def RunActualGpuTest(self, test_path: str, *args) -> None:
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     """Subclasses must override this to run the actual test at the given
     URL. test_path is a path on the local file system that may need to
     be resolved via UrlOfStaticFilePath.

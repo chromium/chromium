@@ -77,9 +77,9 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
     # artifact of the failure to help with debugging. There are no accepted
     # positive baselines recorded in Skia Gold, so its diff will not be
     # sufficient to debugging the failure.
-    yield ('Maps_maps', 'file://performance.html', ())
+    yield ('Maps_maps', 'file://performance.html', [])
 
-  def RunActualGpuTest(self, test_path: str, *args) -> None:
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     tab = self.tab
     action_runner = tab.action_runner
     action_runner.Navigate(test_path)

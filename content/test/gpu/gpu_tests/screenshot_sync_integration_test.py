@@ -8,9 +8,12 @@ import math
 import os
 import random
 import sys
+import typing
+import unittest
 
 from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
 import gpu_path_util
@@ -25,7 +28,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   """
 
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     """The name by which this test is invoked on the command line."""
     return 'screenshot_sync'
 
@@ -36,15 +39,15 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _parsed_command_line_options = None
 
   @classmethod
-  def SetParsedCommandLineOptions(cls, options):
+  def SetParsedCommandLineOptions(cls, options: ct.ParsedCmdArgs) -> None:
     cls._parsed_command_line_options = options
 
   @classmethod
-  def GetParsedCommandLineOptions(cls):
+  def GetParsedCommandLineOptions(cls) -> ct.ParsedCmdArgs:
     return cls._parsed_command_line_options
 
   @classmethod
-  def AddCommandlineArgs(cls, parser):
+  def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(ScreenshotSyncIntegrationTest, cls).AddCommandlineArgs(parser)
     parser.add_option(
         '--dont-restore-color-profile-after-test',
@@ -56,7 +59,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'color profile. See http://crbug.com/784456.')
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     options = cls.GetParsedCommandLineOptions()
     color_profile_manager.ForceUntilExitSRGB(
         options.dont_restore_color_profile_after_test)
@@ -66,7 +69,8 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args):
+  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
+                          ) -> typing.List[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -83,18 +87,18 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return default_args
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     cls.SetParsedCommandLineOptions(options)
     yield ('ScreenshotSync_SWRasterWithCanvas', 'screenshot_sync_canvas.html',
-           ('--disable-gpu-rasterization'))
+           ['--disable-gpu-rasterization'])
     yield ('ScreenshotSync_SWRasterWithDivs', 'screenshot_sync_divs.html',
-           ('--disable-gpu-rasterization'))
+           ['--disable-gpu-rasterization'])
     yield ('ScreenshotSync_GPURasterWithCanvas', 'screenshot_sync_canvas.html',
-           (cba.ENABLE_GPU_RASTERIZATION))
+           [cba.ENABLE_GPU_RASTERIZATION])
     yield ('ScreenshotSync_GPURasterWithDivs', 'screenshot_sync_divs.html',
-           (cba.ENABLE_GPU_RASTERIZATION))
+           [cba.ENABLE_GPU_RASTERIZATION])
 
-  def _Navigate(self, test_path):
+  def _Navigate(self, test_path: str) -> None:
     url = self.UrlOfStaticFilePath(test_path)
     # It's crucial to use the action_runner, rather than the tab's
     # Navigate method directly. It waits for the document ready state
@@ -102,7 +106,9 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # conditions.
     self.tab.action_runner.Navigate(url)
 
-  def _CheckColorMatchAtLocation(self, expectedRGB, screenshot, x, y):
+  def _CheckColorMatchAtLocation(self, expectedRGB: rgba_color.RgbaColor,
+                                 screenshot: ct.Screenshot, x: int,
+                                 y: int) -> None:
     pixel_value = image_util.GetPixelColor(screenshot, x, y)
     # Allow for off-by-one errors due to color conversion.
     tolerance = 1
@@ -117,7 +123,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                            pixel_value.r, pixel_value.g, pixel_value.b)
       self.fail(error_message)
 
-  def _CheckScreenshot(self):
+  def _CheckScreenshot(self) -> None:
     canvasRGB = rgba_color.RgbaColor(
         random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),
         255)
@@ -143,7 +149,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       for x in range(start_x, outer_size, skip):
         self._CheckColorMatchAtLocation(canvasRGB, screenshot, x, y)
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     browser_arg = args[0]
     self.RestartBrowserIfNecessaryWithArgs([browser_arg])
     self._Navigate(test_path)
@@ -152,7 +158,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self._CheckScreenshot()
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
@@ -160,6 +166,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

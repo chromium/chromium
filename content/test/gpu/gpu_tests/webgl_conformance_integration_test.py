@@ -6,13 +6,18 @@ import logging
 import os
 import re
 import sys
+import typing
+import unittest
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_test_util
 
 import gpu_path_util
+
+from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 
 conformance_harness_script = r"""
   var testHarness = {};
@@ -59,13 +64,12 @@ extension_harness_additional_script = r"""
 """
 
 
-if sys.version_info[0] == 3:
-  # cmp no longer exists in Python 3
-  def cmp(a, b):
-    return int(a > b) - int(a < b)
+# cmp no longer exists in Python 3
+def cmp(a: typing.Any, b: typing.Any) -> int:
+  return int(a > b) - int(a < b)
 
 
-def _CompareVersion(version1, version2):
+def _CompareVersion(version1: str, version2: str) -> int:
   ver_num1 = [int(x) for x in version1.split('.')]
   ver_num2 = [int(x) for x in version2.split('.')]
   size = min(len(ver_num1), len(ver_num2))
@@ -93,11 +97,11 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _original_environ = None
 
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     return 'webgl_conformance'
 
   @classmethod
-  def AddCommandlineArgs(cls, parser):
+  def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(WebGLConformanceIntegrationTest, cls).AddCommandlineArgs(parser)
     parser.add_option(
         '--webgl-conformance-version',
@@ -113,7 +117,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                       help='Whether to enable Metal debug layers')
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     #
     # Conformance tests
     #
@@ -129,8 +133,8 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         test_path_with_args += '?webglVersion=' + str(cls._webgl_version)
       yield (test_path.replace(os.path.sep, '/'),
              os.path.join(webgl_test_util.conformance_relpath,
-                          test_path_with_args), ('_RunConformanceTest',
-                                                 WebGLTestArgs()))
+                          test_path_with_args),
+             ['_RunConformanceTest', WebGLTestArgs()])
 
     #
     # Extension tests
@@ -139,21 +143,23 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Coverage test.
     yield ('WebglExtension_TestCoverage',
            os.path.join(webgl_test_util.extensions_relpath,
-                        'webgl_extension_test.html'),
-           ('_RunExtensionCoverageTest',
-            WebGLTestArgs(webgl_version=cls._webgl_version,
-                          extension_list=extension_tests)))
+                        'webgl_extension_test.html'), [
+                            '_RunExtensionCoverageTest',
+                            WebGLTestArgs(webgl_version=cls._webgl_version,
+                                          extension_list=extension_tests)
+                        ])
     # Individual extension tests.
     for extension in extension_tests:
       yield ('WebglExtension_%s' % extension,
              os.path.join(webgl_test_util.extensions_relpath,
-                          'webgl_extension_test.html'),
-             ('_RunExtensionTest',
-              WebGLTestArgs(webgl_version=cls._webgl_version,
-                            extension=extension)))
+                          'webgl_extension_test.html'), [
+                              '_RunExtensionTest',
+                              WebGLTestArgs(webgl_version=cls._webgl_version,
+                                            extension=extension)
+                          ])
 
   @classmethod
-  def _GetExtensionList(cls):
+  def _GetExtensionList(cls) -> typing.List[str]:
     if cls._webgl_version == 1:
       return [
           'ANGLE_instanced_arrays',
@@ -222,7 +228,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
   @classmethod
-  def _ModifyBrowserEnvironment(cls):
+  def _ModifyBrowserEnvironment(cls) -> None:
     super(WebGLConformanceIntegrationTest, cls)._ModifyBrowserEnvironment()
     if (sys.platform == 'darwin'
         and cls.GetOriginalFinderOptions().enable_metal_debug_layers):
@@ -234,17 +240,17 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       os.environ['MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES'] = '4'
 
   @classmethod
-  def _RestoreBrowserEnvironment(cls):
+  def _RestoreBrowserEnvironment(cls) -> None:
     if cls._original_environ is not None:
       os.environ = cls._original_environ.copy()
     super(WebGLConformanceIntegrationTest, cls)._RestoreBrowserEnvironment()
 
-  def _ShouldForceRetryOnFailureFirstTest(self):
+  def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
     # Force RetryOnFailure of the first test on a shard on ChromeOS VMs.
     # See crbug.com/1079244.
     return 'chromeos-board-amd64-generic' in self.GetPlatformTags(self.browser)
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     # This indirection allows these tests to trampoline through
     # _RunGpuTest.
     assert len(args) == 2
@@ -252,7 +258,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     test_args = args[1]
     getattr(self, test_name)(test_path, test_args)
 
-  def _VerifyGLBackend(self, gpu_info):
+  def _VerifyGLBackend(self, gpu_info: telemetry_gpu_info.GPUInfo) -> bool:
     # Verify that Chrome's GL backend matches if a specific one was requested
     if self._gl_backend:
       if (self._gl_backend == 'angle'
@@ -263,7 +269,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         return False
     return True
 
-  def _VerifyANGLEBackend(self, gpu_info):
+  def _VerifyANGLEBackend(self, gpu_info: telemetry_gpu_info.GPUInfo) -> bool:
     if self._angle_backend:
       # GPU exepections use slightly different names for the angle backends
       # than the Chrome flags
@@ -288,7 +294,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         return False
     return True
 
-  def _VerifyCommandDecoder(self, gpu_info):
+  def _VerifyCommandDecoder(self, gpu_info: telemetry_gpu_info.GPUInfo) -> bool:
     if self._command_decoder:
       # GPU exepections use slightly different names for the command decoders
       # than the Chrome flags
@@ -306,7 +312,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         return False
     return True
 
-  def _NavigateTo(self, test_path, harness_script):
+  def _NavigateTo(self, test_path: str, harness_script: str) -> None:
     gpu_info = self.browser.GetSystemInfo().gpu
     self._crash_count = gpu_info.aux_attributes['process_crash_count']
     if not self._verified_flags:
@@ -318,7 +324,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     url = self.UrlOfStaticFilePath(test_path)
     self.tab.Navigate(url, script_to_evaluate_on_commit=harness_script)
 
-  def _CheckTestCompletion(self):
+  def _CheckTestCompletion(self) -> None:
     self.tab.action_runner.WaitForJavaScriptCondition(
         'webglTestHarness._finished', timeout=self._GetTestTimeout())
     if self._crash_count != self.browser.GetSystemInfo().gpu \
@@ -328,11 +334,12 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     elif not self._DidWebGLTestSucceed(self.tab):
       self.fail(self._WebGLTestMessages(self.tab))
 
-  def _RunConformanceTest(self, test_path, _):
+  def _RunConformanceTest(self, test_path: str, _: WebGLTestArgs) -> None:
     self._NavigateTo(test_path, conformance_harness_script)
     self._CheckTestCompletion()
 
-  def _RunExtensionCoverageTest(self, test_path, test_args):
+  def _RunExtensionCoverageTest(self, test_path: str,
+                                test_args: WebGLTestArgs) -> None:
     self._NavigateTo(test_path, _GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window._loaded', timeout=self._GetTestTimeout())
@@ -347,7 +354,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         context_type=context_type)
     self._CheckTestCompletion()
 
-  def _RunExtensionTest(self, test_path, test_args):
+  def _RunExtensionTest(self, test_path: str, test_args: WebGLTestArgs) -> None:
     self._NavigateTo(test_path, _GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window._loaded', timeout=self._GetTestTimeout())
@@ -358,7 +365,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         context_type=context_type)
     self._CheckTestCompletion()
 
-  def _GetTestTimeout(self):
+  def _GetTestTimeout(self) -> int:
     timeout = 300
     if self.is_asan:
       # Asan runs much slower and needs a longer timeout
@@ -366,7 +373,8 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return timeout
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args):
+  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
+                          ) -> typing.List[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -422,7 +430,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return default_args
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     super(WebGLConformanceIntegrationTest, cls).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
@@ -439,16 +447,19 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   # Helper functions.
 
   @staticmethod
-  def _DidWebGLTestSucceed(tab):
+  def _DidWebGLTestSucceed(tab: ct.Tab) -> bool:
     return tab.EvaluateJavaScript('webglTestHarness._allTestSucceeded')
 
   @staticmethod
-  def _WebGLTestMessages(tab):
+  def _WebGLTestMessages(tab: ct.Tab) -> str:
     return tab.EvaluateJavaScript('webglTestHarness._messages')
 
   @classmethod
-  def _ParseTests(cls, path, version, webgl2_only, folder_min_version):
-    def _ParseTestNameAndVersions(line):
+  def _ParseTests(cls, path: str, version: str, webgl2_only: bool,
+                  folder_min_version: typing.Optional[str]) -> typing.List[str]:
+    def _ParseTestNameAndVersions(
+        line: str
+    ) -> typing.Tuple[str, typing.Optional[str], typing.Optional[str]]:
       """Parses any min/max versions and the test name on the given line.
 
       Args:
@@ -517,7 +528,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return test_paths
 
   @classmethod
-  def GetPlatformTags(cls, browser):
+  def GetPlatformTags(cls, browser: ct.Browser) -> typing.List[str]:
     tags = super(WebGLConformanceIntegrationTest, cls).GetPlatformTags(browser)
     tags.append('webgl-version-%d' % cls._webgl_version)
 
@@ -557,7 +568,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return tags
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     assert cls._webgl_version == 1 or cls._webgl_version == 2
     if cls._webgl_version == 1:
       file_name = 'webgl_conformance_expectations.txt'
@@ -570,7 +581,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
-def _GetGPUInfoErrorString(gpu_info):
+def _GetGPUInfoErrorString(gpu_info: telemetry_gpu_info.GPUInfo) -> str:
   primary_gpu = gpu_info.devices[0]
   error_str = 'primary gpu=' + primary_gpu.device_string
   if gpu_info.aux_attributes:
@@ -580,10 +591,11 @@ def _GetGPUInfoErrorString(gpu_info):
   return error_str
 
 
-def _GetExtensionHarnessScript():
+def _GetExtensionHarnessScript() -> str:
   return conformance_harness_script + extension_harness_additional_script
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

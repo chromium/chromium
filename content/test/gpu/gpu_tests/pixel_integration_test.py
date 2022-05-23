@@ -93,9 +93,9 @@ class PixelIntegrationTest(
       pages += namespace.HdrTestPages(cls.test_base_name)
     for p in pages:
       yield (p.name, posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
-                                    p.url), tuple([p]))
+                                    p.url), [p])
 
-  def RunActualGpuTest(self, test_path: str, *args) -> None:
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     page = args[0]
     # Some pixel tests require non-standard browser arguments. Need to
     # check before running each page that it can run in the current

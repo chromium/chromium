@@ -9,13 +9,19 @@ import re
 import shutil
 import sys
 import tempfile
+import typing
+import unittest
 
 from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests.skia_gold import gpu_skia_gold_properties
-from gpu_tests.skia_gold import gpu_skia_gold_session_manager
+from gpu_tests import pixel_test_pages
+from gpu_tests.skia_gold import gpu_skia_gold_properties as sgp
+from gpu_tests.skia_gold import gpu_skia_gold_session_manager as sgsm
+
+from skia_gold_common import skia_gold_session as sgs
 
 import gpu_path_util
 
@@ -34,15 +40,15 @@ SKIA_GOLD_CORPUS = 'chrome-gpu'
 class _ImageParameters():
   def __init__(self):
     # Parameters for cloud storage reference images.
-    self.vendor_id = None
-    self.device_id = None
-    self.vendor_string = None
-    self.device_string = None
-    self.msaa = False
-    self.model_name = None
-    self.driver_version = None
-    self.driver_vendor = None
-    self.display_server = None
+    self.vendor_id: typing.Optional[int] = None
+    self.device_id: typing.Optional[int] = None
+    self.vendor_string: typing.Optional[str] = None
+    self.device_string: typing.Optional[str] = None
+    self.msaa: bool = False
+    self.model_name: typing.Optional[str] = None
+    self.driver_version: typing.Optional[str] = None
+    self.driver_vendor: typing.Optional[str] = None
+    self.display_server: typing.Optional[str] = None
 
 
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
@@ -65,15 +71,15 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   _skia_gold_properties = None
 
   @classmethod
-  def SetParsedCommandLineOptions(cls, options):
+  def SetParsedCommandLineOptions(cls, options: ct.ParsedCmdArgs) -> None:
     cls._parsed_command_line_options = options
 
   @classmethod
-  def GetParsedCommandLineOptions(cls):
+  def GetParsedCommandLineOptions(cls) -> ct.ParsedCmdArgs:
     return cls._parsed_command_line_options
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     options = cls.GetParsedCommandLineOptions()
     color_profile_manager.ForceUntilExitSRGB(
         options.dont_restore_color_profile_after_test)
@@ -84,23 +90,22 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     cls._skia_gold_temp_dir = tempfile.mkdtemp()
 
   @classmethod
-  def GetSkiaGoldProperties(cls):
+  def GetSkiaGoldProperties(cls) -> sgp.GpuSkiaGoldProperties:
     if not cls._skia_gold_properties:
-      cls._skia_gold_properties =\
-          gpu_skia_gold_properties.GpuSkiaGoldProperties(
-              cls.GetParsedCommandLineOptions())
+      cls._skia_gold_properties = sgp.GpuSkiaGoldProperties(
+          cls.GetParsedCommandLineOptions())
     return cls._skia_gold_properties
 
   @classmethod
-  def GetSkiaGoldSessionManager(cls):
+  def GetSkiaGoldSessionManager(cls) -> sgsm.GpuSkiaGoldSessionManager:
     if not cls._skia_gold_session_manager:
-      cls._skia_gold_session_manager =\
-          gpu_skia_gold_session_manager.GpuSkiaGoldSessionManager(
-              cls._skia_gold_temp_dir, cls.GetSkiaGoldProperties())
+      cls._skia_gold_session_manager = sgsm.GpuSkiaGoldSessionManager(
+          cls._skia_gold_temp_dir, cls.GetSkiaGoldProperties())
     return cls._skia_gold_session_manager
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args):
+  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
+                          ) -> typing.List[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -119,18 +124,18 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return default_args
 
   @classmethod
-  def StopBrowser(cls):
+  def StopBrowser(cls) -> None:
     super(SkiaGoldIntegrationTestBase, cls).StopBrowser()
     cls.ResetGpuInfo()
 
   @classmethod
-  def TearDownProcess(cls):
+  def TearDownProcess(cls) -> None:
     super(SkiaGoldIntegrationTestBase, cls).TearDownProcess()
     shutil.rmtree(cls._skia_gold_temp_dir)
     cls._skia_gold_session_manager = None
 
   @classmethod
-  def AddCommandlineArgs(cls, parser):
+  def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(SkiaGoldIntegrationTestBase, cls).AddCommandlineArgs(parser)
     parser.add_option(
         '--git-revision', help='Chrome revision being tested.', default=None)
@@ -209,17 +214,18 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         'be used in case a Gold outage occurs and cannot be fixed quickly.')
 
   @classmethod
-  def ResetGpuInfo(cls):
+  def ResetGpuInfo(cls) -> None:
     cls._image_parameters = None
 
   @classmethod
-  def GetImageParameters(cls, page):
+  def GetImageParameters(cls, page: pixel_test_pages.PixelTestPage
+                         ) -> _ImageParameters:
     if not cls._image_parameters:
       cls._ComputeGpuInfo(page)
     return cls._image_parameters
 
   @classmethod
-  def _ComputeGpuInfo(cls, page):
+  def _ComputeGpuInfo(cls, page: pixel_test_pages.PixelTestPage) -> None:
     if cls._image_parameters:
       return
     browser = cls.browser
@@ -257,7 +263,11 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     params.display_server = gpu_helper.GetDisplayServer(browser.browser_type)
 
   @classmethod
-  def _UploadBitmapToCloudStorage(cls, bucket, name, bitmap, public=False):
+  def _UploadBitmapToCloudStorage(cls,
+                                  bucket: str,
+                                  name: str,
+                                  bitmap: typing.Any,
+                                  public: bool = False) -> None:
     # This sequence of steps works on all platforms to write a temporary
     # PNG to disk, following the pattern in bitmap_unittest.py. The key to
     # avoiding PermissionErrors seems to be to not actually try to write to
@@ -269,7 +279,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   # Not used consistently, but potentially useful for debugging issues on the
   # bots, so kept around for future use.
   @classmethod
-  def _UploadGoldErrorImageToCloudStorage(cls, image_name, screenshot):
+  def _UploadGoldErrorImageToCloudStorage(cls, image_name: str,
+                                          screenshot: ct.Screenshot) -> None:
     revision = cls.GetSkiaGoldProperties().git_revision
     machine_name = re.sub(r'\W+', '_',
                           cls.GetParsedCommandLineOptions().test_machine_name)
@@ -283,13 +294,14 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         public=True)
 
   @staticmethod
-  def _UrlToImageName(url):
+  def _UrlToImageName(url: str) -> str:
     image_name = re.sub(r'^(http|https|file)://(/*)', '', url)
     image_name = re.sub(r'\.\./', '', image_name)
     image_name = re.sub(r'(\.|/|-)', '_', image_name)
     return image_name
 
-  def GetGoldJsonKeys(self, page):
+  def GetGoldJsonKeys(self, page: pixel_test_pages.PixelTestPage
+                      ) -> typing.Dict[str, str]:
     """Get all the JSON metadata that will be passed to golctl."""
     img_params = self.GetImageParameters(page)
     # The frequently changing last part of the ANGLE driver version (revision of
@@ -335,7 +347,9 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
       gpu_keys['ignore'] = '1'
     return gpu_keys
 
-  def _UploadTestResultToSkiaGold(self, image_name, screenshot, page):
+  def _UploadTestResultToSkiaGold(self, image_name: str,
+                                  screenshot: ct.Screenshot,
+                                  page: pixel_test_pages.PixelTestPage) -> None:
     """Compares the given image using Skia Gold and uploads the result.
 
     No uploading is done if the test is being run in local run mode. Compares
@@ -417,7 +431,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
           'This probably just means that the test produced an image that has '
           'not been triaged as positive.')
 
-  def _ShouldReportGoldFailure(self, page):
+  def _ShouldReportGoldFailure(self,
+                               page: pixel_test_pages.PixelTestPage) -> bool:
     """Determines if a Gold failure should actually be surfaced.
 
     Args:
@@ -438,28 +453,29 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return True
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     del options
-    return []
+    raise NotImplementedError(
+        'GenerateGpuTests must be overridden in a subclass')
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     raise NotImplementedError(
         'RunActualGpuTest must be overridden in a subclass')
 
 
-def _ToHex(num):
+def _ToHex(num: str) -> str:
   return hex(int(num))
 
 
-def _ToHexOrNone(num):
+def _ToHexOrNone(num: typing.Optional[str]) -> str:
   return 'None' if num is None else _ToHex(num)
 
 
-def _ToNonEmptyStrOrNone(val):
+def _ToNonEmptyStrOrNone(val: typing.Optional[str]) -> str:
   return 'None' if val == '' else str(val)
 
 
-def _GracePeriodActive(page):
+def _GracePeriodActive(page: pixel_test_pages.PixelTestPage) -> bool:
   """Returns whether a grace period is currently active for a test.
 
   Args:
@@ -472,7 +488,7 @@ def _GracePeriodActive(page):
   return page.grace_period_end and date.today() <= page.grace_period_end
 
 
-def _StripAngleRevisionFromDriver(img_params):
+def _StripAngleRevisionFromDriver(img_params: _ImageParameters) -> None:
   """Strips the revision off the end of an ANGLE driver version.
 
   E.g. 2.1.0.b50541b2d6c4 -> 2.1.0
@@ -495,7 +511,7 @@ def _StripAngleRevisionFromDriver(img_params):
   img_params.driver_version = '.'.join(kept_parts)
 
 
-def _GetCombinedHardwareIdentifier(img_params):
+def _GetCombinedHardwareIdentifier(img_params: _ImageParameters) -> str:
   """Combine all relevant hardware identifiers into a single key.
 
   This makes Gold forwarding more precise by allowing us to forward explicit
@@ -512,7 +528,8 @@ def _GetCombinedHardwareIdentifier(img_params):
   return combined_hw_identifiers
 
 
-def _OutputLocalDiffFiles(gold_session, image_name):
+def _OutputLocalDiffFiles(gold_session: sgs.SkiaGoldSession,
+                          image_name: str) -> None:
   """Logs the local diff image files from the given SkiaGoldSession.
 
   Args:
@@ -530,6 +547,7 @@ def _OutputLocalDiffFiles(gold_session, image_name):
   logging.error('Diff image: %s', diff_file or failure_message)
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

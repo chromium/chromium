@@ -6,8 +6,11 @@ import os
 import sys
 import json
 import itertools
+import typing
+import unittest
 
 import gpu_path_util
+from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
 html_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test',
@@ -25,74 +28,74 @@ accelerations = ['prefer-hardware', 'prefer-software']
 
 class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
-  def Name(cls):
+  def Name(cls) -> str:
     return 'webcodecs'
 
 # pylint: disable=too-many-branches
 
   @classmethod
-  def GenerateGpuTests(cls, options):
+  def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
     tests = itertools.chain(cls.GenerateFrameTests(), cls.GenerateVideoTests(),
                             cls.GenerateAudioTests())
     for test in tests:
       yield test
 
   @classmethod
-  def GenerateFrameTests(cls):
+  def GenerateFrameTests(cls) -> ct.TestGenerator:
     for source_type in frame_sources:
-      yield ('WebCodecs_DrawImage_' + source_type, 'draw-image.html', ({
+      yield ('WebCodecs_DrawImage_' + source_type, 'draw-image.html', [{
           'source_type':
           source_type
-      }))
-      yield ('WebCodecs_TexImage2d_' + source_type, 'tex-image-2d.html', ({
+      }])
+      yield ('WebCodecs_TexImage2d_' + source_type, 'tex-image-2d.html', [{
           'source_type':
           source_type
-      }))
-      yield ('WebCodecs_copyTo_' + source_type, 'copyTo.html', ({
+      }])
+      yield ('WebCodecs_copyTo_' + source_type, 'copyTo.html', [{
           'source_type':
           source_type
-      }))
+      }])
 
   @classmethod
-  def GenerateAudioTests(cls):
-    yield ('WebCodecs_AudioEncoding_AAC_LC', 'audio-encode-decode.html', ({
+  def GenerateAudioTests(cls) -> ct.TestGenerator:
+    yield ('WebCodecs_AudioEncoding_AAC_LC', 'audio-encode-decode.html', [{
         'codec':
         'mp4a.67',
         'sample_rate':
         48000,
         'channels':
         2
-    }))
+    }])
 
   @classmethod
-  def GenerateVideoTests(cls):
+  def GenerateVideoTests(cls) -> ct.TestGenerator:
     yield ('WebCodecs_WebRTCPeerConnection_Window',
-           'webrtc-peer-connection.html', ({
+           'webrtc-peer-connection.html', [{
                'use_worker': False
-           }))
+           }])
     yield ('WebCodecs_WebRTCPeerConnection_Worker',
-           'webrtc-peer-connection.html', ({
+           'webrtc-peer-connection.html', [{
                'use_worker': True
-           }))
+           }])
 
     for codec in video_codecs:
-      yield ('WebCodecs_EncodeDecode_' + codec, 'encode-decode.html', ({
+      yield ('WebCodecs_EncodeDecode_' + codec, 'encode-decode.html', [{
           'codec':
           codec
-      }))
+      }])
 
     for source_type in frame_sources:
       for codec in video_codecs:
         for acc in accelerations:
           args = (source_type, codec, acc)
-          yield ('WebCodecs_Encode_%s_%s_%s' % args, 'encode.html', ({
+          yield ('WebCodecs_Encode_%s_%s_%s' % args, 'encode.html', [{
               'source_type':
               source_type,
               'codec':
               codec,
               'acceleration':
               acc
-          }))
+          }])
 
     for codec in video_codecs:
       for acc in accelerations:
@@ -101,35 +104,35 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
             source_type = 'offscreen'
             args = (source_type, codec, acc, bitrate_mode, latency_mode)
             yield ('WebCodecs_EncodingModes_%s_%s_%s_%s_%s' % args,
-                   'encoding-modes.html', ({
+                   'encoding-modes.html', [{
                        'source_type': source_type,
                        'codec': codec,
                        'acceleration': acc,
                        'bitrate_mode': bitrate_mode,
                        'latency_mode': latency_mode
-                   }))
+                   }])
 
     for codec in video_codecs:
       for layers in [2, 3]:
         args = (codec, layers)
-        yield ('WebCodecs_SVC_%s_layers_%d' % args, 'svc.html', ({
+        yield ('WebCodecs_SVC_%s_layers_%d' % args, 'svc.html', [{
             'codec':
             codec,
             'layers':
             layers
-        }))
+        }])
 
     for codec in video_codecs:
       for acc in accelerations:
         args = (codec, acc)
         yield ('WebCodecs_EncodeColorSpace_%s_%s' % args,
-               'encode-color-space.html', ({
+               'encode-color-space.html', [{
                    'codec': codec,
                    'acceleration': acc
-               }))
+               }])
 # pylint: enable=too-many-branches
 
-  def RunActualGpuTest(self, test_path, *args):
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     url = self.UrlOfStaticFilePath(html_path + '/' + test_path)
     tab = self.tab
     arg_obj = args[0]
@@ -146,11 +149,11 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Test failure:' + tab.EvaluateJavaScript('TEST.summary()'))
 
   @staticmethod
-  def CameraCanShowFourColors(os_name):
+  def CameraCanShowFourColors(os_name: str) -> bool:
     return os_name not in ('android', 'chromeos')
 
   @classmethod
-  def SetUpProcess(cls):
+  def SetUpProcess(cls) -> None:
     super(WebCodecsIntegrationTest, cls).SetUpProcess()
     args = [
         '--use-fake-device-for-media-stream',
@@ -169,13 +172,14 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([html_path, data_path])
 
   @classmethod
-  def ExpectationsFiles(cls):
+  def ExpectationsFiles(cls) -> typing.List[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'webcodecs_expectations.txt')
     ]
 
 
-def load_tests(loader, tests, pattern):
+def load_tests(loader: unittest.TestLoader, tests: typing.Any,
+               pattern: typing.Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])
