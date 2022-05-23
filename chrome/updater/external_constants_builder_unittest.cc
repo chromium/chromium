@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/external_constants_builder.h"
@@ -70,14 +71,20 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
+  base::Value::DictStorage group_policies;
+  group_policies["a"] = base::Value(1);
+  group_policies["b"] = base::Value(2);
+
   ExternalConstantsBuilder builder;
   builder.SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
       .SetUseCUP(false)
       .SetInitialDelay(123)
-      .SetServerKeepAliveSeconds(2);
+      .SetServerKeepAliveSeconds(2)
+      .SetGroupPolicies(group_policies);
   EXPECT_TRUE(builder.Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -92,6 +99,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
 
   EXPECT_EQ(verifier->InitialDelay(), 123);
   EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 2);
+  EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
@@ -114,6 +122,7 @@ TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
@@ -127,6 +136,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearUseCUP()
                   .ClearInitialDelay()
                   .ClearServerKeepAliveSeconds()
+                  .ClearGroupPolicies()
                   .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -140,15 +150,20 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
 
   EXPECT_EQ(verifier->InitialDelay(), kInitialDelay);
   EXPECT_EQ(verifier->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
+  base::Value::DictStorage group_policies;
+  group_policies["a"] = base::Value(1);
+
   EXPECT_TRUE(
       ExternalConstantsBuilder()
           .SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(true)
           .SetInitialDelay(123.4)
           .SetServerKeepAliveSeconds(2)
+          .SetGroupPolicies(group_policies)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
           .SetUseCUP(false)
           .SetInitialDelay(937.6)
@@ -167,16 +182,23 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
 
   EXPECT_EQ(verifier->InitialDelay(), 937.6);
   EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
+  EXPECT_EQ(verifier->GroupPolicies().size(), 1U);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ExternalConstantsBuilder builder;
+
+  base::Value::DictStorage group_policies;
+  group_policies["a"] = base::Value(1);
+  group_policies["b"] = base::Value(2);
+
   EXPECT_TRUE(
       builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
           .SetUseCUP(false)
           .SetInitialDelay(123.4)
           .SetServerKeepAliveSeconds(3)
           .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
+          .SetGroupPolicies(group_policies)
           .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -191,11 +213,16 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
 
   EXPECT_EQ(verifier->InitialDelay(), 123.4);
   EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
+  EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+
+  base::Value::DictStorage group_policies2;
+  group_policies2["b"] = base::Value(2);
 
   // But now we can use the builder again:
   EXPECT_TRUE(builder.SetInitialDelay(92.3)
                   .SetServerKeepAliveSeconds(4)
                   .ClearUpdateURL()
+                  .SetGroupPolicies(group_policies2)
                   .Overwrite());
 
   // We need a new overrider to verify because it only loads once.
@@ -212,6 +239,62 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier2->InitialDelay(),
             92.3);  // Updated; update should be seen.
   EXPECT_EQ(verifier2->ServerKeepAliveSeconds(), 4);
+  EXPECT_EQ(verifier2->GroupPolicies().size(), 1U);
+}
+
+TEST_F(ExternalConstantsBuilderTests, TestModify) {
+  ExternalConstantsBuilder builder;
+
+  base::Value::DictStorage group_policies;
+  group_policies["a"] = base::Value(1);
+  group_policies["b"] = base::Value(2);
+
+  EXPECT_TRUE(
+      builder.SetUpdateURL(std::vector<std::string>{"https://www.google.com"})
+          .SetUseCUP(false)
+          .SetInitialDelay(123.4)
+          .SetServerKeepAliveSeconds(3)
+          .SetUpdateURL(std::vector<std::string>{"https://www.example.com"})
+          .SetGroupPolicies(group_policies)
+          .Overwrite());
+
+  scoped_refptr<ExternalConstantsOverrider> verifier =
+      ExternalConstantsOverrider::FromDefaultJSONFile(
+          CreateDefaultExternalConstants());
+
+  EXPECT_FALSE(verifier->UseCUP());
+
+  std::vector<GURL> urls = verifier->UpdateURL();
+  ASSERT_EQ(urls.size(), 1ul);
+  EXPECT_EQ(urls[0], GURL("https://www.example.com"));
+
+  EXPECT_EQ(verifier->InitialDelay(), 123.4);
+  EXPECT_EQ(verifier->ServerKeepAliveSeconds(), 3);
+  EXPECT_EQ(verifier->GroupPolicies().size(), 2U);
+
+  // Now we use a new builder to modify just the group policies.
+  ExternalConstantsBuilder builder2;
+
+  base::Value::DictStorage group_policies2;
+  group_policies2["b"] = base::Value(2);
+
+  EXPECT_TRUE(builder2.SetGroupPolicies(group_policies2).Modify());
+
+  // We need a new overrider to verify because it only loads once.
+  scoped_refptr<ExternalConstantsOverrider> verifier2 =
+      ExternalConstantsOverrider::FromDefaultJSONFile(
+          CreateDefaultExternalConstants());
+
+  // Only the group policies are different.
+  EXPECT_EQ(verifier2->GroupPolicies().size(), 1U);
+
+  // All the values below are unchanged.
+  EXPECT_FALSE(verifier2->UseCUP());
+  urls = verifier2->UpdateURL();
+  ASSERT_EQ(urls.size(), 1ul);
+  EXPECT_EQ(urls[0], GURL("https://www.example.com"));
+  EXPECT_EQ(verifier2->InitialDelay(), 123.4);
+  EXPECT_EQ(verifier2->ServerKeepAliveSeconds(), 3);
 }
 
 }  // namespace updater

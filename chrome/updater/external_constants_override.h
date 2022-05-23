@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
 #include "chrome/updater/external_constants.h"
 
 class GURL;
@@ -45,6 +46,7 @@ class ExternalConstantsOverrider : public ExternalConstants {
   double InitialDelay() const override;
   int ServerKeepAliveSeconds() const override;
   crx_file::VerifierFormat CrxVerifierFormat() const override;
+  base::Value::DictStorage GroupPolicies() const override;
 
  private:
   const base::flat_map<std::string, base::Value> override_values_;

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #include "base/test/test_suite.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
@@ -31,6 +33,7 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -53,6 +56,12 @@ using ::testing::UnitTest;
 constexpr int kSuccess = 0;
 constexpr int kUnknownSwitch = 101;
 constexpr int kBadCommand = 102;
+
+base::Value::DictStorage DictStorageFromString(const std::string& values) {
+  absl::optional<base::Value> results_value = base::JSONReader::Read(values);
+  EXPECT_TRUE(results_value);
+  return results_value->Clone().TakeDictDeprecated();
+}
 
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
@@ -138,6 +147,19 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
+// Overload for base::Value::DictStorage switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::Value::DictStorage&, Args...)>
+        callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(DictStorageFromString(flag), std::move(args)...);
+      }));
+}
+
 template <typename Arg, typename... RemainingArgs>
 base::RepeatingCallback<bool(RemainingArgs...)> WithArg(
     Arg arg,
@@ -198,6 +220,7 @@ void AppTestHelper::FirstTaskRun() {
     // then use the With* helper functions to provide its arguments.
     {"clean", WithSystemScope(Wrap(&Clean))},
     {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
+    {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
     {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
     {"expect_registered",
      WithSwitch("app_id", WithSystemScope(Wrap(&ExpectRegistered)))},

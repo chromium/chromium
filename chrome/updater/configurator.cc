@@ -57,7 +57,7 @@ namespace updater {
 Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
                            scoped_refptr<ExternalConstants> external_constants)
     : prefs_(prefs),
-      policy_service_(PolicyService::Create()),
+      policy_service_(PolicyService::Create(external_constants)),
       external_constants_(external_constants),
       activity_data_service_(
           std::make_unique<ActivityDataService>(GetUpdaterScope())),

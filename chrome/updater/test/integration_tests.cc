@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -133,6 +134,10 @@ class IntegrationTest : public ::testing::Test {
   void ExpectClean() { test_commands_->ExpectClean(); }
 
   void EnterTestMode(const GURL& url) { test_commands_->EnterTestMode(url); }
+
+  void SetGroupPolicies(const base::Value::DictStorage& values) {
+    test_commands_->SetGroupPolicies(values);
+  }
 
   void ExpectVersionActive(const std::string& version) {
     test_commands_->ExpectVersionActive(version);
@@ -484,34 +489,22 @@ TEST_F(IntegrationTest, LegacyUpdate3Web) {
   ExpectNoUpdateSequence(&test_server, kAppId);
   ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_NO_UPDATE, S_OK);
 
+  base::Value::DictStorage group_policies;
+  group_policies["Updatetest1"] = base::Value(kPolicyAutomaticUpdatesOnly);
+  SetGroupPolicies(group_policies);
+  ExpectLegacyUpdate3WebSucceeds(
+      kAppId, STATE_ERROR, GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL);
+
+  group_policies["Updatetest1"] = base::Value(kPolicyDisabled);
+  SetGroupPolicies(group_policies);
+  ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_ERROR,
+                                 GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
+
+  group_policies.clear();
+  SetGroupPolicies(group_policies);
   ExpectUpdateSequence(&test_server, kAppId, "", base::Version("0.1"),
                        base::Version("0.2"));
   ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_INSTALL_COMPLETE, S_OK);
-
-  // TODO(crbug.com/1272853) - Need administrative access to be able to write
-  // under the policies key.
-  if (::IsUserAnAdmin()) {
-    base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                          Wow6432(KEY_ALL_ACCESS));
-
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.WriteValue(
-                  base::StrCat({L"Update", base::UTF8ToWide(kAppId)}).c_str(),
-                  kPolicyAutomaticUpdatesOnly));
-    ExpectLegacyUpdate3WebSucceeds(
-        kAppId, STATE_ERROR, GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL);
-
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.WriteValue(
-                  base::StrCat({L"Update", base::UTF8ToWide(kAppId)}).c_str(),
-                  static_cast<DWORD>(kPolicyDisabled)));
-    ExpectLegacyUpdate3WebSucceeds(kAppId, STATE_ERROR,
-                                   GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
-
-    EXPECT_EQ(ERROR_SUCCESS,
-              base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(DELETE))
-                  .DeleteKey(UPDATER_POLICIES_KEY));
-  }
 
   Uninstall();
 }

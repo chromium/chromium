@@ -638,6 +638,8 @@ overridden by the execution environment:
 *   `use_cup`: Whether CUP is used at all.
 *   `cup_public_key`: An unarmored PEM-encoded ASN.1 SubjectPublicKeyInfo with
     the ecPublicKey algorithm and containing a named elliptic curve.
+*   `group_policies`: Allows setting group policies, such as install and update
+    policies.
 
 Windows: these overrides exist in registry, under
 `HKLM\Software\{Company}\Update\Clients\ClientState\UpdateDev`.

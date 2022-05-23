@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <shlobj.h>
 #include <wrl/client.h>
 
 #include <regstr.h>
@@ -238,10 +239,12 @@ void CheckInstallation(UpdaterScope scope,
                         .HasSwitch(kWakeSwitch));
       }
     } else {
-      for (const wchar_t* key :
-           {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
-            UPDATER_POLICIES_KEY}) {
-        EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
+      if (::IsUserAnAdmin()) {
+        for (const wchar_t* key :
+             {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
+              UPDATER_POLICIES_KEY}) {
+          EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
+        }
       }
 
       EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
@@ -364,9 +367,13 @@ void Clean(UpdaterScope scope) {
   for (const wchar_t* key : {CLIENT_STATE_KEY, CLIENTS_KEY, UPDATER_KEY}) {
     EXPECT_TRUE(DeleteRegKey(root, key));
   }
-  for (const wchar_t* key : {kRegKeyCompanyCloudManagement,
-                             kRegKeyCompanyEnrollment, UPDATER_POLICIES_KEY}) {
-    EXPECT_TRUE(DeleteRegKey(HKEY_LOCAL_MACHINE, key));
+
+  if (::IsUserAnAdmin()) {
+    for (const wchar_t* key :
+         {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
+          UPDATER_POLICIES_KEY}) {
+      EXPECT_TRUE(DeleteRegKey(HKEY_LOCAL_MACHINE, key));
+    }
   }
 
   for (const CLSID& clsid :
@@ -423,7 +430,7 @@ void EnterTestMode(const GURL& url) {
                   .SetUseCUP(false)
                   .SetInitialDelay(0.1)
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
-                  .Overwrite());
+                  .Modify());
 }
 
 void ExpectInstalled(UpdaterScope scope) {

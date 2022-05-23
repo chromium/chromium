@@ -65,6 +65,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
+  void SetGroupPolicies(const base::Value::DictStorage& values) const override {
+    updater::test::SetGroupPolicies(values);
+  }
+
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const std::string& install_data_index,

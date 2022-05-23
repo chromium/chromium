@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/manager.h"
 
 namespace updater {
@@ -15,7 +17,8 @@ namespace updater {
 // The GroupPolicyManager returns policies for domain-joined machines.
 class GroupPolicyManager : public PolicyManagerInterface {
  public:
-  GroupPolicyManager();
+  explicit GroupPolicyManager(
+      scoped_refptr<ExternalConstants> external_constants);
   GroupPolicyManager(const GroupPolicyManager&) = delete;
   GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
   ~GroupPolicyManager() override;
@@ -49,11 +52,13 @@ class GroupPolicyManager : public PolicyManagerInterface {
   bool GetProxyServer(std::string* proxy_server) const override;
 
  private:
+  bool IsManagedInternal() const;
   void LoadAllPolicies();
   bool GetIntPolicy(const std::string& key, int* value) const;
   bool GetStringPolicy(const std::string& key, std::string* value) const;
 
   base::Value policies_;
+  const base::Value external_constants_group_policies_;
 };
 
 }  // namespace updater

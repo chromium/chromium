@@ -11,10 +11,12 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -36,6 +38,16 @@
 
 namespace updater {
 namespace test {
+
+namespace {
+
+std::string StringFromDictStorage(const base::Value::DictStorage& values) {
+  std::string values_string;
+  EXPECT_TRUE(base::JSONWriter::Write(base::Value(values), &values_string));
+  return values_string;
+}
+
+}  // namespace
 
 class IntegrationTestCommandsSystem : public IntegrationTestCommands {
  public:
@@ -66,6 +78,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& url) const override {
     RunCommand("enter_test_mode", {Param("url", url.spec())});
+  }
+
+  void SetGroupPolicies(const base::Value::DictStorage& values) const override {
+    RunCommand("set_group_policies",
+               {Param("values", StringFromDictStorage(values))});
   }
 
   void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
