@@ -5010,24 +5010,6 @@
           'all',
         ],
       },
-      'Mac10.11 Tests': {
-        'mixins': [
-            'mac_10.11',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
-      'Mac10.12 Tests': {
-        'mixins': [
-            'mac_10.12',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
       'Mac10.13 Tests': {
         'mixins': [
             'mac_10.13',
@@ -5557,62 +5539,6 @@
         },
         'test_suites': {
           'gtest_tests': 'updater_gtests_mac',
-        },
-      },
-      'mac10.11-updater-tester-dbg': {
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
-              'os': 'Mac-10.11',
-            }
-          ]
-        },
-      },
-      'mac10.11-updater-tester-rel': {
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-       'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
-              'os': 'Mac-10.11',
-            }
-          ]
-        },
-      },
-      'mac10.12-updater-tester-dbg': {
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
-              'os': 'Mac-10.12',
-            }
-          ]
-        },
-      },
-      'mac10.12-updater-tester-rel': {
-        'test_suites': {
-          'gtest_tests': 'updater_gtests_mac',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'pool': 'chromium.updater.mac',
-              'os': 'Mac-10.12',
-            }
-          ]
         },
       },
       'mac10.13-updater-tester-dbg': {

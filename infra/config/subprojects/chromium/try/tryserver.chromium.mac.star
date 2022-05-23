@@ -140,22 +140,6 @@ try_.compilator_builder(
 # they are built, hence no additional dimension is specified.
 # The 10.xx version translates to which bots will run isolated tests.
 try_.builder(
-    name = "mac_chromium_10.11_rel_ng",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac10.11 Tests",
-    ],
-)
-
-try_.builder(
-    name = "mac_chromium_10.12_rel_ng",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac10.12 Tests",
-    ],
-)
-
-try_.builder(
     name = "mac_chromium_10.13_rel_ng",
     mirrors = [
         "ci/Mac Builder",

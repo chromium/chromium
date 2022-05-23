@@ -187,66 +187,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Mac10.11 Tests",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-        build_gs_bucket = "chromium-mac-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release",
-        short_name = "11",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    # TODO crbug/1325672 Removing as builder soon to be decomm'd
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = ["ci/Mac Builder"],
-)
-
-ci.thin_tester(
-    name = "Mac10.12 Tests",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-                "goma_use_local",  # to mitigate compile step timeout (crbug.com/1056935)
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-        build_gs_bucket = "chromium-mac-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release",
-        short_name = "12",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    # TODO crbug/1325672 Removing as builder soon to be decomm'd
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = ["ci/Mac Builder"],
-)
-
-ci.thin_tester(
     name = "Mac10.13 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder_spec = builder_config.builder_spec(
