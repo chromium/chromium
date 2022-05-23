@@ -112,6 +112,26 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 #define EXPECT_WV_PROPRIETARY EXPECT_UNSUPPORTED
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
+// For Widevine key system with software secure robustness, persistent license
+// session is supported on Windows and Mac. On ChromeOS, it is supported when
+// the protected media identifier permission is allowed. See
+// kUnsafelyAllowProtectedMediaIdentifierForDomain used below.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define EXPECT_WV_SW_SECURE_PERSISTENT_SESSION EXPECT_WV
+#else
+#define EXPECT_WV_SW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
+#endif
+
+// For Widevine key system with hardware secure robustness, persistent license
+// session is only supported on ChromeOS when the protected media identifier
+// permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
+// used below.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_WV
+#else
+#define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
+#endif
+
 }  // namespace
 
 class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
@@ -348,9 +368,11 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   }
 
   std::string IsSessionTypeSupported(const std::string& key_system,
-                                     SessionType session_type) {
+                                     SessionType session_type,
+                                     const char* robustness = nullptr) {
     return IsSupportedByKeySystem(key_system, kVideoWebMMimeType,
-                                  video_webm_codecs(), session_type);
+                                  video_webm_codecs(), session_type,
+                                  robustness);
   }
 
   std::string IsAudioRobustnessSupported(const std::string& key_system,
@@ -1218,18 +1240,8 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
   EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
 
   // Persistent license session support varies by platform.
-  auto result =
-      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // Persistent license session supported by Widevine key system on Windows and
-  // Mac. On ChromeOS, it is supported when the protected media identifier
-  // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
-  // used above.
-  EXPECT_WV(result);
-#else
-  EXPECT_UNSUPPORTED(result);
-#endif
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(
+      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
@@ -1433,6 +1445,31 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   EXPECT_UNSUPPORTED(
       IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9", "HW_SECURE_ALL"));
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
+                       SessionType) {
+  // Temporary session always supported.
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "SW_SECURE_DECODE"));
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "HW_SECURE_CRYPTO"));
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary,
+                                   "HW_SECURE_ALL"));
+
+  // Persistent session for software secure Widevine is platform specific.
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "SW_SECURE_CRYPTO"));
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "SW_SECURE_DECODE"));
+
+  // Persistent session for hardware secure Widevine is platform specific.
+  EXPECT_WV_HW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "HW_SECURE_CRYPTO"));
+  EXPECT_WV_HW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
+      kWidevine, SessionType::kPersistentLicense, "HW_SECURE_ALL"));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,

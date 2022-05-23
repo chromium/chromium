@@ -36,26 +36,9 @@ namespace {
 using ::media::EmeConfigRule;
 using ::media::EmeFeatureSupport;
 using ::media::EmeMediaType;
-using ::media::EmeSessionTypeSupport;
 using ::media::EncryptionScheme;
 using EmeFeatureRequirement = WebMediaKeySystemConfiguration::Requirement;
 using EmeEncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
-
-EmeConfigRule GetSessionTypeConfigRule(EmeSessionTypeSupport support) {
-  switch (support) {
-    case EmeSessionTypeSupport::INVALID:
-      NOTREACHED();
-      return EmeConfigRule::NOT_SUPPORTED;
-    case EmeSessionTypeSupport::NOT_SUPPORTED:
-      return EmeConfigRule::NOT_SUPPORTED;
-    case EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER:
-      return EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED;
-    case EmeSessionTypeSupport::SUPPORTED:
-      return EmeConfigRule::PERSISTENCE_REQUIRED;
-  }
-  NOTREACHED();
-  return EmeConfigRule::NOT_SUPPORTED;
-}
 
 EmeConfigRule GetDistinctiveIdentifierConfigRule(
     EmeFeatureSupport support,
@@ -756,8 +739,8 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     // 13.1. Let session type be the value.
     WebEncryptedMediaSessionType session_type = session_types[i];
     if (session_type == WebEncryptedMediaSessionType::kUnknown) {
-      DVLOG(2) << "Rejecting requested configuration because "
-               << "session type was not recognized.";
+      DVLOG(2) << "Rejecting requested configuration because the session type "
+                  "was not recognized.";
       return CONFIGURATION_NOT_SUPPORTED;
     }
 
@@ -767,8 +750,8 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     if (accumulated_configuration->persistent_state ==
             EmeFeatureRequirement::kNotAllowed &&
         IsPersistentSessionType(session_type)) {
-      DVLOG(2) << "Rejecting requested configuration because persistent "
-                  "sessions are not allowed.";
+      DVLOG(2) << "Rejecting requested configuration because persistent state "
+                  "is not allowed.";
       return CONFIGURATION_NOT_SUPPORTED;
     }
 
@@ -784,8 +767,8 @@ KeySystemConfigSelector::GetSupportedConfiguration(
         session_type_rule = EmeConfigRule::SUPPORTED;
         break;
       case WebEncryptedMediaSessionType::kPersistentLicense:
-        session_type_rule = GetSessionTypeConfigRule(
-            key_systems_->GetPersistentLicenseSessionSupport(key_system));
+        session_type_rule =
+            key_systems_->GetPersistentLicenseSessionSupport(key_system);
         break;
     }
 

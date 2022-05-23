@@ -65,8 +65,13 @@ class MEDIA_EXPORT KeySystemProperties {
       const bool* hw_secure_requirement) const = 0;
 
   // Returns the support this key system provides for persistent-license
-  // sessions.
-  virtual EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const = 0;
+  // sessions. The returned `EmeConfigRule` (if supported) assumes persistence
+  // requirement, which is enforced by `KeySystemConfigSelector`. Therefore, the
+  // returned `EmeConfigRule` doesn't need to specify persistence requirement
+  // explicitly.
+  // TODO(crbug.com/1324262): Refactor `EmeConfigRule` to make it easier to
+  // express combinations of requirements.
+  virtual EmeConfigRule GetPersistentLicenseSessionSupport() const = 0;
 
   // Returns the support this key system provides for persistent state.
   virtual EmeFeatureSupport GetPersistentStateSupport() const = 0;

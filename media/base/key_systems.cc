@@ -177,8 +177,8 @@ class ClearKeyProperties : public KeySystemProperties {
                                         : EmeConfigRule::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const final {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
+  EmeConfigRule GetPersistentLicenseSessionSupport() const final {
+    return EmeConfigRule::NOT_SUPPORTED;
   }
 
   EmeFeatureSupport GetPersistentStateSupport() const final {
@@ -295,7 +295,7 @@ class KeySystemsImpl : public KeySystems {
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const override;
-  EmeSessionTypeSupport GetPersistentLicenseSessionSupport(
+  EmeConfigRule GetPersistentLicenseSessionSupport(
       const std::string& key_system) const override;
   EmeFeatureSupport GetPersistentStateSupport(
       const std::string& key_system) const override;
@@ -485,8 +485,6 @@ void KeySystemsImpl::ProcessSupportedKeySystems(
 
   for (auto& properties : key_systems) {
     DCHECK(!properties->GetBaseKeySystemName().empty());
-    DCHECK(properties->GetPersistentLicenseSessionSupport() !=
-           EmeSessionTypeSupport::INVALID);
     DCHECK(properties->GetPersistentStateSupport() !=
            EmeFeatureSupport::INVALID);
     DCHECK(properties->GetDistinctiveIdentifierSupport() !=
@@ -504,15 +502,7 @@ void KeySystemsImpl::ProcessSupportedKeySystems(
     if (properties->GetPersistentStateSupport() ==
         EmeFeatureSupport::NOT_SUPPORTED) {
       DCHECK(properties->GetPersistentLicenseSessionSupport() ==
-             EmeSessionTypeSupport::NOT_SUPPORTED);
-    }
-
-    // If distinctive identifiers are not supported, then no other features can
-    // require them.
-    if (properties->GetDistinctiveIdentifierSupport() ==
-        EmeFeatureSupport::NOT_SUPPORTED) {
-      DCHECK(properties->GetPersistentLicenseSessionSupport() !=
-             EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER);
+             EmeConfigRule::NOT_SUPPORTED);
     }
 
     if (!CanBlock(*properties)) {
@@ -775,14 +765,14 @@ EmeConfigRule KeySystemsImpl::GetRobustnessConfigRule(
       key_system, media_type, requested_robustness, hw_secure_requirement);
 }
 
-EmeSessionTypeSupport KeySystemsImpl::GetPersistentLicenseSessionSupport(
+EmeConfigRule KeySystemsImpl::GetPersistentLicenseSessionSupport(
     const std::string& key_system) const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* properties = GetKeySystemProperties(key_system);
   if (!properties) {
     NOTREACHED();
-    return EmeSessionTypeSupport::INVALID;
+    return EmeConfigRule::NOT_SUPPORTED;
   }
 
   return properties->GetPersistentLicenseSessionSupport();
