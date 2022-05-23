@@ -518,7 +518,7 @@ class FileURLLoader : public network::mojom::URLLoader {
 #if BUILDFLAG(IS_WIN)
     base::FilePath shortcut_target;
     if (link_following_policy == LinkFollowingPolicy::kFollow &&
-        base::LowerCaseEqualsASCII(path.Extension(), ".lnk") &&
+        base::EqualsCaseInsensitiveASCII(path.Extension(), ".lnk") &&
         base::win::ResolveShortcut(path, &shortcut_target, nullptr)) {
       // Follow Windows shortcuts
       redirect_data_ = std::make_unique<RedirectData>();
