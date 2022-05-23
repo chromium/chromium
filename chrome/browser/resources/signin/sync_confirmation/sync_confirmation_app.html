@@ -113,6 +113,28 @@
     width: 512px;
   }
 
+<if expr="chromeos_lacros">
+  :host {
+    --content-container-margin-top: 72px;
+    --content-container-title-font-size: 24px;
+    --content-container-title-font-weight: 500;
+    --content-container-title-line-height: 32px;
+    --confirmation-description-font-size: 14px;
+    --confirmation-description-line-height: 20px;
+    --theme-frame-color: transparent;
+  }
+</if>
+
+<if expr="not chromeos_lacros">
+  :host {
+    --content-container-title-font-size: 1.85em;
+    --content-container-title-font-weight: normal;
+    --content-container-title-line-height: auto;
+    --confirmation-description-font-size: var(--text-font-size);
+    --confirmation-description-line-height: auto;
+  }
+</if>
+
   /* Makes the absolutely positioned footer relative to confirmationContainer
      which may be larger than the window. */
   #confirmationContainer {
@@ -193,12 +215,14 @@
   }
 
   #contentContainer h2 {
-    font-size: 1.85em;
-    font-weight: normal;
+    font-size: var(--content-container-title-font-size);
+    font-weight: var(--content-container-title-font-weight);
+    line-height: var(--content-container-title-line-height);
   }
 
   #confirmationDescription {
-    font-size: var(--text-font-size);
+    font-size: var(--confirmation-description-font-size);
+    line-height: var(--confirmation-description-line-height);
     margin-inline: var(--confirmation-description-margin-inline);
     margin-top: 16px;
     max-width: 516px;
@@ -297,7 +321,11 @@
 
 <template is="dom-if" if="[[isNewDesign_]]">
   <div id="confirmationContainer">
-    <div id="headerContainer" style$="--theme-frame-color:[[highlightColor_]]">
+    <div id="headerContainer"
+    <if expr="not chromeos_lacros">
+      style$="--theme-frame-color:[[highlightColor_]]"
+    </if>
+    >
       <div id="syncPromoBanner"></div>
       <div id="avatarContainer">
         <img id="avatar" alt="" src="[[accountImageSrc_]]">

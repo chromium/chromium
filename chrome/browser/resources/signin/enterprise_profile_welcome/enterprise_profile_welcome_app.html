@@ -29,6 +29,43 @@
     width: 512px;
   }
 
+<if expr="chromeos_lacros">
+  :host {
+    --background-image:
+        url(images/lacros_enterprise_profile_welcome_illustration.svg);
+    --content-container-font-size: 14px;
+    --content-container-line-height: 20px;
+    --content-container-margin-top: 72px;
+    --content-container-width: 382px;
+    --content-container-title-font-size: 24px;
+    --content-container-title-font-weight: 500;
+    --content-container-title-line-height: 32px;
+    --info-box-bottom: 0;
+    --info-box-position: absolute;
+    --info-box-border: none;
+    --info-box-border-radius: 0px;
+    --info-box-font-size: 11px;
+    --info-box-line-height: 16px;
+  }
+</if>
+
+<if expr="not chromeos_lacros">
+  :host {
+    --background-image: url(images/enterprise_profile_welcome_illustration.svg);
+    --content-container-font-size: auto;
+    --content-container-line-height: auto;
+    --content-container-width: auto;
+    --content-container-title-font-size: 1.85em;
+    --content-container-title-font-weight: normal;
+    --content-container-title-line-height: auto;
+    --info-box-position: auto;
+    --info-box-border: 1px solid var(--google-grey-200);
+    --info-box-border-radius: 8px;
+    --info-box-font-size: auto;
+    --info-box-line-height: auto;
+  }
+</if>
+
   .secondary {
     color: var(--cr-secondary-text-color);
   }
@@ -49,7 +86,7 @@
   }
 
   #banner {
-    background-image: url(images/enterprise_profile_welcome_illustration.svg);
+    background-image: var(--background-image);
     background-position: center;
     background-repeat: no-repeat;
     background-size: var(--banner-size);
@@ -102,29 +139,37 @@
   }
 
   #contentContainer {
+    font-size: var(--content-container-font-size);
+    line-height: var(--content-container-line-height);
     margin-bottom: var(--content-container-margin-bottom);
     margin-inline: auto;
     margin-top: var(--content-container-margin-top);
     text-align: center;
+    width: var(--content-container-width);
   }
 
   #contentContainer h2 {
-    font-size: 1.85em;
-    font-weight: normal;
+    font-size: var(--content-container-title-font-size);
+    font-weight: var(--content-container-title-font-weight);
+    line-height: var(--content-container-title-line-height);
     margin-bottom: 8px;
   }
 
   .info-box {
     align-items: center;
-    border: 1px solid var(--google-grey-200);
-    border-radius: 8px;
+    border: var(--info-box-border);
+    border-radius: var(--info-box-border-radius);
+    bottom: var(--info-box-bottom);
     color: var(--google-grey-700);
     display: flex;
     flex-direction: row;
+    font-size: var(--info-box-font-size);
+    line-height: var(--info-box-line-height);
     margin-inline: var(--info-box-margin-inline);
     margin-top: var(--info-box-margin-top);
     padding-block: 12px;
     padding-inline-end: 18px;
+    position: var(--info-box-position);
     width: var(--info-box-width);
   }
 
@@ -175,7 +220,6 @@
     }
 
     .info-box {
-      border-color: var(--google-grey-600);
       color: var(--google-grey-100);
     }
 
@@ -206,6 +250,7 @@
       [[subtitle_]]
     </p>
   </template>
+  <if expr="not chromeos_lacros">
   <template is="dom-if" if="[[enterpriseInfo_]]">
     <div class="info-box">
       <div class="icon-container">
@@ -216,7 +261,20 @@
       </p>
     </div>
   </template>
+  </if>
 </div>
+<if expr="chromeos_lacros">
+<template is="dom-if" if="[[enterpriseInfo_]]">
+  <div class="info-box">
+    <div class="icon-container">
+      <iron-icon icon="cr:domain"></iron-icon>
+    </div>
+    <p id="enterpriseInfo" >
+      [[enterpriseInfo_]]
+    </p>
+  </div>
+</template>
+</if>
 <template is="dom-if" if="[[showLinkDataCheckbox_]]">
   <cr-checkbox id="linkData" checked="{{linkData_}}">
     <div>$i18n{linkDataText}</div>

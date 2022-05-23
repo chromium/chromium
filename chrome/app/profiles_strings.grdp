@@ -698,13 +698,13 @@
         Welcome to Chrome
       </message>
       <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE" desc="Subtitle of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
-        Access your Chrome browser stuff from <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>
+        Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>
       </message>
       <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL" desc="Label of the 'next' button of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
         Let's go
       </message>
       <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the landing screen in first run experience for the primary profile, informing that the session is managed by an administrator.">
-        Your account is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Your administrator can see and edit this Chrome browser profile and its data. Your data includes bookmarks, history, and passwords.
+        Your account is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history, and passwords.
       </message>
     </if>
 

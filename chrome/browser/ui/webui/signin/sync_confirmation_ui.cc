@@ -116,6 +116,8 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS;
     info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE_LACROS;
     confirm_label_id = IDS_DONE;
+  } else {
+    title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
   }
 #endif
   AddStringResource(source, "syncConfirmationTitle", title_id);

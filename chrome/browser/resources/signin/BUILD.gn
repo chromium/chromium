@@ -50,11 +50,16 @@ generate_grd("build_grd") {
   if (!is_chromeos_ash) {
     input_files += [
       "enterprise_profile_welcome/enterprise_profile_welcome.html",
-      "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg",
       "profile_customization/profile_customization.html",
       "signin_email_confirmation/signin_email_confirmation.html",
       "signin_error/signin_error.html",
     ]
+  }
+  if (is_chromeos_lacros) {
+    input_files += [ "enterprise_profile_welcome/images/lacros_enterprise_profile_welcome_illustration.svg" ]
+  }
+  if (!is_chromeos_ash && !is_chromeos_lacros) {
+    input_files += [ "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg" ]
   }
   if (enable_dice_support) {
     input_files += [

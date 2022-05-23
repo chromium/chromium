@@ -153,7 +153,9 @@ export class EnterpriseProfileWelcomeAppElement extends
   }
 
   private setProfileInfo_(info: EnterpriseProfileInfo) {
+    // <if expr="not chromeos_lacros">
     this.style.setProperty('--header-background-color', info.backgroundColor);
+    // </if>
     this.pictureUrl_ = info.pictureUrl;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
     this.title_ = info.title;
