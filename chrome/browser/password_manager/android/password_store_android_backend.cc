@@ -35,6 +35,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -175,6 +176,23 @@ SuccessStatus GetSuccessStatusFromError(
   }
   NOTREACHED();
   return SuccessStatus::kError;
+}
+
+void RecordApiErrorInCombinationWithSyncStatus(
+    int error_code,
+    GoogleServiceAuthError sync_error) {
+  std::string histogram_suffix;
+  if (sync_error.IsPersistentError()) {
+    histogram_suffix = "PersistentAuthError";
+  } else if (sync_error.IsTransientError()) {
+    histogram_suffix = "TransientAuthError";
+  } else {
+    histogram_suffix = "NoAuthError";
+  }
+  base::UmaHistogramSparse(
+      "PasswordManager.PasswordStoreAndroidBackend.APIError." +
+          histogram_suffix,
+      error_code);
 }
 
 }  // namespace
@@ -539,6 +557,7 @@ void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
 
 void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
+  sync_service_ = sync_service;
   sync_service->AddObserver(sync_controller_delegate_.get());
 }
 
@@ -579,7 +598,13 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
-  // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code, 10) to catch dev errors.
+  if (error.api_error_code.has_value() && sync_service_) {
+    // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code, 10) to catch dev
+    // errors.
+    DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
+    RecordApiErrorInCombinationWithSyncStatus(error.api_error_code.value(),
+                                              sync_service_->GetAuthError());
+  }
   reply->RecordMetrics(std::move(error));
   if (reply->Holds<LoginsOrErrorReply>()) {
     main_task_runner_->PostTask(
