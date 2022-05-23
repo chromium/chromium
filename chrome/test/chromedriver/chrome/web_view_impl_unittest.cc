@@ -57,7 +57,7 @@ void AssertEvalFails(const base::DictionaryValue& command_result) {
   FakeDevToolsClient client;
   client.set_result(command_result);
   Status status = internal::EvaluateScript(
-      &client, 0, std::string(), internal::ReturnByValue,
+      &client, "context", std::string(), internal::ReturnByValue,
       base::TimeDelta::Max(), false, &result);
   ASSERT_EQ(kUnknownError, status.code());
   ASSERT_FALSE(result);
@@ -70,7 +70,7 @@ TEST(EvaluateScript, CommandError) {
   FakeDevToolsClient client;
   client.set_status(Status(kUnknownError));
   Status status = internal::EvaluateScript(
-      &client, 0, std::string(), internal::ReturnByValue,
+      &client, "context", std::string(), internal::ReturnByValue,
       base::TimeDelta::Max(), false, &result);
   ASSERT_EQ(kUnknownError, status.code());
   ASSERT_FALSE(result);
@@ -95,7 +95,7 @@ TEST(EvaluateScript, Ok) {
   dict.GetDict().SetByDottedPath("result.key", 100);
   FakeDevToolsClient client;
   client.set_result(dict);
-  ASSERT_TRUE(internal::EvaluateScript(&client, 0, std::string(),
+  ASSERT_TRUE(internal::EvaluateScript(&client, "context", std::string(),
                                        internal::ReturnByValue,
                                        base::TimeDelta::Max(), false, &result)
                   .IsOk());
@@ -109,9 +109,9 @@ TEST(EvaluateScriptAndGetValue, MissingType) {
   base::DictionaryValue dict;
   dict.GetDict().SetByDottedPath("result.value", 1);
   client.set_result(dict);
-  ASSERT_TRUE(internal::EvaluateScriptAndGetValue(&client, 0, std::string(),
-                                                  base::TimeDelta::Max(), false,
-                                                  &result)
+  ASSERT_TRUE(internal::EvaluateScriptAndGetValue(
+                  &client, "context", std::string(), base::TimeDelta::Max(),
+                  false, &result)
                   .IsError());
 }
 
@@ -122,7 +122,8 @@ TEST(EvaluateScriptAndGetValue, Undefined) {
   dict.GetDict().SetByDottedPath("result.type", "undefined");
   client.set_result(dict);
   Status status = internal::EvaluateScriptAndGetValue(
-      &client, 0, std::string(), base::TimeDelta::Max(), false, &result);
+      &client, "context", std::string(), base::TimeDelta::Max(), false,
+      &result);
   ASSERT_EQ(kOk, status.code());
   ASSERT_TRUE(result && result->is_none());
 }
@@ -135,7 +136,8 @@ TEST(EvaluateScriptAndGetValue, Ok) {
   dict.GetDict().SetByDottedPath("result.value", 1);
   client.set_result(dict);
   Status status = internal::EvaluateScriptAndGetValue(
-      &client, 0, std::string(), base::TimeDelta::Max(), false, &result);
+      &client, "context", std::string(), base::TimeDelta::Max(), false,
+      &result);
   ASSERT_EQ(kOk, status.code());
   ASSERT_TRUE(result && result->is_int());
   ASSERT_EQ(1, result->GetInt());
@@ -149,8 +151,8 @@ TEST(EvaluateScriptAndGetObject, NoObject) {
   bool got_object;
   std::string object_id;
   ASSERT_TRUE(internal::EvaluateScriptAndGetObject(
-                  &client, 0, std::string(), base::TimeDelta::Max(), false,
-                  &got_object, &object_id)
+                  &client, "context", std::string(), base::TimeDelta::Max(),
+                  false, &got_object, &object_id)
                   .IsOk());
   ASSERT_FALSE(got_object);
   ASSERT_TRUE(object_id.empty());
@@ -164,8 +166,8 @@ TEST(EvaluateScriptAndGetObject, Ok) {
   bool got_object;
   std::string object_id;
   ASSERT_TRUE(internal::EvaluateScriptAndGetObject(
-                  &client, 0, std::string(), base::TimeDelta::Max(), false,
-                  &got_object, &object_id)
+                  &client, "context", std::string(), base::TimeDelta::Max(),
+                  false, &got_object, &object_id)
                   .IsOk());
   ASSERT_TRUE(got_object);
   ASSERT_STREQ("id", object_id.c_str());

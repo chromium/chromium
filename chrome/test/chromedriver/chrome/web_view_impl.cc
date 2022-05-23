@@ -47,9 +47,10 @@ const int kWaitForNavigationStopSeconds = 10;
 
 Status GetContextIdForFrame(WebViewImpl* web_view,
                             const std::string& frame,
-                            int* context_id) {
+                            std::string* context_id) {
+  DCHECK(context_id);
   if (frame.empty() || frame == web_view->GetId()) {
-    *context_id = 0;
+    context_id->clear();
     return Status(kOk);
   }
   Status status =
@@ -587,7 +588,7 @@ Status WebViewImpl::EvaluateScriptWithTimeout(
                                              awaitPromise, result);
   }
 
-  int context_id;
+  std::string context_id;
   Status status = GetContextIdForFrame(this, frame, &context_id);
   if (status.IsError())
     return status;
@@ -680,7 +681,7 @@ Status WebViewImpl::GetFrameByFunction(const std::string& frame,
     return target->GetFrameByFunction(frame, function, args, out_frame);
   }
 
-  int context_id;
+  std::string context_id;
   Status status = GetContextIdForFrame(this, frame, &context_id);
   if (status.IsError())
     return status;
@@ -1136,7 +1137,7 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
                                               int* backend_node_id) {
   if (!element.is_dict())
     return Status(kUnknownError, "'element' is not a dictionary");
-  int context_id;
+  std::string context_id;
   Status status = GetContextIdForFrame(this, frame, &context_id);
   if (status.IsError())
     return status;
@@ -1535,7 +1536,7 @@ WebViewImplHolder::~WebViewImplHolder() {
 namespace internal {
 
 Status EvaluateScript(DevToolsClient* client,
-                      int context_id,
+                      const std::string& context_id,
                       const std::string& expression,
                       EvaluateScriptReturnType return_type,
                       const base::TimeDelta& timeout,
@@ -1544,8 +1545,9 @@ Status EvaluateScript(DevToolsClient* client,
   base::DictionaryValue params;
   base::Value::Dict& dict = params.GetDict();
   dict.Set("expression", expression);
-  if (context_id)
-    dict.Set("contextId", context_id);
+  if (!context_id.empty()) {
+    dict.Set("uniqueContextId", context_id);
+  }
   dict.Set("returnByValue", return_type == ReturnByValue);
   dict.Set("awaitPromise", awaitPromise);
   base::Value cmd_result;
@@ -1575,7 +1577,7 @@ Status EvaluateScript(DevToolsClient* client,
 }
 
 Status EvaluateScriptAndGetObject(DevToolsClient* client,
-                                  int context_id,
+                                  const std::string& context_id,
                                   const std::string& expression,
                                   const base::TimeDelta& timeout,
                                   const bool awaitPromise,
@@ -1599,7 +1601,7 @@ Status EvaluateScriptAndGetObject(DevToolsClient* client,
 }
 
 Status EvaluateScriptAndGetValue(DevToolsClient* client,
-                                 int context_id,
+                                 const std::string& context_id,
                                  const std::string& expression,
                                  const base::TimeDelta& timeout,
                                  const bool awaitPromise,
@@ -1650,7 +1652,7 @@ Status ParseCallFunctionResult(const base::Value& temp_result,
 }
 
 Status GetBackendNodeIdFromFunction(DevToolsClient* client,
-                                    int context_id,
+                                    const std::string& context_id,
                                     const std::string& function,
                                     const base::ListValue& args,
                                     bool* found_node,
@@ -1715,7 +1717,7 @@ Status GetBackendNodeIdFromFunction(DevToolsClient* client,
 }
 
 Status GetFrameIdFromFunction(DevToolsClient* client,
-                              int context_id,
+                              const std::string& context_id,
                               const std::string& function,
                               const base::ListValue& args,
                               bool* found_node,
