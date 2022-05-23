@@ -42656,15 +42656,27 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FuseArchiveError">
-  <int value="0" label="EXIT_SUCCESS"/>
-  <int value="1" label="EXIT_CODE_GENERIC_FAILURE"/>
-  <int value="10" label="EXIT_CODE_LIBARCHIVE_CONTRACT_VIOLATION"/>
-  <int value="20" label="EXIT_CODE_PASSPHRASE_REQUIRED"/>
-  <int value="21" label="EXIT_CODE_PASSPHRASE_INCORRECT"/>
-  <int value="22" label="EXIT_CODE_PASSPHRASE_NOT_SUPPORTED"/>
-  <int value="30" label="EXIT_CODE_INVALID_RAW_ARCHIVE"/>
-  <int value="31" label="EXIT_CODE_INVALID_ARCHIVE_HEADER"/>
-  <int value="32" label="EXIT_CODE_INVALID_ARCHIVE_CONTENTS"/>
+  <int value="0" label="Success">EXIT_SUCCESS</int>
+  <int value="1" label="Generic Failure">EXIT_CODE_GENERIC_FAILURE</int>
+  <int value="11" label="Cannot Open Archive">
+    EXIT_CODE_CANNOT_OPEN_ARCHIVE
+  </int>
+  <int value="20" label="Passphrase Required">
+    EXIT_CODE_PASSPHRASE_REQUIRED
+  </int>
+  <int value="21" label="Passphrase Incorrect">
+    EXIT_CODE_PASSPHRASE_INCORRECT
+  </int>
+  <int value="22" label="Passphrase Not Supported">
+    EXIT_CODE_PASSPHRASE_NOT_SUPPORTED
+  </int>
+  <int value="30" label="Invalid Archive">EXIT_CODE_INVALID_RAW_ARCHIVE</int>
+  <int value="31" label="Invalid Archive Header">
+    EXIT_CODE_INVALID_ARCHIVE_HEADER
+  </int>
+  <int value="32" label="Invalid Archive Contents">
+    EXIT_CODE_INVALID_ARCHIVE_CONTENTS
+  </int>
   <int value="132" label="Terminated by SIGILL">
     MINIJAIL_ERR_SIG_BASE + SIGILL from libminijail
   </int>
