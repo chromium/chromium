@@ -1699,6 +1699,18 @@
       "features": [
         "accelerated_video_encode"
       ]
+    },
+    {
+      "id": 176,
+      "description": "VMware is buggy on Linux",
+      "cr_bugs": [1327939],
+      "os": {
+        "type": "linux"
+      },
+      "vendor_id": "0x15ad",
+      "features": [
+        "all"
+      ]
     }
   ]
 }
