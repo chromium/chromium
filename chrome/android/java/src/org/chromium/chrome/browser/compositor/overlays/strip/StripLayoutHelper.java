@@ -343,7 +343,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         float offset = -(useUnadjustedScrollOffset ? mScrollOffset
                 : (mMinScrollOffset - mScrollOffset));
 
-        if (offset == 0.f) {
+        if (offset <= 0.f) {
             return 0.f;
         } else if (offset >= FADE_FULL_OPACITY_THRESHOLD_DP) {
             return 1.f;
