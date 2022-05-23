@@ -19,11 +19,12 @@ HttpsEngagementPageLoadMetricsObserver::HttpsEngagementPageLoadMetricsObserver(
       HttpsEngagementServiceFactory::GetForBrowserContext(context);
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 HttpsEngagementPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // This class is interested only in the primary page's end of life timing,
+  // and doesn't need to continue observing FencedFrame pages.
   return STOP_OBSERVING;
 }
 
