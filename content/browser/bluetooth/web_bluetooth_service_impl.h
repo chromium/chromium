@@ -155,9 +155,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            DeviceGattServicesDiscoveryTimeout);
 #if PAIR_BLUETOOTH_ON_DEMAND()
-  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBondingTest,
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            ReadCharacteristicValueNotAuthorized);
-  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBondingTest,
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            IncompletePairingOnShutdown);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 

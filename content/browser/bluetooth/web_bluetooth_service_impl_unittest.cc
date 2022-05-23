@@ -643,22 +643,6 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
   FakeWebBluetoothCharacteristicClient characteristic_client_;
 };
 
-// TODO(crbug.com/1213499): Delete parameterized test when bonding is deemed
-// stable, and the flag is removed.
-class WebBluetoothServiceImplBondingTest : public WebBluetoothServiceImplTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatureState(features::kWebBluetoothBondOnDemand,
-                                       on_demand_bonding_enabled());
-    WebBluetoothServiceImplTest::SetUp();
-  }
-
-  bool on_demand_bonding_enabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDevice) {
   auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
   options->accept_all_devices = true;
@@ -876,8 +860,7 @@ TEST_F(WebBluetoothServiceImplTest,
 }
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
-TEST_P(WebBluetoothServiceImplBondingTest,
-       ReadCharacteristicValueNotAuthorized) {
+TEST_F(WebBluetoothServiceImplTest, ReadCharacteristicValueNotAuthorized) {
   const std::vector<uint8_t> read_error_value = {1, 2, 3};
   bool read_value_callback_called = false;
 
@@ -890,8 +873,7 @@ TEST_P(WebBluetoothServiceImplBondingTest,
   service_->SetPairingManagerForTesting(
       std::unique_ptr<WebBluetoothPairingManager>(pairing_manager));
 
-  EXPECT_CALL(*pairing_manager, PairForCharacteristicReadValue(_, _))
-      .Times(on_demand_bonding_enabled() ? 1 : 0);
+  EXPECT_CALL(*pairing_manager, PairForCharacteristicReadValue(_, _)).Times(1);
 
   service_->OnCharacteristicReadValue(
       test_characteristic.GetIdentifier(),
@@ -906,10 +888,10 @@ TEST_P(WebBluetoothServiceImplBondingTest,
           }),
       device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED,
       read_error_value);
-  EXPECT_EQ(!on_demand_bonding_enabled(), read_value_callback_called);
+  EXPECT_FALSE(read_value_callback_called);
 }
 
-TEST_P(WebBluetoothServiceImplBondingTest, IncompletePairingOnShutdown) {
+TEST_F(WebBluetoothServiceImplTest, IncompletePairingOnShutdown) {
   RegisterTestCharacteristic();
 
   EXPECT_CALL(test_bundle().characteristic(), ReadRemoteCharacteristic_(_))
@@ -920,14 +902,10 @@ TEST_P(WebBluetoothServiceImplBondingTest, IncompletePairingOnShutdown) {
   base::MockCallback<
       WebBluetoothServiceImpl::RemoteCharacteristicReadValueCallback>
       callback;
-  if (on_demand_bonding_enabled()) {
-    // The pairing is never completed so the callback won't be run before the
-    // test ends.
-    EXPECT_CALL(callback, Run(_, _)).Times(0);
-  } else {
-    EXPECT_CALL(callback, Run(WebBluetoothResult::GATT_NOT_AUTHORIZED,
-                              testing::Eq(absl::nullopt)));
-  }
+
+  // The pairing is never completed so the callback won't be run before the
+  // test ends.
+  EXPECT_CALL(callback, Run(_, _)).Times(0);
 
   service_->RemoteCharacteristicReadValue(
       test_bundle().characteristic().GetIdentifier(), callback.Get());
@@ -936,10 +914,6 @@ TEST_P(WebBluetoothServiceImplBondingTest, IncompletePairingOnShutdown) {
   // tab closure while the pairing request is in progress.
   std::exchange(service_, nullptr)->ResetAndDeleteThis();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebBluetoothServiceImplBondingTest,
-                         testing::Values(false, true));
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
 TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {

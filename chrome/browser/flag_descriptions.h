@@ -120,9 +120,6 @@ extern const char kPasswordNotesDescription[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiName[];
 extern const char kEnableBluetoothSerialPortProfileInSerialApiDescription[];
 
-extern const char kWebBluetoothBondOnDemandName[];
-extern const char kWebBluetoothBondOnDemandDescription[];
-
 extern const char kEnableDrDcName[];
 extern const char kEnableDrDcDescription[];
 

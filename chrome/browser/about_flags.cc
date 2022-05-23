@@ -8248,12 +8248,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCommerceDeveloperDescription, kOsAll,
      FEATURE_VALUE_TYPE(commerce::kCommerceDeveloper)},
 
-    {"bluetooth-bond-on-demand",
-     flag_descriptions::kWebBluetoothBondOnDemandName,
-     flag_descriptions::kWebBluetoothBondOnDemandDescription,
-     kOsWin | kOsLinux | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kWebBluetoothBondOnDemand)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-libinput-to-handle-touchpad",
      flag_descriptions::kEnableLibinputToHandleTouchpadName,

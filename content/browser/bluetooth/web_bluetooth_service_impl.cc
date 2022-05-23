@@ -2072,8 +2072,7 @@ void WebBluetoothServiceImpl::OnCharacteristicReadValue(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
 #if PAIR_BLUETOOTH_ON_DEMAND()
-    if (error_code.value() == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED &&
-        base::FeatureList::IsEnabled(features::kWebBluetoothBondOnDemand)) {
+    if (error_code.value() == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED) {
       BluetoothDevice* device = GetCachedDevice(
           GetCharacteristicDeviceID(characteristic_instance_id));
       if (device && !device->IsPaired()) {
@@ -2111,8 +2110,7 @@ void WebBluetoothServiceImpl::OnCharacteristicWriteValueFailed(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
-  if (error_code == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED &&
-      base::FeatureList::IsEnabled(features::kWebBluetoothBondOnDemand)) {
+  if (error_code == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED) {
     BluetoothDevice* device =
         GetCachedDevice(GetCharacteristicDeviceID(characteristic_instance_id));
     if (device && !device->IsPaired()) {
@@ -2172,8 +2170,7 @@ void WebBluetoothServiceImpl::OnStartNotifySessionFailed(
   }
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
-  if (error_code == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED && client &&
-      base::FeatureList::IsEnabled(features::kWebBluetoothBondOnDemand)) {
+  if (error_code == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED && client) {
     BluetoothDevice* device =
         GetCachedDevice(GetCharacteristicDeviceID(characteristic_instance_id));
     if (device && !device->IsPaired()) {
@@ -2222,8 +2219,7 @@ void WebBluetoothServiceImpl::OnDescriptorReadValue(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
 #if PAIR_BLUETOOTH_ON_DEMAND()
-    if (error_code.value() == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED &&
-        base::FeatureList::IsEnabled(features::kWebBluetoothBondOnDemand)) {
+    if (error_code.value() == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED) {
       BluetoothDevice* device =
           GetCachedDevice(GetDescriptorDeviceId(descriptor_instance_id));
       if (device && !device->IsPaired()) {
@@ -2258,8 +2254,7 @@ void WebBluetoothServiceImpl::OnDescriptorWriteValueFailed(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
-  if (error_code == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED &&
-      base::FeatureList::IsEnabled(features::kWebBluetoothBondOnDemand)) {
+  if (error_code == GattErrorCode::GATT_ERROR_NOT_AUTHORIZED) {
     BluetoothDevice* device =
         GetCachedDevice(GetDescriptorDeviceId(descriptor_instance_id));
     if (device && !device->IsPaired()) {
