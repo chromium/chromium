@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
@@ -396,6 +397,13 @@ SystemNetworkContextManager::GetSharedURLLoaderFactory() {
 // static
 SystemNetworkContextManager* SystemNetworkContextManager::CreateInstance(
     PrefService* pref_service) {
+#if DCHECK_IS_ON()
+  // Check that this function is not reentrant.
+  static bool inside_this_function = false;
+  DCHECK(!inside_this_function);
+  base::AutoReset now_inside_this_function(&inside_this_function, true);
+#endif
+
   DCHECK(!g_system_network_context_manager);
   g_system_network_context_manager =
       new SystemNetworkContextManager(pref_service);
