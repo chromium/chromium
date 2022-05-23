@@ -649,7 +649,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, AddRemoveEventListeners) {
+// TODO(crbug.com/1325383): test is flaky on Chromium OS MSAN builder.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_AddRemoveEventListeners DISABLED_AddRemoveEventListeners
+#else
+#define MAYBE_AddRemoveEventListeners AddRemoveEventListeners
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_AddRemoveEventListeners) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "add_remove_event_listeners.html"}))
