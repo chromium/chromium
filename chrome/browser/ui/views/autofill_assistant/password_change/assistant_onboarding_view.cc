@@ -10,12 +10,23 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "build/branding_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+
+namespace {
+// Ratios of element width and dialog width.
+constexpr double kAssistantLogoScaleFactor = 0.2;
+}  // namespace
 
 // Factory function to create onboarding prompts on desktop platforms.
 base::WeakPtr<AssistantOnboardingPrompt> AssistantOnboardingPrompt::Create(
@@ -64,6 +75,9 @@ void AssistantOnboardingView::InitDelegate() {
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
+  set_margins(views::LayoutProvider::Get()->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
+
   SetAcceptCallback(
       base::BindOnce(&AssistantOnboardingController::OnAccept, controller_));
   SetCancelCallback(
@@ -73,7 +87,32 @@ void AssistantOnboardingView::InitDelegate() {
 }
 
 void AssistantOnboardingView::InitDialog() {
-  // TODO(crbug.com/1322387): Populate dialog with views for image, texts, and
+  // The dialog is not expected to be resized, so for our purposes, a
+  // `BoxLayout` is sufficient.
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  // TODO(crbug.com/1322387): Set spacing between children.
+
+  const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const gfx::VectorIcon& assistant_icon = kAssistantIcon;
+#else
+  // Only developer builds will ever use this branch and the color used in
+  // `FromVectorIcon` below.
+  const gfx::VectorIcon& assistant_icon = kProductIcon;
+#endif
+  AddChildView(std::make_unique<views::ImageView>())
+      ->SetImage(
+          gfx::CreateVectorIcon(assistant_icon, gfx::kPlaceholderColor,
+                                kAssistantLogoScaleFactor * dialog_width));
+
+  // TODO(crbug.com/1322387): Populate dialog with views for texts and the
   // learn more link.
 }
 
