@@ -274,6 +274,7 @@ android_library("cronet_impl_common_base_java") {
     "java/src/org/chromium/net/impl/CronetEngineBase.java",
     "java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
     "java/src/org/chromium/net/impl/CronetExceptionImpl.java",
+    "java/src/org/chromium/net/impl/CronetLogger.java",
     "java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
     "java/src/org/chromium/net/impl/Preconditions.java",
     "java/src/org/chromium/net/impl/QuicExceptionImpl.java",
