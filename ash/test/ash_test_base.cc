@@ -85,8 +85,15 @@ class AshEventGeneratorDelegate
   ui::EventTarget* GetTargetAt(const gfx::Point& point_in_screen) override {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display = screen->GetDisplayNearestPoint(point_in_screen);
+    if (current_display_id_ != display.id()) {
+      Shell::Get()->cursor_manager()->SetDisplay(display);
+      current_display_id_ = display.id();
+    }
     return Shell::GetRootWindowForDisplayId(display.id())->GetHost()->window();
   }
+
+ private:
+  int64_t current_display_id_ = display::kInvalidDisplayId;
 };
 
 }  // namespace

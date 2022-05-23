@@ -65,8 +65,6 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
   if (seat_->was_shutdown())
     return;
 
-  seat_->SetLastPointerLocation(event->root_location_f());
-
   bool send_details = false;
 
   const int touch_pointer_id = event->pointer_details().id;

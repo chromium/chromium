@@ -14,6 +14,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
+#include "ash/wm/window_state.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -596,9 +597,9 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates) {
   auto operation = DragDropOperation::Create(
       &data_exchange_delegate, data_source.get(), shell_surface->root_surface(),
       nullptr, location, ui::mojom::DragEventSource::kMouse);
-
   auto* drag_drop_controller = static_cast<ash::DragDropController*>(
       aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()));
+
   EXPECT_FALSE(shell_surface->IsDragged());
   base::RunLoop loop;
   drag_drop_controller->SetLoopClosureForTesting(
@@ -613,6 +614,70 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates) {
   loop.Run();
   operation.reset();
   EXPECT_FALSE(shell_surface->IsDragged());
+}
+
+TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
+  UpdateDisplay("800x600,800x600");
+
+  // Create and map a toplevel shell surface.
+  auto shell_surface =
+      exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  shell_surface->GetWidget()->SetBounds({810, 10, 32, 32});
+
+  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+      shell_surface->GetWidget()->GetNativeWindow());
+  EXPECT_EQ(gfx::Rect(800, 0, 800, 600), display.bounds());
+
+  gfx::Rect expected_bounds =
+      shell_surface->GetWidget()->GetWindowBoundsInScreen();
+
+  constexpr int kDragOffset = 10;
+  extended_drag_source_->Drag(surface, gfx::Vector2d(kDragOffset, 0));
+
+  // Start the DND + extended-drag session.
+  // Creates a mouse-pressed event before starting the drag session.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo({810 + kDragOffset, 10});
+  generator->PressLeftButton();
+
+  // Start a DragDropOperation.
+  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  seat_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
+                   ui::mojom::DragEventSource::kMouse);
+  // Just move to the middle to avoid snapping.
+  int x_movement = 500;
+  expected_bounds.set_x(310);
+
+  constexpr int kXDragDelta = 20;
+  auto* toplevel_handler = ash::Shell::Get()->toplevel_window_event_handler();
+
+  base::RunLoop loop;
+  drag_drop_controller_->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        if (x_movement == 500) {
+          auto* window_state = ash::WindowState::Get(
+              shell_surface->GetWidget()->GetNativeWindow());
+          EXPECT_EQ(gfx::PointF(20, 10),
+                    window_state->drag_details()->initial_location_in_parent);
+        }
+        if (x_movement > 0) {
+          x_movement -= kXDragDelta;
+          generator->MoveMouseBy(-kXDragDelta, 0);
+          EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
+        } else {
+          generator->ReleaseLeftButton();
+        }
+      }),
+      loop.QuitClosure());
+  loop.Run();
+  EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
+  EXPECT_EQ(expected_bounds,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen());
+  display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+      shell_surface->GetWidget()->GetNativeWindow());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), display.bounds());
 }
 
 }  // namespace exo
