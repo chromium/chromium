@@ -303,9 +303,12 @@ void TrashIOTask::SetupSubDirectory(
       FROM_HERE,
       base::BindOnce(&StartCreateDirectoryOnIOThread, file_system_context_,
                      trash_subdirectory,
-                     base::BindOnce(&TrashIOTask::OnSetupSubDirectory,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    base::OwnedRef(it), trash_subdirectory)),
+                     base::BindPostTask(
+                         base::SequencedTaskRunnerHandle::Get(),
+                         base::BindOnce(&TrashIOTask::OnSetupSubDirectory,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        base::OwnedRef(it), trash_subdirectory),
+                         FROM_HERE)),
       base::BindOnce(&TrashIOTask::SetCurrentOperationID,
                      weak_ptr_factory_.GetWeakPtr()));
 }
