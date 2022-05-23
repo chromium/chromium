@@ -94,8 +94,6 @@ class IntegrationTestCommands
   virtual void ExpectLastStarted() const = 0;
   virtual void UninstallApp(const std::string& app_id) const = 0;
 
-  virtual void RunOfflineInstall() = 0;
-
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;
 
