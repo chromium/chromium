@@ -76,6 +76,7 @@ try_.builder(
 try_.builder(
     name = "mac-builder-next-rel",
     os = os.MAC_12,
+    builderless = False,
 )
 
 try_.builder(
