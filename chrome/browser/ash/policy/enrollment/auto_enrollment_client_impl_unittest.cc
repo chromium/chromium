@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/testing_psm_rlwe_id_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
@@ -182,6 +183,7 @@ class AutoEnrollmentClientImplTest
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
+
     if (GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE) {
       client_ = AutoEnrollmentClientImpl::FactoryImpl().CreateForFRE(
           progress_callback, service_.get(), local_state_,
@@ -196,8 +198,11 @@ class AutoEnrollmentClientImplTest
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
-              power_initial, power_limit, psm_rlwe_test_client_factory_.get(),
-              testing_psm_rlwe_id_provider_.get());
+              power_initial, power_limit,
+              std::make_unique<PsmRlweDmserverClientImpl>(
+                  service_.get(), shared_url_loader_factory_,
+                  psm_rlwe_test_client_factory_.get(),
+                  testing_psm_rlwe_id_provider_.get()));
     }
   }
 

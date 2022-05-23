@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 
+#include <memory>
+
 #include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ash/policy/enrollment/private_membership/fake_private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client_impl.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_id_provider_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -422,7 +425,11 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       serial_number, rlz_brand_code, power_initial, power_limit,
-      psm_rlwe_client_factory_.get(), &psm_rlwe_id_provider_);
+      std::make_unique<policy::PsmRlweDmserverClientImpl>(
+          service,
+          g_browser_process->system_network_context_manager()
+              ->GetSharedURLLoaderFactory(),
+          psm_rlwe_client_factory_.get(), &psm_rlwe_id_provider_));
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();

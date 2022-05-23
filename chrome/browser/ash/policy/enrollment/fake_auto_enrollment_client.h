@@ -16,7 +16,7 @@ class PrefService;
 namespace policy {
 
 class DeviceManagementService;
-class PsmRlweIdProvider;
+class PsmRlweDmserverClient;
 
 // A fake AutoEnrollmentClient. The test code can control its state.
 class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
@@ -53,8 +53,8 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
-        PsmRlweIdProvider* psm_rlwe_id_provider) override;
+        std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client)
+        override;
 
    private:
     base::RepeatingCallback<void(FakeAutoEnrollmentClient*)>

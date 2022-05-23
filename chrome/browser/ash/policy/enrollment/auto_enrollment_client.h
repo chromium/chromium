@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 
 class PrefService;
 
@@ -21,7 +20,7 @@ class SharedURLLoaderFactory;
 namespace policy {
 
 class DeviceManagementService;
-class PsmRlweIdProvider;
+class PsmRlweDmserverClient;
 
 // Indicates the current state of the auto-enrollment check. (Numeric values
 // are just to make reading of log files easier.)
@@ -90,8 +89,7 @@ class AutoEnrollmentClient {
         const std::string& device_brand_code,
         int power_initial,
         int power_limit,
-        PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
-        PsmRlweIdProvider* psm_rlwe_id_provider) = 0;
+        std::unique_ptr<PsmRlweDmserverClient> psm_rlwe_dmserver_client) = 0;
   };
 
   virtual ~AutoEnrollmentClient() {}
