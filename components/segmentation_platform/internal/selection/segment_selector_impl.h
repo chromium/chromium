@@ -25,6 +25,7 @@ namespace segmentation_platform {
 struct Config;
 class DefaultModelManager;
 class ExecutionService;
+class ExperimentalGroupRecorder;
 class FieldTrialRegister;
 class SegmentationResultPrefs;
 class SignalStorageConfig;
@@ -106,7 +107,13 @@ class SegmentSelectorImpl : public SegmentSelector {
   // The config for providing configuration params.
   const raw_ptr<const Config> config_;
 
+  // Delegate that records selected segments to metrics.
   const raw_ptr<FieldTrialRegister> field_trial_register_;
+
+  // Helper that records segmentation subgroups to `field_trial_register_`. Once
+  // for each segment in the `config_`.
+  std::vector<std::unique_ptr<ExperimentalGroupRecorder>>
+      experimental_group_recorder_;
 
   // The time provider.
   const raw_ptr<base::Clock> clock_;

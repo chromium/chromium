@@ -180,7 +180,7 @@ void TestSegmentInfoDatabase::AddPredictionResult(OptimizationTarget segment_id,
 
 void TestSegmentInfoDatabase::AddDiscreteMapping(
     OptimizationTarget segment_id,
-    float mappings[][2],
+    const float mappings[][2],
     int num_pairs,
     const std::string& discrete_mapping_key) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);

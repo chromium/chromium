@@ -323,4 +323,23 @@ void FieldTrialRegisterImpl::RegisterFieldTrial(base::StringPiece trial_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
+void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
+    base::StringPiece trial_name,
+    OptimizationTarget segment_id,
+    int subsegment_rank) {
+  absl::optional<std::string> group_name;
+  // TODO(ssid): Make GetSubsegmentName as a ModelProvider API so that clients
+  // can simply implement it instead of adding conditions here, once the
+  // subsegment process is more stable.
+  if (segment_id ==
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
+    group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
+  }
+
+  if (!group_name) {
+    return;
+  }
+  RegisterFieldTrial(trial_name, *group_name);
+}
+
 }  // namespace segmentation_platform
