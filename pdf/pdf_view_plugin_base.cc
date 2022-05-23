@@ -83,9 +83,6 @@ constexpr double kMinZoom = 0.01;
 // responsive.
 constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
-constexpr char kChromeExtensionHost[] =
-    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
-
 // Same value as printing::COMPLETE_PREVIEW_DOCUMENT_INDEX.
 constexpr int kCompletePDFIndex = -1;
 // A different negative value to differentiate itself from `kCompletePDFIndex`.
@@ -154,22 +151,11 @@ PdfViewPluginBase::PdfViewPluginBase() = default;
 PdfViewPluginBase::~PdfViewPluginBase() = default;
 
 void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
-                                       base::StringPiece embedder_origin,
                                        base::StringPiece src_url,
                                        base::StringPiece original_url,
                                        bool full_frame,
                                        SkColor background_color,
                                        bool has_edits) {
-  // Check if the PDF is being loaded in the PDF chrome extension. We only allow
-  // the plugin to be loaded in the extension and print preview to avoid
-  // exposing sensitive APIs directly to external websites.
-  //
-  // This is enforced before launching the plugin process (see
-  // ChromeContentBrowserClient::ShouldAllowPluginCreation), so below we just do
-  // a CHECK as a defense-in-depth.
-  is_print_preview_ = (embedder_origin == kChromePrintHost);
-  CHECK(IsPrintPreview() || embedder_origin == kChromeExtensionHost);
-
   full_frame_ = full_frame;
   background_color_ = background_color;
 
@@ -432,10 +418,6 @@ void PdfViewPluginBase::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
   SendMessage(std::move(message));
 
   SetFormTextFieldInFocus(type == PDFEngine::FocusFieldType::kText);
-}
-
-bool PdfViewPluginBase::IsPrintPreview() const {
-  return is_print_preview_;
 }
 
 SkColor PdfViewPluginBase::GetBackgroundColor() {

@@ -123,7 +123,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
-  bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
@@ -184,11 +183,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   ~PdfViewPluginBase() override;
 
   // Performs initialization common to all implementations of this plugin.
-  // `engine` should be an appropriately-configured PDF engine, and
-  // `embedder_origin` should be the origin of the plugin's embedder. The other
+  // `engine` should be an appropriately-configured PDF engine, while the other
   // parameters come from the corresponding plugin attributes.
   void InitializeBase(std::unique_ptr<PDFiumEngine> engine,
-                      base::StringPiece embedder_origin,
                       base::StringPiece src_url,
                       base::StringPiece original_url,
                       bool full_frame,
@@ -591,9 +588,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   std::unique_ptr<PDFiumEngine> preview_engine_;
 
   DocumentLoadState preview_document_load_state_ = DocumentLoadState::kComplete;
-
-  // True if the plugin is loaded in print preview, otherwise false.
-  bool is_print_preview_ = false;
 
   // Number of pages in print preview mode for non-PDF source, 0 if print
   // previewing a PDF, and -1 if not in print preview mode.

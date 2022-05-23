@@ -267,6 +267,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
+  bool IsPrintPreview() const override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void SetSelectedText(const std::string& selected_text) override;
   bool IsValidLink(const std::string& url) override;
@@ -488,6 +489,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The indices of pages to print.
   std::vector<int> pages_to_print_;
+
+  // Whether the plugin is loaded in Print Preview.
+  bool is_print_preview_ = false;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

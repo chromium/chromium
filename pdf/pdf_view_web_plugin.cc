@@ -96,6 +96,9 @@ namespace {
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
+constexpr char kChromeExtensionHost[] =
+    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
+
 // Initialization performed per renderer process. Initialization may be
 // triggered from multiple plugin instances, but should only execute once.
 //
@@ -219,8 +222,19 @@ bool PdfViewWebPlugin::InitializeCommon() {
   base::debug::SetCrashKeyString(subresource_url, params->original_url);
 
   PerProcessInitializer::GetInstance().Acquire();
+
+  // Check if the PDF is being loaded in the PDF chrome extension. We only allow
+  // the plugin to be loaded in the extension and print preview to avoid
+  // exposing sensitive APIs directly to external websites.
+  //
+  // This is enforced before launching the plugin process (see
+  // `ChromeContentBrowserClient::ShouldAllowPluginCreation()`), so below we
+  // just do a CHECK as a defense-in-depth.
+  const std::string& embedder_origin = client_->GetEmbedderOriginString();
+  is_print_preview_ = (embedder_origin == kChromePrintHost);
+  CHECK(IsPrintPreview() || embedder_origin == kChromeExtensionHost);
+
   InitializeBase(CreateEngine(this, params->script_option),
-                 /*embedder_origin=*/client_->GetEmbedderOriginString(),
                  /*src_url=*/params->src_url,
                  /*original_url=*/params->original_url,
                  /*full_frame=*/params->full_frame,
@@ -715,6 +729,10 @@ PdfViewWebPlugin::SearchString(const char16_t* string,
   while (searcher.NextMatchResult(match_index, match_length))
     results.push_back({.start_index = match_index, .length = match_length});
   return results;
+}
+
+bool PdfViewWebPlugin::IsPrintPreview() const {
+  return is_print_preview_;
 }
 
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
