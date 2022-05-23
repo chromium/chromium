@@ -13082,6 +13082,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION" translateable="false">
       During trials, Chrome is exploring ways to limit spam, fraud, and sharing between sites. Chrome also <ph name="ESTIMATE_INTERESTS_LINK">$1<ex>estimates your interests</ex></ph> that sites can use to show you ads. You can manage your interests in settings.
     </message>
+    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_SETTINGS_LINK" translateable="false">
+      Go to settings
+    </message>
     <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK" translateable="false">
       estimates your interests
     </message>

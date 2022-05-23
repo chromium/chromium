@@ -53,7 +53,7 @@ PasswordReuseModalWarningTest.*
 PermissionRequestChipDialogBrowserTest.*
 *PermissionPromptBubbleViewBrowserTest.*
 PrivacySandboxDialogViewBrowserTest.*
-PrivacySandboxNoticeBubbleViewBrowserTest.*
+PrivacySandboxNoticeBubbleBrowserTest.*
 PromptForScanningModalDialogTest.*
 QRCodeGeneratorBubbleBrowserTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
