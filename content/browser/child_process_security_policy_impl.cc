@@ -495,9 +495,9 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   void SetProcessLock(const ProcessLock& lock_to_set,
                       BrowsingInstanceId browsing_instance_id,
                       bool is_process_used) {
-    DCHECK(!lock_to_set.is_invalid());
-    DCHECK(!process_lock_.is_locked_to_site());
-    DCHECK_NE(SiteInstanceImpl::GetDefaultSiteURL(), lock_to_set.lock_url());
+    CHECK(!lock_to_set.is_invalid());
+    CHECK(!process_lock_.is_locked_to_site());
+    CHECK_NE(SiteInstanceImpl::GetDefaultSiteURL(), lock_to_set.lock_url());
 
     if (process_lock_.is_invalid()) {
       DCHECK(browsing_instance_ids_.empty());

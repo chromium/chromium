@@ -118,10 +118,13 @@ class CONTENT_EXPORT ProcessLock {
   // Returns whether this ProcessLock is specific to PDF contents.
   bool is_pdf() const { return site_info_.has_value() && site_info_->is_pdf(); }
 
+  // Returns whether this ProcessLock can only be used for error pages.
   bool is_error_page() const {
     return site_info_.has_value() && site_info_->is_error_page();
   }
 
+  // Returns whether this ProcessLock is used for a <webview> guest process.
+  // This may be false for other types of GuestView.
   bool is_guest() const {
     return site_info_.has_value() && site_info_->is_guest();
   }
@@ -130,11 +133,12 @@ class CONTENT_EXPORT ProcessLock {
   // lock is used with.
   StoragePartitionConfig GetStoragePartitionConfig() const;
 
-  // Representing agent cluster's "cross-origin isolated" concept.
+  // Returns the exposed isolation state (e.g., cross-origin-isolated) of all
+  // agent clusters allowed in this ProcessLock. See
   // https://html.spec.whatwg.org/multipage/webappapis.html#dom-crossoriginisolated
-  // This property is renderer process global because we ensure that a
-  // renderer process host only cross-origin isolated agents or only
-  // non-cross-origin isolated agents, not both.
+  // This is tracked on ProcessLock because a RenderProcessHost can host only
+  // cross-origin isolated agents or only non-cross-origin isolated agents, not
+  // both.
   WebExposedIsolationInfo GetWebExposedIsolationInfo() const;
 
   // Returns whether lock_url() is at least at the granularity of a site (i.e.,
@@ -170,8 +174,9 @@ class CONTENT_EXPORT ProcessLock {
   explicit ProcessLock(const SiteInfo& site_info);
 
   // TODO(creis): Consider tracking multiple compatible SiteInfos in ProcessLock
-  // (e.g., multiple extensions). This can better restrict what the process has
-  // access to in cases that we don't currently use a ProcessLock.
+  // (e.g., multiple sites when Site Isolation is disabled). This can better
+  // restrict what the process has access to in cases that we currently use an
+  // allows-any-site ProcessLock.
   absl::optional<SiteInfo> site_info_;
 };
 
