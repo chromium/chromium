@@ -8,8 +8,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shell.h"
+#include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,11 +23,15 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -34,6 +40,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -79,6 +87,96 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
   EXPECT_EQ(
       GURL(chrome::kChromeUIManagementURL),
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+}
+
+using ConsumerDeviceTest = MixinBasedInProcessBrowserTest;
+
+// Verify that the management device mode is indeed none of the
+// enterprise licenses.
+IN_PROC_BROWSER_TEST_F(ConsumerDeviceTest, WithNoLicense) {
+  EXPECT_EQ(ash::Shell::Get()
+                ->system_tray_model()
+                ->enterprise_domain()
+                ->management_device_mode(),
+            ash::ManagementDeviceMode::kNone);
+}
+
+namespace {
+
+// This is the constant that exists on the server side. It corresponds to
+// the type of enrollment license.
+constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
+
+}  // namespace
+
+class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
+ public:
+  EnterpriseManagedTest() { device_state_.set_skip_initial_policy_setup(true); }
+  ~EnterpriseManagedTest() override = default;
+  EnterpriseManagedTest(const EnterpriseManagedTest&) = delete;
+  void operator=(const EnterpriseManagedTest&) = delete;
+
+ protected:
+  policy::DevicePolicyCrosTestHelper* policy_helper() {
+    return &policy_helper_;
+  }
+
+ private:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  policy::DevicePolicyCrosTestHelper policy_helper_;
+};
+
+// Verify that the management device mode is indeed Kiosk Sku.
+IN_PROC_BROWSER_TEST_F(EnterpriseManagedTest, WithKioskSku) {
+  policy_helper()->device_policy()->policy_data().set_license_sku(
+      kKioskSkuName);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_EQ(ash::Shell::Get()
+                ->system_tray_model()
+                ->enterprise_domain()
+                ->management_device_mode(),
+            ash::ManagementDeviceMode::kKioskSku);
+}
+
+// Verify that the management device mode is indeed education license.
+IN_PROC_BROWSER_TEST_F(EnterpriseManagedTest, WithEducationLicense) {
+  policy_helper()->device_policy()->policy_data().set_market_segment(
+      enterprise_management::PolicyData::ENROLLED_EDUCATION);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_EQ(ash::Shell::Get()
+                ->system_tray_model()
+                ->enterprise_domain()
+                ->management_device_mode(),
+            ash::ManagementDeviceMode::kChromeEducation);
+}
+
+// Verify that the management device mode is indeed enterprise license.
+IN_PROC_BROWSER_TEST_F(EnterpriseManagedTest, WithEnterpriseLicense) {
+  policy_helper()->device_policy()->policy_data().set_market_segment(
+      enterprise_management::PolicyData::ENROLLED_ENTERPRISE);
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_EQ(ash::Shell::Get()
+                ->system_tray_model()
+                ->enterprise_domain()
+                ->management_device_mode(),
+            ash::ManagementDeviceMode::kChromeEnterprise);
+}
+
+// Verify that the management device mode is indeed unknown when the market
+// segment of the device policy data does not have value.
+IN_PROC_BROWSER_TEST_F(EnterpriseManagedTest, WithUnknownLicense) {
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  EXPECT_EQ(ash::Shell::Get()
+                ->system_tray_model()
+                ->enterprise_domain()
+                ->management_device_mode(),
+            ash::ManagementDeviceMode::kOther);
 }
 
 class SystemTrayClientClockTest : public ash::LoginManagerTest {
