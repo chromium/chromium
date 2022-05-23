@@ -62,6 +62,25 @@ class HttpsOnlyModeUpgradeTabHelper
   void ClearAllowlistForTesting();
 
  private:
+  enum class State {
+    // Initial state.
+    kNone,
+    // The navigation is stopped to start an upgraded navigation.
+    kStoppedToUpgrade,
+    // The upgraded navigation is started.
+    kUpgraded,
+    // The upgraded navigation timed out.
+    kStoppedWithTimeout,
+    // The upgraded navigation is stopped to start a fallback navigation (e.g.
+    // due to the upgraded navigation redirecting to HTTP).
+    kStoppedToFallback,
+    // A fallback navigation is started.
+    kFallbackStarted,
+    // Final state. Either the interstitial is shown or the upgrade completed
+    // successfully.
+    kDone,
+  };
+
   HttpsOnlyModeUpgradeTabHelper(web::WebState* web_state,
                                 PrefService* prefs,
                                 PrerenderService* prerender_service);
@@ -77,10 +96,19 @@ class HttpsOnlyModeUpgradeTabHelper
 
   // Called when the upgrade timer times out.
   void OnHttpsLoadTimeout();
+  // Stops the current navigation and sets the state so that an upgrade will be
+  // started.
+  void StopToUpgrade(
+      const GURL& url,
+      const web::Referrer& referrer,
+      base::OnceCallback<void(web::WebStatePolicyDecider::PolicyDecision)>
+          callback);
   // Initiates a fallback navigation to the original HTTP URL. This will be
   // cancelled in ShouldAllowResponse() with an HTTP interstitial, unless the
   // HTTP URL was previously allowlisted.
   void FallbackToHttp();
+  // Sets the initial state and clears the timer.
+  void ResetState();
 
   // web::WebStatePolicyDecider implementation
   void ShouldAllowResponse(
@@ -96,17 +124,11 @@ class HttpsOnlyModeUpgradeTabHelper
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // True if the navigation was upgraded.
-  bool was_upgraded_ = false;
+  // Internal state of the navigation.
+  State state_ = State::kNone;
+
   // The original HTTP URL that was navigated to.
   GURL http_url_;
-
-  // True if we know if the current navigation has an SSL error.
-  bool is_http_fallback_navigation_ = false;
-
-  // True if the HTTP navigation was stopped to initiate an upgrade.
-  bool stopped_loading_to_upgrade_ = false;
-  bool stopped_with_timeout_ = false;
 
   // Parameters for the upgraded navigation.
   GURL upgraded_https_url_;

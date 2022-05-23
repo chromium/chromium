@@ -510,34 +510,71 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:1];
 
-  // Click through the interstitial. This should load the HTTP page.
+  // Click through the interstitial. This should load the HTTP page. Histogram
+  // numbers shouldn't change.
   [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
-             @"Timer is still running");
+  [self assertFailedUpgrade:1];
 
   // Reload. Since the URL is now allowlisted, this should immediately load
-  // HTTP without trying to upgrade.
+  // HTTP without trying to upgrade. Histogram numbers shouldn't change.
   [ChromeEarlGrey reload];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-  GREYAssertNil([MetricsAppInterface
-                    expectTotalCount:2
-                        forHistogram:@(security_interstitials::https_only_mode::
-                                           kEventHistogram)],
-                @"Unexpected histogram event recorded.");
-  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
-             @"Timer is still running");
+  [self assertFailedUpgrade:1];
 
+  // Clear the allowlist by clearing the browsing data.
   [ChromeEarlGreyUI clearAllBrowsingData];
 
   // Clearing the browsing data automatically reloads tabs. Check that the
   // interstitial is showing.
-  // TODO(crbug.com/1302509): Doing an extra reload here hits a DCHECK, consider
-  // moving ShouldAllowRequest() code to ShouldAllowResponse() to avoid this.
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:2];
-  GREYAssert(![HttpsOnlyModeAppInterface isTimerRunning],
-             @"Timer is still running");
+
+  // Reloading the should show the interstitial again.
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertFailedUpgrade:3];
+}
+
+// Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
+// The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
+// Reloading the page should show the interstitial again.
+- (void)testUpgrade_BadHTTPS_ReloadInterstitial {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.badHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertFailedUpgrade:1];
+
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertFailedUpgrade:2];
+}
+
+// Navigate to an HTTP URL directly. The upgraded HTTPS version serves slow SSL.
+// The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
+// Reloading the page should show the interstitial again.
+- (void)testUpgrade_SlowHTTPS_ReloadInterstitial {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.slowHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:true];
+  // Set the fallback delay to zero. This will immediately stop the HTTPS
+  // upgrade attempt.
+  [HttpsOnlyModeAppInterface setFallbackDelayForTesting:0];
+
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertTimedOutUpgrade:1];
+
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertTimedOutUpgrade:2];
 }
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
@@ -605,9 +642,6 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // HTTP without trying to upgrade.
   [ChromeEarlGreyUI reload];
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
-
-  // TODO(crbug.com/1302509): Clear the browsing data. This should clear all
-  // allowlist decisions.
 }
 
 // Same as testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted but uses

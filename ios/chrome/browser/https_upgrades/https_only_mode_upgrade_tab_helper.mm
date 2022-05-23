@@ -125,8 +125,6 @@ bool HttpsOnlyModeUpgradeTabHelper::IsLocalhost(const GURL& url) const {
 }
 
 bool HttpsOnlyModeUpgradeTabHelper::IsHttpAllowedForUrl(const GURL& url) const {
-  // TODO(crbug.com/1302509): Allow HTTP for IP addresses when not running
-  // tests. If the URL is in the allowlist, don't show any warning.
   HttpsUpgradeService* service = HttpsUpgradeServiceFactory::GetForBrowserState(
       web_state()->GetBrowserState());
   return service->IsHttpAllowedForHost(url.host());
@@ -152,7 +150,6 @@ HttpsOnlyModeUpgradeTabHelper::HttpsOnlyModeUpgradeTabHelper(
     PrefService* prefs,
     PrerenderService* prerender_service)
     : web::WebStatePolicyDecider(web_state),
-      was_upgraded_(false),
       prefs_(prefs),
       prerender_service_(prerender_service) {
   web_state->AddObserver(this);
@@ -164,7 +161,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
   if (navigation_context->IsSameDocument()) {
     return;
   }
-  if (was_upgraded_) {
+  if (state_ == State::kUpgraded) {
     DCHECK(!timer_.IsRunning());
     // |timer_| is deleted when the tab helper is deleted, so it's safe to use
     // Unretained here.
@@ -172,9 +169,14 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
         FROM_HERE, fallback_delay_,
         base::BindOnce(&HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout,
                        base::Unretained(this)));
+    return;
   }
-  navigation_transition_type_ = navigation_context->GetPageTransition();
-  navigation_is_renderer_initiated_ = navigation_context->IsRendererInitiated();
+  if (state_ == State::kNone) {
+    // Store navigation parameters on initial navigation.
+    navigation_transition_type_ = navigation_context->GetPageTransition();
+    navigation_is_renderer_initiated_ =
+        navigation_context->IsRendererInitiated();
+  }
 }
 
 void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
@@ -184,13 +186,14 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (stopped_loading_to_upgrade_) {
-    DCHECK(!was_upgraded_);
-    DCHECK(!stopped_with_timeout_);
+  if (state_ == State::kNone) {
+    return;
+  }
+
+  if (state_ == State::kStoppedToUpgrade) {
+    state_ = State::kUpgraded;
     // Start an upgraded navigation.
     RecordUMA(Event::kUpgradeAttempted);
-    stopped_loading_to_upgrade_ = false;
-    was_upgraded_ = true;
     web::NavigationManager::WebLoadParams params(upgraded_https_url_);
     params.transition_type = navigation_transition_type_;
     params.is_renderer_initiated = navigation_is_renderer_initiated_;
@@ -200,18 +203,16 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (stopped_with_timeout_) {
+  if (state_ == State::kStoppedWithTimeout ||
+      state_ == State::kStoppedToFallback) {
     DCHECK(!timer_.IsRunning());
-    stopped_with_timeout_ = false;
-    RecordUMA(Event::kUpgradeTimedOut);
+    RecordUMA(state_ == State::kStoppedWithTimeout ? Event::kUpgradeTimedOut
+                                                   : Event::kUpgradeFailed);
     FallbackToHttp();
     return;
   }
 
-  if (!was_upgraded_) {
-    return;
-  }
-  was_upgraded_ = false;
+  DCHECK(state_ == State::kUpgraded || state_ == State::kDone);
   // The upgrade either failed or succeeded. In both cases, stop the timer.
   timer_.Stop();
 
@@ -221,6 +222,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
     return;
   }
 
+  state_ = State::kNone;
   if (navigation_context->GetUrl().SchemeIs(url::kHttpsScheme) ||
       IsFakeHTTPSForTesting(navigation_context->GetUrl())) {
     RecordUMA(Event::kUpgradeSucceeded);
@@ -228,12 +230,26 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
   }
 }
 
+void HttpsOnlyModeUpgradeTabHelper::StopToUpgrade(
+    const GURL& url,
+    const web::Referrer& referrer,
+    base::OnceCallback<void(web::WebStatePolicyDecider::PolicyDecision)>
+        callback) {
+  state_ = State::kStoppedToUpgrade;
+  // Copy navigation parameters, then cancel the current navigation.
+  http_url_ = url;
+  referrer_ = referrer;
+  upgraded_https_url_ = GetUpgradedHttpsUrl(url, https_port_for_testing_,
+                                            use_fake_https_for_testing_);
+  DCHECK(upgraded_https_url_.is_valid());
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+}
+
 void HttpsOnlyModeUpgradeTabHelper::FallbackToHttp() {
-  DCHECK(!was_upgraded_);
-  DCHECK(!stopped_with_timeout_);
+  DCHECK(state_ == State::kUpgraded || state_ == State::kStoppedWithTimeout ||
+         state_ == State::kStoppedToFallback);
   DCHECK(!timer_.IsRunning());
-  DCHECK(!is_http_fallback_navigation_);
-  is_http_fallback_navigation_ = true;
+  state_ = State::kFallbackStarted;
   // Start a new navigation to the original HTTP page. We'll then show an
   // interstitial for this navigation in ShouldAllowRequest().
   web::NavigationManager::WebLoadParams params(http_url_);
@@ -254,11 +270,14 @@ void HttpsOnlyModeUpgradeTabHelper::FallbackToHttp() {
           web_state()->GetWeakPtr(), std::move(params)));
 }
 
+void HttpsOnlyModeUpgradeTabHelper::ResetState() {
+  state_ = State::kNone;
+  timer_.Stop();
+}
+
 void HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout() {
-  DCHECK(!stopped_with_timeout_);
-  DCHECK(was_upgraded_);
-  stopped_with_timeout_ = true;
-  was_upgraded_ = false;
+  DCHECK(state_ == State::kUpgraded);
+  state_ = State::kStoppedWithTimeout;
   web_state()->Stop();
 }
 
@@ -271,6 +290,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   // Ignore subframe navigations and schemes that we don't care about.
   if (!response_info.for_main_frame ||
       !(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme))) {
+    ResetState();
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
@@ -278,6 +298,10 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
 
   // If the URL is in the allowlist, don't upgrade.
   if (IsHttpAllowedForUrl(url)) {
+    // The URL might have been allowlisted in another tab while we are loading
+    // this tab, so we can't make any assumptions about the state. Simply clear
+    // it.
+    ResetState();
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
@@ -285,16 +309,16 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
 
   // If already HTTPS (real or faux), simply allow the response.
   if (url.SchemeIs(url::kHttpsScheme) || IsFakeHTTPSForTesting(url)) {
+    timer_.Stop();
+    state_ = State::kDone;
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
 
-  if (is_http_fallback_navigation_) {
-    DCHECK(!stopped_loading_to_upgrade_);
-    DCHECK(!was_upgraded_);
+  if (state_ == State::kFallbackStarted) {
     DCHECK(!timer_.IsRunning());
-    is_http_fallback_navigation_ = false;
+    state_ = State::kDone;
     HttpsOnlyModeContainer* container =
         HttpsOnlyModeContainer::FromWebState(web_state());
     container->SetHttpUrl(http_url_);
@@ -305,12 +329,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   web::NavigationItem* item_pending =
       web_state()->GetNavigationManager()->GetPendingItem();
   if (!item_pending) {
-    // Clear everything.
-    timer_.Stop();
-    was_upgraded_ = false;
-    is_http_fallback_navigation_ = false;
-    stopped_loading_to_upgrade_ = false;
-    stopped_with_timeout_ = false;
+    ResetState();
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
@@ -327,6 +346,7 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
       // TODO(crbug.com/1302509): Also ignore POST requests. On Desktop and
       // Android we ignore all requests with methods other than "GET", but we
       // don't have method information here.
+      ResetState();
       std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Allow());
       return;
@@ -335,20 +355,20 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
     if (prerender_service_ &&
         prerender_service_->IsWebStatePrerendered(web_state())) {
       prerender_service_->CancelPrerender();
+      ResetState();
       std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Cancel());
       return;
     }
-    DCHECK(!stopped_loading_to_upgrade_);
-    // Copy navigation parameters, then cancel the current navigation.
-    http_url_ = url;
-    referrer_ = item_pending->GetReferrer();
-    upgraded_https_url_ = GetUpgradedHttpsUrl(url, https_port_for_testing_,
-                                              use_fake_https_for_testing_);
-    DCHECK(upgraded_https_url_.is_valid());
-    stopped_loading_to_upgrade_ = true;
-    std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    StopToUpgrade(url, item_pending->GetReferrer(), std::move(callback));
+    return;
+  }
+
+  if (state_ == State::kNone) {
+    // If the pending item was a failed upgrade but the upgrade bit wasn't set,
+    // this is likely an interstitial reload.
+    timer_.Stop();
+    StopToUpgrade(url, item_pending->GetReferrer(), std::move(callback));
     return;
   }
 
@@ -362,11 +382,11 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   // navigation.
   // This is a divergence from the desktop implementation of this feature which
   // relies on a redirect loop triggering a net error.
-  RecordUMA(Event::kUpgradeFailed);
-  DCHECK(was_upgraded_);
-  DCHECK(timer_.IsRunning());
-  was_upgraded_ = false;
+  DCHECK(state_ == State::kUpgraded || state_ == State::kNone);
   timer_.Stop();
+  state_ = State::kDone;
+  RecordUMA(Event::kUpgradeFailed);
+
   HttpsOnlyModeContainer* container =
       HttpsOnlyModeContainer::FromWebState(web_state());
   container->SetHttpUrl(url);
