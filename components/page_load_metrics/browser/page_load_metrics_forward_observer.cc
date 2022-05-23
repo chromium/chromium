@@ -217,13 +217,11 @@ void PageLoadMetricsForwardObserver::OnFirstMeaningfulPaintInMainFrameDocument(
 void PageLoadMetricsForwardObserver::OnFirstInputInPage(
     const mojom::PageLoadTiming& timing) {}
 
+// OnLoadingBehaviorObserved is called through PageLoadTracker::UpdateMetrics.
+// So, the event is always forwarded at the PageLoadTracker layer.
 void PageLoadMetricsForwardObserver::OnLoadingBehaviorObserved(
     content::RenderFrameHost* rfh,
-    int behavior_flags) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnLoadingBehaviorObserved(rfh, behavior_flags);
-}
+    int behavior_flags) {}
 
 void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,

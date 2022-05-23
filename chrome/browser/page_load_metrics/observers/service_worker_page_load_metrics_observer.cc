@@ -106,11 +106,12 @@ bool IsForwardBackLoad(ui::PageTransition transition) {
 
 ServiceWorkerPageLoadMetricsObserver::ServiceWorkerPageLoadMetricsObserver() {}
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ServiceWorkerPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // All events this class is interested in are preprocessed and forwarded at
+  // PageLoadTracker and observer doesn't need to care for forwarding.
   return STOP_OBSERVING;
 }
 
