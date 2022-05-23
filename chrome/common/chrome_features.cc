@@ -625,9 +625,11 @@ const base::Feature kIncognitoBrandConsistencyForAndroid{
     "IncognitoBrandConsistencyForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 // When enabled, users will see a warning when downloading from Incognito.
 const base::Feature kIncognitoDownloadsWarning{
     "IncognitoDownloadsWarning", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // When enabled, users will see updated UI in Incognito NTP
 const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
