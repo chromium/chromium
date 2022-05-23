@@ -530,8 +530,11 @@ public class CustomTabActivityIncognitoTest {
         CustomTabActivity customTabActivity = launchIncognitoCustomTab(intent);
 
         // Ensure that we did indeed create the re-auth controller.
-        IncognitoReauthController controller = customTabActivity.getRootUiCoordinatorForTesting()
-                                                       .getIncognitoReauthControllerForTesting();
-        assertNotNull(controller);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            IncognitoReauthController controller =
+                    customTabActivity.getRootUiCoordinatorForTesting()
+                            .getIncognitoReauthControllerForTesting();
+            assertNotNull(controller);
+        });
     }
 }
