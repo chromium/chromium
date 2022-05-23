@@ -21,7 +21,9 @@ import {PanelBackground} from '/chromevox/background/panel/panel_background.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 import {RangeAutomationHandler} from '/chromevox/background/range_automation_handler.js';
 import {ExtensionBridge} from '/chromevox/common/extension_bridge.js';
+import {JaPhoneticMap} from '/chromevox/third_party/tamachiyomi/ja_phonetic_map.js';
 import {InstanceChecker} from '/common/instance_checker.js';
+
 
 /**
  * @fileoverview The entry point for all ChromeVox related code for the

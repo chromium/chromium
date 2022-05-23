@@ -23,7 +23,6 @@ goog.require('CommandHandlerInterface');
 goog.require('EventSourceState');
 goog.require('EventStreamLogger');
 goog.require('ExtraCellsSpan');
-goog.require('JaPhoneticMap');
 goog.require('KeyCode');
 goog.require('KeySequence');
 goog.require('LibLouis');
