@@ -6,11 +6,12 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement, isBookmarkFolderElement} from './bookmark_folder.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BookmarksDragManager} from './bookmarks_drag_manager.js';
+import {getTemplate} from './bookmarks_list.html.js';
 
 // Key for localStorage object that refers to all the open folders.
 export const LOCAL_STORAGE_OPEN_FOLDERS_KEY = 'openFolders';
@@ -31,7 +32,7 @@ export class BookmarksListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

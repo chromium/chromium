@@ -5,8 +5,9 @@
 import '../strings.m.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './app.html.js';
 import {ContentNode, ContentType} from './read_anything.mojom-webui.js';
 import {ReadAnythingApiProxy, ReadAnythingApiProxyImpl} from './read_anything_api_proxy.js';
 
@@ -18,7 +19,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

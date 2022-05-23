@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("./side_panel.gni")
@@ -48,18 +48,18 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess_src") {
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = non_web_component_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_gen") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = web_component_files
+  in_files = html_wrapper_files
 }
 
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files + icons_html_files
 }
 
 mojo_root_folder =
@@ -98,7 +98,7 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  in_files = non_web_component_files + web_component_files + mojo_files
+  in_files = ts_files + html_wrapper_files + mojo_files
   definitions = [
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",

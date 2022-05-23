@@ -11,7 +11,9 @@ import './bookmarks/bookmarks_list.js';
 import './read_anything/app.js'; /* <read-anything-app> */
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './app.html.js';
 import {ReadingListApiProxy, ReadingListApiProxyImpl} from './reading_list/reading_list_api_proxy.js';
 
 // Key for localStorage object that refers to the last active tab's ID.
@@ -23,7 +25,7 @@ export class SidePanelAppElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
