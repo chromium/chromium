@@ -163,16 +163,15 @@ PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
 
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
-    mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
+    mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service,
     const blink::WebPluginParams& params)
     : client_(std::move(client)),
-      pdf_service_remote_(std::move(pdf_service_remote)),
+      pdf_service_(std::move(pdf_service)),
       initial_params_(params),
       pdf_accessibility_data_handler_(
           client_->CreateAccessibilityDataHandler(this)) {
-  auto* service = GetPdfService();
-  if (service)
-    service->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
+  DCHECK(pdf_service_);
+  pdf_service_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
 }
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
@@ -881,12 +880,9 @@ void PdfViewWebPlugin::SendMessage(base::Value::Dict message) {
 }
 
 void PdfViewWebPlugin::SaveAs() {
-  auto* service = GetPdfService();
-  if (!service)
-    return;
-
-  service->SaveUrlAs(GURL(GetURL().c_str()),
-                     network::mojom::ReferrerPolicy::kDefault);
+  // TODO(crbug.com/1302059): Is there a good reason to null-terminate here?
+  pdf_service_->SaveUrlAs(GURL(GetURL().c_str()),
+                          network::mojom::ReferrerPolicy::kDefault);
 }
 
 void PdfViewWebPlugin::SetFormTextFieldInFocus(bool in_focus) {
@@ -923,19 +919,11 @@ void PdfViewWebPlugin::SetAccessibilityViewportInfo(
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
-  auto* service = GetPdfService();
-  if (!service)
-    return;
-
-  service->UpdateContentRestrictions(content_restrictions);
+  pdf_service_->UpdateContentRestrictions(content_restrictions);
 }
 
 void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
-  auto* service = GetPdfService();
-  if (!service)
-    return;
-
-  service->SetPluginCanSave(can_save);
+  pdf_service_->SetPluginCanSave(can_save);
 }
 
 void PdfViewWebPlugin::DidStartLoading() {
@@ -964,16 +952,12 @@ void PdfViewWebPlugin::NotifySelectionChanged(const gfx::PointF& left,
                                               int left_height,
                                               const gfx::PointF& right,
                                               int right_height) {
-  auto* service = GetPdfService();
-  if (!service)
-    return;
-
-  service->SelectionChanged(left, left_height, right, right_height);
+  pdf_service_->SelectionChanged(left, left_height, right, right_height);
 }
 
 void PdfViewWebPlugin::NotifyUnsupportedFeature() {
   DCHECK(full_frame());
-  GetPdfService()->HasUnsupportedFeature();
+  pdf_service_->HasUnsupportedFeature();
 }
 
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
@@ -1090,10 +1074,6 @@ void PdfViewWebPlugin::OnSetAccessibilityViewportInfo(
     return;
   pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(viewport_info);
   // `this` may be deleted. Don't do anything else.
-}
-
-pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {
-  return pdf_service_remote_.is_bound() ? pdf_service_remote_.get() : nullptr;
 }
 
 void PdfViewWebPlugin::ResetRecentlySentFindUpdate() {

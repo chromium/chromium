@@ -185,10 +185,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
         PdfAccessibilityActionHandler* action_handler);
   };
 
-  PdfViewWebPlugin(
-      std::unique_ptr<Client> client,
-      mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
-      const blink::WebPluginParams& params);
+  PdfViewWebPlugin(std::unique_ptr<Client> client,
+                   mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service,
+                   const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
 
@@ -401,9 +400,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // asynchronously.
   void OnSetAccessibilityViewportInfo(AccessibilityViewportInfo viewport_info);
 
-  // May be null in unit tests.
-  pdf::mojom::PdfService* GetPdfService();
-
   void ResetRecentlySentFindUpdate();
 
   // Records metrics about the document metadata.
@@ -423,8 +419,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::unique_ptr<Client> const client_;
 
   // Used to access the services provided by the browser.
-  // May be unbound in unit tests.
-  mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_remote_;
+  mojo::AssociatedRemote<pdf::mojom::PdfService> const pdf_service_;
 
   mojo::Receiver<pdf::mojom::PdfListener> listener_receiver_{this};
 
