@@ -4955,6 +4955,14 @@
     "expiry_milestone": 104
   },
   {
+    "name": "privacy-guide-android",
+    "owners": [
+      "andzaytsev",
+      "msramek",
+      "chrome-friendly-settings@google.com"],
+    "expiry_milestone": 114
+  },
+  {
     "name": "privacy-sandbox-ads-apis",
     "owners": [
       "johnidel",

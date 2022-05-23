@@ -56968,6 +56968,7 @@ from previous Chrome versions.
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>
   <int value="-522075903"
       label="OmniboxOnFocusSuggestionsContextualWeb:enabled"/>
+  <int value="-521251533" label="PrivacyGuideAndroid:enabled"/>
   <int value="-520221221" label="UserDataSnapshot:enabled"/>
   <int value="-520004021" label="WebXRHitTest:disabled"/>
   <int value="-519960638" label="enable-site-engagement-service"/>
@@ -58750,6 +58751,7 @@ from previous Chrome versions.
   <int value="682916740" label="PdfUnseasoned:disabled"/>
   <int value="683013217" label="AllowPopupsDuringPageUnload:disabled"/>
   <int value="683433500" label="CommerceMerchantViewer:disabled"/>
+  <int value="683746280" label="PrivacyGuideAndroid:disabled"/>
   <int value="684198422" label="UnifiedPasswordManagerDesktop:enabled"/>
   <int value="684806628" label="TranslateLanguageByULP:disabled"/>
   <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>

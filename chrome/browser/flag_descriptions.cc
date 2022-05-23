@@ -2167,6 +2167,11 @@ const char kPrivacyGuide2Description[] =
     "Enables UI updates for Privacy Guide. This requires #privacy-guide to "
     "also be enabled";
 
+const char kPrivacyGuideAndroidName[] = "Privacy Guide on Android";
+const char kPrivacyGuideAndroidDescription[] =
+    "Shows a new subpage in Settings that helps the user to review various "
+    "privacy settings.";
+
 const char kPrivacySandboxAdsAPIsOverrideName[] = "Privacy Sandbox Ads APIs";
 const char kPrivacySandboxAdsAPIsOverrideDescription[] =
     "Enables Privacy Sandbox APIs: Attribution Reporting, Fledge, Topics, "

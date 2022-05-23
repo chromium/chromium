@@ -568,6 +568,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrivacyGuide2;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPrivacyGuideAndroid;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPushMessagingBackgroundMode;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

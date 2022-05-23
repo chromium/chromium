@@ -808,6 +808,9 @@ const base::Feature kPrivacyGuide{"PrivacyGuide",
 const base::Feature kPrivacyGuide2{"PrivacyGuide2",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPrivacyGuideAndroid{"PrivacyGuideAndroid",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables push subscriptions keeping Chrome running in the
 // background when closed.
 const base::Feature kPushMessagingBackgroundMode{

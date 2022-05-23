@@ -118,7 +118,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kElasticOverscroll,
     &features::kElidePrioritizationOfPreNativeBootstrapTasks,
     &features::kGiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority,
-    &features::kPrivacyGuide,
+    &features::kPrivacyGuideAndroid,
     &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForIcon,
     &features::kPwaUpdateDialogForName,

@@ -1212,6 +1212,9 @@ extern const char kPrivacyGuideDescription[];
 extern const char kPrivacyGuide2Name[];
 extern const char kPrivacyGuide2Description[];
 
+extern const char kPrivacyGuideAndroidName[];
+extern const char kPrivacyGuideAndroidDescription[];
+
 extern const char kPrivacySandboxAdsAPIsOverrideName[];
 extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 
