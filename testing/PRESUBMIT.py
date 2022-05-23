@@ -35,9 +35,15 @@ def CommonChecks(input_api, output_api):
       env=testing_env,
       run_on_python3=USE_PYTHON3,
       skip_shebang_check=True))
+  files_to_skip = input_api.DEFAULT_FILES_TO_SKIP
+  if input_api.is_windows:
+    # These scripts don't run on Windows and should not be linted on Windows -
+    # trying to do so will lead to spurious errors.
+    files_to_skip += ('xvfb.py', '.*host_info.py')
   output.extend(input_api.canned_checks.RunPylint(
       input_api,
       output_api,
+      files_to_skip=files_to_skip,
       version='2.7'))
 
   return output
