@@ -1,0 +1,67 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.autofill_assistant.password_change.proto";
+option java_multiple_files = true;
+
+package autofill_assistant.password_change;
+
+import "components/autofill_assistant/browser/public/external_action.proto";
+
+enum TopIcon {
+  TOP_ICON_UNSPECIFIED = 0;
+}
+
+enum ProgressStep {
+  PROGRESS_STEP_UNSPECIFIED = 0;
+
+  PROGRESS_STEP_START = 1;
+  PROGRESS_STEP_CHANGE_PASSWORD = 3;
+  PROGRESS_STEP_SAVE_PASSWORD = 4;
+  PROGRESS_STEP_END = 5;
+}
+
+message BasePrompt {
+  message Choice {
+    // The text shown on the chip/button.
+    optional string text = 1;
+
+    // Tag that identifies a choice.
+    optional string tag = 2;
+  }
+  // List of available choices in a prompt
+  repeated Choice choices = 1;
+}
+
+// Updates the side panel rendered in desktop during APC runs.
+message UpdateDesktopSidePanelSpecification {
+  // Icon rendered on top of the side panel.
+  optional TopIcon top_icon = 1;
+
+  // The title message shown to the user.
+  optional string title = 2;
+
+  // The description message shown to the user.
+  optional string description = 3;
+
+  // The current password change flow step.
+  optional ProgressStep progress_step = 4;
+
+  message Prompt {
+    oneof type {
+      // TODO(crbug.com/1328093): Add remaining prompt fieds .
+      BasePrompt prompt = 1;
+    }
+  }
+
+  // Optional prompt to ask for user input.
+  optional Prompt prompt = 5;
+}
+
+extend external.ActionInfo {
+  optional UpdateDesktopSidePanelSpecification update_side_panel = 447949102;
+}
