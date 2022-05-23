@@ -474,8 +474,14 @@ const base::Feature kAllowSyncXHRInPageDismissal{
     "AllowSyncXHRInPageDismissal", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Font enumeration and data access. https://crbug.com/535764
-const base::Feature kFontAccess{"FontAccess",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFontAccess {
+  "FontAccess",
+#if BUILDFLAG(IS_ANDROID)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Kill switch for the Compute Pressure API. https://crbug.com/1067627
 const base::Feature kComputePressure{"ComputePressure",
