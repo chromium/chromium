@@ -479,10 +479,6 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
 // (e.g. in AnalyzeMatchResult()) and actually apply them. We need to do this
 // in a second phase so that we know which ones actually won the cascade
 // before we start applying, as some properties can affect others.
-//
-// TODO(sesse): See if we can make this more efficient by iterating
-// directly over the BackingVector instead. In particular, that would
-// remove the Find() calls into map_.
 void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
   // We only need to apply the resolver part of the filter here;
   // the rest have been applied in the previous pass.
