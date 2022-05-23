@@ -8,6 +8,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./side_panel.gni")
 
 preprocess_folder = "preprocessed"
 
@@ -44,15 +45,52 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
-preprocess_if_expr("preprocess_web_components") {
+preprocess_if_expr("preprocess_src") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = non_web_component_files
+}
+
+preprocess_if_expr("preprocess_gen") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "app.ts" ]
+  in_files = web_component_files
 }
 
 html_to_js("web_components") {
-  js_files = [ "app.ts" ]
+  js_files = web_component_files
+}
+
+mojo_root_folder =
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel"
+
+copy("copy_mojo_bookmarks") {
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings_webui_js",
+  ]
+  sources = [ "$mojo_root_folder/bookmarks/bookmarks.mojom-webui.js" ]
+  outputs =
+      [ "$target_gen_dir/$preprocess_folder/bookmarks/{{source_file_part}}" ]
+}
+
+copy("copy_mojo_read_anything") {
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/read_anything:mojo_bindings_webui_js",
+  ]
+  sources = [ "$mojo_root_folder/read_anything/read_anything.mojom-webui.js" ]
+  outputs = [
+    "$target_gen_dir/$preprocess_folder/read_anything/{{source_file_part}}",
+  ]
+}
+
+copy("copy_mojo_reading_list") {
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings_webui_js",
+  ]
+  sources = [ "$mojo_root_folder/reading_list/reading_list.mojom-webui.js" ]
+  outputs =
+      [ "$target_gen_dir/$preprocess_folder/reading_list/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
@@ -60,22 +98,7 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   composite = true
-  in_files = [
-    "app.ts",
-    "bookmarks/bookmark_folder.ts",
-    "bookmarks/bookmarks_list.ts",
-    "bookmarks/bookmarks_api_proxy.ts",
-    "bookmarks/bookmarks_drag_manager.ts",
-    "bookmarks/bookmarks.mojom-webui.js",
-    "read_anything/app.ts",
-    "read_anything/read_anything_api_proxy.ts",
-    "read_anything/read_anything.mojom-webui.js",
-    "reading_list/app.ts",
-    "reading_list/icons.ts",
-    "reading_list/reading_list_api_proxy.ts",
-    "reading_list/reading_list_item.ts",
-    "reading_list/reading_list.mojom-webui.js",
-  ]
+  in_files = non_web_component_files + web_component_files + mojo_files
   definitions = [
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/bookmarks.d.ts",
@@ -88,15 +111,10 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
-    ":preprocess_web_components",
-    "bookmarks:preprocess",
-    "bookmarks:preprocess_mojo",
-    "bookmarks:preprocess_web_components",
-    "read_anything:preprocess",
-    "read_anything:preprocess_mojo",
-    "read_anything:preprocess_web_components",
-    "reading_list:preprocess",
-    "reading_list:preprocess_mojo",
-    "reading_list:preprocess_web_components",
+    ":copy_mojo_bookmarks",
+    ":copy_mojo_read_anything",
+    ":copy_mojo_reading_list",
+    ":preprocess_gen",
+    ":preprocess_src",
   ]
 }

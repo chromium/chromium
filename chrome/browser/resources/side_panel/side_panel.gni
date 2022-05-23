@@ -1,0 +1,27 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+non_web_component_files = [
+  "bookmarks/bookmarks_api_proxy.ts",
+  "bookmarks/bookmarks_drag_manager.ts",
+  "read_anything/read_anything_api_proxy.ts",
+  "reading_list/reading_list_api_proxy.ts",
+]
+
+# Files holding a Polymer element definition and have an equivalent .html file.
+web_component_files = [
+  "app.ts",
+  "bookmarks/bookmark_folder.ts",
+  "bookmarks/bookmarks_list.ts",
+  "read_anything/app.ts",
+  "reading_list/app.ts",
+  "reading_list/icons.ts",
+  "reading_list/reading_list_item.ts",
+]
+
+mojo_files = [
+  "bookmarks/bookmarks.mojom-webui.js",
+  "read_anything/read_anything.mojom-webui.js",
+  "reading_list/reading_list.mojom-webui.js",
+]
