@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -87,17 +88,6 @@ namespace {
 // The size of overflow symbol images.
 NSInteger kOverflowSymbolPointSize = 22;
 
-enum class Destination {
-  Bookmarks = 0,
-  History = 1,
-  ReadingList = 2,
-  Passwords = 3,
-  Downloads = 4,
-  RecentTabs = 5,
-  SiteInfo = 6,
-  Settings = 7,
-};
-
 typedef void (^Handler)(void);
 
 OverflowMenuAction* CreateOverflowMenuAction(int nameID,
@@ -133,36 +123,6 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                           accessibilityIdentifier:accessibilityID
                                enterpriseDisabled:NO
                                           handler:handler];
-}
-
-void RecordUmaActionForDestination(Destination destination) {
-  switch (destination) {
-    case Destination::Bookmarks:
-      RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));
-      break;
-    case Destination::History:
-      RecordAction(UserMetricsAction("MobileMenuHistory"));
-      break;
-    case Destination::ReadingList:
-      RecordAction(UserMetricsAction("MobileMenuReadingList"));
-      break;
-    case Destination::Passwords:
-      RecordAction(UserMetricsAction("MobileMenuPasswords"));
-      break;
-    case Destination::Downloads:
-      RecordAction(
-          UserMetricsAction("MobileDownloadFolderUIShownFromToolsMenu"));
-      break;
-    case Destination::RecentTabs:
-      RecordAction(UserMetricsAction("MobileMenuRecentTabs"));
-      break;
-    case Destination::SiteInfo:
-      RecordAction(UserMetricsAction("MobileMenuSiteInformation"));
-      break;
-    case Destination::Settings:
-      RecordAction(UserMetricsAction("MobileMenuSettings"));
-      break;
-  }
 }
 
 OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
@@ -435,12 +395,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           : @"overflow_menu_destination_bookmarks";
   self.bookmarksDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
-                          destinationEnum:Destination::Bookmarks
+                              destination:overflow_menu::Destination::Bookmarks
                                 imageName:bookmarksIconName
                           accessibilityID:kToolsMenuBookmarksId
                                   handler:^{
                                     [weakSelf openBookmarks];
                                   }];
+
   // Downloads destination.
   NSString* downloadsIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
@@ -448,7 +409,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           : @"overflow_menu_destination_downloads";
   self.downloadsDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
-                          destinationEnum:Destination::Downloads
+                              destination:overflow_menu::Destination::Downloads
                                 imageName:downloadsIconName
                           accessibilityID:kToolsMenuDownloadsId
                                   handler:^{
@@ -461,7 +422,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                   : @"overflow_menu_destination_history";
   self.historyDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
-                          destinationEnum:Destination::History
+                              destination:overflow_menu::Destination::History
                                 imageName:historyIconName
                           accessibilityID:kToolsMenuHistoryId
                                   handler:^{
@@ -480,25 +441,26 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                  : @"overflow_menu_destination_passwords");
   self.passwordsDestination =
       [self createOverflowMenuDestination:passwordTitleID
-                          destinationEnum:Destination::Passwords
+                              destination:overflow_menu::Destination::Passwords
                                 imageName:passwordIconImageName
                           accessibilityID:@""
                                   handler:^{
                                     [weakSelf openPasswords];
                                   }];
+
   // Reading List destination.
   NSString* readingListIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
           ? @"overflow_menu_destination_reading_list_simple"
           : @"overflow_menu_destination_reading_list";
-  self.readingListDestination =
-      [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
-                          destinationEnum:Destination::ReadingList
-                                imageName:readingListIconName
-                          accessibilityID:kToolsMenuReadingListId
-                                  handler:^{
-                                    [weakSelf openReadingList];
-                                  }];
+  self.readingListDestination = [self
+      createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
+                        destination:overflow_menu::Destination::ReadingList
+                          imageName:readingListIconName
+                    accessibilityID:kToolsMenuReadingListId
+                            handler:^{
+                              [weakSelf openReadingList];
+                            }];
 
   // Recent Tabs destination.
   NSString* recentTabsIconName =
@@ -507,12 +469,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           : @"overflow_menu_destination_recent_tabs";
   self.recentTabsDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
-                          destinationEnum:Destination::RecentTabs
+                              destination:overflow_menu::Destination::RecentTabs
                                 imageName:recentTabsIconName
                           accessibilityID:kToolsMenuOtherDevicesId
                                   handler:^{
                                     [weakSelf openRecentTabs];
                                   }];
+
   // Settings destination.
   NSString* settingsIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
@@ -520,12 +483,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           : @"overflow_menu_destination_settings";
   self.settingsDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
-                          destinationEnum:Destination::Settings
+                              destination:overflow_menu::Destination::Settings
                                 imageName:settingsIconName
                           accessibilityID:kToolsMenuSettingsId
                                   handler:^{
                                     [weakSelf openSettings];
                                   }];
+
   // Site Info destination.
   NSString* siteInfoIconName =
       IsNewOverflowMenuSimpleDestinationIconsEnabled()
@@ -533,7 +497,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           : @"overflow_menu_destination_site_info";
   self.siteInfoDestination =
       [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
-                          destinationEnum:Destination::SiteInfo
+                              destination:overflow_menu::Destination::SiteInfo
                                 imageName:siteInfoIconName
                           accessibilityID:kToolsMenuSiteInformation
                                   handler:^{
@@ -825,7 +789,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // carousel.
 - (OverflowMenuDestination*)
     createOverflowMenuDestination:(int)nameID
-                  destinationEnum:(Destination)destinationEnum
+                      destination:(overflow_menu::Destination)destination
                         imageName:(NSString*)imageName
                   accessibilityID:(NSString*)accessibilityID
                           handler:(Handler)handler {
@@ -834,9 +798,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   NSString* name = l10n_util::GetNSString(nameID);
 
   auto handlerWithMetrics = ^{
-    RecordUmaActionForDestination(destinationEnum);
+    overflow_menu::RecordUmaActionForDestination(destination);
 
     if (IsSmartSortingNewOverflowMenuEnabled()) {
+      // NOTE: swapping name for destination coming in subsequent CL very soon!
       [weakSelf.destinationUsageHistory trackDestinationClick:name];
     }
 

@@ -4,6 +4,14 @@
 
 import("//build/config/ios/swift_source_set.gni")
 
+source_set("overflow_menu_constants") {
+  sources = [
+    "overflow_menu_constants.cc",
+    "overflow_menu_constants.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("overflow_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -14,6 +22,7 @@ source_set("overflow_menu") {
   ]
   deps = [
     ":feature_flags",
+    ":overflow_menu_constants",
     ":overflow_menu_swift",
     "resources:overflow_menu_action_bookmark",
     "resources:overflow_menu_action_clear_browsing_data",
