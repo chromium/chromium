@@ -31,5 +31,9 @@ const base::Feature kSegmentationPlatformLowEngagementFeature{
     "SegmentationPlatformLowEngagementFeature",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSegmentationPlatformFeedSegmentFeature{
+    "SegmentationPlatformFeedSegmentFeature",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace segmentation_platform

@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <variants name="BooleanModel">
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
+  <variant name="FeedUserSegment"/>
   <variant name="QueryTiles"/>
 </variants>
 
@@ -38,6 +39,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="DummyFeature"/>
+  <variant name="FeedUserSegment"/>
   <variant name="QueryTiles"/>
 </variants>
 

@@ -26,6 +26,9 @@ extern const base::Feature kSegmentationPlatformUkmEngine;
 // Feature flag for enabling low engagement segmentation key.
 extern const base::Feature kSegmentationPlatformLowEngagementFeature;
 
+// Feature flag for enabling Feed user segments feature.
+extern const base::Feature kSegmentationPlatformFeedSegmentFeature;
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

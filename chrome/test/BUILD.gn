@@ -5250,6 +5250,7 @@ test("unit_tests") {
     "../browser/search_engines/template_url_parser_unittest.cc",
     "../browser/search_engines/template_url_service_sync_unittest.cc",
     "../browser/search_engines/template_url_service_unittest.cc",
+    "../browser/segmentation_platform/default_model/feed_user_segment_unittest.cc",
     "../browser/segmentation_platform/default_model/low_user_engagement_model_unittest.cc",
     "../browser/services_unittest.cc",
     "../browser/sessions/chrome_serialized_navigation_driver_unittest.cc",

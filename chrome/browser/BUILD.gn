@@ -1525,6 +1525,8 @@ static_library("browser") {
     "security_events/security_event_sync_bridge_impl.h",
     "segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.cc",
     "segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.h",
+    "segmentation_platform/default_model/feed_user_segment.cc",
+    "segmentation_platform/default_model/feed_user_segment.h",
     "segmentation_platform/default_model/low_user_engagement_model.cc",
     "segmentation_platform/default_model/low_user_engagement_model.h",
     "segmentation_platform/default_model/metadata_writer.cc",

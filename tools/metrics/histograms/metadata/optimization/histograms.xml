@@ -44,6 +44,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationChromeStartAndroid"
       summary="Chrome Start Android"/>
   <variant name="SegmentationDummyFeature" summary="Dummy feature"/>
+  <variant name="SegmentationFeedUser"
+      summary="Segmentation: Feed usage in Chrome"/>
   <variant name="SegmentationNewTab" summary="Segmentation: New tab page user"/>
   <variant name="SegmentationQueryTiles" summary="Query tiles"/>
   <variant name="SegmentationShare" summary="Segmentation: Share user"/>
