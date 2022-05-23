@@ -370,6 +370,9 @@ try_.compilator_builder(
 
 try_.builder(
     name = "linux_chromium_cfi_rel_ng",
+    mirrors = [
+        "ci/Linux CFI",
+    ],
     cores = 32,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 7 * time.hour,
