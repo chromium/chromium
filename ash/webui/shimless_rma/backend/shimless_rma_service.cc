@@ -991,6 +991,8 @@ void ShimlessRmaService::LaunchDiagnostics() {
     return;
   }
   shimless_rma_delegate_->ShowDiagnosticsDialog();
+
+  SendMetricOnLaunchDiagnostics();
 }
 
 void ShimlessRmaService::EndRma(
@@ -1017,6 +1019,30 @@ void ShimlessRmaService::EndRmaForgetNetworkResponse(
     EndRmaCallback callback) {
   state_proto_.mutable_repair_complete()->set_shutdown(shutdown_method);
   TransitionNextStateGeneric(std::move(callback));
+}
+
+////////////////////////////////
+// Metrics
+void ShimlessRmaService::SendMetricOnLaunchDiagnostics() {
+  rmad::RecordBrowserActionMetricRequest request;
+  request.set_diagnostics(true);
+  request.set_os_update(false);
+
+  RmadClient::Get()->RecordBrowserActionMetric(
+      request, base::BindOnce(&ShimlessRmaService::OnMetricsReply,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShimlessRmaService::OnMetricsReply(
+    absl::optional<rmad::RecordBrowserActionMetricReply> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to call rmad::RecordBrowserActionMetric";
+    return;
+  }
+
+  if (response->error() != rmad::RmadErrorCode::RMAD_ERROR_OK) {
+    LOG(ERROR) << "Failed to upload metrics";
+  }
 }
 
 ////////////////////////////////

@@ -65,8 +65,34 @@ class FakeRmadClientForTest : public FakeRmadClient {
     FakeRmadClient::TransitionNextState(state, std::move(callback));
   }
 
+  void RecordBrowserActionMetric(
+      const rmad::RecordBrowserActionMetricRequest request,
+      DBusMethodCallback<rmad::RecordBrowserActionMetricReply> callback)
+      override {
+    rmad::RecordBrowserActionMetricReply response;
+    response.set_error(rmad::RmadErrorCode::RMAD_ERROR_OK);
+    std::move(callback).Run(response);
+
+    metric_diagnostics = request.diagnostics();
+    metric_os_update = request.os_update();
+    ++record_browser_action_metric_counter_;
+  }
+
+  uint32_t GetRecordBrowserActionMetricCount() {
+    return record_browser_action_metric_counter_;
+  }
+
+  bool GetMetricOsUpdate() { return metric_os_update; }
+
+  bool GetMetricDiagnostics() { return metric_diagnostics; }
+
   base::RepeatingCallback<void(const rmad::RmadState& state)>
       check_state_callback;
+
+ private:
+  uint32_t record_browser_action_metric_counter_ = 0;
+  bool metric_diagnostics = false;
+  bool metric_os_update = false;
 };
 
 // A fake impl of ShimlessRmaDelegate.
@@ -2915,6 +2941,31 @@ TEST_F(ShimlessRmaServiceTest, EndRmaAndRebootFromWrongStateFails) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, LaunchDiagnosticsSendsMetric) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kRepairComplete);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  fake_rmad_client_()->SetRecordBrowserActionMetricReply(rmad::RMAD_ERROR_OK);
+
+  EXPECT_EQ(0u, fake_rmad_client_()->GetRecordBrowserActionMetricCount());
+
+  shimless_rma_provider_->LaunchDiagnostics();
+  run_loop.RunUntilIdle();
+
+  EXPECT_EQ(1u, fake_rmad_client_()->GetRecordBrowserActionMetricCount());
+  EXPECT_TRUE(fake_rmad_client_()->GetMetricDiagnostics());
+  EXPECT_FALSE(fake_rmad_client_()->GetMetricOsUpdate());
 }
 
 class FakeErrorObserver : public mojom::ErrorObserver {

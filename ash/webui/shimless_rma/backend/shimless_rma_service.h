@@ -186,6 +186,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                         double progress,
                         update_engine::ErrorCode error_code);
 
+  // Sends a metric to the platform side when the Diagnostics app is launched.
+  void SendMetricOnLaunchDiagnostics();
+
  private:
   using TransitionStateCallback =
       base::OnceCallback<void(mojom::State, bool, bool, rmad::RmadErrorCode)>;
@@ -238,6 +241,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // Confirms if the network was dropped. Invokes `end_rma_callback_` once all
   // the expected networks are dropped.
   void OnForgetNetwork(const std::string& guid, bool success);
+
+  // Handles responses from the platform to diagnostics requests.
+  void OnMetricsReply(
+      absl::optional<rmad::RecordBrowserActionMetricReply> response);
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
