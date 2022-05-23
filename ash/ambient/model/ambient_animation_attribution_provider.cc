@@ -4,18 +4,36 @@
 
 #include "ash/ambient/model/ambient_animation_attribution_provider.h"
 
+#include <string>
+
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/utility/lottie_util.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/lottie/animation.h"
 
 namespace ash {
 
 namespace {
+
+// Returns the attribution text node name with the given |idx|.
+// 1 -> "CrOS_AttributionNode1"
+// 2 -> "CrOS_AttributionNode2"
+// ...
+std::string BuildAttributionNodeName(int idx) {
+  return base::StringPrintf("%s_Attribution_Text%d",
+                            kLottieCustomizableIdPrefix.data(), idx);
+}
 
 // Not all text nodes in the animation are necessarily ones that should hold
 // photo attribution. Some animations may have static text embedded in them.
@@ -32,16 +50,38 @@ namespace {
 // See "UX Guidance" below for why.
 std::vector<cc::SkottieResourceIdHash> GetAttributionNodeIds(
     const cc::SkottieWrapper& skottie) {
-  base::flat_set<std::string> attribution_node_names_sorted;
+  RE2 attribution_node_pattern(base::StrCat(
+      {kLottieCustomizableIdPrefix, R"(_Attribution_Text([[:digit:]]+))"}));
+
+  // Note the indices are not required to be contiguous (1, 2, 3, ...). In
+  // practice they probably are, but the code can handle "gaps" (1, 2, 4, ...).
+  base::flat_set<int> attribution_node_indices_sorted;
   for (const std::string& text_node_name : skottie.GetTextNodeNames()) {
-    if (IsCustomizableLottieId(text_node_name))
-      attribution_node_names_sorted.insert(text_node_name);
+    if (!IsCustomizableLottieId(text_node_name)) {
+      DVLOG(4) << "Ignoring static text node in animation";
+      continue;
+    }
+
+    // Index embedded within the attribution text node's name:
+    // "CrOS_AttributionNode1" -> 1
+    // "CrOS_AttributionNode2" -> 2
+    int attribution_node_idx = 0;
+    if (!RE2::FullMatch(text_node_name, attribution_node_pattern,
+                        &attribution_node_idx)) {
+      LOG(DFATAL) << "Failed to parse index from text attribution node "
+                  << text_node_name;
+      continue;
+    }
+
+    if (!attribution_node_indices_sorted.insert(attribution_node_idx).second) {
+      LOG(DFATAL) << "Found duplicated attribution node names: "
+                  << text_node_name;
+    }
   }
   std::vector<cc::SkottieResourceIdHash> attribution_node_ids;
-  for (const std::string& attribution_node_name :
-       attribution_node_names_sorted) {
+  for (int idx : attribution_node_indices_sorted) {
     attribution_node_ids.push_back(
-        cc::HashSkottieResourceId(attribution_node_name));
+        cc::HashSkottieResourceId(BuildAttributionNodeName(idx)));
   }
   return attribution_node_ids;
 }
