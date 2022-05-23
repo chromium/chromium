@@ -1618,7 +1618,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 }
 
 // Check that window.focus works for cross-process popups.
-IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest, PopupWindowFocus) {
+// Flaky on ChromeOS debug and ASAN builds. https://crbug.com/1326293
+#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#define MAYBE_PopupWindowFocus DISABLED_PopupWindowFocus
+#else
+#define MAYBE_PopupWindowFocus PopupWindowFocus
+#endif
+IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
+                       MAYBE_PopupWindowFocus) {
   GURL main_url(embedded_test_server()->GetURL("/page_with_focus_events.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
