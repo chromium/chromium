@@ -164,6 +164,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "win10_chromium_x64_rel_ng",
+    check_for_flakiness = True,
     compilator = "win10_chromium_x64_rel_ng-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
@@ -188,6 +189,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "win10_chromium_x64_rel_ng-compilator",
+    check_for_flakiness = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_list_view = "try",
     # TODO (crbug.com/1245171): Revert when root issue is fixed
