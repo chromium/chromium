@@ -603,10 +603,8 @@ void CrostiniSection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetCrostiniContainerUpgradeSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniDiskResizingSearchConcepts());
 
-  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_))
-    return;
-
-  if (!pref_service_->GetBoolean(crostini::prefs::kCrostiniEnabled)) {
+  if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_) ||
+      !pref_service_->GetBoolean(crostini::prefs::kCrostiniEnabled)) {
     updater.AddSearchTags(GetCrostiniOptedOutSearchConcepts());
     return;
   }
