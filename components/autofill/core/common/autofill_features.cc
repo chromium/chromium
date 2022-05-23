@@ -425,12 +425,19 @@ const base::Feature kAutofillRationalizeStreetAddressAndAddressLine{
     "AutofillRationalizeStreetAddressAndAddressLine",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Clear fields which are not visible in the settings for a profile's country,
-// both during profile import and on startup.
+// Prevents Autofill from importing setting-inaccessible field types on profile
+// import.
 // TODO(crbug.com/1299435): Cleanup when launched.
 const base::Feature kAutofillRemoveInaccessibleProfileValues{
     "AutofillRemoveInaccessibleProfileValues",
     base::FEATURE_DISABLED_BY_DEFAULT};
+// If enabled, setting-inaccessible field types are additionally removed from
+// existing profiles on startup. These can exit in profile imported prior to
+// AutofillRemoveInaccessibleProfileValues.
+const base::FeatureParam<bool>
+    kAutofillRemoveInaccessibleProfileValuesOnStartup{
+        &kAutofillRemoveInaccessibleProfileValues,
+        "remove_inaccessible_fields_on_startup", false};
 
 // If enabled, invalid phone numbers are removed on profile import, rather than
 // invalidating the entire profile.

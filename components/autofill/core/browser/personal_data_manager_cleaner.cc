@@ -157,7 +157,8 @@ void PersonalDataManagerCleaner::RemoveOrphanAutofillTableRows() {
 
 void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillRemoveInaccessibleProfileValues)) {
+          features::kAutofillRemoveInaccessibleProfileValues) ||
+      !features::kAutofillRemoveInaccessibleProfileValuesOnStartup.Get()) {
     return;
   }
 
