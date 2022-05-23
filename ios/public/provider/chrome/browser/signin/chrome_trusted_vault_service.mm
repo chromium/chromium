@@ -22,11 +22,6 @@ void ChromeTrustedVaultService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ChromeTrustedVaultService::ReauthenticationForOptIn(
-    ChromeIdentity* chrome_identity,
-    UIViewController* presentingViewController,
-    void (^callback)(BOOL success, NSError* error)) {}
-
 void ChromeTrustedVaultService::NotifyKeysChanged() {
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged();
