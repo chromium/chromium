@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.common.base.Optional;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.ModelType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -119,7 +121,8 @@ public class PasswordManagerHelper {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
-        if (credentialManagerLauncher != null && hasChosenToSyncPasswords(syncService)) {
+        if (credentialManagerLauncher != null && hasChosenToSyncPasswords(syncService)
+                && !hasPersistentAuthError(syncService)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(
@@ -131,6 +134,15 @@ public class PasswordManagerHelper {
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(settingsLauncher.createSettingsActivityIntent(
                 context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
+    }
+
+    // TODO(crbug.com/1327294): Make sure we rely on the same util in all places that need
+    // to check whether UPM can be used (for password check as well as for all other cases that
+    // share the same preconditions, e.g. launching the credential manager).
+    public static boolean canUseUpmCheckup() {
+        SyncService syncService = SyncService.get();
+        return PasswordManagerHelper.usesUnifiedPasswordManagerUI() && syncService != null
+                && hasChosenToSyncPasswords(syncService) && !hasPersistentAuthError(syncService);
     }
 
     public static void showPasswordCheckup(Context context, @PasswordCheckReferrer int referrer,
@@ -254,6 +266,29 @@ public class PasswordManagerHelper {
                             loadingDialogCoordinator.getState());
                     loadingDialogCoordinator.dismiss();
                 });
+    }
+
+    private static boolean hasPersistentAuthError(@NonNull SyncService syncService) {
+        // TODO(crbug.com/1327311): Ensure that the enum is generated from C++ and maybe
+        // that the transient check is properly mirrored in java to avoid manual code duplication
+        // which is error-prone.
+        switch (syncService.getAuthError()) {
+            // These are failures that are likely to succeed if tried again (or there is no
+            // failure.
+            case GoogleServiceAuthError.State.NONE:
+            case GoogleServiceAuthError.State.CONNECTION_FAILED:
+            case GoogleServiceAuthError.State.SERVICE_UNAVAILABLE:
+            case GoogleServiceAuthError.State.REQUEST_CANCELED:
+                return false;
+            case GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS:
+            case GoogleServiceAuthError.State.USER_NOT_SIGNED_UP:
+            case GoogleServiceAuthError.State.UNEXPECTED_SERVICE_RESPONSE:
+            case GoogleServiceAuthError.State.SERVICE_ERROR:
+                return true;
+            default:
+                assert false : "All error values should be classified as persistent or transient";
+                return true;
+        }
     }
 
     private static void recordFailureMetrics(
