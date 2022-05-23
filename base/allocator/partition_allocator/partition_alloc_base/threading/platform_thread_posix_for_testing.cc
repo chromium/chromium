@@ -16,7 +16,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_internal_posix.h"
-#include "base/check_op.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -71,7 +71,7 @@ void* ThreadFunc(void* params) {
 bool CreateThread(size_t stack_size,
                   PlatformThreadForTesting::Delegate* delegate,
                   PlatformThreadHandle* thread_handle) {
-  DCHECK(thread_handle);
+  PA_DCHECK(thread_handle);
   base::InitThreading();
 
   pthread_attr_t attributes;
@@ -135,7 +135,7 @@ void PlatformThreadForTesting::Join(PlatformThreadHandle thread_handle) {
   //
   // base::internal::ScopedBlockingCallWithBaseSyncPrimitives
   //   scoped_blocking_call(base::BlockingType::MAY_BLOCK);
-  CHECK_EQ(0, pthread_join(thread_handle.platform_handle(), nullptr));
+  PA_CHECK(0 == pthread_join(thread_handle.platform_handle(), nullptr));
 }
 
 // static

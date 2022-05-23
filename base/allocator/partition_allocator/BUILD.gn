@@ -75,6 +75,8 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc_base/atomic_ref_count.h",
     "partition_alloc_base/bit_cast.h",
     "partition_alloc_base/bits.h",
+    "partition_alloc_base/check.cc",
+    "partition_alloc_base/check.h",
     "partition_alloc_base/compiler_specific.h",
     "partition_alloc_base/cpu.cc",
     "partition_alloc_base/cpu.h",

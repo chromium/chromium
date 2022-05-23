@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "build/build_config.h"
@@ -38,7 +39,7 @@ void InitThreading() {
                            withObject:nil];
     multithreaded = YES;
 
-    DCHECK([NSThread isMultiThreaded]);
+    PA_DCHECK([NSThread isMultiThreaded]);
   }
 }
 

@@ -20,8 +20,8 @@ bool RefCountedThreadSafeBase::HasAtLeastOneRef() const {
 
 #if DCHECK_IS_ON()
 RefCountedThreadSafeBase::~RefCountedThreadSafeBase() {
-  DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
-                      "calling Release()";
+  PA_DCHECK(in_dtor_) << "RefCountedThreadSafe object deleted without "
+                         "calling Release()";
 }
 #endif
 

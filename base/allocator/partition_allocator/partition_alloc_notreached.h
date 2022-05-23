@@ -6,7 +6,6 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_NOTREACHED_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging_buildflags.h"
 
@@ -16,10 +15,10 @@
 // So PA_NOTREACHED() uses PA_DCHECK() instead of DCHECK().
 
 #if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-#define PA_NOTREACHED()                                                        \
-  true ? ::logging::RawError(__FILE__                                          \
-                             "(" PA_STRINGIFY(__LINE__) ") NOTREACHED() hit.") \
-       : EAT_CHECK_STREAM_PARAMS()
+#define PA_NOTREACHED()                                                    \
+  true ? ::partition_alloc::internal::logging::RawError(                   \
+             __FILE__ "(" PA_STRINGIFY(__LINE__) ") PA_NOTREACHED() hit.") \
+       : PA_EAT_CHECK_STREAM_PARAMS()
 
 #elif BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OFFICIAL_BUILD) && \
     defined(NDEBUG) && DCHECK_IS_ON()
@@ -37,11 +36,11 @@
 //     case Y:
 //     ...
 // So define PA_NOTREACHED() by using async-signal-safe RawCheck().
-#define PA_NOTREACHED()                                                   \
-  UNLIKELY(true)                                                          \
-  ? ::logging::RawCheck(__FILE__                                          \
-                        "(" PA_STRINGIFY(__LINE__) ") NOTREACHED() hit.") \
-  : EAT_CHECK_STREAM_PARAMS()
+#define PA_NOTREACHED()                                               \
+  UNLIKELY(true)                                                      \
+  ? ::partition_alloc::internal::logging::RawCheck(                   \
+        __FILE__ "(" PA_STRINGIFY(__LINE__) ") PA_NOTREACHED() hit.") \
+  : PA_EAT_CHECK_STREAM_PARAMS()
 
 #else
 

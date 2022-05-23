@@ -8,8 +8,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
-#include "base/check.h"
-#include "base/check_op.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 
@@ -156,7 +155,7 @@ void PlatformThreadForTesting::YieldCurrentThread() {
 
 // static
 void PlatformThreadForTesting::Join(PlatformThreadHandle thread_handle) {
-  DCHECK(thread_handle.platform_handle());
+  PA_DCHECK(thread_handle.platform_handle());
 
   DWORD thread_id = 0;
   thread_id = ::GetThreadId(thread_handle.platform_handle());
@@ -178,7 +177,7 @@ void PlatformThreadForTesting::Join(PlatformThreadHandle thread_handle) {
 
   // Wait for the thread to exit.  It should already have terminated but make
   // sure this assumption is valid.
-  CHECK_EQ(WAIT_OBJECT_0,
+  PA_CHECK(WAIT_OBJECT_0 ==
            WaitForSingleObject(thread_handle.platform_handle(), INFINITE));
   CloseHandle(thread_handle.platform_handle());
 }
@@ -187,7 +186,7 @@ void PlatformThreadForTesting::Join(PlatformThreadHandle thread_handle) {
 bool PlatformThreadForTesting::Create(size_t stack_size,
                                       Delegate* delegate,
                                       PlatformThreadHandle* thread_handle) {
-  DCHECK(thread_handle);
+  PA_DCHECK(thread_handle);
   return CreateThreadInternal(stack_size, delegate, thread_handle);
 }
 

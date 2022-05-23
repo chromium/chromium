@@ -8,9 +8,8 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/atomic_ref_count.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/base_export.h"
-#include "base/check.h"
-#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
@@ -61,37 +60,37 @@ class BASE_EXPORT RefCountedThreadSafeBase {
 
   void Adopted() const {
 #if DCHECK_IS_ON()
-    DCHECK(needs_adopt_ref_);
+    PA_DCHECK(needs_adopt_ref_);
     needs_adopt_ref_ = false;
 #endif
   }
 
   PA_ALWAYS_INLINE void AddRefImpl() const {
 #if DCHECK_IS_ON()
-    DCHECK(!in_dtor_);
+    PA_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
     // MakeRefCounted.
-    DCHECK(!needs_adopt_ref_);
+    PA_DCHECK(!needs_adopt_ref_);
 #endif
     ref_count_.Increment();
   }
 
   PA_ALWAYS_INLINE void AddRefWithCheckImpl() const {
 #if DCHECK_IS_ON()
-    DCHECK(!in_dtor_);
+    PA_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
     // MakeRefCounted.
-    DCHECK(!needs_adopt_ref_);
+    PA_DCHECK(!needs_adopt_ref_);
 #endif
-    CHECK_GT(ref_count_.Increment(), 0);
+    PA_CHECK(ref_count_.Increment() > 0);
   }
 
   PA_ALWAYS_INLINE bool ReleaseImpl() const {
 #if DCHECK_IS_ON()
-    DCHECK(!in_dtor_);
-    DCHECK(!ref_count_.IsZero());
+    PA_DCHECK(!in_dtor_);
+    PA_DCHECK(!ref_count_.IsZero());
 #endif
     if (!ref_count_.Decrement()) {
 #if DCHECK_IS_ON()

@@ -10,7 +10,7 @@
 
 #include <limits>
 
-#include "base/check_op.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
 namespace partition_alloc::internal::base {
 
@@ -21,7 +21,7 @@ uint64_t RandUint64() {
 }
 
 uint64_t RandGenerator(uint64_t range) {
-  DCHECK_GT(range, 0u);
+  PA_DCHECK(range > 0u);
   // We must discard random results above this number, as they would
   // make the random generator non-uniform (consider e.g. if
   // MAX_UINT64 was 7 and |range| was 5, then a result of 1 would be twice

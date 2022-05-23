@@ -15,7 +15,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/files/file_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
-#include "base/check.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
@@ -42,7 +42,7 @@ static constexpr int kOpenFlags = O_RDONLY | O_CLOEXEC;
 class URandomFd {
  public:
   URandomFd() : fd_(PA_HANDLE_EINTR(open("/dev/urandom", kOpenFlags))) {
-    CHECK(fd_ >= 0) << "Cannot open /dev/urandom";
+    PA_CHECK(fd_ >= 0) << "Cannot open /dev/urandom";
   }
 
   ~URandomFd() { close(fd_); }
@@ -96,7 +96,7 @@ void RandBytes(void* output, size_t output_length) {
   const int urandom_fd = GetUrandomFD();
   const bool success =
       ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
-  CHECK(success);
+  PA_CHECK(success);
 }
 
 }  // namespace partition_alloc::internal::base

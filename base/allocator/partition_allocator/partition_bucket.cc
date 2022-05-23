@@ -31,7 +31,6 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/check.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {

@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/random.h"
-#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -190,7 +190,7 @@ void RandomBitCorrelation(int random_bit) {
       // For k=2 probability of Chi^2 < 35 is p=3.338e-9. This condition is
       // tested ~19000 times, so probability of it failing randomly per one
       // base_unittests run is (1 - (1 - p) ^ 19000) ~= 6e-5.
-      CHECK_LE(chi_squared, 35.0);
+      PA_CHECK(chi_squared <= 35.0);
       // If the predictor bit is a fixed 0 or 1 then it makes no sense to
       // repeat the test with a different age.
       if (predictor_bit < 0)

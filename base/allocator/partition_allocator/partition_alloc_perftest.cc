@@ -193,7 +193,7 @@ float SingleBucket(Allocator* allocator) {
   do {
     auto* next = reinterpret_cast<MemoryAllocationPerfNode*>(
         allocator->Alloc(kAllocSize));
-    CHECK_NE(next, nullptr);
+    PA_CHECK(next != nullptr);
     cur->SetNext(next);
     cur = next;
     timer.NextLap();
@@ -224,7 +224,7 @@ float SingleBucketWithFree(Allocator* allocator) {
   base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kAllocSize);
-    CHECK_NE(cur, nullptr);
+    PA_CHECK(cur != nullptr);
     allocator->Free(cur);
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
@@ -246,7 +246,7 @@ float MultiBucket(Allocator* allocator) {
       size_t size = kMultiBucketMinimumSize + (i * kMultiBucketIncrement);
       auto* next =
           reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(size));
-      CHECK_NE(next, nullptr);
+      PA_CHECK(next != nullptr);
       cur->SetNext(next);
       cur = next;
       allocated_memory += size;
@@ -278,7 +278,7 @@ float MultiBucketWithFree(Allocator* allocator) {
   for (int i = 0; i < kMultiBucketRounds; i++) {
     void* cur =
         allocator->Alloc(kMultiBucketMinimumSize + (i * kMultiBucketIncrement));
-    CHECK_NE(cur, nullptr);
+    PA_CHECK(cur != nullptr);
     elems.push_back(cur);
   }
 
@@ -287,7 +287,7 @@ float MultiBucketWithFree(Allocator* allocator) {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       void* cur = allocator->Alloc(kMultiBucketMinimumSize +
                                    (i * kMultiBucketIncrement));
-      CHECK_NE(cur, nullptr);
+      PA_CHECK(cur != nullptr);
       allocator->Free(cur);
     }
     timer.NextLap();
@@ -306,7 +306,7 @@ float DirectMapped(Allocator* allocator) {
   base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kSize);
-    CHECK_NE(cur, nullptr);
+    PA_CHECK(cur != nullptr);
     allocator->Free(cur);
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
