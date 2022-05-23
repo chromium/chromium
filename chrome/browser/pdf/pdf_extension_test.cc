@@ -4566,3 +4566,69 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
   // Ensure that the fenced frame's navigation should not abort the PDF stream.
   EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
 }
+
+// Test that ensures we cannot navigate a fenced frame to a PDF because PDF
+// isn't allowed by default static sandbox flags of fenced frames.
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
+                       LoadPdfInFencedFrame) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Create a fenced frame and try to navigate to a PDF.
+  EXPECT_NE(nullptr,
+            fenced_frame_helper().CreateFencedFrame(
+                GetActiveWebContents()->GetMainFrame(),
+                embedded_test_server()->GetURL("/pdf/test-fenced-frame.pdf"),
+                net::Error::ERR_BLOCKED_BY_CLIENT));
+  EXPECT_EQ(CountPDFProcesses(), 0);
+}
+
+// Test that ensures a fenced frame cannot load a document embedding a PDF
+// because PDF isn't allowed in fenced frames.
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
+                       LoadEmbeddedPdfInFencedFrame) {
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Create a fenced frame for loading a document with pdf embed(s).
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_helper().CreateFencedFrame(
+          GetActiveWebContents()->GetMainFrame(),
+          embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  ASSERT_TRUE(fenced_frame_host);
+
+  const GURL pdf_url =
+      embedded_test_server()->GetURL("/pdf/test-fenced-frame.pdf");
+  // Ensure that the fenced frame cannot load a PDF embedding with <iframe>.
+  ASSERT_TRUE(content::ExecJs(
+      fenced_frame_host,
+      content::JsReplace("let e = document.createElement('iframe');"
+                         "e.src = $1;"
+                         "e.type = 'application/pdf';"
+                         "document.body.appendChild(e);",
+                         pdf_url)));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  EXPECT_EQ(CountPDFProcesses(), 0);
+
+  // Ensure that the fenced frame cannot load a PDF embedding with <object>.
+  ASSERT_TRUE(content::ExecJs(
+      fenced_frame_host,
+      content::JsReplace("let e = document.createElement('object');"
+                         "e.data = $1;"
+                         "e.type = 'application/pdf';"
+                         "document.body.appendChild(e);",
+                         pdf_url)));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  EXPECT_EQ(CountPDFProcesses(), 0);
+
+  // Ensure that the fenced frame cannot load a PDF embedding with <embed>.
+  ASSERT_TRUE(content::ExecJs(
+      fenced_frame_host,
+      content::JsReplace("let e = document.createElement('embed');"
+                         "e.src = $1;"
+                         "e.type = 'application/pdf';"
+                         "document.body.appendChild(e);",
+                         pdf_url)));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  EXPECT_EQ(CountPDFProcesses(), 0);
+}
