@@ -16,20 +16,45 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/rsa_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
+namespace {
 
 namespace em = ::enterprise_management;
+
+class CloudPolicyStoreWaiter : public CloudPolicyStore::Observer {
+ public:
+  CloudPolicyStoreWaiter() = default;
+  CloudPolicyStoreWaiter(const CloudPolicyStoreWaiter&) = delete;
+  CloudPolicyStoreWaiter& operator=(const CloudPolicyStoreWaiter&) = delete;
+  ~CloudPolicyStoreWaiter() override = default;
+
+  void OnStoreLoaded(CloudPolicyStore* store) override { loop_.Quit(); }
+
+  void OnStoreError(CloudPolicyStore* store) override { FAIL(); }
+
+  void Wait() { loop_.Run(); }
+
+ private:
+  base::RunLoop loop_;
+};
+
+}  // namespace
 
 void DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
     UserPolicyBuilder* policy_builder,
@@ -172,6 +197,22 @@ void DevicePolicyCrosTestHelper::RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
   run_loop.Run();
   // Allow tasks posted by CrosSettings observers to complete:
   base::RunLoop().RunUntilIdle();
+}
+
+void DevicePolicyCrosTestHelper::
+    RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated() {
+  policy::DeviceCloudPolicyStoreAsh* policy_store =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->GetDeviceCloudPolicyManager()
+          ->device_store();
+  if (!policy_store->has_policy()) {
+    CloudPolicyStoreWaiter waiter;
+    policy_store->AddObserver(&waiter);
+    RefreshDevicePolicy();
+    waiter.Wait();
+    policy_store->RemoveObserver(&waiter);
+  }
 }
 
 void DevicePolicyCrosTestHelper::UnsetPolicy(

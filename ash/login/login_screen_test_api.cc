@@ -276,6 +276,14 @@ bool LoginScreenTestApi::IsSystemInfoShown() {
 }
 
 // static
+bool LoginScreenTestApi::IsKioskInstructionBubbleShown() {
+  LoginShelfView* view = GetLoginShelfView();
+  return view->GetKioskInstructionBubbleForTesting() &&
+         view->GetKioskInstructionBubbleForTesting()->GetWidget() &&
+         view->GetKioskInstructionBubbleForTesting()->GetWidget()->IsVisible();
+}
+
+// static
 bool LoginScreenTestApi::IsPasswordFieldShown(const AccountId& account_id) {
   if (GetFocusedUser() != account_id) {
     ADD_FAILURE() << "The user " << account_id.Serialize() << " is not focused";

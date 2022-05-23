@@ -8,9 +8,11 @@
 #include <string>
 
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -96,6 +98,8 @@ class DevicePolicyCrosTestHelper {
   //   resolution setting.
   void RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
       const std::vector<std::string>& settings);
+  // Refreshes the whole device cloud policies.
+  void RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
   void UnsetPolicy(const std::vector<std::string>& settings);
 
  private:

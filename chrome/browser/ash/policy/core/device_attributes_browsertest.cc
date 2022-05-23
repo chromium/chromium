@@ -27,23 +27,6 @@ namespace policy {
 
 namespace {
 
-void WaitUntilPolicyLoaded() {
-  DeviceCloudPolicyStoreAsh* policy_store = g_browser_process->platform_part()
-                                                ->browser_policy_connector_ash()
-                                                ->GetDeviceCloudPolicyManager()
-                                                ->device_store();
-  if (!policy_store->has_policy()) {
-    MockCloudPolicyStoreObserver observer;
-    base::RunLoop loop;
-    policy_store->AddObserver(&observer);
-    EXPECT_CALL(observer, OnStoreLoaded(policy_store))
-        .Times(1)
-        .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit));
-    loop.Run();
-    policy_store->RemoveObserver(&observer);
-  }
-}
-
 constexpr char kFakeDomain[] = "fake.domain.acme.corp";
 constexpr char kFakeDisplayDomain[] = "acme.corp";
 constexpr char kFakeSSOProfile[] = "fake sso profile";
@@ -100,8 +83,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
       kFakeLogoURL);
   device_policy()->policy_data().set_market_segment(
       enterprise_management::PolicyData_MarketSegment_ENROLLED_ENTERPRISE);
-  RefreshDevicePolicy();
-  WaitUntilPolicyLoaded();
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   // Verify returned attributes correspond to what was set.
   EXPECT_EQ(kFakeDomain, attributes_.GetEnterpriseEnrollmentDomain());
