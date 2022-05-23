@@ -159,9 +159,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Returns a copy of what this storage key would have been if
   // `kThirdPartyStoragePartitioning` were enabled. This is a convenience
-  // function for callsites that benefit from future functionality that
-  // should be removed when storage partitioning is fully launched.
-  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  // function for callsites that benefit from future functionality.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
   StorageKey CopyWithForceEnabledThirdPartyStoragePartitioning() const {
     StorageKey storage_key = *this;
     storage_key.top_level_site_ =
@@ -233,9 +232,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Stores the value `top_level_site_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
-  // serialization or comparison, and this information is lost if you convert
-  // to a BlinkStorageKey or send it via mojom.
-  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  // serialization or comparison.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
   net::SchemefulSite top_level_site_if_third_party_enabled_;
 
   // An optional nonce, forcing a partitioned storage from anything else. Used
@@ -251,9 +249,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   // Stores the value `ancestor_chain_bit_` would have had if
   // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
-  // serialization or comparison, and this information is lost if you convert
-  // to a BlinkStorageKey or send it via mojom.
-  // TODO(crbug.com/1159586): Add support in BlinkStorageKey if needed.
+  // serialization or comparison.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
   blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_{
       blink::mojom::AncestorChainBit::kSameSite};
 };

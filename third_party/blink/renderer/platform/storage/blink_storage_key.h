@@ -94,14 +94,39 @@ class PLATFORM_EXPORT BlinkStorageKey {
 
   String ToDebugString() const;
 
+  // Returns a copy of what this storage key would have been if
+  // `kThirdPartyStoragePartitioning` were enabled. This is a convenience
+  // function for callsites that benefit from future functionality.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
+  BlinkStorageKey CopyWithForceEnabledThirdPartyStoragePartitioning() const {
+    BlinkStorageKey storage_key = *this;
+    storage_key.top_level_site_ =
+        storage_key.top_level_site_if_third_party_enabled_;
+    storage_key.ancestor_chain_bit_ =
+        storage_key.ancestor_chain_bit_if_third_party_enabled_;
+    return storage_key;
+  }
+
  private:
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                   const base::UnguessableToken* nonce);
 
   scoped_refptr<const SecurityOrigin> origin_;
   BlinkSchemefulSite top_level_site_;
+  // Stores the value `top_level_site_` would have had if
+  // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
+  // serialization or comparison.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
+  BlinkSchemefulSite top_level_site_if_third_party_enabled_;
   absl::optional<base::UnguessableToken> nonce_;
-  mojom::blink::AncestorChainBit ancestor_chain_bit_;
+  mojom::blink::AncestorChainBit ancestor_chain_bit_{
+      mojom::blink::AncestorChainBit::kSameSite};
+  // Stores the value `ancestor_chain_bit_` would have had if
+  // `kThirdPartyStoragePartitioning` were enabled. This isn't used in
+  // serialization or comparison.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
+  mojom::blink::AncestorChainBit ancestor_chain_bit_if_third_party_enabled_{
+      mojom::blink::AncestorChainBit::kSameSite};
 };
 
 PLATFORM_EXPORT
