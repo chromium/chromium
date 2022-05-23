@@ -14,6 +14,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +32,7 @@ std::string FailureMessage(const std::string& msg) {
   return "";
 #else
   return msg;
-#endif
+#endif  // !defined(DEBUG) && defined(OFFICIAL_BUILD)
 }
 
 }  // namespace
@@ -58,6 +59,21 @@ class ScopedHandleTest : public ::testing::Test,
   }
 
   static bool HooksEnabled() { return GetParam(); }
+  static bool DoDeathTestsWork() {
+    // Death tests don't seem to work on Windows 7 32-bit native with hooks
+    // enabled.
+    // TODO(crbug.com/1328022): Investigate why.
+    if (!HooksEnabled())
+      return true;
+#if defined(ARCH_CPU_32_BITS)
+    const auto* os_info = base::win::OSInfo::GetInstance();
+    if (os_info->version() <= base::win::Version::WIN7 &&
+        os_info->IsWowDisabled()) {
+      return false;
+    }
+#endif  // defined(ARCH_CPU_32_BITS)
+    return true;
+  }
 };
 
 using ScopedHandleDeathTest = ScopedHandleTest;
@@ -105,11 +121,13 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
       FailureMessage("CloseHandle failed"));
 }
 
-// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
-TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierCloseTrackedHandle) {
+TEST_P(ScopedHandleDeathTest, HandleVerifierCloseTrackedHandle) {
   // This test is only valid if hooks are enabled.
   if (!HooksEnabled())
     return;
+  if (!DoDeathTestsWork())
+    return;
+
   ASSERT_DEATH(
       {
         HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
@@ -131,18 +149,23 @@ TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierCloseTrackedHandle) {
       FailureMessage("CloseHandleHook validation failure"));
 }
 
-// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
-TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierDoubleTracking) {
+TEST_P(ScopedHandleDeathTest, HandleVerifierDoubleTracking) {
+  if (!DoDeathTestsWork())
+    return;
+
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
 
   base::win::CheckedScopedHandle handle_holder(handle);
 
-  ASSERT_DEATH({ base::win::CheckedScopedHandle handle_holder2(handle); }, "");
+  ASSERT_DEATH({ base::win::CheckedScopedHandle handle_holder2(handle); },
+               FailureMessage("Handle Already Tracked"));
 }
 
-// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
-TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierWrongOwner) {
+TEST_P(ScopedHandleDeathTest, HandleVerifierWrongOwner) {
+  if (!DoDeathTestsWork())
+    return;
+
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
 
@@ -157,8 +180,10 @@ TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierWrongOwner) {
   handle_holder.Close();
 }
 
-// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
-TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierUntrackedHandle) {
+TEST_P(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
+  if (!DoDeathTestsWork())
+    return;
+
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
 
