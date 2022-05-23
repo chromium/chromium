@@ -764,29 +764,6 @@ message NavigationHandle {
   optional FrameTreeNodeInfo frame_tree_node = 4;
   optional RenderFrameHost render_frame_host = 5;
 
-  enum NavigationType {
-    NAVIGATION_TYPE_UNSPECIFIED = 0;
-    RELOAD = 1;
-    RELOAD_BYPASSING_CACHE = 2;
-    RELOAD_ORIGINAL_REQUEST_URL = 3;
-    RESTORE = 4;
-    RESTORE_WITH_POST = 5;
-    HISTORY_SAME_DOCUMENT = 6;
-    HISTORY_DIFFERENT_DOCUMENT = 7;
-    SAME_DOCUMENT = 8;
-    DIFFERENT_DOCUMENT = 9;
-  }
-  optional NavigationType navigation_type = 6;
-
-  enum FrameType {
-    FRAME_TYPE_UNSPECIFIED = 0;
-    SUBFRAME = 1;
-    PRIMARY_MAIN_FRAME = 2;
-    PRERENDER_MAIN_FRAME = 3;
-    FENCED_FRAME_ROOT = 4;
-  }
-  optional FrameType frame_type = 7;
-
   // Additional untyped debug information associated with this
   // NavigationHandle/Request, populated via TracedProto::AddDebugAnnotations
   // API.
@@ -803,7 +780,7 @@ enum DeviceThermalState {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1039
+  // Next ID: 1037
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -885,7 +862,5 @@ message ChromeTrackEvent {
     optional DeviceThermalState device_thermal_state = 1036;
 
     optional NavigationHandle navigation = 1037;
-
-    optional NavigationHandle navigation_when_created = 1038;
   }
 }
