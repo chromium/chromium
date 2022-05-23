@@ -54,105 +54,11 @@ namespace autofill {
 namespace form_util {
 namespace {
 
-struct AutofillFieldLabelSourceCase {
-  const char* html;
-  const FormFieldData::LabelSource label_source;
-};
-
 struct AutofillFieldUtilCase {
   const char* description;
   const char* html;
   const char16_t* expected_label;
 };
-
-const char kElevenChildren[] =
-    "<div id='target'>"
-    "<div>child0</div>"
-    "<div>child1</div>"
-    "<div>child2</div>"
-    "<div>child3</div>"
-    "<div>child4</div>"
-    "<div>child5</div>"
-    "<div>child6</div>"
-    "<div>child7</div>"
-    "<div>child8</div>"
-    "<div>child9</div>"
-    "<div>child10</div>"
-    "</div>";
-const char16_t kElevenChildrenExpected[] =
-    u"child0child1child2child3child4child5child6child7child8";
-
-const char kElevenChildrenNested[] =
-    "<div id='target'>"
-    "<div>child0"
-    "<div>child1"
-    "<div>child2"
-    "<div>child3"
-    "<div>child4"
-    "<div>child5"
-    "<div>child6"
-    "<div>child7"
-    "<div>child8"
-    "<div>child9"
-    "<div>child10"
-    "</div></div></div></div></div></div></div></div></div></div></div></div>";
-// Take 10 elements -1 for target element, -1 as text is a leaf element.
-const char16_t kElevenChildrenNestedExpected[] =
-    u"child0child1child2child3child4";
-
-const char kSkipElement[] =
-    "<div id='target'>"
-    "<div>child0</div>"
-    "<div class='skip'>child1</div>"
-    "<div>child2</div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be child0child2
-const char16_t kSkipElementExpected[] = u"child0";
-
-const char kDivTableExample1[] =
-    "<div>"
-    "<div>label</div><div><input id='target'/></div>"
-    "</div>";
-const char16_t kDivTableExample1Expected[] = u"label";
-
-const char kDivTableExample2[] =
-    "<div>"
-    "<div>label</div>"
-    "<div>should be skipped<input/></div>"
-    "<div><input id='target'/></div>"
-    "</div>";
-const char16_t kDivTableExample2Expected[] = u"label";
-
-const char kDivTableExample3[] =
-    "<div>"
-    "<div>should be skipped<input/></div>"
-    "<div>label</div>"
-    "<div><input id='target'/></div>"
-    "</div>";
-const char16_t kDivTableExample3Expected[] = u"label";
-
-const char kDivTableExample4[] =
-    "<div>"
-    "<div>should be skipped<input/></div>"
-    "label"
-    "<div><input id='target'/></div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be label
-const char16_t kDivTableExample4Expected[] = u"";
-
-const char kDivTableExample5[] =
-    "<div>"
-    "<div>label<div><input id='target'/></div>behind</div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be label
-const char16_t kDivTableExample5Expected[] = u"labelbehind";
-
-const char kDivTableExample6[] =
-    "<div>"
-    "<div>label<div><div>-<div><input id='target'/></div></div>"
-    "</div>";
-// TODO(crbug.com/796918): Should be "label" or "label-"
-const char16_t kDivTableExample6Expected[] = u"";
 
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
@@ -184,14 +90,43 @@ TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
       {"simple test", "<div id='target'>test</div>", u"test"},
       {"Concatenate test", "<div id='target'><span>one</span>two</div>",
        u"onetwo"},
-      // TODO(crbug.com/796918): should be "onetwo"
+      // Test that "two" is not inferred, because for the purpose of label
+      // extraction, we only care about text before the input element.
       {"Ignore input", "<div id='target'>one<input value='test'/>two</div>",
        u"one"},
       {"Trim", "<div id='target'>   one<span>two  </span></div>", u"onetwo"},
-      {"eleven children", kElevenChildren, kElevenChildrenExpected},
-      // TODO(crbug.com/796918): Depth is only 5 elements
-      {"eleven children nested", kElevenChildrenNested,
-       kElevenChildrenNestedExpected},
+      {"eleven children",
+       "<div id='target'>"
+       "<div>child0</div>"
+       "<div>child1</div>"
+       "<div>child2</div>"
+       "<div>child3</div>"
+       "<div>child4</div>"
+       "<div>child5</div>"
+       "<div>child6</div>"
+       "<div>child7</div>"
+       "<div>child8</div>"
+       "<div>child9</div>"
+       "<div>child10</div>",
+       u"child0child1child2child3child4child5child6child7child8"},
+      // TODO(crbug.com/796918): Depth is only 5 elements instead of 10. This
+      // happens because every div and every text node decrease the depth.
+      {"eleven children nested",
+       "<div id='target'>"
+       "<div>child0"
+       "<div>child1"
+       "<div>child2"
+       "<div>child3"
+       "<div>child4"
+       "<div>child5"
+       "<div>child6"
+       "<div>child7"
+       "<div>child8"
+       "<div>child9"
+       "<div>child10"
+       "</div></div></div></div></div></div></div></div></div></div></div></"
+       "div>",
+       u"child0child1child2child3child4"},
   };
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
@@ -205,7 +140,14 @@ TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
 
 TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
   static const AutofillFieldUtilCase test_cases[] = {
-      {"Skip div element", kSkipElement, kSkipElementExpected},
+      // Test that everything after the "skip" div is discarded.
+      {"Skip div element", R"(
+       <div id=target>
+         <div>child0</div>
+         <div class=skip>child1</div>
+         <div>child2</div>
+       </div>)",
+       u"child0"},
   };
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
@@ -227,12 +169,48 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
 
 TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
   static const AutofillFieldUtilCase test_cases[] = {
-      {"DIV table test 1", kDivTableExample1, kDivTableExample1Expected},
-      {"DIV table test 2", kDivTableExample2, kDivTableExample2Expected},
-      {"DIV table test 3", kDivTableExample3, kDivTableExample3Expected},
-      {"DIV table test 4", kDivTableExample4, kDivTableExample4Expected},
-      {"DIV table test 5", kDivTableExample5, kDivTableExample5Expected},
-      {"DIV table test 6", kDivTableExample6, kDivTableExample6Expected},
+      {"DIV table test 1", R"(
+       <div>
+         <div>label</div><div><input id=target></div>
+       </div>)",
+       u"label"},
+      {"DIV table test 2", R"(
+       <div>
+         <div>label</div>
+         <div>should be skipped<input></div>
+         <div><input id=target></div>
+       </div>)",
+       u"label"},
+      {"DIV table test 3", R"(
+       <div>
+         <div>should be skipped<input></div>
+         <div>label</div>
+         <div><input id=target></div>
+       </div>)",
+       u"label"},
+      // TODO(crbug.com/796918): Should be label
+      {"DIV table test 4", R"(
+       <div>
+         <div>should be skipped<input></div>
+         label
+         <div><input id=target></div>
+       </div>)",
+       u""},
+      // TODO(crbug.com/796918): Should be label
+      {"DIV table test 5",
+       "<div>"
+       "<div>label<div><input id='target'/></div>behind</div>"
+       "</div>",
+       u"labelbehind"},
+      {"DIV table test 6", R"(
+       <div>
+         label
+         <div>-</div>
+         <div><input id='target'></div>
+       </div>)",
+       // TODO(crbug.com/796918): Should be "label" or "label-". This happens
+       // because "-" is inferred, but discarded because `!IsLabelValid()`.
+       u""},
   };
   for (auto test_case : test_cases) {
     SCOPED_TRACE(test_case.description);
@@ -251,6 +229,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
+  struct AutofillFieldLabelSourceCase {
+    const char* html;
+    const FormFieldData::LabelSource label_source;
+  };
   const char16_t kLabelSourceExpectedLabel[] = u"label";
   static const AutofillFieldLabelSourceCase test_cases[] = {
       {"<div><div>label</div><div><input id='target'/></div></div>",
