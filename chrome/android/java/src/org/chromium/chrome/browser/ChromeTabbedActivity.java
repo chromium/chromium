@@ -169,6 +169,7 @@ import org.chromium.chrome.browser.tasks.TasksUma;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -372,6 +373,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private NotificationPermissionController mNotificationPermissionController;
 
     private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
+    private TabSwitcherBackPressHandler mTabSwitcherBackPressHandler;
 
     // ID assigned to each ChromeTabbedActivity instance in Android S+ where multi-instance feature
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
@@ -2190,7 +2192,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // If we are in the tab switcher mode (not in the Start surface homepage) and not a tablet,
         // then leave tab switcher mode on back.
-        if (isInOverviewMode() && !isTablet()
+        if (!BackPressManager.isEnabled() && isInOverviewMode() && !isTablet()
                 && (mStartSurfaceSupplier.get() == null
                         || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
                                 == StartSurfaceState.SHOWN_TABSWITCHER)) {
@@ -2265,9 +2267,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mReturnToChromeBackPressHandler =
                     new ReturnToChromeBackPressHandler(mLayoutStateProviderSupplier,
                             getTabModelSelectorSupplier(), this::returnToOverviewModeOnBackPressed);
+            mBackPressManager.addHandler(mReturnToChromeBackPressHandler,
+                    BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
         }
-        mBackPressManager.addHandler(mReturnToChromeBackPressHandler,
-                BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
+        if (mTabSwitcherBackPressHandler == null && !isTablet()) {
+            mTabSwitcherBackPressHandler = new TabSwitcherBackPressHandler(
+                    mLayoutStateProviderSupplier, mStartSurfaceSupplier,
+                    () -> mLayoutManager.showLayout(LayoutType.BROWSING, true));
+            mBackPressManager.addHandler(
+                    mTabSwitcherBackPressHandler, BackPressHandler.Type.TAB_SWITCHER_TO_BROWSING);
+        }
     }
 
     /**
@@ -2510,6 +2519,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onDestroyInternal() {
+        if (mTabSwitcherBackPressHandler != null) {
+            mTabSwitcherBackPressHandler.destroy();
+            mTabSwitcherBackPressHandler = null;
+        }
+
         if (mNotificationPermissionController != null) {
             NotificationPermissionController.detach(mNotificationPermissionController);
             mNotificationPermissionController = null;
