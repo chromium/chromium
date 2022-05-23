@@ -564,7 +564,7 @@ void AddVersionKeyWorkItems(const InstallParams& install_params,
     // languages is a superset of Chrome's set of translations with this one
     // exception: what Chrome calls "en-us", Omaha calls "en".  sigh.
     std::wstring language(GetCurrentTranslation());
-    if (base::LowerCaseEqualsASCII(language, "en-us"))
+    if (base::EqualsCaseInsensitiveASCII(language, "en-us"))
       language.resize(2);
     list->AddSetRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
                                  google_update::kRegLangField, language,
