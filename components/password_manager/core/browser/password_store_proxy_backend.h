@@ -92,6 +92,12 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
       CallbackOriginatesFromAndroidBackend originatesFromAndroid,
       base::RepeatingClosure sync_enabled_or_disabled_cb);
 
+  // Helper used to determine main *and* shadow backends. Some UPM experiment
+  // groups use shadow traffic to compare the two backends, other may need it
+  // to execute login deletions on both backends, to avoid recovery of deleted
+  // data.
+  bool UsesAndroidBackendAsMainBackend();
+
   PasswordStoreBackend* main_backend();
   PasswordStoreBackend* shadow_backend();
 
@@ -99,6 +105,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   const raw_ptr<PasswordStoreBackend> android_backend_;
   raw_ptr<PrefService> const prefs_ = nullptr;
   const raw_ptr<SyncDelegate> sync_delegate_;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };
