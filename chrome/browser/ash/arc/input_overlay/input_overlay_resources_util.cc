@@ -32,6 +32,19 @@ absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
       {"com.estoty.game2048", IDR_IO_COM_ESTOTY_GAME2048},
       {"com.s2apps.game2048", IDR_IO_COM_S2APPS_GAME2048},
       {"com.storms.azrun", IDR_IO_COM_STORMS_AZRUN},
+      {"com.aldagames.zombero.bullet.hell", IDR_IO_COM_ALDAGAMES_ZOMBERO_BULLET_HELL},
+      {"games.lightheart.mrautofire", IDR_IO_GAMES_LIGHTHEART_MRAUTOFIRE},
+      {"com.yuriychechulin.throwio", IDR_IO_COM_YURIYCHECHULIN_THROWIO},
+      {"com.azurgames.stackball", IDR_IO_COM_AZURGAMES_STACKBALL},
+      {"com.hiroba.helix", IDR_IO_COM_HIROBA_HELIX},
+      {"com.match3blaster.DropStackBallFall", IDR_IO_COM_MATCH3BLASTER_DROPSTACKBALLFALL},
+      {"com.stack.ball.destroy.wood", IDR_IO_COM_STACK_BALL_DESTROY_WOOD},
+      {"com.twist.stackball", IDR_IO_COM_TWIST_STACKBALL},
+      {"com.NikSanTech.FireDots3D", IDR_IO_COM_NIKSANTECH_FIREDOTS3D},
+      {"com.nama.stackball", IDR_IO_COM_NAMA_STACKBALL},
+      {"com.stack.ball.crush", IDR_IO_COM_STACK_BALL_CRUSH},
+      {"com.elegant.stack.ball.blast.crush", IDR_IO_COM_ELEGANT_STACK_BALL_BLAST_CRUSH},
+      {"com.Stellar.StackFall", IDR_IO_COM_STELLAR_STACKFALL},
   };
 
   auto it = resource_id_map.find(package_name);

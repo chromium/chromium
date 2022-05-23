@@ -31,6 +31,19 @@
        <include name="IDR_IO_COM_ESTOTY_GAME2048" file="com.estoty.game2048.json" type="BINDATA" />
        <include name="IDR_IO_COM_S2APPS_GAME2048" file="com.s2apps.game2048.json" type="BINDATA" />
        <include name="IDR_IO_COM_STORMS_AZRUN" file="com.storms.azrun.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ALDAGAMES_ZOMBERO_BULLET_HELL" file="com.aldagames.zombero.bullet.hell.json" type="BINDATA" />
+       <include name="IDR_IO_GAMES_LIGHTHEART_MRAUTOFIRE" file="games.lightheart.mrautofire.json" type="BINDATA" />
+       <include name="IDR_IO_COM_YURIYCHECHULIN_THROWIO" file="com.yuriychechulin.throwio.json" type="BINDATA" />
+       <include name="IDR_IO_COM_AZURGAMES_STACKBALL" file="com.azurgames.stackball.json" type="BINDATA" />
+       <include name="IDR_IO_COM_HIROBA_HELIX" file="com.hiroba.helix.json" type="BINDATA" />
+       <include name="IDR_IO_COM_MATCH3BLASTER_DROPSTACKBALLFALL" file="com.match3blaster.DropStackBallFall.json" type="BINDATA" />
+       <include name="IDR_IO_COM_STACK_BALL_DESTROY_WOOD" file="com.stack.ball.destroy.wood.json" type="BINDATA" />
+       <include name="IDR_IO_COM_TWIST_STACKBALL" file="com.twist.stackball.json" type="BINDATA" />
+       <include name="IDR_IO_COM_NIKSANTECH_FIREDOTS3D" file="com.NikSanTech.FireDots3D.json" type="BINDATA" />
+       <include name="IDR_IO_COM_NAMA_STACKBALL" file="com.nama.stackball.json" type="BINDATA" />
+       <include name="IDR_IO_COM_STACK_BALL_CRUSH" file="com.stack.ball.crush.json" type="BINDATA" />
+       <include name="IDR_IO_COM_ELEGANT_STACK_BALL_BLAST_CRUSH" file="com.elegant.stack.ball.blast.crush.json" type="BINDATA" />
+       <include name="IDR_IO_COM_STELLAR_STACKFALL" file="com.Stellar.StackFall.json" type="BINDATA" />
     </includes>
   </release>
 </grit>
