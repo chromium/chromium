@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/pending_beacon_host.h"
 
+#include "content/browser/renderer_host/pending_beacon_service.h"
+
 namespace content {
 
 PendingBeaconHost::PendingBeaconHost(RenderFrameHost* rfh,
@@ -30,5 +32,26 @@ void PendingBeaconHost::SetReceiver(
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PendingBeaconHost);
+
+Beacon::Beacon(const base::UnguessableToken& id,
+               const GURL& url,
+               blink::mojom::BeaconMethod method,
+               base::TimeDelta timeout,
+               mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver)
+    : receiver_(this, std::move(receiver)),
+      id_(id),
+      url_(url),
+      method_(method),
+      timeout_(timeout) {}
+
+Beacon::~Beacon() = default;
+
+void Beacon::Deactivate() {
+  // Beacons are not deleted on deactivation; they'll be cleaned up when the
+  // document that owns the beacon is either hidden or discarded.
+  // TODO(crbug.com/1293679): Clean up beacons when their owning document is
+  // discarded or hidden.
+  active_ = false;
+}
 
 }  // namespace content

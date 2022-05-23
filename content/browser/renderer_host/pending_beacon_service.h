@@ -8,6 +8,7 @@
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "content/browser/renderer_host/pending_beacon_host.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -34,37 +35,6 @@ class CONTENT_EXPORT PendingBeaconService {
   ~PendingBeaconService();
 
  private:
-  class Beacon : public blink::mojom::PendingBeacon {
-   public:
-    // Browser-side pending beacon constructor. Parameters correspond to the
-    // renderer-side PendingBeacon class, except for 'id' which is a
-    // browser-side identifier to distinguish which beacons belong to which
-    // documents. This will be used to determine if a beacon should be sent when
-    // a particular document is discarded or hidden (each document has a
-    // `PendingBeaconHost` which keeps a vector of IDs for the beacons it owns).
-    // API explainer can be found at:
-    // https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
-    explicit Beacon(
-        const base::UnguessableToken& id,
-        const GURL& url,
-        blink::mojom::BeaconMethod method,
-        base::TimeDelta timeout,
-        mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver);
-    ~Beacon() override;
-    void Deactivate() override;
-
-   private:
-    mojo::Receiver<blink::mojom::PendingBeacon> receiver_;
-
-    const base::UnguessableToken id_;
-    const GURL url_;
-    [[maybe_unused]] const blink::mojom::BeaconMethod method_;
-    [[maybe_unused]] const base::TimeDelta timeout_;
-    bool active_ = true;
-
-    friend class PendingBeaconService;
-  };
-
   PendingBeaconService();
 
   std::vector<std::unique_ptr<Beacon>> beacons_;
