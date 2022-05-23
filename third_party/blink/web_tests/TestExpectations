@@ -1867,7 +1867,6 @@ crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failur
 
 # @container
 crbug.com/1294155 external/wpt/css/css-contain/container-queries/canvas-as-container-004.html [ Failure ]
-crbug.com/1273913 external/wpt/css/css-contain/container-queries/pseudo-elements-002.html [ Failure ]
 crbug.com/1307656 external/wpt/css/css-contain/container-queries/crashtests/columns-in-table-002-crash.html [ Crash ]
 
 # CSS Scrollbars

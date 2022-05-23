@@ -1114,6 +1114,15 @@
       default_value: "false",
     },
     {
+      // Set to true if this ComputedStyle is for an element whose ::first-line
+      // style depends on size container queries.
+      name: "FirstLineDependsOnContainerQueries",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
       name: "BaseData",
       inherited: false,
       field_template: "external",

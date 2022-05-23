@@ -2702,8 +2702,22 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       break;
   }
 
-  if (query_change != ContainerQueryEvaluator::Change::kNone)
+  if (query_change != ContainerQueryEvaluator::Change::kNone) {
     style.ClearCachedPseudoElementStyles();
+    // When the container query changes, the ::first-line matching the container
+    // itself is not detected as changed. Firstly, because the style for the
+    // container is computed before the layout causing the ::first-line styles
+    // to change. Also, we mark the ComputedStyle with HasPseudoElementStyle()
+    // for kPseudoIdFirstLine, even when the container query for the
+    // ::first-line rules doesn't match, which means a diff for that flag would
+    // not detect a change. Instead, if a container has ::first-line rules which
+    // depends on size container queries, fall back to re-attaching its box tree
+    // when any of the size queries change the evaluation result.
+    if (style.HasPseudoElementStyle(kPseudoIdFirstLine) &&
+        style.FirstLineDependsOnContainerQueries()) {
+      change = change.ForceMarkReattachLayoutTree().ForceReattachLayoutTree();
+    }
+  }
 
   NthIndexCache nth_index_cache(GetDocument());
 

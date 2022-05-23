@@ -102,10 +102,6 @@ class CORE_EXPORT StyleRecalcChange {
   StyleRecalcChange SuppressRecalc() const {
     return {propagate_, static_cast<Flags>(flags_ | kSuppressRecalc)};
   }
-  StyleRecalcChange WithRecalcContainerFlags(StyleRecalcChange& from) const {
-    return {propagate_,
-            static_cast<Flags>(flags_ | (from.flags_ & kRecalcContainerFlags))};
-  }
   StyleRecalcChange Combine(const StyleRecalcChange& other) const {
     return {std::max(propagate_, other.propagate_),
             static_cast<Flags>(flags_ | other.flags_)};
@@ -113,7 +109,8 @@ class CORE_EXPORT StyleRecalcChange {
 
   bool ReattachLayoutTree() const { return flags_ & kReattach; }
   bool MarkReattachLayoutTree() const {
-    return (flags_ & (kMarkReattach | kReattach)) ==
+    // Never mark the query container (kSuppressRecalc) for reattachment.
+    return (flags_ & (kMarkReattach | kReattach | kSuppressRecalc)) ==
            (kMarkReattach | kReattach);
   }
   bool RecalcChildren() const { return propagate_ > kUpdatePseudoElements; }

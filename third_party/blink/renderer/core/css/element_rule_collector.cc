@@ -865,6 +865,9 @@ void ElementRuleCollector::DidMatchRule(
         DCHECK(result.custom_highlight_name);
         style_->SetHasCustomHighlightName(result.custom_highlight_name);
       }
+    } else if (dynamic_pseudo == kPseudoIdFirstLine &&
+               rule_data->GetContainerQuery()) {
+      style_->SetFirstLineDependsOnContainerQueries(true);
     }
   } else {
     matched_rules_.push_back(MatchedRule(rule_data, layer_order, proximity,
