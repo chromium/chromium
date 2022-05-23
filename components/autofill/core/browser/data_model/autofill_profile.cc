@@ -320,19 +320,15 @@ void AutofillProfile::GetMatchingTypes(
 
 std::u16string AutofillProfile::GetRawInfo(ServerFieldType type) const {
   const FormGroup* form_group = FormGroupForType(AutofillType(type));
-  if (!form_group) {
-    NOTREACHED();
+  if (!form_group)
     return std::u16string();
-  }
   return form_group->GetRawInfo(type);
 }
 
 int AutofillProfile::GetRawInfoAsInt(ServerFieldType type) const {
   const FormGroup* form_group = FormGroupForType(AutofillType(type));
-  if (!form_group) {
-    NOTREACHED();
+  if (!form_group)
     return 0;
-  }
   return form_group->GetRawInfoAsInt(type);
 }
 
@@ -341,11 +337,9 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
     const std::u16string& value,
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
-  if (!form_group) {
-    NOTREACHED();
-    return;
+  if (form_group) {
+    form_group->SetRawInfoWithVerificationStatus(type, value, status);
   }
-  form_group->SetRawInfoWithVerificationStatus(type, value, status);
 }
 
 void AutofillProfile::SetRawInfoAsIntWithVerificationStatus(
@@ -353,11 +347,9 @@ void AutofillProfile::SetRawInfoAsIntWithVerificationStatus(
     int value,
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
-  if (!form_group) {
-    NOTREACHED();
-    return;
+  if (form_group) {
+    form_group->SetRawInfoAsIntWithVerificationStatus(type, value, status);
   }
-  form_group->SetRawInfoAsIntWithVerificationStatus(type, value, status);
 }
 
 void AutofillProfile::GetSupportedTypes(
