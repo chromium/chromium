@@ -113,6 +113,9 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // TODO(crbug.com/1289880): Remove this button when it is no longer needed.
   PillButton* feedback_button_ = nullptr;
 
+  // Label that shows up when the library has no items.
+  views::Label* no_items_label_ = nullptr;
+
   // Handles mouse/touch events on saved desk library widget.
   std::unique_ptr<SavedDeskLibraryEventHandler> event_handler_;
 };

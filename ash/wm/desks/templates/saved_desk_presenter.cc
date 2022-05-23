@@ -56,6 +56,8 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
   GetAllEntries(base::GUID(), Shell::GetPrimaryRootWindow());
+
+  should_show_templates_ui_ = GetEntryCount() > 0;
 }
 
 SavedDeskPresenter::~SavedDeskPresenter() = default;
@@ -85,19 +87,33 @@ size_t SavedDeskPresenter::GetMaxSaveAndRecallDeskEntryCount() const {
 }
 
 void SavedDeskPresenter::UpdateDesksTemplatesUI() {
-  // The save as desk template button is hidden in tablet mode. The desks
-  // templates button on the desk bar view and the desks templates grid are
-  // hidden in tablet mode and if there no templates to view.
+  // This function:
+  //  1. Figures out whether the library button should be shown in the desk bar.
+  //  2. Hides the library if necessary.
+  //  3. Triggers save desk buttons in the overview overgrid to update.
+  //
+  // The library and the library button is always hidden if we enter tablet
+  // mode. If not in tablet mode, the library button is visible if there are
+  // saved desks in the model, *or* we are already showing the library.
   const bool in_tablet_mode =
       Shell::Get()->tablet_mode_controller()->InTabletMode();
-  should_show_templates_ui_ = !in_tablet_mode && GetEntryCount() > 0u;
+
+  const bool has_saved_desks = GetEntryCount() > 0u;
+
   for (auto& overview_grid : overview_session_->grid_list()) {
-    if (!should_show_templates_ui_ &&
-        overview_grid->IsShowingDesksTemplatesGrid()) {
-      // When deleting, it is possible to delete the last template. In this
-      // case, close the template grid and go back to overview.
+    const bool is_showing_library =
+        overview_grid->IsShowingDesksTemplatesGrid();
+
+    if (in_tablet_mode && is_showing_library) {
+      // This happens when entering tablet mode while the library is visible.
       overview_grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
     }
+
+    // The functions below reach into this class to determine whether the
+    // buttons should be shown or not. If we are already showing saved desk
+    // library, they should not go away (unless we're in tablet mode).
+    should_show_templates_ui_ =
+        !in_tablet_mode && (is_showing_library || has_saved_desks);
 
     if (DesksBarView* desks_bar_view =
             const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {

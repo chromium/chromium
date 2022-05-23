@@ -1901,6 +1901,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" desc="The label visible above the save and recall items in the saved desk library.">
         Saved for later
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_TEMPLATES_OR_DESKS_LABEL" desc="The text that shows in the saved desk library when there are no saved desks or templates.">
+        No saved desks or templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_DESKS_LABEL" desc="The text that shows in the saved desk library when there are no saved desks.">
+        No saved desks
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">

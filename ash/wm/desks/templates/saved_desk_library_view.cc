@@ -20,6 +20,7 @@
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/rounded_label.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,9 +43,14 @@ constexpr int kGridLabelFontSize = 16;
 // Grids use landscape mode if the available width is greater or equal to this.
 constexpr int kLandscapeMinWidth = 756;
 
-// Label dimensions.
+// Section label dimensions.
 constexpr gfx::Size kLabelSizeLandscape = {708, 24};
 constexpr gfx::Size kLabelSizePortrait = {464, 24};
+
+// "No items" label dimensions.
+constexpr gfx::Size kNoItemsLabelPadding = {16, 8};
+constexpr int kNoItemsLabelCornerRadius = 16;
+constexpr int kNoItemsLabelHeight = 32;
 
 // Between child spacing of Library page scroll content view.
 constexpr int kLibraryPageScrollContentsBetweenChildSpacingDp = 32;
@@ -260,6 +266,16 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
           IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
       PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
 
+  no_items_label_ =
+      scroll_contents->AddChildView(std::make_unique<RoundedLabel>(
+          kNoItemsLabelPadding.width(), kNoItemsLabelPadding.height(),
+          kNoItemsLabelCornerRadius, kNoItemsLabelHeight,
+          l10n_util::GetStringUTF16(
+              saved_desk_util::AreDesksTemplatesEnabled()
+                  ? IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_TEMPLATES_OR_DESKS_LABEL
+                  : IDS_ASH_DESKS_TEMPLATES_LIBRARY_NO_DESKS_LABEL)));
+  no_items_label_->SetVisible(false);
+
   scroll_view_->SetContents(std::move(scroll_contents));
 }
 
@@ -426,6 +442,8 @@ void SavedDeskLibraryView::Layout() {
                                    : SavedDeskGridView::LayoutMode::PORTRAIT);
   }
 
+  size_t total_saved_desks = 0;
+
   DCHECK_EQ(grid_views_.size(), grid_labels_.size());
   for (size_t i = 0; i != grid_views_.size(); ++i) {
     // Make the grid label invisible if the corresponding grid view is
@@ -433,7 +451,12 @@ void SavedDeskLibraryView::Layout() {
     grid_labels_[i]->SetVisible(!grid_views_[i]->grid_items().empty());
     grid_labels_[i]->SetPreferredSize(landscape ? kLabelSizeLandscape
                                                 : kLabelSizePortrait);
+
+    total_saved_desks += grid_views_[i]->grid_items().size();
   }
+
+  feedback_button_->SetVisible(total_saved_desks != 0);
+  no_items_label_->SetVisible(total_saved_desks == 0);
 
   scroll_view_->SetBoundsRect({0, 0, width(), height()});
   scroll_view_gradient_helper_->UpdateGradientZone();

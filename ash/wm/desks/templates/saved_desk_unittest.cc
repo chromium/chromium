@@ -547,10 +547,8 @@ TEST_F(SavedDeskTest, NoWindowsLabelOnTemplateGridShow) {
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
 }
 
-// Tests that the no windows widget is shown when the last desk template is
-// deleted, forcing it out of desk template grid and return to overview mode
-// onto a desk grid with no windows
-TEST_F(SavedDeskTest, NoWindowsLabelOnReturnToEmptyOverviewDesk) {
+// Tests that we stay in the saved desk library when deleting the last entry.
+TEST_F(SavedDeskTest, NoItemsLabelOnDeletingLastSavedDesk) {
   UpdateDisplay("800x600,800x600");
   // Create a test window.
   auto test_window = CreateAppWindow();
@@ -567,16 +565,27 @@ TEST_F(SavedDeskTest, NoWindowsLabelOnReturnToEmptyOverviewDesk) {
   WaitForDesksTemplatesUI();
   EXPECT_TRUE(GetOverviewGridList()[0]->no_windows_widget());
 
-  // Open the desk templates grid. The no windows widget should now be hidden.
+  // Open the desk templates grid. The no windows widget should now be hidden
+  // and the no items label in the library UI should also not be visible.
   ShowDesksTemplatesGrids();
   EXPECT_FALSE(GetOverviewGridList()[0]->no_windows_widget());
+  EXPECT_FALSE(SavedDeskLibraryViewTestApi(
+                   GetOverviewGridList()[0]->GetSavedDeskLibraryView())
+                   .no_items_label()
+                   ->GetVisible());
 
   // Delete the one and only template, which should hide the templates grid but
   // remain in overview. Check that the no windows widget is now back.
   OpenOverviewAndShowTemplatesGrid();
   DeleteTemplate(entries[0]->uuid(), /*expected_current_item_count=*/1);
+
   ASSERT_TRUE(InOverviewSession());
-  EXPECT_TRUE(GetOverviewGridList()[0]->no_windows_widget());
+  // We should be in the saved desk UI and the no items label should now be
+  // visible.
+  EXPECT_TRUE(SavedDeskLibraryViewTestApi(
+                  GetOverviewGridList()[0]->GetSavedDeskLibraryView())
+                  .no_items_label()
+                  ->GetVisible());
 }
 
 // Tests that the "App does not support split-screen" label is hidden when the
@@ -853,15 +862,6 @@ TEST_F(SavedDeskTest, DeleteTemplate) {
   // Delete the template with `uuid_2`.
   DeleteTemplate(uuid_2, /*expected_current_item_count=*/1);
   EXPECT_EQ(0ul, desk_model()->GetEntryCount());
-
-  // After all templates have been deleted, check to ensure we have exited the
-  // Desks Templates Grid on all displays. Also check to make sure the hidden
-  // windows and the save template button are shown again.
-  EXPECT_EQ(1.0f, test_window->layer()->opacity());
-  for (auto& overview_grid : GetOverviewGridList())
-    EXPECT_FALSE(overview_grid->IsShowingDesksTemplatesGrid());
-  EXPECT_TRUE(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
-                  ->IsSaveDeskAsTemplateButtonVisible());
 }
 
 // Tests that the save desk button container is aligned with the first
@@ -950,13 +950,18 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     ASSERT_EQ(saved_desk_presenter->GetMaxDeskTemplateEntryCount(),
               saved_desk_presenter->GetDeskTemplateEntryCount());
 
-    // Verify that the button is re-enabled after we delete all entries and exit
-    // the templates grid.
+    // Verify that the button is re-enabled after we delete all entries.
     std::vector<const DeskTemplate*> entries = GetAllEntries();
     for (size_t i = entries.size(); i > 0; i--) {
       DeleteTemplate(/*uuid=*/entries[i - 1]->uuid(),
                      /*expected_current_item_count=*/i);
     }
+    EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+
+    // Leave and re-enter overview.
+    ToggleOverview();
+    ToggleOverview();
+
     EXPECT_FALSE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
     EXPECT_EQ(views::Button::STATE_NORMAL,
               GetSaveDeskAsTemplateButtonForRoot(root_window)->GetState());
@@ -989,13 +994,18 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     ASSERT_EQ(saved_desk_presenter->GetMaxSaveAndRecallDeskEntryCount(),
               saved_desk_presenter->GetSaveAndRecallDeskEntryCount());
 
-    // Verify that the button is re-enabled after we delete all entries and exit
-    // the templates grid.
+    // Verify that the button is re-enabled after we delete all entries.
     std::vector<const DeskTemplate*> entries = GetAllEntries();
     for (size_t i = entries.size(); i > 0; i--) {
       DeleteTemplate(/*uuid=*/entries[i - 1]->uuid(),
                      /*expected_current_item_count=*/i);
     }
+    EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+
+    // Leave and re-enter overview.
+    ToggleOverview();
+    ToggleOverview();
+
     EXPECT_FALSE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
     EXPECT_EQ(views::Button::STATE_NORMAL,
               GetSaveDeskForLaterButtonForRoot(root_window)->GetState());
@@ -1703,9 +1713,9 @@ TEST_F(SavedDeskTest, ClamshellToTabletMode) {
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
 }
 
-// Tests that the desks templates grid gets hidden when transitioning to tablet
+// Tests that the saved desk library gets hidden when transitioning to tablet
 // mode.
-TEST_F(SavedDeskTest, ShowingTemplatesGridToTabletMode) {
+TEST_F(SavedDeskTest, ShowingSavedDeskLibraryToTabletMode) {
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up.
   auto test_window_1 = CreateAppWindow();
@@ -1835,10 +1845,9 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   EXPECT_NE(button, GetHighlightedView());
 }
 
-// Tests that the desks bar returns to zero state if the second-to-last desk is
-// deleted while viewing the templates grid. Also verifies that the zero state
-// buttons are visible. Regression test for https://crbug.com/1264989.
-TEST_F(SavedDeskTest, DesksBarReturnsToZeroState) {
+// Tests that the desks bar does not return to zero state if the second-to-last
+// desk is deleted while viewing the templates grid.
+TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
   const base::GUID uuid = base::GUID::GenerateRandomV4();
   AddEntry(uuid, "template", base::Time::Now(), DeskTemplateType::kTemplate);
@@ -1862,17 +1871,17 @@ TEST_F(SavedDeskTest, DesksBarReturnsToZeroState) {
   EXPECT_TRUE(expanded_templates_button->GetVisible());
   EXPECT_FALSE(desks_bar_view->IsZeroState());
 
-  // Delete the one and only template, which should hide the templates grid.
+  // Delete the one and only template, we should remain in the desk library.
   DeleteTemplate(uuid, /*expected_current_item_count=*/1);
-  EXPECT_FALSE(GetOverviewSession()
-                   ->GetGridWithRootWindow(root_window)
-                   ->saved_desk_library_widget()
-                   ->IsVisible());
+  EXPECT_TRUE(GetOverviewSession()
+                  ->GetGridWithRootWindow(root_window)
+                  ->saved_desk_library_widget()
+                  ->IsVisible());
 
-  // Test that we are now in zero state.
+  // Test that we are not in zero state.
   auto* zero_new_desk_button = desks_bar_view->zero_state_new_desk_button();
-  EXPECT_TRUE(zero_new_desk_button->GetVisible());
-  EXPECT_TRUE(desks_bar_view->IsZeroState());
+  EXPECT_FALSE(zero_new_desk_button->GetVisible());
+  EXPECT_FALSE(desks_bar_view->IsZeroState());
 }
 
 // Tests that the unsupported apps dialog is shown when a user attempts to save
@@ -2125,9 +2134,10 @@ TEST_F(SavedDeskTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
       GetOverviewGridList().front()->GetSavedDeskLibraryView();
   ASSERT_TRUE(library_view);
 
-  // The library has two grids, two labels and one feedback button.
+  // The library has two grids, two section labels, one feedback button and one
+  // "no items" label.
   SavedDeskLibraryViewTestApi test_api(library_view);
-  ASSERT_EQ(5ul, test_api.scroll_view()->contents()->children().size());
+  ASSERT_EQ(6ul, test_api.scroll_view()->contents()->children().size());
 
   // Click on the grid item to launch the template.
   ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
@@ -2137,41 +2147,7 @@ TEST_F(SavedDeskTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
   // Go back to the library view and verify that we have the same amount of
   // expected children.
   ShowDesksTemplatesGrids();
-  ASSERT_EQ(5ul, test_api.scroll_view()->contents()->children().size());
-}
-
-// Tests that if we open the desks templates grid a second time during an
-// overview session, we can still see the template items. Opening a second time
-// can be done after deleting all the templates from the first open. Regression
-// test for https://crbug.com/1275179.
-TEST_F(SavedDeskTest, TemplatesAreVisibleAfterSecondSave) {
-  // One window is needed to save a template.
-  auto window = CreateAppWindow();
-
-  // Open overview and save a template.
-  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<const DeskTemplate*> entries = GetAllEntries();
-  ASSERT_EQ(1ul, entries.size());
-
-  // Delete the one and only template, which should hide the templates grid but
-  // remain in overview.
-  DeleteTemplate(entries[0]->uuid(), /*expected_current_item_count=*/1);
-  ASSERT_TRUE(InOverviewSession());
-
-  // Open overview and save a template again.
-  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-
-  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  SavedDeskLibraryView* library_view = overview_grid->GetSavedDeskLibraryView();
-  ASSERT_TRUE(library_view);
-
-  const std::vector<SavedDeskItemView*> grid_items =
-      GetItemViewsFromDeskLibrary(library_view);
-  ASSERT_EQ(1ul, grid_items.size());
-
-  // Tests that bounds of the views are not empty.
-  EXPECT_FALSE(library_view->bounds().IsEmpty());
-  EXPECT_FALSE(grid_items[0]->bounds().IsEmpty());
+  ASSERT_EQ(6ul, test_api.scroll_view()->contents()->children().size());
 }
 
 // Tests that the desks templates are organized in alphabetical order.
@@ -2734,11 +2710,12 @@ TEST_F(SavedDeskTest, ItemsDoNotOverlapShelf) {
   SavedDeskLibraryView* library_view =
       GetOverviewGridList().front()->GetSavedDeskLibraryView();
 
-  // The library has two grids, two labels and one feedback button.
+  // The library has two grids, two section labels, one feedback button and one
+  // "no items" label.
   SavedDeskLibraryViewTestApi test_api(library_view);
   views::View::Views library_child_views =
       test_api.scroll_view()->contents()->children();
-  ASSERT_EQ(5ul, library_child_views.size());
+  ASSERT_EQ(6ul, library_child_views.size());
 
   const gfx::Rect shelf_bounds =
       GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen();
@@ -2790,10 +2767,6 @@ TEST_F(SavedDeskTest, DeleteTemplateRecordsMetric) {
   // Delete the template with `uuid_1`.
   DeleteTemplate(uuid_1, /*expected_current_item_count=*/1);
   EXPECT_EQ(0ul, desk_model()->GetEntryCount());
-
-  // There is only one desk to delete in this test so we should have
-  // exited the overview.
-  EXPECT_EQ(1.0f, test_window->layer()->opacity());
 
   // Verifies that the template with `uuid_1`, doesn't exist anymore.
   DeleteTemplate(uuid_1, /*expected_current_item_count=*/0,

@@ -57,8 +57,13 @@ class SavedDeskLibraryViewTestApi {
   SavedDeskLibraryViewTestApi& operator=(SavedDeskLibraryViewTestApi&) = delete;
   ~SavedDeskLibraryViewTestApi() = default;
 
-  void WaitForAnimationDone();
   const views::ScrollView* scroll_view() { return library_view_->scroll_view_; }
+
+  const views::Label* no_items_label() {
+    return library_view_->no_items_label_;
+  }
+
+  void WaitForAnimationDone();
 
  private:
   SavedDeskLibraryView* library_view_;
