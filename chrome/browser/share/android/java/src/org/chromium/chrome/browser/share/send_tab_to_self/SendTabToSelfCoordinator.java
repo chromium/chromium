@@ -8,7 +8,6 @@ import android.accounts.Account;
 import android.content.Context;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Promise;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -18,6 +17,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -30,38 +30,60 @@ import java.util.List;
  * Coordinator for displaying the send tab to self feature.
  */
 public class SendTabToSelfCoordinator {
-    /** Waits for Sync to download the list of target devices after sign-in. */
-    private static class TargetDeviceListWaiter implements SyncService.SyncStateChangedListener {
-        private final Promise<Void> mPromise = new Promise<Void>();
+    /**
+     * Waits for Sync to download the list of target devices after sign-in. Aborts if the
+     * user dismisses the sign-in bottom sheet ("account picker") before success.
+     */
+    private static class TargetDeviceListWaiter
+            extends EmptyBottomSheetObserver implements SyncService.SyncStateChangedListener {
+        private final BottomSheetController mBottomSheetController;
+        private final Runnable mGotDeviceListCallback;
 
-        public TargetDeviceListWaiter() {
+        /**
+         * Note there's no need for a notion for a failure callback because in that case the
+         * account picker bottom sheet was closed and there's nothing left to do (simply don't
+         * show any other bottom sheet).
+         */
+        public TargetDeviceListWaiter(
+                BottomSheetController bottomSheetController, Runnable gotDeviceListCallback) {
+            mBottomSheetController = bottomSheetController;
+            mGotDeviceListCallback = gotDeviceListCallback;
+
             SyncService.get().addSyncStateChangedListener(this);
-            fullfillIfReady();
+            mBottomSheetController.addObserver(this);
+            notifyAndDestroyIfDone();
         }
 
-        public Promise<Void> waitUntilReady() {
-            return mPromise;
+        private void destroy() {
+            SyncService.get().removeSyncStateChangedListener(this);
+            mBottomSheetController.removeObserver(this);
         }
 
         @Override
         public void syncStateChanged() {
-            fullfillIfReady();
+            notifyAndDestroyIfDone();
         }
 
-        private void fullfillIfReady() {
+        @Override
+        public void onSheetClosed(int reason) {
+            // The account picker doesn't dismiss itself, so this must mean the user did.
+            destroy();
+        }
+
+        private void notifyAndDestroyIfDone() {
             if (SyncService.get().getActiveDataTypes().contains(ModelType.DEVICE_INFO)) {
-                SyncService.get().removeSyncStateChangedListener(this);
-                mPromise.fulfill(null);
+                destroy();
+                mGotDeviceListCallback.run();
             }
         }
     }
 
     /** Performs sign-in for the promo shown to signed-out users. */
     private static class SendTabToSelfAccountPickerDelegate implements AccountPickerDelegate {
-        private final Runnable mShowDeviceListCallback;
+        private final Runnable mOnSignInCompleteCallback;
 
-        public SendTabToSelfAccountPickerDelegate(Runnable showDeviceListCallback) {
-            mShowDeviceListCallback = showDeviceListCallback;
+        public SendTabToSelfAccountPickerDelegate(Runnable onSignInCompleteCallback) {
+            mOnSignInCompleteCallback = onSignInCompleteCallback;
         }
 
         @Override
@@ -76,8 +98,7 @@ public class SendTabToSelfCoordinator {
             signinManager.signin(account, new SigninManager.SignInCallback() {
                 @Override
                 public void onSignInComplete() {
-                    new TargetDeviceListWaiter().waitUntilReady().then(
-                            unused -> { mShowDeviceListCallback.run(); });
+                    mOnSignInCompleteCallback.run();
                 }
 
                 @Override
@@ -115,13 +136,17 @@ public class SendTabToSelfCoordinator {
             return;
         }
 
-        Runnable showDeviceListCallback = () -> {
-            // TODO(crbug.com/1219434): The sign-in promo should close itself instead.
-            mController.hideContent(mController.getCurrentSheetContent(), /*animate=*/true);
-            showDeviceList();
-        };
         new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController,
-                new SendTabToSelfAccountPickerDelegate(showDeviceListCallback));
+                new SendTabToSelfAccountPickerDelegate(this::onSignInComplete));
+    }
+
+    private void onSignInComplete() {
+        new TargetDeviceListWaiter(mController, this::onTargetDeviceListReady);
+    }
+
+    private void onTargetDeviceListReady() {
+        mController.hideContent(mController.getCurrentSheetContent(), /*animate=*/true);
+        showDeviceList();
     }
 
     private void showDeviceList() {
