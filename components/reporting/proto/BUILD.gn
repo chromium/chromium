@@ -36,7 +36,7 @@ proto_library("interface_proto") {
   # Generate JS so it can be used by chrome extensions
   generate_javascript = true
 
-  sources = [ "interface.proto" ]
+  sources = [ "synced/interface.proto" ]
 
   proto_deps = [
     ":record_constants",
