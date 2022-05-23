@@ -343,6 +343,7 @@ source_set("tests") {
 
   sources = [
     "chunked_data_pipe_upload_data_stream_unittest.cc",
+    "cookie_access_delegate_impl_unittest.cc",
     "cookie_manager_unittest.cc",
     "cookie_settings_unittest.cc",
     "cors/cors_url_loader_factory_unittest.cc",

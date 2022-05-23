@@ -85,8 +85,10 @@ CookieAccessDelegateImpl::FindFirstPartySetOwner(
     const net::SchemefulSite& site,
     base::OnceCallback<void(FirstPartySetsManager::OwnerResult)> callback)
     const {
-  if (!first_party_sets_manager_)
-    return {absl::nullopt};
+  if (!first_party_sets_manager_) {
+    return absl::make_optional<FirstPartySetsManager::OwnerResult>(
+        absl::nullopt);
+  }
   return first_party_sets_manager_->FindOwner(
       site, first_party_sets_context_config_, std::move(callback));
 }
