@@ -36,6 +36,7 @@ namespace fileManagerPrivateInternal {
   callback GetDisallowedTransfersCallback =
       void(EntryDescription[] entries);
   callback StartCopyCallback = void(long copyId);
+  callback IOTaskIdCallback = void(long taskId);
   callback ZipSelectionCallback = void(long zipId, double totalBytes);
   callback ValidatePathNameLengthCallback = void(boolean result);
   callback GetDirectorySizeCallback = void(double size);
@@ -146,6 +147,7 @@ namespace fileManagerPrivateInternal {
                                           optional SimpleCallback callback);
     static void startIOTask(fileManagerPrivate.IOTaskType type,
                             DOMString[] urls,
-                            IOTaskParams params);
+                            IOTaskParams params,
+                            optional IOTaskIdCallback callback);
   };
 };

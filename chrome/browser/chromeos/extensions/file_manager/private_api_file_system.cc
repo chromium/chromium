@@ -1590,8 +1590,9 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
           std::move(source_urls), std::move(destination_folder_url), *type);
       break;
   }
-  volume_manager->io_task_controller()->Add(std::move(task));
-  return RespondNow(NoArguments());
+  const auto taskId =
+      volume_manager->io_task_controller()->Add(std::move(task));
+  return RespondNow(OneArgument(base::Value(static_cast<int>(taskId))));
 }
 
 ExtensionFunction::ResponseAction

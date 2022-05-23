@@ -380,6 +380,7 @@ js_library("file_operation_manager") {
     ":metadata_proxy",
     ":trash",
     ":volume_manager_factory",
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/file_manager/file_manager/common/js:trash",

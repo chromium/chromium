@@ -9,7 +9,7 @@ import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
-import {getHoldingSpaceState} from '../../common/js/api.js';
+import {getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -2081,7 +2081,7 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
 
     const selectionEntries = fileManager.getSelection().entries;
     if (util.isExtractArchiveEnabled()) {
-      chrome.fileManagerPrivate.startIOTask(
+      startIOTask(
           chrome.fileManagerPrivate.IOTaskType.EXTRACT, selectionEntries,
           {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
     }
@@ -2132,7 +2132,7 @@ CommandHandler.COMMANDS_['zip-selection'] = new (class extends FilesCommand {
 
     const selectionEntries = fileManager.getSelection().entries;
     if (window.isSWA) {
-      chrome.fileManagerPrivate.startIOTask(
+      startIOTask(
           chrome.fileManagerPrivate.IOTaskType.ZIP, selectionEntries,
           {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
     } else {

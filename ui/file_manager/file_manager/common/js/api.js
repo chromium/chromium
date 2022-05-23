@@ -191,3 +191,16 @@ export async function getFrameColor() {
     return '#ffffff';
   }
 }
+
+/**
+ * Starts an IOTask of `type` and returns a taskId that can be used to cancel
+ * or identify the ongoing IO operation.
+ * @param {!chrome.fileManagerPrivate.IOTaskType} type
+ * @param {!Array<!Entry>} entries
+ * @param {!chrome.fileManagerPrivate.IOTaskParams} params
+ * @returns {!Promise<!number>}
+ */
+export async function startIOTask(type, entries, params) {
+  return promisify(
+      chrome.fileManagerPrivate.startIOTask, type, entries, params);
+}

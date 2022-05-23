@@ -1405,8 +1405,10 @@ chrome.fileManagerPrivate.sendFeedback = function() {};
  * @param {!chrome.fileManagerPrivate.IOTaskType} type
  * @param {!Array<!Entry>} entries
  * @param {!chrome.fileManagerPrivate.IOTaskParams} params
+ * @param {(function(number): void)=} callback Returns the task ID.
  */
-chrome.fileManagerPrivate.startIOTask = function(type, entries, params) {};
+chrome.fileManagerPrivate.startIOTask = function(
+    type, entries, params, callback) {};
 
 /**
  * Cancels an I/O task by id. Task ids are communicated to the Files App in

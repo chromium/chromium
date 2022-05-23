@@ -367,14 +367,16 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             urls, added, callback);
       });
 
-  apiFunctions.setHandleRequest('startIOTask', function(type, entries, params) {
-    const urls = entries.map(entry => getEntryURL(entry));
-    let newParams = {};
-    if (params.destinationFolder) {
-      newParams.destinationFolderUrl = getEntryURL(params.destinationFolder);
-    }
-    fileManagerPrivateInternal.startIOTask(type, urls, newParams);
-  });
+  apiFunctions.setHandleRequest(
+      'startIOTask', function(type, entries, params, callback) {
+        const urls = entries.map(entry => getEntryURL(entry));
+        let newParams = {};
+        if (params.destinationFolder) {
+          newParams.destinationFolderUrl =
+              getEntryURL(params.destinationFolder);
+        }
+        fileManagerPrivateInternal.startIOTask(type, urls, newParams, callback);
+      });
 });
 
 bindingUtil.registerEventArgumentMassager(

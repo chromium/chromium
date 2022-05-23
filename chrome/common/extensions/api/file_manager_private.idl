@@ -1043,6 +1043,9 @@ callback GetDisallowedTransfersCallback =
 // cancel the task.
 callback StartCopyCallback = void(long copyId);
 
+// |taskId| ID of the task that was started. Can be used to cancel ongoing task.
+callback IOTaskIdCallback = void(long taskId);
+
 // |sizeStats| Name/value pairs of size stats. Will be undefined if stats could
 // not be determined.
 callback GetSizeStatsCallback = void(optional MountPointSizeStats sizeStats);
@@ -1650,7 +1653,8 @@ interface Functions {
   static void startIOTask(
       IOTaskType type,
       [instanceof=Entry] object[] entries,
-      IOTaskParams params);
+      IOTaskParams params,
+      optional IOTaskIdCallback callback);
 
   // Cancels an I/O task by id. Task ids are communicated to the Files App in
   // each I/O task's progress status.
