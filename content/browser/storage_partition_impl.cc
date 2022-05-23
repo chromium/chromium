@@ -875,15 +875,14 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   QuotaManagedDataDeletionHelper(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      const absl::optional<url::Origin>& storage_origin,
+      const absl::optional<blink::StorageKey>& storage_key,
       base::OnceClosure callback)
       : remove_mask_(remove_mask),
         quota_storage_remove_mask_(quota_storage_remove_mask),
-        storage_origin_(storage_origin),
+        storage_key_(storage_key),
         callback_(std::move(callback)),
         task_count_(0) {
-    DCHECK(!storage_origin_.has_value() ||
-           !storage_origin_->GetURL().is_empty());
+    DCHECK(!storage_key_.has_value() || !storage_key_->origin().opaque());
   }
 
   QuotaManagedDataDeletionHelper(const QuotaManagedDataDeletionHelper&) =
@@ -917,7 +916,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   // All of these data are accessed on IO thread.
   uint32_t remove_mask_;
   uint32_t quota_storage_remove_mask_;
-  absl::optional<url::Origin> storage_origin_;
+  absl::optional<blink::StorageKey> storage_key_;
   base::OnceClosure callback_;
   int task_count_;
 };
@@ -968,7 +967,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       const scoped_refptr<storage::QuotaManager>& quota_manager,
       const base::Time begin,
       const base::Time end,
-      const GURL& storage_origin,
+      const blink::StorageKey& storage_key,
       const scoped_refptr<storage::SpecialStoragePolicy>&
           special_storage_policy,
       StoragePartition::OriginMatcherFunction origin_matcher,
@@ -1015,7 +1014,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearQuotaManagedDataOnIOThread(
     const scoped_refptr<storage::QuotaManager>& quota_manager,
     const base::Time begin,
     const base::Time end,
-    const GURL& storage_origin,
+    const blink::StorageKey& storage_key,
     const scoped_refptr<storage::SpecialStoragePolicy>& special_storage_policy,
     StoragePartition::OriginMatcherFunction origin_matcher,
     bool perform_storage_cleanup,
@@ -1025,9 +1024,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearQuotaManagedDataOnIOThread(
   StoragePartitionImpl::QuotaManagedDataDeletionHelper* helper =
       new StoragePartitionImpl::QuotaManagedDataDeletionHelper(
           remove_mask_, quota_storage_remove_mask_,
-          storage_origin.is_empty()
-              ? absl::nullopt
-              : absl::make_optional(url::Origin::Create(storage_origin)),
+          storage_key.origin().opaque() ? absl::nullopt
+                                        : absl::make_optional(storage_key),
           std::move(callback));
   helper->ClearDataOnIOThread(quota_manager, begin, end, special_storage_policy,
                               std::move(origin_matcher),
@@ -2310,8 +2308,7 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
   (*deletion_task_count)++;
   for (const auto& bucket : buckets) {
     // TODO(mkwst): Clean this up, it's slow. http://crbug.com/130746
-    if (storage_origin_.has_value() &&
-        bucket.storage_key.origin() != *storage_origin_)
+    if (storage_key_.has_value() && bucket.storage_key != *storage_key_)
       continue;
 
     if (origin_matcher && !origin_matcher.Run(bucket.storage_key.origin(),
@@ -2457,12 +2454,12 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       remove_mask_ & REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&DataDeletionHelper::ClearQuotaManagedDataOnIOThread,
-                       base::Unretained(this),
-                       base::WrapRefCounted(quota_manager), begin, end,
-                       storage_origin, storage_policy_ref, origin_matcher,
-                       perform_storage_cleanup,
-                       CreateTaskCompletionClosure(TracingDataType::kQuota)));
+        base::BindOnce(
+            &DataDeletionHelper::ClearQuotaManagedDataOnIOThread,
+            base::Unretained(this), base::WrapRefCounted(quota_manager), begin,
+            end, blink::StorageKey(url::Origin::Create(storage_origin)),
+            storage_policy_ref, origin_matcher, perform_storage_cleanup,
+            CreateTaskCompletionClosure(TracingDataType::kQuota)));
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_LOCAL_STORAGE) {
