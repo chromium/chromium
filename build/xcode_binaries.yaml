@@ -8,9 +8,9 @@
 # To deploy the newly created cipd package across the fleet, modify
 # mac_toolchain.py to point to the new cipd hash.
 #
-# Note that runhooks extracts the cipd file to build/mac/xcode_binaries -- your
-# build/xcode_binaries you're creating in step 1 above isn't used as part of
-# the Chromium build, build/mac_files/xcode_binaries is. So you need to
+# Note that runhooks extracts the cipd file to build/mac_files/xcode_binaries
+# -- your build/xcode_binaries you're creating in step 1 above isn't used as
+# part of the Chromium build, build/mac_files/xcode_binaries is. So you need to
 # `runhooks` after updating the hash in mac_toolchain.py like everyone else to
 # get the new bits for your local build.
 #
