@@ -31,6 +31,9 @@ consoles.list_view(
 
 try_.builder(
     name = "android-10-arm64-rel",
+    mirrors = [
+        "ci/android-10-arm64-rel",
+    ],
 )
 
 try_.builder(
