@@ -6815,6 +6815,9 @@ crbug.com/1286883 [ Mac ] fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob.html
 # Sheriff 2022-05-11
 crbug.com/1324428 fast/webgl/canvas-toDataURL-crash.html [ Crash Pass ]
 
+# Disabled to allow a DevTools roll
+crbug.com/1325751 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]
+
 # Throttling a hidden-cross origin frame may stall animations.
 crbug.com/1323246 external/wpt/web-animations/timing-model/timelines/sibling-iframe-timeline.html [ Failure Pass ]
 
