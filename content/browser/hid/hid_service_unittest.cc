@@ -197,8 +197,6 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
                            url::Origin::Create(GURL(kTestUrl)),
                            service_.BindNewPipeAndPassReceiver());
         break;
-      default:
-        NOTREACHED();
     }
     return service_;
   }

@@ -4,6 +4,7 @@
 
 #include "content/browser/hid/hid_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace content {
@@ -80,7 +82,7 @@ void RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
 class DocumentHelper
     : public content::DocumentService<blink::mojom::HidService> {
  public:
-  DocumentHelper(HidService* parent,
+  DocumentHelper(std::unique_ptr<HidService> parent,
                  RenderFrameHost* render_frame_host,
                  mojo::PendingReceiver<blink::mojom::HidService> receiver)
       : DocumentService(render_frame_host, std::move(receiver)),
@@ -121,8 +123,7 @@ class DocumentHelper
 
 HidService::HidService(BrowserContext* browser_context,
                        const url::Origin& origin,
-                       RenderFrameHostImpl* render_frame_host,
-                       mojo::PendingReceiver<blink::mojom::HidService> receiver)
+                       RenderFrameHostImpl* render_frame_host)
     : browser_context_(browser_context),
       render_frame_host_(render_frame_host),
       origin_(origin) {
@@ -133,21 +134,6 @@ HidService::HidService(BrowserContext* browser_context,
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   if (delegate)
     delegate->AddObserver(browser_context_, this);
-
-  if (render_frame_host_) {
-    // DocumentHelper observes the lifetime of the document connected to
-    // `render_frame_host_` and destroys the HidService (deletes `this`) when
-    // the document is destroyed or navigates cross-origin. It will also trigger
-    // self-destruction if the Mojo connection is disconnected.
-    new DocumentHelper(std::move(this), render_frame_host_,
-                       std::move(receiver));
-  } else {
-    // If there is no connected document, register a disconnect handler to
-    // self-destruct on disconnection.
-    receiver_.Bind(std::move(receiver));
-    receiver_.set_disconnect_handler(base::BindOnce(
-        &HidService::OnServiceDisconnected, base::Unretained(this)));
-  }
 }
 
 HidService::~HidService() {
@@ -185,12 +171,16 @@ void HidService::Create(
     return;
   }
 
-  // HidService owns itself. It will self-destruct when a mojo interface error
-  // occurs, the render frame host is deleted, or the render frame host
-  // navigates to a new document.
-  new HidService(render_frame_host->GetBrowserContext(),
-                 render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
-                 render_frame_host, std::move(receiver));
+  // DocumentHelper observes the lifetime of the document connected to
+  // `render_frame_host` and destroys the HidService when the Mojo connection is
+  // disconnected, RenderFrameHost is deleted, or the RenderFrameHost commits a
+  // cross-document navigation. It forwards its Mojo interface to HidService.
+  new DocumentHelper(
+      std::make_unique<HidService>(
+          render_frame_host->GetBrowserContext(),
+          render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
+          render_frame_host),
+      render_frame_host, std::move(receiver));
 }
 
 // static
@@ -205,10 +195,12 @@ void HidService::Create(
   if (!GetContentClient()->browser()->GetHidDelegate())
     return;
 
-  // HidService owns itself. It will self-destruct when a mojo interface
-  // error occurs.
-  new HidService(browser_context, origin, /*render_frame_host=*/nullptr,
-                 std::move(receiver));
+  // This makes HidService a self-owned receiver so it will self-destruct when a
+  // mojo interface error occurs.
+  mojo::MakeSelfOwnedReceiver<blink::mojom::HidService, HidService>(
+      std::make_unique<HidService>(browser_context, origin,
+                                   /*render_frame_host=*/nullptr),
+      std::move(receiver));
 }
 
 void HidService::RegisterClient(
@@ -282,10 +274,6 @@ void HidService::OnWatcherRemoved(bool cleanup_watcher_ids) {
       return watcher_entry.second == watchers_.current_receiver();
     });
   }
-}
-
-void HidService::OnServiceDisconnected() {
-  delete this;
 }
 
 void HidService::IncrementActiveFrameCount() {

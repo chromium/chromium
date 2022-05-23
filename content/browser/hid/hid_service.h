@@ -30,6 +30,7 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
                                   public device::mojom::HidConnectionWatcher,
                                   public HidDelegate::Observer {
  public:
+  HidService(BrowserContext*, const url::Origin&, RenderFrameHostImpl*);
   HidService(HidService&) = delete;
   HidService& operator=(HidService&) = delete;
   ~HidService() override;
@@ -69,13 +70,7 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
   void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
-  HidService(BrowserContext*,
-             const url::Origin&,
-             RenderFrameHostImpl*,
-             mojo::PendingReceiver<blink::mojom::HidService>);
-
   void OnWatcherRemoved(bool cleanup_watcher_ids);
-  void OnServiceDisconnected();
   void IncrementActiveFrameCount();
   void DecrementActiveFrameCount();
 
@@ -88,26 +83,14 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
       ConnectCallback callback,
       mojo::PendingRemote<device::mojom::HidConnection> connection);
 
-  // The browser_context pointed by |browser_context_| always outlives
+  // The BrowserContext pointed by |browser_context_| always outlives
   // HidService itself.
   const raw_ptr<BrowserContext> browser_context_;
 
-  // When render_frame_host pointed by |render_frame_host| destroys, the bound
-  // HidService will be destroyed first. It should be safe to access
+  // When RenderFrameHost pointed by |render_frame_host| is destroyed, the
+  // bound HidService will be destroyed first. It should be safe to access
   // |render_frame_host_| whenever it is not null.
   const raw_ptr<RenderFrameHostImpl> render_frame_host_;
-
-  // When created from a document, `receiver_` is not bound. Instead, the
-  // receiver is transferred to a DocumentService which manages the Mojo
-  // connection and observes the document lifecycle. The DocumentService ensures
-  // HidService is destroyed when the Mojo connection is disconnected,
-  // renderFrameHost is deleted, or the RenderFrameHost commits a cross-document
-  // navigation. The DocumentService forwards its Mojo interface to HidService.
-  //
-  // When created from a service worker, `receiver_` is bound and no
-  // DocumentService is created. HidService self-destructs when the Mojo
-  // connection is disconnected.
-  mojo::Receiver<blink::mojom::HidService> receiver_{this};
 
   // The last shown HID chooser UI.
   std::unique_ptr<HidChooser> chooser_;
