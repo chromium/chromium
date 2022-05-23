@@ -1613,7 +1613,10 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
         fileManager.volumeManager.getLocationInfo(parentEntry) :
         null;
     const volumeIsNotReadOnly = !!locationInfo && !locationInfo.isReadOnly;
+    // ARC doesn't support rename for now. http://b/232152680
+    const isRecentArcEntry = VolumeManagerCommon.isRecentArcEntry(entries[0]);
     event.canExecute = entries.length === 1 && volumeIsNotReadOnly &&
+        !isRecentArcEntry &&
         CommandUtil.hasCapability(fileManager, entries, 'canRename');
     event.command.setHidden(false);
   }

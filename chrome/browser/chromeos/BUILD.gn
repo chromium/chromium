@@ -3630,6 +3630,7 @@ source_set("unit_tests") {
     "../ash/arc/fileapi/arc_content_file_system_file_stream_reader_unittest.cc",
     "../ash/arc/fileapi/arc_content_file_system_file_stream_writer_unittest.cc",
     "../ash/arc/fileapi/arc_content_file_system_url_util_unittest.cc",
+    "../ash/arc/fileapi/arc_documents_provider_root_map_unittest.cc",
     "../ash/arc/fileapi/arc_documents_provider_root_unittest.cc",
     "../ash/arc/fileapi/arc_documents_provider_util_unittest.cc",
     "../ash/arc/fileapi/arc_file_system_bridge_unittest.cc",

@@ -94,13 +94,23 @@ export class MockFileOperationManager extends EventTarget {
     return this.generatedTaskIds.indexOf(id) !== -1;
   }
 
-  hasQueuedTasks() {}
-  filterSameDirectoryEntry() {}
-  willUseTrash() {}
+  /** @return {boolean} */
+  hasQueuedTasks() {
+    throw new Error('Not implemented');
+  }
+  /** @return {Promise} */
+  filterSameDirectoryEntry(sourceEntries, targetEntry, isMove) {}
+  /** @return {boolean} */
+  willUseTrash(volumeManager, entries) {
+    throw new Error('Not implemented');
+  }
   deleteEntries() {}
   restoreDeleted() {}
   emptyTrash() {}
   zipSelection() {}
   cancelZip() {}
-  async writeFile() {}
+  /** @return {!Promise<!FileEntry>} */
+  async writeFile(file, destination) {
+    throw new Error('Not implemented');
+  }
 }

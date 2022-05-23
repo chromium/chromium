@@ -117,9 +117,14 @@ export class MockVolumeManager {
    */
   getLocationInfo(entry) {
     if (util.isFakeEntry(entry)) {
+      const isReadOnly =
+          entry.rootType === VolumeManagerCommon.RootType.RECENT ?
+          !util.isRecentsFilterV2Enabled() :
+          true;
       return new EntryLocationImpl(
           this.volumeInfoList.item(0),
-          /** @type {!FakeEntry} */ (entry).rootType, true, true);
+          /** @type {!FakeEntry} */ (entry).rootType, /* isRootType= */ true,
+          isReadOnly);
     }
 
     if (entry.filesystem.name === VolumeManagerCommon.VolumeType.DRIVE) {
@@ -223,6 +228,9 @@ export class MockVolumeManager {
     return volumeInfo;
   }
 
+  /**
+   * @return {!Promise<!VolumeInfo>}
+   */
   async mountArchive(fileUrl, password) {
     throw new Error('Not implemented');
   }
@@ -235,7 +243,7 @@ export class MockVolumeManager {
     throw new Error('Not implemented');
   }
 
-  configure(volumeInfo) {
+  async configure(volumeInfo) {
     throw new Error('Not implemented');
   }
 
@@ -247,6 +255,9 @@ export class MockVolumeManager {
     throw new Error('Not implemented');
   }
 
+  /**
+   * @return {boolean}
+   */
   dispatchEvent(event) {
     throw new Error('Not implemented');
   }

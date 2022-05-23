@@ -446,6 +446,20 @@ js_library("directory_model") {
   ]
 }
 
+js_unittest("directory_model_unittest.m") {
+  deps = [
+    ":directory_contents",
+    ":directory_model",
+    "metadata:mock_metadata",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/background/js:mock_file_operation_manager",
+    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
 js_library("navigation_uma") {
   deps = [
     "//ui/file_manager/file_manager/common/js:metrics",
@@ -1331,6 +1345,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":banner_controller_unittest.m",
     ":banner_util_unittest.m",
     ":directory_contents_unittest.m",
+    ":directory_model_unittest.m",
     ":file_list_model_unittest.m",
     ":file_manager_commands_unittest.m",
     ":file_tasks_unittest.m",

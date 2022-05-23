@@ -3003,6 +3003,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "isFiltersInRecentsEnabledV2") {
+    *output = options.enable_filters_in_recents_v2 ? "true" : "false";
+    return;
+  }
+
   if (name == "switchLanguage") {
     const std::string* language = value.FindStringKey("language");
     ASSERT_TRUE(language);

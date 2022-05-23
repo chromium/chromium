@@ -372,6 +372,9 @@ js_library("mock_file_operation_manager") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
+  visibility += [
+    "//ui/file_manager/file_manager/foreground/js:directory_model_unittest.m",
+  ]
 }
 
 js_library("file_operation_manager") {

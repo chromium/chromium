@@ -416,7 +416,8 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
       arc::kMediaDocumentsProviderAuthority, root_document_id);
   volume->mount_condition_ = ash::disks::MOUNT_CONDITION_NONE;
   volume->volume_label_ = MediaViewDocumentIdToLabel(root_document_id);
-  volume->is_read_only_ = true;
+  volume->is_read_only_ =
+      arc::ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly();
   volume->watchable_ = false;
   volume->volume_id_ = arc::GetMediaViewVolumeId(root_document_id);
   return volume;

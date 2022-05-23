@@ -6,6 +6,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
@@ -359,6 +360,70 @@ export async function testExtractAllCommand(done) {
   // Check: ZIP canExecute is true and command visible for multiple selection.
   zipCommand.canExecute(event, fileManager);
   assertTrue(event.canExecute);
+  assertFalse(event.command.hidden);
+
+  done();
+}
+
+/**
+ * Tests that rename command should be disabled for Recent entry.
+ */
+export async function testRenameCommand(done) {
+  loadTimeData.resetForTesting({});
+
+  // Check: `rename` command exists.
+  const command = CommandHandler.getCommand('rename');
+  assertNotEquals(command, undefined);
+
+  // Mock volume manager.
+  const volumeManager = new MockVolumeManager();
+
+  // Create `documents_root` volume.
+  const documentsRootVolumeInfo = volumeManager.createVolumeInfo(
+      VolumeManagerCommon.VolumeType.MEDIA_VIEW,
+      'com.android.providers.media.documents:documents_root', 'Documents');
+
+  // Mock file entries.
+  const recentEntry =
+      new FakeEntryImpl('Recent', VolumeManagerCommon.RootType.RECENT);
+  const pdfEntry = MockDirectoryEntry.create(
+      documentsRootVolumeInfo.fileSystem, 'Documents/abc.pdf');
+
+  // Mock `Event`.
+  const event = {
+    canExecute: true,
+    target: {
+      entry: pdfEntry,
+    },
+    command: {
+      hidden: false,
+      setHidden: (hidden) => {
+        event.command.hidden = hidden;
+      },
+    },
+  };
+
+  // The current selection for testing.
+  const currentSelection = {
+    entries: [pdfEntry],
+    iconType: 'none',
+    totalCount: 1,
+  };
+
+  // Mock `FileManager`.
+  const fileManager = {
+    directoryModel: {
+      isOnNative: () => true,
+      isReadOnly: () => false,
+    },
+    getCurrentDirectoryEntry: () => recentEntry,
+    getSelection: () => currentSelection,
+    volumeManager: volumeManager,
+  };
+
+  // Check: canExecute is false and command is disabled.
+  command.canExecute(event, fileManager);
+  assertFalse(event.canExecute);
   assertFalse(event.command.hidden);
 
   done();

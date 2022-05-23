@@ -446,6 +446,14 @@ VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE = 'archive_opened';
 VolumeManagerCommon.PHOTOS_DOCUMENTS_PROVIDER_VOLUME_ID =
     'documents_provider:com.google.android.apps.photos.photoprovider/com.google.android.apps.photos';
 
+/**
+ * ID of the MediaDocumentsProvider. All the files returned by ARC source in
+ * Recents have this ID prefix in their filesystem.
+ * @const {string}
+ */
+VolumeManagerCommon.MEDIA_DOCUMENTS_PROVIDER_ID =
+    'com.android.providers.media.documents';
+
 
 /**
  * Creates an CustomEvent object for changing current directory when an archive
@@ -458,6 +466,19 @@ VolumeManagerCommon.createArchiveOpenedEvent = mountPoint => {
   return new CustomEvent(
       VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE,
       {detail: {mountPoint: mountPoint}});
+};
+
+/**
+ * Checks if a file entry is a Recent entry coming from ARC source.
+ * @param {?Entry} entry
+ * @return {boolean}
+ */
+VolumeManagerCommon.isRecentArcEntry = entry => {
+  if (!entry) {
+    return false;
+  }
+  return entry.filesystem.name.startsWith(
+      VolumeManagerCommon.MEDIA_DOCUMENTS_PROVIDER_ID);
 };
 
 export {VolumeManagerCommon};

@@ -114,6 +114,12 @@ export class DirectoryModel extends EventTarget {
     this.fileWatcher_.addEventListener(
         'watcher-directory-changed',
         this.onWatcherDirectoryChanged_.bind(this));
+    // For non-watchable directory (e.g. FakeEntry), we need to subscribe to
+    // the IOTask and manually refresh.
+    if (util.isRecentsFilterV2Enabled()) {
+      chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
+          this.updateFileListAfterIOTask_.bind(this));
+    }
     util.addEventListenerToBackgroundComponent(
         fileOperationManager, 'entries-changed',
         this.onEntriesChanged_.bind(this));
@@ -368,7 +374,7 @@ export class DirectoryModel extends EventTarget {
           });
     } else {
       // Invokes force refresh if the detailed information isn't provided.
-      // This can occur very frequently (e.g. when copying files into Downlaods)
+      // This can occur very frequently (e.g. when copying files into Downloads)
       // and rescan is heavy operation, so we keep some interval for each
       // rescan.
       this.rescanAggregator_.run();
@@ -1591,6 +1597,35 @@ export class DirectoryModel extends EventTarget {
     if (this.onClearSearch_) {
       this.onClearSearch_();
       this.onClearSearch_ = null;
+    }
+  }
+
+  /**
+   * Update the file list when curtain IO task is finished. Fake directory
+   * entries like RecentEntry is not watchable, to keep the file list
+   * refresh, we need to explicitly subscribe to the IO task status event, and
+   * manually refresh.
+   * @param {!chrome.fileManagerPrivate.ProgressStatus} event
+   * @private
+   */
+  updateFileListAfterIOTask_(event) {
+    /** @type {!Set<!chrome.fileManagerPrivate.IOTaskType>} */
+    const eventTypesRequireRefresh = new Set([
+      chrome.fileManagerPrivate.IOTaskType.DELETE,
+      chrome.fileManagerPrivate.IOTaskType.MOVE,
+    ]);
+    /** @type {!Set<?VolumeManagerCommon.RootType>} */
+    const rootTypesRequireRefresh =
+        new Set([VolumeManagerCommon.RootType.RECENT]);
+
+    const currentRootType = this.getCurrentRootType();
+    if (!rootTypesRequireRefresh.has(currentRootType)) {
+      return;
+    }
+    const isIOTaskFinished =
+        event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS;
+    if (isIOTaskFinished && eventTypesRequireRefresh.has(event.type)) {
+      this.rescanLater(/* refresh= */ false);
     }
   }
 }

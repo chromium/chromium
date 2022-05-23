@@ -67,6 +67,17 @@ async function isFiltersInRecentsEnabled() {
 }
 
 /**
+ * Checks if the #file-filters-in-recents-v2 flag has been enabled or not.
+ *
+ * @return {!Promise<boolean>} Flag enabled or not.
+ */
+async function isFiltersInRecentsV2Enabled() {
+  const isFiltersInRecentsEnabled =
+      await sendTestMessage({name: 'isFiltersInRecentsEnabledV2'});
+  return isFiltersInRecentsEnabled === 'true';
+}
+
+/**
  * Navigate to Recent folder with specific type and verify the breadcrumb path.
  *
  * @param {string} appId Files app windowId.
@@ -120,9 +131,15 @@ async function verifyCurrentEntries(appId, expectedEntries) {
   // Check: the file-list should be selected.
   await remoteCall.waitForElement(appId, '#file-list li[selected]');
 
-  // Test that the delete button isn't visible.
+  // Test that the delete button's visibility based on v2 flag.
   const deleteButton = await remoteCall.waitForElement(appId, '#delete-button');
-  chrome.test.assertTrue(deleteButton.hidden, 'delete button should be hidden');
+  if (await isFiltersInRecentsV2Enabled()) {
+    chrome.test.assertFalse(
+        deleteButton.hidden, 'delete button should be visible');
+  } else {
+    chrome.test.assertTrue(
+        deleteButton.hidden, 'delete button should be hidden');
+  }
 }
 
 /**

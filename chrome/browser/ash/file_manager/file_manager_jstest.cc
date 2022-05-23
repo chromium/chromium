@@ -69,6 +69,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryContentsTest) {
   RunTestURL("foreground/js/directory_contents_unittest.m_gen.html");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryModelTest) {
+  RunTestURL("foreground/js/directory_model_unittest.m_gen.html");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeTest) {
   RunTestURL("foreground/js/ui/directory_tree_unittest.m_gen.html");
 }

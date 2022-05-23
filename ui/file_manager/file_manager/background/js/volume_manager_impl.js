@@ -397,10 +397,13 @@ export class VolumeManagerImpl extends EventTarget {
     const volumeInfo = this.getVolumeInfo(entry);
 
     if (util.isFakeEntry(entry)) {
+      const isReadOnly =
+          entry.rootType === VolumeManagerCommon.RootType.RECENT ?
+          !util.isRecentsFilterV2Enabled() :
+          true;
       return new EntryLocationImpl(
           volumeInfo, assert(entry.rootType),
-          true /* the entry points a root directory. */,
-          true /* fake entries are read only. */);
+          true /* The entry points a root directory. */, isReadOnly);
     }
 
     if (!volumeInfo) {

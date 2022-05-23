@@ -1318,6 +1318,12 @@ export class FileTransferController {
       return false;
     }
 
+    // Recent isn't read-only, but it doesn't support paste/drop.
+    if (destinationLocationInfo.rootType ===
+        VolumeManagerCommon.RootType.RECENT) {
+      return false;
+    }
+
     if (destinationLocationInfo.volumeInfo &&
         destinationLocationInfo.volumeInfo.error) {
       return false;
@@ -1495,6 +1501,11 @@ export class FileTransferController {
     }
     if (destinationLocationInfo.volumeInfo &&
         destinationLocationInfo.volumeInfo.error) {
+      return new DropEffectAndLabel(DropEffectType.NONE, null);
+    }
+    // Recent isn't read-only, but it doesn't support drop.
+    if (destinationLocationInfo.rootType ===
+        VolumeManagerCommon.RootType.RECENT) {
       return new DropEffectAndLabel(DropEffectType.NONE, null);
     }
     if (destinationLocationInfo.isReadOnly) {

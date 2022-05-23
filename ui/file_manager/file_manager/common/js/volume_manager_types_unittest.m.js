@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertTrue} from 'chrome://test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
+import {MockFileEntry, MockFileSystem} from './mock_entry.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 // Test that every volumeType has a rootType, and that it maps back to the same
@@ -54,4 +56,18 @@ export function testEveryRootTypeHasAVolumeType() {
     const volumeType = VolumeManagerCommon.getVolumeTypeFromRootType(rootType);
     assertTrue(volumeType !== undefined);
   });
+}
+
+// Tests that IsRecentArcEntry() should return true/false if an entry belongs/
+// doesn't belong to recent.
+export function testIsRecentArcEntry() {
+  assertFalse(VolumeManagerCommon.isRecentArcEntry(null));
+  const otherEntry = MockFileEntry.create(
+      new MockFileSystem('download:Downloads'), 'test.txt');
+  assertFalse(VolumeManagerCommon.isRecentArcEntry(otherEntry));
+  const recentEntry = MockFileEntry.create(
+      new MockFileSystem(
+          'com.android.providers.media.documents:documents_root'),
+      'Documents/abc.pdf');
+  assertTrue(VolumeManagerCommon.isRecentArcEntry(recentEntry));
 }
