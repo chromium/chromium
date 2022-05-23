@@ -288,6 +288,7 @@ if (enable_pdf) {
 
     deps = [
       ":accessibility",
+      ":content_restriction",
       ":internal",
       ":ppapi_migration",
       "//base",

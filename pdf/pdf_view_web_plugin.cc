@@ -35,6 +35,7 @@
 #include "cc/paint/paint_image_builder.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/content_restriction.h"
 #include "pdf/metrics_handler.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/parsed_params.h"
@@ -683,6 +684,25 @@ void PdfViewWebPlugin::DidFormOpen(int32_t result) {
   form_loader_.reset();
 }
 
+std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
+  if (full_frame()) {
+    DidStartLoading();
+
+    // Disable save and print until the document is fully loaded, since they
+    // would generate an incomplete document. This needs to be done each time
+    // DidStartLoading() is called because that resets the content restrictions.
+    SetContentRestrictions(kContentRestrictionSave | kContentRestrictionPrint);
+  }
+
+  return CreateUrlLoaderInternal();
+}
+
+std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
+  auto loader = std::make_unique<BlinkUrlLoader>(weak_factory_.GetWeakPtr());
+  loader->GrantUniversalAccess();
+  return loader;
+}
+
 std::vector<PDFEngine::Client::SearchStringResult>
 PdfViewWebPlugin::SearchString(const char16_t* string,
                                const char16_t* term,
@@ -801,12 +821,6 @@ void PdfViewWebPlugin::HandleAccessibilityAction(
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
-}
-
-std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
-  auto loader = std::make_unique<BlinkUrlLoader>(weak_factory_.GetWeakPtr());
-  loader->GrantUniversalAccess();
-  return loader;
 }
 
 void PdfViewWebPlugin::OnDocumentLoadComplete() {

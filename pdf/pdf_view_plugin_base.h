@@ -118,7 +118,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
              const std::string& subject,
              const std::string& body) override;
   void Print() override;
-  std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   void DocumentLoadComplete() override;
   void DocumentLoadFailed() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
@@ -217,10 +216,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Gets a weak pointer with a lifetime matching the derived class.
   virtual base::WeakPtr<PdfViewPluginBase> GetWeakPtr() = 0;
-
-  // Creates a URL loader and allows it to access all urls, i.e. not just the
-  // frame's origin.
-  virtual std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() = 0;
 
   // Runs when document load completes.
   virtual void OnDocumentLoadComplete() = 0;

@@ -263,6 +263,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SubmitForm(const std::string& url,
                   const void* data,
                   int length) override;
+  std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   std::vector<SearchStringResult> SearchString(const char16_t* string,
                                                const char16_t* term,
                                                bool case_sensitive) override;
@@ -314,7 +315,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
       PDFiumFormFiller::ScriptOption script_option) override;
   void LoadUrl(base::StringPiece url, LoadUrlCallback callback) override;
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
-  std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
   void OnDocumentLoadComplete() override;
   void SendMessage(base::Value::Dict message) override;
   void SaveAs() override;
@@ -350,6 +350,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Handles `Open()` result for `form_loader_`.
   void DidFormOpen(int32_t result);
+
+  // Creates a URL loader with universal access.
+  std::unique_ptr<UrlLoader> CreateUrlLoaderInternal();
 
   // Recalculates values that depend on scale factors.
   void UpdateScaledValues();

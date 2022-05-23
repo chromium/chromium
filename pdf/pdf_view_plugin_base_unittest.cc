@@ -83,6 +83,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               (const std::string&, const std::string&),
               (override));
 
+  MOCK_METHOD(std::unique_ptr<UrlLoader>, CreateUrlLoader, (), (override));
+
   MOCK_METHOD(std::vector<PDFEngine::Client::SearchStringResult>,
               SearchString,
               (const char16_t*, const char16_t*, bool),
@@ -112,11 +114,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
-
-  MOCK_METHOD(std::unique_ptr<UrlLoader>,
-              CreateUrlLoaderInternal,
-              (),
-              (override));
 
   MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
 
