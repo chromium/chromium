@@ -549,16 +549,6 @@ void AuthenticatorCommon::MakeCredential(
 
   BeginRequestTimeout(options->timeout);
 
-  if (options->remote_desktop_client_override) {
-    // WebAuthRequestSecurityChecker will validate whether use of the extension
-    // is authorized.
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebAuthRemoteDesktopSupport)) {
-      mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
-      return;
-    }
-  }
-
   WebAuthRequestSecurityChecker::RequestType request_type =
       options->is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
@@ -865,16 +855,6 @@ void AuthenticatorCommon::GetAssertion(
 
   DCHECK(get_assertion_response_callback_.is_null());
   get_assertion_response_callback_ = std::move(callback);
-
-  if (options->remote_desktop_client_override) {
-    // WebAuthRequestSecurityChecker will validate whether use of the extension
-    // is authorized.
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kWebAuthRemoteDesktopSupport)) {
-      mojo::ReportBadMessage("--webauthn-remote-desktop-support not enabled");
-      return;
-    }
-  }
 
   if (!options->is_conditional) {
     BeginRequestTimeout(options->timeout);
