@@ -72744,6 +72744,32 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Missing: physical display size"/>
 </enum>
 
+<enum name="PartialTranslateBubbleUiEvent">
+  <int value="0" label="Bubble was shown"/>
+  <int value="1" label="Triggered translation by clicking target language tab"/>
+  <int value="2" label="Reverted translation by clicking source language tab"/>
+  <int value="3" label="Translate Full Page button clicked"/>
+  <int value="4" label="Close button clicked"/>
+  <int value="5" label="Try Again button in error view clicked"/>
+  <int value="6"
+      label="Page is Not in {Source Language} item in options menu clicked"/>
+  <int value="7" label="Choose Another Language item in options menu clicked"/>
+  <int value="8" label="Language selected in source language combobox"/>
+  <int value="9" label="Language selected in target language combobox"/>
+  <int value="10"
+      label="Reset button in source language selection view clicked"/>
+  <int value="11"
+      label="Reset button in target language selection view clicked"/>
+  <int value="12"
+      label="Done button in source language selection view clicked"/>
+  <int value="13"
+      label="Translate button in source language selection view clicked"/>
+  <int value="14"
+      label="Done button in target language selection view clicked"/>
+  <int value="15"
+      label="Translate button in target language selection view clicked"/>
+</enum>
+
 <enum name="PartnerBookmark.FaviconFetchResult">
   <int value="0" label="SUCCESS">
     Success - favicon found in local cache or fetched from server.

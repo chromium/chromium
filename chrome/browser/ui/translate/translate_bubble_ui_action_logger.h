@@ -87,7 +87,7 @@ enum TranslateBubbleUiEvent {
 };
 
 // Logs metrics for the user's TranslateBubbleUiEvent |action|.
-void ReportUiAction(translate::TranslateBubbleUiEvent action);
+void ReportTranslateBubbleUiAction(translate::TranslateBubbleUiEvent action);
 
 }  // namespace translate
 

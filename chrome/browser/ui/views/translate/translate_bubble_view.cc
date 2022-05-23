@@ -375,7 +375,7 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       if (should_never_translate_language_) {
         should_always_translate_ = false;
         model_->SetAlwaysTranslate(should_always_translate_);
-        translate::ReportUiAction(
+        translate::ReportTranslateBubbleUiAction(
             translate::NEVER_TRANSLATE_LANGUAGE_MENU_CLICKED);
         model_->SetNeverTranslateLanguage(true);
         RevertOrDeclineTranslation();
@@ -389,7 +389,8 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
           translate::UIInteraction::kNeverTranslateSite);
       should_never_translate_site_ = !should_never_translate_site_;
       if (should_never_translate_site_) {
-        translate::ReportUiAction(translate::NEVER_TRANSLATE_SITE_MENU_CLICKED);
+        translate::ReportTranslateBubbleUiAction(
+            translate::NEVER_TRANSLATE_SITE_MENU_CLICKED);
         model_->SetNeverTranslateSite(true);
         RevertOrDeclineTranslation();
       } else {
@@ -398,12 +399,14 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     case OptionsMenuItem::CHANGE_TARGET_LANGUAGE:
-      translate::ReportUiAction(translate::ADVANCED_MENU_CLICKED);
+      translate::ReportTranslateBubbleUiAction(
+          translate::ADVANCED_MENU_CLICKED);
       SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
       break;
 
     case OptionsMenuItem::CHANGE_SOURCE_LANGUAGE:
-      translate::ReportUiAction(translate::ADVANCED_MENU_CLICKED);
+      translate::ReportTranslateBubbleUiAction(
+          translate::ADVANCED_MENU_CLICKED);
       SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
       break;
 
@@ -483,14 +486,15 @@ void TranslateBubbleView::Translate() {
   model_->ReportUIInteraction(translate::UIInteraction::kTranslate);
   model_->Translate();
   SwitchView(TranslateBubbleModel::VIEW_STATE_TRANSLATING);
-  translate::ReportUiAction(translate::TRANSLATE_BUTTON_CLICKED);
+  translate::ReportTranslateBubbleUiAction(translate::TRANSLATE_BUTTON_CLICKED);
 }
 
 void TranslateBubbleView::ShowOriginal() {
   model_->ReportUIInteraction(translate::UIInteraction::kRevert);
   model_->RevertTranslation();
   SwitchView(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
-  translate::ReportUiAction(translate::SHOW_ORIGINAL_BUTTON_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::SHOW_ORIGINAL_BUTTON_CLICKED);
 }
 
 void TranslateBubbleView::ConfirmAdvancedOptions() {
@@ -510,7 +514,7 @@ void TranslateBubbleView::ConfirmAdvancedOptions() {
     SwitchView(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
   }
 
-  translate::ReportUiAction(translate::DONE_BUTTON_CLICKED);
+  translate::ReportTranslateBubbleUiAction(translate::DONE_BUTTON_CLICKED);
 }
 
 void TranslateBubbleView::SourceLanguageChanged() {
@@ -518,7 +522,8 @@ void TranslateBubbleView::SourceLanguageChanged() {
   model_->UpdateSourceLanguageIndex(
       source_language_combobox_->GetSelectedIndex());
   UpdateAdvancedView();
-  translate::ReportUiAction(translate::SOURCE_LANGUAGE_MENU_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::SOURCE_LANGUAGE_MENU_CLICKED);
 }
 
 void TranslateBubbleView::TargetLanguageChanged() {
@@ -526,16 +531,17 @@ void TranslateBubbleView::TargetLanguageChanged() {
   model_->UpdateTargetLanguageIndex(
       target_language_combobox_->GetSelectedIndex());
   UpdateAdvancedView();
-  translate::ReportUiAction(translate::TARGET_LANGUAGE_MENU_CLICKED);
+  translate::ReportTranslateBubbleUiAction(
+      translate::TARGET_LANGUAGE_MENU_CLICKED);
 }
 
 void TranslateBubbleView::AlwaysTranslatePressed() {
   model_->ReportUIInteraction(
       translate::UIInteraction::kAlwaysTranslateLanguage);
   should_always_translate_ = GetAlwaysTranslateCheckbox()->GetChecked();
-  translate::ReportUiAction(should_always_translate_
-                                ? translate::ALWAYS_TRANSLATE_CHECKED
-                                : translate::ALWAYS_TRANSLATE_UNCHECKED);
+  translate::ReportTranslateBubbleUiAction(
+      should_always_translate_ ? translate::ALWAYS_TRANSLATE_CHECKED
+                               : translate::ALWAYS_TRANSLATE_UNCHECKED);
   // In the tab UI the always translate button should apply immediately
   // except for in an advanced view.
   if (GetViewState() != TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE) {
@@ -731,7 +737,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
   auto try_again_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
           [](TranslateBubbleModel* model) {
-            translate::ReportUiAction(translate::TRY_AGAIN_BUTTON_CLICKED);
+            translate::ReportTranslateBubbleUiAction(
+                translate::TRY_AGAIN_BUTTON_CLICKED);
             model->Translate();
           },
           base::Unretained(model_.get())),
@@ -972,7 +979,8 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateCloseButton() {
   auto close_button =
       views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
           [](View* view) {
-            translate::ReportUiAction(translate::CLOSE_BUTTON_CLICKED);
+            translate::ReportTranslateBubbleUiAction(
+                translate::CLOSE_BUTTON_CLICKED);
             view->GetWidget()->CloseWithReason(
                 views::Widget::ClosedReason::kCloseButtonClicked);
           },

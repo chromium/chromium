@@ -198,6 +198,8 @@ static_library("ui") {
     "translate/partial_translate_bubble_model.h",
     "translate/partial_translate_bubble_model_impl.cc",
     "translate/partial_translate_bubble_model_impl.h",
+    "translate/partial_translate_bubble_ui_action_logger.cc",
+    "translate/partial_translate_bubble_ui_action_logger.h",
     "translate/source_language_combobox_model.cc",
     "translate/source_language_combobox_model.h",
     "translate/target_language_combobox_model.cc",

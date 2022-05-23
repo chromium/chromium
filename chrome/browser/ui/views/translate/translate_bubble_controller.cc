@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
 #include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
@@ -83,7 +84,7 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   translate_bubble_view_->SetViewState(step, error_type);
 
   translate_bubble_view_->ShowForReason(reason);
-  translate::ReportUiAction(translate::BUBBLE_SHOWN);
+  translate::ReportTranslateBubbleUiAction(translate::BUBBLE_SHOWN);
 
   translate_bubble_view_->model()->ReportUIChange(true);
 
@@ -145,6 +146,8 @@ views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
 
   partial_translate_bubble_view_->ShowForReason(
       LocationBarBubbleDelegateView::USER_GESTURE);
+  translate::ReportPartialTranslateBubbleUiAction(
+      translate::PartialTranslateBubbleUiEvent::BUBBLE_SHOWN);
 
   return bubble_widget;
 }

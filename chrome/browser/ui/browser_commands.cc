@@ -1280,7 +1280,8 @@ void Translate(Browser* browser) {
       web_contents, step, source_language, target_language,
       translate::TranslateErrors::NONE, true);
   if (result != ShowTranslateBubbleResult::SUCCESS)
-    translate::ReportUiAction(TranslateBubbleResultToUiEvent(result));
+    translate::ReportTranslateBubbleUiAction(
+        TranslateBubbleResultToUiEvent(result));
 }
 
 void ManagePasswordsForPage(Browser* browser) {

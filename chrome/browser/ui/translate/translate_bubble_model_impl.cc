@@ -65,7 +65,7 @@ void TranslateBubbleModelImpl::SetViewState(
   current_view_state_ = view_state;
   if (view_state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
       view_state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE)
-    translate::ReportUiAction(translate::SET_STATE_OPTIONS);
+    translate::ReportTranslateBubbleUiAction(translate::SET_STATE_OPTIONS);
 }
 
 void TranslateBubbleModelImpl::ShowError(

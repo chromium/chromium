@@ -72,9 +72,9 @@ void TranslateIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 void TranslateIconView::OnPressed(bool activated) {
-  translate::ReportUiAction(activated
-                                ? translate::PAGE_ACTION_ICON_ACTIVATED
-                                : translate::PAGE_ACTION_ICON_DEACTIVATED);
+  translate::ReportTranslateBubbleUiAction(
+      activated ? translate::PAGE_ACTION_ICON_ACTIVATED
+                : translate::PAGE_ACTION_ICON_DEACTIVATED);
 }
 
 const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
