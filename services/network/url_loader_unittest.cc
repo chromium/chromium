@@ -7313,8 +7313,10 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
     params["pervasive-payloads"] = base::StrCat(
         {"1,", pervasive_payload_url_.spec(),
          ",87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"});
-    cache_transparency_feature_.InitAndEnableFeatureWithParameters(
-        features::kCacheTransparency, params);
+    pervasive_payloads_feature_.InitAndEnableFeatureWithParameters(
+        features::kPervasivePayloadsList, params);
+    cache_transparency_feature_.InitAndEnableFeature(
+        features::kCacheTransparency);
     split_cache_feature_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
 
@@ -7398,6 +7400,7 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
  private:
   static constexpr char kPervasivePayload[] = "/pervasive.js";
 
+  base::test::ScopedFeatureList pervasive_payloads_feature_;
   base::test::ScopedFeatureList cache_transparency_feature_;
   base::test::ScopedFeatureList split_cache_feature_;
   GURL pervasive_payload_url_;

@@ -113,6 +113,9 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCacheTransparency;
 
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kPervasivePayloadsList;
+
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<std::string>
     kCacheTransparencyPervasivePayloads;
 

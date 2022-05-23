@@ -268,13 +268,17 @@ const base::Feature kOmitCorsClientCert{"OmitCorsClientCert",
 const base::Feature kCacheTransparency{"CacheTransparency",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Load Pervasive Payloads List for Cache Transparency.
+const base::Feature kPervasivePayloadsList{"PervasivePayloadsList",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The list of pervasive payloads. A comma separated list starting with a
 // version number, followed one or more pairs of URL and checksum. The version
 // number is an integer. The URL is the canonical URL as returned by
 // GURL::spec(). The checksum is the SHA-256 of the payload and selected headers
 // converted to uppercase hexadecimal.
 constexpr base::FeatureParam<std::string> kCacheTransparencyPervasivePayloads{
-    &kCacheTransparency, "pervasive-payloads", ""};
+    &kPervasivePayloadsList, "pervasive-payloads", ""};
 
 // Read as much of the net::URLRequest as there is space in the Mojo data pipe.
 const base::Feature kOptimizeNetworkBuffers{"OptimizeNetworkBuffers",

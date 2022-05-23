@@ -432,26 +432,46 @@ class CacheTransparencySettings {
     return enabled_;
   }
 
-  absl::optional<std::pair<int, std::string>> GetChecksumForURL(
-      const GURL& url) const {
+  bool PervasivePayloadsEnabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return pervasive_payloads_enabled_;
+  }
+
+  absl::optional<int> GetIndexForURL(const GURL& url) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (!url.is_valid())
+    if (!pervasive_payloads_enabled_ || !url.is_valid())
       return absl::nullopt;
 
     auto it = map_.find(url.spec());
     if (it == map_.end()) {
       return absl::nullopt;
     }
-    int index = std::distance(map_.begin(), it);
-    return std::make_pair(index, it->second);
+    return std::distance(map_.begin(), it);
+  }
+
+  absl::optional<std::string> GetChecksumForURL(const GURL& url) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!enabled_ || !url.is_valid())
+      return absl::nullopt;
+
+    auto it = map_.find(url.spec());
+    if (it == map_.end()) {
+      return absl::nullopt;
+    }
+    return it->second;
   }
 
  private:
   using PervasivePayloadsMap = base::flat_map<std::string, std::string>;
 
   CacheTransparencySettings()
-      : enabled_(base::FeatureList::IsEnabled(features::kCacheTransparency)),
+      : enabled_(
+            base::FeatureList::IsEnabled(features::kCacheTransparency) &&
+            base::FeatureList::IsEnabled(features::kPervasivePayloadsList)),
+        pervasive_payloads_enabled_(
+            base::FeatureList::IsEnabled(features::kPervasivePayloadsList)),
         map_(CreateMap()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -460,7 +480,7 @@ class CacheTransparencySettings {
 
   PervasivePayloadsMap CreateMap() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!enabled_)
+    if (!pervasive_payloads_enabled_)
       return PervasivePayloadsMap();
 
     const std::string comma_separated =
@@ -499,7 +519,8 @@ class CacheTransparencySettings {
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  const bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const bool pervasive_payloads_enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
   const PervasivePayloadsMap map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // This is normally leaked to avoid running a destructor. It's only
@@ -776,17 +797,20 @@ URLLoader::URLLoader(
 
   int request_load_flags = request.load_flags;
 
+  if (CacheTransparencySettings::Get().PervasivePayloadsEnabled()) {
+    auto index = CacheTransparencySettings::Get().GetIndexForURL(request.url);
+    if (index.has_value()) {
+      url_request_->set_pervasive_payloads_index_for_logging(index.value());
+      base::UmaHistogramExactLinear("Network.CacheTransparency.URLMatched",
+                                    index.value(), 101);
+    }
+  }
+
   if (CacheTransparencySettings::Get().enabled() &&
       ThirdPartyCookiesEnabled()) {
-    auto result =
+    auto checksum =
         CacheTransparencySettings::Get().GetChecksumForURL(request.url);
-    if (result.has_value()) {
-      const auto [index, checksum] = std::move(result.value());
-
-      url_request_->set_pervasive_payloads_index_for_logging(index);
-      base::UmaHistogramExactLinear("Network.CacheTransparency.URLMatched",
-                                    index, 101);
-
+    if (checksum.has_value()) {
       CacheTransparencyCacheNotUsedReason cache_not_used_reason =
           CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache;
       DVLOG(2) << "Found pervasive payload: " << request.url.spec();
@@ -809,7 +833,7 @@ URLLoader::URLLoader(
         DVLOG(2) << "Trying single-keyed cache";
         request_load_flags |= net::LOAD_USE_SINGLE_KEYED_CACHE;
 
-        url_request_->set_expected_response_checksum(checksum);
+        url_request_->set_expected_response_checksum(checksum.value());
       }
       base::UmaHistogramEnumeration("Network.CacheTransparency.CacheNotUsed",
                                     cache_not_used_reason);
