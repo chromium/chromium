@@ -794,6 +794,18 @@ TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
   EXPECT_EQ("application/x-protobuf", requested_content_type);
 }
 
+TEST_F(FeedNetworkTest,
+       SendApiRequest_DiscoFeedRequestsSendResponseEncodingHeader) {
+  feed_network()->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
+      {}, account_info(), request_metadata(), base::DoNothing());
+
+  std::string requested_response_encoding;
+  RespondToDiscoverRequest("", net::HTTP_OK)
+      .headers.GetHeader("x-response-encoding", &requested_response_encoding);
+
+  EXPECT_EQ("gzip", requested_response_encoding);
+}
+
 TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectDiscoverApis) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");

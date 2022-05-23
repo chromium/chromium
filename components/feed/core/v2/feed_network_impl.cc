@@ -606,6 +606,9 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
       request_metadata ? CreateApiRequestHeaders(*request_metadata)
                        : net::HttpRequestHeaders();
 
+  // Set the x-response-encoding header to enable compression for DiscoFeed.
+  headers.SetHeader("x-response-encoding", "gzip");
+
   Send(url, method, std::move(request_body),
        /*allow_bless_auth=*/false, account_info, std::move(headers),
        std::move(callback));
