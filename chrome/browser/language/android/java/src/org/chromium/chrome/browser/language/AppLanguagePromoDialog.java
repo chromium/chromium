@@ -225,6 +225,10 @@ public class AppLanguagePromoDialog {
             return mTopLanguages.contains(mCurrentLanguage);
         }
 
+        public boolean areOtherLanguagesShown() {
+            return mShowOtherLanguages;
+        }
+
         protected LanguageItem getLanguageItemAt(int position) {
             if (position < mTopLanguages.size()) {
                 return mTopLanguages.get(position);
@@ -385,6 +389,7 @@ public class AppLanguagePromoDialog {
         } else {
             recordDismissAction(ActionType.OTHER, displayTime);
         }
+        recordOtherLanguagesShown(mAdapter.areOtherLanguagesShown());
         TranslateBridge.setAppLanguagePromptShown();
     }
 
@@ -623,5 +628,10 @@ public class AppLanguagePromoDialog {
     private static void recordIsTopLanguage(boolean isTopLanguage) {
         RecordHistogram.recordBooleanHistogram(
                 "LanguageSettings.AppLanguagePrompt.IsTopLanguageSelected", isTopLanguage);
+    }
+
+    private static void recordOtherLanguagesShown(boolean shown) {
+        RecordHistogram.recordBooleanHistogram(
+                "LanguageSettings.AppLanguagePrompt.OtherLanguagesShown", shown);
     }
 }

@@ -165,6 +165,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="LanguageSettings.AppLanguagePrompt.OtherLanguagesShown"
+    enum="BooleanYesNo" expires_after="2022-09-11">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the &quot;Other Languages&quot; have been shown for the
+    AppLanguagePrompt was displayed.
+
+    Reported when the AppLanguagePrompt dialog is dismissed for any reason.
+  </summary>
+</histogram>
+
 <histogram name="LanguageSettings.PageImpression"
     enum="LanguageSettingsPageType" expires_after="2022-09-11">
   <owner>googleo@chromium.org</owner>
