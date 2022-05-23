@@ -160,7 +160,8 @@ void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   gfx::ImageSkia image =
       WallpaperControllerClientImpl::Get()->GetWallpaperImage();
-  image.SetReadOnly();
+  if (!image.isNull())
+    image.SetReadOnly();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&EncodeImagePng, image), std::move(callback));

@@ -168,3 +168,11 @@ TEST_F(ArcWallpaperServiceTest, SetWallpaperFailure) {
   EXPECT_EQ(10, wallpaper_instance_->changed_ids()[0]);
   EXPECT_EQ(-1, wallpaper_instance_->changed_ids()[1]);
 }
+
+// For crbug.com/1325863
+TEST_F(ArcWallpaperServiceTest, GetEmptyWallpaper) {
+  test_wallpaper_controller_.ShowWallpaperImage(gfx::ImageSkia{});
+
+  service_->GetWallpaper(base::DoNothing());
+  content::RunAllTasksUntilIdle();
+}
