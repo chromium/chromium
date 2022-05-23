@@ -74,6 +74,9 @@ public class WebViewLayoutTest {
     private static final long TIMEOUT_SECONDS = 20;
 
     private static final String MODE_REBASELINE = "rebaseline";
+    private static final String NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH =
+            "//android_webview/tools/system_webview_shell/test/data/"
+            + "webexposed/not-webview-exposed.txt";
 
     private WebViewLayoutTestActivity mTestActivity;
     private boolean mRebaseLine;
@@ -245,13 +248,17 @@ public class WebViewLayoutTest {
         String result = mTestActivity.getTestResult();
         webviewInterfacesMap = buildHashMap(result);
 
+        HashSet<String> missingInterfaces = new HashSet<>();
+        HashMap<String, HashSet<String>> missingInterfaceProperties = new HashMap<>();
+
         // Check that each stable blink interface and its properties are present in webview
         // except the excluded interfaces/properties.
         for (HashMap.Entry<String, HashSet<String>> entry : blinkStableInterfacesMap.entrySet()) {
             String interfaceS = entry.getKey();
             HashSet<String> subsetExcluded = webviewExcludedInterfacesMap.get(interfaceS);
+
             if (subsetExcluded != null && subsetExcluded.isEmpty()) {
-                // Interface is not exposed in WebView at all
+                // Interface is not exposed in WebView.
                 continue;
             }
 
@@ -259,25 +266,44 @@ public class WebViewLayoutTest {
             HashSet<String> subsetWebView = webviewInterfacesMap.get(interfaceS);
 
             if (subsetWebView == null) {
-                // interface is missing completely
-                missing.append(interfaceS + "\n");
+                // Interface is unexpectedly missing from WebView.
+                missingInterfaces.add(interfaceS);
                 continue;
             }
 
             for (String propertyBlink : subsetBlink) {
-                if (subsetExcluded != null && subsetExcluded.contains(propertyBlink)) continue;
+                if (subsetExcluded != null && subsetExcluded.contains(propertyBlink)) {
+                    // At least one of the properties of this interface is excluded from WebView.
+                    continue;
+                }
                 if (!subsetWebView.contains(propertyBlink)) {
-                    missing.append(interfaceS + "." + propertyBlink + "\n");
+                    // At least one of the properties of this interface is unexpectedly missing from
+                    // WebView.
+                    missingInterfaceProperties.putIfAbsent(interfaceS, new HashSet<>());
+                    missingInterfaceProperties.get(interfaceS).add(propertyBlink);
                 }
             }
         }
 
-        if (missing.length() > 0) {
-            Assert.fail("Android WebView is missing the following declared Blink interfaces: "
-                    + missing.toString()
-                    + ". Interfaces which are intentionally not exposed in WebView need to be"
-                    + " added to not-webview-exposed.txt");
+        StringBuilder errorMessage = new StringBuilder();
+        if (!missingInterfaces.isEmpty()) {
+            errorMessage.append(String.format("\nWebView does not expose the "
+                            + "Blink interfaces below. Add them to\n%s\nto suppress this error.\n",
+                    NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
+            missingInterfaces.forEach(
+                    (missingInterface) -> errorMessage.append("\t- " + missingInterface + "\n"));
         }
+        missingInterfaceProperties.forEach((blinkInterface, missingProperties) -> {
+            errorMessage.append(String.format(
+                    "\nAt least one of the properties of the Blink interface \"%s\" "
+                            + "is not exposed in WebView.\nAdd them to the list of properties "
+                            + "not exposed for the \"%s\" interface in\n%s\nto suppress "
+                            + "this error\n",
+                    blinkInterface, blinkInterface, NOT_WEBVIEW_EXPOSED_CHROMIUM_PATH));
+            missingProperties.forEach(
+                    (missingProperty) -> errorMessage.append("\t- " + missingProperty + "\n"));
+        });
+        Assert.assertTrue(errorMessage.toString(), errorMessage.length() == 0);
     }
 
     @Test
@@ -465,7 +491,7 @@ public class WebViewLayoutTest {
     }
 
     private HashMap<String, HashSet<String>> buildHashMap(String contents) {
-        HashMap<String, HashSet<String>> interfaces = new HashMap<String, HashSet<String>>();
+        HashMap<String, HashSet<String>> interfaces = new HashMap<>();
 
         return buildHashMap(contents, interfaces);
     }
@@ -480,7 +506,7 @@ public class WebViewLayoutTest {
             if (isInterfaceOrGlobalObject(s)) {
                 subset = interfaces.get(s);
                 if (subset == null) {
-                    subset = new HashSet<String>();
+                    subset = new HashSet<>();
                     interfaces.put(s, subset);
                 }
             } else if (isInterfaceProperty(s) && subset != null) {
