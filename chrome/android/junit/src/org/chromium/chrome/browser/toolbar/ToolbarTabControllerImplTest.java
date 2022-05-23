@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -80,6 +81,8 @@ public class ToolbarTabControllerImplTest {
     private Profile mProfile;
     @Mock
     public Profile.Natives mMockProfileNatives;
+    @Mock
+    private NativePage mNativePage;
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -93,6 +96,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(false).when(mOverrideHomePageSupplier).get();
         mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
         doReturn(mProfile).when(mMockProfileNatives).fromWebContents(any());
+        doReturn(mNativePage).when(mTab).getNativePage();
         TrackerFactory.setTrackerForTests(mTracker);
         mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
                 mOverrideHomePageSupplier, mTrackerSupplier, mBottomControlsCoordinatorSupplier,
@@ -106,6 +110,7 @@ public class ToolbarTabControllerImplTest {
 
         assertFalse(mToolbarTabController.forward());
         assertFalse(mToolbarTabController.back());
+        verify(mNativePage, never()).notifyHidingWithBack();
     }
 
     @Test
@@ -129,6 +134,15 @@ public class ToolbarTabControllerImplTest {
         verify(mBottomControlsCoordinator).onBackPressed();
         verify(mRunnable, never()).run();
         verify(mTab, never()).goBack();
+    }
+
+    @Test
+    public void back_notifyNativePageHiding() {
+        doReturn(null).when(mBottomControlsCoordinatorSupplier).get();
+        doReturn(true).when(mTab).canGoBack();
+
+        mToolbarTabController.back();
+        verify(mNativePage).notifyHidingWithBack();
     }
 
     @Test
