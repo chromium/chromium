@@ -954,13 +954,19 @@ void AutocompleteController::UpdateKeywordDescriptions(
         const TemplateURL* template_url =
             i->GetTemplateURL(template_url_service_, false);
         if (template_url) {
-          // For extension keywords, just make the description the extension
-          // name -- don't assume that the normal search keyword description is
-          // applicable.
-          i->description = template_url->AdjustedShortNameForLocaleDirection();
-          if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
-            i->description = l10n_util::GetStringFUTF16(
-                IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION, i->description);
+          if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
+              template_url->starter_pack_id() > 0) {
+            i->description = base::UTF8ToUTF16(template_url->url());
+          } else {
+            // For extension keywords, just make the description the extension
+            // name -- don't assume that the normal search keyword description
+            // is applicable.
+            i->description =
+                template_url->AdjustedShortNameForLocaleDirection();
+            if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
+              i->description = l10n_util::GetStringFUTF16(
+                  IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION, i->description);
+            }
           }
           i->description_class.push_back(
               ACMatchClassification(0, ACMatchClassification::DIM));

@@ -32,13 +32,28 @@ class BuiltinProvider : public AutocompleteProvider {
   typedef std::vector<std::u16string> Builtins;
 
   static const int kRelevance;
+  static const int kStarterPackRelevance;
 
-  void AddMatch(const std::u16string& match_string,
-                const std::u16string& inline_completion,
-                const ACMatchClassifications& styles);
+  // Populates `matches_` with matching starter pack keywords such as @history,
+  // and @bookmarks
+  void DoStarterPackAutocompletion(const std::u16string& text);
 
-  // Constructs an AutocompleteMatch for starter pack (@bookmarks, @history,
-  // etc.) suggestions and adds it to `matches_`.
+  // Populates `matches_` with matching built-in URLs such as about:settings and
+  // chrome://version.
+  void DoBuiltinAutocompletion(const std::u16string& text);
+
+  // De-deupes the relevance scores, determines if a match can be default, and
+  // if a match can be default, updates its relevance score accordingly.
+  void UpdateRelevanceScores(const AutocompleteInput& input);
+
+  // Constructs an AutocompleteMatch for built-in URLs such as
+  // chrome://settings, etc. and adds it to `matches_`.
+  void AddBuiltinMatch(const std::u16string& match_string,
+                       const std::u16string& inline_completion,
+                       const ACMatchClassifications& styles);
+
+  // Constructs an AutocompleteMatch for starter pack suggestions such as
+  // @bookmarks, @history, etc. and adds it to `matches_`.
   void AddStarterPackMatch(const TemplateURL& template_url);
 
   // Returns true if |matches_| contains a match that should be allowed to be
