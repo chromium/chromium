@@ -124,6 +124,16 @@ bool IOSurfaceMemoryDumpProvider::OnMemoryDump(
 
   dump->AddScalar("size", "bytes", virtual_size);
 
+  // Some IOSurfaces have a non-trivial difference between their mapped size
+  // and their "dirty" size, possibly because some of it has been marked
+  // purgeable, and has been purged (rather than swapped out). Report resident
+  // + swapped, as it is the fraction of memory which is: (a) using actual
+  // memory, and (b) counted in private memory footprint.
+  //
+  // Note: not using "dirty_size", as it doesn't contain the swapped out part.
+  dump->AddScalar("resident_swapped", "bytes",
+                  resident_size + swapped_out_size);
+
   return true;
 }
 }  // namespace

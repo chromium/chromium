@@ -219,6 +219,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
 #if BUILDFLAG(IS_MAC)
     {"iosurface", "IOSurface", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUmaOnly, nullptr},
+    {"iosurface", "IOSurface.DirtyMemory", MetricSize::kLarge,
+     "resident_swapped", EmitTo::kSizeInUmaOnly, nullptr},
 #endif
     {"java_heap", "JavaHeap", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetJavaHeap},
