@@ -185,6 +185,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
         file_system_context.get(),
         /*origin=*/GURL(),
         /*file_type=*/chromeos::RecentModel::FileType::kAll,
+        /*invalidate_cache=*/false,
         base::BindLambdaForTesting(
             [&result,
              &run_loop](const std::vector<chromeos::RecentFile>& files) {

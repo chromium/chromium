@@ -1505,6 +1505,7 @@ interface Functions {
   [nocompile]
   static void getRecentFiles(SourceRestriction restriction,
                              RecentFileType fileType,
+                             boolean invalidateCache,
                              GetRecentFilesCallback callback);
 
   // Requests the root directory of the volume with the ID specified in

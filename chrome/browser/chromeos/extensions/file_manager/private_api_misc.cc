@@ -1223,6 +1223,7 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
 
   model->GetRecentFiles(
       file_system_context.get(), source_url(), file_type,
+      params->invalidate_cache,
       base::BindOnce(
           &FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles,
           this, params->restriction));

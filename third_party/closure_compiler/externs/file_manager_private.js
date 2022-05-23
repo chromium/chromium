@@ -1185,9 +1185,10 @@ chrome.fileManagerPrivate.getDirectorySize = function(entry, callback) {};
  * Gets recently modified files across file systems.
  * @param {string} restriction
  * @param {string} fileType
+ * @param {boolean} invalidateCache
  * @param {function((!Array<!FileEntry>))} callback
  */
-chrome.fileManagerPrivate.getRecentFiles = function(restriction, fileType, callback) {};
+chrome.fileManagerPrivate.getRecentFiles = function(restriction, fileType, invalidateCache, callback) {};
 
 /**
  * Requests the root directory of a volume. The ID of the volume must be

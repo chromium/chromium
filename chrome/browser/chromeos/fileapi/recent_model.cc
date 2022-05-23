@@ -87,12 +87,19 @@ void RecentModel::GetRecentFiles(
     storage::FileSystemContext* file_system_context,
     const GURL& origin,
     FileType file_type,
+    bool invalidate_cache,
     GetRecentFilesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Use cache if available.
+  /**
+   * Use cache only if:
+   *  * cache has value.
+   *  * invalidate_cache = false.
+   *  * cached file type matches the query file type.
+   * Otherwise clear cache if it has values.
+   */
   if (cached_files_.has_value()) {
-    if (cached_files_type_ == file_type) {
+    if (!invalidate_cache && cached_files_type_ == file_type) {
       std::move(callback).Run(cached_files_.value());
       return;
     }

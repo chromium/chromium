@@ -490,9 +490,12 @@ export class DirectoryModel extends EventTarget {
    * Schedule rescan with short delay.
    * @param {boolean} refresh True to refresh metadata, or false to use cached
    *     one.
+   * @param {boolean=} invalidateCache True to invalidate the backend scanning
+   *     result cache. This param only works if the corresponding backend
+   *     scanning supports cache.
    */
-  rescanSoon(refresh) {
-    this.scheduleRescan(SHORT_RESCAN_INTERVAL, refresh);
+  rescanSoon(refresh, invalidateCache = false) {
+    this.scheduleRescan(SHORT_RESCAN_INTERVAL, refresh, invalidateCache);
   }
 
   /**
@@ -500,9 +503,12 @@ export class DirectoryModel extends EventTarget {
    * notification.
    * @param {boolean} refresh True to refresh metadata, or false to use cached
    *     one.
+   * @param {boolean=} invalidateCache True to invalidate the backend scanning
+   *     result cache. This param only works if the corresponding backend
+   *     scanning supports cache.
    */
-  rescanLater(refresh) {
-    this.scheduleRescan(SIMULTANEOUS_RESCAN_INTERVAL, refresh);
+  rescanLater(refresh, invalidateCache = false) {
+    this.scheduleRescan(SIMULTANEOUS_RESCAN_INTERVAL, refresh, invalidateCache);
   }
 
   /**
@@ -512,8 +518,11 @@ export class DirectoryModel extends EventTarget {
    * @param {number} delay Delay in ms after which the rescan will be performed.
    * @param {boolean} refresh True to refresh metadata, or false to use cached
    *     one.
+   * @param {boolean=} invalidateCache True to invalidate the backend scanning
+   *     result cache. This param only works if the corresponding backend
+   *     scanning supports cache.
    */
-  scheduleRescan(delay, refresh) {
+  scheduleRescan(delay, refresh, invalidateCache = false) {
     if (this.rescanTime_) {
       if (this.rescanTime_ <= Date.now() + delay) {
         return;
@@ -527,7 +536,7 @@ export class DirectoryModel extends EventTarget {
     this.rescanTimeoutId_ = setTimeout(() => {
       this.rescanTimeoutId_ = null;
       if (sequence === this.changeDirectorySequence_) {
-        this.rescan(refresh);
+        this.rescan(refresh, invalidateCache);
       }
     }, delay);
   }
@@ -554,8 +563,11 @@ export class DirectoryModel extends EventTarget {
    *
    * @param {boolean} refresh True to refresh metadata, or false to use cached
    *     one.
+   * @param {boolean=} invalidateCache True to invalidate the backend scanning
+   *     result cache. This param only works if the corresponding backend
+   *     scanning supports cache.
    */
-  rescan(refresh) {
+  rescan(refresh, invalidateCache = false) {
     this.clearRescanTimeout_();
     if (this.runningScan_) {
       this.pendingRescan_ = true;
@@ -577,7 +589,8 @@ export class DirectoryModel extends EventTarget {
     };
 
     this.scan_(
-        dirContents, refresh, successCallback, () => {}, () => {}, () => {});
+        dirContents, refresh, invalidateCache, successCallback, () => {},
+        () => {}, () => {});
   }
 
   /**
@@ -684,7 +697,7 @@ export class DirectoryModel extends EventTarget {
     dispatchSimpleEvent(this, 'scan-started');
     fileList.splice(0, fileList.length);
     this.scan_(
-        this.currentDirContents_, false, onDone, onFailed, onUpdated,
+        this.currentDirContents_, false, true, onDone, onFailed, onUpdated,
         onCancelled);
   }
 
@@ -753,6 +766,7 @@ export class DirectoryModel extends EventTarget {
    *     the scan will be run.
    * @param {boolean} refresh True to refresh metadata, or false to use cached
    *     one.
+   * @param {boolean} invalidateCache True to invalidate scanning result cache.
    * @param {function()} successCallback Callback on success.
    * @param {function(DOMError)} failureCallback Callback on failure.
    * @param {function()} updatedCallback Callback on update. Only on the last
@@ -761,8 +775,8 @@ export class DirectoryModel extends EventTarget {
    * @private
    */
   scan_(
-      dirContents, refresh, successCallback, failureCallback, updatedCallback,
-      cancelledCallback) {
+      dirContents, refresh, invalidateCache, successCallback, failureCallback,
+      updatedCallback, cancelledCallback) {
     const self = this;
 
     /**
@@ -843,7 +857,7 @@ export class DirectoryModel extends EventTarget {
     dirContents.addEventListener('scan-updated', updatedCallback);
     dirContents.addEventListener('scan-failed', onFailure);
     dirContents.addEventListener('scan-cancelled', onCancelled);
-    dirContents.scan(refresh);
+    dirContents.scan(refresh, invalidateCache);
   }
 
   /**
@@ -1625,7 +1639,7 @@ export class DirectoryModel extends EventTarget {
     const isIOTaskFinished =
         event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS;
     if (isIOTaskFinished && eventTypesRequireRefresh.has(event.type)) {
-      this.rescanLater(/* refresh= */ false);
+      this.rescanLater(/* refresh= */ false, /* invalidateCache= */ true);
     }
   }
 }

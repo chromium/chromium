@@ -46,7 +46,7 @@ requestAllFileSystems().then(function() {
   chrome.test.runTests([
     function testGetRecentFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'all', chrome.test.callbackPass(entries => {
+          'native_source', 'all', false, chrome.test.callbackPass(entries => {
             chrome.test.assertTrue(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg not found');
@@ -60,7 +60,7 @@ requestAllFileSystems().then(function() {
     },
     function testGetRecentAudioFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'audio', chrome.test.callbackPass(entries => {
+          'native_source', 'audio', false, chrome.test.callbackPass(entries => {
             chrome.test.assertFalse(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg unexpectedly found');
@@ -74,7 +74,7 @@ requestAllFileSystems().then(function() {
     },
     function testGetRecentImageFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'image', chrome.test.callbackPass(entries => {
+          'native_source', 'image', false, chrome.test.callbackPass(entries => {
             chrome.test.assertTrue(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg not found');
@@ -88,7 +88,7 @@ requestAllFileSystems().then(function() {
     },
     function testGetRecentVideoFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', 'video', chrome.test.callbackPass(entries => {
+          'native_source', 'video', false, chrome.test.callbackPass(entries => {
             chrome.test.assertFalse(
                 exists(entries, 'all-justice.jpg'),
                 'all-justice.jpg unexpectedly found');
