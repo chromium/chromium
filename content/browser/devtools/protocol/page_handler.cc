@@ -1277,9 +1277,18 @@ Response PageHandler::StopLoading() {
 }
 
 Response PageHandler::SetWebLifecycleState(const std::string& state) {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!host_)
     return Response::ServerError("Not attached to a page");
+
+  // Inactive pages(e.g., a prerendered or back-forward cached page) should not
+  // affect the state.
+  if (!host_->IsActive())
+    return Response::ServerError("Not attached to an active page");
+
+  if (host_->GetParentOrOuterDocument())
+    return Response::ServerError("This is only supported for top-level frames");
+
+  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
   if (state == Page::SetWebLifecycleState::StateEnum::Frozen) {
     // TODO(fmeawad): Instead of forcing a visibility change, only allow
     // freezing a page if it was already hidden.
