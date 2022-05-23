@@ -1,6 +1,6 @@
 // META: title=Batch Get All (big value)
-// META: script=support.js
-// META: script=support-promises.js
+// META: script=resources/support.js
+// META: script=resources/support-promises.js
 
 'use strict';
 
