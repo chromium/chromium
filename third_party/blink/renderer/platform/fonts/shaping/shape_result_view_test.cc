@@ -468,4 +468,24 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
   EXPECT_EQ(view2->NumGlyphs(), 1u);
 }
 
+// https://crbug.com/1304876
+// In a text containing only Latin characters and without ligatures (or where
+// ligatures are not close to the end of the view), PreviousSafeToBreakOffset in
+// some cases used to return the length of the view, rather than a position into
+// the view.
+TEST_F(ShapeResultViewTest, PreviousSafeOffsetInsideView) {
+  HarfBuzzShaper shaper("Blah bla test something. ");
+  scoped_refptr<const ShapeResult> result =
+      shaper.Shape(&font, TextDirection::kLtr);
+
+  // Used to be 14 - 9 = 5, which is before the start of the view.
+  auto view1 = ShapeResultView::Create(result.get(), 9, 14);
+  EXPECT_EQ(view1->PreviousSafeToBreakOffset(14), 14u);
+
+  // Used to be 25 - 9 = 16, which is inside the view's range, but not the last
+  // safe offset.
+  auto view2 = ShapeResultView::Create(result.get(), 9, 25);
+  EXPECT_EQ(view2->PreviousSafeToBreakOffset(24), 24u);
+}
+
 }  // namespace blink

@@ -536,8 +536,7 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   ResetRewindLoopDetector();
 }
 
-void NGLineBreaker::NextLine(
-    NGLineInfo* line_info) {
+void NGLineBreaker::NextLine(NGLineInfo* line_info) {
   PrepareNextLine(line_info);
   BreakLine(line_info);
   if (UNLIKELY(HasHyphen()))
@@ -578,8 +577,7 @@ void NGLineBreaker::NextLine(
   ComputeLineLocation(line_info);
 }
 
-void NGLineBreaker::BreakLine(
-    NGLineInfo* line_info) {
+void NGLineBreaker::BreakLine(NGLineInfo* line_info) {
   DCHECK(!line_info->IsLastLine());
   const HeapVector<NGInlineItem>& items = Items();
   state_ = LineBreakState::kContinue;
@@ -1469,6 +1467,7 @@ scoped_refptr<ShapeResultView> NGLineBreaker::TruncateLineEndResult(
 
   unsigned last_safe = source_result->PreviousSafeToBreakOffset(end_offset);
   DCHECK_LE(last_safe, end_offset);
+  // TODO(abotella): Shouldn't last_safe <= start_offset trigger a reshaping?
   if (last_safe == end_offset || last_safe <= start_offset) {
     return ShapeResultView::Create(source_result, start_offset, end_offset);
   }
@@ -1909,9 +1908,8 @@ void NGLineBreaker::HandleBidiControlItem(const NGInlineItem& item,
   MoveToNextOf(item);
 }
 
-void NGLineBreaker::HandleAtomicInline(
-    const NGInlineItem& item,
-    NGLineInfo* line_info) {
+void NGLineBreaker::HandleAtomicInline(const NGInlineItem& item,
+                                       NGLineInfo* line_info) {
   DCHECK_EQ(item.Type(), NGInlineItem::kAtomicInline);
   DCHECK(item.Style());
   const ComputedStyle& style = *item.Style();

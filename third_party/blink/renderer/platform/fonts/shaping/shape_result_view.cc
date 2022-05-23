@@ -472,7 +472,7 @@ scoped_refptr<ShapeResultView> ShapeResultView::Create(
 unsigned ShapeResultView::PreviousSafeToBreakOffset(unsigned index) const {
   for (auto it = RunsOrParts().rbegin(); it != RunsOrParts().rend(); ++it) {
     const auto& part = *it;
-    unsigned run_start = part.start_index_;
+    unsigned run_start = part.start_index_ + char_index_offset_;
     if (index >= run_start) {
       unsigned offset = index - run_start;
       if (offset <= part.num_characters_) {
