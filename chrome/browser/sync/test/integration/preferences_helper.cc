@@ -75,8 +75,11 @@ scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile) {
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(
       profile->GetPath().Append(chrome::kPreferencesFilename));
   base::ScopedAllowBlockingForTesting allow_blocking;
-  if (pref_store->ReadPrefs() != PersistentPrefStore::PREF_READ_ERROR_NONE) {
-    ADD_FAILURE() << " Failed reading the prefs file into the store.";
+  PersistentPrefStore::PrefReadError result = pref_store->ReadPrefs();
+  if (result != PersistentPrefStore::PREF_READ_ERROR_NONE) {
+    ADD_FAILURE()
+        << " Failed reading the prefs file into the store, error code "
+        << result;
   }
 
   return pref_store;
