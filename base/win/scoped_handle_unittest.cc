@@ -105,7 +105,8 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
       FailureMessage("CloseHandle failed"));
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierCloseTrackedHandle) {
+// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
+TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierCloseTrackedHandle) {
   // This test is only valid if hooks are enabled.
   if (!HooksEnabled())
     return;
@@ -130,7 +131,8 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierCloseTrackedHandle) {
       FailureMessage("CloseHandleHook validation failure"));
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierDoubleTracking) {
+// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
+TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierDoubleTracking) {
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
 
@@ -139,7 +141,8 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierDoubleTracking) {
   ASSERT_DEATH({ base::win::CheckedScopedHandle handle_holder2(handle); }, "");
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierWrongOwner) {
+// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
+TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierWrongOwner) {
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
 
@@ -154,7 +157,8 @@ TEST_P(ScopedHandleDeathTest, HandleVerifierWrongOwner) {
   handle_holder.Close();
 }
 
-TEST_P(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
+// TODO(crbug.com/1328022): Flaky on Windows 7, deflake and re-enable.
+TEST_P(ScopedHandleDeathTest, DISABLED_HandleVerifierUntrackedHandle) {
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
 
