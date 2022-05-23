@@ -55,6 +55,9 @@ gen_parser.add_argument(
     default=None,
     help="Only generate BUILD.gn files for specified crate(s). Can be passed "
     "multiple times. Used for testing this tool.")
+gen_parser.add_argument("--skip-patch",
+                        action="store_true",
+                        help="Skip applying .patch file to third_party/rust")
 gen_parser.add_argument("--verbose",
                         action="store_true",
                         help="Used for debugging of this tool.")

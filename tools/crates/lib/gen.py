@@ -19,6 +19,7 @@ import argparse
 import tempfile
 import os
 import re
+import subprocess
 import sys
 
 from lib.build_rule import BuildRule
@@ -279,6 +280,15 @@ def run(args: argparse.Namespace):
         num_done, num_total),
                            last_printed,
                            done=True)
+
+    if not args.skip_patch:
+        patch_path = common.os_third_party_dir(consts.BUILD_PATCH_FILE)
+        try:
+            with open(patch_path, "r") as patch_file:
+                _apply_build_patch(patch_file.read())
+        except FileNotFoundError:
+            # If the file does not exist simply print a warning and continue.
+            print(f"Warning: file {patch_path} did not exist.")
 
 
 def _get_copyright_year(path: str) -> str:
@@ -1190,3 +1200,15 @@ def _gen_build_rule(args: argparse.Namespace, build_data_set: BuildData,
         print("for test: ")
         pprint(vars(build_rule.test_usage))
     return build_rule
+
+
+def _apply_build_patch(patch_contents: str):
+    """Apply a git patch after generating BUILD.gn files. If the patch does not
+    apply, throws an error.
+
+    Args:
+        patch_contents: The patch contents (not the filename)"""
+
+    subprocess.run(["git", "apply", "-"],
+                   input=patch_contents.encode(),
+                   check=True)

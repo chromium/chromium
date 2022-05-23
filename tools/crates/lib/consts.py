@@ -33,6 +33,11 @@ ALLOWED_LICENSES = [
 # directory where the tool is run (i.e. `os.getcwd()`).
 THIRD_PARTY = ["third_party", "rust"]
 
+# Path to a patch file, relative to third_party/rust, that will be applied to
+# the entire third_party/rust directory after generating BUILD.gn files. The
+# patch should only contain changes to BUILD.gn files.
+BUILD_PATCH_FILE = ["crates_py_build_patch"]
+
 # Where to place the extracted crate inside the version epoch directory. If
 # empty, it will be extracted directly to the epoch directory.
 CRATE_INNER_DIR = ["crate"]

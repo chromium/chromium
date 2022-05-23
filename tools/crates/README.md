@@ -30,9 +30,14 @@ transitive dependencies to download:
 1. Change directory to the root src/ dir of Chromium.
 1. `tools/crates/crates.py gen`
 
-This will generate a `BUILD.gn` file for each third-party crate, which should be
-added to the repository with `git add`. The full list of new `BUILD.gn` files
-would be visible in `git status`.
+This will generate a `BUILD.gn` file for each third-party crate and apply the
+patch at `//third_party/rust/crates_py_build_patch`. The `BUILD.gn` file changes
+will be visible in `git status` and can be added with `git add`.
+
+The `crates_py_build_patch` file allows fixing generated build rules as well as
+adding missing `BUILD.gn` files which result from bugs. The patch should *only*
+contain `BUILD.gn` file changes. [Other patches](#patching-third-party-crates)
+should be placed in a crate's `patches` subdirectory.
 
 # Downloading missing third-party crates
 
