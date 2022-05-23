@@ -2208,23 +2208,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (!BackPressManager.isEnabled() && getToolbarManager().back()) return true;
 
-        // If the current tab url is HELP_URL, then the back button should close the tab to
-        // get back to the previous state. The reason for startsWith check is that the
-        // actual redirected URL is a different system language based help url.
-        final @TabLaunchType int type = currentTab.getLaunchType();
-
-        final boolean helpUrl = currentTab.getUrl().getSpec().startsWith(HELP_URL_PREFIX);
-        if (type == TabLaunchType.FROM_CHROME_UI && helpUrl) {
-            getCurrentTabModel().closeTab(currentTab);
-            return true;
-        }
-
         // If we aren't in the overview mode, we handle the Tab that is opened from Start Surface.
         if (!BackPressManager.isEnabled() && !isInOverviewMode()
                 && ReturnToChromeUtil.isTabFromStartSurface(currentTab)) {
             returnToOverviewModeOnBackPressed();
             return true;
         }
+
+        final @TabLaunchType int type = currentTab.getLaunchType();
 
         if (type == TabLaunchType.FROM_READING_LIST) {
             assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
