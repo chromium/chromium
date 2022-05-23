@@ -417,6 +417,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.FCMInstanceIdTokenRetrievalStatus"
+    enum="InstanceIDResult" expires_after="2022-11-30">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records status of each attempt to retrieve the instance id token. Replaces
+    FCMInvalidations.InitialTokenRetrievalStatus for Sync standalone
+    invalidations.
+  </summary>
+</histogram>
+
 <histogram name="Sync.FCMMessageDeliveredToListeners" enum="Boolean"
     expires_after="2022-11-30">
   <owner>rushans@google.com</owner>

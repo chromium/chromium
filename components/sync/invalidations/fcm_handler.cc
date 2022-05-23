@@ -154,6 +154,8 @@ bool FCMHandler::IsListening() const {
 void FCMHandler::DidRetrieveToken(const std::string& subscription_token,
                                   instance_id::InstanceID::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration("Sync.FCMInstanceIdTokenRetrievalStatus",
+                                result);
   waiting_for_token_ = false;
 
   if (!IsListening()) {
@@ -162,7 +164,6 @@ void FCMHandler::DidRetrieveToken(const std::string& subscription_token,
     return;
   }
 
-  // TODO(crbug.com/1108783): add a UMA histogram to monitor results.
   // Notify observers only if the token has changed.
   if (result == instance_id::InstanceID::SUCCESS &&
       fcm_registration_token_ != subscription_token) {
