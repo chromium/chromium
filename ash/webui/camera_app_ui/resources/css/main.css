@@ -596,7 +596,7 @@ body.should-handle-intent-result #gallery-enter {
   --option-item-vpadding: 12px;
   --switch-device-gap: 32px;
   bottom: calc(var(--bottom-line) + (var(--big-icon) / 2) + var(--switch-device-gap) - var(--option-item-vpadding));
-  flex-direction: column-reverse;
+  flex-direction: column;
   transition: bottom var(--fast1-duration);
 }
 

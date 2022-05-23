@@ -118,69 +118,28 @@
           </div>
         </div>
       </div>
-      <div id="video-snapshot-holder" class="buttons right-stripe circle">
-        <button id="video-snapshot" tabindex="0"
-                i18n-label="take_video_snapshot_button"></button>
+      <div class="top-stripe left-stripe buttons circle">
+        <button id="open-settings" tabindex="0"
+                i18n-label="settings_button" aria-haspopup="true"></button>
       </div>
-      <div id="shutters-group" class="buttons right-stripe circle">
-        <button id="recordvideo" class="shutter" tabindex="0"
-                i18n-label="record_video_start_button">
-          <div class="red-dot"></div>
-          <div class="white-square"></div>
-          <svg id="shutter-progress-bar">
-            <circle></circle>
-          </svg>
+      <div class="top-stripe right-stripe circle buttons">
+        <input id="toggle-mic" type="checkbox" tabindex="0"
+               i18n-label="toggle_mic_button" data-state="mic"
+               i18n-aria="aria_mute_off" data-key="toggleMic" checked>
+      </div>
+      <div class="top-stripe right-stripe circle buttons">
+        <input id="toggle-barcode" type="checkbox" tabindex="0"
+               i18n-label="toggle_barcode_button">
+      </div>
+      <div id="options-group" class="left-stripe buttons circle">
+        <button id="open-mirror-panel" tabindex="0" aria-haspopup="true">
         </button>
-        <button id="start-takephoto" class="shutter" tabindex="0"
-                i18n-label="take_photo_button"></button>
-        <button id="stop-takephoto" class="shutter" tabindex="0"
-                i18n-label="take_photo_cancel_button"></button>
-      </div>
-      <div id="pause-recordvideo-holder" class="buttons right-stripe circle">
-        <button id="pause-recordvideo" tabindex="0"
-                i18n-label="record_video_pause_button">
-          <div class="red-dot"></div>
-          <div class="two-bars"></div>
+        <button id="open-grid-panel" tabindex="0" aria-haspopup="true"></button>
+        <button id="open-timer-panel" tabindex="0" aria-haspopup="true">
+        <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
+                i18n-label="open_ptz_panel_button"
+                i18n-new-feature="new_control_toast"></button>
         </button>
-      </div>
-      <div class="bottom-stripe right-stripe buttons circle">
-        <button id="gallery-enter" tabindex="0"
-                i18n-label="gallery_button" hidden>
-          <img>
-        </button>
-      </div>
-      <div id="mode-selector" class="bottom-stripe">
-        <div id="modes-group" class="buttons" role="radiogroup"
-             i18n-aria="aria_camera_mode_group">
-          <div class="mode-item">
-            <input type="radio" name="mode"
-                 data-mode="video" tabindex="0"
-                 i18n-aria="switch_record_video_button">
-            <span i18n-text="label_switch_record_video_button"
-                  aria-hidden="true"></span>
-          </div>
-          <div class="mode-item">
-            <input type="radio" name="mode"
-                 data-mode="photo" tabindex="0"
-                 i18n-aria="switch_take_photo_button">
-            <span i18n-text="label_switch_take_photo_button"
-                  aria-hidden="true"></span>
-          </div>
-          <div class="mode-item" i18n-new-feature="new_document_scan_toast">
-            <input type="radio" name="mode"
-                 data-mode="scan" tabindex="0"
-                 i18n-aria="switch_scan_mode_button">
-            <span i18n-text="label_switch_scan_mode_button"
-                  aria-hidden="true"></span>
-          </div>
-          <div class="mode-item">
-            <input type="radio" name="mode"
-                 data-mode="portrait" tabindex="0"
-                 i18n-aria="switch_take_portrait_bokeh_photo_button">
-            <span i18n-text="label_switch_take_portrait_bokeh_photo_button"
-                  aria-hidden="true"></span>
-          </div>
-        </div>
       </div>
       <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
            i18n-aria="aria_scan_type_group">
@@ -216,38 +175,78 @@
                aria-hidden="true"></div>
         </div>
       </div>
+      <div id="video-snapshot-holder" class="buttons right-stripe circle">
+        <button id="video-snapshot" tabindex="0"
+                i18n-label="take_video_snapshot_button"></button>
+      </div>
+      <div id="shutters-group" class="buttons right-stripe circle">
+        <button id="recordvideo" class="shutter" tabindex="0"
+                i18n-label="record_video_start_button">
+          <div class="red-dot"></div>
+          <div class="white-square"></div>
+          <svg id="shutter-progress-bar">
+            <circle></circle>
+          </svg>
+        </button>
+        <button id="start-takephoto" class="shutter" tabindex="0"
+                i18n-label="take_photo_button"></button>
+        <button id="stop-takephoto" class="shutter" tabindex="0"
+                i18n-label="take_photo_cancel_button"></button>
+      </div>
+      <div id="pause-recordvideo-holder" class="buttons right-stripe circle">
+        <button id="pause-recordvideo" tabindex="0"
+                i18n-label="record_video_pause_button">
+          <div class="red-dot"></div>
+          <div class="two-bars"></div>
+        </button>
+      </div>
       <div class="bottom-stripe left-stripe buttons circle">
         <button id="switch-device" tabindex="0"
                 i18n-label="switch_camera_button"></button>
       </div>
-
-      <div id="options-group" class="left-stripe buttons circle">
-        <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
-                i18n-label="open_ptz_panel_button"
-                i18n-new-feature="new_control_toast"></button>
-        <button id="open-timer-panel" tabindex="0" aria-haspopup="true">
-        </button>
-        <button id="open-grid-panel" tabindex="0" aria-haspopup="true"></button>
-        <button id="open-mirror-panel" tabindex="0" aria-haspopup="true">
-        </button>
+      <div id="mode-selector" class="bottom-stripe">
+        <div id="modes-group" class="buttons" role="radiogroup"
+             i18n-aria="aria_camera_mode_group">
+          <div class="mode-item">
+            <input type="radio" name="mode"
+                 data-mode="video" tabindex="0"
+                 i18n-aria="switch_record_video_button">
+            <span i18n-text="label_switch_record_video_button"
+                  aria-hidden="true"></span>
+          </div>
+          <div class="mode-item">
+            <input type="radio" name="mode"
+                 data-mode="photo" tabindex="0"
+                 i18n-aria="switch_take_photo_button">
+            <span i18n-text="label_switch_take_photo_button"
+                  aria-hidden="true"></span>
+          </div>
+          <div class="mode-item" i18n-new-feature="new_document_scan_toast">
+            <input type="radio" name="mode"
+                 data-mode="scan" tabindex="0"
+                 i18n-aria="switch_scan_mode_button">
+            <span i18n-text="label_switch_scan_mode_button"
+                  aria-hidden="true"></span>
+          </div>
+          <div class="mode-item">
+            <input type="radio" name="mode"
+                 data-mode="portrait" tabindex="0"
+                 i18n-aria="switch_take_portrait_bokeh_photo_button">
+            <span i18n-text="label_switch_take_portrait_bokeh_photo_button"
+                  aria-hidden="true"></span>
+          </div>
+        </div>
       </div>
-      <div class="top-stripe left-stripe buttons circle">
-        <button id="open-settings" tabindex="0"
-                i18n-label="settings_button" aria-haspopup="true"></button>
+      <div class="bottom-stripe right-stripe buttons circle">
+        <button id="gallery-enter" tabindex="0"
+                i18n-label="gallery_button" hidden>
+          <img>
+        </button>
       </div>
       <div id="record-time" class="top-stripe horizontal-center-stripe" hidden>
         <div class="icon"></div>
         <div id="paused-msg" i18n-text="record_video_paused_msg"></div>
         <div id="record-time-msg"></div>
-      </div>
-      <div class="top-stripe right-stripe circle buttons">
-        <input id="toggle-mic" type="checkbox" tabindex="0"
-               i18n-label="toggle_mic_button" data-state="mic"
-               i18n-aria="aria_mute_off" data-key="toggleMic" checked>
-      </div>
-      <div class="top-stripe right-stripe circle buttons">
-        <input id="toggle-barcode" type="checkbox" tabindex="0"
-               i18n-label="toggle_barcode_button">
       </div>
       <div class="centered-overlay">
         <div id="timer-tick-msg"></div>
