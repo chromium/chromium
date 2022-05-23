@@ -792,6 +792,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
   Idempotency GetIdempotency() const { return idempotency_; }
 
+  int pervasive_payloads_index_for_logging() const {
+    return pervasive_payloads_index_for_logging_;
+  }
+
+  void set_pervasive_payloads_index_for_logging(int index) {
+    pervasive_payloads_index_for_logging_ = index;
+  }
+
   const std::string& expected_response_checksum() const {
     return expected_response_checksum_;
   }
@@ -1040,6 +1048,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
+
+  // The index of the request URL in Cache Transparency's Pervasive Payloads
+  // List. This is only used for logging purposes. It is initialized as -1 to
+  // signify that the index has not been set.
+  int pervasive_payloads_index_for_logging_ = -1;
 
   // A SHA-256 checksum of the response and selected headers, stored as
   // upper-case hexadecimal. This is only used if the

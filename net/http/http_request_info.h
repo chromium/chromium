@@ -89,6 +89,10 @@ struct NET_EXPORT HttpRequestInfo {
   // that the request is idempotent.
   net::Idempotency idempotency;
 
+  // Index of the requested URL in Cache Transparency's pervasive payload list.
+  // Only used for logging purposes.
+  int pervasive_payloads_index_for_logging;
+
   // Checksum of the request body and selected headers, in upper-case
   // hexadecimal. Only non-empty if the USE_SINGLE_KEYED_CACHE load flag is set.
   std::string checksum;

@@ -432,7 +432,8 @@ class CacheTransparencySettings {
     return enabled_;
   }
 
-  absl::optional<std::string> GetChecksumForURL(const GURL& url) const {
+  absl::optional<std::pair<int, std::string>> GetChecksumForURL(
+      const GURL& url) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!url.is_valid())
@@ -442,7 +443,8 @@ class CacheTransparencySettings {
     if (it == map_.end()) {
       return absl::nullopt;
     }
-    return it->second;
+    int index = std::distance(map_.begin(), it);
+    return std::make_pair(index, it->second);
   }
 
  private:
@@ -543,6 +545,16 @@ bool HasHeadersIncompatibleWithSingleKeyedCache(
   }
   return false;
 }
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CacheTransparencyCacheNotUsedReason {
+  kTryingSingleKeyedCache = 0,
+  kIncompatibleRequestType = 1,
+  kIncompatibleRequestLoadFlags = 2,
+  kIncompatibleRequestHeaders = 3,
+  kMaxValue = kIncompatibleRequestHeaders,
+};
 
 }  // namespace
 
@@ -766,25 +778,41 @@ URLLoader::URLLoader(
 
   if (CacheTransparencySettings::Get().enabled() &&
       ThirdPartyCookiesEnabled()) {
-    auto checksum =
+    auto result =
         CacheTransparencySettings::Get().GetChecksumForURL(request.url);
-    if (checksum.has_value()) {
+    if (result.has_value()) {
+      const auto [index, checksum] = std::move(result.value());
+
+      url_request_->set_pervasive_payloads_index_for_logging(index);
+      base::UmaHistogramExactLinear("Network.CacheTransparency.URLMatched",
+                                    index, 101);
+
+      CacheTransparencyCacheNotUsedReason cache_not_used_reason =
+          CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache;
       DVLOG(2) << "Found pervasive payload: " << request.url.spec();
       if (request.method != net::HttpRequestHeaders::kGetMethod) {
         DVLOG(2) << "Not using single-keyed-cache; method is "
                  << request.method;
+        cache_not_used_reason =
+            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestType;
       } else if (HasFlagsIncompatibleWithSingleKeyedCache(request_load_flags)) {
         DVLOG(2) << "Not using single-keyed-cache; flags are "
                  << request_load_flags;
+        cache_not_used_reason =
+            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestLoadFlags;
       } else if (HasHeadersIncompatibleWithSingleKeyedCache(request.headers)) {
         DVLOG(2) << "Not using single-keyed-cache; headers are\n"
                  << request.headers.ToString();
+        cache_not_used_reason =
+            CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders;
       } else {
         DVLOG(2) << "Trying single-keyed cache";
         request_load_flags |= net::LOAD_USE_SINGLE_KEYED_CACHE;
 
-        url_request_->set_expected_response_checksum(checksum.value());
+        url_request_->set_expected_response_checksum(checksum);
       }
+      base::UmaHistogramEnumeration("Network.CacheTransparency.CacheNotUsed",
+                                    cache_not_used_reason);
     }
   }
 

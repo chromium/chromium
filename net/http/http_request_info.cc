@@ -15,7 +15,8 @@ HttpRequestInfo::HttpRequestInfo()
       privacy_mode(PRIVACY_MODE_DISABLED),
       secure_dns_policy(SecureDnsPolicy::kAllow),
       reporting_upload_depth(0),
-      idempotency(net::DEFAULT_IDEMPOTENCY) {}
+      idempotency(net::DEFAULT_IDEMPOTENCY),
+      pervasive_payloads_index_for_logging(-1) {}
 
 HttpRequestInfo::HttpRequestInfo(const HttpRequestInfo& other) = default;
 

@@ -13437,6 +13437,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="Path FileInfo Failed"/>
 </enum>
 
+<enum name="CacheTransparencyCacheNotUsedReason">
+  <int value="0" label="Trying Single Keyed Cache"/>
+  <int value="1" label="Incompatible Request Type"/>
+  <int value="2" label="Incompatible Request Load Flags"/>
+  <int value="3" label="Incompatible Request Headers"/>
+</enum>
+
 <enum name="CALayerResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown failure"/>
