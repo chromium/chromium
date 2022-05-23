@@ -164,6 +164,13 @@ SkColor GetSecondaryTextColor() {
       AshColorProvider::ContentLayerType::kTextColorSecondary);
 }
 
+SkColor GetDisabledTextColor() {
+  const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
+  const SkColor primary_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  return color_provider->GetDisabledColor(primary_color);
+}
+
 base::Time GetFirstDayOfMonth(const base::Time& date) {
   return date -
          base::Days(calendar_utils::GetExplodedUTC(date).day_of_month - 1);

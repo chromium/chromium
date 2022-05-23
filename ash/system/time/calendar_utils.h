@@ -148,6 +148,7 @@ ASH_EXPORT int GetMonthsBetween(const base::Time& start_date,
 // Colors.
 SkColor GetPrimaryTextColor();
 SkColor GetSecondaryTextColor();
+SkColor GetDisabledTextColor();
 
 // Get the first day of the month that includes |date|.
 ASH_EXPORT base::Time GetFirstDayOfMonth(const base::Time& date);

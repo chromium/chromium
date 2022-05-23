@@ -110,7 +110,7 @@ void CalendarDateCellView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   // Gray-out the date that is not in the current month.
-  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetDisabledTextColor()
                                    : calendar_utils::GetPrimaryTextColor());
 }
 
