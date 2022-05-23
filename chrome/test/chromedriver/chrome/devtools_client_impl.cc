@@ -26,7 +26,6 @@
 
 namespace {
 
-const int kCdpMethodNotFoundCode = -32601;
 const char kInspectorDefaultContextError[] =
     "Cannot find default execution context";
 const char kInspectorContextError[] = "Cannot find context with specified id";
@@ -39,6 +38,9 @@ const char kInspectorPushPermissionError[] =
     "Push Permission without userVisibleOnly:true isn't supported";
 const char kInspectorNoSuchFrameError[] =
     "Frame with the given id was not found.";
+
+static constexpr int kSessionNotFoundInspectorCode = -32001;
+static constexpr int kCdpMethodNotFoundCode = -32601;
 static constexpr int kInvalidParamsInspectorCode = -32602;
 
 class ScopedIncrementer {
@@ -564,8 +566,23 @@ Status DevToolsClientImpl::ProcessCommandResponse(
             << " (id=" << response.id << ") " << id_ << " " << result;
   }
 
-  if (iter == response_info_map_.end())
+  if (iter == response_info_map_.end()) {
+    // A CDP session may become detached while a command sent to that session
+    // is still pending. When the browser eventually tries to process this
+    // command, it sends a response with an error and no session ID. Since
+    // there is no session ID, this message will be routed here to the root
+    // DevToolsClientImpl. If we receive such a response, just ignore it
+    // since the session it belongs to is already detached.
+    if (parent_ == nullptr) {
+      if (!response.result) {
+        const Status status = internal::ParseInspectorError(response.error);
+        if (status.code() == StatusCode::kNoSuchFrame) {
+          return Status(kOk);
+        }
+      }
+    }
     return Status(kUnknownError, "unexpected command response");
+  }
 
   scoped_refptr<ResponseInfo> response_info = response_info_map_[response.id];
   response_info_map_.erase(response.id);
@@ -698,6 +715,9 @@ Status ParseInspectorError(const std::string& error_json) {
     if (maybe_code.value() == kCdpMethodNotFoundCode) {
       return Status(kUnknownCommand,
                     maybe_message ? *maybe_message : "UnknownCommand");
+    } else if (maybe_code.value() == kSessionNotFoundInspectorCode) {
+      return Status(kNoSuchFrame,
+                    maybe_message ? *maybe_message : "inspector detached");
     }
   }
 
