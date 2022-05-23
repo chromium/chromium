@@ -78,6 +78,7 @@ void EnterprisePolicyDelegateImpl::OnWallpaperChanged() {
 void EnterprisePolicyDelegateImpl::OnShellDestroying() {
   // WallpaperController is about to be destroyed.
   scoped_wallpaper_controller_observation_.Reset();
+  scoped_shell_observation_.Reset();
 }
 
 }  // namespace ash::personalization_app
