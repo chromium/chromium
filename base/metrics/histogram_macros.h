@@ -142,7 +142,7 @@
 // large numbers. For example, code might pass a count of 1825 bytes and a scale
 // of 1024 bytes to report values in kilobytes. Only the scaled count is
 // reported, but the remainder is tracked between calls, so that multiple calls
-// will accumulate correctly. Only "exact linear" is supported.
+// will accumulate correctly.
 // It'll be necessary to #include "base/lazy_instance.h" to use this macro.
 //   name: Full constant name of the histogram (must not change between calls).
 //   sample: Bucket to be incremented.
