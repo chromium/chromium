@@ -68,11 +68,11 @@ class CrostiniInstallerTest : public testing::Test {
     explicit WaitingFakeConciergeClient(ash::FakeCiceroneClient* client)
         : ash::FakeConciergeClient(client) {}
 
-    void StartTerminaVm(
+    void StartVm(
         const vm_tools::concierge::StartVmRequest& request,
         chromeos::DBusMethodCallback<vm_tools::concierge::StartVmResponse>
             callback) override {
-      ash::FakeConciergeClient::StartTerminaVm(request, std::move(callback));
+      ash::FakeConciergeClient::StartVm(request, std::move(callback));
       if (quit_closure_) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                       std::move(quit_closure_));
@@ -83,7 +83,7 @@ class CrostiniInstallerTest : public testing::Test {
       base::RunLoop loop;
       quit_closure_ = loop.QuitClosure();
       loop.Run();
-      EXPECT_GE(start_termina_vm_call_count(), 1);
+      EXPECT_GE(start_vm_call_count(), 1);
     }
 
    private:

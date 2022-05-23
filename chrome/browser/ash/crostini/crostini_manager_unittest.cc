@@ -363,7 +363,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmNameError) {
       "", disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmAnomalyDetectorNotConnectedError) {
@@ -376,7 +376,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmAnomalyDetectorNotConnectedError) {
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmDiskPathError) {
@@ -386,7 +386,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmDiskPathError) {
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
@@ -416,7 +416,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
 
   auto notification = notification_service.GetNotification(
       "crostini_powerwash_request_instead_of_run");
@@ -453,7 +453,7 @@ TEST_F(CrostiniManagerTest,
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
 
   auto notification = notification_service.GetNotification(
       "crostini_powerwash_request_cryptohome_error");
@@ -474,7 +474,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountError) {
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   histogram_tester.ExpectUniqueSample(kCrostiniCorruptionHistogram,
                                       CorruptionStates::MOUNT_FAILED, 1);
 }
@@ -494,7 +494,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountErrorThenSuccess) {
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   histogram_tester.ExpectUniqueSample(kCrostiniCorruptionHistogram,
                                       CorruptionStates::MOUNT_ROLLED_BACK, 1);
 }
@@ -508,7 +508,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   histogram_tester.ExpectTotalCount(kCrostiniCorruptionHistogram, 0);
 }
 
@@ -528,7 +528,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
 
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   auto notification = notification_service.GetNotification("crostini_low_disk");
   EXPECT_NE(absl::nullopt, notification);
 }
@@ -550,7 +550,7 @@ TEST_F(CrostiniManagerTest,
       base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
 
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   auto notification = notification_service.GetNotification("crostini_low_disk");
   EXPECT_EQ(absl::nullopt, notification);
 }
@@ -818,7 +818,7 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   absl::optional<ContainerInfo> container_info =
@@ -857,7 +857,7 @@ TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   absl::optional<ContainerInfo> container_info =
@@ -886,7 +886,7 @@ TEST_F(CrostiniManagerRestartTest, RestartDelayAndSuccessWhenVmStopping) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   absl::optional<ContainerInfo> container_info =
@@ -906,7 +906,7 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccessWithOptions) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
   absl::optional<ContainerInfo> container_info =
@@ -926,7 +926,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnComponentLoaded) {
   EXPECT_FALSE(
       profile_->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled));
   EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -958,7 +958,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnDiskImageCreated) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
   histogram_tester_.ExpectTotalCount(
@@ -980,7 +980,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_EQ(fake_concierge_client_->start_termina_vm_call_count(), 0);
+  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1012,7 +1012,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnVmStarted) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1028,7 +1028,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartVm) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1047,7 +1047,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForVmStarted) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1061,7 +1061,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnLxdStarted) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1077,7 +1077,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartLxd) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1094,7 +1094,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForLxdStarted) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1108,7 +1108,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnContainerCreated) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1138,7 +1138,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerCreated) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1166,7 +1166,7 @@ TEST_F(CrostiniManagerRestartTest, HeartbeatKeepsCreateContainerFromTimingOut) {
   ASSERT_EQ(1, restart_crostini_callback_count_);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1183,7 +1183,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnContainerCreatedError) {
   run_loop()->Run();
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(0, restart_crostini_callback_count_);
   ExpectRestarterUmaCount(1);
 }
@@ -1197,7 +1197,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnContainerStarted) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1211,7 +1211,7 @@ TEST_F(CrostiniManagerRestartTest, CancelOnContainerSetup) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1227,7 +1227,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringContainerSetup) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::SETUP_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1257,7 +1257,7 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerStarted) {
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1287,7 +1287,7 @@ TEST_F(CrostiniManagerRestartTest,
   ASSERT_EQ(1, restart_crostini_callback_count_);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
@@ -1301,7 +1301,7 @@ TEST_F(CrostiniManagerRestartTest, CancelThenStopVm) {
       this);
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
@@ -1356,7 +1356,7 @@ TEST_F(CrostiniManagerRestartTest, MultiRestartAllowed) {
 
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(3, restart_crostini_callback_count_);
 
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id1));
@@ -1386,7 +1386,7 @@ TEST_F(CrostiniManagerRestartTest, FailureWithMultipleRestarts) {
 
   run_loop()->Run();
 
-  EXPECT_EQ(1, fake_concierge_client_->start_termina_vm_call_count());
+  EXPECT_EQ(1, fake_concierge_client_->start_vm_call_count());
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id1));
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id2));
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id3));
@@ -1402,7 +1402,7 @@ TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
   run_loop()->Run();
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   // Mount only performed for termina/penguin.
   EXPECT_EQ(1, restart_crostini_callback_count_);
 
@@ -1418,7 +1418,7 @@ TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
       kVmName, disk_path, {}, 0,
       base::BindOnce(&ExpectSuccess, run_loop2.QuitClosure()));
   run_loop2.Run();
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_TRUE(crostini_manager()->IsVmRunning(kVmName));
   EXPECT_FALSE(crostini_manager()->GetContainerInfo(container_id()));
   ExpectRestarterUmaCount(1);
@@ -1881,7 +1881,7 @@ TEST_F(CrostiniManagerEnterpriseReportingTest,
   run_loop()->Run();
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_TRUE(
       fake_concierge_client_->get_vm_enterprise_reporting_info_call_count());
   EXPECT_EQ(1, restart_crostini_callback_count_);
@@ -1907,7 +1907,7 @@ TEST_F(CrostiniManagerEnterpriseReportingTest,
   run_loop()->Run();
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_termina_vm_call_count(), 1);
+  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_TRUE(
       fake_concierge_client_->get_vm_enterprise_reporting_info_call_count());
   EXPECT_EQ(1, restart_crostini_callback_count_);

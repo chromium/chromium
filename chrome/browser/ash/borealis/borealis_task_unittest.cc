@@ -157,7 +157,7 @@ TEST_F(BorealisTasksTest, StartBorealisVmSucceedsAndCallbackRanWithResults) {
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
-  EXPECT_GE(FakeConciergeClient()->start_termina_vm_call_count(), 1);
+  EXPECT_GE(FakeConciergeClient()->start_vm_call_count(), 1);
 }
 
 TEST_F(BorealisTasksTest,
@@ -173,7 +173,7 @@ TEST_F(BorealisTasksTest,
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
-  EXPECT_GE(FakeConciergeClient()->start_termina_vm_call_count(), 1);
+  EXPECT_GE(FakeConciergeClient()->start_vm_call_count(), 1);
 }
 
 TEST_F(BorealisTasksTest,
@@ -343,7 +343,7 @@ TEST_P(BorealisTasksTestsStartBorealisVm,
   task.Run(context_.get(), callback_factory.BindOnce());
   task_environment_.RunUntilIdle();
 
-  EXPECT_GE(FakeConciergeClient()->start_termina_vm_call_count(), 1);
+  EXPECT_GE(FakeConciergeClient()->start_vm_call_count(), 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

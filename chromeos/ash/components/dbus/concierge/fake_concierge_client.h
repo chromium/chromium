@@ -74,14 +74,13 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   void ListVmDisks(const vm_tools::concierge::ListVmDisksRequest& request,
                    DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
                        callback) override;
-  void StartTerminaVm(const vm_tools::concierge::StartVmRequest& request,
-                      DBusMethodCallback<vm_tools::concierge::StartVmResponse>
-                          callback) override;
-  void StartTerminaVmWithFd(
-      base::ScopedFD fd,
-      const vm_tools::concierge::StartVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback)
-      override;
+  void StartVm(const vm_tools::concierge::StartVmRequest& request,
+               DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+                   callback) override;
+  void StartVmWithFd(base::ScopedFD fd,
+                     const vm_tools::concierge::StartVmRequest& request,
+                     DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+                         callback) override;
   void StopVm(const vm_tools::concierge::StopVmRequest& request,
               DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback)
       override;
@@ -171,9 +170,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     return import_disk_image_call_count_;
   }
   int list_vm_disks_call_count() const { return list_vm_disks_call_count_; }
-  int start_termina_vm_call_count() const {
-    return start_termina_vm_call_count_;
-  }
+  int start_vm_call_count() const { return start_vm_call_count_; }
   int stop_vm_call_count() const { return stop_vm_call_count_; }
   int get_vm_info_call_count() const { return get_vm_info_call_count_; }
   int get_vm_enterprise_reporting_info_call_count() const {
@@ -364,7 +361,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int import_disk_image_call_count_ = 0;
   int disk_image_status_call_count_ = 0;
   int list_vm_disks_call_count_ = 0;
-  int start_termina_vm_call_count_ = 0;
+  int start_vm_call_count_ = 0;
   int stop_vm_call_count_ = 0;
   int get_vm_info_call_count_ = 0;
   int get_vm_enterprise_reporting_info_call_count_ = 0;

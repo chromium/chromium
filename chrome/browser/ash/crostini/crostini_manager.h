@@ -681,7 +681,7 @@ class CrostiniManager : public KeyedService,
       ListVmDisksCallback callback,
       absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
-  // Callback for ConciergeClient::StartTerminaVm. Called after the Concierge
+  // Callback for ConciergeClient::StartVm. Called after the Concierge
   // service method finishes.  Updates running containers list then calls the
   // |callback| if the container has already been started, otherwise passes the
   // callback to OnStartTremplin.

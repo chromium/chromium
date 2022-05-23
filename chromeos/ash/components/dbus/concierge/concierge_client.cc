@@ -139,17 +139,16 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kListVmDisksMethod, request, std::move(callback));
   }
 
-  void StartTerminaVm(
+  void StartVm(
       const concierge::StartVmRequest& request,
       DBusMethodCallback<concierge::StartVmResponse> callback) override {
     CallMethod(concierge::kStartVmMethod, request, std::move(callback));
   }
 
-  void StartTerminaVmWithFd(
-      base::ScopedFD fd,
-      const vm_tools::concierge::StartVmRequest& request,
-      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback)
-      override {
+  void StartVmWithFd(base::ScopedFD fd,
+                     const vm_tools::concierge::StartVmRequest& request,
+                     DBusMethodCallback<vm_tools::concierge::StartVmResponse>
+                         callback) override {
     CallMethodWithFd(concierge::kStartVmMethod, request, std::move(fd),
                      std::move(callback));
   }

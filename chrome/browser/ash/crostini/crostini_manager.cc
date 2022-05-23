@@ -1446,7 +1446,7 @@ void CrostiniManager::StartTerminaVm(std::string name,
   disk_image->set_writable(true);
   disk_image->set_do_mount(false);
 
-  GetConciergeClient()->StartTerminaVm(
+  GetConciergeClient()->StartVm(
       request, base::BindOnce(&CrostiniManager::OnStartTerminaVm,
                               weak_ptr_factory_.GetWeakPtr(), request.name(),
                               std::move(callback)));

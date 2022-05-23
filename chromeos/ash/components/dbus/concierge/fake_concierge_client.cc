@@ -183,10 +183,10 @@ void FakeConciergeClient::ListVmDisks(
       FROM_HERE, base::BindOnce(std::move(callback), list_vm_disks_response_));
 }
 
-void FakeConciergeClient::StartTerminaVm(
+void FakeConciergeClient::StartVm(
     const vm_tools::concierge::StartVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
-  start_termina_vm_call_count_++;
+  start_vm_call_count_++;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), start_vm_response_),
       send_start_vm_response_delay_);
@@ -218,11 +218,11 @@ void FakeConciergeClient::StartTerminaVm(
                                 std::move(vm_started_signal)));
 }
 
-void FakeConciergeClient::StartTerminaVmWithFd(
+void FakeConciergeClient::StartVmWithFd(
     base::ScopedFD fd,
     const vm_tools::concierge::StartVmRequest& request,
     DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
-  StartTerminaVm(std::move(request), std::move(callback));
+  StartVm(std::move(request), std::move(callback));
 }
 
 void FakeConciergeClient::NotifyTremplinStarted(
