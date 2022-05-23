@@ -1886,8 +1886,8 @@ void WebFormControlElementToFormField(
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type = element.FormControlTypeForAutofill().Utf8();
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
-  if (base::LowerCaseEqualsASCII(element.GetAttribute(*kRole).Utf16(),
-                                 "presentation")) {
+  if (base::EqualsCaseInsensitiveASCII(element.GetAttribute(*kRole).Utf16(),
+                                       "presentation")) {
     field->role = FormFieldData::RoleAttribute::kPresentation;
   }
 
