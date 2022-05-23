@@ -137,13 +137,14 @@ class GPUDevice final : public EventTargetWithInlineData,
   void InjectError(WGPUErrorType type, const char* message);
   void AddConsoleWarning(const char* message);
 
-  void EnsureExternalTextureDestroyed(GPUExternalTexture* externalTexture);
-
  private:
   using LostProperty =
       ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
 
+  void EnsureExternalTextureDestroyed(GPUExternalTexture* externalTexture);
   void DestroyExternalTexturesMicrotask();
+
+  void DestroyAllExternalTextures();
 
   void OnUncapturedError(WGPUErrorType errorType, const char* message);
   void OnLogging(WGPULoggingType loggingType, const char* message);
@@ -188,8 +189,11 @@ class GPUDevice final : public EventTargetWithInlineData,
   static constexpr int kMaxAllowedConsoleWarnings = 500;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
 
-  bool has_pending_microtask_ = false;
+  bool has_destroy_external_texture_microtask_ = false;
   HeapVector<Member<GPUExternalTexture>> external_textures_pending_destroy_;
+
+  // This attribute records that whether GPUDevice is destroyed (via destroy()).
+  bool destroyed_ = false;
 };
 
 }  // namespace blink

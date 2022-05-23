@@ -104,6 +104,7 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
 }
 
 GPUDevice::~GPUDevice() {
+  DestroyAllExternalTextures();
   // Clear the callbacks since we can't handle callbacks after finalization.
   // error_callback_, logging_callback_, and lost_callback_ will be deleted.
   GetProcs().deviceSetUncapturedErrorCallback(GetHandle(), nullptr, nullptr);
@@ -276,6 +277,8 @@ GPUQueue* GPUDevice::queue() {
 }
 
 void GPUDevice::destroy() {
+  destroyed_ = true;
+  DestroyAllExternalTextures();
   GetProcs().deviceDestroy(GetHandle());
   FlushNow();
 }
@@ -305,10 +308,18 @@ GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
 GPUExternalTexture* GPUDevice::importExternalTexture(
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
+  // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
+  // expired immediately.
+  if (destroyed_)
+    return GPUExternalTexture::CreateExpired(this, descriptor, exception_state);
+
   GPUExternalTexture* externalTexture =
       GPUExternalTexture::Create(this, descriptor, exception_state);
-  if (externalTexture)
+
+  // No need to manage expired GPUExternalTexture in GPUDevice.
+  if (externalTexture && !externalTexture->expired()) {
     EnsureExternalTextureDestroyed(externalTexture);
+  }
   return externalTexture;
 }
 
@@ -485,19 +496,34 @@ void GPUDevice::EnsureExternalTextureDestroyed(
   DCHECK(externalTexture);
   external_textures_pending_destroy_.push_back(externalTexture);
 
-  if (has_pending_microtask_)
+  if (has_destroy_external_texture_microtask_)
     return;
 
   Microtask::EnqueueMicrotask(WTF::Bind(
       &GPUDevice::DestroyExternalTexturesMicrotask, WrapWeakPersistent(this)));
-  has_pending_microtask_ = true;
+  has_destroy_external_texture_microtask_ = true;
 }
 
 void GPUDevice::DestroyExternalTexturesMicrotask() {
-  has_pending_microtask_ = false;
+  // GPUDevice.destroy() call has destroyed all pending external textures.
+  if (!has_destroy_external_texture_microtask_)
+    return;
+
+  has_destroy_external_texture_microtask_ = false;
 
   auto externalTextures = std::move(external_textures_pending_destroy_);
   for (Member<GPUExternalTexture> externalTexture : externalTextures) {
+    externalTexture->Destroy();
+  }
+}
+
+void GPUDevice::DestroyAllExternalTextures() {
+  has_destroy_external_texture_microtask_ = false;
+
+  auto externalTexturesPendingDestroy =
+      std::move(external_textures_pending_destroy_);
+  for (Member<GPUExternalTexture> externalTexture :
+       externalTexturesPendingDestroy) {
     externalTexture->Destroy();
   }
 }

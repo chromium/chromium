@@ -103,6 +103,85 @@ void GetColorSpaceConversionConstants(gfx::ColorSpace srcColorSpace,
   dstTransferConstants[5] = dst_transfer_fn.e;
   dstTransferConstants[6] = dst_transfer_fn.f;
 }
+
+struct ExternalTextureSource {
+  scoped_refptr<media::VideoFrame> media_video_frame = nullptr;
+  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  bool valid = false;
+};
+
+ExternalTextureSource GetExternalTextureSource(
+    GPUDevice* deivce,
+    const GPUExternalTextureDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
+  ExternalTextureSource source;
+  switch (webgpu_desc->source()->GetContentType()) {
+    case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kHTMLVideoElement: {
+      HTMLVideoElement* video = webgpu_desc->source()->GetAsHTMLVideoElement();
+      if (!video) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                          "Missing video source");
+        return source;
+      }
+
+      if (video->WouldTaintOrigin()) {
+        exception_state.ThrowSecurityError(
+            "Video element is tainted by cross-origin data and may not be "
+            "loaded.");
+        return source;
+      }
+
+      if (auto* wmp = video->GetWebMediaPlayer()) {
+        source.media_video_frame = wmp->GetCurrentFrame();
+        source.video_renderer = wmp->GetPaintCanvasVideoRenderer();
+      }
+
+      if (!source.media_video_frame) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                          "Failed to import texture from video "
+                                          "element that doesn't have back "
+                                          "resource.");
+        return source;
+      }
+
+      break;
+    }
+
+    case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame: {
+      VideoFrame* frame = webgpu_desc->source()->GetAsVideoFrame();
+
+      if (!frame) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                          "Missing video frame");
+        return source;
+      }
+      // Tainted blink::VideoFrames are not supposed to be possible.
+      DCHECK(!frame->WouldTaintOrigin());
+
+      source.media_video_frame = frame->frame();
+      if (!source.media_video_frame) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kOperationError,
+            "Failed to import texture from video "
+            "frame that doesn't have back resource");
+        return source;
+      }
+
+      if (!source.media_video_frame->coded_size().width() ||
+          !source.media_video_frame->coded_size().height()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kOperationError,
+            "Cannot import from zero sized video frame");
+        return source;
+      }
+      break;
+    }
+  }
+
+  source.valid = true;
+  return source;
+}
+
 }  // namespace
 
 // static
@@ -110,87 +189,34 @@ GPUExternalTexture* GPUExternalTexture::Create(
     GPUDevice* device,
     const GPUExternalTextureDescriptor* webgpu_desc,
     ExceptionState& exception_state) {
-  scoped_refptr<media::VideoFrame> media_video_frame;
-  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
-  switch (webgpu_desc->source()->GetContentType()) {
-    case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kHTMLVideoElement: {
-      HTMLVideoElement* video = webgpu_desc->source()->GetAsHTMLVideoElement();
-
-      if (!video || !video->videoWidth() || !video->videoHeight()) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                          "Missing video source");
-        return nullptr;
-      }
-
-      if (video->WouldTaintOrigin()) {
-        exception_state.ThrowSecurityError(
-            "Video element is tainted by cross-origin data and may not be "
-            "loaded.");
-        return nullptr;
-      }
-
-      if (auto* wmp = video->GetWebMediaPlayer()) {
-        media_video_frame = wmp->GetCurrentFrame();
-        video_renderer = wmp->GetPaintCanvasVideoRenderer();
-      }
-      break;
-    }
-
-    case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame: {
-      VideoFrame* frame = webgpu_desc->source()->GetAsVideoFrame();
-
-      if (!frame || !frame->codedWidth() || !frame->codedHeight()) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                          "Missing video source");
-        return nullptr;
-      }
-
-      if (frame->WouldTaintOrigin()) {
-        exception_state.ThrowSecurityError(
-            "VideoFrame is tainted by cross-origin data and may not be "
-            "loaded.");
-        return nullptr;
-      }
-
-      media_video_frame = frame->frame();
-      break;
-    }
-  }
-
-  if (!media_video_frame) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Failed to import texture from video");
-    if (!media_video_frame) {
-      device->AddConsoleWarning(
-          "Cannot get valid video frame, maybe the"
-          "HTMLVideoElement is not loaded");
-    }
-
+  ExternalTextureSource source =
+      GetExternalTextureSource(device, webgpu_desc, exception_state);
+  if (!source.valid)
     return nullptr;
-  }
 
-  gfx::ColorSpace srcColorSpace = media_video_frame->ColorSpace();
+  gfx::ColorSpace srcColorSpace = source.media_video_frame->ColorSpace();
   gfx::ColorSpace dstColorSpace;
   switch (webgpu_desc->colorSpace().AsEnum()) {
     case V8GPUPredefinedColorSpace::Enum::kSRGB:
       dstColorSpace = gfx::ColorSpace::CreateSRGB();
   }
 
+  DCHECK(source.media_video_frame);
   // TODO(crbug.com/1306753): Use SharedImageProducer and CompositeSharedImage
   // rather than check 'is_webgpu_compatible'.
   bool device_support_zero_copy =
       device->adapter()->features()->FeatureNameSet().Contains(
           "multi-planar-formats");
 
-  if (media_video_frame->HasTextures() &&
-      (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
+  if (source.media_video_frame->HasTextures() &&
+      (source.media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
       device_support_zero_copy &&
-      media_video_frame->metadata().is_webgpu_compatible) {
+      source.media_video_frame->metadata().is_webgpu_compatible) {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromVideoFrame(
             device->GetDawnControlClient(), device->GetHandle(),
             WGPUTextureUsage::WGPUTextureUsage_TextureBinding,
-            media_video_frame);
+            source.media_video_frame);
 
     WGPUTextureViewDescriptor view_desc = {
         .format = WGPUTextureFormat_R8Unorm,
@@ -210,7 +236,7 @@ GPUExternalTexture* GPUExternalTexture::Create(
     external_texture_desc.colorSpace = AsDawnEnum(webgpu_desc->colorSpace());
 
     float yuvToRgbMatrix[12];
-    GetYUVToRGBMatrix(srcColorSpace, media_video_frame->BitDepth(),
+    GetYUVToRGBMatrix(srcColorSpace, source.media_video_frame->BitDepth(),
                       yuvToRgbMatrix);
     external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix;
 
@@ -247,7 +273,7 @@ GPUExternalTexture* GPUExternalTexture::Create(
       context_provider_wrapper->ContextProvider()->IsContextLost())
     return nullptr;
 
-  const auto intrinsic_size = media_video_frame->natural_size();
+  const auto intrinsic_size = source.media_video_frame->natural_size();
 
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
@@ -276,10 +302,10 @@ GPUExternalTexture* GPUExternalTexture::Create(
   // DrawVideoFrameIntoResourceProvider() creates local_video_renderer always.
   // This might affect performance, maybe a cache local_video_renderer could
   // help.
-  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
+  const auto dest_rect = gfx::Rect(source.media_video_frame->natural_size());
   if (!DrawVideoFrameIntoResourceProvider(
-          std::move(media_video_frame), resource_provider,
-          raster_context_provider, dest_rect, video_renderer)) {
+          std::move(source.media_video_frame), resource_provider,
+          raster_context_provider, dest_rect, source.video_renderer)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
     return nullptr;
@@ -327,6 +353,24 @@ GPUExternalTexture* GPUExternalTexture::Create(
   return external_texture;
 }
 
+// static
+GPUExternalTexture* GPUExternalTexture::CreateExpired(
+    GPUDevice* device,
+    const GPUExternalTextureDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
+  // Validate GPUExternalTextureDescriptor.
+  ExternalTextureSource source =
+      GetExternalTextureSource(device, webgpu_desc, exception_state);
+  if (!source.valid)
+    return nullptr;
+
+  // Bypass importing video frame into Dawn.
+  GPUExternalTexture* external_texture =
+      MakeGarbageCollected<GPUExternalTexture>(device, nullptr, nullptr);
+  external_texture->Destroy();
+  return external_texture;
+}
+
 GPUExternalTexture::GPUExternalTexture(
     GPUDevice* device,
     WGPUExternalTexture external_texture,
@@ -335,11 +379,12 @@ GPUExternalTexture::GPUExternalTexture(
       mailbox_texture_(mailbox_texture) {}
 
 void GPUExternalTexture::Destroy() {
-  WGPUTexture texture = mailbox_texture_->GetTexture();
-  GetProcs().textureReference(texture);
+  expired_ = true;
+  if (!mailbox_texture_)
+    return;
+
+  GetProcs().textureDestroy(mailbox_texture_->GetTexture());
   mailbox_texture_.reset();
-  GetProcs().textureDestroy(texture);
-  GetProcs().textureRelease(texture);
 }
 
 }  // namespace blink

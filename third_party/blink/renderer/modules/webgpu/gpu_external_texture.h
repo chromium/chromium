@@ -22,6 +22,10 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       GPUDevice* device,
       const GPUExternalTextureDescriptor* webgpu_desc,
       ExceptionState& exception_state);
+  static GPUExternalTexture* CreateExpired(
+      GPUDevice* device,
+      const GPUExternalTextureDescriptor* webgpu_desc,
+      ExceptionState& exception_state);
   explicit GPUExternalTexture(
       GPUDevice* device,
       WGPUExternalTexture external_texture,
@@ -32,6 +36,8 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
 
   void Destroy();
 
+  bool expired() const { return expired_; }
+
  private:
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
@@ -39,6 +45,9 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   }
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
+
+  // This attribute marks whether GPUExternalTexture will be destroyed.
+  bool expired_ = false;
 };
 
 }  // namespace blink
