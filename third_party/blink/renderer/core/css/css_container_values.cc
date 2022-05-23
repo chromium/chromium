@@ -18,7 +18,10 @@ CSSContainerValues::CSSContainerValues(Document& document,
       width_(width),
       height_(height),
       writing_mode_(style.GetWritingMode()),
-      font_sizes_(&style, document.documentElement()->GetComputedStyle()) {}
+      font_sizes_(CSSToLengthConversionData::FontSizes(
+                      &style,
+                      document.documentElement()->GetComputedStyle())
+                      .Unzoomed()) {}
 
 float CSSContainerValues::EmSize() const {
   return font_sizes_.Em();
@@ -29,11 +32,11 @@ float CSSContainerValues::RemSize() const {
 }
 
 float CSSContainerValues::ExSize() const {
-  return font_sizes_.Ex() / font_sizes_.Zoom();
+  return font_sizes_.Ex();
 }
 
 float CSSContainerValues::ChSize() const {
-  return font_sizes_.Ch() / font_sizes_.Zoom();
+  return font_sizes_.Ch();
 }
 
 }  // namespace blink

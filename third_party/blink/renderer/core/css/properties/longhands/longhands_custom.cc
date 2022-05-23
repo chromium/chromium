@@ -6620,12 +6620,13 @@ void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
     const CSSValue& second = list.Item(1);
     auto* first_primitive_value = DynamicTo<CSSPrimitiveValue>(first);
     if (first_primitive_value && first_primitive_value->IsLength()) {
+      CSSToLengthConversionData unzoomed_conversion_data =
+          state.CssToLengthConversionData().Unzoomed();
       // <length>{2}
       size = gfx::SizeF(
-          first_primitive_value->ComputeLength<float>(
-              state.CssToLengthConversionData().CopyWithAdjustedZoom(1.0)),
+          first_primitive_value->ComputeLength<float>(unzoomed_conversion_data),
           To<CSSPrimitiveValue>(second).ComputeLength<float>(
-              state.CssToLengthConversionData().CopyWithAdjustedZoom(1.0)));
+              unzoomed_conversion_data));
     } else {
       // <page-size> <orientation>
       size = GetPageSizeFromName(To<CSSIdentifierValue>(first));
@@ -6647,7 +6648,7 @@ void Size::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
       // <length>
       page_size_type = PageSizeType::kFixed;
       float width = first_primitive_value->ComputeLength<float>(
-          state.CssToLengthConversionData().CopyWithAdjustedZoom(1.0));
+          state.CssToLengthConversionData().Unzoomed());
       size = gfx::SizeF(width, width);
     } else {
       const auto& ident = To<CSSIdentifierValue>(first);

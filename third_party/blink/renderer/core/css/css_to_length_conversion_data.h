@@ -55,21 +55,27 @@ class CORE_EXPORT CSSToLengthConversionData {
     DISALLOW_NEW();
 
    public:
-    FontSizes() : em_(0), rem_(0), font_(nullptr), zoom_(1) {}
+    FontSizes() = default;
     FontSizes(float em, float rem, const Font*, float zoom);
     FontSizes(const ComputedStyle*, const ComputedStyle* root_style);
 
-    float Em() const { return em_; }
-    float Rem() const { return rem_; }
-    float Zoom() const;
+    FontSizes Unzoomed() const { return CopyWithAdjustedZoom(1.0f); }
+
+    float Em() const { return em_ * zoom_adjust_.value_or(zoom_); }
+    float Rem() const { return rem_ * zoom_adjust_.value_or(zoom_); }
     float Ex() const;
     float Ch() const;
 
    private:
-    float em_;
-    float rem_;
-    const Font* font_;
-    float zoom_;
+    friend class CSSToLengthConversionData;
+
+    FontSizes CopyWithAdjustedZoom(float new_zoom) const;
+
+    float em_ = 0;
+    float rem_ = 0;
+    const Font* font_ = nullptr;
+    float zoom_ = 1;
+    absl::optional<float> zoom_adjust_;
   };
 
   class CORE_EXPORT ViewportSize {
@@ -172,7 +178,6 @@ class CORE_EXPORT CSSToLengthConversionData {
   float RemFontSize() const;
   float ExFontSize() const;
   float ChFontSize() const;
-  float FontSizeZoom() const { return font_sizes_.Zoom(); }
 
   // Accessing these marks the style as having viewport units
   double ViewportWidthPercent() const;
@@ -225,6 +230,9 @@ class CORE_EXPORT CSSToLengthConversionData {
     return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,
                                      viewport_size_, container_sizes_,
                                      new_zoom);
+  }
+  CSSToLengthConversionData Unzoomed() const {
+    return CopyWithAdjustedZoom(1.0f);
   }
 
   double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;

@@ -102,18 +102,31 @@ float CSSToLengthConversionData::FontSizes::Ex() const {
   DCHECK(font_data);
   if (!font_data || !font_data->GetFontMetrics().HasXHeight())
     return em_ / 2.0f;
-  return font_data->GetFontMetrics().XHeight();
+  // Font-metrics-based units already account for `zoom`. Therefore we need
+  // to unzoom using `zoom` first, if the zoom is adjusted.
+  float unzoom = (zoom_adjust_.has_value() ? zoom_ : 1.0f);
+  return font_data->GetFontMetrics().XHeight() / unzoom *
+         zoom_adjust_.value_or(1.0f);
 }
 
 float CSSToLengthConversionData::FontSizes::Ch() const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
   DCHECK(font_data);
-  return font_data ? font_data->GetFontMetrics().ZeroWidth() : 0;
+  // Font-metrics-based units already account for `zoom`. Therefore we need
+  // to unzoom using `zoom` first, if the zoom is adjusted.
+  float unzoom = (zoom_adjust_.has_value() ? zoom_ : 1.0f);
+  return font_data ? (font_data->GetFontMetrics().ZeroWidth() / unzoom *
+                      zoom_adjust_.value_or(1.0f))
+                   : 0;
 }
 
-float CSSToLengthConversionData::FontSizes::Zoom() const {
-  return zoom_ ? zoom_ : 1;
+CSSToLengthConversionData::FontSizes
+CSSToLengthConversionData::FontSizes::CopyWithAdjustedZoom(
+    float new_zoom) const {
+  FontSizes font_sizes = *this;
+  font_sizes.zoom_adjust_ = new_zoom;
+  return font_sizes;
 }
 
 CSSToLengthConversionData::ViewportSize::ViewportSize(
@@ -188,7 +201,10 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       font_sizes_(font_sizes),
       viewport_size_(viewport_size),
       container_sizes_(container_sizes),
-      zoom_(ClampTo<float>(zoom, std::numeric_limits<float>::denorm_min())) {}
+      zoom_(ClampTo<float>(zoom, std::numeric_limits<float>::denorm_min())) {
+  if (zoom_ != font_sizes_.zoom_)
+    font_sizes_ = font_sizes.CopyWithAdjustedZoom(zoom_);
+}
 
 CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* style,
@@ -553,19 +569,17 @@ double CSSToLengthConversionData::ZoomedComputedPixels(
     case CSSPrimitiveValue::UnitType::kContainerMax:
       return value * ContainerMaxPercent() * Zoom();
 
-    // We do not apply the zoom factor when we are computing the value of the
-    // font-size property. The zooming for font sizes is much more complicated,
-    // since we have to worry about enforcing the minimum font size preference
-    // as well as enforcing the implicit "smart minimum."
+    // Note that functions for font-relative units already account for the
+    // zoom factor.
     case CSSPrimitiveValue::UnitType::kEms:
     case CSSPrimitiveValue::UnitType::kQuirkyEms:
-      return value * EmFontSize() * Zoom();
+      return value * EmFontSize();
 
     case CSSPrimitiveValue::UnitType::kExs:
       return value * ExFontSize();
 
     case CSSPrimitiveValue::UnitType::kRems:
-      return value * RemFontSize() * Zoom();
+      return value * RemFontSize();
 
     case CSSPrimitiveValue::UnitType::kChs:
       return value * ChFontSize();

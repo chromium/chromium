@@ -261,10 +261,9 @@ float MediaValues::CalculateExSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  CSSToLengthConversionData::FontSizes font_sizes(style, style);
   // Font metrics are based on the used font which is scaled to match the size
   // of CSS pixels. Need to scale back to CSS pixels.
-  return font_sizes.Ex() / font_sizes.Zoom();
+  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ex();
 }
 
 float MediaValues::CalculateChSize(LocalFrame* frame) {
@@ -272,10 +271,9 @@ float MediaValues::CalculateChSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  CSSToLengthConversionData::FontSizes font_sizes(style, style);
   // Font metrics are based on the used font which is scaled to match the size
   // of CSS pixels. Need to scale back to CSS pixels.
-  return font_sizes.Ch() / font_sizes.Zoom();
+  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ch();
 }
 
 const String MediaValues::CalculateMediaType(LocalFrame* frame) {

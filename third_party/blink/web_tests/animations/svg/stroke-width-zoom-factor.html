@@ -3,12 +3,17 @@
 <title>Make sure stroke-width is zoom agnostic when animating</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/ahem.js"></script>
 
 <div id="target"></div>
 
 <script>
 test(t => {
-  // Setting the zoom factor should not change the value of strokeWidth.
+  t.add_cleanup(() => {
+    if (window.testRunner)
+      testRunner.setPageZoomFactor(1);
+  });
+
   if (window.testRunner)
     testRunner.setPageZoomFactor(5);
 
@@ -21,5 +26,28 @@ test(t => {
 
   anim.currentTime = 500;
   assert_equals(getComputedStyle(target).strokeWidth, '12.5px');
-});
+}, 'Zoom does not affect strokeWidth animation (px)');
+
+promise_test(async t => {
+  t.add_cleanup(() => {
+    target.style = '';
+  });
+  target.style.fontFamily = 'Ahem';
+  target.style.fontSize = '20px';
+
+  await document.fonts.ready;
+
+  if (window.testRunner)
+    testRunner.setPageZoomFactor(5);
+
+  const anim = target.animate([
+    { strokeWidth: '1ex' }, // 16px
+    { strokeWidth: '2ex' }, // 32px
+  ], {
+    duration: 1000,
+  });
+
+  anim.currentTime = 500;
+  assert_equals(getComputedStyle(target).strokeWidth, '24px');
+}, 'Zoom does not affect strokeWidth animation (ex)');
 </script>
