@@ -1717,6 +1717,27 @@
             ]
         }
     ],
+    "BlinkSchedulerPrioritizeRenderingAfterInput": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220523",
+                    "enable_features": [
+                        "PrioritizeCompositingAfterInput"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserSwitcherNoneIsGreylist": [
         {
             "platforms": [
