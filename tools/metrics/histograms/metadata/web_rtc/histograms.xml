@@ -1250,7 +1250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.{Capturer}CapturerFrameTime"
-    units="ms" expires_after="2022-07-03">
+    units="ms" expires_after="2022-10-09">
   <owner>jamiewalch@chromium.org</owner>
   <owner>auorion@microsoft.com</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
