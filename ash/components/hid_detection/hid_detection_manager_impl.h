@@ -7,6 +7,7 @@
 
 #include "ash/components/hid_detection/hid_detection_manager.h"
 
+#include "ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -20,7 +21,8 @@ namespace ash::hid_detection {
 // Concrete HidDetectionManager implementation that uses InputDeviceManager and
 // BluetoothHidDetectorImpl to detect and connect with devices.
 class HidDetectionManagerImpl : public HidDetectionManager,
-                                public device::mojom::InputDeviceManagerClient {
+                                public device::mojom::InputDeviceManagerClient,
+                                public BluetoothHidDetector::Delegate {
  public:
   using InputDeviceManagerBinder = base::RepeatingCallback<void(
       mojo::PendingReceiver<device::mojom::InputDeviceManager>)>;
@@ -29,8 +31,8 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   static void SetInputDeviceManagerBinderForTest(
       InputDeviceManagerBinder binder);
 
-  explicit HidDetectionManagerImpl(
-      device::mojom::DeviceService* device_service);
+  HidDetectionManagerImpl(device::mojom::DeviceService* device_service,
+                          BluetoothHidDetector* bluetooth_hid_detector);
   ~HidDetectionManagerImpl() override;
 
  private:
@@ -45,6 +47,9 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   // device::mojom::InputDeviceManagerClient:
   void InputDeviceAdded(device::mojom::InputDeviceInfoPtr info) override;
   void InputDeviceRemoved(const std::string& id) override;
+
+  // BluetoothHidDetector::Delegate:
+  void OnBluetoothHidStatusChanged() override;
 
   void BindToInputDeviceManagerIfNeeded();
 
@@ -77,6 +82,9 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   InputMetadata GetInputMetadata(
       const absl::optional<std::string>& device_id) const;
 
+  // Informs |bluetooth_hid_detector_| what devices are missing.
+  void SetInputDevicesStatus();
+
   std::map<std::string, device::mojom::InputDeviceInfoPtr>
       device_id_to_device_map_;
   absl::optional<std::string> connected_touchscreen_id_;
@@ -84,6 +92,7 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   absl::optional<std::string> connected_keyboard_id_;
 
   device::mojom::DeviceService* device_service_ = nullptr;
+  BluetoothHidDetector* bluetooth_hid_detector_ = nullptr;
   mojo::Remote<device::mojom::InputDeviceManager> input_device_manager_;
   mojo::AssociatedReceiver<device::mojom::InputDeviceManagerClient>
       input_device_manager_receiver_{this};

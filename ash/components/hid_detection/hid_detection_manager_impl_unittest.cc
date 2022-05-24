@@ -4,6 +4,8 @@
 
 #include "ash/components/hid_detection/hid_detection_manager_impl.h"
 
+#include "ash/components/hid_detection/bluetooth_hid_detector.h"
+#include "ash/components/hid_detection/fake_bluetooth_hid_detector.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +19,7 @@ namespace {
 using InputMetadata = HidDetectionManager::InputMetadata;
 using InputState = HidDetectionManager::InputState;
 using InputDeviceType = device::mojom::InputDeviceType;
+using InputDevicesStatus = BluetoothHidDetector::InputDevicesStatus;
 
 enum HidType {
   kMouse,
@@ -66,8 +69,9 @@ class HidDetectionManagerImplTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kOobeHidDetectionRevamp);
-    hid_detection_manager_ =
-        std::make_unique<HidDetectionManagerImpl>(/*device_service=*/nullptr);
+    fake_bluetooth_hid_detector_ = std::make_unique<FakeBluetoothHidDetector>();
+    hid_detection_manager_ = std::make_unique<HidDetectionManagerImpl>(
+        /*device_service=*/nullptr, fake_bluetooth_hid_detector_.get());
 
     HidDetectionManagerImpl::SetInputDeviceManagerBinderForTest(
         base::BindRepeating(&device::FakeInputServiceLinux::Bind,
@@ -75,6 +79,9 @@ class HidDetectionManagerImplTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (fake_bluetooth_hid_detector_->is_bluetooth_hid_detection_active())
+      StopHidDetection();
+
     HidDetectionManagerImpl::SetInputDeviceManagerBinderForTest(
         base::NullCallback());
   }
@@ -89,13 +96,21 @@ class HidDetectionManagerImplTest : public testing::Test {
   }
 
   void StartHidDetection() {
+    EXPECT_FALSE(
+        fake_bluetooth_hid_detector_->is_bluetooth_hid_detection_active());
     hid_detection_manager_->StartHidDetection(&delegate_);
     base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(
+        fake_bluetooth_hid_detector_->is_bluetooth_hid_detection_active());
   }
 
   void StopHidDetection() {
+    EXPECT_TRUE(
+        fake_bluetooth_hid_detector_->is_bluetooth_hid_detection_active());
     hid_detection_manager_->StopHidDetection();
     base::RunLoop().RunUntilIdle();
+    EXPECT_FALSE(
+        fake_bluetooth_hid_detector_->is_bluetooth_hid_detection_active());
   }
 
   size_t GetNumHidDetectionStatusChangedCalls() {
@@ -166,6 +181,12 @@ class HidDetectionManagerImplTest : public testing::Test {
               GetLastHidDetectionStatus()->keyboard_metadata.detected_hid_name);
     EXPECT_EQ(touchscreen_detected,
               GetLastHidDetectionStatus()->touchscreen_detected);
+    EXPECT_EQ(pointer_metadata.state == InputState::kSearching,
+              fake_bluetooth_hid_detector_->input_devices_status()
+                  .pointer_is_missing);
+    EXPECT_EQ(keyboard_metadata.state == InputState::kSearching,
+              fake_bluetooth_hid_detector_->input_devices_status()
+                  .keyboard_is_missing);
   }
 
  private:
@@ -177,6 +198,7 @@ class HidDetectionManagerImplTest : public testing::Test {
   size_t num_devices_created_ = 0;
 
   FakeHidDetectionManagerDelegate delegate_;
+  std::unique_ptr<FakeBluetoothHidDetector> fake_bluetooth_hid_detector_;
 
   std::unique_ptr<hid_detection::HidDetectionManager> hid_detection_manager_;
 };

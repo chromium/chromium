@@ -12,7 +12,10 @@ HidDetectionManager::HidDetectionManager() {
   DCHECK(ash::features::IsOobeHidDetectionRevampEnabled());
 }
 
-HidDetectionManager::~HidDetectionManager() = default;
+HidDetectionManager::~HidDetectionManager() {
+  DCHECK(!delegate_) << " HID detection must be stopped before "
+                     << "HidDetectionManager is destroyed";
+}
 
 void HidDetectionManager::StartHidDetection(Delegate* delegate) {
   DCHECK(!delegate_);

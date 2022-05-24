@@ -59,6 +59,7 @@ source_set("unit_tests") {
 
   deps = [
     ":hid_detection",
+    ":test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
