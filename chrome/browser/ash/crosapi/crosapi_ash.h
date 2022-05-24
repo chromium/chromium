@@ -46,6 +46,7 @@ class DeskTemplateAsh;
 class DeviceAttributesAsh;
 class DeviceSettingsAsh;
 class DlpAsh;
+class DocumentScanAsh;
 class DownloadControllerAsh;
 class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
@@ -150,6 +151,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindDigitalGoodsFactory(
       mojo::PendingReceiver<mojom::DigitalGoodsFactory> receiver) override;
   void BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) override;
+  void BindDocumentScan(
+      mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
   void BindHoldingSpaceService(
       mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) override;
   void BindDownloadController(
@@ -278,6 +281,8 @@ class CrosapiAsh : public mojom::Crosapi {
 
   DeskTemplateAsh* desk_template_ash() { return desk_template_ash_.get(); }
 
+  DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
+
   DownloadControllerAsh* download_controller_ash() {
     return download_controller_ash_.get();
   }
@@ -374,6 +379,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
   std::unique_ptr<apps::DigitalGoodsFactoryAsh> digital_goods_factory_ash_;
   std::unique_ptr<DlpAsh> dlp_ash_;
+  std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;

@@ -6870,6 +6870,7 @@ test("unit_tests") {
       "../browser/chromeos/arc/arc_external_protocol_dialog_unittest.cc",
       "../browser/chromeos/arc/open_with_menu_unittest.cc",
       "../browser/download/notification/download_item_notification_unittest.cc",
+      "../browser/extensions/api/document_scan/document_scan_api_unittest.cc",
       "../browser/media/platform_verification_chromeos_unittest.cc",
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
       "chromeos/printing/fake_local_printer_chromeos.cc",

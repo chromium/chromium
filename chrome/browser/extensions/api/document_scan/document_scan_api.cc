@@ -2,23 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/extensions/document_scan/document_scan_api.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
-#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
-#include "content/public/browser/browser_context.h"
-#include "third_party/cros_system_api/dbus/lorgnette/dbus-constants.h"
+#include "chromeos/crosapi/mojom/document_scan.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace extensions {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
-namespace api {
+namespace extensions::api {
 
 namespace {
 
@@ -49,6 +53,11 @@ DocumentScanScanFunction::DocumentScanScanFunction() = default;
 
 DocumentScanScanFunction::~DocumentScanScanFunction() = default;
 
+void DocumentScanScanFunction::SetMojoInterfaceForTesting(
+    crosapi::mojom::DocumentScan* document_scan) {
+  document_scan_ = document_scan;
+}
+
 ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
   params_ = document_scan::Scan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
@@ -56,14 +65,36 @@ ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
   if (!user_gesture())
     return RespondNow(Error(kUserGestureRequiredError));
 
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context())
-      ->GetScannerNames(
-          base::BindOnce(&DocumentScanScanFunction::OnNamesReceived, this));
+  MaybeInitializeMojoInterface();
+  if (!document_scan_)
+    return RespondNow(Error(kScanImageError));
+
+  document_scan_->GetScannerNames(
+      base::BindOnce(&DocumentScanScanFunction::OnNamesReceived, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
+void DocumentScanScanFunction::MaybeInitializeMojoInterface() {
+  // Check if SetMojoInterfaceForTesting() already initialized `document_scan_`.
+  if (document_scan_)
+    return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(crosapi::CrosapiManager::IsInitialized());
+  document_scan_ =
+      crosapi::CrosapiManager::Get()->crosapi_ash()->document_scan_ash();
+#else
+  auto* service = chromeos::LacrosService::Get();
+  if (service->IsAvailable<crosapi::mojom::DocumentScan>()) {
+    document_scan_ = service->GetRemote<crosapi::mojom::DocumentScan>().get();
+  } else {
+    LOG(ERROR) << "Document scan not available";
+  }
+#endif
+}
+
 void DocumentScanScanFunction::OnNamesReceived(
-    std::vector<std::string> scanner_names) {
+    const std::vector<std::string>& scanner_names) {
   if (scanner_names.empty()) {
     Respond(Error(kNoScannersAvailableError));
     return;
@@ -98,43 +129,30 @@ void DocumentScanScanFunction::OnNamesReceived(
     scanner_name = scanner_names[0];
   }
 
-  lorgnette::ScanSettings settings;
-  settings.set_color_mode(lorgnette::MODE_COLOR);  // Hardcoded for now.
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context())
-      ->Scan(
-          scanner_name, settings, base::NullCallback(),
-          base::BindRepeating(&DocumentScanScanFunction::OnPageReceived, this),
-          base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
-}
-
-void DocumentScanScanFunction::OnPageReceived(std::string scanned_image,
-                                              uint32_t /*page_number*/) {
-  // Take only the first page of the scan.
-  if (!scan_data_.has_value()) {
-    scan_data_ = std::move(scanned_image);
-  }
+  document_scan_->ScanFirstPage(
+      scanner_name,
+      base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 }
 
 void DocumentScanScanFunction::OnScanCompleted(
-    lorgnette::ScanFailureMode failure_mode) {
+    crosapi::mojom::ScanFailureMode failure_mode,
+    const absl::optional<std::string>& scan_data) {
   // TODO(pstew): Enlist a delegate to display received scan in the UI and
   // confirm that this scan should be sent to the caller. If this is a
   // multi-page scan, provide a means for adding additional scanned images up to
   // the requested limit.
-  if (!scan_data_.has_value() ||
-      failure_mode != lorgnette::SCAN_FAILURE_MODE_NO_FAILURE) {
+  if (!scan_data.has_value() ||
+      failure_mode != crosapi::mojom::ScanFailureMode::kNoFailure) {
     Respond(Error(kScanImageError));
     return;
   }
 
   std::string image_base64;
-  base::Base64Encode(scan_data_.value(), &image_base64);
+  base::Base64Encode(scan_data.value(), &image_base64);
   document_scan::ScanResults scan_results;
   scan_results.data_urls.push_back(kPngImageDataUrlPrefix + image_base64);
   scan_results.mime_type = kScannerImageMimeTypePng;
   Respond(ArgumentList(document_scan::Scan::Results::Create(scan_results)));
 }
 
-}  // namespace api
-
-}  // namespace extensions
+}  // namespace extensions::api

@@ -4,8 +4,8 @@
 
 // Use the <code>chrome.documentScan</code> API to discover and retrieve
 // images from attached paper document scanners.
-[platforms=("chromeos"),
-implemented_in="chrome/browser/chromeos/extensions/document_scan/document_scan_api.h"]
+[platforms=("chromeos", "lacros"),
+implemented_in="chrome/browser/extensions/api/document_scan/document_scan_api.h"]
 namespace documentScan {
   dictionary ScanOptions {
     // The MIME types that are accepted by the caller.

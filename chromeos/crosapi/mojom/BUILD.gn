@@ -28,6 +28,7 @@ mojom("mojom") {
     "device_settings_service.mojom",
     "digital_goods.mojom",
     "dlp.mojom",
+    "document_scan.mojom",
     "download_controller.mojom",
     "drive_integration_service.mojom",
     "echo_private.mojom",

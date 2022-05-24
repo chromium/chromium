@@ -5,22 +5,19 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
-#include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
-#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
-#include "chrome/browser/chromeos/extensions/document_scan/document_scan_api.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/browser_context.h"
+#include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "extensions/browser/api_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/cros_system_api/dbus/lorgnette/dbus-constants.h"
 
 namespace extensions {
 
@@ -32,11 +29,43 @@ namespace {
 constexpr char kTestScannerName[] = "Test Scanner";
 constexpr char kVirtualUSBPrinterName[] = "DavieV Virtual USB Printer (USB)";
 
-// Creates a new FakeLorgnetteScannerManager for the given |context|.
-std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
-    content::BrowserContext* context) {
-  return std::make_unique<ash::FakeLorgnetteScannerManager>();
-}
+class TestDocumentScan : public crosapi::mojom::DocumentScan {
+ public:
+  TestDocumentScan() = default;
+  TestDocumentScan(const TestDocumentScan&) = delete;
+  TestDocumentScan& operator=(const TestDocumentScan&) = delete;
+  ~TestDocumentScan() override = default;
+
+  void SetGetScannerNamesResponse(std::vector<std::string> scanner_names) {
+    scanner_names_ = std::move(scanner_names);
+  }
+
+  void SetScanResponse(
+      const absl::optional<std::vector<std::string>>& scan_data) {
+    if (scan_data.has_value())
+      DCHECK(!scan_data.value().empty());
+    scan_data_ = scan_data;
+  }
+
+  // crosapi::mojom::DocumentScan:
+  void GetScannerNames(GetScannerNamesCallback callback) override {
+    std::move(callback).Run(scanner_names_);
+  }
+  void ScanFirstPage(const std::string& scanner_name,
+                     ScanFirstPageCallback callback) override {
+    if (scan_data_.has_value()) {
+      std::move(callback).Run(crosapi::mojom::ScanFailureMode::kNoFailure,
+                              scan_data_.value()[0]);
+    } else {
+      std::move(callback).Run(crosapi::mojom::ScanFailureMode::kDeviceBusy,
+                              absl::nullopt);
+    }
+  }
+
+ private:
+  std::vector<std::string> scanner_names_;
+  absl::optional<std::vector<std::string>> scan_data_;
+};
 
 }  // namespace
 
@@ -49,16 +78,15 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
     function_->set_user_gesture(true);
-    ash::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
-        browser()->profile(),
-        base::BindRepeating(&BuildLorgnetteScannerManager));
+    function_->SetMojoInterfaceForTesting(&document_scan_);
   }
 
-  ash::FakeLorgnetteScannerManager* GetLorgnetteScannerManager() {
-    return static_cast<ash::FakeLorgnetteScannerManager*>(
-        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(
-            browser()->profile()));
+  void TearDown() override {
+    function_->SetMojoInterfaceForTesting(nullptr);
+    ExtensionApiUnittest::TearDown();
   }
+
+  TestDocumentScan& GetDocumentScan() { return document_scan_; }
 
  protected:
   std::string RunFunctionAndReturnError(const std::string& args) {
@@ -70,6 +98,7 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
   }
 
   scoped_refptr<DocumentScanScanFunction> function_;
+  TestDocumentScan document_scan_;
 };
 
 TEST_F(DocumentScanScanFunctionTest, UserGestureRequiredError) {
@@ -79,27 +108,27 @@ TEST_F(DocumentScanScanFunctionTest, UserGestureRequiredError) {
 }
 
 TEST_F(DocumentScanScanFunctionTest, NoScannersAvailableError) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({});
+  GetDocumentScan().SetGetScannerNamesResponse({});
   EXPECT_EQ("No scanners available", RunFunctionAndReturnError("[{}]"));
 }
 
 TEST_F(DocumentScanScanFunctionTest, UnsupportedMimeTypesError) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
+  GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
   EXPECT_EQ("Unsupported MIME types",
             RunFunctionAndReturnError("[{\"mimeTypes\": [\"image/tiff\"]}]"));
 }
 
 TEST_F(DocumentScanScanFunctionTest, ScanImageError) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
-  GetLorgnetteScannerManager()->SetScanResponse(absl::nullopt);
+  GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
+  GetDocumentScan().SetScanResponse(absl::nullopt);
   EXPECT_EQ("Failed to scan image",
             RunFunctionAndReturnError("[{\"mimeTypes\": [\"image/png\"]}]"));
 }
 
 TEST_F(DocumentScanScanFunctionTest, Success) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
+  GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
   const std::vector<std::string> scan_data = {"PrettyPicture"};
-  GetLorgnetteScannerManager()->SetScanResponse(scan_data);
+  GetDocumentScan().SetScanResponse(scan_data);
   std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
       function_.get(), "[{\"mimeTypes\": [\"image/png\"]}]"));
   ASSERT_NE(nullptr, result.get());
@@ -114,16 +143,16 @@ TEST_F(DocumentScanScanFunctionTest, Success) {
 }
 
 TEST_F(DocumentScanScanFunctionTest, TestingMIMETypeError) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
+  GetDocumentScan().SetGetScannerNamesResponse({kTestScannerName});
   EXPECT_EQ("Virtual USB printer unavailable",
             RunFunctionAndReturnError("[{\"mimeTypes\": [\"testing\"]}]"));
 }
 
 TEST_F(DocumentScanScanFunctionTest, TestingMIMEType) {
-  GetLorgnetteScannerManager()->SetGetScannerNamesResponse(
+  GetDocumentScan().SetGetScannerNamesResponse(
       {kTestScannerName, kVirtualUSBPrinterName});
   const std::vector<std::string> scan_data = {"PrettyPicture"};
-  GetLorgnetteScannerManager()->SetScanResponse(scan_data);
+  GetDocumentScan().SetScanResponse(scan_data);
   std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
       function_.get(), "[{\"mimeTypes\": [\"testing\"]}]"));
   ASSERT_NE(nullptr, result.get());

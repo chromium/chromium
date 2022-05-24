@@ -955,6 +955,8 @@ static_library("extensions") {
 
   if (is_chromeos) {
     sources += [
+      "api/document_scan/document_scan_api.cc",
+      "api/document_scan/document_scan_api.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.h",

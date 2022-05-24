@@ -33,6 +33,7 @@
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/digital_goods.mojom.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
+#include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
@@ -262,6 +263,9 @@ LacrosService::LacrosService()
       Crosapi::MethodMinVersions::kBindDigitalGoodsFactoryMinVersion>();
   ConstructRemote<crosapi::mojom::Dlp, &Crosapi::BindDlp,
                   Crosapi::MethodMinVersions::kBindDlpMinVersion>();
+  ConstructRemote<crosapi::mojom::DocumentScan,
+                  &crosapi::mojom::Crosapi::BindDocumentScan,
+                  Crosapi::MethodMinVersions::kBindDocumentScanMinVersion>();
   ConstructRemote<
       crosapi::mojom::DownloadController, &Crosapi::BindDownloadController,
       Crosapi::MethodMinVersions::kBindDownloadControllerMinVersion>();

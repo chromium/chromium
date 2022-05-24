@@ -74,6 +74,7 @@ if (!is_android) {
 
 if (is_chromeos) {
   schema_sources_ += [
+    "document_scan.idl",
     "echo_private.json",
     "enterprise_device_attributes.idl",
     "enterprise_networking_attributes.idl",
@@ -99,7 +100,6 @@ if (is_chromeos_ash) {
     "accessibility_private.json",
     "certificate_provider.idl",
     "certificate_provider_internal.idl",
-    "document_scan.idl",
     "enterprise_platform_keys_private.json",
     "file_manager_private.idl",
     "file_manager_private_internal.idl",
