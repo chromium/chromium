@@ -157,6 +157,11 @@ void UserNoteService::OnNoteFocused(const base::UnguessableToken& id) {
   NOTIMPLEMENTED();
 }
 
+void UserNoteService::OnNoteDeleted(const base::UnguessableToken& id) {
+  DCHECK(IsUserNotesEnabled());
+  NOTIMPLEMENTED();
+}
+
 void UserNoteService::OnNoteCreationDone(const base::UnguessableToken& id,
                                          const std::string& note_content) {
   DCHECK(IsUserNotesEnabled());

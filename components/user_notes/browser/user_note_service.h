@@ -84,6 +84,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
 
   // UserNotesUIDelegate implementation.
   void OnNoteFocused(const base::UnguessableToken& id) override;
+  void OnNoteDeleted(const base::UnguessableToken& id) override;
   void OnNoteCreationDone(const base::UnguessableToken& id,
                           const std::string& note_content) override;
   void OnNoteCreationCancelled(const base::UnguessableToken& id) override;

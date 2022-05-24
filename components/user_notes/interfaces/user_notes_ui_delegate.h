@@ -23,6 +23,9 @@ class UserNotesUIDelegate {
   // Called when a note in the UI is focused.
   virtual void OnNoteFocused(const base::UnguessableToken& id) = 0;
 
+  // Called when the user deletes a note in the UI.
+  virtual void OnNoteDeleted(const base::UnguessableToken& id) = 0;
+
   // Called when the user successfully creates a new note in the UI.
   virtual void OnNoteCreationDone(const base::UnguessableToken& id,
                                   const std::string& note_content) = 0;

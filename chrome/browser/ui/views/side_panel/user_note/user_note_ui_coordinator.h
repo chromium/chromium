@@ -32,6 +32,8 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kScrollViewElementIdForTesting);
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void OnNoteDeleted(const base::UnguessableToken& id,
+                     UserNoteView* user_note_view);
   void OnNoteCreationDone(const base::UnguessableToken& id,
                           const std::string& note_content);
   void OnNoteCreationCancelled(const base::UnguessableToken& id,

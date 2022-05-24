@@ -430,7 +430,7 @@ void UserNoteView::OnEditUserNote(int event_flags) {
 }
 
 void UserNoteView::OnDeleteUserNote(int event_flags) {
-  // TODO(cheickcisse): Delete existing note.
+  coordinator_->OnNoteDeleted(UserNoteId(), this);
 }
 
 void UserNoteView::OnLearnUserNote(int event_flags) {

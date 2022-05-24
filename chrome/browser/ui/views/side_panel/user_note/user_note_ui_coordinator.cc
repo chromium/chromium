@@ -56,6 +56,14 @@ void UserNoteUICoordinator::CreateAndRegisterEntry(
                           base::Unretained(this))));
 }
 
+void UserNoteUICoordinator::OnNoteDeleted(const base::UnguessableToken& id,
+                                          UserNoteView* user_note_view) {
+  scroll_contents_view_->RemoveChildView(user_note_view);
+  auto* service =
+      user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
+  service->OnNoteDeleted(id);
+}
+
 void UserNoteUICoordinator::OnNoteCreationDone(
     const base::UnguessableToken& id,
     const std::string& note_content) {
