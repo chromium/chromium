@@ -179,6 +179,11 @@ const base::Feature kAssistPersonalInfoName{"AssistPersonalInfoName",
 const base::Feature kAssistPersonalInfoPhoneNumber{
     "AssistPersonalInfoPhoneNumber", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the Audio Settings Page in System Settings, which allows
+// audio configuration. crbug.com/1092970.
+const base::Feature kAudioSettingsPage{"AudioSettingsPage",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Audio URL that is designed to help user debug or troubleshoot
 // common issues on ChromeOS.
 const base::Feature kAudioUrl{"AudioUrl", base::FEATURE_DISABLED_BY_DEFAULT};

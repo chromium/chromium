@@ -367,6 +367,11 @@
     "expiry_milestone": 103
   },
   {
+    "name": "audio-settings-page",
+    "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "audio-url",
     "owners": [ "enshuo", "chromeos-audio@google.com" ],
     "expiry_milestone": 104

@@ -3460,6 +3460,13 @@ const FeatureEntry kFeatureEntries[] = {
     },
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {
+        "audio-settings-page",
+        flag_descriptions::kAudioSettingsPageName,
+        flag_descriptions::kAudioSettingsPageDescription,
+        kOsCrOS,
+        FEATURE_VALUE_TYPE(ash::features::kAudioSettingsPage),
+    },
     {"disable-explicit-dma-fences",
      flag_descriptions::kDisableExplicitDmaFencesName,
      flag_descriptions::kDisableExplicitDmaFencesDescription, kOsCrOS,

@@ -2436,6 +2436,9 @@ extern const char kAshEnablePipRoundedCornersDescription[];
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 
+extern const char kAudioSettingsPageName[];
+extern const char kAudioSettingsPageDescription[];
+
 extern const char kAudioUrlName[];
 extern const char kAudioUrlDescription[];
 

@@ -55422,6 +55422,7 @@ from previous Chrome versions.
   <int value="-1515198913" label="AllowPolyDevicePairing:disabled"/>
   <int value="-1514943439" label="ash-enable-swipe-to-close-in-overview-mode"/>
   <int value="-1514611301" label="enable-data-reduction-proxy-bypass-warnings"/>
+  <int value="-1513112313" label="AudioSettingsPage:enabled"/>
   <int value="-1512656386" label="disable-new-audio-rendering-mixing-strategy"/>
   <int value="-1512555526" label="PaintPreviewShowOnStartup:enabled"/>
   <int value="-1511549741" label="verbose-logging-in-nacl"/>
@@ -57931,6 +57932,7 @@ from previous Chrome versions.
   <int value="127789400" label="PrivacyElevatedAndroid:enabled"/>
   <int value="128086566" label="D3D11VideoDecoder:enabled"/>
   <int value="128323385" label="WebUIOmniboxPopup:enabled"/>
+  <int value="129246815" label="AudioSettingsPage:disabled"/>
   <int value="129458360" label="LiteVideo:disabled"/>
   <int value="130939792" label="FilesJsModules:disabled"/>
   <int value="131881947" label="D3DVsync:enabled"/>

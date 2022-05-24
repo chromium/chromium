@@ -4258,6 +4258,11 @@ const char kAshEnableUnifiedDesktopDescription[] =
     "Enable unified desktop mode which allows a window to span multiple "
     "displays.";
 
+const char kAudioSettingsPageName[] = "Audio Settings Page";
+const char kAudioSettingsPageDescription[] =
+    "Enables the dedicated Audio Settings Page in system settings, which "
+    "allows for greater audio configuration.";
+
 const char kAudioUrlName[] = "Enable chrome://audio";
 const char kAudioUrlDescription[] =
     "Enable chrome://audio that is designed for debugging ChromeOS audio "
