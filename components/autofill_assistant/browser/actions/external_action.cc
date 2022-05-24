@@ -52,14 +52,16 @@ void ExternalAction::StartDomChecks() {
   }
 }
 
-void ExternalAction::OnExternalActionFinished(
-    ExternalActionDelegate::ActionResult result) {
+void ExternalAction::OnExternalActionFinished(const external::Result& result) {
   if (!callback_) {
     return;
   }
 
-  EndAction(result.success ? ClientStatus(ACTION_APPLIED)
-                           : ClientStatus(UNKNOWN_ACTION_STATUS));
+  *processed_action_proto_->mutable_external_action_result()
+       ->mutable_result_info() = result.result_info();
+
+  EndAction(result.success() ? ClientStatus(ACTION_APPLIED)
+                             : ClientStatus(UNKNOWN_ACTION_STATUS));
 }
 
 void ExternalAction::EndAction(const ClientStatus& status) {

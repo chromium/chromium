@@ -14,10 +14,6 @@ namespace autofill_assistant {
 // script.
 class ExternalActionDelegate {
  public:
-  struct ActionResult {
-    bool success = false;
-  };
-
   // Called when the script reaches an external action.
   // The |start_dom_checks_callback| can optionally be called to start the DOM
   // checks. This will allow interrupts to trigger (if the action itself allows
@@ -26,7 +22,8 @@ class ExternalActionDelegate {
   virtual void OnActionRequested(
       const external::Action& action_info,
       base::OnceCallback<void()> start_dom_checks_callback,
-      base::OnceCallback<void(ActionResult result)> end_action_callback) = 0;
+      base::OnceCallback<void(const external::Result& result)>
+          end_action_callback) = 0;
 };
 
 }  // namespace autofill_assistant

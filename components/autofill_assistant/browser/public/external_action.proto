@@ -10,10 +10,28 @@ option java_multiple_files = true;
 
 package autofill_assistant.external;
 
+// Defines an action to be executed by the ExternalActionDelegate.
 message Action {
+  // Integrator-specific information. This was forwarded without modifications.
   optional ActionInfo info = 1;
 }
 
+// Extended by the integrator.
 message ActionInfo {
+  extensions 100 to max;
+}
+
+// The result of the execution of |Action|
+message Result {
+  // Integrator-specific information. This will be forwarded to the backend
+  // without modification.
+  optional ResultInfo result_info = 1;
+
+  // Whether the action was successful.
+  optional bool success = 2;
+}
+
+// Extended by the integrator.
+message ResultInfo {
   extensions 100 to max;
 }

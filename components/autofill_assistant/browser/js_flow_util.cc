@@ -215,6 +215,9 @@ absl::optional<std::string> SerializeActionResult(
     case ProcessedActionProto::kSaveSubmittedPasswordResult:
       proto = &processed_action.save_submitted_password_result();
       break;
+    case ProcessedActionProto::kExternalActionResult:
+      proto = &processed_action.external_action_result();
+      break;
     case ProcessedActionProto::RESULT_DATA_NOT_SET:
       return absl::nullopt;
   }

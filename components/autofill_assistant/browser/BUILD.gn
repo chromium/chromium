@@ -27,7 +27,11 @@ proto_library("proto") {
 }
 
 proto_library("test_proto") {
-  sources = [ "parse_jspb_test.proto" ]
+  sources = [
+    "external_action_extension_test.proto",
+    "parse_jspb_test.proto",
+  ]
+  link_deps = [ "//components/autofill_assistant/browser/public:proto" ]
 }
 
 static_library("browser") {

@@ -1154,6 +1154,8 @@ message ProcessedActionProto {
     JsFlowProto.Result js_flow_result = 37;
     // Should be set as a result of SaveSubmittedPassword.
     SaveSubmittedPasswordProto.Result save_submitted_password_result = 38;
+    // Should be set as a result of an ExternalAction.
+    ExternalActionProto.Result external_action_result = 39;
   }
 
   // Reports information about navigation that happened while
@@ -3436,4 +3438,8 @@ message ExternalActionProto {
   // Whether interrupts should be executed while Autofill Assistant is in prompt
   // state.
   optional bool allow_interrupt = 3;
+
+  message Result {
+    optional external.ResultInfo result_info = 1;
+  }
 }

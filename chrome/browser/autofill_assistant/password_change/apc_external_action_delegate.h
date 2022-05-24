@@ -20,9 +20,8 @@ class ApcExternalActionDelegate
   void OnActionRequested(
       const autofill_assistant::external::Action& action_info,
       base::OnceCallback<void()> start_dom_checks_callback,
-      base::OnceCallback<
-          void(autofill_assistant::ExternalActionDelegate::ActionResult)>
-          end_action_callback) override;
+      base::OnceCallback<void(const autofill_assistant::external::Result&
+                                  result)> end_action_callback) override;
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_EXTERNAL_ACTION_DELEGATE_H_

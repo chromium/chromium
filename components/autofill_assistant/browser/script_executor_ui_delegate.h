@@ -98,7 +98,7 @@ class ScriptExecutorUiDelegate {
   virtual void ExecuteExternalAction(
       const external::Action& external_action,
       base::OnceCallback<void()> start_dom_checks_callback,
-      base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+      base::OnceCallback<void(const external::Result& result)>
           end_action_callback) = 0;
 
  protected:

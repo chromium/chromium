@@ -26,7 +26,7 @@ class ExternalAction : public Action {
   void InternalProcessAction(ProcessActionCallback callback) override;
 
   void StartDomChecks();
-  void OnExternalActionFinished(ExternalActionDelegate::ActionResult success);
+  void OnExternalActionFinished(const external::Result& success);
   void EndAction(const ClientStatus& status);
 
   ProcessActionCallback callback_;

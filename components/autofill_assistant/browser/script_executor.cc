@@ -1116,7 +1116,7 @@ bool ScriptExecutor::SupportsExternalActions() {
 void ScriptExecutor::RequestExternalAction(
     const ExternalActionProto& external_action,
     base::OnceCallback<void()> start_dom_checks_callback,
-    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+    base::OnceCallback<void(const external::Result& result)>
         end_action_callback) {
   bool prompt = external_action.allow_interrupt() ||
                 external_action.show_touchable_area();
@@ -1140,9 +1140,9 @@ void ScriptExecutor::RequestExternalAction(
 void ScriptExecutor::OnExternalActionFinished(
     const ExternalActionProto& external_action,
     const bool prompt,
-    base::OnceCallback<void(ExternalActionDelegate::ActionResult result)>
+    base::OnceCallback<void(const external::Result& result)>
         end_action_callback,
-    ExternalActionDelegate::ActionResult result) {
+    const external::Result& result) {
   if (prompt) {
     CleanUpAfterPrompt(external_action.show_touchable_area());
   }
