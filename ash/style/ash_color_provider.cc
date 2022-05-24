@@ -107,10 +107,10 @@ SkColor ResolveColor(AshColorProvider::ContentLayerType type,
 }
 
 // Notify all the other components besides the System UI to update on the color
-// mode or theme changes. E.g, Chrome browser, WebUI. And since AshColorProvider
-// is kind of NativeTheme of ChromeOS. This will notify the View::OnThemeChanged
-// to live update the colors on color mode or theme changes as well.
-void NotifyColorModeAndThemeChanges(bool is_dark_mode_enabled) {
+// mode changes. E.g, Chrome browser, WebUI. And since AshColorProvider is kind
+// of NativeTheme of ChromeOS. This will notify the View::OnThemeChanged to live
+// update the colors on color mode or theme changes as well.
+void NotifyColorModeChanges(bool is_dark_mode_enabled) {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_use_dark_colors(is_dark_mode_enabled);
   native_theme->NotifyOnNativeThemeUpdated();
@@ -184,8 +184,6 @@ SkColor AshColorProvider::GetSecondToneColor(SkColor color_of_first_tone) {
 void AshColorProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDarkModeEnabled,
                                 kDefaultDarkModeEnabled);
-  registry->RegisterBooleanPref(prefs::kColorModeThemed,
-                                kDefaultColorModeThemed);
 }
 
 void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
@@ -200,14 +198,9 @@ void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
       prefs::kDarkModeEnabled,
       base::BindRepeating(&AshColorProvider::NotifyDarkModeEnabledPrefChange,
                           base::Unretained(this)));
-  pref_change_registrar_->Add(
-      prefs::kColorModeThemed,
-      base::BindRepeating(&AshColorProvider::NotifyColorModeThemedPrefChange,
-                          base::Unretained(this)));
 
   // Immediately tell all the observers to load this user's saved preferences.
   NotifyDarkModeEnabledPrefChange();
-  NotifyColorModeThemedPrefChange();
 }
 
 void AshColorProvider::OnSessionStateChanged(
@@ -219,7 +212,6 @@ void AshColorProvider::OnSessionStateChanged(
     force_oobe_light_mode_ = false;
   }
   NotifyDarkModeEnabledPrefChange();
-  NotifyColorModeThemedPrefChange();
 }
 
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
@@ -291,12 +283,13 @@ SkColor AshColorProvider::GetInvertedContentLayerColor(
 }
 
 SkColor AshColorProvider::GetBackgroundColor() const {
-  return IsThemed() ? GetBackgroundThemedColor() : GetBackgroundDefaultColor();
+  return GetBackgroundThemedColorImpl(GetBackgroundDefaultColor(),
+                                      IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetInvertedBackgroundColor() const {
-  return IsThemed() ? GetInvertedBackgroundThemedColor()
-                    : GetInvertedBackgroundDefaultColor();
+  return GetBackgroundThemedColorImpl(GetInvertedBackgroundDefaultColor(),
+                                      !IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetBackgroundColorInMode(bool use_dark_color) const {
@@ -381,12 +374,6 @@ void AshColorProvider::OnFocusPod(const AccountId& account_id) {
           .FindBoolPath(account_id, prefs::kDarkModeEnabled);
 }
 
-bool AshColorProvider::IsThemed() const {
-  if (!active_user_pref_service_)
-    return kDefaultColorModeThemed;
-  return active_user_pref_service_->GetBoolean(prefs::kColorModeThemed);
-}
-
 void AshColorProvider::ToggleColorMode() {
   DCHECK(active_user_pref_service_);
   active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
@@ -395,16 +382,6 @@ void AshColorProvider::ToggleColorMode() {
   NotifyDarkModeEnabledPrefChange();
 
   DarkModeController::Get()->ToggledByUser();
-}
-
-void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
-  if (is_themed == IsThemed())
-    return;
-
-  DCHECK(active_user_pref_service_);
-  active_user_pref_service_->SetBoolean(prefs::kColorModeThemed, is_themed);
-  active_user_pref_service_->CommitPendingWrite();
-  NotifyColorModeThemedPrefChange();
 }
 
 SkColor AshColorProvider::GetShieldLayerColorImpl(ShieldLayerType type,
@@ -535,16 +512,6 @@ SkColor AshColorProvider::GetInvertedBackgroundDefaultColor() const {
   return GetBackgroundColorInMode(!IsDarkModeEnabled());
 }
 
-SkColor AshColorProvider::GetBackgroundThemedColor() const {
-  return GetBackgroundThemedColorImpl(GetBackgroundDefaultColor(),
-                                      IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetInvertedBackgroundThemedColor() const {
-  return GetBackgroundThemedColorImpl(GetInvertedBackgroundDefaultColor(),
-                                      !IsDarkModeEnabled());
-}
-
 SkColor AshColorProvider::GetBackgroundThemedColorImpl(
     SkColor default_color,
     bool use_dark_color) const {
@@ -578,15 +545,7 @@ void AshColorProvider::NotifyDarkModeEnabledPrefChange() {
   for (auto& observer : observers_)
     observer.OnColorModeChanged(is_enabled);
 
-  NotifyColorModeAndThemeChanges(IsDarkModeEnabled());
-}
-
-void AshColorProvider::NotifyColorModeThemedPrefChange() {
-  const bool is_themed = IsThemed();
-  for (auto& observer : observers_)
-    observer.OnColorModeThemed(is_themed);
-
-  NotifyColorModeAndThemeChanges(IsDarkModeEnabled());
+  NotifyColorModeChanges(IsDarkModeEnabled());
 }
 
 base::ScopedClosureRunner AshColorProvider::GetNotifyOnDarkModeChangeClosure() {

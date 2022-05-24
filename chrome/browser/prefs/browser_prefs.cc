@@ -745,6 +745,11 @@ const char kAccessCodeCastDiscoveredNetworks[] =
 extern const char kAccountIdMigrationState[] = "account_id_migration_state";
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 05/2022.
+const char kColorModeThemed[] = "ash.dark_mode.color_mode_themed";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -973,6 +978,10 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kAccountIdMigrationState, 0);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kColorModeThemed, true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -1906,6 +1915,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 05/2022
   profile_prefs->ClearPref(kAccountIdMigrationState);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 05/2022.
+  profile_prefs->ClearPref(kColorModeThemed);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

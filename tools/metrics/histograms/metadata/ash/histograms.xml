@@ -1370,6 +1370,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.DarkTheme.Settings.IsDarkModeEnabled" enum="Boolean"
     expires_after="2023-03-01">
+  <obsolete>
+    Deprecated May 2022, now that it's no longer needed.
+  </obsolete>
   <owner>minch@chromium.org</owner>
   <owner>changmar@chromium.org</owner>
   <summary>
@@ -1381,6 +1384,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.DarkTheme.Settings.IsThemed" enum="Boolean"
     expires_after="2023-03-01">
+  <obsolete>
+    Deprecated May 2022, now that it's no longer needed.
+  </obsolete>
   <owner>minch@chromium.org</owner>
   <owner>changmar@chromium.org</owner>
   <summary>

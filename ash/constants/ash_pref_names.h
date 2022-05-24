@@ -239,7 +239,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kMessageCenterLockScreenModeHideSensitive[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAmbientColorEnabled[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kColorModeThemed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDarkModeEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDarkLightModeNudge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDarkModeScheduleType[];

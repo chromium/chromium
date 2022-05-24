@@ -481,11 +481,6 @@ const char kMessageCenterLockScreenModeHideSensitive[] = "hideSensitive";
 // A boolean pref storing the enabled status of the ambient color feature.
 const char kAmbientColorEnabled[] = "ash.ambient_color.enabled";
 
-// A boolean pref used when dark light mode feature is enabled to indicate
-// whether the color mode is themed. If true, the background color will be
-// calculated based on extracted wallpaper color.
-const char kColorModeThemed[] = "ash.dark_mode.color_mode_themed";
-
 // A boolean pref that indicates whether dark mode is enabled.
 const char kDarkModeEnabled[] = "ash.dark_mode.enabled";
 

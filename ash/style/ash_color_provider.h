@@ -96,15 +96,8 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Gets the background color in the desired color mode dark/light.
   SkColor GetBackgroundColorInMode(bool use_dark_color) const;
 
-  // Whether the system color mode is themed, by default is true. If true, the
-  // background color will be calculated based on extracted wallpaper color.
-  bool IsThemed() const;
-
   // Toggles pref |kDarkModeEnabled|.
   void ToggleColorMode();
-
-  // Updates pref |kColorModeThemed| to |is_themed|.
-  void UpdateColorModeThemed(bool is_themed);
 
  private:
   friend class ScopedLightModeAsDefault;
@@ -126,10 +119,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Gets the background default color based on the current inverted color mode.
   SkColor GetInvertedBackgroundDefaultColor() const;
 
-  // Gets the background themed color based on the current color mode.
-  SkColor GetBackgroundThemedColor() const;
-  // Gets the background themed color based on the current inverted color mode.
-  SkColor GetInvertedBackgroundThemedColor() const;
   // Gets the background themed color that's calculated based on the color
   // extracted from wallpaper. For dark mode, it will be dark muted wallpaper
   // prominent color + SK_ColorBLACK 50%. For light mode, it will be light
@@ -140,9 +129,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
 
   // Notifies all the observers on |kDarkModeEnabled|'s change.
   void NotifyDarkModeEnabledPrefChange();
-
-  // Notifies all the observers on |kColorModeThemed|'s change.
-  void NotifyColorModeThemedPrefChange();
 
   // Returns a closure which calls `NotifyIfDarkModeChanged` if the dark mode
   // changed between creation and getting out of scope.
