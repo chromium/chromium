@@ -18,6 +18,7 @@ Note: This is a jinja2 template, processed at build time into the final manifest
 
     <!-- TODO(torne): we should specify an icon, roundIcon, and label from resources. -->
     <application
+        android:hasCode="false"
         android:label="{{ application_label|default('Trichrome Library') }}"
         android:icon="@drawable/icon_webview"
         android:multiArch="true"
