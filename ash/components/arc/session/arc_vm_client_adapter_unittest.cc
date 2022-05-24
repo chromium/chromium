@@ -27,6 +27,7 @@
 #include "ash/components/arc/test/fake_app_host.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -2289,6 +2290,37 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_EnableArcNearbyShare_Disabled) {
   EXPECT_FALSE(boot_notification_server()->received_data().empty());
   EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
                              "ro.boot.enable_arc_nearby_share=0"));
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       StartArc_EnableConsumerAutoUpdateToggle_Default) {
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.enable_consumer_auto_update_toggle());
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       StartArc_EnableConsumerAutoUpdateToggle_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kConsumerAutoUpdateToggleAllowed);
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.enable_consumer_auto_update_toggle());
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       StartArc_EnableConsumerAutoUpdateToggle_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ash::features::kConsumerAutoUpdateToggleAllowed);
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.enable_consumer_auto_update_toggle());
 }
 
 // Test that StartArcVmRequest has no androidboot.arcvm.logd.size field

@@ -26,6 +26,7 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/session/file_system_status.h"
 #include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -499,6 +500,9 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   } else {
     VLOG(1) << "Use BalanceAvailableBalloonPolicy";
   }
+
+  request.set_enable_consumer_auto_update_toggle(base::FeatureList::IsEnabled(
+      ash::features::kConsumerAutoUpdateToggleAllowed));
 
   return request;
 }
