@@ -21,7 +21,6 @@
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/private_membership/src/membership_response_map.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 namespace enterprise_management {

@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
-#include "third_party/private_membership/src/membership_response_map.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 #include "third_party/shell-encryption/src/statusor.h"

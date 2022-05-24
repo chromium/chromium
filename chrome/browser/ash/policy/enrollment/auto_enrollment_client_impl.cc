@@ -32,7 +32,6 @@
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/private_membership/src/membership_response_map.h"
 #include "url/gurl.h"
 
 namespace policy {
