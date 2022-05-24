@@ -20,6 +20,8 @@
 #include "components/user_notes/interfaces/user_notes_ui_delegate.h"
 #include "components/user_notes/model/user_note.h"
 
+class UserNoteUICoordinatorTest;
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -101,7 +103,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   friend class UserNoteBaseTest;
   friend class UserNoteInstanceTest;
   friend class UserNoteUtilsTest;
-  friend class UserNoteUICoordinatorTest;
+  friend class ::UserNoteUICoordinatorTest;
 
   // Source of truth for the in-memory note models. Any note currently being
   // displayed in a tab is stored in this data structure. Each entry also

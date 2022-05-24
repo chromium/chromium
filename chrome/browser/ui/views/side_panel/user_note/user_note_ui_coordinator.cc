@@ -19,6 +19,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 // Compares two UserNoteInstances by their rect's origin, which represents their
@@ -34,6 +35,9 @@ bool UserNoteComparator(const user_notes::UserNoteInstance* first,
 }
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UserNoteUICoordinator,
+                                      kScrollViewElementIdForTesting);
 
 UserNoteUICoordinator::UserNoteUICoordinator(Browser* browser)
     : BrowserUserData<UserNoteUICoordinator>(*browser), browser_(browser) {
@@ -179,14 +183,14 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
   // [| ...                     |]
 
   auto root_view = std::make_unique<views::View>();
-  root_view->SetID(kUserNoteUIViewId);
   root_view->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto* scroll_view =
       root_view->AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->SetID(kUserNoteScrollViewId);
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view->SetProperty(views::kElementIdentifierKey,
+                           kScrollViewElementIdForTesting);
   // Setting clip height is necessary to make ScrollView take into account its
   // contents' size. Using zeroes doesn't prevent it from scrolling and sizing
   // correctly.
@@ -194,7 +198,6 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
 
   scroll_contents_view_ =
       scroll_view->SetContents(std::make_unique<views::View>());
-  scroll_contents_view_->SetID(kUserNoteScrollContentsViewId);
 
   constexpr int edge_margin = 16;
   constexpr int vertical_padding = 16;

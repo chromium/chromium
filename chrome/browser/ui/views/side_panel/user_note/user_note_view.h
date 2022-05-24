@@ -55,14 +55,9 @@ class UserNoteView : public views::View {
   UserNoteView& operator=(const UserNoteView&) = delete;
   ~UserNoteView() override;
 
-  const base::UnguessableToken& UserNoteId() {
-    return user_note_instance_ != nullptr ? user_note_instance_->model().id()
-                                          : base::UnguessableToken::Null();
-  }
+  const base::UnguessableToken& UserNoteId() { return id_; }
 
-  const gfx::Rect& user_note_rect() const {
-    return user_note_instance_->rect();
-  }
+  const gfx::Rect& user_note_rect() const { return rect_; }
 
  private:
   void CreateOrUpdateNoteView(UserNoteView::State state,
@@ -82,14 +77,16 @@ class UserNoteView : public views::View {
                                  const std::string quote);
 
   raw_ptr<user_notes::UserNoteInstance> user_note_instance_;
-  raw_ptr<views::Textarea> text_area_;
-  raw_ptr<views::View> button_container_;
-  raw_ptr<views::Label> user_note_body_;
-  raw_ptr<views::View> user_note_header_;
-  raw_ptr<views::View> user_note_quote_;
-  raw_ptr<UserNoteUICoordinator> coordinator_;
+  raw_ptr<views::Textarea> text_area_ = nullptr;
+  raw_ptr<views::View> button_container_ = nullptr;
+  raw_ptr<views::Label> user_note_body_ = nullptr;
+  raw_ptr<views::View> user_note_header_ = nullptr;
+  raw_ptr<views::View> user_note_quote_ = nullptr;
+  raw_ptr<UserNoteUICoordinator> coordinator_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<ui::MenuModel> dialog_model_;
+  base::UnguessableToken id_;
+  gfx::Rect rect_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_VIEW_H_

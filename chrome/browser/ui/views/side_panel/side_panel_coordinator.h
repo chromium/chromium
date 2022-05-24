@@ -52,6 +52,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   friend class SidePanelCoordinatorTest;
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
                            ShowEmptyUserNoteSidePanel);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
+                           PopulateUserNoteSidePanel);
 
   views::View* GetContentView();
   SidePanelEntry* GetEntryForId(SidePanelEntry::Id entry_id);

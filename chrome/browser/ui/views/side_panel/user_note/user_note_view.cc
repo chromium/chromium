@@ -226,7 +226,10 @@ std::u16string ConvertDate(base::Time time) {
 UserNoteView::UserNoteView(UserNoteUICoordinator* coordinator,
                            user_notes::UserNoteInstance* user_note_instance,
                            UserNoteView::State state)
-    : user_note_instance_(user_note_instance), coordinator_(coordinator) {
+    : user_note_instance_(user_note_instance),
+      coordinator_(coordinator),
+      id_(user_note_instance->model().id()),
+      rect_(user_note_instance->rect()) {
   // Creates an empty view if the user note instance or or user note model is
   // null.
   if (user_note_instance_ == nullptr)

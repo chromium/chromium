@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
 
 namespace user_notes {
@@ -27,9 +28,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   UserNoteUICoordinator& operator=(const UserNoteUICoordinator&) = delete;
   ~UserNoteUICoordinator() override;
 
-  static constexpr int kUserNoteUIViewId = 172;
-  static constexpr int kUserNoteScrollViewId = 173;
-  static constexpr int kUserNoteScrollContentsViewId = 174;
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kScrollViewElementIdForTesting);
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
   void OnNoteCreationDone(const base::UnguessableToken& id,
