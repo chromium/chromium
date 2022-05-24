@@ -14,6 +14,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -301,8 +302,12 @@ class SafeBrowsingUI : public content::WebUIController {
   ~SafeBrowsingUI() override;
 };
 
-class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
+class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate,
+                           public PingManager::WebUIDelegate {
  public:
+  WebUIInfoSingleton();
+  ~WebUIInfoSingleton() override;
+
   static WebUIInfoSingleton* GetInstance();
 
   WebUIInfoSingleton(const WebUIInfoSingleton&) = delete;
@@ -352,12 +357,16 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   // Clear the list of the received ClientPhishingResponse messages.
   void ClearClientPhishingResponsesReceived();
 
+  // PingManager::WebUIDelegate:
   // Add the new message in |csbrrs_sent_| and send it to all the open
   // chrome://safe-browsing tabs.
-  void AddToCSBRRsSent(std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr);
+  void AddToCSBRRsSent(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr) override;
 
   // Clear the list of the sent ClientSafeBrowsingReportRequest messages.
   void ClearCSBRRsSent();
+
+  void SetOnCSBRRLoggedCallbackForTesting(base::OnceClosure on_done);
 
   // Add the new message in |hit_reports_sent_| and send it to all the open
   // chrome://safe-browsing tabs.
@@ -576,9 +585,6 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   void ClearListenerForTesting();
 
  private:
-  WebUIInfoSingleton();
-  ~WebUIInfoSingleton() override;
-
   void MaybeClearData();
 
   friend struct base::DefaultSingletonTraits<WebUIInfoSingleton>;
@@ -620,6 +626,9 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   // "ClientSafeBrowsingReportRequest" cannot be const, due to being used by
   // functions that call AllowJavascript(), which is not marked const.
   std::vector<std::unique_ptr<ClientSafeBrowsingReportRequest>> csbrrs_sent_;
+
+  // Gets fired at the end of the AddToCSBRRsSent function. Only used for tests.
+  base::OnceClosure on_csbrr_logged_for_testing_;
 
   // List of HitReports sent since since the oldest currently open
   // chrome://safe-browsing tab was opened.

@@ -7,7 +7,9 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 
 namespace safe_browsing {
 
@@ -40,7 +42,9 @@ KeyedService* AwPingManagerFactory::BuildServiceInstanceFor(
       safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
                                          /*disable_auto_update=*/false),
       GetURLLoaderFactory(), /*token_fetcher=*/nullptr,
-      get_should_fetch_access_token);
+      get_should_fetch_access_token,
+      safe_browsing::WebUIInfoSingleton::GetInstance(),
+      content::GetUIThreadTaskRunner({}));
 }
 
 std::string AwPingManagerFactory::GetProtocolConfigClientName() const {

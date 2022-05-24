@@ -60,6 +60,8 @@
 using download::DownloadItem;
 using MixedContentStatus = download::DownloadItem::MixedContentStatus;
 using safe_browsing::DownloadFileType;
+using ReportThreatDetailsResult =
+    safe_browsing::PingManager::ReportThreatDetailsResult;
 
 namespace {
 
@@ -794,24 +796,10 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
                 download_);
         if (!token.empty())
           report->set_token(token);
-        std::string serialized_report;
-        if (report->SerializeToString(&serialized_report)) {
-          sb_service->SendSerializedDownloadReport(profile(),
-                                                   serialized_report);
 
-          // The following is to log this ClientSafeBrowsingReportRequest on any
-          // open
-          // chrome://safe-browsing pages.
-          content::GetUIThreadTaskRunner({})->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  &safe_browsing::WebUIInfoSingleton::AddToCSBRRsSent,
-                  base::Unretained(
-                      safe_browsing::WebUIInfoSingleton::GetInstance()),
-                  std::move(report)));
-        } else {
-          DCHECK(false) << "Unable to serialize the download warning report.";
-        }
+        ReportThreatDetailsResult result =
+            sb_service->SendDownloadReport(profile(), std::move(report));
+        DCHECK(result == ReportThreatDetailsResult::SUCCESS);
       }
 #endif
       download_->ValidateDangerousDownload();

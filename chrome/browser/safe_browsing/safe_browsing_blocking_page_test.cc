@@ -272,8 +272,12 @@ class FakeSafeBrowsingUIManager : public TestSafeBrowsingUIManager {
       delete;
 
   // Overrides SafeBrowsingUIManager
-  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
-                                   const std::string& serialized) override {
+  void SendThreatDetails(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override {
+    std::string serialized;
+    report->SerializeToString(&serialized);
+
     // Notify the UI thread that we got a report.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
