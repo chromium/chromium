@@ -6,12 +6,17 @@
 
 #include <windows.h>
 
+// sddl.h must come after windows.h.
+#include <sddl.h>
+
 #include <algorithm>
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/win/scoped_localalloc.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace browser_util {
@@ -46,7 +51,32 @@ bool IsBrowserAlreadyRunning() {
   nt_dir_name = L"Global\\" + nt_dir_name;
   if (handle != NULL)
     ::CloseHandle(handle);
-  handle = ::CreateEventW(NULL, TRUE, TRUE, nt_dir_name.c_str());
+
+  // For this to work for both user and system installs, we need the event to be
+  // accessible to all interactive users so that we can correctly detect any
+  // instance they are running. Otherwise, we can end up executing pending
+  // upgrade actions while there are instances running, resulting in reliability
+  // issues for one of the users.
+  // Security Descriptor for the global browser running event:
+  //   SYSTEM : EVENT_ALL_ACCESS
+  //   Interactive User : EVENT_ALL_ACCESS
+  static constexpr wchar_t kAllAccessDescriptor[] =
+      L"D:P(A;;0x1F0003;;;SY)(A;;0x1F0003;;;IU)";
+  SECURITY_ATTRIBUTES attributes = {sizeof(SECURITY_ATTRIBUTES), nullptr,
+                                    FALSE};
+  if (!::ConvertStringSecurityDescriptorToSecurityDescriptor(
+          kAllAccessDescriptor, SDDL_REVISION_1,
+          &attributes.lpSecurityDescriptor, nullptr)) {
+    // If this fails, it usually means the security descriptor string is
+    // incorrect. As a fallback, create the event with the default descriptor
+    // by setting it to nullptr. This works for single user devices which is the
+    // most common case for Windows.
+    DPCHECK(false);
+    attributes.lpSecurityDescriptor = nullptr;
+  }
+  base::win::ScopedLocalAlloc scoped_sd(attributes.lpSecurityDescriptor);
+
+  handle = ::CreateEventW(&attributes, TRUE, TRUE, nt_dir_name.c_str());
   int error = ::GetLastError();
   return (error == ERROR_ALREADY_EXISTS || error == ERROR_ACCESS_DENIED);
 }
