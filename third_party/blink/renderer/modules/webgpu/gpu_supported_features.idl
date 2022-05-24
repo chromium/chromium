@@ -13,7 +13,8 @@ enum GPUFeatureName {
     "shader-float16",
     "depth-clamping",
     "depth24unorm-stencil8",
-    "depth32float-stencil8"
+    "depth32float-stencil8",
+    "indirect-first-instance"
 };
 
 [
