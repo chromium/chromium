@@ -444,4 +444,4 @@ export class Background extends ChromeVoxState {
 }
 
 InstanceChecker.closeExtraInstances();
-new Background();
+ChromeVoxState.instance = new Background();

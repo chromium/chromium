@@ -30,38 +30,11 @@ ChromeVoxStateObserver = class {
   onCurrentRangeChanged(range, opt_fromEditing) {}
 };
 
-/**
- * ChromeVox state object.
- * @constructor
- */
-ChromeVoxState = function() {
-  if (ChromeVoxState.instance) {
-    throw 'Trying to create two instances of singleton ChromeVoxState.';
-  }
-  ChromeVoxState.instance = this;
-};
-
-/**
- * @type {ChromeVoxState}
- */
-ChromeVoxState.instance;
-
-/**
- * Holds the un-composite tts object.
- * @type {Object}
- */
-ChromeVoxState.backgroundTts;
-
-/**
- * @type {boolean}
- */
-ChromeVoxState.isReadingContinuously;
-
-ChromeVoxState.prototype = {
+ChromeVoxState = class {
   /** @return {cursors.Range} */
   get currentRange() {
     return this.getCurrentRange();
-  },
+  }
 
   /**
    * @return {cursors.Range} The current range.
@@ -69,33 +42,38 @@ ChromeVoxState.prototype = {
    */
   getCurrentRange() {
     return null;
-  },
+  }
 
   /** @return {cursors.Range} */
   get pageSel() {
     return null;
-  },
+  }
 
   /**
    * Return the current range, but focus recovery is not applied to it.
    * @return {cursors.Range} The current range.
+   * @abstract
    */
-  getCurrentRangeWithoutRecovery: goog.abstractMethod,
+  getCurrentRangeWithoutRecovery() {}
 
   /**
    * @param {cursors.Range} newRange The new range.
    * @param {boolean=} opt_fromEditing
+   * @abstract
    */
-  setCurrentRange: goog.abstractMethod,
+  setCurrentRange(newRange, opt_fromEditing) {}
 
-  /** @param {cursors.Range} */
-  set pageSel(newPageSel) {},
+  /**
+   * @param {cursors.Range}
+   * @abstract
+   */
+  set pageSel(newPageSel) {}
 
   /** @return {number} */
-  get typingEcho() {},
+  get typingEcho() {}
 
   /** @param {number} newTypingEcho */
-  set typingEcho(newTypingEcho) {},
+  set typingEcho(newTypingEcho) {}
 
   /**
    * Navigate to the given range - it both sets the range and outputs it.
@@ -104,27 +82,44 @@ ChromeVoxState.prototype = {
    * @param {Object=} opt_speechProps Speech properties.
    * @param {boolean=} opt_skipSettingSelection If true, does not set
    *     the selection, otherwise it does by default.
+   * @abstract
    */
-  navigateToRange: goog.abstractMethod,
+  navigateToRange(range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
+  }
 
   /**
    * Restores the last valid ChromeVox range.
+   * @abstract
    */
-  restoreLastValidRangeIfNeeded: goog.abstractMethod,
+  restoreLastValidRangeIfNeeded() {}
 
   /**
    * Handles a braille command.
    * @param {!BrailleKeyEvent} evt
    * @param {!NavBraille} content
    * @return {boolean} True if evt was processed.
+   * @abstract
    */
-  onBrailleKeyEvent: goog.abstractMethod,
+  onBrailleKeyEvent(evt, content) {}
 
   /**
    * Forces the reading of the next change to the clipboard.
+   * @abstract
    */
-  readNextClipboardDataChange: goog.abstractMethod,
+  readNextClipboardDataChange() {}
 };
+
+/** @type {ChromeVoxState} */
+ChromeVoxState.instance;
+
+/**
+ * Holds the un-composite tts object.
+ * @type {Object}
+ */
+ChromeVoxState.backgroundTts;
+
+/** @type {boolean} */
+ChromeVoxState.isReadingContinuously;
 
 /** @type {!Array<ChromeVoxStateObserver>} */
 ChromeVoxState.observers = [];
