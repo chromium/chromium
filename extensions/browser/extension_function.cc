@@ -688,15 +688,6 @@ ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
   return ResponseValue(new ArgumentListResponseValue(this, std::move(list)));
 }
 
-ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
-    std::unique_ptr<base::ListValue> args) {
-  base::Value::List new_args;
-  if (args)
-    new_args = std::move(args->GetList());
-  return ResponseValue(
-      new ArgumentListResponseValue(this, std::move(new_args)));
-}
-
 ExtensionFunction::ResponseValue ExtensionFunction::Error(std::string error) {
   return ResponseValue(new ErrorResponseValue(this, std::move(error)));
 }

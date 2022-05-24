@@ -250,8 +250,8 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
     client_certs.Append(base::Value(std::move(cert)));
   }
 
-  auto results = std::make_unique<base::ListValue>();
-  results->Append(base::Value(std::move(client_certs)));
+  std::vector<base::Value> results;
+  results.emplace_back(std::move(client_certs));
   Respond(ArgumentList(std::move(results)));
 }
 
