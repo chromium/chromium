@@ -5,11 +5,11 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc {
 
@@ -24,8 +24,10 @@ struct BASE_EXPORT PartitionAllocator {
 
   void init(PartitionOptions);
 
-  ALWAYS_INLINE PartitionRoot<thread_safe>* root() { return &partition_root_; }
-  ALWAYS_INLINE const PartitionRoot<thread_safe>* root() const {
+  PA_ALWAYS_INLINE PartitionRoot<thread_safe>* root() {
+    return &partition_root_;
+  }
+  PA_ALWAYS_INLINE const PartitionRoot<thread_safe>* root() const {
     return &partition_root_;
   }
 

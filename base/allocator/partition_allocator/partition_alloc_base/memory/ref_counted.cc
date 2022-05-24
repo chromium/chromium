@@ -29,7 +29,7 @@ RefCountedThreadSafeBase::~RefCountedThreadSafeBase() {
 //
 // In an attempt to avoid binary bloat (from inlining the `CHECK`), we define
 // these functions out-of-line. However, compilers are wily. Further testing may
-// show that `NOINLINE` helps or hurts.
+// show that `PA_NOINLINE` helps or hurts.
 //
 #if !defined(ARCH_CPU_X86_FAMILY)
 bool RefCountedThreadSafeBase::Release() const {

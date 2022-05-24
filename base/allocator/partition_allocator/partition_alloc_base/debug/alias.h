@@ -44,10 +44,10 @@ namespace partition_alloc::internal::base::debug {
 // the stack so we can use nullptr. The call to base::debug::Alias() needs to
 // happen after the call that is suspected to be tail called. Note: This
 // technique will prevent tail calls at the specific call site only. To prevent
-// them for all invocations of a function look at NOT_TAIL_CALLED.
+// them for all invocations of a function look at PA_NOT_TAIL_CALLED.
 //
 // Example usage:
-//   NOINLINE void Foo(){
+//   PA_NOINLINE void Foo(){
 //     ... code ...
 //
 //     Bar();
@@ -62,7 +62,7 @@ namespace partition_alloc::internal::base::debug {
 // base::debug::Alias();
 //
 // Example usage:
-//   NOINLINE void Foo(){
+//   PA_NOINLINE void Foo(){
 //     PA_NO_CODE_FOLDING();
 //     Bar();
 //   }

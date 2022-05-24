@@ -10,6 +10,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/dcheck_is_on.h"
@@ -31,14 +32,15 @@
 // For official build discard log strings to reduce binary bloat.
 #if defined(OFFICIAL_BUILD) && defined(NDEBUG)
 // See base/check.h for implementation details.
-#define PA_CHECK(condition) \
-  UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() : PA_EAT_CHECK_STREAM_PARAMS()
+#define PA_CHECK(condition)                        \
+  PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
+                            : PA_EAT_CHECK_STREAM_PARAMS()
 #else
 // PartitionAlloc uses async-signal-safe RawCheck() for error reporting.
 // Async-signal-safe functions are guaranteed to not allocate as otherwise they
 // could operate with inconsistent allocator state.
 #define PA_CHECK(condition)                                                \
-  UNLIKELY(!(condition))                                                   \
+  PA_UNLIKELY(!(condition))                                                \
   ? ::partition_alloc::internal::logging::RawCheck(                        \
         __FILE__ "(" PA_STRINGIFY(__LINE__) ") Check failed: " #condition) \
   : PA_EAT_CHECK_STREAM_PARAMS()

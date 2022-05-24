@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "base/dcheck_is_on.h"
@@ -25,7 +26,7 @@ namespace partition_alloc::internal {
 // This is a `memset` that resists being optimized away. Adapted from
 // boringssl/src/crypto/mem.c. (Copying and pasting is bad, but //base can't
 // depend on //third_party, and this is small enough.)
-ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
+PA_ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
   memset(ptr, value, size);
 
   // As best as we can tell, this is sufficient to break any optimisations that
@@ -35,7 +36,7 @@ ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
 }
 
 // Used to memset() memory for debugging purposes only.
-ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
+PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   // Only set the first 512kiB of the allocation. This is enough to detect uses
   // of uininitialized / freed memory, and makes tests run significantly
   // faster. Note that for direct-mapped allocations, memory is decomitted at
@@ -48,9 +49,9 @@ ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
 // invoke `RandomValue` too often, because we call this function in a hot spot
 // (`Free`), and `RandomValue` incurs the cost of atomics.
 #if !DCHECK_IS_ON()
-ALWAYS_INLINE bool RandomPeriod() {
+PA_ALWAYS_INLINE bool RandomPeriod() {
   static thread_local uint8_t counter = 0;
-  if (UNLIKELY(counter == 0)) {
+  if (PA_UNLIKELY(counter == 0)) {
     // It's OK to truncate this value.
     counter = static_cast<uint8_t>(::partition_alloc::internal::RandomValue());
   }

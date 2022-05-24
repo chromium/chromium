@@ -23,6 +23,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
@@ -464,11 +465,11 @@ class PartitionAllocTest : public testing::TestWithParam<bool> {
 
   void RunRefCountReallocSubtest(size_t orig_size, size_t new_size);
 
-  NOINLINE PA_MALLOC_FN void* Alloc(size_t size) {
+  PA_NOINLINE PA_MALLOC_FN void* Alloc(size_t size) {
     return allocator.root()->Alloc(size, "");
   }
 
-  NOINLINE void Free(void* ptr) { allocator.root()->Free(ptr); }
+  PA_NOINLINE void Free(void* ptr) { allocator.root()->Free(ptr); }
 
   PartitionAllocator<internal::ThreadSafe> allocator;
   PartitionAllocator<internal::ThreadSafe> aligned_allocator;
@@ -4169,7 +4170,7 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 
 namespace {
 
-NOINLINE void FreeForTest(void* data) {
+PA_NOINLINE void FreeForTest(void* data) {
   free(data);
 }
 
@@ -4190,7 +4191,7 @@ class ThreadDelegateForPreforkHandler
 
       // A simple malloc() / free() pair can be discarded by the compiler (and
       // is), making the test fail. It is sufficient to make |FreeForTest()| a
-      // NOINLINE function for the call to not be eliminated, but it is
+      // PA_NOINLINE function for the call to not be eliminated, but it is
       // required.
       FreeForTest(ptr);
     }

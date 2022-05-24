@@ -7,9 +7,9 @@
 
 #include <type_traits>
 
-#include "base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 
-#if !HAS_BUILTIN(__builtin_bit_cast)
+#if !PA_HAS_BUILTIN(__builtin_bit_cast)
 #include <string.h>  // memcpy
 #endif
 
@@ -19,14 +19,14 @@ namespace partition_alloc::internal::base {
 // It morally does what `*reinterpret_cast<Dest*>(&source)` does, but the
 // cast/deref pair is undefined behavior, while bit_cast<>() isn't.
 template <class Dest, class Source>
-#if HAS_BUILTIN(__builtin_bit_cast)
+#if PA_HAS_BUILTIN(__builtin_bit_cast)
 constexpr
 #else
 inline
 #endif
     Dest
     bit_cast(const Source& source) {
-#if HAS_BUILTIN(__builtin_bit_cast)
+#if PA_HAS_BUILTIN(__builtin_bit_cast)
   // TODO(thakis): Keep only this codepath once nacl is gone or updated.
   return __builtin_bit_cast(Dest, source);
 #else
