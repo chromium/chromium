@@ -134,9 +134,11 @@ LogStore = class {
     this.shouldSkipOutput_ = newValue;
   }
 
-  /**
-   * @return {LogStore}
-   */
+  static init() {
+    LogStore.getInstance();
+  }
+
+  /** @return {!LogStore} */
   static getInstance() {
     if (!LogStore.instance) {
       LogStore.instance = new LogStore();

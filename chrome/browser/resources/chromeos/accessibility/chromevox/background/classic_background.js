@@ -27,8 +27,6 @@ export class ChromeVoxBackground {
     consoleTts.setEnabled(
         ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] === 'true');
 
-    LogStore.getInstance();
-
     /**
      * Chrome's actual TTS which knows and cares about pitch, volume, etc.
      * @type {TtsBackground}

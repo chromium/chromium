@@ -85,6 +85,7 @@ export class Background extends ChromeVoxState {
     JaPhoneticData.init(JaPhoneticMap.MAP);
     LiveRegions.init(this);
     LocaleOutputHelper.init();
+    LogStore.init();
     MediaAutomationHandler.init();
     PageLoadSoundHandler.init();
     PanelBackground.init();
