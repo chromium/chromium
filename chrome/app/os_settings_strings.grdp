@@ -723,10 +723,10 @@
     Disabled
   </message>
   <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB" desc="Title for the link to open personalization hub.">
-    Personalize your device
+    Set your wallpaper &amp; style
   </message>
   <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
-    Customize wallpaper, avatar, screensaver and more
+    Personalize wallpaper, screen saver, accent colors, and more
   </message>
 
   <!-- Ambient Mode Page -->
