@@ -247,18 +247,16 @@ AccountInfo AccountTrackerService::FindAccountInfoByEmail(
   return AccountInfo();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 AccountTrackerService::AccountIdMigrationState
 AccountTrackerService::GetMigrationState() const {
   return GetMigrationState(pref_service_);
 }
 
 void AccountTrackerService::SetMigrationDone() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   SetMigrationState(MIGRATION_DONE);
-#else
-  NOTREACHED() << "Migration cannot be in progress on this platform";
-#endif
 }
+#endif
 
 void AccountTrackerService::NotifyAccountUpdated(
     const AccountInfo& account_info) {
@@ -491,19 +489,14 @@ void AccountTrackerService::SetMigrationState(AccountIdMigrationState state) {
   DCHECK(state != MIGRATION_DONE || AreAllAccountsMigrated());
   pref_service_->SetInteger(prefs::kAccountIdMigrationState, state);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 AccountTrackerService::AccountIdMigrationState
 AccountTrackerService::GetMigrationState(const PrefService* pref_service) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return static_cast<AccountTrackerService::AccountIdMigrationState>(
       pref_service->GetInteger(prefs::kAccountIdMigrationState));
-#else
-  // Migration is now done on all other platforms
-  return AccountIdMigrationState::MIGRATION_DONE;
-#endif
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::FilePath AccountTrackerService::GetImagePathFor(
     const CoreAccountId& account_id) {
@@ -699,12 +692,12 @@ void AccountTrackerService::LoadFromPrefs() {
     }
   }
   DCHECK(GetMigrationState() != MIGRATION_DONE || AreAllAccountsMigrated());
-#else
-  DCHECK(AreAllAccountsMigrated());
-#endif
 
   UMA_HISTOGRAM_ENUMERATION("Signin.AccountTracker.GaiaIdMigrationState",
                             GetMigrationState(), NUM_MIGRATION_STATES);
+#else
+  DCHECK(AreAllAccountsMigrated());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   UMA_HISTOGRAM_COUNTS_100("Signin.AccountTracker.CountOfLoadedAccounts",
                            accounts_.size());
@@ -783,6 +776,7 @@ CoreAccountId AccountTrackerService::PickAccountIdForAccount(
     const PrefService* pref_service,
     const std::string& gaia,
     const std::string& email) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!gaia.empty() ||
          GetMigrationState(pref_service) == MIGRATION_NOT_STARTED);
   DCHECK(!email.empty());
@@ -796,6 +790,9 @@ CoreAccountId AccountTrackerService::PickAccountIdForAccount(
       NOTREACHED();
       return CoreAccountId::FromString(email);
   }
+#else
+  return CoreAccountId::FromGaiaId(gaia);
+#endif
 }
 
 CoreAccountId AccountTrackerService::SeedAccountInfo(const std::string& gaia,

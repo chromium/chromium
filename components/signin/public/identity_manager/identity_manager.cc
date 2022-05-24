@@ -426,8 +426,12 @@ void IdentityManager::OnNetworkInitialized() {
 
 IdentityManager::AccountIdMigrationState
 IdentityManager::GetAccountIdMigrationState() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return static_cast<IdentityManager::AccountIdMigrationState>(
       account_tracker_service_->GetMigrationState());
+#else
+  return IdentityManager::AccountIdMigrationState::MIGRATION_DONE;
+#endif
 }
 
 CoreAccountId IdentityManager::PickAccountIdForAccount(

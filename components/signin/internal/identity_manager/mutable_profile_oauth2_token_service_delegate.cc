@@ -474,8 +474,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
 
     VLOG(1) << "MutablePO2TS::LoadAllCredentialsIntoMemory; "
             << db_tokens.size() << " Credential(s).";
-    AccountTrackerService::AccountIdMigrationState migration_state =
-        account_tracker_service_->GetMigrationState();
     for (auto iter = db_tokens.begin(); iter != db_tokens.end(); ++iter) {
       std::string prefixed_account_id = iter->first;
       std::string refresh_token = iter->second;
@@ -492,55 +490,9 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       } else {
         DCHECK(!refresh_token.empty());
         CoreAccountId account_id = RemoveAccountIdPrefix(prefixed_account_id);
-
-        switch (migration_state) {
-          case AccountTrackerService::MIGRATION_IN_PROGRESS: {
-            // Migrate to gaia-ids.
-            AccountInfo account_info =
-                account_tracker_service_->FindAccountInfoByEmail(
-                    account_id.ToString());
-            // |account_info| can be empty if |account_id| was already migrated.
-            // This could happen if the chrome was closed in the middle of the
-            // account id migration.
-            if (!account_info.IsEmpty()) {
-              ClearPersistedCredentials(account_id);
-              account_id = account_info.account_id;
-              PersistCredentials(account_id, refresh_token);
-            }
-
-            // Skip duplicate accounts, this could happen if migration was
-            // crashed in the middle.
-            if (refresh_tokens_.count(account_id) != 0)
-              continue;
-            break;
-          }
-          case AccountTrackerService::MIGRATION_NOT_STARTED:
-            // If the account_id is an email address, then canonicalize it. This
-            // is to support legacy account_ids, and will not be needed after
-            // switching to gaia-ids.
-            if (account_id.ToString().find('@') != std::string::npos) {
-              // If the canonical account id is not the same as the loaded
-              // account id, make sure not to overwrite a refresh token from
-              // a canonical version.  If no canonical version was loaded, then
-              // re-persist this refresh token with the canonical account id.
-              CoreAccountId canon_account_id = CoreAccountId::FromEmail(
-                  gaia::CanonicalizeEmail(account_id.ToString()));
-              if (canon_account_id != account_id) {
-                ClearPersistedCredentials(account_id);
-                if (db_tokens.count(
-                        ApplyAccountIdPrefix(canon_account_id.ToString())) == 0)
-                  PersistCredentials(canon_account_id, refresh_token);
-              }
-              account_id = canon_account_id;
-            }
-            break;
-          case AccountTrackerService::MIGRATION_DONE:
-            DCHECK_EQ(std::string::npos, account_id.ToString().find('@'));
-            break;
-          case AccountTrackerService::NUM_MIGRATION_STATES:
-            NOTREACHED();
-            break;
-        }
+        DCHECK(!account_id.IsEmail())
+            << "Expecting a Gaia ID as account id [ account_id = " << account_id
+            << "]";
 
         // Only load secondary accounts when account consistency is enabled.
         bool load_account =
