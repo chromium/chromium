@@ -53,6 +53,10 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // |callback| is run.
   void InitTaskGetArcFeatures(base::OnceClosure callback);
 
+  // Loads the cellular device variant. When this task is complete, |callback|
+  // is run.
+  void InitTaskGetCellularDeviceVariant(base::OnceClosure callback);
+
   // Retrieves TPM type using TpmManagerClient. When this task is complete,
   // |callback| is run.
   void InitTaskGetTpmType(base::OnceClosure callback);
@@ -84,6 +88,10 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void SetFullHardwareClass(base::OnceClosure callback,
                             std::string full_hardware_class);
 
+  // Sets the cellular device variant, then calls the callback.
+  void SetCellularDeviceVariant(base::OnceClosure callback,
+                                std::string cellular_device_variant);
+
   // Updates ARC-related system profile fields, then calls the callback.
   void OnArcFeaturesParsed(base::OnceClosure callback,
                            absl::optional<arc::ArcFeatures> features);
@@ -109,6 +117,11 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void WriteLinkedAndroidPhoneProto(
       metrics::SystemProfileProto* system_profile_proto);
 
+  // Writes info about cellular device variant if present in
+  // system profile proto.
+  void WriteCellularDeviceVariant(
+      metrics::SystemProfileProto* system_profile_proto);
+
   // For collecting systemwide performance data via the UMA channel.
   std::unique_ptr<metrics::ProfileProvider> profile_provider_;
 
@@ -126,6 +139,9 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // Hardware class (e.g., hardware qualification ID). This value identifies
   // the configured system components such as CPU, WiFi adapter, etc.
   std::string full_hardware_class_;
+
+  // Cellular device variant for Chrome OS devices with cellular support.
+  std::string cellular_device_variant_;
 
   // ARC release version obtained from build properties.
   absl::optional<std::string> arc_release_ = absl::nullopt;

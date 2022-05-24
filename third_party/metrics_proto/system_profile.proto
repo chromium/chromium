@@ -229,7 +229,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 24
+  // Next tag: 25
   message Hardware {
     // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
     // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
@@ -274,6 +274,10 @@ message SystemProfileProto {
     // device specifications including OEM information, schematics, hardware
     // qualification reports, test device tags, etc.
     optional string full_hardware_class = 18;
+
+    // This field is only sent on Chrome OS devices with cellular support.
+    // This represents the variant of cellular modem present on the device.
+    optional string cellular_device_variant = 24;
 
     // The number of physical screens.
     optional int32 screen_count = 5;
