@@ -39219,8 +39219,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3341" label="V8Window_ShowSaveFilePicker_Method"/>
   <int value="3342" label="V8Window_ShowDirectoryPicker_Method"/>
   <int value="3343" label="V8Window_GetOriginPrivateDirectory_Method"/>
-  <int value="3344" label="RTCConstraintEnableRtpDataChannelsTrue"/>
-  <int value="3345" label="RTCConstraintEnableRtpDataChannelsFalse"/>
+  <int value="3344" label="OBSOLETE_RTCConstraintEnableRtpDataChannelsTrue"/>
+  <int value="3345" label="OBSOLETE_RTCConstraintEnableRtpDataChannelsFalse"/>
   <int value="3346" label="FileSystemAccessDragAndDrop"/>
   <int value="3347" label="RTCAdaptivePtime"/>
   <int value="3348"
@@ -40105,9 +40105,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4195" label="NavigatorUAData_Platform"/>
   <int value="4196" label="NavigatorUAData_Brands"/>
   <int value="4197" label="OldConstraintsParsed"/>
-  <int value="4198" label="OldConstraintNotReported"/>
-  <int value="4199" label="OldConstraintRejected"/>
-  <int value="4200" label="OldConstraintIgnored"/>
+  <int value="4198" label="OBSOLETE_OldConstraintNotReported"/>
+  <int value="4199" label="OBSOLETE_OldConstraintRejected"/>
+  <int value="4200" label="OBSOLETE_OldConstraintIgnored"/>
   <int value="4201" label="ExplicitOverflowVisibleOnReplacedElement"/>
   <int value="4202"
       label="ExplicitOverflowVisibleOnReplacedElementWithObjectProp"/>

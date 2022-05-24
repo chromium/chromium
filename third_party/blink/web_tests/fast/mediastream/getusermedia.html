@@ -17,8 +17,12 @@ function error() {
     finishJSTest();
 }
 
-function gotStreamInError(s) {
-    testFailed('Stream generated.');
+function gotStream6(s) {
+    stream = s;
+    testPassed('Stream generated.');
+    shouldBe('stream.getAudioTracks().length', '1');
+    shouldBe('stream.getVideoTracks().length', '1');
+
     finishJSTest();
 }
 
@@ -28,16 +32,7 @@ function gotStream5(s) {
     shouldBe('stream.getAudioTracks().length', '1');
     shouldBe('stream.getVideoTracks().length', '1');
 
-    finishJSTest();
-}
-
-function error1(e) {
-    errorArg = e;
-    testPassed('Error callback called.');
-    shouldBeEqualToString('errorArg.name', 'OverconstrainedError');
-    shouldBeEqualToString('errorArg.constraint', 'valid_but_unsupported_1');
-
-    shouldNotThrow("navigator.getUserMedia({audio:{mandatory:{'valid_and_supported_1':1}, optional:[{'valid_but_unsupported_1':0}]}, video:true}, gotStream5, error);");
+    shouldNotThrow("navigator.getUserMedia({audio:{mandatory:{'valid_and_supported_1':1}, optional:[{'valid_but_unsupported_1':0}]}, video:true}, gotStream6, error);");
 }
 
 function gotStream4(s) {
@@ -46,7 +41,7 @@ function gotStream4(s) {
     shouldBe('stream.getAudioTracks().length', '1');
     shouldBe('stream.getVideoTracks().length', '1');
 
-    shouldNotThrow("navigator.getUserMedia({audio:{mandatory:{'valid_but_unsupported_1':0}, optional:[]}, video:true}, gotStreamInError, error1);");
+    shouldNotThrow("navigator.getUserMedia({audio:{mandatory:{'valid_but_unsupported_1':0}, optional:[]}, video:true}, gotStream5, error);");
 }
 
 function gotStream3(s) {

@@ -590,9 +590,6 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
     case DeprecationIssueType::kRtcpMuxPolicyNegotiate:
       type = protocol::Audits::DeprecationIssueTypeEnum::RtcpMuxPolicyNegotiate;
       break;
-    case DeprecationIssueType::kRTPDataChannel:
-      type = protocol::Audits::DeprecationIssueTypeEnum::RTPDataChannel;
-      break;
     case DeprecationIssueType::kSharedArrayBufferConstructedWithoutIsolation:
       type = protocol::Audits::DeprecationIssueTypeEnum::
           SharedArrayBufferConstructedWithoutIsolation;

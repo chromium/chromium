@@ -212,10 +212,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kRtcpMuxPolicyNegotiate:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kRtcpMuxPolicyNegotiate);
-    case WebFeature::kRTCConstraintEnableRtpDataChannelsFalse:
-    case WebFeature::kRTCConstraintEnableRtpDataChannelsTrue:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kRTPDataChannel);
     case WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation:
       return DeprecationInfo::WithTranslation(
           feature,

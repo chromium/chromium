@@ -66,9 +66,9 @@ shouldNotThrow("new RTCPeerConnection(null, {optional:[{valid_and_supported_1:0}
 shouldNotThrow("new RTCPeerConnection(null, {optional:[{valid_and_supported_1:0},{valid_and_supported_2:0}]});");
 shouldNotThrow("new RTCPeerConnection(null, {optional:[{valid_but_unsupported_1:0},{valid_but_unsupported_2:0}]});");
 shouldThrow("new RTCPeerConnection(null, {mandatory:{valid_and_supported_1:66}});");
-shouldThrow("new RTCPeerConnection(null, {mandatory:{invalid:1}});");
-shouldThrow("new RTCPeerConnection(null, {mandatory:{valid_but_unsupported_1:1}});");
-shouldThrow("new RTCPeerConnection(null, {mandatory:{valid_but_unsupported_1:1, valid_and_supported_1:1}});");
+shouldNotThrow("new RTCPeerConnection(null, {mandatory:{invalid:1}});");
+shouldNotThrow("new RTCPeerConnection(null, {mandatory:{valid_but_unsupported_1:1}});");
+shouldNotThrow("new RTCPeerConnection(null, {mandatory:{valid_but_unsupported_1:1, valid_and_supported_1:1}});");
 shouldThrow("new RTCPeerConnection(null, {optional:{valid_and_supported_1:0}});");
 shouldThrow("new RTCPeerConnection(null, {optional:[{valid_and_supported_1:0,valid_and_supported_2:0}]});");
 // Optional constraints are ignored even if they are invalid.
