@@ -310,6 +310,8 @@ public class ContextualSearchInstrumentationBase {
     private static final int PANEL_INTERACTION_MAX_RETRIES = 3;
     private static final int PANEL_INTERACTION_RETRY_DELAY_MS = 200;
 
+    private static final int DOUBLE_TAP_DELAY_MULTIPLIER = 3;
+
     // Search request URL paths and CGI parameters.
     private static final String LOW_PRIORITY_SEARCH_ENDPOINT = "/s?";
     private static final String NORMAL_PRIORITY_SEARCH_ENDPOINT = "/search?";
@@ -1288,7 +1290,7 @@ public class ContextualSearchInstrumentationBase {
         // refinement from nearby taps. The double-tap timeout is sufficiently
         // short that this shouldn't conflict with tap refinement by the user.
         int doubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
-        Thread.sleep(doubleTapTimeout);
+        Thread.sleep(doubleTapTimeout * DOUBLE_TAP_DELAY_MULTIPLIER);
     }
 
     /**
