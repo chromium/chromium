@@ -1245,6 +1245,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "remove_inaccessible_fields_on_startup": "false"
+                    },
                     "enable_features": [
                         "AutofillRemoveInaccessibleProfileValues"
                     ]
