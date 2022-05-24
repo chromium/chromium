@@ -242,6 +242,8 @@ class TestableCalendarModel : public CalendarModel {
     return error;
   }
 
+  CalendarModel::MonthToEventsMap event_months() { return event_months_; }
+
  protected:
   void MaybeFetchMonth(base::Time start_of_month) override {
     // Early return if events (not even an empty list) have been injected.
@@ -304,6 +306,13 @@ class CalendarModelTest : public AshTestBase {
     return calendar_model_->EventsNumberOfDay(day_base, events);
   }
 
+  int EventsNumberOfDay(base::Time day, SingleDayEventList* events) {
+    if (events)
+      events->clear();
+
+    return calendar_model_->EventsNumberOfDay(day, events);
+  }
+
   int EventsNumberOfDayInternal(const char* day,
                                 SingleDayEventList* events) const {
     base::Time day_base = calendar_test_utils::GetTimeFromString(day);
@@ -312,6 +321,15 @@ class CalendarModelTest : public AshTestBase {
       events->clear();
 
     return calendar_model_->EventsNumberOfDayInternal(day_base, events);
+  }
+
+  base::Time GetStartTimeMidnightAdjusted(
+      const google_apis::calendar::CalendarEvent* event) {
+    return calendar_model_->GetStartTimeMidnightAdjusted(event);
+  }
+
+  void set_time_difference_minutes(int minutes) {
+    calendar_model_->set_time_difference_minutes(minutes);
   }
 
   bool IsEventPresent(const char* event_id, SingleDayEventList& events) {
@@ -1148,6 +1166,63 @@ TEST_F(CalendarModelTest, ShouldFilterEvents) {
               testing::UnorderedElementsAreArray(std::vector<std::string>{
                   "confirmed+accepted", "tentative+accepted",
                   "confirmed+needs_action", "confirmed+tentative"}));
+}
+
+TEST_F(CalendarModelTest, EdgeOfMonthEvent) {
+  const char* kId = "id";
+  const char* kSummary = "summary";
+
+  // Will add event that's in the same month as kNow using PDT (UTC-7),
+  // so the times will translate to next day (and month) on UTC.
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
+      u"America/Los_Angeles");
+  const char* kNow = "10 May 2022 13:00 PDT";
+  const char* kEdgeOfMonthEventStartTime = "31 May 2022 22:00 PDT";
+  const char* kEdgeOfMonthEventEndTime = "31 May 2022 23:00 PDT";
+
+  // Set current date and get surrounding months.
+  SetFakeNowFromStr(kNow);
+  calendar_model_ = std::make_unique<TestableCalendarModel>();
+  base::Time current_month =
+      calendar_utils::GetStartOfMonthUTC(base::Time::Now());
+  base::Time next_month =
+      calendar_utils::GetStartOfNextMonthUTC(base::Time::Now());
+
+  // Get ready to inject an event in the edge of the month.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  SingleDayEventList events;
+
+  // Insert an event in the edge of the month.
+  std::unique_ptr<google_apis::calendar::CalendarEvent> end_of_month_event =
+      calendar_test_utils::CreateEvent(
+          kId, kSummary, kEdgeOfMonthEventStartTime, kEdgeOfMonthEventEndTime);
+
+  // Haven't injected anything yet, so no events on the start time.
+  base::Time start_time_adjusted =
+      GetStartTimeMidnightAdjusted(end_of_month_event.get());
+  EXPECT_EQ(0, EventsNumberOfDay(start_time_adjusted, &events));
+
+  // Inject event.
+  event_list->InjectItemForTesting(std::move(end_of_month_event));
+  calendar_model_->InjectEvents(std::move(event_list));
+  calendar_model_->FetchEvents(current_month);
+  calendar_model_->FetchEvents(next_month);
+
+  // Now the day where the event started should have an event.
+  EXPECT_EQ(1, EventsNumberOfDay(start_time_adjusted, &events));
+
+  // The month to events map should insert the event in the current month.
+  auto event_months = calendar_model_->event_months();
+  auto cur_month_map =
+      event_months.find(calendar_utils::GetStartOfMonthUTC(base::Time::Now()));
+  EXPECT_FALSE(cur_month_map->second.empty());
+
+  // The month to events map should not insert the event in the next month.
+  auto next_month_map = event_months.find(
+      calendar_utils::GetStartOfNextMonthUTC(base::Time::Now()));
+
+  EXPECT_TRUE(next_month_map->second.empty());
 }
 
 // A mock `CalendarClient`. This mock client's `GetEventList` waits for a short
