@@ -326,7 +326,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     BOOL isScrolledToBottom = [self isScrolledToBottom];
     self.separator.hidden = isScrolledToBottom;
     if (self.didReachBottom || isScrolledToBottom) {
-      [self updateActionButtonsAndPushUpScrollView];
+      [self updateActionButtonsAndPushUpScrollViewIfMandatory];
     } else {
       [self setReadMoreText];
     }
@@ -747,16 +747,17 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   BOOL isScrolledToBottom = [self isScrolledToBottom];
   self.separator.hidden = isScrolledToBottom;
   if (self.scrollToEndMandatory && !self.didReachBottom && isScrolledToBottom) {
-    [self updateActionButtonsAndPushUpScrollView];
+    [self updateActionButtonsAndPushUpScrollViewIfMandatory];
   }
 }
 
 // This method should be called right before the view is scrolled to the bottom.
 // It updates the primary button's label and adds secondary and/or tertiary
 // buttons, and as a result, pushing the scroll view up by updating the bottom
-// offset of the scroll view and scroll to the new offset. It also sets
-// |didReachBottom| to YES.
-- (void)updateActionButtonsAndPushUpScrollView {
+// offset of the scroll view and scroll to the new offset if the change in
+// action buttons is triggered by a scroll in a view that sets
+// `self.scrollToEndMandatory=YES`. It also sets `self.didReachBottom` to YES.
+- (void)updateActionButtonsAndPushUpScrollViewIfMandatory {
   [self.primaryActionButton setAttributedTitle:nil
                                       forState:UIControlStateNormal];
   [self.primaryActionButton setTitle:self.primaryActionString
@@ -813,7 +814,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     [NSLayoutConstraint
         activateConstraints:self.buttonsVerticalAnchorConstraints];
   }
-  if (![self isScrolledToBottom]) {
+  if (self.scrollToEndMandatory && ![self isScrolledToBottom]) {
     [self.scrollView setContentOffset:updatedBottomOffset animated:YES];
   }
   self.didReachBottom = YES;
@@ -832,7 +833,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     if (targetOffset.y < self.scrollViewBottomOffsetY + 1) {
       [self.scrollView setContentOffset:targetOffset animated:YES];
     } else {
-      [self updateActionButtonsAndPushUpScrollView];
+      [self updateActionButtonsAndPushUpScrollViewIfMandatory];
     }
   } else if ([self.delegate
                  respondsToSelector:@selector(didTapPrimaryActionButton)]) {
