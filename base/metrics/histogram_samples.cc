@@ -187,6 +187,11 @@ HistogramSamples::HistogramSamples(uint64_t id, Metadata* meta)
     meta_->id = id;
 }
 
+HistogramSamples::HistogramSamples(uint64_t id, std::unique_ptr<Metadata> meta)
+    : HistogramSamples(id, meta.get()) {
+  meta_owned_ = std::move(meta);
+}
+
 // This mustn't do anything with |meta_|. It was passed to the ctor and may
 // be invalid by the time this dtor gets called.
 HistogramSamples::~HistogramSamples() = default;
