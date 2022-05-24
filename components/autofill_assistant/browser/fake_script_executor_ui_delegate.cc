@@ -165,7 +165,7 @@ void FakeScriptExecutorUiDelegate::SetShowFeedbackChip(
     bool show_feedback_chip) {}
 
 bool FakeScriptExecutorUiDelegate::SupportsExternalActions() {
-  return false;
+  return true;
 }
 
 void FakeScriptExecutorUiDelegate::ExecuteExternalAction(
