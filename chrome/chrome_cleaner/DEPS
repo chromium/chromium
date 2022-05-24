@@ -9,7 +9,6 @@ include_rules = [
   "+mojo/public",
   "+sandbox/win/src",
   "+testing",
-  "+third_party/abseil-cpp/absl",
   "+third_party/protobuf/src/google/protobuf",
   "+url",
 ]

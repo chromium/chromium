@@ -7,7 +7,6 @@ include_rules = [
   "-third_party",
   "-ui",
 
-  "+third_party/abseil-cpp/absl",
   "+ui/base/buildflags.h",  # Doesn't bring in all of UI.
   "+ui/gfx/x",
   "+ui/events",
