@@ -389,7 +389,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // If the user says no during the FRE, then they should be re-prompted at the
 // end of the FRE.
 // TODO(crbug.com/1282047): Re-enable when fixed.
-- (void)testSignInScreenUIWhenForcedByPolicy {
+- (void)DISABLED_testSignInScreenUIWhenForcedByPolicy {
   AppLaunchConfiguration configToSetPolicy = self.appConfigurationForTestCase;
 
   // Configure the policy to force sign-in.
@@ -553,7 +553,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that the FRE sign in screen is not displayed when sign in is disabled
 // by policy.
-- (void)testSignInDisabled {
+- (void)DISABLED_testSignInDisabled {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
 
   // Configure the policy to disable SignIn.
@@ -650,7 +650,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the user is signed in and that sync is turned on after the user
 // chooses to turn on sync.
-- (void)testSignInAndTurnOnSync {
+- (void)DISABLED_testSignInAndTurnOnSync {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -676,7 +676,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that pressing "No thanks" on sign-in & sync screen doesn't sign in the
 // user and doesn't sync.
-- (void)testNoSignInNoSync {
+- (void)DISABLED_testNoSignInNoSync {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -704,7 +704,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // The browser should only be signed in temporarily while the advanced settings
 // prompt is opened and then signed out when the user selects "No thanks".
 // Sync is also turned off.
-- (void)testAdvancedSettingsSignoutSyncOff {
+- (void)DISABLED_testAdvancedSettingsSignoutSyncOff {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -747,7 +747,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // If browser is already signed in and the user opens the advanced settings then
 // selects "No thanks", the user should stay signed in, but sync should be
 // turned off.
-- (void)testAdvancedSettingsSignedInSyncOff {
+- (void)DISABLED_testAdvancedSettingsSignedInSyncOff {
   // Sign-in browser.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
@@ -806,7 +806,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that sync is turned on after the user chose to turn on sync in the
 // advanced sync settings screen and that the correct sync options are selected.
-- (void)testCustomSyncOn {
+- (void)DISABLED_testCustomSyncOn {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -868,7 +868,7 @@ GREYLayoutConstraint* BelowConstraint() {
 }
 
 // Checks that the user is signed in, but no sync options is selected.
-- (void)testCustomSyncOff {
+- (void)DISABLED_testCustomSyncOff {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -941,7 +941,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // Checks that the user is not signed in and that sync is turned off after the
 // user chose to not sign-in even though they selected some sync options in the
 // advanced sync settings screen.
-- (void)testCustomSyncSignout {
+- (void)DISABLED_testCustomSyncSignout {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -1060,7 +1060,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the sync screen doesn't appear when the SyncDisabled policy is
 // enabled.
-- (void)testSyncDisabled {
+- (void)DISABLED_testSyncDisabled {
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
 
   // Go to the sign-in screen.
