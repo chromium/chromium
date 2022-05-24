@@ -36,7 +36,12 @@ AssistantSidePanelCoordinatorImpl::AssistantSidePanelCoordinatorImpl(
           base::BindRepeating(
               &AssistantSidePanelCoordinatorImpl::CreateSidePanelView,
               base::Unretained(this))));
-  AddObserver(this);
+
+  // Listen to `OnEntryHidden` events to be able to propagate them outside.
+  GetSidePanelRegistry()
+      ->GetEntryForId(SidePanelEntry::Id::kAssistant)
+      ->AddObserver(this);
+
   GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kAssistant);
 }
 
@@ -83,15 +88,19 @@ void AssistantSidePanelCoordinatorImpl::RemoveView() {
   side_panel_view_host_->RemoveAllChildViews();
 }
 
-void AssistantSidePanelCoordinatorImpl::AddObserver(
-    SidePanelEntryObserver* observer) {
-  GetSidePanelRegistry()
-      ->GetEntryForId(SidePanelEntry::Id::kAssistant)
-      ->AddObserver(observer);
+void AssistantSidePanelCoordinatorImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AssistantSidePanelCoordinatorImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void AssistantSidePanelCoordinatorImpl::OnEntryHidden(SidePanelEntry* entry) {
   side_panel_view_host_ = nullptr;
+
+  for (Observer& observer : observers_)
+    observer.OnHidden();
 }
 
 std::unique_ptr<views::View>

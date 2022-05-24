@@ -64,6 +64,16 @@ void ApcClientImpl::OnRunComplete() {
   Stop();
 }
 
+void ApcClientImpl::OnHidden() {
+  // The side panel was hidden, so we need to destroy it.
+  side_panel_coordinator_.reset();
+
+  // TODO(crbug.com/1324089): Destroy the ApcExternalAction delegate and decide
+  // whether to log any data about the shutdown.
+
+  Stop();
+}
+
 std::unique_ptr<ApcOnboardingCoordinator>
 ApcClientImpl::CreateOnboardingCoordinator() {
   return ApcOnboardingCoordinator::Create(&GetWebContents());

@@ -4,14 +4,27 @@
 
 #include "chrome/browser/ui/views/autofill_assistant/password_change/assistant_side_panel_coordinator_impl.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/assistant_side_panel_coordinator.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "content/public/browser/web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+class MockAssistantSidePanelObserver
+    : public AssistantSidePanelCoordinator::Observer {
+ public:
+  MockAssistantSidePanelObserver() = default;
+  ~MockAssistantSidePanelObserver() override = default;
+
+  MOCK_METHOD(void, OnHidden, (), (override));
+};
 
 class AssistantSidePanelCoordinatorImplTest : public TestWithBrowserView {
  public:
@@ -74,4 +87,23 @@ TEST_F(AssistantSidePanelCoordinatorImplTest,
       AssistantSidePanelCoordinator::Create(
           browser_view()->GetActiveWebContents());
   EXPECT_EQ(nullptr, coordinator);
+}
+
+TEST_F(AssistantSidePanelCoordinatorImplTest,
+       AssistantSidePanelPropagatesOnHidden) {
+  // Since we are testing the implementation here, we can safely perform this
+  // cast.
+  AssistantSidePanelCoordinatorImpl* coordinator =
+      static_cast<AssistantSidePanelCoordinatorImpl*>(
+          assistant_side_panel_coordinator());
+  auto observer = std::make_unique<MockAssistantSidePanelObserver>();
+  coordinator->AddObserver(observer.get());
+
+  // Only a total of 1 call is expected.
+  EXPECT_CALL(*observer, OnHidden).Times(1);
+  coordinator->OnEntryHidden(nullptr);
+
+  coordinator->RemoveObserver(observer.get());
+  // This call does not get registered.
+  coordinator->OnEntryHidden(nullptr);
 }

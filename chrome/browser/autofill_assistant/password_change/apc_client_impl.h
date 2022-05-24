@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/assistant_side_panel_coordinator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -22,7 +23,8 @@
 // Implementation of the ApcClient interface that attaches itself to a
 // `WebContents`.
 class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
-                      public ApcClient {
+                      public ApcClient,
+                      public AssistantSidePanelCoordinator::Observer {
  public:
   ~ApcClientImpl() override;
 
@@ -54,6 +56,9 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // Registers when a run is complete. Used in callbacks.
   void OnRunComplete();
 
+  // AssistantSidePanelCoordinator::Observer:
+  void OnHidden() override;
+
   // The state of the `ApcClient` to avoid that a run is started while
   // another is already ongoing in the tab.
   bool is_running_ = false;
@@ -61,6 +66,9 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // Orchestrates prompting the user for consent if it has not been given
   // previously.
   std::unique_ptr<ApcOnboardingCoordinator> onboarding_coordinator_;
+
+  // The coordinator for the side panel.
+  std::unique_ptr<AssistantSidePanelCoordinator> side_panel_coordinator_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
