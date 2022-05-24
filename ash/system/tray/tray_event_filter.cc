@@ -126,10 +126,13 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
               ->GetStatusAreaWidget();
       UnifiedSystemTray* tray = status_area->unified_system_tray();
 
-      // See the `DateTray` and the `UnifiedSystemTray` together as one button
-      // when clicking outside of the tray.
-      if (features::IsCalendarViewEnabled())
-        bounds.Union(status_area->date_tray()->GetBoundsInScreen());
+      // When Quick Settings bubble is opened and the date tray is clicked, the
+      // bubble should not be closed since it will transition to show calendar.
+      if (features::IsCalendarViewEnabled() &&
+          status_area->date_tray()->GetBoundsInScreen().Contains(
+              screen_location)) {
+        continue;
+      }
 
       TrayBubbleBase* system_tray_bubble = tray->bubble();
       if (tray->IsBubbleShown() && system_tray_bubble != bubble) {
