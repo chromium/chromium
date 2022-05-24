@@ -7,9 +7,9 @@
 
 #include <iosfwd>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
@@ -85,7 +85,7 @@ class BASE_EXPORT CheckError {
   // Stream for adding optional details to the error message.
   std::ostream& stream();
 
-  NOMERGE ~CheckError();
+  PA_NOMERGE ~CheckError();
 
   CheckError(const CheckError& other) = delete;
   CheckError& operator=(const CheckError& other) = delete;
@@ -105,8 +105,9 @@ class BASE_EXPORT CheckError {
 // This is not calling BreakDebugger since this is called frequently, and
 // calling an out-of-line function instead of a noreturn inline macro prevents
 // compiler optimizations.
-#define PA_BASE_CHECK(condition) \
-  UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() : PA_EAT_CHECK_STREAM_PARAMS()
+#define PA_BASE_CHECK(condition)                   \
+  PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
+                            : PA_EAT_CHECK_STREAM_PARAMS()
 
 // TODO(1151236): base/test/gtest_util.h uses CHECK_WILL_STREAM(). After
 // copying (or removing) gtest_util.h and removing gtest_uti.h from partition
@@ -118,7 +119,7 @@ class BASE_EXPORT CheckError {
       ::partition_alloc::internal::logging::CheckError::PCheck(__FILE__, \
                                                                __LINE__) \
           .stream(),                                                     \
-      UNLIKELY(!(condition)))
+      PA_UNLIKELY(!(condition)))
 
 #else
 
@@ -127,7 +128,7 @@ class BASE_EXPORT CheckError {
       ::partition_alloc::internal::logging::CheckError::Check( \
           __FILE__, __LINE__, #condition)                      \
           .stream(),                                           \
-      !ANALYZER_ASSUME_TRUE(condition))
+      !PA_ANALYZER_ASSUME_TRUE(condition))
 
 #define CHECK_WILL_STREAM() true
 
@@ -136,7 +137,7 @@ class BASE_EXPORT CheckError {
       ::partition_alloc::internal::logging::CheckError::PCheck( \
           __FILE__, __LINE__, #condition)                       \
           .stream(),                                            \
-      !ANALYZER_ASSUME_TRUE(condition))
+      !PA_ANALYZER_ASSUME_TRUE(condition))
 
 #endif
 
@@ -147,14 +148,14 @@ class BASE_EXPORT CheckError {
       ::partition_alloc::internal::logging::CheckError::DCheck( \
           __FILE__, __LINE__, #condition)                       \
           .stream(),                                            \
-      !ANALYZER_ASSUME_TRUE(condition))
+      !PA_ANALYZER_ASSUME_TRUE(condition))
 
 #define PA_BASE_DPCHECK(condition)                               \
   PA_LAZY_CHECK_STREAM(                                          \
       ::partition_alloc::internal::logging::CheckError::DPCheck( \
           __FILE__, __LINE__, #condition)                        \
           .stream(),                                             \
-      !ANALYZER_ASSUME_TRUE(condition))
+      !PA_ANALYZER_ASSUME_TRUE(condition))
 
 #else
 
