@@ -108,6 +108,7 @@ class DownloadBubbleRowView : public views::View,
   raw_ptr<views::MdTextButton> keep_button_ = nullptr;
   raw_ptr<views::MdTextButton> scan_button_ = nullptr;
   raw_ptr<views::MdTextButton> open_now_button_ = nullptr;
+  raw_ptr<views::MdTextButton> resume_button_ = nullptr;
   raw_ptr<views::FlexLayoutView> main_button_holder_ = nullptr;
 
   // The progress bar for in-progress downloads.
@@ -137,6 +138,7 @@ class DownloadBubbleRowView : public views::View,
   download::DownloadItemMode mode_;
   download::DownloadItem::DownloadState state_;
   DownloadUIModel::BubbleUIInfo ui_info_;
+  bool is_paused_;
 
   const gfx::VectorIcon* last_overriden_icon_ = nullptr;
   bool already_set_default_icon_ = false;

@@ -448,7 +448,7 @@ class DownloadUIModel {
   BubbleUIInfo GetBubbleUIInfo() const;
   BubbleUIInfo GetBubbleUIInfoForInterrupted(
       offline_items_collection::FailState fail_state) const;
-  BubbleUIInfo GetBubbleUIInfoForWarning() const;
+  BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete() const;
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

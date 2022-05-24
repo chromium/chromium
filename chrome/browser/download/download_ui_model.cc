@@ -778,8 +778,8 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
                        ui::kColorAlertHighSeverity);
 }
 
-DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
-    const {
+DownloadUIModel::BubbleUIInfo
+DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete() const {
   switch (GetMixedContentStatus()) {
     case download::DownloadItem::MixedContentStatus::BLOCK:
     case download::DownloadItem::MixedContentStatus::WARN:
@@ -996,7 +996,9 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForWarning()
   bool has_progress_bar = GetState() == DownloadItem::IN_PROGRESS;
   BubbleUIInfo bubble_ui_info = DownloadUIModel::BubbleUIInfo(has_progress_bar);
   if (has_progress_bar) {
-    bubble_ui_info.AddPrimaryButton(DownloadCommands::Command::CANCEL);
+    bubble_ui_info.AddPrimaryButton(IsPaused()
+                                        ? DownloadCommands::Command::RESUME
+                                        : DownloadCommands::Command::CANCEL);
   }
   return bubble_ui_info;
 }
@@ -1005,7 +1007,7 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfo() const {
   switch (GetState()) {
     case DownloadItem::IN_PROGRESS:
     case DownloadItem::COMPLETE:
-      return GetBubbleUIInfoForWarning();
+      return GetBubbleUIInfoForInProgressOrComplete();
     case DownloadItem::INTERRUPTED: {
       const FailState fail_state = GetLastFailState();
       if (fail_state != FailState::USER_CANCELED) {

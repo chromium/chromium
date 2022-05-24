@@ -72,11 +72,14 @@ void DownloadBubbleRowView::UpdateBubbleUIInfo() {
   auto mode = download::GetDesiredDownloadItemMode(model_.get());
   auto state = model_->GetState();
   bool mode_unchanged = (mode_ == mode);
-  if (mode_unchanged && (state_ == state))
+  bool is_paused = model_->IsPaused();
+  if (mode_unchanged && (state_ == state) && (is_paused_ == is_paused)) {
     return;
+  }
 
   mode_ = mode;
   state_ = state;
+  is_paused_ = is_paused;
 
   // If either of mode or state changes, we might need to change UI.
   ui_info_ = model_->GetBubbleUIInfo();
@@ -268,6 +271,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   open_now_button_ = AddMainPageButton(
       DownloadCommands::BYPASS_DEEP_SCANNING,
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_NOW));
+  resume_button_ =
+      AddMainPageButton(DownloadCommands::RESUME,
+                        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME));
 
   subpage_icon_holder_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -305,6 +311,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // Set up initial state.
   mode_ = download::GetDesiredDownloadItemMode(model_.get());
   state_ = model_->GetState();
+  is_paused_ = model_->IsPaused();
   ui_info_ = model_->GetBubbleUIInfo();
   OnDownloadUpdated();
 }
@@ -346,6 +353,8 @@ void DownloadBubbleRowView::UpdateButtonsForItems() {
                            DownloadCommands::DEEP_SCAN);
   open_now_button_->SetVisible(ui_info_.primary_button_command ==
                                DownloadCommands::BYPASS_DEEP_SCANNING);
+  resume_button_->SetVisible(ui_info_.primary_button_command ==
+                             DownloadCommands::RESUME);
   subpage_icon_->SetVisible(ui_info_.has_subpage);
   subpage_icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(ui_info_.has_subpage ? kDownloadSubpageIconMargin : 0)));

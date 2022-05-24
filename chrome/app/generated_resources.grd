@@ -2565,6 +2565,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Label for the Delete button on the blocked download bubble subpage.">
         Delete
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_RESUME"
+               desc="Label for the button prompting to resume a paused download">
+        Resume
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SCAN"
                desc="Label for the button prompting for Deep Scanning">
         Scan
