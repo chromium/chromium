@@ -8,11 +8,11 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 
@@ -148,7 +148,7 @@ class BASE_EXPORT PCScanScheduler final {
 
   // Account freed `bytes`. Returns true if scan should be triggered
   // immediately, and false otherwise.
-  ALWAYS_INLINE bool AccountFreed(size_t bytes);
+  PA_ALWAYS_INLINE bool AccountFreed(size_t bytes);
 
   size_t epoch() const {
     return quarantine_data_.epoch.load(std::memory_order_relaxed);

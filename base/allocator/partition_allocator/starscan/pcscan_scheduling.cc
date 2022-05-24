@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
@@ -106,13 +107,13 @@ bool MUAwareTaskBasedBackend::LimitReached() {
 
       // 2. Unlikely case: If also above hard limit, start scan right away. This
       // ignores explicit PCScan disabling.
-      if (UNLIKELY(data.current_size.load(std::memory_order_relaxed) >
-                   data.size_limit.load(std::memory_order_relaxed))) {
+      if (PA_UNLIKELY(data.current_size.load(std::memory_order_relaxed) >
+                      data.size_limit.load(std::memory_order_relaxed))) {
         return true;
       }
 
       // 3. Check if PCScan was explicitly disabled.
-      if (UNLIKELY(!is_scheduling_enabled())) {
+      if (PA_UNLIKELY(!is_scheduling_enabled())) {
         return false;
       }
 

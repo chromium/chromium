@@ -7,14 +7,14 @@
 
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 
 // Returns the current stack pointer.
 // TODO(bikineev,1202644): Remove this once base/stack_util.h lands.
-BASE_EXPORT NOINLINE uintptr_t* GetStackPointer();
+BASE_EXPORT PA_NOINLINE uintptr_t* GetStackPointer();
 // Returns the top of the stack using system API.
 BASE_EXPORT void* GetStackTop();
 

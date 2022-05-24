@@ -8,10 +8,10 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/starscan_fwd.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -103,7 +103,7 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
     // Keep it MTE-untagged. See DisableMTEScope for details.
     const uintptr_t maybe_ptr = *reinterpret_cast<uintptr_t*>(begin);
 #if defined(PA_HAS_64_BITS_POINTERS)
-    if (LIKELY((maybe_ptr & mask) != base))
+    if (PA_LIKELY((maybe_ptr & mask) != base))
       continue;
 #else
     if (!maybe_ptr)
@@ -136,7 +136,7 @@ __attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(uintptr_t begin,
     const __m256i vand = _mm256_and_si256(maybe_ptrs, cage_mask);
     const __m256i vcmp = _mm256_cmpeq_epi64(vand, vbase);
     const int mask = _mm256_movemask_pd(_mm256_castsi256_pd(vcmp));
-    if (LIKELY(!mask))
+    if (PA_LIKELY(!mask))
       continue;
     // It's important to extract pointers from the already loaded vector.
     // Otherwise, new loads can break in-cage assumption checked above.
@@ -172,7 +172,7 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
     const __m128i vand = _mm_and_si128(maybe_ptrs, cage_mask);
     const __m128i vcmp = _mm_cmpeq_epi64(vand, vbase);
     const int mask = _mm_movemask_pd(_mm_castsi128_pd(vcmp));
-    if (LIKELY(!mask))
+    if (PA_LIKELY(!mask))
       continue;
     // It's important to extract pointers from the already loaded vector.
     // Otherwise, new loads can break in-cage assumption checked above.
@@ -208,7 +208,7 @@ void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
     const uint64x2_t vand = vandq_u64(maybe_ptrs, cage_mask);
     const uint64x2_t vcmp = vceqq_u64(vand, vbase);
     const uint32_t max = vmaxvq_u32(vreinterpretq_u32_u64(vcmp));
-    if (LIKELY(!max))
+    if (PA_LIKELY(!max))
       continue;
     // It's important to extract pointers from the already loaded vector.
     // Otherwise, new loads can break in-cage assumption checked above.

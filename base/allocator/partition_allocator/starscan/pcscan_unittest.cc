@@ -9,6 +9,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -643,19 +644,19 @@ TEST_F(PartitionAllocPCScanTest, StackScanning) {
   dangling_reference = nullptr;
 
   // Create and set dangling reference in the global.
-  [this]() NOINLINE {
+  [this]() PA_NOINLINE {
     auto* value = ValueList::Create(root(), nullptr);
     ValueList::Destroy(root(), value);
     dangling_reference = value;
   }();
 
-  [this]() NOINLINE {
+  [this]() PA_NOINLINE {
     // Register the top of the stack to be the current pointer.
     PCScan::NotifyThreadCreated(GetStackPointer());
-    [this]() NOINLINE {
+    [this]() PA_NOINLINE {
       // This writes the pointer to the stack.
       [[maybe_unused]] auto* volatile stack_ref = dangling_reference;
-      [this]() NOINLINE {
+      [this]() PA_NOINLINE {
         // Schedule PCScan but don't scan.
         SchedulePCScan();
         // Enter safepoint and scan from mutator. This will scan the stack.

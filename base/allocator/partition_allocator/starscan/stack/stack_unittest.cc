@@ -7,7 +7,7 @@
 #include <memory>
 #include <ostream>
 
-#include "base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,16 +91,16 @@ namespace {
 // must not actually be materialized.
 //
 // Parameter positiosn are explicit to test various calling conventions.
-NOINLINE void* RecursivelyPassOnParameterImpl(void* p1,
-                                              void* p2,
-                                              void* p3,
-                                              void* p4,
-                                              void* p5,
-                                              void* p6,
-                                              void* p7,
-                                              void* p8,
-                                              Stack* stack,
-                                              StackVisitor* visitor) {
+PA_NOINLINE void* RecursivelyPassOnParameterImpl(void* p1,
+                                                 void* p2,
+                                                 void* p3,
+                                                 void* p4,
+                                                 void* p5,
+                                                 void* p6,
+                                                 void* p7,
+                                                 void* p8,
+                                                 Stack* stack,
+                                                 StackVisitor* visitor) {
   if (p1) {
     return RecursivelyPassOnParameterImpl(nullptr, p1, nullptr, nullptr,
                                           nullptr, nullptr, nullptr, nullptr,
@@ -136,10 +136,10 @@ NOINLINE void* RecursivelyPassOnParameterImpl(void* p1,
   return nullptr;
 }
 
-NOINLINE void* RecursivelyPassOnParameter(size_t num,
-                                          void* parameter,
-                                          Stack* stack,
-                                          StackVisitor* visitor) {
+PA_NOINLINE void* RecursivelyPassOnParameter(size_t num,
+                                             void* parameter,
+                                             Stack* stack,
+                                             StackVisitor* visitor) {
   switch (num) {
     case 0:
       stack->IteratePointers(visitor);
@@ -297,7 +297,7 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
 // (Ignoring implementation-dependent dirty registers/stack.)
 #define KEEP_ALIVE_FROM_CALLEE_SAVED(reg)                                \
   local_scanner->Reset();                                                \
-  [local_stack, local_scanner]() NOINLINE {                              \
+  [local_stack, local_scanner]() PA_NOINLINE {                           \
     asm volatile("   mov %0, %%" reg                                     \
                  "\n mov %1, %%rdi"                                      \
                  "\n mov %2, %%rsi"                                      \
