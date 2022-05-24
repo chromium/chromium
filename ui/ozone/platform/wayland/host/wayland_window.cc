@@ -175,6 +175,10 @@ uint32_t WaylandWindow::GetPreferredEnteredOutputId() {
     auto* output_manager = connection_->wayland_output_manager();
     auto* output = output_manager->GetOutput(output_id);
     auto* preferred_output = output_manager->GetOutput(preferred_output_id);
+    // crbug.com/1323635
+    DCHECK(output) << " output " << output_id << " not found!";
+    DCHECK(preferred_output)
+        << " output " << preferred_output_id << " not found!";
     if (output->scale_factor() > preferred_output->scale_factor())
       preferred_output_id = output_id;
   }
@@ -632,7 +636,7 @@ WaylandWindow* WaylandWindow::GetRootParentWindow() {
   return parent_window_ ? parent_window_->GetRootParentWindow() : this;
 }
 
-void WaylandWindow::OnEnteredOutputIdAdded() {
+void WaylandWindow::OnEnteredOutput() {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
@@ -642,7 +646,7 @@ void WaylandWindow::OnEnteredOutputIdAdded() {
   UpdateWindowScale(true);
 }
 
-void WaylandWindow::OnEnteredOutputIdRemoved() {
+void WaylandWindow::OnLeftOutput() {
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.

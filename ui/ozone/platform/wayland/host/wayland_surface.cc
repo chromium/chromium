@@ -26,6 +26,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
@@ -681,10 +682,15 @@ void WaylandSurface::Enter(void* data,
 
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
+
+  DCHECK_NE(surface->connection_->wayland_output_manager()->GetOutput(
+                wayland_output->output_id()),
+            nullptr);
+
   surface->entered_outputs_.emplace_back(wayland_output->output_id());
 
   if (surface->root_window_)
-    surface->root_window_->OnEnteredOutputIdAdded();
+    surface->root_window_->OnEnteredOutput();
 }
 
 // static
@@ -700,27 +706,21 @@ void WaylandSurface::Leave(void* data,
 }
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
-  if (entered_outputs().empty())
-    return;
-
   auto entered_outputs_it_ =
       std::find_if(entered_outputs_.begin(), entered_outputs_.end(),
                    [&output_id](uint32_t id) { return id == output_id; });
+  if (entered_outputs_it_ == entered_outputs_.end())
+    return;
 
-  // The `entered_outputs_` list should be updated,
-  // 1. for wl_surface::leave, when a user switches physical output between two
-  // displays, a surface does not necessarily receive enter events immediately
-  // or until a user resizes/moves it.  This means that switching output between
-  // displays in a single output mode results in leave events, but the surface
-  // might not have received enter event before.  Thus, remove the id of the
-  // output that the surface leaves only if it was stored before.
-  // 2. for wl_registry::global_remove, when wl_output is removed by a server
-  // after the display is unplugged or switched off.
-  if (entered_outputs_it_ != entered_outputs_.end())
-    entered_outputs_.erase(entered_outputs_it_);
+  // In certain use cases, such as switching outputs in the single output
+  // configuration, the compositor may move the surface from one output to
+  // another one, send wl_surface::leave event to it, but defer sending
+  // wl_surface::enter until the user moves or resizes the surface on the new
+  // output.
+  entered_outputs_.erase(entered_outputs_it_);
 
   if (root_window_)
-    root_window_->OnEnteredOutputIdRemoved();
+    root_window_->OnLeftOutput();
 }
 
 void WaylandSurface::SetOverlayPriority(

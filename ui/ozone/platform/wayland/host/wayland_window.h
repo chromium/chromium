@@ -278,12 +278,13 @@ class WaylandWindow : public PlatformWindow,
   WaylandWindow* GetTopMostChildWindow();
 
   // Called by the WaylandSurface attached to this window when that surface
-  // becomes partially or fully within the scanout region of |output|.
-  void OnEnteredOutputIdAdded();
+  // becomes partially or fully within the scanout region of an output that it
+  // wasn't before.
+  void OnEnteredOutput();
 
   // Called by the WaylandSurface attached to this window when that surface
-  // becomes fully outside of the scanout region of |output|.
-  void OnEnteredOutputIdRemoved();
+  // becomes fully outside of one of outputs that it previously resided on.
+  void OnLeftOutput();
 
   // Returns true iff this window is opaque.
   bool IsOpaqueWindow() const;
