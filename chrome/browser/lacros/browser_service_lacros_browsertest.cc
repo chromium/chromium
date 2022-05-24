@@ -35,6 +35,8 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -424,6 +426,77 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
             tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
+                       NewTab_OpensWindowWithSessionRestore) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  auto* profile =
+      profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
+  DisableWelcomePages({profile});
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Set the startup pref to restore the last session.
+  SessionStartupPref pref(SessionStartupPref::LAST);
+
+  // Open a browser window with some URLs.
+  auto* browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
+  auto* tab_strip = browser->tab_strip_model();
+
+  chrome::NewTab(browser);
+  tab_strip->ActivateTabAt(0);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, embedded_test_server()->GetURL("/title1.html")));
+
+  chrome::NewTab(browser);
+  tab_strip->ActivateTabAt(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, embedded_test_server()->GetURL("/title2.html")));
+
+  ASSERT_EQ(2, tab_strip->count());
+
+  // Keep the browser process running while the browser is closed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Close the browser and ensure there are no longer any open browser windows.
+  CloseBrowserSynchronously(browser);
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Trigger a new tab with session restore.
+  base::RunLoop run_loop;
+  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  browser_service()->NewTab(
+      /*should_trigger_session_restore=*/true,
+      /*callback=*/base::DoNothing());
+  run_loop.Run();
+
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  auto* new_browser = chrome::FindBrowserWithProfile(profile);
+  ASSERT_TRUE(new_browser);
+  auto* new_tab_strip = new_browser->tab_strip_model();
+  ASSERT_EQ(2, new_tab_strip->count());
+
+  EXPECT_EQ("/title1.html",
+            new_tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+  EXPECT_EQ("/title2.html",
+            new_tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path());
+
+  // A second call to NewTab() ignores session restore and adds a new tab to
+  // the existing browser.
+  base::RunLoop run_loop2;
+  browser_service()->NewTab(
+      /*should_trigger_session_restore=*/true,
+      /*callback=*/run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(3, new_tab_strip->count());
+}
+
 // Tests that requesting an incognito window when incognito mode is disallowed
 // does not crash, and opens a regular window instead. Regression test for
 // https://crbug.com/1314473
@@ -533,6 +606,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 
   base::RunLoop run_loop;
   browser_service()->NewTab(
+      /*should_trigger_session_restore=*/false,
       /*callback=*/run_loop.QuitClosure());
   profiles::testing::CompleteLacrosFirstRun(LoginUIService::ABORT_SYNC);
 

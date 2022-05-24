@@ -641,7 +641,8 @@ void BrowserManager::NewTab(bool should_trigger_session_restore) {
     LOG(ERROR) << "BrowserService was disconnected";
     return;
   }
-  browser_service_->service->NewTab(base::DoNothing());
+  browser_service_->service->NewTab(should_trigger_session_restore,
+                                    base::DoNothing());
 }
 
 void BrowserManager::OpenUrl(const GURL& url,

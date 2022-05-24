@@ -244,10 +244,12 @@ void BrowserServiceLacros::NewWindowForDetachingTab(
       /*can_trigger_fre=*/false);
 }
 
-void BrowserServiceLacros::NewTab(NewTabCallback callback) {
+void BrowserServiceLacros::NewTab(bool should_trigger_session_restore,
+                                  NewTabCallback callback) {
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::NewTabWithProfile,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     should_trigger_session_restore, std::move(callback)),
       /*can_trigger_fre=*/true);
 }
 
@@ -563,8 +565,10 @@ void BrowserServiceLacros::NewWindowForDetachingTabWithProfile(
                           platform_window->GetWindowUniqueId());
 }
 
-void BrowserServiceLacros::NewTabWithProfile(NewTabCallback callback,
-                                             Profile* profile) {
+void BrowserServiceLacros::NewTabWithProfile(
+    bool should_trigger_session_restore,
+    NewTabCallback callback,
+    Profile* profile) {
   if (!profile) {
     LOG(WARNING) << "No profile, it might be an early exit from the FRE. "
                     "Aborting the requested action.";
@@ -576,7 +580,7 @@ void BrowserServiceLacros::NewTabWithProfile(NewTabCallback callback,
   if (browser) {
     chrome::NewTab(browser);
   } else {
-    chrome::NewEmptyWindow(profile, /*should_trigger_session_restore=*/false);
+    chrome::NewEmptyWindow(profile, should_trigger_session_restore);
   }
   std::move(callback).Run();
 }
