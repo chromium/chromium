@@ -40,6 +40,11 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
               mojom::FSPChangeType type,
               std::vector<mojom::FSPChangePtr> changes,
               NotifyCallback callback) override;
+  void OperationFinished(mojom::FSPOperationResponse response,
+                         mojom::FileSystemIdPtr file_system_id,
+                         int64_t request_id,
+                         std::vector<base::Value> args,
+                         OperationFinishedCallback callback) override;
 
   // In order to support multi-login in ash, a legacy feature that is going
   // away in Lacros, all methods above are redirected to a variation that
@@ -63,6 +68,12 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                          std::vector<mojom::FSPChangePtr> changes,
                          NotifyCallback callback,
                          Profile* profile);
+  void OperationFinishedWithProfile(mojom::FSPOperationResponse response,
+                                    mojom::FileSystemIdPtr file_system_id,
+                                    int64_t request_id,
+                                    std::vector<base::Value> args,
+                                    OperationFinishedCallback callback,
+                                    Profile* profile);
 };
 
 }  // namespace crosapi

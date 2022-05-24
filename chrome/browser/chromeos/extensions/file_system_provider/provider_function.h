@@ -12,13 +12,6 @@
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "extensions/browser/extension_function.h"
 
-namespace ash {
-namespace file_system_provider {
-class RequestManager;
-class RequestValue;
-}  // namespace file_system_provider
-}  // namespace ash
-
 namespace extensions {
 
 // Error names from
@@ -41,36 +34,6 @@ std::string FileErrorToString(base::File::Error error);
 // was possible to create DOMError instances in Javascript easily.
 base::File::Error ProviderErrorToFileError(
     api::file_system_provider::ProviderError error);
-
-// Base class for internal API functions handling request results, either
-// a success or a failure.
-class FileSystemProviderInternalFunction : public ExtensionFunction {
- public:
-  FileSystemProviderInternalFunction();
-
- protected:
-  ~FileSystemProviderInternalFunction() override {}
-
-  // Rejects the request and returns a response for this API function.
-  ResponseAction RejectRequest(
-      std::unique_ptr<ash::file_system_provider::RequestValue> value,
-      base::File::Error error);
-
-  // Fulfills the request with parsed arguments of this API function
-  // encapsulated as a RequestValue instance and returns a response.
-  // If |has_more| is set to true, then the function will be called again for
-  // this request.
-  ResponseAction FulfillRequest(
-      std::unique_ptr<ash::file_system_provider::RequestValue> value,
-      bool has_more);
-
- private:
-  // Guarantees |request_id_| and |request_manager_| are valid.
-  bool PreRunValidation(std::string* error) override;
-
-  int request_id_;
-  ash::file_system_provider::RequestManager* request_manager_;
-};
 
 }  // namespace extensions
 

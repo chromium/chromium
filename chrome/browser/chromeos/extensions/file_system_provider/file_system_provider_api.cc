@@ -295,9 +295,9 @@ FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  return FulfillRequest(
-      RequestValue::CreateForUnmountSuccess(std::move(params)),
-      false /* has_more */);
+  ForwardOperationResult(params, mutable_args(),
+                         crosapi::mojom::FSPOperationResponse::kUnmountSuccess);
+  return RespondLater();
 }
 
 ExtensionFunction::ResponseAction
@@ -306,9 +306,10 @@ FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  return FulfillRequest(
-      RequestValue::CreateForGetMetadataSuccess(std::move(params)),
-      false /* has_more */);
+  ForwardOperationResult(
+      params, mutable_args(),
+      crosapi::mojom::FSPOperationResponse::kGetEntryMetadataSuccess);
+  return RespondLater();
 }
 
 ExtensionFunction::ResponseAction
@@ -316,10 +317,10 @@ FileSystemProviderInternalGetActionsRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::GetActionsRequestedSuccess::Params;
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  return FulfillRequest(
-      RequestValue::CreateForGetActionsSuccess(std::move(params)),
-      false /* has_more */);
+  ForwardOperationResult(
+      params, mutable_args(),
+      crosapi::mojom::FSPOperationResponse::kGetActionsSuccess);
+  return RespondLater();
 }
 
 ExtensionFunction::ResponseAction
@@ -328,10 +329,10 @@ FileSystemProviderInternalReadDirectoryRequestedSuccessFunction::Run() {
       Params;
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  const bool has_more = params->has_more;
-  return FulfillRequest(
-      RequestValue::CreateForReadDirectorySuccess(std::move(params)), has_more);
+  ForwardOperationResult(
+      params, mutable_args(),
+      crosapi::mojom::FSPOperationResponse::kReadDirectorySuccess);
+  return RespondLater();
 }
 
 ExtensionFunction::ResponseAction
@@ -339,12 +340,13 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
   TRACE_EVENT0("file_system_provider", "ReadFileRequestedSuccess");
   using api::file_system_provider_internal::ReadFileRequestedSuccess::Params;
 
+  // TODO(https://crbug.com/1314397): Improve performance by removing copy.
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  const bool has_more = params->has_more;
-  return FulfillRequest(
-      RequestValue::CreateForReadFileSuccess(std::move(params)), has_more);
+  ForwardOperationResult(
+      params, mutable_args(),
+      crosapi::mojom::FSPOperationResponse::kReadFileSuccess);
+  return RespondLater();
 }
 
 ExtensionFunction::ResponseAction
@@ -353,10 +355,9 @@ FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  return FulfillRequest(
-      std::unique_ptr<RequestValue>(
-          RequestValue::CreateForOperationSuccess(std::move(params))),
-      false /* has_more */);
+  ForwardOperationResult(params, mutable_args(),
+                         crosapi::mojom::FSPOperationResponse::kGenericSuccess);
+  return RespondLater();
 }
 
 ExtensionFunction::ResponseAction
@@ -370,9 +371,9 @@ FileSystemProviderInternalOperationRequestedErrorFunction::Run() {
     return ValidationFailure(this);
   }
 
-  const base::File::Error error = ProviderErrorToFileError(params->error);
-  return RejectRequest(RequestValue::CreateForOperationError(std::move(params)),
-                       error);
+  ForwardOperationResult(params, mutable_args(),
+                         crosapi::mojom::FSPOperationResponse::kGenericFailure);
+  return RespondLater();
 }
 
 }  // namespace extensions

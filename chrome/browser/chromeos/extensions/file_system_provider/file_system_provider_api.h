@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_function.h"
 
@@ -72,8 +76,44 @@ class FileSystemProviderNotifyFunction : public FileSystemProviderBase {
   void OnNotifyCompleted(base::File::Error result);
 };
 
+class FileSystemProviderInternal : public FileSystemProviderBase {
+ protected:
+  ~FileSystemProviderInternal() override {}
+
+  // Returns the operation metadata from FileSystemProviderInternal methods via
+  // output parameters.
+  template <typename Params>
+  void GetOperationMetadata(const Params& params,
+                            crosapi::mojom::FileSystemIdPtr* file_system_id,
+                            int64_t* request_id) {
+    *file_system_id = crosapi::mojom::FileSystemId::New();
+    (*file_system_id)->provider = extension_id();
+    (*file_system_id)->id = params->file_system_id;
+    *request_id = params->request_id;
+  }
+
+  // Forwards the result of the operation to the file system provider service.
+  template <typename Params>
+  void ForwardOperationResult(const Params& params,
+                              std::vector<base::Value>& args,
+                              crosapi::mojom::FSPOperationResponse response) {
+    crosapi::mojom::FileSystemIdPtr file_system_id;
+    int64_t request_id;
+    GetOperationMetadata(params, &file_system_id, &request_id);
+    auto callback =
+        base::BindOnce(&FileSystemProviderInternal::RespondWithError, this);
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->file_system_provider_service_ash()
+        ->OperationFinishedWithProfile(
+            response, std::move(file_system_id), request_id, std::move(args),
+            std::move(callback),
+            Profile::FromBrowserContext(browser_context()));
+  }
+};
+
 class FileSystemProviderInternalUnmountRequestedSuccessFunction
-    : public FileSystemProviderInternalFunction {
+    : public FileSystemProviderInternal {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "fileSystemProviderInternal.unmountRequestedSuccess",
@@ -85,7 +125,7 @@ class FileSystemProviderInternalUnmountRequestedSuccessFunction
 };
 
 class FileSystemProviderInternalGetMetadataRequestedSuccessFunction
-    : public FileSystemProviderInternalFunction {
+    : public FileSystemProviderInternal {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "fileSystemProviderInternal.getMetadataRequestedSuccess",
@@ -97,7 +137,7 @@ class FileSystemProviderInternalGetMetadataRequestedSuccessFunction
 };
 
 class FileSystemProviderInternalGetActionsRequestedSuccessFunction
-    : public FileSystemProviderInternalFunction {
+    : public FileSystemProviderInternal {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "fileSystemProviderInternal.getActionsRequestedSuccess",
@@ -109,7 +149,7 @@ class FileSystemProviderInternalGetActionsRequestedSuccessFunction
 };
 
 class FileSystemProviderInternalReadDirectoryRequestedSuccessFunction
-    : public FileSystemProviderInternalFunction {
+    : public FileSystemProviderInternal {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "fileSystemProviderInternal.readDirectoryRequestedSuccess",
@@ -121,7 +161,7 @@ class FileSystemProviderInternalReadDirectoryRequestedSuccessFunction
 };
 
 class FileSystemProviderInternalReadFileRequestedSuccessFunction
-    : public FileSystemProviderInternalFunction {
+    : public FileSystemProviderInternal {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "fileSystemProviderInternal.readFileRequestedSuccess",
@@ -133,7 +173,7 @@ class FileSystemProviderInternalReadFileRequestedSuccessFunction
 };
 
 class FileSystemProviderInternalOperationRequestedSuccessFunction
-    : public FileSystemProviderInternalFunction {
+    : public FileSystemProviderInternal {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "fileSystemProviderInternal.operationRequestedSuccess",
@@ -145,7 +185,7 @@ class FileSystemProviderInternalOperationRequestedSuccessFunction
 };
 
 class FileSystemProviderInternalOperationRequestedErrorFunction
-    : public FileSystemProviderInternalFunction {
+    : public FileSystemProviderInternal {
  public:
   DECLARE_EXTENSION_FUNCTION(
       "fileSystemProviderInternal.operationRequestedError",
