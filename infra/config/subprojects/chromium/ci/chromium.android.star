@@ -425,6 +425,28 @@ ci.thin_tester(
 ci.builder(
     name = "Cast Android (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "cast_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
         short_name = "cst",
