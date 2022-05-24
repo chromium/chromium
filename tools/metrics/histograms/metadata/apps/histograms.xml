@@ -989,7 +989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2{TabletOrClamshell}"
+    name="Apps.AppList.SortDiscoveryDurationAfterEducationNudgeV2.{TabletOrClamshell}"
     units="ms" expires_after="M107">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
