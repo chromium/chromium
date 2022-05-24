@@ -1589,7 +1589,8 @@ class OobeSpokenFeedbackTest : public OobeBaseTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
+// TODO(crbug.com/1310682) - Re-enable this test.
+IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
   ui_controls::EnableUIControls();
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedbackWithTutorial();
