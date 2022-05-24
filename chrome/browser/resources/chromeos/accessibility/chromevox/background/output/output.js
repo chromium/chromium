@@ -12,6 +12,7 @@ goog.require('AbstractEarcons');
 goog.require('AutomationTreeWalker');
 goog.require('ChromeVox');
 goog.require('EventSourceState');
+goog.require('FocusBounds');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('NavBraille');
@@ -596,7 +597,7 @@ Output = class {
 
     // Display.
     if (this.speechCategory_ !== TtsCategory.LIVE && this.drawFocusRing_) {
-      ChromeVoxState.instance.setFocusBounds(this.locations_);
+      FocusBounds.set(this.locations_);
     }
   }
 

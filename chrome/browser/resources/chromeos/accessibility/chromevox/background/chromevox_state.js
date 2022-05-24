@@ -39,9 +39,6 @@ ChromeVoxState = function() {
     throw 'Trying to create two instances of singleton ChromeVoxState.';
   }
   ChromeVoxState.instance = this;
-
-  /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
-  this.focusBounds_ = [];
 };
 
 /**
@@ -122,27 +119,6 @@ ChromeVoxState.prototype = {
    * @return {boolean} True if evt was processed.
    */
   onBrailleKeyEvent: goog.abstractMethod,
-
-  /**
-   * Gets the bounds of the focus ring.
-   * @return {Array<chrome.accessibilityPrivate.ScreenRect>}
-   */
-  getFocusBounds() {
-    return this.focusBounds_;
-  },
-
-  /**
-   * Sets the bounds of the focus ring.
-   * @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} bounds
-   */
-  setFocusBounds(bounds) {
-    this.focusBounds_ = bounds;
-    chrome.accessibilityPrivate.setFocusRings([{
-      rects: bounds,
-      type: chrome.accessibilityPrivate.FocusType.GLOW,
-      color: constants.FOCUS_COLOR
-    }]);
-  },
 
   /**
    * Forces the reading of the next change to the clipboard.

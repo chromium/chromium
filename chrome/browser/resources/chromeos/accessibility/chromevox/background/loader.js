@@ -21,6 +21,7 @@ goog.require('ChromeVoxStateObserver');
 goog.require('CommandHandlerInterface');
 goog.require('EventSourceState');
 goog.require('ExtraCellsSpan');
+goog.require('FocusBounds');
 goog.require('KeyCode');
 goog.require('KeySequence');
 goog.require('LibLouis');

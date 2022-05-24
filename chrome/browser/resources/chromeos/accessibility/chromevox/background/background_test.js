@@ -3120,14 +3120,12 @@ TEST_F('ChromeVoxBackgroundTest', 'ImageAnnotations', async function() {
 TEST_F('ChromeVoxBackgroundTest', 'VolumeChanges', async function() {
   const mockFeedback = this.createMockFeedback();
   await this.runWithLoadedTree('<p>test</p>');
-  const bounds = ChromeVoxState.instance.getFocusBounds();
+  const bounds = FocusBounds.get();
   mockFeedback.call(press(KeyCode.VOLUME_UP))
       .expectSpeech('Volume', 'Slider', /\d+%/)
       .call(() => {
         // The bounds should not have changed.
-        assertEquals(
-            JSON.stringify(bounds),
-            JSON.stringify(ChromeVoxState.instance.getFocusBounds()));
+        assertEquals(JSON.stringify(bounds), JSON.stringify(FocusBounds.get()));
       })
       .replay();
 });

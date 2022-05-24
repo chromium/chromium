@@ -36,6 +36,7 @@ chromevox_modules = [
   "background/chromevox_state.js",
   "background/command_handler_interface.js",
   "background/event_source.js",
+  "background/focus_bounds.js",
   "background/logging/log_store.js",
   "background/output/output.js",
   "background/output/output_ancestry_info.js",

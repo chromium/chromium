@@ -1321,9 +1321,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'WithoutFocusRing', async function() {
   const site = `<button></button>`;
   const root = await this.runWithLoadedTree(site);
   let called = false;
-  ChromeVoxState.instance.setFocusBounds = this.newCallback(() => {
-    called = true;
-  });
+  FocusBounds.set = this.newCallback(() => called = true);
 
   const button = root.find({role: RoleType.BUTTON});
 

@@ -223,15 +223,15 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
   onLocationChanged(evt) {
     const cur = ChromeVoxState.instance.currentRange;
     if (!cur || !cur.isValid()) {
-      if (ChromeVoxState.instance.getFocusBounds().length) {
-        ChromeVoxState.instance.setFocusBounds([]);
+      if (FocusBounds.get().length) {
+        FocusBounds.set([]);
       }
       return;
     }
 
     // Rather than trying to figure out if the current range falls somewhere
     // in |evt.target|, just update it if our cached bounds don't match.
-    const oldFocusBounds = ChromeVoxState.instance.getFocusBounds();
+    const oldFocusBounds = FocusBounds.get();
     const startRect = cur.start.node.location;
     const endRect = cur.end.node.location;
 

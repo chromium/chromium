@@ -136,7 +136,7 @@ export class Background extends ChromeVoxState {
     // There's nothing to be updated in this case.
     if ((!newRange && !this.currentRange_) ||
         (newRange && !newRange.isValid())) {
-      ChromeVoxState.instance.setFocusBounds([]);
+      FocusBounds.set([]);
       return;
     }
 
@@ -147,7 +147,7 @@ export class Background extends ChromeVoxState {
         observer => observer.onCurrentRangeChanged(newRange, opt_fromEditing));
 
     if (!this.currentRange_) {
-      ChromeVoxState.instance.setFocusBounds([]);
+      FocusBounds.set([]);
       return;
     }
 
