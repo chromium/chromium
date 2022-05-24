@@ -442,7 +442,6 @@ CompositorTimingHistory::CompositorTimingHistory(
     : using_synchronous_renderer_compositor_(
           using_synchronous_renderer_compositor),
       enabled_(false),
-      did_send_begin_main_frame_(false),
       compositor_drawing_continuously_(false),
       begin_main_frame_queue_duration_history_(kDurationHistorySize),
       begin_main_frame_queue_duration_critical_history_(kDurationHistorySize),
@@ -597,8 +596,6 @@ void CompositorTimingHistory::WillBeginImplFrame(
 
   if (frame_type == viz::BeginFrameArgs::NORMAL)
     uma_reporter_->AddBeginImplFrameLatency(now - frame_time);
-
-  did_send_begin_main_frame_ = false;
 }
 
 void CompositorTimingHistory::WillFinishImplFrame(bool needs_redraw) {
@@ -616,8 +613,6 @@ void CompositorTimingHistory::WillBeginMainFrame(
 
   begin_main_frame_on_critical_path_ = args.on_critical_path;
   begin_main_frame_sent_time_ = Now();
-
-  did_send_begin_main_frame_ = true;
 }
 
 void CompositorTimingHistory::BeginMainFrameStarted(

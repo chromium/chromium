@@ -112,7 +112,6 @@ class CC_EXPORT CompositorTimingHistory {
   bool enabled_;
 
   // Used to calculate frame rates of Main and Impl threads.
-  bool did_send_begin_main_frame_;
   bool compositor_drawing_continuously_;
   base::TimeTicks new_active_tree_draw_end_time_prev_;
   base::TimeTicks draw_end_time_prev_;
