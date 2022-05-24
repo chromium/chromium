@@ -3467,6 +3467,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ImpressionIgnoredByFeaturePolicy"
     enum="BooleanIgnored" expires_after="M105">
+  <obsolete>
+    Removed May 2022.
+  </obsolete>
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3591,7 +3594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.RegisterImpressionAllowed" enum="BooleanAllowed"
-    expires_after="M105">
+    expires_after="M109">
   <owner>apaseltiner@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
