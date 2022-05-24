@@ -116,10 +116,8 @@ struct CrossThreadCopier<AtomicString>
 };
 
 template <>
-struct CrossThreadCopier<String> {
+struct CrossThreadCopier<String> : public CrossThreadCopierPassThrough<String> {
   STATIC_ONLY(CrossThreadCopier);
-  typedef String Type;
-  WTF_EXPORT static Type Copy(const String&);
 };
 
 }  // namespace WTF

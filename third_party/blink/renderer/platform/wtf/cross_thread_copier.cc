@@ -38,11 +38,6 @@
 
 namespace WTF {
 
-CrossThreadCopier<String>::Type CrossThreadCopier<String>::Copy(
-    const String& str) {
-  return str.IsolatedCopy();
-}
-
 // Test CrossThreadCopier using static_assert.
 
 // Verify that ThreadSafeRefCounted objects get handled correctly.
