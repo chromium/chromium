@@ -1762,6 +1762,8 @@ component("ash") {
     "wallpaper/wallpaper_constants.h",
     "wallpaper/wallpaper_controller_impl.cc",
     "wallpaper/wallpaper_controller_impl.h",
+    "wallpaper/wallpaper_pref_manager.cc",
+    "wallpaper/wallpaper_pref_manager.h",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.cc",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator.h",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h",

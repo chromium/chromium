@@ -26,6 +26,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
+#include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
@@ -267,50 +268,49 @@ base::Value CreateWallpaperInfoDict(WallpaperInfo info) {
   base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
   if (info.asset_id.has_value()) {
     wallpaper_info_dict.SetStringKey(
-        WallpaperControllerImpl::kNewWallpaperAssetIdNodeName,
+        WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
         base::NumberToString(info.asset_id.value()));
   }
   if (info.dedup_key.has_value()) {
     wallpaper_info_dict.SetStringKey(
-        WallpaperControllerImpl::kNewWallpaperDedupKeyNodeName,
+        WallpaperPrefManager::kNewWallpaperDedupKeyNodeName,
         info.dedup_key.value());
   }
   if (info.unit_id.has_value()) {
     wallpaper_info_dict.SetStringKey(
-        WallpaperControllerImpl::kNewWallpaperUnitIdNodeName,
+        WallpaperPrefManager::kNewWallpaperUnitIdNodeName,
         base::NumberToString(info.unit_id.value()));
   }
   base::Value online_wallpaper_variant_list(base::Value::Type::LIST);
   for (const auto& variant : info.variants) {
     base::Value online_wallpaper_variant_dict(base::Value::Type::DICTIONARY);
     online_wallpaper_variant_dict.SetStringKey(
-        WallpaperControllerImpl::kNewWallpaperAssetIdNodeName,
+        WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
         base::NumberToString(variant.asset_id));
     online_wallpaper_variant_dict.SetStringKey(
-        WallpaperControllerImpl::kOnlineWallpaperUrlNodeName,
+        WallpaperPrefManager::kOnlineWallpaperUrlNodeName,
         variant.raw_url.spec());
     online_wallpaper_variant_dict.SetIntKey(
-        WallpaperControllerImpl::kOnlineWallpaperTypeNodeName,
+        WallpaperPrefManager::kOnlineWallpaperTypeNodeName,
         static_cast<int>(variant.type));
     online_wallpaper_variant_list.Append(
         std::move(online_wallpaper_variant_dict));
   }
   wallpaper_info_dict.SetKey(
-      WallpaperControllerImpl::kNewWallpaperVariantListNodeName,
+      WallpaperPrefManager::kNewWallpaperVariantListNodeName,
       std::move(online_wallpaper_variant_list));
   wallpaper_info_dict.SetStringKey(
-      WallpaperControllerImpl::kNewWallpaperCollectionIdNodeName,
+      WallpaperPrefManager::kNewWallpaperCollectionIdNodeName,
       info.collection_id);
   wallpaper_info_dict.SetStringKey(
-      WallpaperControllerImpl::kNewWallpaperDateNodeName,
+      WallpaperPrefManager::kNewWallpaperDateNodeName,
       base::NumberToString(info.date.ToInternalValue()));
   wallpaper_info_dict.SetStringKey(
-      WallpaperControllerImpl::kNewWallpaperLocationNodeName, info.location);
+      WallpaperPrefManager::kNewWallpaperLocationNodeName, info.location);
   wallpaper_info_dict.SetIntKey(
-      WallpaperControllerImpl::kNewWallpaperLayoutNodeName, info.layout);
-  wallpaper_info_dict.SetIntKey(
-      WallpaperControllerImpl::kNewWallpaperTypeNodeName,
-      static_cast<int>(info.type));
+      WallpaperPrefManager::kNewWallpaperLayoutNodeName, info.layout);
+  wallpaper_info_dict.SetIntKey(WallpaperPrefManager::kNewWallpaperTypeNodeName,
+                                static_cast<int>(info.type));
   return wallpaper_info_dict;
 }
 
@@ -3557,16 +3557,16 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, OldOnlineInfoSynced_Discarded) {
   // DO NOT CHANGE as there are preferences like this in production.
   base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
   wallpaper_info_dict.SetStringPath(
-      WallpaperControllerImpl::kNewWallpaperDateNodeName,
+      WallpaperPrefManager::kNewWallpaperDateNodeName,
       base::NumberToString(
           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
   wallpaper_info_dict.SetStringPath(
-      WallpaperControllerImpl::kNewWallpaperLocationNodeName, "location");
+      WallpaperPrefManager::kNewWallpaperLocationNodeName, "location");
   wallpaper_info_dict.SetIntPath(
-      WallpaperControllerImpl::kNewWallpaperLayoutNodeName,
+      WallpaperPrefManager::kNewWallpaperLayoutNodeName,
       WallpaperLayout::WALLPAPER_LAYOUT_CENTER);
   wallpaper_info_dict.SetIntPath(
-      WallpaperControllerImpl::kNewWallpaperTypeNodeName,
+      WallpaperPrefManager::kNewWallpaperTypeNodeName,
       static_cast<int>(WallpaperType::kOnline));
 
   {

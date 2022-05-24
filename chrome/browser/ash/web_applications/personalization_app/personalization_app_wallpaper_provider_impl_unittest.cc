@@ -14,7 +14,7 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback_helpers.h"
@@ -120,8 +120,7 @@ constexpr char kGooglePhotosResumeTokenOnlyResponse[] =
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   ash::device_settings_cache::RegisterPrefs(local_state->registry());
   user_manager::KnownUser::RegisterPrefs(local_state->registry());
-  ash::WallpaperControllerImpl::RegisterLocalStatePrefs(
-      local_state->registry());
+  ash::WallpaperPrefManager::RegisterLocalStatePrefs(local_state->registry());
   policy::DeviceWallpaperImageExternalDataHandler::RegisterPrefs(
       local_state->registry());
   ProfileAttributesStorage::RegisterPrefs(local_state->registry());

@@ -14,6 +14,7 @@
 #include "url/gurl.h"
 
 TestWallpaperController::TestWallpaperController() : id_cache_(0) {}
+
 TestWallpaperController::~TestWallpaperController() = default;
 
 void TestWallpaperController::ShowWallpaperImage(const gfx::ImageSkia& image) {
