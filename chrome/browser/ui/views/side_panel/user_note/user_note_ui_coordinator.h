@@ -17,7 +17,6 @@ class UserNoteInstance;
 }
 
 class SidePanelRegistry;
-class UserNoteView;
 
 class UserNoteUICoordinator : public user_notes::UserNotesUI,
                               public TabStripModelObserver,
@@ -36,10 +35,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
                      UserNoteView* user_note_view);
   void OnNoteCreationDone(const base::UnguessableToken& id,
                           const std::string& note_content);
-  void OnNoteCreationCancelled(const base::UnguessableToken& id,
-                               UserNoteView* user_note_view);
-  void OnNoteUpdated(const base::UnguessableToken& id,
-                     const std::string& note_content);
+  void OnNoteCreationCancelled(const base::UnguessableToken& id);
 
   // UserNoteUI overrides
   void FocusNote(const std::string& guid) override;

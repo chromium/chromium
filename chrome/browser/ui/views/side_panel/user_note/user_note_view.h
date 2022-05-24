@@ -42,9 +42,9 @@ class UserNoteView : public views::View {
     kCreating,
     // State that will display an existing user note to be edited.
     kEditing,
-    // State that will display a detached user note (note without a highlight
-    // on the page).
-    kDetached
+    // State that will display an orphan user note (note without a highlight in
+    // the page).
+    kOrphaned
   };
 
   explicit UserNoteView(
@@ -64,16 +64,14 @@ class UserNoteView : public views::View {
                               base::Time date,
                               const std::string content,
                               const std::string quote);
-  void OnCancelUserNote(UserNoteView::State state);
+  void OnCancelNewUserNote();
   void OnAddUserNote();
-  void OnSaveUserNote();
-  void OnOpenMenu();
-  void OnMenuClosed();
   void OnEditUserNote(int event_flags);
   void OnDeleteUserNote(int event_flags);
   void OnLearnUserNote(int event_flags);
-  void SetCreatingOrEditState(const std::string content,
-                              UserNoteView::State state);
+  void OnOpenMenu();
+  void OnMenuClosed();
+  void SetCreatingOrEditState(const std::string content);
   void SetDefaultOrDetachedState(base::Time date,
                                  const std::string content,
                                  const std::string quote);

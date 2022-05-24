@@ -73,19 +73,10 @@ void UserNoteUICoordinator::OnNoteCreationDone(
 }
 
 void UserNoteUICoordinator::OnNoteCreationCancelled(
-    const base::UnguessableToken& id,
-    UserNoteView* user_note_view) {
-  scroll_contents_view_->RemoveChildView(user_note_view);
+    const base::UnguessableToken& id) {
   auto* service =
       user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
   service->OnNoteCreationCancelled(id);
-}
-
-void UserNoteUICoordinator::OnNoteUpdated(const base::UnguessableToken& id,
-                                          const std::string& note_content) {
-  auto* service =
-      user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
-  service->OnNoteUpdated(id, note_content);
 }
 
 void UserNoteUICoordinator::FocusNote(const std::string& guid) {
