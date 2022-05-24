@@ -9,7 +9,13 @@
 #include "base/check_op.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_dialog_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(Browser* browser)
@@ -40,10 +46,8 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
       !GetWidget()->IsMouseEventsEnabled())
     return;
 
-  content::WebContents* web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
   ExtensionsRequestAccessButtonHoverCard::ShowBubble(
-      web_contents, this, extensions_requesting_access_);
+      web_contents(), this, extensions_requesting_access_);
 }
 
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
@@ -52,9 +56,21 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
   return std::u16string();
 }
 
-// TODO(crbug.com/1239772): Grant access to all the extensions requesting access
-// when the button is pressed.
-void ExtensionsRequestAccessButton::OnButtonPressed() {}
+void ExtensionsRequestAccessButton::OnButtonPressed() {
+  // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
+  // an anchor view and showing a BubbleDialogDelegate into a common location.
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_);
+  ExtensionsToolbarContainer* const container =
+      browser_view ? browser_view->toolbar_button_provider()
+                         ->GetExtensionsToolbarContainer()
+                   : nullptr;
+  DCHECK(container);
+  views::View* const anchor_view = container->GetExtensionsButton();
+
+  ShowExtensionsRequestAccessDialogView(web_contents(), anchor_view,
+                                        extensions_requesting_access_);
+}
 
 // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
 // an enter event and fail to hover the button. This is effectively a no-op if
@@ -70,4 +86,8 @@ void ExtensionsRequestAccessButton::OnMouseEntered(
 
 void ExtensionsRequestAccessButton::OnMouseExited(const ui::MouseEvent& event) {
   ExtensionsRequestAccessButtonHoverCard::HideBubble();
+}
+
+content::WebContents* ExtensionsRequestAccessButton::web_contents() {
+  return browser_->tab_strip_model()->GetActiveWebContents();
 }

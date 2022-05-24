@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -32,16 +32,6 @@ void ShowBlockedActionDialog(Browser* browser,
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
-
-// TODO(crbug.com/1325171): Use extensions::IconImage instead of getting the
-// action's image. The icon displayed should be the "product" icon and not the
-// "action" action based on the web contents.
-ui::ImageModel GetIcon(ToolbarActionViewController* action,
-                       content::WebContents* web_contents) {
-  return ui::ImageModel::FromImageSkia(
-      action->GetIcon(web_contents, InstalledExtensionMenuItemView::kIconSize)
-          .AsImageSkia());
-}
 
 }  // namespace
 

@@ -11,6 +11,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions_toolbar_container.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 scoped_refptr<const extensions::Extension>
 ExtensionsDialogBrowserTest::InstallExtension(const std::string& name) {
@@ -19,6 +20,7 @@ ExtensionsDialogBrowserTest::InstallExtension(const std::string& name) {
   extensions::ExtensionSystem::Get(browser()->profile())
       ->extension_service()
       ->AddExtension(extension.get());
+  views::test::WaitForAnimatingLayoutManager(extensions_container());
   return extension;
 }
 

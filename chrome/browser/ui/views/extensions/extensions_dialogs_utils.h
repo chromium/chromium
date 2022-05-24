@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_UTILS_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_UTILS_H_
+
+#include "content/public/browser/web_contents.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+class ToolbarActionViewController;
+
+std::unique_ptr<views::BubbleDialogModelHost::CustomView> CreateExtensionItem(
+    const std::u16string& name,
+    const ui::ImageModel& icon);
+
+// Returns the icon corresponding to `action` for the given `web_contents`.
+ui::ImageModel GetIcon(ToolbarActionViewController* action,
+                       content::WebContents* web_contents);
+
+// Returns the host of the `web_content`. This method should only be called when
+// web contents are present.
+std::u16string GetCurrentHost(content::WebContents* web_contents);
+
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_UTILS_H_

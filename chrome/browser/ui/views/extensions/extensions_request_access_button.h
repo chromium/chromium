@@ -7,6 +7,10 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class ToolbarActionViewController;
 class Browser;
 
@@ -37,6 +41,8 @@ class ExtensionsRequestAccessButton : public ToolbarButton {
 
  private:
   void OnButtonPressed();
+
+  content::WebContents* web_contents();
 
   raw_ptr<Browser> browser_;
 

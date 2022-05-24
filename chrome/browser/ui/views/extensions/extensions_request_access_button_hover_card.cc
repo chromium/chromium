@@ -5,54 +5,19 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 
 #include "base/bind.h"
-#include "base/strings/strcat.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
 namespace {
 
 views::BubbleDialogModelHost* request_access_bubble = nullptr;
-
-ui::ImageModel GetIcon(ToolbarActionViewController* action,
-                       content::WebContents* web_contents) {
-  return ui::ImageModel::FromImageSkia(
-      action->GetIcon(web_contents, InstalledExtensionMenuItemView::kIconSize)
-          .AsImageSkia());
-}
-
-std::unique_ptr<views::BubbleDialogModelHost::CustomView> CreateExtensionItem(
-    const std::u16string& name,
-    const ui::ImageModel& icon) {
-  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const gfx::Insets content_insets = provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText);
-
-  return std::make_unique<views::BubbleDialogModelHost::CustomView>(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kHorizontal)
-          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-          .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-              0, content_insets.left(), 0, content_insets.right())))
-          .AddChildren(views::Builder<views::ImageView>().SetImage(icon),
-                       views::Builder<views::Label>().SetText(name))
-          .Build(),
-      views::BubbleDialogModelHost::FieldType::kMenuItem);
-}
 
 }  // namespace
 
@@ -64,8 +29,6 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
   DCHECK(!request_access_bubble);
   DCHECK(web_contents);
   DCHECK(!actions.empty());
-  std::u16string url = url_formatter::IDNToUnicode(
-      url_formatter::StripWWW(web_contents->GetLastCommittedURL().host()));
 
   ui::DialogModel::Builder dialog_builder =
       ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>());
@@ -76,6 +39,7 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
       .SetDialogDestroyingCallback(
           base::BindOnce(&ExtensionsRequestAccessButtonHoverCard::HideBubble));
 
+  const std::u16string url = GetCurrentHost(web_contents);
   if (actions.size() == 1) {
     dialog_builder.SetIcon(GetIcon(actions[0], web_contents))
         .AddBodyText(ui::DialogModelLabel(l10n_util::GetStringFUTF16(

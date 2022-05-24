@@ -4896,6 +4896,19 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS" desc="The tooltip text of the request access button that appears on the toolbar when an extension requests access to the site">
           Requesting to read and change <ph name="ORIGIN">$1<ex>google.com</ex></ph>:
         </message>
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_SINGLE_EXTENSION_TITLE" desc="The title of the request access bubble to tell the user to accept the bubble to always run the extension on the site.">
+          Always allow "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" to run on <ph name="ORIGIN">$2<ex>google.com</ex></ph>?
+        </message>
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_MULTIPLE_EXTENSIONS_TITLE" desc="The title of the request access bubble to tell the user to accept the bubble to always run the extensions on the site.">
+          Always allow these extensions to run on <ph name="ORIGIN">$1<ex>google.com</ex></ph>?
+        </message>
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_OK_BUTTON_LABEL" desc="The label of the button to allow the extension(s) to run on the site.">
+          Always allow
+        </message>
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_CANCEL_BUTTON_LABEL" desc="The label of the button to don't allow the extension(s) to run on the site.">
+          No thanks
+        </message>
+
         <if expr="not use_titlecase">
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE" desc="The label in an extension's context menu indicating the extension cannot access the current page. (sentence case)">
             Can't read or change site's data
