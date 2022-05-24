@@ -168,31 +168,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     //============================================================================================
 
     /**
-     * Tests Ranker logging for a simple trigger that resolves.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    @DisabledTest(message = "https://crbug.com/1291065")
-    // TODO(donnd): remove with Ranker support.
-    public void testResolvingSearchRankerLogging() throws Exception {
-        FeatureList.setTestFeatures(ENABLE_NONE);
-
-        simulateResolveSearch("intelligence");
-        assertLoadedLowPriorityUrl();
-
-        assertLoggedAllExpectedFeaturesToRanker();
-        Assert.assertEquals(
-                true, loggedToRanker(ContextualSearchInteractionRecorder.Feature.IS_LONG_WORD));
-        // The panel must be closed for outcomes to be logged.
-        // Close the panel by clicking far away in order to make sure the outcomes get logged by
-        // the hideContextualSearchUi call to writeRankerLoggerOutcomesAndReset.
-        clickWordNode("states-far");
-        waitForPanelToClose();
-        assertLoggedAllExpectedOutcomesToRanker();
-    }
-
-    /**
      * Tests swiping the overlay open, after an initial trigger that activates the peeking card.
      */
     @Test
@@ -557,21 +532,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Make sure we did not try to trigger translate.
         Assert.assertFalse(mManager.getRequest().isTranslationForced());
-    }
-
-    /**
-     * Tests that a non-resolve search does trigger translation.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisabledTest(message = "http://crbug.com/1296677")
-    public void testNonResolveTranslates(@EnabledFeature int enabledFeature) throws Exception {
-        // A non-resolving gesture on any word should trigger a forced translation.
-        simulateNonResolveSearch("search");
-        // Make sure we did try to trigger translate.
-        Assert.assertTrue(mManager.getRequest().isTranslationForced());
     }
 
     @Test
