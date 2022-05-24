@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
 
+#include "ash/ambient/util/ambient_util.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
@@ -35,6 +36,8 @@ ErrorView::ErrorView(DisplayOverlayController* controller,
                             gfx::Font::Weight::MEDIUM));
   SetAutoColorReadabilityEnabled(false);
   SetEnabledColor(kTextColor);
+  // Default shadow elevation value is 2 which is expected.
+  SetShadows(ash::ambient::util::GetTextShadowValues(GetColorProvider()));
 
   auto preferred_size = GetPreferredSize();
   auto content_bounds = view->parent()->bounds();
