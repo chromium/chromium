@@ -2860,8 +2860,7 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest,
 
 // Verify that the in-app shelf should be shown when the app icon receives
 // the accessibility focus.
-// TODO(https://crbug.com/1299759): Re-enable once flaky timeouts are fixed.
-IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, DISABLED_EnableChromeVox) {
+IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
   ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   ash::test::SpeechMonitor speech_monitor;
 
@@ -2880,6 +2879,11 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, DISABLED_EnableChromeVox) {
                 extension_misc::kChromeVoxExtensionId);
     content::ExecuteScriptAsync(host->host_contents(), script);
   });
+
+  // Wait for an utterance from the browser before the test starts traversal
+  // through shelf to ensure that the browser does not show mid shelf traversal,
+  // and causes the a11y focus to unexpectedly switch to the omnibox mid test.
+  speech_monitor.ExpectSpeech("about:blank");
 
   ash::RootWindowController* controller =
       ash::Shell::GetRootWindowControllerWithDisplayId(
