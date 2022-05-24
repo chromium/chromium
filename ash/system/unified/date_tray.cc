@@ -38,6 +38,10 @@ bool DateTray::PerformAction(const ui::Event& event) {
   if (is_active()) {
     unified_system_tray_->CloseBubble();
   } else {
+    // Need to set the date tray as active before notifying the system tray of
+    // an action because we need the system tray to know that the date tray is
+    // already active when it is creating the `UnifiedSystemTrayBubble`.
+    SetIsActive(true);
     unified_system_tray_->OnDateTrayActionPerformed(event);
   }
 
