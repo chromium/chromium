@@ -621,6 +621,7 @@ crbug.com/1287249 [ android android-pixel-6 passthrough ] conformance/extensions
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
