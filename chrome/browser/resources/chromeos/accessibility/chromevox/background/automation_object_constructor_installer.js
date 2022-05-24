@@ -10,30 +10,30 @@
  * of that object, we can save its constructor for future use.
  */
 
-goog.provide('AutomationObjectConstructorInstaller');
+const AutomationNode = chrome.automation.AutomationNode;
+const AutomationEvent = chrome.automation.AutomationEvent;
 
-/**
- * Installs the AutomationNode and AutomationEvent classes based on an
- * AutomationNode instance.
- * @param {chrome.automation.AutomationNode} node
- * @param {function()} callback Called when installation finishes.
- */
-AutomationObjectConstructorInstaller.init = async (node) => {
-  return new Promise(resolve => {
-    chrome.automation.AutomationNode =
-        /** @type {function (new:chrome.automation.AutomationNode)} */ (
-            node.constructor);
-    node.addEventListener(
-        chrome.automation.EventType.CHILDREN_CHANGED,
-        function installAutomationEvent(e) {
-          chrome.automation.AutomationEvent =
-              /** @type {function (new:chrome.automation.AutomationEvent)} */ (
-                  e.constructor);
-          node.removeEventListener(
-              chrome.automation.EventType.CHILDREN_CHANGED,
-              installAutomationEvent, true);
-          resolve();
-        },
-        true);
-  });
+export const AutomationObjectConstructorInstaller = {
+  /**
+   * Installs the AutomationNode and AutomationEvent classes based on an
+   * AutomationNode instance.
+   * @param {AutomationNode} node
+   */
+  async init(node) {
+    return new Promise(resolve => {
+      chrome.automation.AutomationNode =
+          /** @type {function (new:AutomationNode)} */ (node.constructor);
+      node.addEventListener(
+          chrome.automation.EventType.CHILDREN_CHANGED,
+          function installAutomationEvent(e) {
+            chrome.automation.AutomationEvent =
+                /** @type {function (new:AutomationEvent)} */ (e.constructor);
+            node.removeEventListener(
+                chrome.automation.EventType.CHILDREN_CHANGED,
+                installAutomationEvent, true);
+            resolve();
+          },
+          true);
+    });
+  }
 };
