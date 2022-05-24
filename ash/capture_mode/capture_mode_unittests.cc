@@ -96,6 +96,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -163,23 +164,6 @@ void SetUpFileDeletionVerifier(base::RunLoop* loop) {
             EXPECT_FALSE(base::PathExists(path));
             loop->Quit();
           }));
-}
-
-std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
-    aura::Window* transient_parent,
-    const gfx::Rect& bounds) {
-  auto child =
-      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_POPUP);
-  child->Init(ui::LAYER_NOT_DRAWN);
-  child->SetBounds(bounds);
-  wm::AddTransientChild(transient_parent, child.get());
-  aura::client::ParentWindowWithContext(
-      child.get(), transient_parent->GetRootWindow(), bounds);
-  child->Show();
-
-  child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
-  wm::SetModalParent(child.get(), transient_parent);
-  return child;
 }
 
 void LeaveTabletMode() {
@@ -415,6 +399,18 @@ class CaptureModeTest : public AshTestBase {
                     .GetCaptureModeBarView()
                     ->settings_button(),
                 GetEventGenerator());
+  }
+
+  std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
+      gfx::Rect child_window_bounds,
+      aura::Window* transient_parent) {
+    auto child = CreateTestWindow(child_window_bounds);
+    wm::AddTransientChild(transient_parent, child.get());
+    child->Show();
+
+    child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    wm::SetModalParent(child.get(), transient_parent);
+    return child;
   }
 };
 
@@ -2285,42 +2281,6 @@ TEST_F(CaptureModeTest, VerifyWindowRecordingVideoFrames) {
   EXPECT_FALSE(controller->is_recording_in_progress());
 }
 
-// Tests that minimized windows are ignored while tabbing through in kWindow
-// capture source type.
-// TODO(crbug.com/1318231) : Add tests cases for occluded windows when the
-// algorithm is ready.
-TEST_F(CaptureModeTest, IgnoreUnselectableWindowsWhileTabbingInKWindow) {
-  std::unique_ptr<aura::Window> window1(
-      CreateTestWindow(gfx::Rect(10, 10, 500, 600)));
-  // Create `window2` to be minized.
-  std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(0, 0, 50, 90)));
-  WindowState::Get(window2.get())->Minimize();
-  EXPECT_TRUE(WindowState::Get(window2.get())->IsMinimized());
-
-  auto* controller =
-      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
-  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
-
-  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
-  CaptureModeSessionTestApi test_api(capture_mode_session);
-
-  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
-
-  auto* event_generator = GetEventGenerator();
-
-  // Tab six times, `window1` should be focused.
-  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
-  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(window1.get(), capture_mode_session->GetSelectedWindow());
-
-  // Tab once, the `settings` button should be focused. The minimized `window2`
-  // will be ignored during the tabbing process.
-  SendKey(ui::VKEY_TAB, event_generator);
-  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-}
-
 // Tests that the focus should be on the `Settings` button after closing the
 // settings menu.
 TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
@@ -2363,6 +2323,182 @@ TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
   EXPECT_FALSE(test_api.GetCaptureModeSettingsView());
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
   EXPECT_TRUE(test_api.GetCaptureModeBarView()->settings_button()->has_focus());
+}
+
+// Tests that minimized window(s) will be ignored whereas four corners occluded
+// but overall partially occluded window will be focusable while tabbing through
+// in `kWindow` mode.
+TEST_F(CaptureModeTest, IgnoreMinimizeWindowsInKWindow) {
+  // Layout of three windows: four corners of `window3` are occluded by
+  // `window1` and `window2`.
+  //
+  //   +------+
+  //   |      |       +-----------+
+  //   |  1   |-------|           |
+  //   |      |   3   |     2     |
+  //   |      |       |           |
+  //   |      |       |           |
+  //   |      |-------|           |
+  //   |      |       +-----------+
+  //   +------+
+  std::unique_ptr<aura::Window> window3 =
+      CreateTestWindow(gfx::Rect(100, 45, 150, 200));
+  std::unique_ptr<aura::Window> window2 =
+      CreateTestWindow(gfx::Rect(150, 50, 150, 250));
+  std::unique_ptr<aura::Window> window1 =
+      CreateTestWindow(gfx::Rect(20, 30, 100, 300));
+  std::unique_ptr<aura::Window> window4(
+      CreateTestWindow(gfx::Rect(0, 0, 50, 90)));
+  WindowState::Get(window4.get())->Minimize();
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tab six times, `window1` should be focused. Tab another time, `window2`
+  // should be focused. Tab again, `window3` will be focused.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(window1.get(), capture_mode_session->GetSelectedWindow());
+
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window3.get(), capture_mode_session->GetSelectedWindow());
+
+  // Tab once, the `settings` button should be focused. The minimized `window4`
+  // will be ignored during the tabbing process.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  controller->Stop();
+}
+
+// Tests that partially occluded window(s) will be focusable even when four
+// edges are occluded by other windows while tabbing through in `kWindow` mode.
+TEST_F(CaptureModeTest, PartiallyOccludedWindowIsFocusableInKWindow) {
+  // Layout of five windows: four edges of `window3` is occluded by `window1`,
+  // `window2`, `window4` and `window5` respectively, but the middle part is not
+  // occluded.
+  //        +-----------+
+  //        |           |
+  //   +----|     4     |
+  //   |    |           |---------+
+  //   |    |           |         |
+  //   |    +-|-------|-+         |
+  //   |  1   |   3   |     2     |
+  //   |      |       |           |
+  //   |    +-|-------|--+        |
+  //   |    |            |--------+
+  //   +----|     5      |
+  //        |            |
+  //        +------------+
+  std::unique_ptr<aura::Window> window3 =
+      CreateTestWindow(gfx::Rect(100, 45, 150, 200));
+  std::unique_ptr<aura::Window> window2 =
+      CreateTestWindow(gfx::Rect(150, 50, 150, 250));
+  std::unique_ptr<aura::Window> window1 =
+      CreateTestWindow(gfx::Rect(20, 30, 100, 300));
+  std::unique_ptr<aura::Window> window4 =
+      CreateTestWindow(gfx::Rect(50, 5, 150, 55));
+  std::unique_ptr<aura::Window> window5 =
+      CreateTestWindow(gfx::Rect(60, 225, 210, 45));
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tab six times, `window5` should be focused. Then `window4`, `window1`,
+  // `window2` and `window3` will be focused after each tab.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(window5.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window4.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window1.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window3.get(), capture_mode_session->GetSelectedWindow());
+
+  // Tab once, the `settings` button should be focused.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  controller->Stop();
+}
+
+// Tests that fully occluded window(s) will be ignored while tabbing in
+// `kWindow`.
+TEST_F(CaptureModeTest, IgnoreFullyOccludedWindowWhileTabbingInKWindow) {
+  // Layout of six windows: `window3` is fully occluded by `window1`, `window2`,
+  // `window4`, `window5` and `window6`.
+  //        +-----------+
+  //        |           |
+  //   +----|     4     |
+  //   | 1  |           |---------+
+  //   |  +-----------------+     |
+  //   |  |                 |     |
+  //   |  |       6         |  2  |
+  //   |  |                 |     |
+  //   |  +-----------------+     |
+  //   |    |            |--------+
+  //   +----|     5      |
+  //        |            |
+  //        +------------+
+  std::unique_ptr<aura::Window> window3 =
+      CreateTestWindow(gfx::Rect(100, 45, 150, 200));
+  std::unique_ptr<aura::Window> window2 =
+      CreateTestWindow(gfx::Rect(150, 50, 150, 250));
+  std::unique_ptr<aura::Window> window1 =
+      CreateTestWindow(gfx::Rect(20, 30, 100, 300));
+  std::unique_ptr<aura::Window> window4 =
+      CreateTestWindow(gfx::Rect(50, 5, 150, 55));
+  std::unique_ptr<aura::Window> window5 =
+      CreateTestWindow(gfx::Rect(60, 225, 210, 45));
+  std::unique_ptr<aura::Window> window6 =
+      CreateTestWindow(gfx::Rect(30, 55, 175, 185));
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  CaptureModeSessionTestApi test_api(capture_mode_session);
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+
+  EXPECT_EQ(FocusGroup::kNone, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Tab six times, `window6` should be focused. Then `window5`, `window4`,
+  // `window1` and `window2` will be focused after each tab.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kCaptureWindow, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(window6.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window5.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window4.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window1.get(), capture_mode_session->GetSelectedWindow());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(window2.get(), capture_mode_session->GetSelectedWindow());
+
+  // Tab once, the `settings` button should be focused. The fully occluded
+  // `window3` will be ignored during the tabbing process.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
 }
 
 class CaptureModeSaveFileTest
@@ -3535,7 +3671,7 @@ TEST_F(CaptureModeTest, KeyboardNavigationTabThroughWindowsOnMultipleDisplays) {
   std::unique_ptr<aura::Window> window1(
       CreateTestWindow(gfx::Rect(0, 0, 200, 200)));
   auto window1_transient = CreateTransientModalChildWindow(
-      window1.get(), gfx::Rect(20, 30, 200, 150));
+      gfx::Rect(20, 30, 200, 150), window1.get());
   std::unique_ptr<aura::Window> window2(
       CreateTestWindow(gfx::Rect(900, 0, 200, 200)));
 
