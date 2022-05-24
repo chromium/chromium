@@ -2088,6 +2088,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.Responsiveness.UserInteraction.MaxEventDuration.{InteractionType}"
+    units="ms" expires_after="2023-05-17">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The duration of a single user interaction:
+    https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+
+    This metric is emitted once for every interaction in the web contents
+    {InteractionType}
+  </summary>
+  <token key="InteractionType">
+    <variant name="AllTypes"
+        summary="of all interaction types (keyboard, click, tap, drag). The
+                 maximum event duration for the keydown, keypress, keyup,
+                 pointerdown, pointerup, mousedown, mouseup, and click event
+                 is reported."/>
+    <variant name="ClickOrTap"
+        summary="of type click or tap. The maximum event duration for the
+                 pointerdown, pointerup, mousedown, mouseup, and click event
+                 is reported."/>
+    <variant name="Drag"
+        summary="of type drag. The maximum event duration for the
+                 pointerdown, pointerup, mousedown, mouseup, and click event
+                 is reported."/>
+    <variant name="Keyboard"
+        summary="of type keyboard. The maximum event duration for the
+                 keydown, keypress, and keyup event is reported."/>
+  </token>
+</histogram>
+
 <histogram name="Blink.ScanAndPreloadTime.{FrameType}.{IsInitial}" units="ms"
     expires_after="2022-11-29">
   <owner>cduvall@chromium.org</owner>
