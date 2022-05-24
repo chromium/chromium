@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import android.graphics.Bitmap;
 import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -28,6 +29,8 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.components.favicon.IconType;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -117,9 +120,9 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         /**
          * Returns a callback to be invoked when the icon for the provided tile is loaded. It will
-         * be responsible for triggering the visual refresh.
+         * be responsible for updating the tile data and triggering the visual refresh.
          */
-        Runnable createIconLoadCallback(Tile tile);
+        LargeIconBridge.LargeIconCallback createIconLoadCallback(Tile tile);
     }
 
     /**
@@ -219,16 +222,13 @@ public class TileGroup implements MostVisitedSites.Observer {
         }
 
         @Override
-        public Runnable createIconLoadCallback(Tile tile) {
+        public LargeIconBridge.LargeIconCallback createIconLoadCallback(Tile tile) {
             // TODO(dgn): We could save on fetches by avoiding a new one when there is one pending
             // for the same URL, and applying the result to all matched URLs.
             boolean trackLoad =
                     isLoadTracked() && tile.getSectionType() == TileSectionType.PERSONALIZED;
             if (trackLoad) addTask(TileTask.FETCH_ICON);
-            return () -> {
-                mObserver.onTileIconChanged(tile);
-                if (trackLoad) removeTask(TileTask.FETCH_ICON);
-            };
+            return new LargeIconCallbackImpl(tile.getData(), trackLoad);
         }
     };
 
@@ -291,7 +291,8 @@ public class TileGroup implements MostVisitedSites.Observer {
     @Override
     public void onIconMadeAvailable(GURL siteUrl) {
         for (Tile tile : findTilesForUrl(siteUrl)) {
-            mTileRenderer.updateIcon(tile, () -> mObserver.onTileIconChanged(tile));
+            mTileRenderer.updateIcon(tile.getData(),
+                    new LargeIconCallbackImpl(tile.getData(), /* trackLoadTask = */ false));
         }
     }
 
@@ -499,6 +500,37 @@ public class TileGroup implements MostVisitedSites.Observer {
         // The mOfflineModelObserver which implements SuggestionsOfflineModelObserver adds itself
         // as the offlinePageBridge's observer. Calling onDestroy() removes itself from subscribers.
         mOfflineModelObserver.onDestroy();
+    }
+
+    // TODO(dgn): I would like to move that to TileRenderer, but setting the data on the tile,
+    // notifying the observer and updating the tasks make it awkward.
+    private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
+        private final SiteSuggestion mSiteData;
+        private final boolean mTrackLoadTask;
+
+        private LargeIconCallbackImpl(SiteSuggestion suggestion, boolean trackLoadTask) {
+            mSiteData = suggestion;
+            mTrackLoadTask = trackLoadTask;
+        }
+
+        @Override
+        public void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor,
+                boolean isFallbackColorDefault, @IconType int iconType) {
+            Tile tile = findTile(mSiteData);
+            if (tile != null) { // Do nothing if the tile was removed.
+                tile.setIconType(iconType);
+                if (icon == null) {
+                    mTileRenderer.setTileIconFromColor(tile, fallbackColor, isFallbackColorDefault);
+                } else {
+                    mTileRenderer.setTileIconFromBitmap(tile, icon);
+                }
+
+                mObserver.onTileIconChanged(tile);
+            }
+
+            // This call needs to be made after the tiles are completely initialised, for UMA.
+            if (mTrackLoadTask) removeTask(TileTask.FETCH_ICON);
+        }
     }
 
     private class TileInteractionDelegateImpl

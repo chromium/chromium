@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
@@ -30,9 +29,6 @@ public class Tile implements OfflinableSuggestion {
 
     @Nullable
     private Drawable mIcon;
-
-    @Nullable
-    private ColorStateList mIconTint;
 
     @Nullable
     private Long mOfflinePageOfflineId;
@@ -154,17 +150,6 @@ public class Tile implements OfflinableSuggestion {
      */
     public void setIcon(@Nullable Drawable icon) {
         mIcon = icon;
-    }
-
-    /**
-     * Updates the icon tint color.
-     */
-    public void setIconTint(@Nullable ColorStateList iconTint) {
-        mIconTint = iconTint;
-    }
-
-    public ColorStateList getIconTint() {
-        return mIconTint;
     }
 
     @TileSectionType
