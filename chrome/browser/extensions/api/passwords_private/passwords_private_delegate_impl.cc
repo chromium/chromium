@@ -243,8 +243,7 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   form.signon_realm = password_manager::GetSignonRealm(form.url);
   form.username_value = username;
   form.password_value = password;
-  form.note.value = note;
-  form.note.date_created = base::Time::Now();
+  form.notes.emplace_back(/*value=*/note, /*date_created=*/base::Time::Now());
   form.in_store = use_account_store
                       ? password_manager::PasswordForm::Store::kAccountStore
                       : password_manager::PasswordForm::Store::kProfileStore;
@@ -383,7 +382,8 @@ void PasswordsPrivateDelegateImpl::SetPasswordList(
     api::passwords_private::PasswordUiEntry entry;
     entry.urls = CreateUrlCollectionFromForm(*form);
     entry.username = base::UTF16ToUTF8(form->username_value);
-    entry.password_note = base::UTF16ToUTF8(form->note.value);
+    entry.password_note =
+        form->notes.empty() ? "" : base::UTF16ToUTF8(form->notes[0].value);
     entry.id = password_id_generator_.GenerateId(
         password_manager::CreateSortKey(*form));
     entry.frontend_id = password_frontend_id_generator_.GenerateId(

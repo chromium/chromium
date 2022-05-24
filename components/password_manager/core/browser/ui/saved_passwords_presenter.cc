@@ -170,14 +170,16 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
     return false;
   IsUsernameChanged username_changed(new_username != forms[0].username_value);
   IsPasswordChanged password_changed(new_password != forms[0].password_value);
-  IsPasswordNoteChanged note_changed =
-      IsPasswordNoteChanged(forms[0].note.value != new_note);
+  IsPasswordNoteChanged note_changed = IsPasswordNoteChanged(
+      (forms[0].notes.empty() && !new_note.empty()) ||
+      (!forms[0].notes.empty() && forms[0].notes[0].value != new_note));
 
   if (new_password.empty())
     return false;
   if (username_changed &&
-      IsUsernameAlreadyUsed(passwords_, forms, new_username))
+      IsUsernameAlreadyUsed(passwords_, forms, new_username)) {
     return false;
+  }
 
   // An updated username implies a change in the primary key, thus we need to
   // make sure to call the right API. Update every entry in the equivalence
@@ -195,10 +197,15 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
 
       if (note_changed) {
         // if the old note is empty, the note is just created.
-        if (old_form.note.value.empty()) {
-          new_form.note.date_created = base::Time::Now();
+        if (old_form.notes.empty()) {
+          new_form.notes.emplace_back(new_note,
+                                      /*date_created=*/base::Time::Now());
+        } else {
+          if (old_form.notes[0].value.empty()) {
+            new_form.notes[0].date_created = base::Time::Now();
+          }
+          new_form.notes[0].value = new_note;
         }
-        new_form.note.value = new_note;
       }
 
       if (username_changed) {

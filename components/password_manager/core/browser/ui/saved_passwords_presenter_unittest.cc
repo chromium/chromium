@@ -393,7 +393,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
   RunUntilIdle();
 
   PasswordForm expected_updated_form = form;
-  expected_updated_form.note = PasswordNote(kNewNoteValue, base::Time::Now());
+  expected_updated_form.notes = {
+      PasswordNote(kNewNoteValue, base::Time::Now())};
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
@@ -418,7 +419,8 @@ TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
   RunUntilIdle();
 
   PasswordForm expected_updated_form = form;
-  expected_updated_form.note = PasswordNote(kNewNoteValue, base::Time::Now());
+  expected_updated_form.notes = {
+      PasswordNote(kNewNoteValue, base::Time::Now())};
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
@@ -429,7 +431,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
       PasswordNote(u"existing note", base::Time::Now());
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form.note = kExistingNote;
+  form.notes = {kExistingNote};
 
   store().AddLogin(form);
   RunUntilIdle();
@@ -442,7 +444,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
   RunUntilIdle();
 
   PasswordForm expected_updated_form = form;
-  expected_updated_form.note.value = kNewNoteValue;
+  expected_updated_form.notes[0].value = kNewNoteValue;
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));
@@ -451,7 +453,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
 TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form.note = PasswordNote(u"existing note", base::Time::Now());
+  form.notes = {PasswordNote(u"existing note", base::Time::Now())};
   std::vector<PasswordForm> forms = {form};
 
   store().AddLogin(form);
@@ -462,7 +464,7 @@ TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
   RunUntilIdle();
 
   PasswordForm expected_updated_form = form;
-  expected_updated_form.note.value = u"";
+  expected_updated_form.notes[0].value = u"";
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form.signon_realm, ElementsAre(expected_updated_form))));

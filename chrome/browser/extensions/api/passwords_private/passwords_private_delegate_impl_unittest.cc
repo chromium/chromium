@@ -468,7 +468,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   password_manager::PasswordForm sample_form = CreateSampleForm();
   password_manager::PasswordNote note(u"example note", base::Time::Now());
-  sample_form.note = note;
+  sample_form.notes = {note};
   SetUpPasswordStore({sample_form});
 
   PasswordsPrivateDelegateImpl delegate(&profile_);
@@ -483,7 +483,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
       .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ(sample_form.username_value,
                   base::UTF8ToUTF16(passwords[0].username));
-        EXPECT_EQ(sample_form.note.value,
+        EXPECT_EQ(sample_form.notes[0].value,
                   base::UTF8ToUTF16(passwords[0].password_note));
       });
   delegate.GetSavedPasswordsList(callback.Get());
