@@ -120,7 +120,7 @@ void RecommendAppsScreenHandler::Hide() {}
 
 void RecommendAppsScreenHandler::OnLoadSuccess(base::Value app_list) {
   recommended_app_count_ =
-      static_cast<int>(app_list.GetListDeprecated().size());
+      app_list.is_list() ? static_cast<int>(app_list.GetList().size()) : 0;
   LoadAppListInUI(std::move(app_list));
 }
 
@@ -146,8 +146,8 @@ void RecommendAppsScreenHandler::LoadAppListInUI(base::Value app_list) {
       features::IsOobeNewRecommendAppsEnabled()
           ? IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML
           : IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
-  CallJS("login.RecommendAppsOldScreen.setWebview", app_list_webview);
-  CallJS("login.RecommendAppsOldScreen.loadAppList", std::move(app_list));
+  CallJS("login.RecommendAppsScreen.setWebview", app_list_webview);
+  CallJS("login.RecommendAppsScreen.loadAppList", std::move(app_list));
 }
 
 void RecommendAppsScreenHandler::OnUserSkip() {

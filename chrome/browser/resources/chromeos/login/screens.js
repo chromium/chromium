@@ -32,7 +32,6 @@ import './screens/common/os_install.m.js';
 import './screens/common/os_trial.m.js';
 import './screens/common/parental_handoff.m.js';
 import './screens/common/pin_setup.m.js';
-import './screens/common/recommend_apps_old.m.js'; // TODO(crbug.com/1261902): Remove.
 import './screens/common/recommend_apps.m.js';
 import './screens/common/saml_confirm_password.m.js';
 import './screens/common/signin_fatal_error.m.js';
@@ -42,7 +41,6 @@ import './screens/common/theme_selection.m.js';
 import './screens/common/tpm_error.m.js';
 import './screens/common/user_creation.m.js';
 import './screens/common/wrong_hwid.m.js';
-
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/active_directory_password_change.m.js';
 import './screens/login/encryption_migration.m.js';
@@ -51,7 +49,6 @@ import './screens/login/lacros_data_migration.m.js';
 import './screens/login/management_transition.m.js';
 import './screens/login/offline_login.m.js';
 import './screens/login/update_required_card.m.js';
-
 // SCREENS USED DURING THE OOBE FLOW
 import './screens/oobe/auto_enrollment_check.m.js';
 import './screens/oobe/demo_preferences.m.js';
@@ -95,7 +92,6 @@ export const commonScreensList = [
    {tag: 'os-trial-element', id: 'os-trial', condition: 'isOsInstallAllowed'},
    {tag: 'parental-handoff-element', id: 'parental-handoff'},
    {tag: 'pin-setup-element', id: 'pin-setup'},
-   {tag: 'recommend-apps-old-element', id: 'recommend-apps-old'}, // TODO(crbug.com/1261902): Remove.
    {tag: 'recommend-apps-element', id: 'recommend-apps'},
    {tag: 'saml-confirm-password-element', id: 'saml-confirm-password'},
    {tag: 'signin-fatal-error-element', id: 'signin-fatal-error'},

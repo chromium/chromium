@@ -1209,49 +1209,6 @@ cr.define('cr.ui.login.debug', function() {
         },
       ],
     },
-    // TODO(crbug.com/1261902): Remove.
-    {
-      id: 'recommend-apps-old',
-      kind: ScreenKind.NORMAL,
-      handledSteps: 'list',
-      // Known issue: reset() does not clear list of apps, so loadAppList
-      // will append apps instead of replacing.
-      states: [
-        {
-          id: '2-apps',
-          trigger: (screen) => {
-            screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_OLD_CONTENT);
-            screen.loadAppList([
-              {
-                name: 'Test app 1',
-                package_name: 'test1.app',
-              },
-              {
-                name: 'Test app 2 with some really long name',
-                package_name: 'test2.app',
-              },
-            ]);
-          },
-        },
-        {
-          id: '21-apps',
-          trigger: (screen) => {
-            // There can be up to 21 apps: see recommend_apps_fetcher_impl
-            screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_OLD_CONTENT);
-            const apps = [];
-            for (let i = 1; i <= 21; i++) {
-              apps.push({
-                name: 'Test app ' + i,
-                package_name: 'app.test' + i,
-              });
-            }
-            screen.loadAppList(apps);
-          },
-        },
-      ],
-    },
     {
       id: 'recommend-apps',
       kind: ScreenKind.NORMAL,
@@ -1263,7 +1220,7 @@ cr.define('cr.ui.login.debug', function() {
           id: '2-apps',
           trigger: (screen) => {
             screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_CONTENT);
+            screen.setWebview(RECOMMENDED_APPS_OLD_CONTENT);
             screen.loadAppList([
               {
                 name: 'Test app 1',
@@ -1281,7 +1238,7 @@ cr.define('cr.ui.login.debug', function() {
           trigger: (screen) => {
             // There can be up to 21 apps: see recommend_apps_fetcher_impl
             screen.reset();
-            screen.setWebview(RECOMMENDED_APPS_CONTENT);
+            screen.setWebview(RECOMMENDED_APPS_OLD_CONTENT);
             const apps = [];
             for (let i = 1; i <= 21; i++) {
               apps.push({

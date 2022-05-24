@@ -125,22 +125,25 @@ class RecommendAppsElement extends RecommendAppsElementBase {
 
     const appListView = this.$.appView;
     appListView.addEventListener('contentload', () => {
-      appListView.executeScript({file: 'recommend_app_list_view.js'}, () => {
-        appListView.contentWindow.postMessage('initialMessage', '*');
+      appListView.executeScript(
+          {file: 'recommend_app_old_list_view.js'}, () => {
+            appListView.contentWindow.postMessage('initialMessage', '*');
 
-        appList.forEach(function(app_data, index) {
-          const app = /** @type {OobeTypes.RecommendedAppsExpectedAppData} */ (app_data);
-          const generateItemScript = 'generateContents("' + app.icon + '", "' +
-              app.name + '", "' + app.package_name + '");';
-          const generateContents = {code: generateItemScript};
-          appListView.executeScript(generateContents);
-        });
+            appList.forEach(function(app_data, index) {
+              const app =
+                  /** @type {OobeTypes.RecommendedAppsExpectedAppData} */ (
+                      app_data);
+              const generateItemScript = 'generateContents("' + app.icon +
+                  '", "' + app.name + '", "' + app.package_name + '");';
+              const generateContents = {code: generateItemScript};
+              appListView.executeScript(generateContents);
+            });
 
-        const getNumOfSelectedAppsScript = 'sendNumberOfSelectedApps();';
-        appListView.executeScript({code: getNumOfSelectedAppsScript});
+            const getNumOfSelectedAppsScript = 'sendNumberOfSelectedApps();';
+            appListView.executeScript({code: getNumOfSelectedAppsScript});
 
-        this.onFullyLoaded_();
-      });
+            this.onFullyLoaded_();
+          });
     });
   }
 

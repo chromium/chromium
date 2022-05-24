@@ -77,7 +77,8 @@ bool RecommendAppsScreen::MaybeSkip(WizardContext* context) {
 }
 
 void RecommendAppsScreen::ShowImpl() {
-  view_->Show();
+  if (view_)
+    view_->Show();
 
   recommend_apps_fetcher_ = RecommendAppsFetcher::Create(this);
   recommend_apps_fetcher_->Start();

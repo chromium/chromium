@@ -171,7 +171,8 @@ constexpr char kKeyboardUtilsForInjectionModulePath[] =
 constexpr char kLoginJSPath[] = "login.js";
 constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
-// TODO(crbug.com/1261902): Remove.
+// TODO(crbug.com/1261902): Clean-up old implementation once feature is
+// launched.
 constexpr char kRecommendAppOldListViewJSPath[] =
     "recommend_app_old_list_view.js";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
