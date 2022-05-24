@@ -32,6 +32,7 @@ mojom::ReadyFrameInBufferPtr ToVideoCaptureBuffer(
   video_capture_buffer_info->pixel_format = buffer_info->pixel_format;
   video_capture_buffer_info->coded_size = buffer_info->coded_size;
   video_capture_buffer_info->visible_rect = buffer_info->visible_rect;
+  video_capture_buffer_info->color_space.emplace();
 
   media::VideoFrameMetadata media_frame_metadata;
   switch (buffer_info->rotation) {
@@ -72,9 +73,11 @@ gfx::GpuMemoryBufferHandle ToGfxGpuMemoryBufferHandle(
   if (buffer_handle->platform_handle) {
     auto& platform_handle = buffer_handle->platform_handle;
     if (platform_handle->is_shared_memory_handle()) {
+      gfx_buffer_handle.type = gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
       gfx_buffer_handle.region =
           std::move(platform_handle->get_shared_memory_handle());
     } else if (platform_handle->is_native_pixmap_handle()) {
+      gfx_buffer_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
       auto& native_pixmap_handle = platform_handle->get_native_pixmap_handle();
       gfx::NativePixmapHandle gfx_native_pixmap_handle;
       gfx_native_pixmap_handle.planes = std::move(native_pixmap_handle->planes);
