@@ -16,6 +16,7 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -399,8 +400,13 @@ GURL SelectFileDialogExtension::MakeDialogURL(
     // as |default_path| (crbug.com/178013 #9-#11). In such a case, we use the
     // last selected directory as a workaround. Real fix is tracked at
     // crbug.com/110119.
+    base::FilePath base_name = default_path.BaseName();
     if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-            profile, fallback_path.Append(default_path.BaseName()),
+            profile,
+            // If the base_name is absolute (happens for default_path '/') it's
+            // not usable in Append.
+            base_name.IsAbsolute() ? fallback_path
+                                   : fallback_path.Append(base_name),
             file_manager::util::GetFileManagerURL(), &selection_url)) {
       DVLOG(1) << "Unable to resolve the selection URL.";
     }
