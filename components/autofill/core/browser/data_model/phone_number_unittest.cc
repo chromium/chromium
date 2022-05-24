@@ -115,51 +115,54 @@ TEST(PhoneNumberTest, Matcher_TrunkTypes_DE) {
        {u"01741234567", {PHONE_HOME_CITY_AND_NUMBER}}});
 }
 
-// Verify that PhoneNumber::SetInfo() correctly formats the incoming number.
+// Verify that `PhoneNumber::SetInfo()` correctly formats the incoming number.
 TEST(PhoneNumberTest, SetInfo) {
   AutofillProfile profile;
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  const char kLocale[] = "US";  // Irrelevant, as `profile` has a country.
 
   PhoneNumber phone(&profile);
-  EXPECT_EQ(std::u16string(), phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_TRUE(phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
+  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale).empty());
 
   // Set the formatted info directly.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"(650) 234-5678", "US"));
+  EXPECT_TRUE(
+      phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
   EXPECT_EQ(u"(650) 234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // Unformatted numbers should be formatted.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"8887776666", "US"));
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"8887776666", kLocale));
   EXPECT_EQ(u"(888) 777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"+18887776666", "US"));
+  EXPECT_EQ(u"8887776666", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"+18887776666", kLocale));
   EXPECT_EQ(u"1 888-777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"18887776666", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // Differently formatted numbers should be left alone.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"800-432-8765", "US"));
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"800-432-8765", kLocale));
   EXPECT_EQ(u"800-432-8765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"8004328765", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // SetRawInfo should not try to format.
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"8004328765");
   EXPECT_EQ(u"8004328765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
 
-  // Invalid numbers should not be stored.  In the US, phone numbers cannot
-  // start with the digit '1'.
-  EXPECT_FALSE(
-      phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), u"650111111", "US"));
-  EXPECT_EQ(std::u16string(), phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  // Invalid numbers should not be stored. In the US, phone numbers cannot start
+  // with the digit '1'.
+  EXPECT_FALSE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"650111111", kLocale));
+  EXPECT_TRUE(phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER).empty());
+  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale).empty());
 
-  // If the stored number is invalid due to metadata mismatch(non-existing
+  // If the stored number is invalid due to metadata mismatch (non-existing
   // carrier code for example), but otherwise is a possible number and can be
   // parsed into different components, we should respond to queries with best
   // effort as if it is a valid number.
-  EXPECT_TRUE(phone.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER),
-                            u"5141231234", "US"));
-  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, "CA"));
-  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, "CA"));
-  EXPECT_EQ(u"514", phone.GetInfo(PHONE_HOME_CITY_CODE, "CA"));
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"5141231234", kLocale));
+  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
+  EXPECT_EQ(u"5141231234", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+  EXPECT_EQ(u"514", phone.GetInfo(PHONE_HOME_CITY_CODE, kLocale));
 }
 
 // Test that cached phone numbers are correctly invalidated and updated.

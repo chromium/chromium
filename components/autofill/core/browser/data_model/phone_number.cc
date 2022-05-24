@@ -270,18 +270,22 @@ bool PhoneNumber::SetInfoWithVerificationStatusImpl(
   if (number_.empty())
     return true;
 
-  // Store a formatted (i.e., pretty printed) version of the number if either
-  // the number doesn't contain formatting marks.
+  // `SetRawInfoWithVerificationStatus()` invalidated `cached_parsed_phone_` and
+  // calling `UpdateCacheIfNeeded()` will thus try parsing the `number_` here.
   UpdateCacheIfNeeded(app_locale);
+  // If the number invalid, setting fails and `GetRawInfo()` and `GetInfo()`
+  // should return an empty string. Clear both representations of the number.
+  if (!cached_parsed_phone_.IsValidNumber()) {
+    number_.clear();
+    cached_parsed_phone_ = i18n::PhoneObject();
+    return false;
+  }
+  // Store a formatted (i.e., pretty printed) version of the number if it
+  // doesn't contain formatting marks.
   if (base::ContainsOnlyChars(number_, u"+0123456789")) {
     number_ = cached_parsed_phone_.GetFormattedNumber();
-  } else if (i18n::NormalizePhoneNumber(number_,
-                                        GetRegion(*profile_, app_locale))
-                 .empty()) {
-    // The number doesn't make sense for this region; clear it.
-    number_.clear();
   }
-  return !number_.empty();
+  return true;
 }
 
 void PhoneNumber::UpdateCacheIfNeeded(const std::string& app_locale) const {
