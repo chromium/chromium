@@ -1,1 +1,1 @@
-per-file file_icon_util.* = file://ui/file_manager/OWNERS
+per-file file_icon_util* = file://ui/file_manager/OWNERS
