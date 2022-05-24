@@ -7150,6 +7150,7 @@ test("unit_tests") {
       "//ash/shortcut_viewer/strings:strings_grit",
       "//ash/strings",
       "//ash/webui/camera_app_ui",
+      "//ash/webui/personalization_app/mojom:mojom",
       "//ash/webui/projector_app:test_support",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/scanning",

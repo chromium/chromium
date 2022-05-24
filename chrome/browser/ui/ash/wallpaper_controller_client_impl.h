@@ -34,6 +34,10 @@ namespace value_store {
 class ValueStore;
 }
 
+namespace {
+class WallpaperControllerClientImplTest;
+}
+
 // Handles chrome-side wallpaper control alongside the ash-side controller.
 class WallpaperControllerClientImpl
     : public ash::WallpaperControllerClient,
@@ -164,6 +168,7 @@ class WallpaperControllerClientImpl
   void RecordWallpaperSourceUMA(const ash::WallpaperType type);
 
  private:
+  friend class WallpaperControllerClientImplTest;
   // Initialize the controller for this client and some wallpaper directories.
   void InitController();
 
