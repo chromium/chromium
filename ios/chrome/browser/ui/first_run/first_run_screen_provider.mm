@@ -36,7 +36,8 @@
       break;
   }
 
-  if (fre_field_trial::IsFREDefaultBrowserScreenEnabled()) {
+  if (fre_field_trial::GetFREDefaultBrowserScreenPromoFRE() !=
+      NewDefaultBrowserPromoFRE::kDisabled) {
     [screens addObject:@(kDefaultBrowserPromo)];
   }
 

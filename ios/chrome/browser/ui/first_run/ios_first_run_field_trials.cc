@@ -24,10 +24,11 @@ scoped_refptr<base::FieldTrial>
 FirstRunFieldTrialConfig::CreateOneTimeRandomizedTrial(
     const std::string& default_group_name,
     const base::FieldTrial::EntropyProvider& low_entropy_provider) {
+  DCHECK_LE(GetTotalProbability(), 100);
   scoped_refptr<base::FieldTrial> trial =
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          trial_name_, GetTotalProbability(), default_group_name,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, 0,
+          trial_name_, /*total_probability=*/100, default_group_name,
+          base::FieldTrial::ONE_TIME_RANDOMIZED, /*randomization_seed=*/0,
           /*default_group_number=*/nullptr, &low_entropy_provider);
   for (const auto& group : groups_) {
     variations::AssociateGoogleVariationID(

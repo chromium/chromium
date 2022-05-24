@@ -321,11 +321,11 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kFREDefaultPromoTestingDefaultDelay[] = {
-    {kFREDefaultPromoTestingDefaultDelayParam, "true"}};
+    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoDefaultDelayParam}};
 const FeatureEntry::FeatureParam kFREDefaultPromoTestingOnly[] = {
-    {kFREDefaultPromoTestingOnlyParam, "true"}};
+    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoFirstRunOnlyParam}};
 const FeatureEntry::FeatureParam kFREDefaultPromoTestingShortDelay[] = {
-    {kFREDefaultPromoTestingShortDelayParam, "true"}};
+    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoShortDelayParam}};
 const FeatureEntry::FeatureVariation kFREDefaultPromoTestingVariations[] = {
     {"Wait 14 days after FRE default browser promo",
      kFREDefaultPromoTestingDefaultDelay,
@@ -526,7 +526,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(signin::kNewMobileIdentityConsistencyFRE,
                                     kNewMobileIdentityConsistencyFREVariations,
-                                    "NewMobileIdentityConsistencyFRE")},
+                                    kIOSMICeAndDefaultBrowserTrialName)},
     {"enable-long-message-duration",
      flag_descriptions::kEnableLongMessageDurationName,
      flag_descriptions::kEnableLongMessageDurationDescription, flags_ui::kOsIos,
@@ -727,7 +727,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREDefaultBrowserScreenTesting,
                                     kFREDefaultPromoTestingVariations,
-                                    "EnableFREDefaultBrowserScreenTesting")},
+                                    kIOSMICeAndDefaultBrowserTrialName)},
     {"enable-discover-feed-shorter-cache",
      flag_descriptions::kEnableDiscoverFeedShorterCacheName,
      flag_descriptions::kEnableDiscoverFeedShorterCacheDescription,

@@ -1063,7 +1063,8 @@ bool IsSigninForcedByPolicy() {
          !self.sceneState.appState.postCrashLaunch &&
          !IsChromeLikelyDefaultBrowser() &&
          !HasUserOpenedSettingsFromFirstRunPromo() &&
-         !fre_field_trial::IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
+         fre_field_trial::GetFREDefaultBrowserScreenPromoFRE() !=
+             NewDefaultBrowserPromoFRE::kFirstRunOnly;
 }
 
 - (void)maybeShowDefaultBrowserPromo:(Browser*)browser {
