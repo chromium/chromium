@@ -128,6 +128,8 @@ class WebPerformance {
   BLINK_EXPORT double FirstInputOrScrollNotifiedTimestamp() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputDelay() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputTimestamp() const;
+  BLINK_EXPORT absl::optional<base::TimeTicks>
+  FirstInputTimestampAsMonotonicTime() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> LongestInputDelay() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> LongestInputTimestamp() const;
   BLINK_EXPORT absl::optional<base::TimeDelta> FirstInputProcessingTime() const;

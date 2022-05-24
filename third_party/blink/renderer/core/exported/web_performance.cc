@@ -265,6 +265,11 @@ absl::optional<base::TimeDelta> WebPerformance::FirstInputTimestamp() const {
   return private_->timing()->FirstInputTimestamp();
 }
 
+absl::optional<base::TimeTicks>
+WebPerformance::FirstInputTimestampAsMonotonicTime() const {
+  return private_->timing()->FirstInputTimestampAsMonotonicTime();
+}
+
 absl::optional<base::TimeDelta> WebPerformance::LongestInputDelay() const {
   return private_->timing()->LongestInputDelay();
 }

@@ -510,10 +510,15 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
   }
   if (perf.FirstInputDelay().has_value()) {
     timing->interactive_timing->first_input_delay = *perf.FirstInputDelay();
+    monotonic_timing.first_input_delay = perf.FirstInputDelay();
   }
   if (perf.FirstInputTimestamp().has_value()) {
     timing->interactive_timing->first_input_timestamp =
         ClampDelta((*perf.FirstInputTimestamp()).InSecondsF(), start);
+  }
+  if (perf.FirstInputTimestampAsMonotonicTime()) {
+    monotonic_timing.first_input_timestamp =
+        perf.FirstInputTimestampAsMonotonicTime();
   }
   if (perf.LongestInputDelay().has_value()) {
     timing->interactive_timing->longest_input_delay = *perf.LongestInputDelay();

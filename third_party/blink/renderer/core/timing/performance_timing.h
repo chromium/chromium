@@ -163,6 +163,9 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   absl::optional<base::TimeDelta> FirstInputDelay() const;
   // The timestamp of the event whose delay is reported by FirstInputDelay().
   absl::optional<base::TimeDelta> FirstInputTimestamp() const;
+  // The timestamp of the event whose delay is reported by FirstInputDelay().
+  // Intended to be used for correlation with other events internal to blink.
+  absl::optional<base::TimeTicks> FirstInputTimestampAsMonotonicTime() const;
   // The longest duration between the hardware timestamp and being queued on the
   // main thread for the click, tap, key press, cancellable touchstart, or
   // pointer down followed by a pointer up.

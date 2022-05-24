@@ -523,6 +523,15 @@ absl::optional<base::TimeDelta> PerformanceTiming::FirstInputTimestamp() const {
       interactive_detector->GetFirstInputTimestamp());
 }
 
+absl::optional<base::TimeTicks>
+PerformanceTiming::FirstInputTimestampAsMonotonicTime() const {
+  const InteractiveDetector* interactive_detector = GetInteractiveDetector();
+  if (!interactive_detector)
+    return absl::nullopt;
+
+  return interactive_detector->GetFirstInputTimestamp();
+}
+
 absl::optional<base::TimeDelta> PerformanceTiming::LongestInputDelay() const {
   const InteractiveDetector* interactive_detector = GetInteractiveDetector();
   if (!interactive_detector)
