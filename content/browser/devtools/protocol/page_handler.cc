@@ -84,6 +84,10 @@ constexpr int kCaptureRetryLimit = 2;
 constexpr int kMaxScreencastFramesInFlight = 2;
 constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
     "Command can only be executed on top-level targets";
+constexpr char kErrorNotAttached[] = "Not attached to a page";
+constexpr char kErrorInactivePage[] = "Not attached to an active page";
+constexpr char kErrorNonTopLevelFrames[] =
+    "This is only supported for top-level frames";
 
 Binary EncodeImage(const gfx::Image& image,
                    const std::string& format,
@@ -394,7 +398,7 @@ Response PageHandler::Disable() {
 Response PageHandler::Crash() {
   WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
   if (!web_contents)
-    return Response::ServerError("Not attached to a page");
+    return Response::ServerError(kErrorNotAttached);
   if (web_contents->IsCrashed())
     return Response::ServerError("The target has already crashed");
   if (host_->frame_tree_node()->navigation_request())
@@ -404,7 +408,7 @@ Response PageHandler::Crash() {
 
 Response PageHandler::Close() {
   if (!host_)
-    return Response::ServerError("Not attached to a page");
+    return Response::ServerError(kErrorNotAttached);
 
   if (!host_->IsOutermostMainFrame())
     return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
@@ -418,7 +422,7 @@ void PageHandler::Reload(Maybe<bool> bypassCache,
                          Maybe<std::string> script_to_evaluate_on_load,
                          std::unique_ptr<ReloadCallback> callback) {
   if (!host_) {
-    callback->sendFailure(Response::ServerError("Not attached to a page"));
+    callback->sendFailure(Response::ServerError(kErrorNotAttached));
     return;
   }
 
@@ -994,9 +998,9 @@ Response PageHandler::ScreencastFrameAck(int session_id) {
 
 Response PageHandler::HandleJavaScriptDialog(bool accept,
                                              Maybe<std::string> prompt_text) {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
-    return Response::InternalError();
+  Response response = AssureTopLevelActiveFrame();
+  if (response.IsError())
+    return response;
 
   if (pending_dialog_.is_null())
     return Response::InvalidParams("No dialog is showing");
@@ -1007,6 +1011,7 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
   std::move(pending_dialog_).Run(accept, prompt_override);
 
   // Clean up the dialog UI if any.
+  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
   if (web_contents->GetDelegate()) {
     JavaScriptDialogManager* manager =
         web_contents->GetDelegate()->GetJavaScriptDialogManager(web_contents);
@@ -1072,6 +1077,19 @@ void PageHandler::NotifyScreencastVisibility(bool visible) {
 bool PageHandler::ShouldCaptureNextScreencastFrame() {
   return frames_in_flight_ <= kMaxScreencastFramesInFlight &&
          !(++frame_counter_ % capture_every_nth_frame_);
+}
+
+Response PageHandler::AssureTopLevelActiveFrame() {
+  if (!host_)
+    return Response::ServerError(kErrorNotAttached);
+
+  if (!host_->IsActive())
+    return Response::ServerError(kErrorInactivePage);
+
+  if (host_->GetParentOrOuterDocument())
+    return Response::ServerError(kErrorNonTopLevelFrames);
+
+  return Response::Success();
 }
 
 void PageHandler::InnerSwapCompositorFrame() {
@@ -1277,16 +1295,11 @@ Response PageHandler::StopLoading() {
 }
 
 Response PageHandler::SetWebLifecycleState(const std::string& state) {
-  if (!host_)
-    return Response::ServerError("Not attached to a page");
-
   // Inactive pages(e.g., a prerendered or back-forward cached page) should not
   // affect the state.
-  if (!host_->IsActive())
-    return Response::ServerError("Not attached to an active page");
-
-  if (host_->GetParentOrOuterDocument())
-    return Response::ServerError("This is only supported for top-level frames");
+  Response response = AssureTopLevelActiveFrame();
+  if (response.IsError())
+    return response;
 
   WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
   if (state == Page::SetWebLifecycleState::StateEnum::Frozen) {
