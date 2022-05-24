@@ -8,12 +8,12 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 
 namespace partition_alloc::internal {
 
@@ -71,20 +71,20 @@ struct PartitionBucket {
   // |PartitionRoot::AllocFromBucket|.)
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
-  BASE_EXPORT NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,
-                                               unsigned int flags,
-                                               size_t raw_size,
-                                               size_t slot_span_alignment,
-                                               bool* is_already_zeroed)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+  BASE_EXPORT PA_NOINLINE uintptr_t SlowPathAlloc(
+      PartitionRoot<thread_safe>* root,
+      unsigned int flags,
+      size_t raw_size,
+      size_t slot_span_alignment,
+      bool* is_already_zeroed) PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
-  ALWAYS_INLINE bool CanStoreRawSize() const {
+  PA_ALWAYS_INLINE bool CanStoreRawSize() const {
     // For direct-map as well as single-slot slot spans (recognized by checking
     // against |MaxRegularSlotSpanSize()|), we have some spare metadata space in
     // subsequent PartitionPage to store the raw size. It isn't only metadata
     // space though, slot spans that have more than one slot can't have raw size
     // stored, because we wouldn't know which slot it applies to.
-    if (LIKELY(slot_size <= MaxRegularSlotSpanSize()))
+    if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize()))
       return false;
 
     PA_DCHECK((slot_size % SystemPageSize()) == 0);
@@ -95,19 +95,19 @@ struct PartitionBucket {
 
   // Some buckets are pseudo-buckets, which are disabled because they would
   // otherwise not fulfill alignment constraints.
-  ALWAYS_INLINE bool is_valid() const {
+  PA_ALWAYS_INLINE bool is_valid() const {
     return active_slot_spans_head != nullptr;
   }
-  ALWAYS_INLINE bool is_direct_mapped() const {
+  PA_ALWAYS_INLINE bool is_direct_mapped() const {
     return !num_system_pages_per_slot_span;
   }
-  ALWAYS_INLINE size_t get_bytes_per_span() const {
+  PA_ALWAYS_INLINE size_t get_bytes_per_span() const {
     // Cannot overflow, num_system_pages_per_slot_span is a bitfield, and 255
     // pages fit in a size_t.
     static_assert(kPartitionNumSystemPagesPerSlotSpanBits <= 8, "");
     return num_system_pages_per_slot_span << SystemPageShift();
   }
-  ALWAYS_INLINE size_t get_slots_per_span() const {
+  PA_ALWAYS_INLINE size_t get_slots_per_span() const {
     size_t ret = GetSlotNumber(get_bytes_per_span());
     PA_DCHECK(ret <= SlotSpanMetadata<thread_safe>::kMaxSlotsPerSlotSpan);
     return ret;
@@ -115,7 +115,7 @@ struct PartitionBucket {
   // Returns a natural number of partition pages (calculated by
   // ComputeSystemPagesPerSlotSpan()) to allocate from the current super page
   // when the bucket runs out of slots.
-  ALWAYS_INLINE size_t get_pages_per_slot_span() const {
+  PA_ALWAYS_INLINE size_t get_pages_per_slot_span() const {
     // Rounds up to nearest multiple of NumSystemPagesPerPartitionPage().
     return (num_system_pages_per_slot_span +
             (NumSystemPagesPerPartitionPage() - 1)) /
@@ -140,7 +140,7 @@ struct PartitionBucket {
   BASE_EXPORT void MaintainActiveList();
 
   // Returns a slot number starting from the beginning of the slot span.
-  ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) const {
+  PA_ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) const {
     // See the static assertion for `kReciprocalShift` above.
     PA_DCHECK(offset_in_slot_span <= kMaxBucketed);
     PA_DCHECK(slot_size <= kMaxBucketed);
@@ -161,7 +161,7 @@ struct PartitionBucket {
   // Allocates a new slot span with size |num_partition_pages| from the
   // current extent. Metadata within this slot span will be initialized.
   // Returns nullptr on error.
-  ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
+  PA_ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
       PartitionRoot<thread_safe>* root,
       unsigned int flags,
       size_t slot_span_alignment) PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
@@ -169,8 +169,8 @@ struct PartitionBucket {
   // Allocates a new super page from the current extent, if possible. All
   // slot-spans will be in the decommitted state. Returns the address of the
   // super page's payload, or 0 on error.
-  ALWAYS_INLINE uintptr_t AllocNewSuperPage(PartitionRoot<thread_safe>* root,
-                                            unsigned int flags)
+  PA_ALWAYS_INLINE uintptr_t AllocNewSuperPage(PartitionRoot<thread_safe>* root,
+                                               unsigned int flags)
       PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Each bucket allocates a slot span when it runs out of slots.
@@ -180,7 +180,7 @@ struct PartitionBucket {
   // for the span (in PartitionPage::SlotSpanMetadata) and registers this bucket
   // as the owner of the span. It does NOT put the slots into the bucket's
   // freelist.
-  ALWAYS_INLINE void InitializeSlotSpan(
+  PA_ALWAYS_INLINE void InitializeSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
 
   // Commit 1 or more pages in |slot_span|, enough to get the next slot, which
@@ -191,7 +191,7 @@ struct PartitionBucket {
   //
   // If |slot_span| was freshly allocated, it must have been passed through
   // InitializeSlotSpan() first.
-  ALWAYS_INLINE uintptr_t
+  PA_ALWAYS_INLINE uintptr_t
   ProvisionMoreSlotsAndAllocOne(PartitionRoot<thread_safe>* root,
                                 SlotSpanMetadata<thread_safe>* slot_span)
       PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);

@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
@@ -38,7 +39,7 @@ namespace partition_alloc::internal {
 namespace {
 
 template <bool thread_safe>
-[[noreturn]] NOINLINE void PartitionOutOfMemoryMappingFailure(
+[[noreturn]] PA_NOINLINE void PartitionOutOfMemoryMappingFailure(
     PartitionRoot<thread_safe>* root,
     size_t size) PA_LOCKS_EXCLUDED(root->lock_) {
   PA_NO_CODE_FOLDING();
@@ -47,7 +48,7 @@ template <bool thread_safe>
 }
 
 template <bool thread_safe>
-[[noreturn]] NOINLINE void PartitionOutOfMemoryCommitFailure(
+[[noreturn]] PA_NOINLINE void PartitionOutOfMemoryCommitFailure(
     PartitionRoot<thread_safe>* root,
     size_t size) PA_LOCKS_EXCLUDED(root->lock_) {
   PA_NO_CODE_FOLDING();
@@ -183,7 +184,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
   root->lock_.AssertAcquired();
 
   const bool return_null = flags & AllocFlags::kReturnNull;
-  if (UNLIKELY(raw_size > MaxDirectMapped())) {
+  if (PA_UNLIKELY(raw_size > MaxDirectMapped())) {
     if (return_null)
       return nullptr;
 
@@ -264,7 +265,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 #endif
       reservation_start = ReserveMemoryFromGigaCage(pool, 0, reservation_size);
     }
-    if (UNLIKELY(!reservation_start)) {
+    if (PA_UNLIKELY(!reservation_start)) {
       if (return_null)
         return nullptr;
 
@@ -564,7 +565,7 @@ void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+PA_ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
                                                unsigned int flags,
                                                size_t slot_span_alignment) {
@@ -583,8 +584,8 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
 
   uintptr_t adjusted_next_partition_page =
       base::bits::AlignUp(root->next_partition_page, slot_span_alignment);
-  if (UNLIKELY(adjusted_next_partition_page + slot_span_reservation_size >
-               root->next_partition_page_end)) {
+  if (PA_UNLIKELY(adjusted_next_partition_page + slot_span_reservation_size >
+                  root->next_partition_page_end)) {
     // AllocNewSuperPage() may crash (e.g. address space exhaustion), put data
     // on stack.
     PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
@@ -666,7 +667,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
+PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
     PartitionRoot<thread_safe>* root,
     unsigned int flags) {
   // Need a new super page. We want to allocate super pages in a contiguous
@@ -679,7 +680,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   pool_handle pool = root->ChoosePool();
   uintptr_t super_page =
       ReserveMemoryFromGigaCage(pool, requested_address, kSuperPageSize);
-  if (UNLIKELY(!super_page)) {
+  if (PA_UNLIKELY(!super_page)) {
     if (flags & AllocFlags::kReturnNull)
       return 0;
 
@@ -756,8 +757,8 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   PartitionSuperPageExtentEntry<thread_safe>* current_extent =
       root->current_extent;
   const bool is_new_extent = super_page != requested_address;
-  if (UNLIKELY(is_new_extent)) {
-    if (UNLIKELY(!current_extent)) {
+  if (PA_UNLIKELY(is_new_extent)) {
+    if (PA_UNLIKELY(!current_extent)) {
       PA_DCHECK(!root->first_extent);
       root->first_extent = latest_extent;
     } else {
@@ -807,7 +808,7 @@ ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
+PA_ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   new (slot_span) SlotSpanMetadata<thread_safe>(this);
 
@@ -823,7 +824,7 @@ ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE uintptr_t
+PA_ALWAYS_INLINE uintptr_t
 PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     PartitionRoot<thread_safe>* root,
     SlotSpanMetadata<thread_safe>* slot_span) {
@@ -879,7 +880,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
         PageAccessibilityDisposition::kRequireUpdate);
   }
 
-  if (LIKELY(size <= kMaxMemoryTaggingSize)) {
+  if (PA_LIKELY(size <= kMaxMemoryTaggingSize)) {
     // Ensure the memory tag of the return_slot is unguessable.
     return_slot =
         ::partition_alloc::internal::TagMemoryRangeRandomly(return_slot, size);
@@ -893,7 +894,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   uintptr_t next_slot_end = next_slot + size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
-    if (LIKELY(size <= kMaxMemoryTaggingSize)) {
+    if (PA_LIKELY(size <= kMaxMemoryTaggingSize)) {
       next_slot =
           ::partition_alloc::internal::TagMemoryRangeRandomly(next_slot, size);
     }
@@ -999,7 +1000,7 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
     } else if (slot_span->is_empty()) {
       slot_span->next_slot_span = empty_slot_spans_head;
       empty_slot_spans_head = slot_span;
-    } else if (LIKELY(slot_span->is_decommitted())) {
+    } else if (PA_LIKELY(slot_span->is_decommitted())) {
       slot_span->next_slot_span = decommitted_slot_spans_head;
       decommitted_slot_spans_head = slot_span;
     } else {
@@ -1223,7 +1224,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
   // SetNewActiveSlotSpan() has a side-effect even when returning
   // false where it sweeps the active list and may move things into the empty or
   // decommitted lists which affects the subsequent conditional.
-  if (UNLIKELY(is_direct_mapped())) {
+  if (PA_UNLIKELY(is_direct_mapped())) {
     PA_DCHECK(raw_size > kMaxBucketed);
     PA_DCHECK(this == &root->sentinel_bucket);
     PA_DCHECK(active_slot_spans_head ==
@@ -1239,17 +1240,17 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
       new_bucket = new_slot_span->bucket;
     // Memory from PageAllocator is always zeroed.
     *is_already_zeroed = true;
-  } else if (LIKELY(!allocate_aligned_slot_span && SetNewActiveSlotSpan())) {
+  } else if (PA_LIKELY(!allocate_aligned_slot_span && SetNewActiveSlotSpan())) {
     // First, did we find an active slot span in the active list?
     new_slot_span = active_slot_spans_head;
     PA_DCHECK(new_slot_span->is_active());
-  } else if (LIKELY(!allocate_aligned_slot_span &&
-                    (empty_slot_spans_head != nullptr ||
-                     decommitted_slot_spans_head != nullptr))) {
+  } else if (PA_LIKELY(!allocate_aligned_slot_span &&
+                       (empty_slot_spans_head != nullptr ||
+                        decommitted_slot_spans_head != nullptr))) {
     // Second, look in our lists of empty and decommitted slot spans.
     // Check empty slot spans first, which are preferred, but beware that an
     // empty slot span might have been decommitted.
-    while (LIKELY((new_slot_span = empty_slot_spans_head) != nullptr)) {
+    while (PA_LIKELY((new_slot_span = empty_slot_spans_head) != nullptr)) {
       PA_DCHECK(new_slot_span->bucket == this);
       PA_DCHECK(new_slot_span->is_empty() || new_slot_span->is_decommitted());
       empty_slot_spans_head = new_slot_span->next_slot_span;
@@ -1271,8 +1272,8 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
       new_slot_span->next_slot_span = decommitted_slot_spans_head;
       decommitted_slot_spans_head = new_slot_span;
     }
-    if (UNLIKELY(!new_slot_span) &&
-        LIKELY(decommitted_slot_spans_head != nullptr)) {
+    if (PA_UNLIKELY(!new_slot_span) &&
+        PA_LIKELY(decommitted_slot_spans_head != nullptr)) {
       // Commit can be expensive, don't do it.
       if (flags & AllocFlags::kFastPathOrReturnNull)
         return 0;
@@ -1315,7 +1316,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
   }
 
   // Bail if we had a memory allocation failure.
-  if (UNLIKELY(!new_slot_span)) {
+  if (PA_UNLIKELY(!new_slot_span)) {
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
     if (flags & AllocFlags::kReturnNull)
@@ -1333,7 +1334,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
 
   // If we found an active slot span with free slots, or an empty slot span, we
   // have a usable freelist head.
-  if (LIKELY(new_slot_span->get_freelist_head() != nullptr)) {
+  if (PA_LIKELY(new_slot_span->get_freelist_head() != nullptr)) {
     PartitionFreelistEntry* entry =
         new_slot_span->PopForAlloc(new_bucket->slot_size);
 
