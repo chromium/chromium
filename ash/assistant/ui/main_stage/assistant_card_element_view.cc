@@ -80,6 +80,10 @@ const char* AssistantCardElementView::GetClassName() const {
 }
 
 ui::Layer* AssistantCardElementView::GetLayerForAnimating() {
+  // native_view() can be nullptr if this runs in unit test.
+  if (!native_view())
+    return nullptr;
+
   return native_view()->layer();
 }
 
@@ -88,6 +92,10 @@ std::string AssistantCardElementView::ToStringForTesting() const {
 }
 
 void AssistantCardElementView::AddedToWidget() {
+  // native_view() can be nullptr if this runs in unit test.
+  if (!native_view())
+    return;
+
   aura::Window* const top_level_window = native_view()->GetToplevelWindow();
 
   // Find the window for the Assistant card.

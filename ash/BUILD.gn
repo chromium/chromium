@@ -3387,6 +3387,7 @@ static_library("test_support") {
     "//ash/app_list:test_support",
     "//ash/app_menu",
     "//ash/assistant/model:model",
+    "//ash/assistant/ui:constants",
     "//ash/assistant/ui:ui",
     "//ash/components/attestation:test_support",
     "//ash/components/audio",

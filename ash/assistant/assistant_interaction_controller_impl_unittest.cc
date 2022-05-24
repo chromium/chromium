@@ -12,13 +12,17 @@
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/assistant/model/assistant_response.h"
 #include "ash/assistant/model/assistant_response_observer.h"
+#include "ash/assistant/model/ui/assistant_card_element.h"
 #include "ash/assistant/model/ui/assistant_error_element.h"
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_error_element_view.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/test/fake_android_intent_helper.h"
+#include "ash/test/test_ash_web_view.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -99,6 +103,16 @@ class AssistantInteractionControllerImplTest : public AssistantAshTestBase {
     return result;
   }
 };
+
+AssistantCardElement* GetAssistantCardElement(
+    const std::vector<std::unique_ptr<AssistantUiElement>>& ui_elements) {
+  if (ui_elements.size() != 1lu ||
+      ui_elements.front()->type() != AssistantUiElementType::kCard) {
+    return nullptr;
+  }
+
+  return static_cast<AssistantCardElement*>(ui_elements.front().get());
+}
 
 }  // namespace
 
@@ -252,5 +266,76 @@ TEST_F(AssistantInteractionControllerImplTest,
   auto expected = base::Time::Now() - actual_time_of_last_interaction;
 
   EXPECT_NEAR(actual.InSeconds(), expected.InSeconds(), 1);
+}
+
+TEST_F(AssistantInteractionControllerImplTest, CompactBubbleLauncher) {
+  static constexpr int kStandardLayoutAshWebViewWidth = 592;
+  static constexpr int kNarrowLayoutAshWebViewWidth = 496;
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      app_list_features::kCompactBubbleLauncher);
+
+  UpdateDisplay("1200x800");
+  ShowAssistantUi();
+  StartInteraction();
+
+  interaction_controller()->OnHtmlResponse("<html></html>", "fallback");
+
+  base::RunLoop().RunUntilIdle();
+
+  AssistantCardElement* card_element = GetAssistantCardElement(
+      interaction_controller()->GetModel()->response()->GetUiElements());
+  ASSERT_TRUE(card_element);
+  EXPECT_EQ(card_element->viewport_width(), 638);
+  EXPECT_EQ(
+      page_view()->GetViewByID(AssistantViewID::kAshWebView)->size().width(),
+      kStandardLayoutAshWebViewWidth);
+
+  ASSERT_TRUE(page_view()->GetViewByID(AssistantViewID::kAshWebView) !=
+              nullptr);
+  TestAshWebView* ash_web_view = static_cast<TestAshWebView*>(
+      page_view()->GetViewByID(AssistantViewID::kAshWebView));
+  // max_size and min_size in AshWebView::InitParams are different from the view
+  // size. min_size affects to the size of rendered content, i.e. renderer will
+  // try to render the content to the size. But View::Size() doesn't.
+  ASSERT_TRUE(ash_web_view->init_params_for_testing().max_size);
+  ASSERT_TRUE(ash_web_view->init_params_for_testing().min_size);
+  EXPECT_EQ(ash_web_view->init_params_for_testing().max_size.value().width(),
+            kStandardLayoutAshWebViewWidth);
+  EXPECT_EQ(ash_web_view->init_params_for_testing().min_size.value().width(),
+            kStandardLayoutAshWebViewWidth);
+
+  CloseAssistantUi();
+
+  // Change work area width < 1200 and confirm that the viewport width gets
+  // updated to narrow layout one.
+  UpdateDisplay("1199x800");
+  ShowAssistantUi();
+  StartInteraction();
+
+  interaction_controller()->OnHtmlResponse("<html></html>", "fallback");
+
+  base::RunLoop().RunUntilIdle();
+
+  card_element = GetAssistantCardElement(
+      interaction_controller()->GetModel()->response()->GetUiElements());
+  ASSERT_TRUE(card_element);
+  ASSERT_TRUE(page_view()->GetViewByID(AssistantViewID::kAshWebView) !=
+              nullptr);
+  EXPECT_EQ(card_element->viewport_width(), 542);
+  EXPECT_EQ(
+      page_view()->GetViewByID(AssistantViewID::kAshWebView)->size().width(),
+      kNarrowLayoutAshWebViewWidth);
+
+  ASSERT_TRUE(page_view()->GetViewByID(AssistantViewID::kAshWebView) !=
+              nullptr);
+  ash_web_view = static_cast<TestAshWebView*>(
+      page_view()->GetViewByID(AssistantViewID::kAshWebView));
+  ASSERT_TRUE(ash_web_view->init_params_for_testing().max_size);
+  ASSERT_TRUE(ash_web_view->init_params_for_testing().min_size);
+  EXPECT_EQ(ash_web_view->init_params_for_testing().max_size.value().width(),
+            kNarrowLayoutAshWebViewWidth);
+  EXPECT_EQ(ash_web_view->init_params_for_testing().min_size.value().width(),
+            kNarrowLayoutAshWebViewWidth);
 }
 }  // namespace ash

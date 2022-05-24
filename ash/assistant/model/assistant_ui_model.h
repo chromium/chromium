@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -92,6 +93,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   // Returns the current keyboard traversal mode.
   bool keyboard_traversal_mode() const { return keyboard_traversal_mode_; }
 
+  int AppListBubbleWidth() const { return app_list_bubble_width_; }
+  void SetAppListBubbleWidth(int width);
+
  private:
   void SetVisibility(AssistantVisibility visibility,
                      absl::optional<AssistantEntryPoint> entry_point,
@@ -108,6 +112,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   AssistantUiMode ui_mode_ = AssistantUiMode::kLauncherEmbeddedUi;
   AssistantVisibility visibility_ = AssistantVisibility::kClosed;
   AssistantEntryPoint entry_point_ = AssistantEntryPoint::kUnspecified;
+  int app_list_bubble_width_ = kPreferredWidthDip;
 
   mutable base::ObserverList<AssistantUiModelObserver> observers_;
 

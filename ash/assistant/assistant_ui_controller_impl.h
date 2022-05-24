@@ -66,6 +66,7 @@ class ASH_EXPORT AssistantUiControllerImpl
                 absl::optional<AssistantExitPoint> exit_point) override;
   absl::optional<base::ScopedClosureRunner> CloseUi(
       AssistantExitPoint exit_point) override;
+  void SetAppListBubbleWidth(int width) override;
 
   // AssistantInteractionModelObserver:
   void OnInputModalityChanged(InputModality input_modality) override;

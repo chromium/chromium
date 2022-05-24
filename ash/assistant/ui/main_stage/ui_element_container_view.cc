@@ -224,6 +224,14 @@ std::unique_ptr<ElementAnimator> UiElementContainerView::HandleUiElement(
 
   // Add the view to the hierarchy and prepare its animation layer for entry.
   auto* view_ptr = content_view()->AddChildView(std::move(view));
+
+  // If this runs in test, AssistantCardElement can use TestAshWebView. It does
+  // not return a native view. We cannot obtain a layer for animation. We want
+  // to add it to the UI tree as a test is going to interact with it. But we
+  // skip an animation.
+  if (is_card && !view_ptr->GetLayerForAnimating())
+    return nullptr;
+
   view_ptr->GetLayerForAnimating()->SetOpacity(0.f);
 
   // Return the animator that will be used to animate the view.

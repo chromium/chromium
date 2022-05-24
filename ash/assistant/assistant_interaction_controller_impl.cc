@@ -492,9 +492,11 @@ void AssistantInteractionControllerImpl::OnHtmlResponse(
     return;
   }
 
+  DCHECK(AssistantUiController::Get());
   AssistantResponse* response = GetResponseForActiveInteraction();
-  response->AddUiElement(
-      std::make_unique<AssistantCardElement>(html, fallback));
+  response->AddUiElement(std::make_unique<AssistantCardElement>(
+      html, fallback,
+      AssistantUiController::Get()->GetModel()->AppListBubbleWidth()));
 
   // If |response| is pending, commit it to cause the response for the
   // previous interaction, if one exists, to be animated off stage and the new

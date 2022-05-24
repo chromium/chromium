@@ -13,6 +13,7 @@ source_set("constants") {
   sources = [
     "assistant_ui_constants.cc",
     "assistant_ui_constants.h",
+    "assistant_view_ids.h",
   ]
 
   deps = [
@@ -30,7 +31,6 @@ source_set("ui") {
 
   sources = [
     "assistant_view_delegate.h",
-    "assistant_view_ids.h",
     "assistant_web_container_view.cc",
     "assistant_web_container_view.h",
     "assistant_web_view_delegate.h",

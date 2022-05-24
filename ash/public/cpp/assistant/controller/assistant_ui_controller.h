@@ -51,6 +51,11 @@ class ASH_PUBLIC_EXPORT AssistantUiController {
   virtual absl::optional<base::ScopedClosureRunner> CloseUi(
       chromeos::assistant::AssistantExitPoint) = 0;
 
+  // Sets current AppListBubbleWidth. AssistantCardElement needs to know the
+  // width of AppListBubbleWidth to render its html content.
+  // AssistantCardElement will take the value via AssistantUiModel.
+  virtual void SetAppListBubbleWidth(int width) = 0;
+
  protected:
   AssistantUiController();
   virtual ~AssistantUiController();

@@ -152,6 +152,10 @@ absl::optional<base::ScopedClosureRunner> AssistantUiControllerImpl::CloseUi(
       weak_factory_for_delayed_visibility_changes_.GetWeakPtr(), exit_point));
 }
 
+void AssistantUiControllerImpl::SetAppListBubbleWidth(int width) {
+  model_.SetAppListBubbleWidth(width);
+}
+
 void AssistantUiControllerImpl::ToggleUi(
     absl::optional<AssistantEntryPoint> entry_point,
     absl::optional<AssistantExitPoint> exit_point) {

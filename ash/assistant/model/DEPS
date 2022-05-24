@@ -1,6 +1,7 @@
 include_rules = [
   "-ash",
   "+ash/assistant/ui/assistant_ui_constants.h",
+  "+ash/assistant/ui/assistant_view_ids.h",
   "+ash/assistant/model",
   "+ash/public/cpp",
   "+ash/public/cpp/app_list",

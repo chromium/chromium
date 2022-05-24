@@ -72,6 +72,10 @@ void AssistantUiModel::SetKeyboardTraversalMode(bool keyboard_traversal_mode) {
   NotifyKeyboardTraversalModeChanged();
 }
 
+void AssistantUiModel::SetAppListBubbleWidth(int width) {
+  app_list_bubble_width_ = width;
+}
+
 void AssistantUiModel::SetVisibility(
     AssistantVisibility visibility,
     absl::optional<AssistantEntryPoint> entry_point,
