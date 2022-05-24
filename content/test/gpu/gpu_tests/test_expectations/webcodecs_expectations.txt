@@ -92,6 +92,7 @@ crbug.com/1327041 [ linux angle-disabled no-passthrough ] WebCodecs_TexImage2d_s
 crbug.com/1208827 [ chromeos-board-amd64-generic ] WebCodecs_Encode_capture_avc1.42001E_prefer-hardware [ RetryOnFailure ]
 
 crbug.com/1286918 [ android android-pixel-6 ] WebCodecs_TexImage2d_sw_decoder [ Failure ]
+crbug.com/1286918 [ android android-pixel-6 ] WebCodecs_TexImage2d_capture [ Failure ]
 crbug.com/1288914 [ android android-pixel-6 ] WebCodecs_TexImage2d_camera [ Failure ]
 
 crbug.com/1311091 WebCodecs_WebRTCPeerConnection_* [ Skip ]
