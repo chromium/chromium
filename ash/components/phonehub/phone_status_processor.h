@@ -65,6 +65,8 @@ class PhoneStatusProcessor
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_device_with_status) override;
 
+  void SetStreamableApps(const proto::StreamableApps& streamable_apps);
+
   void ProcessReceivedNotifications(
       const RepeatedPtrField<proto::Notification>& notification_protos);
 

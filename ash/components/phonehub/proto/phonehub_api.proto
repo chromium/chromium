@@ -275,9 +275,20 @@ message Notification {
   Category category = 11;
 }
 
+// Stores the information about the apps that are ready to be streamed.
+// We used a dedicated proto for this instead of inlining this to make it
+// future proof.
+message StreamableApps {
+  // List of apps that are ready to be streamed.
+  // The order of the apps in the list is important and is set by the source.
+  // The client should show the apps in the same order.
+  repeated App apps = 1;
+}
+
 message PhoneStatusSnapshot {
   PhoneProperties properties = 1;
   repeated Notification notifications = 2;
+  StreamableApps streamable_apps = 3;
 }
 
 message PhoneStatusUpdate {

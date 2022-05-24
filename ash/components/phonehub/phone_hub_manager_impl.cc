@@ -14,6 +14,8 @@
 #include "ash/components/phonehub/do_not_disturb_controller_impl.h"
 #include "ash/components/phonehub/feature_status_provider_impl.h"
 #include "ash/components/phonehub/find_my_device_controller_impl.h"
+#include "ash/components/phonehub/icon_decoder.h"
+#include "ash/components/phonehub/icon_decoder_impl.h"
 #include "ash/components/phonehub/invalid_connection_disconnector.h"
 #include "ash/components/phonehub/message_receiver_impl.h"
 #include "ash/components/phonehub/message_sender_impl.h"
@@ -119,7 +121,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               ? std::make_unique<RecentAppsInteractionHandlerImpl>(
                     pref_service,
                     multidevice_setup_client,
-                    multidevice_feature_access_manager_.get())
+                    multidevice_feature_access_manager_.get(),
+                    std::make_unique<IconDecoderImpl>())
               : nullptr),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
           do_not_disturb_controller_.get(),

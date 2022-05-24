@@ -4,12 +4,22 @@
 
 #include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 
+#include <memory>
+
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/phonehub/icon_decoder.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
 namespace phonehub {
@@ -34,10 +44,12 @@ void RecentAppsInteractionHandlerImpl::RegisterPrefs(
 RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
     PrefService* pref_service,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    MultideviceFeatureAccessManager* multidevice_feature_access_manager)
+    MultideviceFeatureAccessManager* multidevice_feature_access_manager,
+    std::unique_ptr<IconDecoder> icon_decoder)
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
-      multidevice_feature_access_manager_(multidevice_feature_access_manager) {
+      multidevice_feature_access_manager_(multidevice_feature_access_manager),
+      icon_decoder_(std::move(icon_decoder)) {
   multidevice_setup_client_->AddObserver(this);
   multidevice_feature_access_manager_->AddObserver(this);
 }
@@ -184,6 +196,56 @@ void RecentAppsInteractionHandlerImpl::OnNotificationAccessChanged() {
 }
 
 void RecentAppsInteractionHandlerImpl::OnAppsAccessChanged() {
+  ComputeAndUpdateUiState();
+}
+
+void RecentAppsInteractionHandlerImpl::SetStreamableApps(
+    const proto::StreamableApps& streamable_apps) {
+  PA_LOG(INFO) << "ClearRecentAppMetadataListAndPref to update the list of "
+               << streamable_apps.apps_size() << " items.";
+  ClearRecentAppMetadataListAndPref();
+  std::unique_ptr<std::vector<IconDecoder::DecodingData>> decoding_data_list =
+      std::make_unique<std::vector<IconDecoder::DecodingData>>();
+  std::hash<std::string> str_hash;
+  gfx::Image image =
+      gfx::Image(CreateVectorIcon(kPhoneHubPhoneIcon, gfx::kGoogleGrey700));
+  for (const auto& app : streamable_apps.apps()) {
+    // TODO(nayebi): AppMetadata is no longer limited to Notification class,
+    // let's move it outside of the Notification class.s2
+    recent_app_metadata_list_.emplace_back(
+        Notification::AppMetadata(base::UTF8ToUTF16(app.visible_name()),
+                                  app.package_name(), image, absl::nullopt,
+                                  app.icon_styling() ==
+                                      proto::NotificationIconStyling::
+                                          ICON_STYLE_MONOCHROME_SMALL_ICON,
+                                  app.user_id()),
+        base::Time::FromDoubleT(0));
+    decoding_data_list->emplace_back(
+        IconDecoder::DecodingData(str_hash(app.package_name()), app.icon()));
+  }
+
+  icon_decoder_->BatchDecode(
+      std::move(decoding_data_list),
+      base::BindOnce(&RecentAppsInteractionHandlerImpl::IconsDecoded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RecentAppsInteractionHandlerImpl::IconsDecoded(
+    std::unique_ptr<std::vector<IconDecoder::DecodingData>>
+        decoding_data_list) {
+  std::hash<std::string> str_hash;
+  for (const IconDecoder::DecodingData& decoding_data : *decoding_data_list) {
+    if (decoding_data.result.IsEmpty())
+      continue;
+    // find the associated app metadata
+    for (auto& app_metadata : recent_app_metadata_list_) {
+      if (decoding_data.id == str_hash(app_metadata.first.package_name)) {
+        app_metadata.first.icon = decoding_data.result;
+        continue;
+      }
+    }
+  }
+  SaveRecentAppMetadataListToPref();
   ComputeAndUpdateUiState();
 }
 

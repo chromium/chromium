@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/components/phonehub/recent_app_click_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
@@ -69,6 +70,8 @@ class RecentAppsInteractionHandler {
       base::Time last_accessed_timestamp) = 0;
   virtual std::vector<Notification::AppMetadata>
   FetchRecentAppMetadataList() = 0;
+  virtual void SetStreamableApps(
+      const proto::StreamableApps& streamable_apps) = 0;
 
  protected:
   RecentAppsInteractionHandler();
