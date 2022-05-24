@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/pollable_thread_safe_flag.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/deadline_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/idle_time_estimator.h"
@@ -74,15 +73,12 @@ FORWARD_DECLARE_TEST(MainThreadSchedulerImplTest,
 class AgentGroupSchedulerImpl;
 class FrameSchedulerImpl;
 class PageSchedulerImpl;
-class TaskQueueThrottler;
 class WebRenderWidgetSchedulingState;
 class CPUTimeBudgetPool;
 
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerImpl,
-      public VirtualTimeController,
       public IdleHelper::Delegate,
-      public SchedulerHelper::Observer,
       public RenderWidgetSignals::Observer,
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
@@ -158,7 +154,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   static const char* UseCaseToString(UseCase use_case);
   static const char* RAILModeToString(RAILMode rail_mode);
-  static const char* VirtualTimePolicyToString(VirtualTimePolicy);
 
   explicit MainThreadSchedulerImpl(
       std::unique_ptr<base::sequence_manager::SequenceManager>
@@ -230,7 +225,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
   std::unique_ptr<ThreadScheduler::RendererPauseHandle> PauseScheduler()
       override;
-  base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
   NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
     return nullptr;
   }
@@ -294,25 +288,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   scoped_refptr<base::sequence_manager::TaskQueue> NewTaskQueueForTest();
 
-  // VirtualTimeController implementation.
-  base::TimeTicks EnableVirtualTime(base::Time initial_time) override;
-  void DisableVirtualTimeForTesting() override;
-  bool VirtualTimeAllowedToAdvance() const override;
-  void GrantVirtualTimeBudget(
-      base::TimeDelta budget,
-      base::OnceClosure budget_exhausted_callback) override;
-  void SetVirtualTimePolicy(VirtualTimePolicy virtual_time_policy) override;
-  void SetMaxVirtualTimeTaskStarvationCount(
-      int max_task_starvation_count) override;
-  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const WTF::String& name,
-      WebScopedVirtualTimePauser::VirtualTaskDuration) override;
-
-  bool IsVirtualTimeEnabled() const;
-  base::TimeTicks IncrementVirtualTimePauseCount();
-  void DecrementVirtualTimePauseCount();
-  void MaybeAdvanceVirtualTime(base::TimeTicks new_virtual_time);
-
   void RemoveAgentGroupScheduler(AgentGroupSchedulerImpl*);
   void AddPageScheduler(PageSchedulerImpl*);
   void RemovePageScheduler(PageSchedulerImpl*);
@@ -354,8 +329,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void EndIdlePeriodForTesting(base::OnceClosure callback,
                                base::TimeTicks time_remaining);
   bool PolicyNeedsUpdateForTesting();
-
-  AutoAdvancingVirtualTimeDomain* GetVirtualTimeDomain();
 
   std::unique_ptr<CPUTimeBudgetPool> CreateCPUTimeBudgetPoolForTesting(
       const char* name);
@@ -462,9 +435,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // WebThreadScheduler private implementation:
   WebThreadScheduler* GetWebMainThreadScheduler() override;
 
-  // SchedulerHelper::Observer implementation:
-  void OnBeginNestedRunLoop() override;
-  void OnExitNestedRunLoop() override;
+  // ThreadSchedulerImpl overrides
+  base::SequencedTaskRunner* GetVirtualTimeTaskRunner() override;
+  void OnVirtualTimeEnabled() override;
+  void OnVirtualTimeDisabled() override;
+  void OnVirtualTimePaused() override;
+  void OnVirtualTimeResumed() override;
 
   static const char* TimeDomainTypeToString(TimeDomainType domain_type);
 
@@ -688,20 +664,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void PauseRendererImpl();
   void ResumeRendererImpl();
 
-  void NotifyVirtualTimePaused();
-  void SetVirtualTimeStopped(bool virtual_time_stopped);
-  void ApplyVirtualTimePolicy();
-
-  // Pauses the timer queues by inserting a fence that blocks any tasks posted
-  // after this point from running. Orthogonal to PauseTimerQueue. Care must
-  // be taken when using this API to avoid fighting with the TaskQueueThrottler.
-  void VirtualTimePaused();
-
-  // Removes the fence added by VirtualTimePaused allowing timers to execute
-  // normally. Care must be taken when using this API to avoid fighting with the
-  // TaskQueueThrottler.
-  void VirtualTimeResumed();
-
   // Returns true if there is a change in the main thread's policy that should
   // trigger a priority update.
   bool ShouldUpdateTaskQueuePriorities(Policy new_policy) const;
@@ -802,9 +764,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   MemoryPurgeManager memory_purge_manager_;
 
-  // Note |virtual_time_domain_| is lazily created.
-  std::unique_ptr<AutoAdvancingVirtualTimeDomain> virtual_time_domain_;
-
   base::RepeatingClosure update_policy_closure_;
   DeadlineTaskRunner delayed_update_policy_runner_;
   CancelableClosureHolder end_renderer_hidden_idle_period_closure_;
@@ -817,8 +776,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         const base::TickClock* time_source,
         base::TimeTicks now);
     ~MainThreadOnly();
-
-    bool IsInNestedRunloop();
 
     IdleTimeEstimator idle_time_estimator;
     TraceableState<UseCase, TracingCategory::kDefault> current_use_case;
@@ -868,19 +825,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         absl::optional<base::sequence_manager::TaskQueue::QueuePriority>,
         TracingCategory::kInfo>
         task_priority_for_tracing;  // Only used for tracing.
-
-    VirtualTimePolicy virtual_time_policy;
-
-    // In VirtualTimePolicy::kDeterministicLoading virtual time is only allowed
-    // to advance if this is zero.
-    int virtual_time_pause_count;
-
-    // The maximum number amount of delayed task starvation we will allow in
-    // VirtualTimePolicy::kAdvance or VirtualTimePolicy::kDeterministicLoading
-    // unless the run_loop is nested (in which case infinite starvation is
-    // allowed). NB a value of 0 allows infinite starvation.
-    int max_virtual_time_task_starvation_count;
-    bool virtual_time_stopped;
 
     // Holds task queues that are currently running.
     // The queue for the inmost task is at the top of stack when there are

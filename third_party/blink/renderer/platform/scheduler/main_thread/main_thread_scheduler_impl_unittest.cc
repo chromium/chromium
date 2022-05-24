@@ -374,10 +374,6 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
     return any_thread().begin_main_frame_on_critical_path;
   }
 
-  VirtualTimePolicy virtual_time_policy() const {
-    return main_thread_only().virtual_time_policy;
-  }
-
   void PerformMicrotaskCheckpoint() override {
     if (on_microtask_checkpoint_)
       std::move(on_microtask_checkpoint_).Run();
@@ -3458,7 +3454,7 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
 TEST_F(MainThreadSchedulerImplWithInitalVirtualTimeTest, VirtualTimeOverride) {
   EXPECT_TRUE(scheduler_->IsVirtualTimeEnabled());
   EXPECT_EQ(VirtualTimeController::VirtualTimePolicy::kPause,
-            scheduler_->virtual_time_policy());
+            scheduler_->GetVirtualTimePolicyForTest());
   EXPECT_EQ(base::Time::Now(), base::Time::FromJsTime(1000000.0));
 }
 

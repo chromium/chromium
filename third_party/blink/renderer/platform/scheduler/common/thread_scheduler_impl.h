@@ -9,8 +9,11 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class TickClock;
@@ -22,14 +25,15 @@ class Isolate;
 
 namespace blink {
 namespace scheduler {
-
-class SchedulerHelper;
+class AutoAdvancingVirtualTimeDomain;
 
 // Scheduler-internal interface for the common methods between
 // MainThreadSchedulerImpl and NonMainThreadSchedulerImpl which should
 // not be exposed outside the scheduler.
 class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
-                                            public WebThreadScheduler {
+                                            public WebThreadScheduler,
+                                            public VirtualTimeController,
+                                            public SchedulerHelper::Observer {
  public:
   // This type is defined in both ThreadScheduler and WebThreadScheduler,
   // so the use of this type causes ambiguous lookup. Redefine this again
@@ -53,9 +57,36 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
   void SetV8Isolate(v8::Isolate* isolate) override { isolate_ = isolate; }
   v8::Isolate* isolate() const { return isolate_; }
 
+  // ThreadScheduler implementation.
+  void Shutdown() override;
+  base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
+
+  // VirtualTimeController implementation.
+  base::TimeTicks EnableVirtualTime(base::Time initial_time) override;
+  void DisableVirtualTimeForTesting() override;
+  bool VirtualTimeAllowedToAdvance() const override;
+  void GrantVirtualTimeBudget(
+      base::TimeDelta budget,
+      base::OnceClosure budget_exhausted_callback) override;
+  void SetVirtualTimePolicy(VirtualTimePolicy virtual_time_policy) override;
+  void SetMaxVirtualTimeTaskStarvationCount(
+      int max_task_starvation_count) override;
+  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
+      const WTF::String& name,
+      WebScopedVirtualTimePauser::VirtualTaskDuration) override;
+
+  bool IsVirtualTimeEnabled() const;
+  base::TimeTicks IncrementVirtualTimePauseCount();
+  void DecrementVirtualTimePauseCount();
+  void MaybeAdvanceVirtualTime(base::TimeTicks new_virtual_time);
+  AutoAdvancingVirtualTimeDomain* GetVirtualTimeDomain();
+  VirtualTimePolicy GetVirtualTimePolicyForTest() const {
+    return virtual_time_policy_;
+  }
+
  protected:
-  ThreadSchedulerImpl() {}
-  ~ThreadSchedulerImpl() override = default;
+  ThreadSchedulerImpl();
+  ~ThreadSchedulerImpl() override;
 
   // Returns the list of callbacks to execute after the current task.
   virtual WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() = 0;
@@ -67,8 +98,50 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
   // task.
   void DispatchOnTaskCompletionCallbacks();
 
+  void WriteVirtualTimeInfoIntoTrace(perfetto::TracedDictionary& dict) const;
+
+  // A derived implementation should provide a task runner associated for
+  // virtual time control tasks (when VT budget is exhausted, callback will be
+  // posted there).
+  virtual base::SequencedTaskRunner* GetVirtualTimeTaskRunner() {
+    NOTREACHED();
+    return nullptr;
+  }
+  virtual void OnVirtualTimeEnabled() {}
+  virtual void OnVirtualTimeDisabled() {}
+
+  // Tells the derived implementation that VT is now paused and it has to
+  // insert fences into its task queues as required.
+  virtual void OnVirtualTimePaused() {}
+  // Tells the derived implementation that VT is now resumed and it has to
+  // remove fences added when time was paused from the queues it manages.
+  virtual void OnVirtualTimeResumed() {}
+
  private:
+  void NotifyVirtualTimePaused();
+  void SetVirtualTimeStopped(bool virtual_time_stopped);
+  void ApplyVirtualTimePolicy();
+
+  // SchedulerHelper::Observer implementation:
+  void OnBeginNestedRunLoop() override;
+  void OnExitNestedRunLoop() override;
+
   v8::Isolate* isolate_ = nullptr;
+
+  // Note |virtual_time_domain_| is only present iff virtual time is enabled.
+  std::unique_ptr<AutoAdvancingVirtualTimeDomain> virtual_time_domain_;
+  VirtualTimePolicy virtual_time_policy_ = VirtualTimePolicy::kAdvance;
+
+  // In VirtualTimePolicy::kDeterministicLoading virtual time is only allowed
+  // to advance if this is zero.
+  int virtual_time_pause_count_ = 0;
+
+  // The maximum number amount of delayed task starvation we will allow in
+  // VirtualTimePolicy::kAdvance or VirtualTimePolicy::kDeterministicLoading
+  // unless the run_loop is nested (in which case infinite starvation is
+  // allowed). NB a value of 0 allows infinite starvation.
+  int max_virtual_time_task_starvation_count_ = 0;
+  bool virtual_time_stopped_ = false;
 };
 
 }  // namespace scheduler
