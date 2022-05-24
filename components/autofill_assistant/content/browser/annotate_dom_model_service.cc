@@ -59,12 +59,11 @@ void AnnotateDomModelService::Shutdown() {
   // This and the optimization guide are keyed services, currently optimization
   // guide is a BrowserContextKeyedService, it will be cleaned first so removing
   // the observer should not be performed.
-  if (annotate_dom_model_file_) {
+  if (model_file_) {
     // If the model file is already loaded, it should be closed on a
     // background thread.
     background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CloseModelFile, std::move(*annotate_dom_model_file_)));
+        FROM_HERE, base::BindOnce(&CloseModelFile, std::move(*model_file_)));
   }
   for (auto& pending_request : pending_model_requests_) {
     // Clear any pending requests, no model file is acceptable as |Shutdown| is
@@ -85,23 +84,24 @@ void AnnotateDomModelService::OnModelUpdated(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&LoadModelFile, model_info.GetModelFilePath()),
       base::BindOnce(&AnnotateDomModelService::OnModelFileLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), model_info.GetVersion()));
 }
 
-void AnnotateDomModelService::OnModelFileLoaded(base::File model_file) {
+void AnnotateDomModelService::OnModelFileLoaded(int64_t model_version,
+                                                base::File model_file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_file.IsValid()) {
     return;
   }
 
-  if (annotate_dom_model_file_) {
+  if (model_file_) {
     // If the model file is already loaded, it should be closed on a background
     // thread.
     background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CloseModelFile, std::move(*annotate_dom_model_file_)));
+        FROM_HERE, base::BindOnce(&CloseModelFile, std::move(*model_file_)));
   }
-  annotate_dom_model_file_ = std::move(model_file);
+  model_file_ = std::move(model_file);
+  model_version_ = model_version;
   for (auto& pending_request : pending_model_requests_) {
     if (!pending_request) {
       continue;
@@ -111,13 +111,17 @@ void AnnotateDomModelService::OnModelFileLoaded(base::File model_file) {
   pending_model_requests_.clear();
 }
 
-absl::optional<base::File> AnnotateDomModelService::GetModelFile() {
-  if (!annotate_dom_model_file_) {
+absl::optional<base::File> AnnotateDomModelService::GetModelFile() const {
+  if (!model_file_) {
     return absl::nullopt;
   }
   // The model must be valid at this point.
-  DCHECK(annotate_dom_model_file_->IsValid());
-  return annotate_dom_model_file_->Duplicate();
+  DCHECK(model_file_->IsValid());
+  return model_file_->Duplicate();
+}
+
+absl::optional<int64_t> AnnotateDomModelService::GetModelVersion() const {
+  return model_version_;
 }
 
 std::string AnnotateDomModelService::GetOverridesPolicy() const {
@@ -131,7 +135,7 @@ bool AnnotateDomModelService::SetOverridesPolicy(
 
 void AnnotateDomModelService::NotifyOnModelFileAvailable(
     NotifyModelAvailableCallback callback) {
-  DCHECK(!annotate_dom_model_file_);
+  DCHECK(!model_file_);
   if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
     pending_model_requests_.emplace_back(std::move(callback));
     return;
@@ -140,7 +144,7 @@ void AnnotateDomModelService::NotifyOnModelFileAvailable(
 }
 
 void AnnotateDomModelService::SetModelFileForTest(base::File model_file) {
-  annotate_dom_model_file_ = std::move(model_file);
+  model_file_ = std::move(model_file);
   for (auto& pending_request : pending_model_requests_) {
     std::move(pending_request).Run(true);
   }

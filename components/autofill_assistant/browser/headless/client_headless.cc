@@ -171,6 +171,11 @@ bool ClientHeadless::MustUseBackendData() const {
   return false;
 }
 
+void ClientHeadless::GetAnnotateDomModelVersion(
+    base::OnceCallback<void(absl::optional<int64_t>)> callback) const {
+  std::move(callback).Run(absl::nullopt);
+}
+
 void ClientHeadless::Shutdown(Metrics::DropOutReason reason) {}
 
 void ClientHeadless::FetchAccessToken(

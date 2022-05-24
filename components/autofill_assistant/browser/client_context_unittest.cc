@@ -83,7 +83,7 @@ TEST_F(ClientContextTest, Initialize) {
   EXPECT_THAT(actual_device_context.model(), Eq("model"));
 }
 
-TEST_F(ClientContextTest, UpdateWithTriggerContext) {
+TEST_F(ClientContextTest, UpdatesToClientContext) {
   // Calls expected when the constructor is called.
   EXPECT_CALL(mock_client_, IsAccessibilityEnabled()).WillOnce(Return(false));
   EXPECT_CALL(mock_client_, GetSignedInEmail())
@@ -102,16 +102,16 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
       .WillOnce(Return(std::pair<int, int>(1080, 1920)));
   EXPECT_CALL(mock_client_, GetScreenOrientation())
       .WillOnce(Return(ClientContextProto::LANDSCAPE));
+
   client_context.Update({std::make_unique<ScriptParameters>(
                              base::flat_map<std::string, std::string>{
                                  {"USER_EMAIL", "example@chromium.org"}}),
-                         /* exp = */ "1,2,3",
+                         /* experiment_ids = */ "1,2,3",
                          /* is_cct = */ true,
                          /* onboarding_shown = */ true,
                          /* is_direct_action = */ true,
                          /* initial_url = */ "https://www.example.com",
                          /* is_in_chrome_triggered = */ true});
-
   auto actual_client_context = client_context.AsProto();
   EXPECT_THAT(actual_client_context.experiment_ids(), Eq("1,2,3"));
   EXPECT_THAT(actual_client_context.is_cct(), Eq(true));
@@ -128,6 +128,13 @@ TEST_F(ClientContextTest, UpdateWithTriggerContext) {
   EXPECT_THAT(actual_client_context.window_size().height_pixels(), Eq(1920));
   EXPECT_THAT(actual_client_context.screen_orientation(),
               ClientContextProto::LANDSCAPE);
+  EXPECT_FALSE(actual_client_context.has_annotate_dom_model_context());
+
+  client_context.UpdateAnnotateDomModelContext(123456);
+  actual_client_context = client_context.AsProto();
+  EXPECT_THAT(
+      actual_client_context.annotate_dom_model_context().model_version(),
+      123456);
 }
 
 TEST_F(ClientContextTest, WindowSizeIsClearedIfNoLongerAvailable) {

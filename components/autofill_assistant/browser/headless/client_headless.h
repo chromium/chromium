@@ -70,6 +70,9 @@ class ClientHeadless : public Client, public AccessTokenFetcher {
   bool HasHadUI() const override;
   ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() override;
   bool MustUseBackendData() const override;
+  void GetAnnotateDomModelVersion(
+      base::OnceCallback<void(absl::optional<int64_t>)> callback)
+      const override;
 
   // Overrides AccessTokenFetcher
   void FetchAccessToken(

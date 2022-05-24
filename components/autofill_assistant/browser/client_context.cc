@@ -86,6 +86,10 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
   proto_.set_screen_orientation(client_->GetScreenOrientation());
 }
 
+void ClientContextImpl::UpdateAnnotateDomModelContext(int64_t model_version) {
+  proto_.mutable_annotate_dom_model_context()->set_model_version(model_version);
+}
+
 ClientContextProto ClientContextImpl::AsProto() const {
   return proto_;
 }

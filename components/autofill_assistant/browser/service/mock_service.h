@@ -59,6 +59,10 @@ class MockService : public Service {
               SetDisableRpcSigning,
               (bool disable_rpc_signing),
               (override));
+  MOCK_METHOD(void,
+              UpdateAnnotateDomModelContext,
+              (int64_t model_version),
+              (override));
 };
 
 }  // namespace autofill_assistant

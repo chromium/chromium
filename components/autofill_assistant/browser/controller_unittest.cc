@@ -2328,4 +2328,50 @@ TEST_F(ControllerTest, SemanticOverridesSetInService) {
   EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
 }
 
+TEST_F(ControllerTest, SkipModelVersionIfParameterNotSpecified) {
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion).Times(0);
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext).Times(0);
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{{}}),
+                         TriggerContext::Options()));
+}
+
+TEST_F(ControllerTest, AttachesAvailableModelVersionOnStart) {
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
+      .WillOnce(RunOnceCallback<0>(123456));
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext(123456));
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{
+                                 {"SEND_ANNOTATE_DOM_MODEL_VERSION", "true"}}),
+                         TriggerContext::Options()));
+}
+
+TEST_F(ControllerTest, DoesNotAttachUnavailableModelVersionOnStart) {
+  EXPECT_CALL(mock_client_, GetAnnotateDomModelVersion)
+      .WillOnce(RunOnceCallback<0>(absl::nullopt));
+  EXPECT_CALL(*mock_service_, UpdateAnnotateDomModelContext).Times(0);
+  EXPECT_CALL(*mock_service_, GetScriptsForUrl)
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{}));
+
+  controller_->Start(GURL("https://www.example.com"),
+                     std::make_unique<TriggerContext>(
+                         /* parameters = */ std::make_unique<ScriptParameters>(
+                             base::flat_map<std::string, std::string>{
+                                 {"SEND_ANNOTATE_DOM_MODEL_VERSION", "true"}}),
+                         TriggerContext::Options()));
+}
+
 }  // namespace autofill_assistant

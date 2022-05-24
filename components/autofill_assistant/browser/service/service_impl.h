@@ -93,6 +93,8 @@ class ServiceImpl : public Service {
 
   void SetDisableRpcSigning(bool disable_rpc_signing) override;
 
+  void UpdateAnnotateDomModelContext(int64_t model_version) override;
+
  private:
   void SendUserDataRequest(
       uint64_t run_id,

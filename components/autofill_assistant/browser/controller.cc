@@ -412,14 +412,42 @@ void Controller::GetOrCheckScripts() {
 #else
     VLOG(2) << "GetScripts for " << script_url_.host();
 #endif
-
-    GetService()->GetScriptsForUrl(
-        url, *trigger_context_,
-        base::BindOnce(&Controller::OnGetScripts, base::Unretained(this), url));
+    MaybeUpdateClientContextAndGetScriptsForUrl(url);
   } else {
     script_tracker()->CheckScripts();
     StartPeriodicScriptChecks();
   }
+}
+
+void Controller::MaybeUpdateClientContextAndGetScriptsForUrl(const GURL& url) {
+  DCHECK(trigger_context_);
+  if (!trigger_context_->GetScriptParameters()
+           .GetSendAnnotateDomModelVersion()
+           .value_or(false)) {
+    GetScriptsForUrl(url);
+    return;
+  }
+
+  DCHECK(client_);
+  client_->GetAnnotateDomModelVersion(
+      base::BindOnce(&Controller::OnGetAnnotateDomModelVersionForGetScripts,
+                     weak_ptr_factory_.GetWeakPtr(), url));
+}
+
+void Controller::OnGetAnnotateDomModelVersionForGetScripts(
+    const GURL& url,
+    absl::optional<int64_t> model_version) {
+  if (model_version) {
+    GetService()->UpdateAnnotateDomModelContext(*model_version);
+  }
+  GetScriptsForUrl(url);
+}
+
+void Controller::GetScriptsForUrl(const GURL& url) {
+  GetService()->GetScriptsForUrl(
+      url, *trigger_context_,
+      base::BindOnce(&Controller::OnGetScripts, weak_ptr_factory_.GetWeakPtr(),
+                     url));
 }
 
 void Controller::StartPeriodicScriptChecks() {

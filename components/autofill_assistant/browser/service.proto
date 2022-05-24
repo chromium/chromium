@@ -28,7 +28,7 @@ message FieldTrialProto {
 }
 
 // Context contains client environment details.
-// Next ID: 21
+// Next ID: 22
 message ClientContextProto {
   message Chrome {
     optional string chrome_version = 1;
@@ -137,7 +137,13 @@ message ClientContextProto {
   }
   optional PlatformType platform_type = 20;
 
-  reserved 19;
+  // The model for semantic dom annotation.
+  message AnnotateDomModelContextProto {
+    optional int64 model_version = 1;
+  }
+  optional AnnotateDomModelContextProto annotate_dom_model_context = 22;
+
+  reserved 19, 21;
 }
 
 // Get the list of scripts that can potentially be run on a url.

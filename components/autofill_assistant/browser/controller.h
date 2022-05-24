@@ -299,6 +299,12 @@ class Controller : public ScriptExecutorDelegate,
   // Sets the semantic selector in the DOM annotation service.
   void SetSemanticSelectorPolicy(SemanticSelectorPolicy policy);
 
+  void MaybeUpdateClientContextAndGetScriptsForUrl(const GURL& url);
+  void OnGetAnnotateDomModelVersionForGetScripts(
+      const GURL& url,
+      absl::optional<int64_t> model_version);
+  void GetScriptsForUrl(const GURL& url);
+
   ClientSettings settings_;
   const raw_ptr<Client> client_;
   const raw_ptr<const base::TickClock> tick_clock_;

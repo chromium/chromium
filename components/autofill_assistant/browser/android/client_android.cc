@@ -98,6 +98,9 @@ ClientAndroid::ClientAndroid(content::WebContents* web_contents,
     : content::WebContentsUserData<ClientAndroid>(*web_contents),
       dependencies_(
           DependenciesAndroid::CreateFromJavaDependencies(jdependencies)),
+      annotate_dom_model_service_(dependencies_->GetCommonDependencies()
+                                      ->GetOrCreateAnnotateDomModelService(
+                                          web_contents->GetBrowserContext())),
       jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
@@ -129,7 +132,7 @@ bool ClientAndroid::IsVisible() const {
          ui_controller_android_->IsAttached();
 }
 
-bool ClientAndroid::Start(
+void ClientAndroid::Start(
     const GURL& url,
     std::unique_ptr<TriggerContext> trigger_context,
     std::unique_ptr<Service> test_service_to_inject,
@@ -176,7 +179,7 @@ bool ClientAndroid::Start(
       DVLOG(2) << "\t\t" << param.name() << ": " << param.value();
     }
   }
-  return controller_->Start(url, std::move(trigger_context));
+  controller_->Start(url, std::move(trigger_context));
 }
 
 void ClientAndroid::OnJavaDestroyUI(
@@ -600,6 +603,31 @@ bool ClientAndroid::MustUseBackendData() const {
   return dependencies_->GetCommonDependencies()->IsWebLayer();
 }
 
+void ClientAndroid::GetAnnotateDomModelVersion(
+    base::OnceCallback<void(absl::optional<int64_t>)> callback) const {
+  if (!annotate_dom_model_service_) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  auto model_version = annotate_dom_model_service_->GetModelVersion();
+  if (model_version.has_value()) {
+    std::move(callback).Run(model_version);
+    return;
+  }
+
+  annotate_dom_model_service_->NotifyOnModelFileAvailable(
+      base::BindOnce(&ClientAndroid::OnAnnotateDomModelFileAvailable,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientAndroid::OnAnnotateDomModelFileAvailable(
+    base::OnceCallback<void(absl::optional<int64_t>)> callback,
+    bool available) {
+  DCHECK(annotate_dom_model_service_);
+  std::move(callback).Run(annotate_dom_model_service_->GetModelVersion());
+}
+
 void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
   if (!controller_)
     return;
@@ -673,10 +701,7 @@ void ClientAndroid::CreateController(
       GetWebContents(), /* client= */ this,
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
-      std::move(service), ukm::UkmRecorder::Get(),
-      dependencies_->GetCommonDependencies()
-          ->GetOrCreateAnnotateDomModelService(
-              GetWebContents()->GetBrowserContext()));
+      std::move(service), ukm::UkmRecorder::Get(), annotate_dom_model_service_);
   ui_controller_ = std::make_unique<UiController>(
       /* client= */ this, controller_.get(), std::move(tts_controller));
   ui_controller_->StartListening();
