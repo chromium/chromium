@@ -5101,7 +5101,10 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   EXPECT_EQ(std::u16string(), response_data.fields[4].value);
 }
 
-// Verify when no complete number can be found, we do best-effort filling.
+// Verify that phone number fields annotated with the autocomplete attribute
+// are filled best-effort.
+// Phone number local heuristics only succeed if a PHONE_HOME_NUMBER field is
+// present.
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
        FillFirstPhoneNumber_BestEfforFilling) {
   AutofillProfile* work_profile = personal_data().GetProfileWithGUID(
