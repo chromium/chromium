@@ -1,7 +1,7 @@
 achuith@chromium.org
+hidehiko@chromium.org
 khorimoto@chromium.org
 michaelpg@chromium.org
-satorux@chromium.org
 xiyuan@chromium.org
 
 per-file *bluetooth*=file://ui/webui/resources/cr_components/chromeos/bluetooth/OWNERS

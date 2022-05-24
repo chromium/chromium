@@ -5,10 +5,10 @@ per-file BUILD.gn=*
 achuith@chromium.org
 afakhry@chromium.org
 alemate@chromium.org
+hidehiko@chromium.org
 jamescook@chromium.org
 khorimoto@chromium.org
 oshima@chromium.org
-satorux@chromium.org
 xiyuan@chromium.org
 per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
 per-file note_taking*=glenrob@chromium.org
