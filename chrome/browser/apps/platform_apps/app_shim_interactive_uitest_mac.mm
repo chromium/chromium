@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_Launch) {
 
   // Case 2: Launch the shim, it should start the app.
   {
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
     shim_cmdline.AppendSwitch(app_mode::kLaunchedForTest);
     NSRunningApplication* shim_app = base::mac::OpenApplicationWithPath(
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
   // Launch the app. It should create a hidden window, but the shim should not
   // launch.
   {
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     LaunchPlatformApp(app);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
   }
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
 
   // Launch a second window. It should not launch the shim.
   {
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     LaunchPlatformApp(app);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
   }
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_RebuildShim) {
   //     rebuild the shim.
   // (3) After rebuilding, Chrome again launches the shim and expects it to
   //     behave normally.
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
   base::CommandLine shim_cmdline(base::CommandLine::NO_PROGRAM);
   NSRunningApplication* shim_app = base::mac::OpenApplicationWithPath(
       shim_path, shim_cmdline, NSWorkspaceLaunchDefault);

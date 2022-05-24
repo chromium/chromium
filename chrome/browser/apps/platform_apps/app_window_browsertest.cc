@@ -101,7 +101,8 @@ class AppWindowAPITest : public extensions::PlatformAppBrowserTest {
     if (!BeginAppWindowAPITest(testName))
       return false;
 
-    ExtensionTestMessageListener round_trip_listener("WaitForRoundTrip", true);
+    ExtensionTestMessageListener round_trip_listener("WaitForRoundTrip",
+                                                     ReplyBehavior::kWillReply);
     if (!round_trip_listener.WaitUntilSatisfied()) {
       message_ = "Did not get the 'WaitForRoundTrip' message.";
       return false;
@@ -120,7 +121,8 @@ class AppWindowAPITest : public extensions::PlatformAppBrowserTest {
 
  private:
   bool BeginAppWindowAPITest(const char* testName) {
-    ExtensionTestMessageListener launched_listener("Launched", true);
+    ExtensionTestMessageListener launched_listener("Launched",
+                                                   ReplyBehavior::kWillReply);
     LoadAndLaunchPlatformApp("window_api", &launched_listener);
     if (!launched_listener.WaitUntilSatisfied()) {
       message_ = "Did not get the 'Launched' message.";
@@ -216,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   // test will check if the geometry cache entry for the test window has
   // changed. When the change happens, the test will let the app know so it can
   // continue running.
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
 
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
@@ -233,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
-  ExtensionTestMessageListener geometry_listener("ListenGeometryChange", true);
+  ExtensionTestMessageListener geometry_listener("ListenGeometryChange",
+                                                 ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   launched_listener.Reply("testRestoreAfterGeometryCacheChange");

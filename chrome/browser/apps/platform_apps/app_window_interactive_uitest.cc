@@ -33,7 +33,8 @@ using extensions::AppWindow;
 using extensions::NativeAppWindow;
 
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, ESCLeavesFullscreenWindow) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   LoadAndLaunchPlatformApp("leave_fullscreen", &launched_listener);
 
   // We start by making sure the window is actually focused.
@@ -70,7 +71,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, ESCLeavesFullscreenWindow) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, ESCLeavesFullscreenDOM) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   LoadAndLaunchPlatformApp("leave_fullscreen", &launched_listener);
 
   // We start by making sure the window is actually focused.
@@ -115,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, ESCLeavesFullscreenDOM) {
 
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
                        ESCDoesNotLeaveFullscreenWindow) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   LoadAndLaunchPlatformApp("prevent_leave_fullscreen", &launched_listener);
 
   // We start by making sure the window is actually focused.
@@ -142,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
 
   ASSERT_TRUE(SimulateKeyPress(ui::VKEY_ESCAPE));
 
-  ExtensionTestMessageListener second_key_listener("B_KEY_RECEIVED", false);
+  ExtensionTestMessageListener second_key_listener("B_KEY_RECEIVED");
 
   ASSERT_TRUE(SimulateKeyPress(ui::VKEY_B));
 
@@ -156,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, ESCDoesNotLeaveFullscreenDOM) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   LoadAndLaunchPlatformApp("prevent_leave_fullscreen", &launched_listener);
 
   // We start by making sure the window is actually focused.
@@ -190,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, ESCDoesNotLeaveFullscreenDOM) {
 
   ASSERT_TRUE(SimulateKeyPress(ui::VKEY_ESCAPE));
 
-  ExtensionTestMessageListener second_key_listener("B_KEY_RECEIVED", false);
+  ExtensionTestMessageListener second_key_listener("B_KEY_RECEIVED");
 
   ASSERT_TRUE(SimulateKeyPress(ui::VKEY_B));
 
@@ -208,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, ESCDoesNotLeaveFullscreenDOM) {
 // and 'overrideEscFullscreen'.
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
                        ESCDoesNotLeaveFullscreenOldPermission) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   LoadAndLaunchPlatformApp("prevent_leave_fullscreen_old", &launched_listener);
 
   // We start by making sure the window is actually focused.
@@ -235,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
 
   ASSERT_TRUE(SimulateKeyPress(ui::VKEY_ESCAPE));
 
-  ExtensionTestMessageListener second_key_listener("B_KEY_RECEIVED", false);
+  ExtensionTestMessageListener second_key_listener("B_KEY_RECEIVED");
 
   ASSERT_TRUE(SimulateKeyPress(ui::VKEY_B));
 
@@ -262,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestInnerBounds) {
 
 void AppWindowInteractiveTest::TestOuterBoundsHelper(
     const std::string& frame_type) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   const extensions::Extension* app =
       LoadAndLaunchPlatformApp("outer_bounds", &launched_listener);
 
@@ -381,15 +387,17 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, TestDrawAttention) {
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, TestCreateHidden) {
   // Created hidden both times.
   {
-    ExtensionTestMessageListener launched_listener("Launched", true);
+    ExtensionTestMessageListener launched_listener("Launched",
+                                                   ReplyBehavior::kWillReply);
     LoadAndLaunchPlatformApp("hidden_with_id", &launched_listener);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
-    ExtensionTestMessageListener create_listener_1("Launched", true);
+    ExtensionTestMessageListener create_listener_1("Launched",
+                                                   ReplyBehavior::kWillReply);
     launched_listener.Reply("createHidden");
     EXPECT_TRUE(create_listener_1.WaitUntilSatisfied());
     AppWindow* app_window = GetFirstAppWindow();
     EXPECT_TRUE(app_window->is_hidden());
-    ExtensionTestMessageListener create_listener_2("Launched", false);
+    ExtensionTestMessageListener create_listener_2("Launched");
     create_listener_1.Reply("createHidden");
     EXPECT_TRUE(create_listener_2.WaitUntilSatisfied());
     EXPECT_TRUE(app_window->is_hidden());
@@ -398,15 +406,17 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, TestCreateHidden) {
 
   // Created hidden, then visible. The second create should show the window.
   {
-    ExtensionTestMessageListener launched_listener("Launched", true);
+    ExtensionTestMessageListener launched_listener("Launched",
+                                                   ReplyBehavior::kWillReply);
     LoadAndLaunchPlatformApp("hidden_with_id", &launched_listener);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
-    ExtensionTestMessageListener create_listener_1("Launched", true);
+    ExtensionTestMessageListener create_listener_1("Launched",
+                                                   ReplyBehavior::kWillReply);
     launched_listener.Reply("createHidden");
     EXPECT_TRUE(create_listener_1.WaitUntilSatisfied());
     AppWindow* app_window = GetFirstAppWindow();
     EXPECT_TRUE(app_window->is_hidden());
-    ExtensionTestMessageListener create_listener_2("Launched", false);
+    ExtensionTestMessageListener create_listener_2("Launched");
     create_listener_1.Reply("createVisible");
     EXPECT_TRUE(create_listener_2.WaitUntilSatisfied());
     EXPECT_FALSE(app_window->is_hidden());
@@ -480,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowHiddenKeepAliveTest, StaysHidden) {
 // A window that is created hidden but shown soon after should keep Chrome
 // alive.
 IN_PROC_BROWSER_TEST_F(AppWindowHiddenKeepAliveTest, HiddenThenShown) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   LoadAndLaunchPlatformApp("hidden_then_shown", &launched_listener);
   AppWindow* app_window = GetFirstAppWindow();
   EXPECT_TRUE(app_window->is_hidden());
@@ -490,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowHiddenKeepAliveTest, HiddenThenShown) {
     browser->window()->Close();
 
   // The app window will show after 3 seconds.
-  ExtensionTestMessageListener shown_listener("Shown", false);
+  ExtensionTestMessageListener shown_listener("Shown");
   launched_listener.Reply("");
   EXPECT_TRUE(shown_listener.WaitUntilSatisfied());
   EXPECT_FALSE(app_window->is_hidden());

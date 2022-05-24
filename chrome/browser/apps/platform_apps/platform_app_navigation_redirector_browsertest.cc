@@ -134,7 +134,7 @@ void PlatformAppNavigationRedirectorBrowserTest::TestNavigationInTab(
 
   InstallPlatformApp(handler);
 
-  ExtensionTestMessageListener handler_listener(handler_start_message, false);
+  ExtensionTestMessageListener handler_listener(handler_start_message);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(base::StringPrintf(
@@ -201,7 +201,7 @@ void PlatformAppNavigationRedirectorBrowserTest::TestNavigationInApp(
 
   InstallPlatformApp(handler);
 
-  ExtensionTestMessageListener handler_listener(handler_start_message, false);
+  ExtensionTestMessageListener handler_listener(handler_start_message);
 
   LoadAndLaunchPlatformApp(launcher, launcher_done_message);
 
@@ -254,7 +254,7 @@ void PlatformAppNavigationRedirectorBrowserTest::TestNavigationInBrowser(
 
   InstallPlatformApp(handler);
 
-  ExtensionTestMessageListener handler_listener(handler_start_message, false);
+  ExtensionTestMessageListener handler_listener(handler_start_message);
 
   NavigateParams params(
       browser(),

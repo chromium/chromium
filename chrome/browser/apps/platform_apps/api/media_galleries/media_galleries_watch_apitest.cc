@@ -111,7 +111,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   void ExecuteCmdAndCheckReply(const std::string& js_command,
                                const std::string& ok_message) {
-    ExtensionTestMessageListener listener(ok_message, false);
+    ExtensionTestMessageListener listener(ok_message);
     background_main_frame_->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(js_command), base::NullCallback());
     EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -129,8 +129,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
                                       ? kAddGalleryWatchRequestSucceeded
                                       : kAddGalleryWatchRequestFailed;
 
-    ExtensionTestMessageListener add_gallery_watch_finished(
-        expected_result, false /* no reply */);
+    ExtensionTestMessageListener add_gallery_watch_finished(expected_result);
     ExecuteCmdAndCheckReply(kSetupWatchOnValidGalleriesCmd, kAddGalleryWatchOK);
     EXPECT_TRUE(add_gallery_watch_finished.WaitUntilSatisfied());
   }
@@ -169,7 +168,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   void FetchMediaGalleriesList() {
     ExtensionTestMessageListener get_media_systems_finished(
-        kGetMediaFileSystemsCallbackOK, false /* no reply */);
+        kGetMediaFileSystemsCallbackOK);
     ExecuteCmdAndCheckReply(kGetMediaFileSystemsCmd, kGetMediaFileSystemsOK);
     EXPECT_TRUE(get_media_systems_finished.WaitUntilSatisfied());
   }
@@ -200,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 
   // Modify gallery contents.
   ExtensionTestMessageListener gallery_change_event_received(
-      kGalleryChangedEventReceived, false /* no reply */);
+      kGalleryChangedEventReceived);
 
   ASSERT_TRUE(AddNewFileInTestGallery());
   if (GalleryWatchesSupported())
@@ -234,8 +233,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
   SetupGalleryWatches();
 
   // Modify gallery contents; expect correct details.
-  ExtensionTestMessageListener got_correct_details(kOnGalleryChangedCheckingOK,
-                                                   false);
+  ExtensionTestMessageListener got_correct_details(kOnGalleryChangedCheckingOK);
   ASSERT_TRUE(AddNewFileInTestGallery());
   EXPECT_TRUE(got_correct_details.WaitUntilSatisfied());
 }
@@ -261,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 
   // Modify gallery contents.
   ExtensionTestMessageListener gallery_change_event_received(
-      kGalleryChangedEventReceived, false /* no reply */);
+      kGalleryChangedEventReceived);
   ASSERT_TRUE(AddNewFileInTestGallery());
   EXPECT_TRUE(gallery_change_event_received.WaitUntilSatisfied());
 
@@ -294,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
   // Modify gallery contents. Listener should not get called because add watch
   // request was not called.
   ExtensionTestMessageListener gallery_change_event_received(
-      kGalleryChangedEventReceived, false /* no reply */);
+      kGalleryChangedEventReceived);
   ASSERT_TRUE(AddNewFileInTestGallery());
 
   // Remove gallery watch listener.

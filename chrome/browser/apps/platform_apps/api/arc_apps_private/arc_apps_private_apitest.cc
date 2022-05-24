@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
   // newly installed app.
   SetCustomArg("Package_0");
   extensions::ResultCatcher catcher;
-  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener ready_listener("ready");
 
   base::FilePath path =
       test_data_dir_.AppendASCII("arc_app_launcher/install_event");

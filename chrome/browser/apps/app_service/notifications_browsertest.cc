@@ -166,7 +166,8 @@ class AppNotificationsExtensionApiTest : public extensions::ExtensionApiTest {
     const extensions::Extension* extension = LoadExtension(extdir);
     EXPECT_TRUE(extension);
 
-    ExtensionTestMessageListener launched_listener("launched", true);
+    ExtensionTestMessageListener launched_listener("launched",
+                                                   ReplyBehavior::kWillReply);
     apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
         extension->id(), ui::EF_SHIFT_DOWN,
         apps::mojom::LaunchSource::kFromTest);
@@ -207,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsExtensionApiTest,
   ASSERT_FALSE(HasBadge(profile(), extension1->id()).value());
 
   // Load the basic app to generate a notification.
-  ExtensionTestMessageListener notification_created_listener("created", false);
+  ExtensionTestMessageListener notification_created_listener("created");
   const Extension* extension2 =
       LoadAppWithWindowState("notifications/api/basic_app");
   ASSERT_TRUE(extension2);
@@ -234,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsExtensionApiTest,
   ASSERT_FALSE(HasBadge(profile(), extension1->id()).value());
 
   // Load the basic app to generate a notification.
-  ExtensionTestMessageListener notification_created_listener1("created", false);
+  ExtensionTestMessageListener notification_created_listener1("created");
   const Extension* extension2 =
       LoadAppWithWindowState("notifications/api/basic_app");
   ASSERT_TRUE(extension2);
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(AppNotificationsExtensionApiTest,
   ASSERT_FALSE(HasBadge(profile(), extension1->id()).value());
 
   // Re-load the basic app to generate a notification again.
-  ExtensionTestMessageListener notification_created_listener2("created", false);
+  ExtensionTestMessageListener notification_created_listener2("created");
   const Extension* extension3 =
       LoadAppWithWindowState("notifications/api/basic_app");
   ASSERT_TRUE(extension3);

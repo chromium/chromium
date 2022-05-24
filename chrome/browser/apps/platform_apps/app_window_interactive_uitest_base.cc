@@ -24,7 +24,8 @@ void FullscreenChangeWaiter::Wait() {
 
 bool AppWindowInteractiveTest::RunAppWindowInteractiveTest(
     const char* testName) {
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
   LoadAndLaunchPlatformApp("window_api_interactive", &launched_listener);
 
   extensions::ResultCatcher catcher;
@@ -44,7 +45,7 @@ bool AppWindowInteractiveTest::SimulateKeyPress(ui::KeyboardCode key) {
 }
 
 void AppWindowInteractiveTest::WaitUntilKeyFocus() {
-  ExtensionTestMessageListener key_listener("KeyReceived", false);
+  ExtensionTestMessageListener key_listener("KeyReceived");
 
   while (!key_listener.was_satisfied()) {
     ASSERT_TRUE(SimulateKeyPress(ui::VKEY_Z));

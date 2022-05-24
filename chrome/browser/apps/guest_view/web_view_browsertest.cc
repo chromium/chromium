@@ -706,7 +706,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
       return;
     }
 
-    ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+    ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
     // Note that domAutomationController may not exist for some tests so we
     // must use the async version of ExecuteScript.
@@ -765,13 +765,13 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
     // Create the guest.
     content::WebContents* embedder_web_contents =
         GetFirstAppWindowWebContents();
-    ExtensionTestMessageListener guest_added("GuestAddedToDom", false);
+    ExtensionTestMessageListener guest_added("GuestAddedToDom");
     EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
                                        base::StringPrintf("createGuest();\n")));
     ASSERT_TRUE(guest_added.WaitUntilSatisfied());
 
     // Now load the guest.
-    ExtensionTestMessageListener guest_loaded("GuestLoaded", false);
+    ExtensionTestMessageListener guest_loaded("GuestLoaded");
     EXPECT_TRUE(content::ExecuteScript(
         embedder_web_contents,
         base::StringPrintf("loadGuest(%d);\n", host_and_port.port())));
@@ -803,7 +803,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
         GetFirstAppWindowWebContents();
     ASSERT_TRUE(embedder_web_contents);
 
-    ExtensionTestMessageListener test_run_listener("PASSED", false);
+    ExtensionTestMessageListener test_run_listener("PASSED");
     test_run_listener.set_failure_message("FAILED");
     EXPECT_TRUE(
         content::ExecuteScript(
@@ -814,8 +814,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
 
   // Loads an app with a <webview> in it, returns once a guest is created.
   void LoadAppWithGuest(const std::string& app_path) {
-    ExtensionTestMessageListener launched_listener("WebViewTest.LAUNCHED",
-                                                   false);
+    ExtensionTestMessageListener launched_listener("WebViewTest.LAUNCHED");
     launched_listener.set_failure_message("WebViewTest.FAILURE");
     LoadAndLaunchPlatformApp(app_path.c_str(), &launched_listener);
 
@@ -833,8 +832,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
                                  const std::string& wait_message) {
     std::unique_ptr<ExtensionTestMessageListener> listener;
     if (!wait_message.empty()) {
-      listener =
-          std::make_unique<ExtensionTestMessageListener>(wait_message, false);
+      listener = std::make_unique<ExtensionTestMessageListener>(wait_message);
     }
 
     EXPECT_TRUE(
@@ -1172,7 +1170,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SpatialNavigationJavascriptAPI) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSpatialNavigation);
 
-  ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED", false);
+  ExtensionTestMessageListener next_step_listener("TEST_STEP_PASSED");
   next_step_listener.set_failure_message("TEST_STEP_FAILED");
 
   LoadAndLaunchPlatformApp("web_view/spatial_navigation_state_api",
@@ -1256,8 +1254,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadEmbedder) {
   // platform_app for this test.
   LoadAppWithGuest("web_view/visibility_changed");
 
-  ExtensionTestMessageListener launched_again_listener("WebViewTest.LAUNCHED",
-                                                       false);
+  ExtensionTestMessageListener launched_again_listener("WebViewTest.LAUNCHED");
   GetEmbedderWebContents()->GetController().Reload(content::ReloadType::NORMAL,
                                                    false);
   ASSERT_TRUE(launched_again_listener.WaitUntilSatisfied());
@@ -1289,8 +1286,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DisplayNoneSetSrc) {
   // Now attempt to navigate the guest again.
   SendMessageToEmbedder("navigate-guest");
 
-  ExtensionTestMessageListener test_passed_listener("WebViewTest.PASSED",
-                                                    false);
+  ExtensionTestMessageListener test_passed_listener("WebViewTest.PASSED");
   // Making the guest visible would trigger loadstop.
   SendMessageToEmbedder("show-guest");
   EXPECT_TRUE(test_passed_listener.WaitUntilSatisfied());
@@ -1735,7 +1731,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 
   // Run the test and wait until the guest WebContents is available and has
   // finished loading.
-  ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+  ExtensionTestMessageListener done_listener("TEST_PASSED");
   done_listener.set_failure_message("TEST_FAILED");
   EXPECT_TRUE(content::ExecuteScript(
       embedder_web_contents, "runTest('testWebViewAndEmbedderInNewWindow')"));
@@ -1780,16 +1776,16 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 // unique across all webviews within the app.
 IN_PROC_BROWSER_TEST_P(WebViewTest, TwoIframesWebRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving webview pages.
-  ExtensionTestMessageListener ready1("ready1", true);
-  ExtensionTestMessageListener ready2("ready2", true);
+  ExtensionTestMessageListener ready1("ready1", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener ready2("ready2", ReplyBehavior::kWillReply);
 
   LoadAndLaunchPlatformApp("web_view/two_iframes_web_request", "Launched");
   EXPECT_TRUE(ready1.WaitUntilSatisfied());
   EXPECT_TRUE(ready2.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener finished1("success1", false);
+  ExtensionTestMessageListener finished1("success1");
   finished1.set_failure_message("fail1");
-  ExtensionTestMessageListener finished2("success2", false);
+  ExtensionTestMessageListener finished2("success2");
   finished2.set_failure_message("fail2");
 
   // Reply to the listeners to start the navigations and wait for the
@@ -2116,7 +2112,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestRemoveWebviewOnExit) {
 
   // Run the test and wait until the guest WebContents is available and has
   // finished loading.
-  ExtensionTestMessageListener guest_loaded_listener("guest-loaded", false);
+  ExtensionTestMessageListener guest_loaded_listener("guest-loaded");
   EXPECT_TRUE(content::ExecuteScript(
                   embedder_web_contents,
                   "runTest('testRemoveWebviewOnExit')"));
@@ -2340,14 +2336,14 @@ class WebViewHttpsFirstModeTest : public WebViewTest {
   void LoadUrlInGuest(const GURL& guest_url) {
     // Create the guest.
     auto* embedder_web_contents = GetFirstAppWindowWebContents();
-    ExtensionTestMessageListener guest_added("GuestAddedToDom", false);
+    ExtensionTestMessageListener guest_added("GuestAddedToDom");
     EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
                                        base::StringPrintf("createGuest();\n")));
     ASSERT_TRUE(guest_added.WaitUntilSatisfied());
 
     // Now load the guest.
     content::TestNavigationObserver observer(guest_url);
-    ExtensionTestMessageListener guest_loaded("GuestLoaded", false);
+    ExtensionTestMessageListener guest_loaded("GuestLoaded");
     std::string command =
         base::StringPrintf("loadGuestUrl('%s');\n", guest_url.spec().c_str());
     EXPECT_TRUE(content::ExecuteScript(embedder_web_contents, command));
@@ -2650,7 +2646,7 @@ void WebViewTestBase::MediaAccessAPIAllowTestHelper(
   std::unique_ptr<MockWebContentsDelegate> mock(new MockWebContentsDelegate());
   embedder_web_contents->SetDelegate(mock.get());
 
-  ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+  ExtensionTestMessageListener done_listener("TEST_PASSED");
   done_listener.set_failure_message("TEST_FAILED");
   EXPECT_TRUE(
       content::ExecuteScript(
@@ -2667,7 +2663,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenURLFromTab_CurrentTab_Abort) {
 
   // Verify that OpenURLFromTab with a window disposition of CURRENT_TAB will
   // navigate the current <webview>.
-  ExtensionTestMessageListener load_listener("WebViewTest.LOADSTOP", false);
+  ExtensionTestMessageListener load_listener("WebViewTest.LOADSTOP");
 
   // Navigating to a file URL is forbidden inside a <webview>.
   content::OpenURLParams params(GURL("file://foo"), content::Referrer(),
@@ -2691,7 +2687,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, OpenURLFromTab_CurrentTab_Succeed) {
 
   // Verify that OpenURLFromTab with a window disposition of CURRENT_TAB will
   // navigate the current <webview>.
-  ExtensionTestMessageListener load_listener("WebViewTest.LOADSTOP", false);
+  ExtensionTestMessageListener load_listener("WebViewTest.LOADSTOP");
 
   GURL test_url("http://www.google.com");
   content::OpenURLParams params(
@@ -2710,8 +2706,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
 
   // Verify that OpenURLFromTab with a window disposition of NEW_BACKGROUND_TAB
   // will trigger the <webview>'s New Window API.
-  ExtensionTestMessageListener new_window_listener(
-      "WebViewTest.NEWWINDOW", false);
+  ExtensionTestMessageListener new_window_listener("WebViewTest.NEWWINDOW");
 
   // Navigating to a file URL is forbidden inside a <webview>.
   content::OpenURLParams params(GURL("file://foo"), content::Referrer(),
@@ -2830,7 +2825,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_Basic) {
   ExecuteScriptWaitForTitle(embedder, "createMenuItem()", "ITEM_CREATED");
 
   // 3. Click the created item, wait for the click handlers to fire from JS.
-  ExtensionTestMessageListener click_listener("ITEM_CLICKED", false);
+  ExtensionTestMessageListener click_listener("ITEM_CLICKED");
   GURL page_url("http://www.google.com");
   // Create and build our test context menu.
   std::unique_ptr<TestRenderViewContextMenu> menu(
@@ -2878,7 +2873,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_PreventDefault) {
   // Add a preventDefault() call on context menu event so context menu
   // does not show up.
   ExtensionTestMessageListener prevent_default_listener(
-      "WebViewTest.CONTEXT_MENU_DEFAULT_PREVENTED", false);
+      "WebViewTest.CONTEXT_MENU_DEFAULT_PREVENTED");
   EXPECT_TRUE(content::ExecuteScript(embedder, "registerPreventDefault()"));
   ContextMenuShownObserver context_menu_shown_observer;
 
@@ -2948,7 +2943,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestCheck) {
   std::unique_ptr<MockWebContentsDelegate> mock(new MockWebContentsDelegate());
   embedder_web_contents->SetDelegate(mock.get());
 
-  ExtensionTestMessageListener done_listener("TEST_PASSED", false);
+  ExtensionTestMessageListener done_listener("TEST_PASSED");
   done_listener.set_failure_message("TEST_FAILED");
   EXPECT_TRUE(
       content::ExecuteScript(
@@ -5351,8 +5346,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TouchpadPinchSyntheticWheelEvents) {
       guest_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
   synchronize_threads.Wait();
 
-  ExtensionTestMessageListener synthetic_wheel_listener("Seen wheel event",
-                                                        false);
+  ExtensionTestMessageListener synthetic_wheel_listener("Seen wheel event");
 
   const gfx::Rect contents_rect = guest_contents->GetContainerBounds();
   const gfx::Point pinch_position(contents_rect.width() / 2,
@@ -5389,7 +5383,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NoExtensionScriptsInjectedInWebview) {
   // webview's DOM has not been modified (in this case, by the extension's
   // content script).
   ExtensionTestMessageListener app_content_script_listener(
-      "WebViewTest.NO_ELEMENT_INJECTED", false);
+      "WebViewTest.NO_ELEMENT_INJECTED");
   app_content_script_listener.set_failure_message(
       "WebViewTest.UNKNOWN_ELEMENT_INJECTED");
   LoadAppWithGuest("web_view/a_com_webview");
@@ -5408,7 +5402,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NoExtensionScriptsInjectedInWebview) {
 using GuestViewExtensionNameCollisionTest = extensions::ExtensionBrowserTest;
 IN_PROC_BROWSER_TEST_F(GuestViewExtensionNameCollisionTest,
                        GuestViewNamesDoNotCollideWithExtensions) {
-  ExtensionTestMessageListener loaded_listener("LOADED", false);
+  ExtensionTestMessageListener loaded_listener("LOADED");
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(
           "platform_apps/web_view/no_extension_name_collision"));
@@ -6043,8 +6037,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
   }
 
   // Navigate <webview> cross-site and ensure the new content script runs.
-  ExtensionTestMessageListener script_listener("Hello from content script!",
-                                               false);
+  ExtensionTestMessageListener script_listener("Hello from content script!");
   const GURL second_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
   {
@@ -6129,8 +6122,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
 
   // Navigate <webview> subframe cross-site to a URL that matches the content
   // script pattern and ensure the new content script runs.
-  ExtensionTestMessageListener script_listener("Hello from content script!",
-                                               false);
+  ExtensionTestMessageListener script_listener("Hello from content script!");
   const GURL frame_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
   {

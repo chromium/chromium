@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(AudioFocusWebContentsObserverBrowserTest,
                        PlatformAppHasDifferentAudioFocus) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ExtensionTestMessageListener launched_listener("Launched", false);
+  ExtensionTestMessageListener launched_listener("Launched");
   const extensions::Extension* extension =
       InstallAndLaunchPlatformApp("minimal");
   ASSERT_TRUE(extension);
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(AudioFocusWebContentsObserverBrowserTest,
   EXPECT_NE(base::UnguessableToken::Null(), GetAudioFocusGroupId(web_contents));
 
   // Create a new window and navigate it to the test app.
-  ExtensionTestMessageListener new_launched_listener("Launched", false);
+  ExtensionTestMessageListener new_launched_listener("Launched");
   LaunchPlatformApp(extension);
   ASSERT_TRUE(new_launched_listener.WaitUntilSatisfied());
 

@@ -157,11 +157,11 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {
   ExtensionTestMessageListener open_failure("checkpoint: Failed to get syncfs",
-                                            true);
+                                            ReplyBehavior::kWillReply);
   ExtensionTestMessageListener bar_created("checkpoint: \"/bar\" created",
-                                           true);
+                                           ReplyBehavior::kWillReply);
   ExtensionTestMessageListener foo_created("checkpoint: \"/foo\" created",
-                                           true);
+                                           ReplyBehavior::kWillReply);
   extensions::ResultCatcher catcher;
 
   LoadAndLaunchPlatformApp("sync_file_system/authorization_test", "Launched");

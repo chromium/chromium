@@ -56,7 +56,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
 
   void SetUpAppShim() {
     ASSERT_EQ(0u, [[NSApp windows] count]);
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
     ASSERT_EQ(1u, [[NSApp windows] count]);
 

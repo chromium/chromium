@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, RunningAppsAreRecorded) {
   // Pretend that the app is supposed to be running.
   extension_prefs->SetExtensionRunning(extension->id(), true);
 
-  ExtensionTestMessageListener restart_listener("onRestarted", false);
+  ExtensionTestMessageListener restart_listener("onRestarted");
   apps::AppRestoreServiceFactory::GetForBrowserContext(browser()->profile())
       ->HandleStartup(true);
   EXPECT_TRUE(restart_listener.WaitUntilSatisfied());
@@ -60,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, RunningAppsAreRecorded) {
 // Tests that apps are recorded in the preferences as active when and only when
 // they have visible windows.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ActiveAppsAreRecorded) {
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("platform_apps/active_test"));
   ASSERT_TRUE(extension);
@@ -163,8 +164,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_FileAccessIsRestored) {
       "temp", temp_directory.GetPath());
 
   extensions::ExtensionHostTestHelper host_helper(profile());
-  ExtensionTestMessageListener access_ok_listener(
-      "restartedFileAccessOK", false);
+  ExtensionTestMessageListener access_ok_listener("restartedFileAccessOK");
   const Extension* extension =
       LoadAndLaunchPlatformApp("file_access_restored_test", "fileWritten");
   ASSERT_TRUE(extension);
