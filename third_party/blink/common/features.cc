@@ -62,6 +62,11 @@ const base::Feature kExcludeLowEntropyImagesFromLCP{
 const base::FeatureParam<double> kMinimumEntropyForLCP{
     &kExcludeLowEntropyImagesFromLCP, "min_bpp", 2};
 
+// Used as a binding for controlling the runtime enabled blink feature
+// "FixedElementsDontOverscroll". This is needed for experimentation.
+const base::Feature kFixedElementsDontOverscroll{
+    "FixedElementsDontOverscroll", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kGMSCoreEmoji{"GMSCoreEmoji",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 

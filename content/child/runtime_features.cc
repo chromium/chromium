@@ -345,6 +345,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"EditContext", blink::features::kEditContext},
           {"ElementSuperRareData", blink::features::kElementSuperRareData},
           {"FileHandling", blink::features::kFileHandlingAPI},
+          {"FixedElementsDontOverscroll",
+           blink::features::kFixedElementsDontOverscroll},
           {"Fledge", blink::features::kFledge, kSetOnlyIfOverridden},
           {"Fledge", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
