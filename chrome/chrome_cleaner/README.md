@@ -107,4 +107,6 @@ The build is controlled by the following arguments that can be set in args.gn:
 
 ## Contact
 
-joenotcharles@chromium.org
+Please file bugs / feature requests / inquiries using the
+[Services>SafeBrowsing>ChromeCleanup component](https://bugs.chromium.org/p/chromium/issues/entry?components=Services%3ESafebrowsing%3EChromeCleanup)
+for tracking.
