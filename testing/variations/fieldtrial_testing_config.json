@@ -1896,7 +1896,7 @@
                 {
                     "name": "CacheTransparencyEnabled",
                     "params": {
-                        "pervasive-payloads": "http://127.0.0.1:4353/pervasive.js,87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"
+                        "pervasive-payloads": "1,http://127.0.0.1:4353/pervasive.js,87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"
                     },
                     "enable_features": [
                         "CacheTransparency",
@@ -1906,7 +1906,7 @@
                 {
                     "name": "InputPervasivePayloadsList",
                     "params": {
-                        "pervasive-payloads": "http://127.0.0.1:4353/pervasive.js,87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"
+                        "pervasive-payloads": "1,http://127.0.0.1:4353/pervasive.js,87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"
                     },
                     "enable_features": [
                         "PervasivePayloadsList"
