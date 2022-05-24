@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -379,5 +381,65 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         mBuilder.setDropdownHeightWithKeyboardActive(2 * viewHeight + 1);
         mBuilder.buildDropdownViewInfoList(result);
         Assert.assertFalse(mBuilder.hasFullyConcealedElements());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void partialGrouping_matchesWithHeaderAreNotPromotedAboveURLs() {
+        final SuggestionProcessor mockProcessor = mock(SuggestionProcessor.class);
+        mBuilder.registerSuggestionProcessor(mockProcessor);
+        final AutocompleteMatch match1 =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+        final AutocompleteMatch match2 =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.NAVSUGGEST).build();
+        final AutocompleteMatch match3 =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(1)
+                        .build();
+
+        // Simulate 6 suggestions by repeating the three above.
+        AutocompleteResult mockResult = mock(AutocompleteResult.class);
+        when(mockResult.getSuggestionsList())
+                .thenReturn(Arrays.asList(match1, match2, match1, match2, match3, match3));
+        when(mockResult.getGroupsDetails()).thenReturn(new SparseArray<>());
+        doNothing().when(mockResult).groupSuggestionsBySearchVsURL(anyInt(), anyInt());
+
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+        when(mMockSuggestionProcessor.getMinimumViewHeight()).thenReturn(10);
+
+        // Scenario 1: everything fits above keyboard. Last 2 suggestions are not touched.
+        mBuilder.setDropdownHeightWithKeyboardActive(90);
+        mBuilder.buildDropdownViewInfoList(mockResult);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(1, 4);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(anyInt(), anyInt());
+        clearInvocations(mockResult);
+
+        // Scenario 2: Suggestions to group fit just above the keyboard
+        mBuilder.setDropdownHeightWithKeyboardActive(35);
+        mBuilder.buildDropdownViewInfoList(mockResult);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(1, 4);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(anyInt(), anyInt());
+        clearInvocations(mockResult);
+
+        // Scenario 3a: Some suggestions to group fit above the keyboard
+        mBuilder.setDropdownHeightWithKeyboardActive(25);
+        mBuilder.buildDropdownViewInfoList(mockResult);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(1, 3);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(3, 4);
+        verify(mockResult, times(2)).groupSuggestionsBySearchVsURL(anyInt(), anyInt());
+        clearInvocations(mockResult);
+
+        // Scenario 3b: Some suggestions to group fit above the keyboard
+        mBuilder.setDropdownHeightWithKeyboardActive(15);
+        mBuilder.buildDropdownViewInfoList(mockResult);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(1, 2);
+        verify(mockResult, times(1)).groupSuggestionsBySearchVsURL(2, 4);
+        verify(mockResult, times(2)).groupSuggestionsBySearchVsURL(anyInt(), anyInt());
+        clearInvocations(mockResult);
+
+        // Skipping scenario where all suggestions are below the keyboard, because in this scenario
+        // the user can't realistically interact with them.
     }
 }

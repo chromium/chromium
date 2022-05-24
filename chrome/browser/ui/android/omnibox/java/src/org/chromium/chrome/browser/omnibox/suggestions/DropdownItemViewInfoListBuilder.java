@@ -241,15 +241,20 @@ class DropdownItemViewInfoListBuilder {
         // Take action only if we have more suggestions to offer than just a default match and
         // one suggestion (otherwise no need to perform grouping).
         if (suggestionsCount > 2) {
+            final int firstSuggestionWithHeader =
+                    getIndexOfFirstSuggestionWithHeader(autocompleteResult);
             final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
             // TODO(crbug.com/1073169): this should either infer the count from UI height or supply
             // the default value if height is not known. For the time being we group the entire list
             // to mimic the native behavior.
-            autocompleteResult.groupSuggestionsBySearchVsURL(1, numVisibleSuggestions);
-            if (numVisibleSuggestions < suggestionsCount) {
+            if (firstSuggestionWithHeader > 1) {
+                autocompleteResult.groupSuggestionsBySearchVsURL(
+                        1, Math.min(numVisibleSuggestions, firstSuggestionWithHeader));
+            }
+            if (numVisibleSuggestions < firstSuggestionWithHeader) {
                 mBuiltListHasFullyConcealedElements = true;
                 autocompleteResult.groupSuggestionsBySearchVsURL(
-                        numVisibleSuggestions, suggestionsCount);
+                        numVisibleSuggestions, firstSuggestionWithHeader);
             } else {
                 mBuiltListHasFullyConcealedElements = false;
             }
@@ -335,6 +340,24 @@ class DropdownItemViewInfoListBuilder {
         }
 
         return lastVisibleIndex;
+    }
+
+    /**
+     * Returns the index of the first suggestion that has an associated group header ID.
+     * - If no suggestions have group header ID set, returns the size of the list.
+     * - If all suggestions have group header ID set, returns 0.
+     */
+    int getIndexOfFirstSuggestionWithHeader(AutocompleteResult autocompleteResult) {
+        final List<AutocompleteMatch> suggestions = autocompleteResult.getSuggestionsList();
+        // Suggestions with headers, if present, are always shown last. Iterate from the bottom of
+        // the list to avoid scanning entire list when there are no headers.
+        for (int suggestionIndex = suggestions.size() - 1; suggestionIndex >= 0;
+                suggestionIndex--) {
+            if (suggestions.get(suggestionIndex).getGroupId() == AutocompleteMatch.INVALID_GROUP) {
+                return suggestionIndex + 1;
+            }
+        }
+        return 0;
     }
 
     /** @return Whether built list contains fully concealed elements. */
