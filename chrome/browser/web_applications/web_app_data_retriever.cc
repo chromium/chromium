@@ -39,6 +39,7 @@ WebAppDataRetriever::~WebAppDataRetriever() = default;
 void WebAppDataRetriever::GetWebAppInstallInfo(
     content::WebContents* web_contents,
     GetWebAppInstallInfoCallback callback) {
+  DCHECK(!web_contents->IsBeingDestroyed());
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -87,6 +88,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     bool bypass_service_worker_check,
     CheckInstallabilityCallback callback) {
+  DCHECK(!web_contents->IsBeingDestroyed());
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents);
   DCHECK(installable_manager);
@@ -115,6 +117,7 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
                                    std::vector<GURL> icon_urls,
                                    bool skip_page_favicons,
                                    GetIconsCallback callback) {
+  DCHECK(!web_contents->IsBeingDestroyed());
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -236,7 +239,7 @@ void WebAppDataRetriever::CallCallbackOnError() {
 }
 
 bool WebAppDataRetriever::ShouldStopRetrieval() const {
-  return !web_contents();
+  return !web_contents() || web_contents()->IsBeingDestroyed();
 }
 
 }  // namespace web_app
