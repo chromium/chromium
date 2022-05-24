@@ -120,9 +120,15 @@ void WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
 
 WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
   DCHECK(AreWebAppsEnabled(profile_));
+
   // WebApp System must have only one instance in original profile.
   // Exclude secondary off-the-record profiles.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!profile_->IsGuestSession())
+    DCHECK(!profile_->IsOffTheRecord());
+#else
   DCHECK(!profile_->IsOffTheRecord());
+#endif
 
   CreateSubsystems(profile_);
 }

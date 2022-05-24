@@ -91,6 +91,10 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
 #endif
   }
 
+  if (params.profile_is_guest) {
+    profile_builder.SetGuestSession();
+  }
+
   if (params.enable_bookmark_model) {
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
@@ -189,11 +193,11 @@ void ExtensionServiceTestBase::InitializeExtensionService(
   CreateExtensionService(params);
 
   extensions_install_dir_ = params.extensions_install_dir;
-  registry_ = ExtensionRegistry::Get(profile_.get());
+  registry_ = ExtensionRegistry::Get(profile());
 
   // Garbage collector is typically NULL during tests, so give it a build.
   ExtensionGarbageCollectorFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile_.get(),
+      profile(),
       base::BindRepeating(&ExtensionGarbageCollectorFactory::BuildInstanceFor));
 }
 
@@ -203,7 +207,8 @@ void ExtensionServiceTestBase::InitializeEmptyExtensionService() {
 
 void ExtensionServiceTestBase::InitializeInstalledExtensionService(
     const base::FilePath& prefs_file,
-    const base::FilePath& source_install_dir) {
+    const base::FilePath& source_install_dir,
+    const ExtensionServiceInitParams& additional_params) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   base::FilePath path = temp_dir_.GetPath();
 
@@ -222,7 +227,7 @@ void ExtensionServiceTestBase::InitializeInstalledExtensionService(
   ASSERT_TRUE(
       base::CopyDirectory(source_install_dir, extensions_install_dir, true));
 
-  ExtensionServiceInitParams params;
+  ExtensionServiceInitParams params = additional_params;
   params.profile_path = path;
   params.pref_file = temp_prefs;
   params.extensions_install_dir = extensions_install_dir;
@@ -349,7 +354,7 @@ void ExtensionServiceTestBase::SetUp() {
 void ExtensionServiceTestBase::TearDown() {
   if (profile_) {
     content::StoragePartitionConfig default_storage_partition_config =
-        content::StoragePartitionConfig::CreateDefault(profile_.get());
+        content::StoragePartitionConfig::CreateDefault(profile());
     auto* partition = profile_->GetStoragePartition(
         default_storage_partition_config, /*can_create=*/false);
     if (partition)
@@ -366,10 +371,15 @@ void ExtensionServiceTestBase::SetUpTestCase() {
 // These are declared in the .cc so that all inheritors don't need to know
 // that TestingProfile derives Profile derives BrowserContext.
 content::BrowserContext* ExtensionServiceTestBase::browser_context() {
-  return profile_.get();
+  return profile();
 }
 
 Profile* ExtensionServiceTestBase::profile() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (profile_->IsGuestSession())
+    return profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   return profile_.get();
 }
 
@@ -381,9 +391,9 @@ ExtensionServiceTestBase::testing_pref_service() {
 void ExtensionServiceTestBase::CreateExtensionService(
     const ExtensionServiceInitParams& params) {
   TestExtensionSystem* system =
-      static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()));
+      static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
   if (!params.is_first_run)
-    ExtensionPrefs::Get(profile_.get())->SetAlertSystemFirstRun();
+    ExtensionPrefs::Get(profile())->SetAlertSystemFirstRun();
 
   service_ = system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), params.extensions_install_dir,
@@ -402,7 +412,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
                                 service_->shared_module_service());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  InstallLimiter::Get(profile_.get())->DisableForTest();
+  InstallLimiter::Get(profile())->DisableForTest();
 #endif
 }
 

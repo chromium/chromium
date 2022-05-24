@@ -70,6 +70,19 @@ AppServiceProxyAsh::~AppServiceProxyAsh() {
   AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(&app_registry_cache_);
 }
 
+bool AppServiceProxyAsh::IsValidProfile() {
+  if (!profile_) {
+    return false;
+  }
+
+  // Use OTR profile for Guest Session.
+  if (profile_->IsGuestSession()) {
+    return profile_->IsOffTheRecord();
+  }
+
+  return AppServiceProxyBase::IsValidProfile();
+}
+
 void AppServiceProxyAsh::Initialize() {
   if (!IsValidProfile()) {
     return;

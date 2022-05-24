@@ -176,6 +176,10 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
   ASSERT_TRUE(profile_manager.SetUp());
 
   Profile* guest_profile = profile_manager.CreateGuestProfile();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  guest_profile =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(guest_profile, GetBrowserContextForWebApps(guest_profile));
   EXPECT_EQ(guest_profile,
             GetBrowserContextForWebApps(guest_profile->GetPrimaryOTRProfile(

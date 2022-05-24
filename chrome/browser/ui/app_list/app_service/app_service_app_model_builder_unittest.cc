@@ -225,7 +225,7 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
 
     app_service_test_.UninstallAllApps(profile());
     testing_profile()->SetGuestSession(guest_mode);
-    app_service_test_.SetUp(testing_profile());
+    app_service_test_.SetUp(profile());
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
@@ -233,7 +233,7 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
     scoped_callback_ = std::make_unique<
         AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
         builder_.get(), base::BindRepeating(&InitAppPosition));
-    builder_->Initialize(nullptr, testing_profile(), model_updater_.get());
+    builder_->Initialize(nullptr, profile(), model_updater_.get());
   }
 
   apps::AppServiceTest app_service_test_;
@@ -248,12 +248,17 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
 };
 
 class BuiltInAppTest : public AppServiceAppModelBuilderTest {
+ public:
+  // Don't call AppListTestBase::SetUp() - it's called from CreateBuilder().
+  void SetUp() override {}
+
  protected:
-  // Creates a new builder, destroying any existing one.
+  // Creates a new builder. Should be called only once for each test.
+  // Calls `AppListTestBase::SetUp()`.
   void CreateBuilder(bool guest_mode) {
+    AppListTestBase::SetUp(guest_mode);
     AppServiceAppModelBuilderTest::CreateBuilder(guest_mode);
-    RemoveApps(apps::AppType::kBuiltIn, testing_profile(),
-               model_updater_.get());
+    RemoveApps(apps::AppType::kBuiltIn, profile(), model_updater_.get());
   }
 };
 

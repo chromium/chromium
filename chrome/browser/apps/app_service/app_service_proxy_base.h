@@ -352,7 +352,7 @@ class AppServiceProxyBase : public KeyedService,
     raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_;
   };
 
-  bool IsValidProfile();
+  virtual bool IsValidProfile();
 
   // Called in AppServiceProxyFactory::BuildServiceInstanceFor immediately
   // following the creation of AppServiceProxy. Use this method to perform any

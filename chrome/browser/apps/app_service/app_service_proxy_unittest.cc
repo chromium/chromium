@@ -267,12 +267,28 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   TestingProfile::Builder guest_builder;
   guest_builder.SetGuestSession();
   auto guest_profile = guest_builder.Build();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // App service is not available for original profile.
+  EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      guest_profile.get()));
+
+  // App service is available for OTR profile in Guest mode.
+  auto* guest_otr_profile =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_TRUE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      guest_otr_profile));
+  auto* guest_otr_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(guest_otr_profile);
+  EXPECT_TRUE(guest_otr_proxy);
+  EXPECT_NE(guest_otr_proxy, proxy);
+#else
   EXPECT_TRUE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       guest_profile.get()));
   auto* guest_proxy =
       apps::AppServiceProxyFactory::GetForProfile(guest_profile.get());
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
+#endif
 }
 
 // The parameter indicates whether the kAppServiceLoadIconWithoutMojom feature

@@ -29,6 +29,10 @@ AppListTestBase::AppListTestBase() {}
 AppListTestBase::~AppListTestBase() {}
 
 void AppListTestBase::SetUp() {
+  SetUp(/*guest_mode=*/false);
+}
+
+void AppListTestBase::SetUp(bool guest_mode) {
   extensions::ExtensionServiceTestBase::SetUp();
 
   // Load "app_list" extensions test profile.
@@ -40,7 +44,9 @@ void AppListTestBase::SetUp() {
       data_dir().AppendASCII("app_list").AppendASCII("Extensions");
   base::FilePath pref_path =
       source_install_dir.DirName().Append(chrome::kPreferencesFilename);
-  InitializeInstalledExtensionService(pref_path, source_install_dir);
+  ExtensionServiceInitParams params;
+  params.profile_is_guest = guest_mode;
+  InitializeInstalledExtensionService(pref_path, source_install_dir, params);
   service_->Init();
 
   ConfigureWebAppProvider();
@@ -53,19 +59,20 @@ void AppListTestBase::SetUp() {
 }
 
 void AppListTestBase::ConfigureWebAppProvider() {
-  Profile* const profile = testing_profile();
+  Profile* testing_profile = profile();
 
   auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
   url_loader_ = url_loader.get();
 
   auto externally_managed_app_manager =
-      std::make_unique<web_app::ExternallyManagedAppManagerImpl>(profile);
+      std::make_unique<web_app::ExternallyManagedAppManagerImpl>(
+          testing_profile);
   externally_managed_app_manager->SetUrlLoaderForTesting(std::move(url_loader));
 
-  auto* const provider = web_app::FakeWebAppProvider::Get(profile);
+  auto* const provider = web_app::FakeWebAppProvider::Get(testing_profile);
   provider->SetExternallyManagedAppManager(
       std::move(externally_managed_app_manager));
-  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(testing_profile);
 }
 
 // Test util constants ---------------------------------------------------------

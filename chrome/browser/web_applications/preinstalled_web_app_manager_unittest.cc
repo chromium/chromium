@@ -513,8 +513,16 @@ TEST_F(PreinstalledWebAppManagerTest, NotEnabledByFinch) {
 }
 
 TEST_F(PreinstalledWebAppManagerTest, GuestUser) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // App service is available for OTR profile in Guest mode.
+  auto primary_profile = CreateGuestProfileAndLogin();
+  auto* otr_profile =
+      primary_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  VerifySetOfApps(otr_profile, {GURL(kAppAllUrl), GURL(kAppGuestUrl)});
+#else
   VerifySetOfApps(CreateGuestProfileAndLogin().get(),
                   {GURL(kAppAllUrl), GURL(kAppGuestUrl)});
+#endif
 }
 
 TEST_F(PreinstalledWebAppManagerTest, UnmanagedUser) {

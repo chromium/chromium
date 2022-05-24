@@ -877,11 +877,21 @@ policy::UserCloudPolicyManager* TestingProfile::GetUserCloudPolicyManager() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 policy::ProfilePolicyConnector* TestingProfile::GetProfilePolicyConnector() {
+  // This matches OffTheRecordProfileImpl::GetProfilePolicyConnector()
+  // implementation.
+  if (IsOffTheRecord())
+    return original_profile_->GetProfilePolicyConnector();
+
   return profile_policy_connector_.get();
 }
 
 const policy::ProfilePolicyConnector*
 TestingProfile::GetProfilePolicyConnector() const {
+  // This matches OffTheRecordProfileImpl::GetProfilePolicyConnector()
+  // implementation.
+  if (IsOffTheRecord())
+    return original_profile_->GetProfilePolicyConnector();
+
   return profile_policy_connector_.get();
 }
 

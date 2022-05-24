@@ -98,9 +98,12 @@ content::BrowserContext* AppListSyncableServiceFactory::GetBrowserContextToUse(
   if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 
-  // Use profile as-is for guest session.
-  if (profile->IsGuestSession())
-    return chrome::GetBrowserContextOwnInstanceInIncognito(context);
+  // Use OTR profile for Guest Session.
+  if (profile->IsGuestSession()) {
+    return profile->IsOffTheRecord()
+               ? chrome::GetBrowserContextOwnInstanceInIncognito(context)
+               : nullptr;
+  }
 
   // This matches the logic in ExtensionSyncServiceFactory, which uses the
   // orginal browser context.

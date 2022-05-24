@@ -143,7 +143,17 @@ content::BrowserContext* GetBrowserContextForWebApps(
     return nullptr;
   }
   Profile* original_profile = profile->GetOriginalProfile();
-  return AreWebAppsEnabled(original_profile) ? original_profile : nullptr;
+  if (!AreWebAppsEnabled(original_profile))
+    return nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Use OTR profile for Guest Session.
+  if (profile->IsGuestSession()) {
+    return profile->IsOffTheRecord() ? profile : nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return original_profile;
 }
 
 content::BrowserContext* GetBrowserContextForWebAppMetrics(

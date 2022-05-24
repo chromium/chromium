@@ -68,6 +68,7 @@ class ExtensionServiceTestBase : public testing::Test {
     bool extensions_enabled = true;
     bool is_first_run = true;
     bool profile_is_supervised = false;
+    bool profile_is_guest = false;
     bool enable_bookmark_model = false;
 
     raw_ptr<policy::PolicyService> policy_service = nullptr;
@@ -111,7 +112,9 @@ class ExtensionServiceTestBase : public testing::Test {
   // |source_install_dir|.
   void InitializeInstalledExtensionService(
       const base::FilePath& prefs_file,
-      const base::FilePath& source_install_dir);
+      const base::FilePath& source_install_dir,
+      const ExtensionServiceInitParams& additional_params =
+          ExtensionServiceInitParams{});
 
   // Initialize an ExtensionService with a few already-installed extensions.
   void InitializeGoodInstalledExtensionService();
