@@ -7,7 +7,7 @@
 import argparse
 
 import itertools
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, Callable
 
 import chrome_names
 import count_cycles
@@ -38,6 +38,18 @@ def _print_diff_node_list(graph1: graph.Graph, graph2: graph.Graph,
                           label: str):
     before_nodes: Set[str] = set(node.name for node in graph1.nodes)
     after_nodes: Set[str] = set(node.name for node in graph2.nodes)
+    _print_set_diff(before_nodes, after_nodes, label)
+
+
+def _print_diff_node_list_filtered(graph1: graph.Graph, graph2: graph.Graph,
+                                   label: str,
+                                   filter_fn: Callable[[graph.Node], bool]):
+
+    before_nodes: Set[str] = set(node.name for node in graph1.nodes
+                                 if filter_fn(node))
+    after_nodes: Set[str] = set(node.name for node in graph2.nodes
+                                if filter_fn(node))
+    _print_diff_metric(len(before_nodes), len(after_nodes), label)
     _print_set_diff(before_nodes, after_nodes, label)
 
 
@@ -108,6 +120,11 @@ def main():
         '--package-cycles',
         type=int,
         help='Also diff the set of package cycles up to the specified size.')
+    arg_parser.add_argument(
+        '--build-target',
+        type=str,
+        help='Also diff the set of class nodes in the given build target, e.g. '
+        '"//chrome/android:chrome_java"')
     arguments = arg_parser.parse_args()
 
     class_graph_before, package_graph_before, _ = \
@@ -155,6 +172,16 @@ def main():
         _print_diff_cycle_list(
             cycles_before, cycles_after,
             f'Java package cycles (up to size {arguments.package_cycles})')
+
+    if arguments.build_target:
+
+        def is_in_build_target(node):
+            return arguments.build_target in node.build_targets
+
+        print()
+        _print_diff_node_list_filtered(
+            class_graph_before, class_graph_after,
+            f'Java classes in {arguments.build_target}', is_in_build_target)
 
 
 if __name__ == '__main__':
