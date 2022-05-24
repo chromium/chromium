@@ -37,11 +37,11 @@
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/reporter_runner_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
+#include "components/chrome_cleaner/public/constants/buildflags.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -75,9 +75,9 @@ const uint8_t kSwReporterSha2Hash[] = {
 const base::FilePath::CharType kSwReporterExeName[] =
     FILE_PATH_LITERAL("software_reporter_tool.exe");
 
-// SwReporter is normally only registered in official builds.  However, to
+// SwReporter is normally only registered in Chrome branded builds. However, to
 // enable testing in chromium build bots, test code can set this to true.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(ENABLE_SOFTWARE_REPORTER)
 bool is_sw_reporter_enabled = true;
 #else
 bool is_sw_reporter_enabled = false;
