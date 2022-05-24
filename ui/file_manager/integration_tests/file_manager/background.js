@@ -64,9 +64,6 @@ export const FILE_MANAGER_SWA_ID = 'chrome://file-manager';
 
 export {FILE_MANAGER_EXTENSIONS_ID};
 
-/**
- * @type {!RemoteCallFilesApp}
- */
 export let remoteCall;
 
 /**

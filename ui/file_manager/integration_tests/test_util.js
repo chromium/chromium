@@ -471,23 +471,6 @@ export class TestEntryInfo {
         }));
     return new TestEntryInfo(updatedOptions);
   }
-
-  /**
-   * Clone the existing TestEntryInfo object to a new TestEntryInfo object but
-   * with modified targetPath field. This is especially useful for testing
-   * rename functionality.
-   *
-   * @param {string} newName the new modified name
-   * @return {!TestEntryInfo}
-   */
-  cloneWithNewName(newName) {
-    const updatedOptions =
-        /** @type {TestEntryInfoOptions} */ (Object.assign({}, this, {
-          targetPath: newName,
-          nameText: newName,
-        }));
-    return new TestEntryInfo(updatedOptions);
-  }
 }
 
 /**

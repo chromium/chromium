@@ -1706,42 +1706,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("recentsA11yMessages").EnableFiltersInRecents(),
         TestCase("recentsA11yMessages").EnableFiltersInRecents().FilesSwa(),
-        TestCase("recentsAllowCut")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowCut")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2()
-            .FilesSwa(),
-        TestCase("recentsAllowDeletion")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowDeletion")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2()
-            .FilesSwa(),
-        TestCase("recentsAllowMultipleFilesDeletion")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowMultipleFilesDeletion")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2()
-            .FilesSwa(),
-        TestCase("recentsAllowRename")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowRename")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2()
-            .FilesSwa(),
         TestCase("recentsDownloads"),
         TestCase("recentsDownloads").FilesSwa(),
         TestCase("recentsDownloads").EnableFiltersInRecents(),
@@ -1788,28 +1752,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsNested").FilesSwa(),
         TestCase("recentsNested").EnableFiltersInRecents(),
         TestCase("recentsNested").EnableFiltersInRecents().FilesSwa(),
-        TestCase("recentsNoRenameForPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsNoRenameForPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2()
-            .FilesSwa(),
         TestCase("recentsPlayFiles").EnableArc(),
         TestCase("recentsPlayFiles").EnableArc().FilesSwa(),
         TestCase("recentsPlayFiles").EnableArc().EnableFiltersInRecents(),
         TestCase("recentsPlayFiles")
             .EnableArc()
             .EnableFiltersInRecents()
-            .FilesSwa(),
-        TestCase("recentsReadOnlyHidden")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsReadOnlyHidden")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2()
             .FilesSwa(),
         TestCase("recentAudioDownloads"),
         TestCase("recentAudioDownloads").FilesSwa(),
