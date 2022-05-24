@@ -448,30 +448,39 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
     }
   };
 
-  if (const CascadePriority* priority =
-          map_.Find(CSSPropertyName(CSSPropertyID::kWebkitBorderImage))) {
-    LookupAndApply(GetCSSPropertyWebkitBorderImage(), resolver);
+  const CSSProperty& webkit_border_image = GetCSSPropertyWebkitBorderImage();
+  if (!resolver.filter_.Rejects(webkit_border_image)) {
+    if (const CascadePriority* priority =
+            map_.Find(webkit_border_image.GetCSSPropertyName())) {
+      LookupAndApply(webkit_border_image, resolver);
 
-    const auto& shorthand = borderImageShorthand();
-    const CSSProperty** longhands = shorthand.properties();
-    for (unsigned i = 0; i < shorthand.length(); ++i) {
-      maybe_skip(*longhands[i], *priority);
+      const auto& shorthand = borderImageShorthand();
+      const CSSProperty** longhands = shorthand.properties();
+      for (unsigned i = 0; i < shorthand.length(); ++i) {
+        maybe_skip(*longhands[i], *priority);
+      }
     }
   }
 
-  if (const CascadePriority* priority =
-          map_.Find(CSSPropertyName(CSSPropertyID::kPerspectiveOrigin))) {
-    LookupAndApply(GetCSSPropertyPerspectiveOrigin(), resolver);
-    maybe_skip(GetCSSPropertyWebkitPerspectiveOriginX(), *priority);
-    maybe_skip(GetCSSPropertyWebkitPerspectiveOriginY(), *priority);
+  const CSSProperty& perspective_origin = GetCSSPropertyPerspectiveOrigin();
+  if (!resolver.filter_.Rejects(perspective_origin)) {
+    if (const CascadePriority* priority =
+            map_.Find(perspective_origin.GetCSSPropertyName())) {
+      LookupAndApply(perspective_origin, resolver);
+      maybe_skip(GetCSSPropertyWebkitPerspectiveOriginX(), *priority);
+      maybe_skip(GetCSSPropertyWebkitPerspectiveOriginY(), *priority);
+    }
   }
 
-  if (const CascadePriority* priority =
-          map_.Find(CSSPropertyName(CSSPropertyID::kTransformOrigin))) {
-    LookupAndApply(GetCSSPropertyTransformOrigin(), resolver);
-    maybe_skip(GetCSSPropertyWebkitTransformOriginX(), *priority);
-    maybe_skip(GetCSSPropertyWebkitTransformOriginY(), *priority);
-    maybe_skip(GetCSSPropertyWebkitTransformOriginZ(), *priority);
+  const CSSProperty& transform_origin = GetCSSPropertyTransformOrigin();
+  if (!resolver.filter_.Rejects(transform_origin)) {
+    if (const CascadePriority* priority =
+            map_.Find(transform_origin.GetCSSPropertyName())) {
+      LookupAndApply(transform_origin, resolver);
+      maybe_skip(GetCSSPropertyWebkitTransformOriginX(), *priority);
+      maybe_skip(GetCSSPropertyWebkitTransformOriginY(), *priority);
+      maybe_skip(GetCSSPropertyWebkitTransformOriginZ(), *priority);
+    }
   }
 }
 

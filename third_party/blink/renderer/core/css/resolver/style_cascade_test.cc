@@ -3109,6 +3109,37 @@ TEST_F(StyleCascadeTest, ApplyWithFilter) {
   EXPECT_EQ("inline", cascade.ComputedValue("display"));
 }
 
+TEST_F(StyleCascadeTest, FilterWebkitBorderImage) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("border-image:linear-gradient(green, red) 1 / 2 / 3 round",
+              Origin::kAuthor);
+  cascade.Add(
+      "-webkit-border-image:linear-gradient(green, red) 4 / 5 / 6 round",
+      Origin::kAuthor);
+  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping, true));
+  EXPECT_EQ("linear-gradient(rgb(0, 128, 0), rgb(255, 0, 0)) 1 / 2 / 3 round",
+            cascade.ComputedValue("-webkit-border-image"));
+}
+
+TEST_F(StyleCascadeTest, FilterPerspectiveOrigin) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-perspective-origin-x:10px");
+  cascade.Add("-webkit-perspective-origin-y:20px");
+  cascade.Add("perspective-origin:30px 40px");
+  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping, false));
+  EXPECT_EQ("10px 20px", cascade.ComputedValue("perspective-origin"));
+}
+
+TEST_F(StyleCascadeTest, FilterTransformOrigin) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("-webkit-transform-origin-x:10px");
+  cascade.Add("-webkit-transform-origin-y:20px");
+  cascade.Add("-webkit-transform-origin-z:30px");
+  cascade.Add("transform-origin:40px 50px 60px");
+  cascade.Apply(CascadeFilter(CSSProperty::kLegacyOverlapping, false));
+  EXPECT_EQ("10px 20px 30px", cascade.ComputedValue("transform-origin"));
+}
+
 TEST_F(StyleCascadeTest, HasAuthorBackground) {
   Vector<String> properties = {"background-attachment", "background-blend-mode",
                                "background-clip",       "background-image",
