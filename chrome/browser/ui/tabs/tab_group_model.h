@@ -54,8 +54,6 @@ class TabGroupModel {
 
   std::vector<tab_groups::TabGroupId> ListTabGroups() const;
 
-  int num_tab_groups() const { return groups_.size(); }
-
  private:
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroup>> groups_;
 
