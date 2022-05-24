@@ -3000,8 +3000,10 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
       /*grid_item_index=*/1);
   // Show replace dialogs.
   auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
-  auto callback = base::BindLambdaForTesting(
-      [&]() { item_view->ReplaceTemplate(uuid_1.AsLowercaseString()); });
+  auto callback = base::BindLambdaForTesting([&]() {
+    item_view->name_view()->SetText(base::UTF8ToUTF16(name_1));
+    item_view->ReplaceTemplate(uuid_1.AsLowercaseString());
+  });
 
   dialog_controller->ShowReplaceDialog(
       Shell::GetPrimaryRootWindow(), base::UTF8ToUTF16(name_1),
@@ -3015,10 +3017,19 @@ TEST_F(SavedDeskTest, ReplaceTemplateMetric) {
       ->AsDialogDelegate()
       ->AcceptDialog();
 
+  WaitForDesksTemplatesUI();
+
   // Only one template left.
   EXPECT_EQ(1ul, desk_model()->GetEntryCount());
+
+  // And we expect one template in the UI.
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  const std::vector<SavedDeskItemView*> grid_items =
+      GetItemViewsFromDeskLibrary(overview_grid);
+  EXPECT_EQ(1u, grid_items.size());
+
   // The Template has been replaced.
-  SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
+  SavedDeskNameView* name_view = grid_items[0]->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(name_1), name_view->GetText());
   std::vector<const DeskTemplate*> entries = GetAllEntries();
   EXPECT_EQ(uuid_2, entries[0]->uuid());

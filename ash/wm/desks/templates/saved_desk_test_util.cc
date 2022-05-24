@@ -84,6 +84,11 @@ void SavedDeskPresenterTestApi::SetOnUpdateUiClosure(
   presenter_->on_update_ui_closure_for_testing_ = std::move(closure);
 }
 
+void SavedDeskPresenterTestApi::MaybeWaitForModel() {
+  if (presenter_->weak_ptr_factory_.HasWeakPtrs())
+    WaitForDesksTemplatesUI();
+}
+
 SavedDeskLibraryViewTestApi::SavedDeskLibraryViewTestApi(
     SavedDeskLibraryView* library_view)
     : library_view_(library_view) {}
@@ -146,14 +151,18 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
   return grid_items;
 }
 
-SavedDeskItemView* GetItemViewFromTemplatesGrid(int grid_item_index) {
-  const auto* overview_grid = GetPrimaryOverviewGrid();
-  if (!overview_grid)
-    return nullptr;
+SavedDeskItemView* GetItemViewFromTemplatesGrid(size_t grid_item_index) {
+  auto* overview_grid = GetPrimaryOverviewGrid();
+  DCHECK(overview_grid);
+
+  SavedDeskPresenterTestApi(
+      overview_grid->overview_session()->saved_desk_presenter())
+      .MaybeWaitForModel();
 
   auto grid_items = GetItemViewsFromDeskLibrary(overview_grid);
-  SavedDeskItemView* item_view = grid_items.at(grid_item_index);
+  DCHECK_LT(grid_item_index, grid_items.size());
 
+  SavedDeskItemView* item_view = grid_items[grid_item_index];
   DCHECK(item_view);
   return item_view;
 }

@@ -195,7 +195,6 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
   auto desk_template_clone = desk_template->Clone();
 
   // Save or update `desk_template` as an entry in DeskModel.
-  weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template),
       base::BindOnce(&SavedDeskPresenter::OnAddOrUpdateEntry,
@@ -224,8 +223,6 @@ void SavedDeskPresenter::OnGetAllEntries(
     const std::vector<const DeskTemplate*>& entries) {
   if (status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
-
-  DCHECK_EQ(GetEntryCount(), entries.size());
 
   // This updates `should_show_templates_ui_`.
   UpdateDesksTemplatesUI();

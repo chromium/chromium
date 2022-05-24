@@ -44,6 +44,10 @@ class SavedDeskPresenterTestApi {
 
   void SetOnUpdateUiClosure(base::OnceClosure closure);
 
+  // If there are outstanding operations on the desk model, this blocks until
+  // they are done.
+  void MaybeWaitForModel();
+
  private:
   SavedDeskPresenter* const presenter_;
 };
@@ -152,7 +156,7 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
 
 // Return the `grid_item_index`th `SavedDeskItemView` from the first
 // `OverviewGrid`'s `SavedDeskGridView` in `GetOverviewGridList()`.
-SavedDeskItemView* GetItemViewFromTemplatesGrid(int grid_item_index);
+SavedDeskItemView* GetItemViewFromTemplatesGrid(size_t grid_item_index);
 
 // These buttons are the ones on the primary root window.
 views::Button* GetZeroStateDesksTemplatesButton();
