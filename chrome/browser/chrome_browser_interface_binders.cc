@@ -49,7 +49,6 @@
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
-#include "components/contextual_search/buildflags.h"
 #include "components/dom_distiller/content/browser/distillability_driver.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_service_impl.h"
 #include "components/dom_distiller/content/common/mojom/distillability_service.mojom.h"
@@ -131,8 +130,6 @@
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
-#include "components/contextual_search/content/browser/contextual_search_js_api_service_impl.h"
-#include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
@@ -360,26 +357,6 @@ void BindUnhandledTapWebContentsObserver(
       std::move(receiver));
 }
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
-
-#if BUILDFLAG(BUILD_CONTEXTUAL_SEARCH)
-void BindContextualSearchObserver(
-    content::RenderFrameHost* const host,
-    mojo::PendingReceiver<
-        contextual_search::mojom::ContextualSearchJsApiService> receiver) {
-  // Early return if the RenderFrameHost's delegate is not a WebContents.
-  auto* web_contents = content::WebContents::FromRenderFrameHost(host);
-  if (!web_contents)
-    return;
-
-  auto* contextual_search_observer =
-      contextual_search::ContextualSearchObserver::FromWebContents(
-          web_contents);
-  if (contextual_search_observer) {
-    contextual_search::CreateContextualSearchJsApiService(
-        contextual_search_observer->api_handler(), std::move(receiver));
-  }
-}
-#endif  // BUILDFLAG(BUILD_CONTEXTUAL_SEARCH)
 
 // Forward image Annotator requests to the profile's AccessibilityLabelsService.
 void BindImageAnnotator(
@@ -695,15 +672,10 @@ void PopulateChromeFrameBinders(
   map->Add<blink::mojom::ShareService>(base::BindRepeating(
       &ForwardToJavaWebContents<blink::mojom::ShareService>));
 
-#if BUILDFLAG(BUILD_CONTEXTUAL_SEARCH)
-  map->Add<contextual_search::mojom::ContextualSearchJsApiService>(
-      base::BindRepeating(&BindContextualSearchObserver));
-
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
   map->Add<blink::mojom::UnhandledTapNotifier>(
       base::BindRepeating(&BindUnhandledTapWebContentsObserver));
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
-#endif  // BUILDFLAG(BUILD_CONTEXTUAL_SEARCH)
 
 #else
   map->Add<blink::mojom::BadgeService>(
