@@ -229,7 +229,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 25
+  // Next tag: 26
   message Hardware {
     // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
     // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
@@ -322,6 +322,29 @@ message SystemProfileProto {
       optional bool is_hypervisor = 4;
     }
     optional CPU cpu = 13;
+
+    // Type of BIOS (can change at each boot).
+    enum BiosType {
+      BIOS_TYPE_UNKNOWN = 0;
+      // Legacy BIOS or UEFI with CSM mode.
+      BIOS_TYPE_LEGACY = 1;
+      // BIOS is UEFI and booted into UEFI mode.
+      BIOS_TYPE_UEFI = 2;
+    }
+    // Motherboard information.
+    message Motherboard {
+      // Manufacturer for the motherboard.
+      optional string manufacturer = 1;
+      // Model for the motherboard.
+      optional string model = 2;
+      // Manufacturer for the BIOS.
+      optional string bios_manufacturer = 3;
+      // Version of the BIOS currently installed.
+      optional string bios_version = 4;
+      // What mode of BIOS is booted.
+      optional BiosType bios_type = 5;
+    }
+    optional Motherboard motherboard = 25;
 
     // Information on the GPU
     message Graphics {
