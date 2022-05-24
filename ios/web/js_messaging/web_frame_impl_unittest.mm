@@ -464,13 +464,13 @@ TEST_F(WebFrameImplTest, ExecuteJavaScript) {
                          /*is_main_frame=*/true, security_origin,
                          &fake_web_state);
 
-  EXPECT_TRUE(web_frame.ExecuteJavaScript(base::SysNSStringToUTF8(script)));
+  EXPECT_TRUE(web_frame.ExecuteJavaScript(base::SysNSStringToUTF16(script)));
 
   WebFrameImpl web_frame2([[WKFrameInfo alloc] init], kFrameId,
                           /*is_main_frame=*/false, security_origin,
                           &fake_web_state);
   // Executing arbitrary code on an iframe should return false.
-  EXPECT_FALSE(web_frame2.ExecuteJavaScript(base::SysNSStringToUTF8(script)));
+  EXPECT_FALSE(web_frame2.ExecuteJavaScript(base::SysNSStringToUTF16(script)));
 }
 
 // Tests that the WebFrame can execute arbitrary JavaScript given
@@ -489,7 +489,7 @@ TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
                          &fake_web_state);
 
   EXPECT_TRUE(
-      web_frame.ExecuteJavaScript(base::SysNSStringToUTF8(script),
+      web_frame.ExecuteJavaScript(base::SysNSStringToUTF16(script),
                                   base::BindOnce(^(const base::Value* value){
                                   })));
 
@@ -498,7 +498,7 @@ TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
                           &fake_web_state);
 
   EXPECT_FALSE(
-      web_frame2.ExecuteJavaScript(base::SysNSStringToUTF8(script),
+      web_frame2.ExecuteJavaScript(base::SysNSStringToUTF16(script),
                                    base::BindOnce(^(const base::Value* value){
                                    })));
 }

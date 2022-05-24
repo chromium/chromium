@@ -29,7 +29,7 @@ void ViewSourceBrowserAgent::ViewSourceForActiveWebState() {
   DCHECK(web_state);
 
   web::WebFrame* web_frame = web::GetMainFrame(web_state);
-  static const char kScript[] = "document.documentElement.outerHTML;";
+  static const char16_t kScript[] = u"document.documentElement.outerHTML;";
 
   web_frame->ExecuteJavaScript(
       kScript,

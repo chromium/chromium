@@ -144,18 +144,18 @@ bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
   return CallJavaScriptFunction(name, parameters, std::move(callback), timeout);
 }
 
-bool FakeWebFrameImpl::ExecuteJavaScript(const std::string& script) {
+bool FakeWebFrameImpl::ExecuteJavaScript(const std::u16string& script) {
   return false;
 }
 
 bool FakeWebFrameImpl::ExecuteJavaScript(
-    const std::string& script,
+    const std::u16string& script,
     base::OnceCallback<void(const base::Value*)> callback) {
   return false;
 }
 
 bool FakeWebFrameImpl::ExecuteJavaScript(
-    const std::string& script,
+    const std::u16string& script,
     base::OnceCallback<void(const base::Value*, bool)> callback) {
   return false;
 }

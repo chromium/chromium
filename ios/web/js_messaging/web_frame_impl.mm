@@ -256,13 +256,13 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
   return called;
 }
 
-bool WebFrameImpl::ExecuteJavaScript(const std::string& script) {
+bool WebFrameImpl::ExecuteJavaScript(const std::u16string& script) {
   return ExecuteJavaScript(script,
                            base::DoNothingAs<void(const base::Value*)>());
 }
 
 bool WebFrameImpl::ExecuteJavaScript(
-    const std::string& script,
+    const std::u16string& script,
     base::OnceCallback<void(const base::Value*)> callback) {
   ExecuteJavaScriptCallbackWithError callback_with_error =
       ExecuteJavaScriptCallbackAdapter(std::move(callback));
@@ -271,7 +271,7 @@ bool WebFrameImpl::ExecuteJavaScript(
 }
 
 bool WebFrameImpl::ExecuteJavaScript(
-    const std::string& script,
+    const std::u16string& script,
     ExecuteJavaScriptCallbackWithError callback) {
   DCHECK(frame_info_);
 
@@ -279,7 +279,7 @@ bool WebFrameImpl::ExecuteJavaScript(
     return false;
   }
 
-  NSString* ns_script = base::SysUTF8ToNSString(script);
+  NSString* ns_script = base::SysUTF16ToNSString(script);
   __block auto internal_callback = std::move(callback);
   void (^completion_handler)(id, NSError*) = ^void(id value, NSError* error) {
     if (error) {

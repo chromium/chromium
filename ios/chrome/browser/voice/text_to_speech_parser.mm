@@ -119,7 +119,7 @@ void ExtractVoiceSearchAudioDataFromWebState(
     return;
   }
 
-  std::string script = base::SysNSStringToUTF8(tts_extraction_script);
+  std::u16string script = base::SysNSStringToUTF16(tts_extraction_script);
   web_frame->ExecuteJavaScript(
       script, BindOnce(^(const base::Value* value) {
         if (value->is_string()) {

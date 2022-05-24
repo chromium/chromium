@@ -996,7 +996,7 @@ NSString* SerializedValue(const base::Value* value) {
       web::GetMainFrame(chrome_test_util::GetCurrentWebState());
 
   if (web_frame) {
-    std::string script = base::SysNSStringToUTF8(javaScript);
+    std::u16string script = base::SysNSStringToUTF16(javaScript);
     web_frame->ExecuteJavaScript(
         script, base::BindOnce(^(const base::Value* value, bool error) {
           handlerCalled = true;

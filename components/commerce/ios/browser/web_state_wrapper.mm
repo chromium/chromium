@@ -5,7 +5,6 @@
 #include "components/commerce/ios/browser/web_state_wrapper.h"
 
 #include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -45,7 +44,7 @@ void WebStateWrapper::RunJavascript(
   }
 
   web_state_->GetWebFramesManager()->GetMainWebFrame()->ExecuteJavaScript(
-      base::UTF16ToUTF8(script),
+      script,
       base::BindOnce(
           [](base::OnceCallback<void(const base::Value)> callback,
              const base::Value* response) {
