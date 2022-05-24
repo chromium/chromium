@@ -137,7 +137,8 @@ BackgroundBridge.EventSourceState = {
    */
   async get() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.EVENT_SOURCE_STATE, BridgeActions.GET);
+        BridgeConstants.EventSourceState.TARGET,
+        BridgeConstants.EventSourceState.Action.GET);
   },
 };
 

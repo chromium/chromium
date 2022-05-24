@@ -16,7 +16,6 @@ BridgeTargets = {
   CHROMEVOX_BACKGROUND: 'ChromeVoxBackground',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
-  EVENT_SOURCE_STATE: 'EventSourceState',
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
   GESTURE_COMMAND_HANDLER: 'GestureCommandHandler',
   LOG_STORE: 'LogStore',
@@ -58,6 +57,15 @@ BridgeConstants = {
       ON_COMMAND: 'onCommand',
     },
   },
+
+  EventSourceState: {
+    /** @public {BridgeTarget} */
+    TARGET: 'EventSourceState',
+    /** @enum {string} */
+    Action: {
+      GET: 'get',
+    },
+  },
 };
 
 /**
@@ -73,7 +81,6 @@ BridgeActions = {
   DESTROY: 'destroy',
   DESTROY_I_SEARCH: 'destroyISearch',
   FOCUS_TAB: 'focusTab',
-  GET: 'get',
   GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
   GET_CURRENT_VOICE: 'getCurrentVoice',
   GET_LOGS: 'getLogs',
@@ -98,6 +105,7 @@ BridgeActions = {
  * @typedef {BridgeActions |
  *           BridgeConstants.BrailleBackground.Action |
  *           BridgeConstants.BrailleCommandHandler.Action |
- *           BridgeConstants.CommandHandler.Action}
+ *           BridgeConstants.CommandHandler.Action |
+ *           BridgeConstants.EventSourceState.Action}
  */
 BridgeAction;

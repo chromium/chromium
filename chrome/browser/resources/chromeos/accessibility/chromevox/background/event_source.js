@@ -42,5 +42,5 @@ EventSource.current_ =
     EventSourceType.NONE;
 
 BridgeHelper.registerHandler(
-    BridgeTargets.EVENT_SOURCE_STATE, BridgeActions.GET,
-    () => EventSourceState.get());
+    BridgeConstants.EventSourceState.TARGET,
+    BridgeConstants.EventSourceState.Action.GET, () => EventSourceState.get());
