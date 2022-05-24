@@ -111,6 +111,7 @@ class WaylandEventSource : public PlatformEventSource,
   void OnResetPointerFlags() override;
   const gfx::PointF& GetPointerLocation() const override;
   bool IsPointerButtonPressed(EventFlags button) const override;
+  void OnPointerStylusToolChanged(EventPointerType pointer_type) override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,
@@ -171,6 +172,9 @@ class WaylandEventSource : public PlatformEventSource,
   gfx::Vector2dF ComputeFlingVelocity();
 
   bool SurfaceSubmissionInPixelCoordinates() const;
+
+  PointerDetails PointerDetailsForDispatching() const;
+
   WaylandWindowManager* const window_manager_;
 
   WaylandConnection* const connection_;
@@ -195,6 +199,9 @@ class WaylandEventSource : public PlatformEventSource,
 
   // Time of the last pointer frame event.
   base::TimeTicks last_pointer_frame_time_;
+
+  // Last known pointer stylus type (eg mouse, pointer, eraser, touch).
+  absl::optional<EventPointerType> last_pointer_stylus_tool_;
 
   // Recent pointer frames to compute fling scroll.
   // Front is newer, and back is older.

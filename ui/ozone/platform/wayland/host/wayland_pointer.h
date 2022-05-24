@@ -120,6 +120,7 @@ class WaylandPointer::Delegate {
   virtual void OnResetPointerFlags() = 0;
   virtual const gfx::PointF& GetPointerLocation() const = 0;
   virtual bool IsPointerButtonPressed(EventFlags button) const = 0;
+  virtual void OnPointerStylusToolChanged(EventPointerType pointer_type) = 0;
 };
 
 }  // namespace ui

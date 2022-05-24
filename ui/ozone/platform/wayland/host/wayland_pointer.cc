@@ -210,8 +210,25 @@ void WaylandPointer::SetupStylus() {
 // static
 void WaylandPointer::Tool(void* data,
                           struct zcr_pointer_stylus_v2* x,
-                          uint32_t y) {
-  NOTIMPLEMENTED_LOG_ONCE();
+                          uint32_t wl_pointer_type) {
+  auto* pointer = static_cast<WaylandPointer*>(data);
+
+  ui::EventPointerType pointer_type = ui::EventPointerType::kMouse;
+  switch (wl_pointer_type) {
+    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_PEN):
+      pointer_type = EventPointerType::kPen;
+      break;
+    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_ERASER):
+      pointer_type = ui::EventPointerType::kEraser;
+      break;
+    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_TOUCH):
+      pointer_type = EventPointerType::kTouch;
+      break;
+    case (ZCR_POINTER_STYLUS_V2_TOOL_TYPE_NONE):
+      break;
+  }
+
+  pointer->delegate_->OnPointerStylusToolChanged(pointer_type);
 }
 
 // static

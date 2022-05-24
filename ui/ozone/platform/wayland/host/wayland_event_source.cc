@@ -226,7 +226,8 @@ void WaylandEventSource::OnPointerButtonEvent(EventType type,
   // MouseEvent's flags should contain the button that was released too.
   int flags = pointer_flags_ | keyboard_modifiers_ | changed_button;
   MouseEvent event(type, pointer_location_, pointer_location_,
-                   EventTimeForNow(), flags, changed_button);
+                   EventTimeForNow(), flags, changed_button,
+                   PointerDetailsForDispatching());
   DispatchEvent(&event);
 
   if (window)
@@ -244,7 +245,7 @@ void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
 
   int flags = pointer_flags_ | keyboard_modifiers_;
   MouseEvent event(ET_MOUSE_MOVED, pointer_location_, pointer_location_,
-                   EventTimeForNow(), flags, 0);
+                   EventTimeForNow(), flags, 0, PointerDetailsForDispatching());
   DispatchEvent(&event);
 }
 
@@ -484,6 +485,11 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
   return pointer_flags_ & button;
 }
 
+void WaylandEventSource::OnPointerStylusToolChanged(
+    EventPointerType pointer_type) {
+  last_pointer_stylus_tool_ = pointer_type;
+}
+
 void WaylandEventSource::ResetPointerFlags() {
   pointer_flags_ = 0;
 }
@@ -570,6 +576,14 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
 
 bool WaylandEventSource::SurfaceSubmissionInPixelCoordinates() const {
   return connection_->surface_submission_in_pixel_coordinates();
+}
+
+PointerDetails WaylandEventSource::PointerDetailsForDispatching() const {
+  if (!last_pointer_stylus_tool_)
+    return PointerDetails(EventPointerType::kMouse);
+
+  DCHECK_NE(*last_pointer_stylus_tool_, EventPointerType::kUnknown);
+  return PointerDetails(*last_pointer_stylus_tool_);
 }
 
 }  // namespace ui
