@@ -465,7 +465,7 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
 
 std::string ClientAndroid::GetSignedInEmail() const {
   return dependencies_->GetCommonDependencies()->GetSignedInEmail(
-      GetWebContents());
+      GetWebContents()->GetBrowserContext());
 }
 
 absl::optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {

@@ -32,7 +32,11 @@ class MockCommonDependencies : public CommonDependencies {
               (const override));
   MOCK_METHOD(std::string,
               GetSignedInEmail,
-              (content::WebContents*),
+              (content::BrowserContext*),
+              (const override));
+  MOCK_METHOD(bool,
+              IsSupervisedUser,
+              (content::BrowserContext*),
               (const override));
   MOCK_METHOD(AnnotateDomModelService*,
               GetOrCreateAnnotateDomModelService,

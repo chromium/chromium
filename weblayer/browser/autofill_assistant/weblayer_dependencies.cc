@@ -97,14 +97,20 @@ WebLayerDependencies::GetPasswordManagerClient(
 }
 
 std::string WebLayerDependencies::GetSignedInEmail(
-    content::WebContents* web_contents) const {
-  ProfileImpl* profile =
-      ProfileImpl::FromBrowserContext(web_contents->GetBrowserContext());
+    content::BrowserContext* browser_context) const {
+  DCHECK(browser_context);
+  ProfileImpl* profile = ProfileImpl::FromBrowserContext(browser_context);
   const ScopedJavaLocalRef<jstring> email =
       Java_WebLayerAssistantStaticDependencies_getEmailOrNull(
           AttachCurrentThread(), jstatic_dependencies_,
           profile->GetJavaProfile());
   return email.is_null() ? "" : ConvertJavaStringToUTF8(email);
+}
+
+bool WebLayerDependencies::IsSupervisedUser(
+    content::BrowserContext* browser_context) const {
+  // WebLayer does not support supervised users.
+  return false;
 }
 
 std::string WebLayerDependencies::GetLocale() const {

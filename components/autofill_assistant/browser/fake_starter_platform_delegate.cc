@@ -107,6 +107,10 @@ bool FakeStarterPlatformDelegate::GetIsLoggedIn() {
   return is_logged_in_;
 }
 
+bool FakeStarterPlatformDelegate::GetIsSupervisedUser() {
+  return is_supervised_user_;
+}
+
 bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
   return is_custom_tab_;
 }
@@ -131,12 +135,13 @@ bool FakeStarterPlatformDelegate::IsAttached() {
   return is_attached_;
 }
 
-const CommonDependencies* FakeStarterPlatformDelegate::GetCommonDependencies() {
+const CommonDependencies* FakeStarterPlatformDelegate::GetCommonDependencies()
+    const {
   return nullptr;
 }
 
 const PlatformDependencies*
-FakeStarterPlatformDelegate::GetPlatformDependencies() {
+FakeStarterPlatformDelegate::GetPlatformDependencies() const {
   return nullptr;
 }
 

@@ -94,7 +94,8 @@ std::string ClientHeadless::GetEmailAddressForAccessTokenAccount() const {
 }
 
 std::string ClientHeadless::GetSignedInEmail() const {
-  return common_dependencies_->GetSignedInEmail(GetWebContents());
+  return common_dependencies_->GetSignedInEmail(
+      GetWebContents()->GetBrowserContext());
 }
 
 absl::optional<std::pair<int, int>> ClientHeadless::GetWindowSize() const {

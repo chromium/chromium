@@ -48,7 +48,9 @@ class WebLayerDependencies : public ::autofill_assistant::DependenciesAndroid,
   std::string GetLocale() const override;
   std::string GetCountryCode() const override;
   std::string GetSignedInEmail(
-      content::WebContents* web_contents) const override;
+      content::BrowserContext* browser_context) const override;
+  bool IsSupervisedUser(
+      content::BrowserContext* browser_context) const override;
   ::autofill_assistant::AnnotateDomModelService*
   GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const override;

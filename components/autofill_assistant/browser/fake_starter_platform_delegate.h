@@ -50,13 +50,14 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   void SetProactiveHelpSettingEnabled(bool enabled) override;
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsLoggedIn() override;
+  bool GetIsSupervisedUser() override;
   bool GetIsCustomTab() const override;
   bool GetIsWebLayer() const override;
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
   bool IsAttached() override;
-  const CommonDependencies* GetCommonDependencies() override;
-  const PlatformDependencies* GetPlatformDependencies() override;
+  const CommonDependencies* GetCommonDependencies() const override;
+  const PlatformDependencies* GetPlatformDependencies() const override;
   base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
   // Intentionally public to give tests direct access.
@@ -78,6 +79,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool proactive_help_enabled_ = true;
   bool msbb_enabled_ = true;
   bool is_logged_in_ = true;
+  bool is_supervised_user_ = false;
   bool is_custom_tab_ = true;
   bool is_web_layer_ = true;
   bool is_tab_created_by_gsa_ = true;

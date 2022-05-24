@@ -56,7 +56,10 @@ class CommonDependencies {
       content::WebContents* web_contents) const = 0;
 
   virtual std::string GetSignedInEmail(
-      content::WebContents* web_contents) const = 0;
+      content::BrowserContext* browser_context) const = 0;
+
+  virtual bool IsSupervisedUser(
+      content::BrowserContext* browser_context) const = 0;
 
   virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const = 0;

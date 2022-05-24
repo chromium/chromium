@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
@@ -56,15 +57,33 @@ PasswordManagerClient* CommonDependenciesChrome::GetPasswordManagerClient(
 }
 
 std::string CommonDependenciesChrome::GetSignedInEmail(
-    WebContents* web_contents) const {
+    content::BrowserContext* browser_context) const {
+  DCHECK(browser_context);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+          Profile::FromBrowserContext(browser_context));
   if (!identity_manager) {
     return std::string();
   }
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
       .email;
+}
+
+bool CommonDependenciesChrome::IsSupervisedUser(
+    content::BrowserContext* browser_context) const {
+  DCHECK(browser_context);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  if (!identity_manager) {
+    return false;
+  }
+
+  std::string gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync).gaia;
+  return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id)
+             .capabilities.is_subject_to_parental_controls() ==
+         signin::Tribool::kTrue;
 }
 
 AnnotateDomModelService*

@@ -56,12 +56,11 @@ StarterDelegateAndroid::StarterDelegateAndroid(
     : content::WebContentsUserData<StarterDelegateAndroid>(*web_contents),
       dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
-          dependencies_->GetCommonDependencies()->GetPasswordManagerClient(
-              web_contents),
+          GetCommonDependencies()->GetPasswordManagerClient(web_contents),
           web_contents)) {
   // Create the AnnotateDomModelService when the browser starts, such that it
   // starts listening to model changes early enough.
-  dependencies_->GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
+  GetCommonDependencies()->GetOrCreateAnnotateDomModelService(
       web_contents->GetBrowserContext());
 }
 
@@ -249,9 +248,14 @@ bool StarterDelegateAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool StarterDelegateAndroid::GetIsLoggedIn() {
-  return !dependencies_->GetCommonDependencies()
-              ->GetSignedInEmail(&GetWebContents())
+  return !GetCommonDependencies()
+              ->GetSignedInEmail(GetWebContents().GetBrowserContext())
               .empty();
+}
+
+bool StarterDelegateAndroid::GetIsSupervisedUser() {
+  return GetCommonDependencies()->IsSupervisedUser(
+      GetWebContents().GetBrowserContext());
 }
 
 bool StarterDelegateAndroid::GetIsCustomTab() const {
@@ -260,7 +264,7 @@ bool StarterDelegateAndroid::GetIsCustomTab() const {
 }
 
 bool StarterDelegateAndroid::GetIsWebLayer() const {
-  return dependencies_->GetCommonDependencies()->IsWebLayer();
+  return GetCommonDependencies()->IsWebLayer();
 }
 
 bool StarterDelegateAndroid::GetIsTabCreatedByGSA() const {
@@ -349,18 +353,20 @@ bool StarterDelegateAndroid::IsRegularScriptVisible() const {
 
 std::unique_ptr<AssistantFieldTrialUtil>
 StarterDelegateAndroid::CreateFieldTrialUtil() {
-  return dependencies_->GetCommonDependencies()->CreateFieldTrialUtil();
+  return GetCommonDependencies()->CreateFieldTrialUtil();
 }
 
 bool StarterDelegateAndroid::IsAttached() {
   return !!java_object_;
 }
 
-const CommonDependencies* StarterDelegateAndroid::GetCommonDependencies() {
+const CommonDependencies* StarterDelegateAndroid::GetCommonDependencies()
+    const {
   return dependencies_->GetCommonDependencies();
 }
 
-const PlatformDependencies* StarterDelegateAndroid::GetPlatformDependencies() {
+const PlatformDependencies* StarterDelegateAndroid::GetPlatformDependencies()
+    const {
   return dependencies_->GetPlatformDependencies();
 }
 

@@ -36,7 +36,10 @@ class CommonDependenciesChrome : public CommonDependencies {
       content::WebContents* web_contents) const override;
 
   std::string GetSignedInEmail(
-      content::WebContents* web_contents) const override;
+      content::BrowserContext* browser_context) const override;
+
+  bool IsSupervisedUser(
+      content::BrowserContext* browser_context) const override;
 
   // The AnnotateDomModelService is a KeyedService. There is only one per
   // BrowserContext.

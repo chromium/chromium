@@ -470,7 +470,13 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
   pending_trigger_context_ = std::move(trigger_context);
   if (!platform_delegate_->IsAttached()) {
-    OnStartDone(/* start_regular_script = */ false);
+    OnStartDone(/* start_script= */ false);
+    return;
+  }
+
+  if (platform_delegate_->GetIsSupervisedUser()) {
+    OnStartDone(/* start_script= */ false);
+    return;
   }
 
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
