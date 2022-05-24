@@ -22,6 +22,9 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
+constexpr int kVerticalPadding = 16;
+
 // Compares two UserNoteInstances by their rect's origin, which represents their
 // position in a web page. If the UserNoteInstances have the same position,
 // compare them by their modification date.
@@ -88,14 +91,54 @@ void UserNoteUICoordinator::FocusNote(const std::string& guid) {
 
 void UserNoteUICoordinator::StartNoteCreation(
     user_notes::UserNoteInstance* instance) {
-  // TODO(cheickcisse): Implement StartNoteCreation, which will be called by
-  // UserNoteService to add a new note in the side panel. The new note entry row
-  // will be position at y relative to existing notes in the side panel.
+  scoped_view_observer_.Observe(scroll_view_);
+
+  auto* scroll_contents_view = scroll_view_->contents();
+  scroll_to_note_id_ = instance->model().id();
+
+  int index = 0;
+  for (views::View* child_view : scroll_contents_view->children()) {
+    UserNoteView* user_note_view = static_cast<UserNoteView*>(child_view);
+    if (user_note_view->user_note_rect() < instance->rect()) {
+      index++;
+      continue;
+    }
+    break;
+  }
+
+  scroll_contents_view->AddChildViewAt(
+      std::make_unique<UserNoteView>(this, instance,
+                                     UserNoteView::State::kCreating),
+      index);
+}
+
+void UserNoteUICoordinator::OnViewBoundsChanged(views::View* observed_view) {
+  // Scrolling to note can only be done after the view is drawn
+  // (bounds has changed), otherwise we cannot get the bounds of each view.
+  // After the view is drawn, we don't need to observe it anymore.
+  scoped_view_observer_.Reset();
+  ScrollToNote();
+}
+
+void UserNoteUICoordinator::ScrollToNote() {
+  if (scroll_to_note_id_ == base::UnguessableToken::Null())
+    return;
+
+  for (views::View* child_content_view : scroll_view_->contents()->children()) {
+    UserNoteView* user_note_view =
+        static_cast<UserNoteView*>(child_content_view);
+    if (user_note_view->UserNoteId() == scroll_to_note_id_) {
+      child_content_view->ScrollViewToVisible();
+      break;
+    }
+  }
+
+  scroll_to_note_id_ = base::UnguessableToken::Null();
 }
 
 void UserNoteUICoordinator::Invalidate() {
   if (!browser_->tab_strip_model()->GetActiveWebContents()) {
-    scroll_contents_view_->RemoveAllChildViews();
+    scroll_view_->contents()->RemoveAllChildViews();
     return;
   }
 
@@ -110,16 +153,17 @@ void UserNoteUICoordinator::Invalidate() {
 
   uint32_t instances_index = 0;
   uint32_t views_index = 0;
+  auto* scroll_contents_view = scroll_view_->contents();
 
   while (instances_index < user_note_instances.size() ||
-         views_index < scroll_contents_view_->children().size()) {
+         views_index < scroll_contents_view->children().size()) {
     // If we've reached the end of the UserNoteInstance vector but not the end
     // of the scroll_contents_view children's vector, we should remove the
     // remaining child views from the scroll_contents_view.
     if (instances_index >= user_note_instances.size()) {
       views::View* user_note_view =
-          scroll_contents_view_->children().at(views_index);
-      scroll_contents_view_->RemoveChildView(user_note_view);
+          scroll_contents_view->children().at(views_index);
+      scroll_contents_view->RemoveChildView(user_note_view);
       continue;
     }
 
@@ -131,8 +175,8 @@ void UserNoteUICoordinator::Invalidate() {
     // not the end of the UserNoteInstance vector, we should create new
     // UserNoteViews from the remaining notes in the UserNoteInstance
     // vector.
-    if (views_index >= scroll_contents_view_->children().size()) {
-      scroll_contents_view_->AddChildViewAt(
+    if (views_index >= scroll_contents_view->children().size()) {
+      scroll_contents_view->AddChildViewAt(
           std::make_unique<UserNoteView>(this, user_note_instance,
                                          UserNoteView::State::kDefault),
           views_index);
@@ -142,12 +186,12 @@ void UserNoteUICoordinator::Invalidate() {
     }
 
     UserNoteView* user_note_view = static_cast<UserNoteView*>(
-        scroll_contents_view_->children().at(views_index));
+        scroll_contents_view->children().at(views_index));
 
     if (user_note_view->UserNoteId() == base::UnguessableToken::Null()) {
       // Remove the current UserNoteView from scroll_contents_view if its Id is
       // null.
-      scroll_contents_view_->RemoveChildView(user_note_view);
+      scroll_contents_view->RemoveChildView(user_note_view);
       continue;
     }
 
@@ -157,11 +201,11 @@ void UserNoteUICoordinator::Invalidate() {
     } else if (user_note_view->user_note_rect() < user_note_instance->rect()) {
       // Remove the current UserNoteView because the note is no longer available
       // in the UserNoteInstance vector.
-      scroll_contents_view_->RemoveChildView(user_note_view);
+      scroll_contents_view->RemoveChildView(user_note_view);
     } else {
       // Add a new UserNoteView because the current UserNoteInstance note is
       // missing from scroll_contents_view's children.
-      scroll_contents_view_->AddChildViewAt(
+      scroll_contents_view->AddChildViewAt(
           std::make_unique<UserNoteView>(this, user_note_instance,
                                          UserNoteView::State::kDefault),
           views_index);
@@ -194,26 +238,25 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
   auto root_view = std::make_unique<views::View>();
   root_view->SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto* scroll_view =
-      root_view->AddChildView(std::make_unique<views::ScrollView>());
-  scroll_view->SetHorizontalScrollBarMode(
+  scroll_view_ = root_view->AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetProperty(views::kElementIdentifierKey,
-                           kScrollViewElementIdForTesting);
+  scroll_view_->SetProperty(views::kElementIdentifierKey,
+                            kScrollViewElementIdForTesting);
   // Setting clip height is necessary to make ScrollView take into account its
   // contents' size. Using zeroes doesn't prevent it from scrolling and sizing
   // correctly.
-  scroll_view->ClipHeightTo(0, 0);
+  scroll_view_->ClipHeightTo(0, 0);
 
-  scroll_contents_view_ =
-      scroll_view->SetContents(std::make_unique<views::View>());
+  // TODO(cheickcisse): Populate scroll content view.
+  views::View* scroll_contents_view =
+      scroll_view_->SetContents(std::make_unique<views::View>());
 
   constexpr int edge_margin = 16;
-  constexpr int vertical_padding = 16;
-  auto* layout = scroll_contents_view_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
+  auto* layout =
+      scroll_contents_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
-          gfx::Insets::VH(vertical_padding, edge_margin), vertical_padding));
+          gfx::Insets::VH(kVerticalPadding, edge_margin), kVerticalPadding));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
