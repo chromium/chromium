@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/share/android/jni_headers/SendTabToSelfAndroidBridge_jni.h"
 #include "chrome/browser/share/android/jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -122,6 +125,36 @@ static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(
         ->GetAndroidNotificationHandlerForProfile(profile)
         ->UpdateWebContents(web_contents);
   }
+}
+
+static ScopedJavaLocalRef<jobject>
+JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_profile,
+    const JavaParamRef<jstring>& j_url_to_share) {
+  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  absl::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+      send_tab_to_self::GetEntryPointDisplayReason(
+          GURL(ConvertJavaStringToUTF8(env, j_url_to_share)),
+          SyncServiceFactory::GetForProfile(profile),
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile),
+          profile->GetPrefs());
+
+  if (!reason) {
+    return nullptr;
+  }
+
+  // Wrap the content in a java.lang.Integer, so it can be nullable.
+  // TODO(crbug.com/1219434): Having an empty optional/null to represent the
+  // hidden entry point doesn't seem worth it after all. Make that just another
+  // value in the enum, sparing the complexity here.
+  ScopedJavaLocalRef<jclass> integer_class =
+      base::android::GetClass(env, "java/lang/Integer");
+  jmethodID constructor =
+      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
+          env, integer_class.obj(), "<init>", "(I)V");
+  return ScopedJavaLocalRef<jobject>(
+      env, env->NewObject(integer_class.obj(), constructor, *reason));
 }
 
 }  // namespace send_tab_to_self

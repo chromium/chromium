@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 import android.accounts.Account;
 import android.content.Context;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,10 +20,8 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.sync.ModelType;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -37,6 +37,7 @@ public class SendTabToSelfCoordinator {
     private static class TargetDeviceListWaiter
             extends EmptyBottomSheetObserver implements SyncService.SyncStateChangedListener {
         private final BottomSheetController mBottomSheetController;
+        private final String mUrl;
         private final Runnable mGotDeviceListCallback;
 
         /**
@@ -44,9 +45,10 @@ public class SendTabToSelfCoordinator {
          * account picker bottom sheet was closed and there's nothing left to do (simply don't
          * show any other bottom sheet).
          */
-        public TargetDeviceListWaiter(
-                BottomSheetController bottomSheetController, Runnable gotDeviceListCallback) {
+        public TargetDeviceListWaiter(BottomSheetController bottomSheetController, String url,
+                Runnable gotDeviceListCallback) {
             mBottomSheetController = bottomSheetController;
+            mUrl = url;
             mGotDeviceListCallback = gotDeviceListCallback;
 
             SyncService.get().addSyncStateChangedListener(this);
@@ -71,10 +73,22 @@ public class SendTabToSelfCoordinator {
         }
 
         private void notifyAndDestroyIfDone() {
-            if (SyncService.get().getActiveDataTypes().contains(ModelType.DEVICE_INFO)) {
-                destroy();
-                mGotDeviceListCallback.run();
+            Optional</*@EntryPointDisplayReason*/ Integer> displayReason =
+                    SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                            Profile.getLastUsedRegularProfile(), mUrl);
+            // The model is starting up, keep waiting.
+            if (!displayReason.isPresent()) return;
+
+            switch (displayReason.get()) {
+                case EntryPointDisplayReason.OFFER_SIGN_IN:
+                    return;
+                case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
+                case EntryPointDisplayReason.OFFER_FEATURE:
+                    break;
             }
+
+            destroy();
+            mGotDeviceListCallback.run();
         }
     }
 
@@ -131,55 +145,45 @@ public class SendTabToSelfCoordinator {
     }
 
     public void show() {
-        if (!shouldOfferSignInPromo()) {
-            showDeviceList();
+        Profile profile = Profile.getLastUsedRegularProfile();
+        Optional</*@EntryPointDisplayReason*/ Integer> displayReason =
+                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(profile, mUrl);
+        if (!displayReason.isPresent()) {
+            // This must be the old behavior where the entry point is shown even in states where
+            // no promo is shown.
+            assert !ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO);
+            mController.requestShowContent(new NoTargetDeviceBottomSheetContent(mContext), true);
             return;
         }
 
-        new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController,
-                new SendTabToSelfAccountPickerDelegate(this::onSignInComplete));
+        switch (displayReason.get()) {
+            case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
+                mController.requestShowContent(
+                        new NoTargetDeviceBottomSheetContent(mContext), true);
+                return;
+            case EntryPointDisplayReason.OFFER_FEATURE:
+                // TODO(crbug.com/1219434): Merge with INFORM_NO_TARGET_DEVICE, just let the UI
+                // differentiate between the 2 by checking the device list size.
+                List<TargetDeviceInfo> targetDevices =
+                        SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(profile);
+                mController.requestShowContent(new DevicePickerBottomSheetContent(mContext, mUrl,
+                                                       mTitle, mController, targetDevices),
+                        true);
+                return;
+            case EntryPointDisplayReason.OFFER_SIGN_IN: {
+                new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController,
+                        new SendTabToSelfAccountPickerDelegate(this::onSignInComplete));
+                return;
+            }
+        }
     }
 
     private void onSignInComplete() {
-        new TargetDeviceListWaiter(mController, this::onTargetDeviceListReady);
+        new TargetDeviceListWaiter(mController, mUrl, this::onTargetDeviceListReady);
     }
 
     private void onTargetDeviceListReady() {
         mController.hideContent(mController.getCurrentSheetContent(), /*animate=*/true);
-        showDeviceList();
-    }
-
-    private void showDeviceList() {
-        List<TargetDeviceInfo> targetDevices = SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(
-                Profile.getLastUsedRegularProfile());
-        if (targetDevices.isEmpty()) {
-            mController.requestShowContent(
-                    new NoTargetDeviceBottomSheetContent(mContext), /*animate=*/true);
-        } else {
-            mController.requestShowContent(new DevicePickerBottomSheetContent(mContext, mUrl,
-                                                   mTitle, mController, targetDevices),
-                    /*animate=*/true);
-        }
-    }
-
-    private boolean shouldOfferSignInPromo() {
-        // There should be some account on the device that can sign in to Chrome.
-        List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
-                AccountManagerFacadeProvider.getInstance().getAccounts());
-        if (accounts.isEmpty()) {
-            return false;
-        }
-
-        Profile profile = Profile.getLastUsedRegularProfile();
-        if (!IdentityServicesProvider.get().getSigninManager(profile).isSigninAllowed()) {
-            return false;
-        }
-
-        // There should be no account signed in to Chrome yet.
-        if (SyncService.get().getAccountInfo() != null) {
-            return false;
-        }
-
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO);
+        show();
     }
 }

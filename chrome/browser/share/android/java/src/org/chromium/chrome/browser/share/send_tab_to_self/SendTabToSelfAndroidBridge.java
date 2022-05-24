@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import androidx.annotation.Nullable;
+
+import com.google.common.base.Optional;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -76,6 +80,14 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfAndroidBridgeJni.get().updateActiveWebContents(webContents);
     }
 
+    public static Optional</*@EntryPointDisplayReason*/ Integer> getEntryPointDisplayReason(
+            Profile profile, String url) {
+        @Nullable
+        Integer reason =
+                SendTabToSelfAndroidBridgeJni.get().getEntryPointDisplayReason(profile, url);
+        return reason == null ? Optional.absent() : Optional.of(reason.intValue());
+    }
+
     @NativeMethods
     public interface Natives {
         boolean addEntry(
@@ -88,5 +100,8 @@ public class SendTabToSelfAndroidBridge {
         TargetDeviceInfo[] getAllTargetDeviceInfos(Profile profile);
 
         void updateActiveWebContents(WebContents webContents);
+
+        @Nullable
+        Integer getEntryPointDisplayReason(Profile profile, String url);
     }
 }

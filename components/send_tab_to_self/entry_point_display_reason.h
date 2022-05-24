@@ -18,6 +18,9 @@ namespace send_tab_to_self {
 
 class SendTabToSelfSyncService;
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.share.send_tab_to_self)
 enum class EntryPointDisplayReason {
   // The send-tab-to-self entry point should be shown because all the conditions
   // are met and the feature is ready to be used.

@@ -15,6 +15,8 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.google.common.base.Optional;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.Link
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
@@ -122,12 +125,12 @@ public class ChromeProvidedSharingOptionsProvider {
         mShareStartTime = shareStartTime;
         mImageEditorModuleProvider = imageEditorModuleProvider;
         mFeatureEngagementTracker = featureEngagementTracker;
-        mOrderedFirstPartyOptions = new ArrayList<>();
-        initializeFirstPartyOptionsInOrder();
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mUrl = url;
         mLinkGenerationStatusForMetrics = linkGenerationStatusForMetrics;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
+        mOrderedFirstPartyOptions = new ArrayList<>();
+        initializeFirstPartyOptionsInOrder();
     }
 
     /**
@@ -299,7 +302,13 @@ public class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
+        Optional<Integer> sendTabToSelfDisplayReason =
+                SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                        Profile.getLastUsedRegularProfile(), mUrl);
+        if (sendTabToSelfDisplayReason.isPresent()
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)) {
+            mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
+        }
         if (!mIsIncognito) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }

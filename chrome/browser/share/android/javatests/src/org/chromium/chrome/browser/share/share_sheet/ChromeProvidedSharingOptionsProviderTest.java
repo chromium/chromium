@@ -45,6 +45,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
@@ -90,6 +92,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Mock
     private UserPrefs.Natives mUserPrefsNatives;
     @Mock
+    private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
+    @Mock
     private Profile mProfile;
     @Mock
     private PrefService mPrefService;
@@ -118,8 +122,13 @@ public class ChromeProvidedSharingOptionsProviderTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        mJniMocker.mock(
+                SendTabToSelfAndroidBridgeJni.TEST_HOOKS, mSendTabToSelfAndroidBridgeNatives);
         Profile.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+        Mockito.when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(
+                             any(), anyString()))
+                .thenReturn(null);
         Mockito.when(mTabProvider.hasValue()).thenReturn(true);
         Mockito.when(mTabProvider.get()).thenReturn(mTab);
         Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
