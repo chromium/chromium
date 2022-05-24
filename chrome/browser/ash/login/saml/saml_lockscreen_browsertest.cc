@@ -482,6 +482,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
   // Wait for proxy login handler and authenticate.
   WaitForLoginHandler();
   ASSERT_TRUE(login_handler());
+  ASSERT_EQ(login_handler()->web_contents()->GetOuterWebContents(),
+            reauth_dialog_helper->DialogWebContents());
   login_handler()->SetAuth(u"foo", u"bar");
 
   reauth_dialog_helper->WaitForIdpPageLoad();
@@ -516,6 +518,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
   // Appearance of login handler means that proxy authentication was requested
   WaitForLoginHandler();
   ASSERT_TRUE(login_handler());
+  ASSERT_EQ(login_handler()->web_contents()->GetOuterWebContents(),
+            reauth_dialog_helper->DialogWebContents());
 
   content::WindowedNotificationObserver auth_cancelled_waiter(
       chrome::NOTIFICATION_AUTH_CANCELLED,
