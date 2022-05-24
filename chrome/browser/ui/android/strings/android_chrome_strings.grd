@@ -1968,6 +1968,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_PASSWORDS" desc="Title for preference which enables sync'ing of passwords. [CHAR_LIMIT=32]">
         Passwords
       </message>
+      <message name="IDS_SYNC_READING_LIST" desc="Title for preference which enables sync'ing of reading list. [CHAR_LIMIT=32]">
+        Reading list
+      </message>
       <message name="IDS_SYNC_RECENT_TABS" desc="Title for preference which enables sync'ing of open tabs. [CHAR_LIMIT=32]">
         Open tabs
       </message>

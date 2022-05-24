@@ -105,6 +105,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @VisibleForTesting
     public static final String PREF_SYNC_PASSWORDS = "sync_passwords";
     @VisibleForTesting
+    public static final String PREF_SYNC_READING_LIST = "sync_reading_list";
+    @VisibleForTesting
     public static final String PREF_SYNC_RECENT_TABS = "sync_recent_tabs";
     @VisibleForTesting
     public static final String PREF_SYNC_SETTINGS = "sync_settings";
@@ -138,6 +140,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private CheckBoxPreference mSyncPaymentsIntegration;
     private CheckBoxPreference mSyncHistory;
     private CheckBoxPreference mSyncPasswords;
+    private CheckBoxPreference mSyncReadingList;
     private CheckBoxPreference mSyncRecentTabs;
     private CheckBoxPreference mSyncSettings;
     // Contains preferences for all sync data types.
@@ -188,6 +191,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 (CheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
         mSyncHistory = (CheckBoxPreference) findPreference(PREF_SYNC_HISTORY);
         mSyncPasswords = (CheckBoxPreference) findPreference(PREF_SYNC_PASSWORDS);
+        mSyncReadingList = (CheckBoxPreference) findPreference(PREF_SYNC_READING_LIST);
         mSyncRecentTabs = (CheckBoxPreference) findPreference(PREF_SYNC_RECENT_TABS);
         mSyncSettings = (CheckBoxPreference) findPreference(PREF_SYNC_SETTINGS);
 
@@ -241,9 +245,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mReviewSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
 
-        mSyncTypePreferences =
-                new CheckBoxPreference[] {mSyncAutofill, mSyncBookmarks, mSyncPaymentsIntegration,
-                        mSyncHistory, mSyncPasswords, mSyncRecentTabs, mSyncSettings};
+        mSyncTypePreferences = new CheckBoxPreference[] {mSyncAutofill, mSyncBookmarks,
+                mSyncPaymentsIntegration, mSyncHistory, mSyncPasswords, mSyncReadingList,
+                mSyncRecentTabs, mSyncSettings};
         for (CheckBoxPreference type : mSyncTypePreferences) {
             type.setOnPreferenceChangeListener(this);
         }
@@ -467,6 +471,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         if (mSyncBookmarks.isChecked()) types.add(ModelType.BOOKMARKS);
         if (mSyncHistory.isChecked()) types.add(ModelType.TYPED_URLS);
         if (mSyncPasswords.isChecked()) types.add(ModelType.PASSWORDS);
+        if (mSyncReadingList.isChecked()) types.add(ModelType.READING_LIST);
         if (mSyncRecentTabs.isChecked()) types.add(ModelType.PROXY_TABS);
         if (mSyncSettings.isChecked()) types.add(ModelType.PREFERENCES);
         return types;
@@ -636,6 +641,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncHistory.setEnabled(true);
         mSyncPasswords.setChecked(syncTypes.contains(ModelType.PASSWORDS));
         mSyncPasswords.setEnabled(true);
+        mSyncReadingList.setChecked(syncTypes.contains(ModelType.READING_LIST));
+        mSyncReadingList.setEnabled(true);
         mSyncRecentTabs.setChecked(syncTypes.contains(ModelType.PROXY_TABS));
         mSyncRecentTabs.setEnabled(true);
         mSyncSettings.setChecked(syncTypes.contains(ModelType.PREFERENCES));

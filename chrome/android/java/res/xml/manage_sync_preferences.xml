@@ -47,6 +47,11 @@
         android:persistent="false"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+        android:key="sync_reading_list"
+        android:title="@string/sync_reading_list"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
         android:key="sync_recent_tabs"
         android:title="@string/sync_recent_tabs"
         android:persistent="false"/>

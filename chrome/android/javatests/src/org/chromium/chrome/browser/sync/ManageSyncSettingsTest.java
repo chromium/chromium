@@ -71,7 +71,7 @@ import java.util.Set;
 public class ManageSyncSettingsTest {
     private static final String TAG = "ManageSyncSettingsTest";
 
-    private static final int RENDER_TEST_REVISION = 4;
+    private static final int RENDER_TEST_REVISION = 5;
 
     /**
      * Maps ModelTypes to their UI element IDs.
@@ -83,6 +83,7 @@ public class ManageSyncSettingsTest {
         UI_DATATYPES.put(ModelType.BOOKMARKS, ManageSyncSettings.PREF_SYNC_BOOKMARKS);
         UI_DATATYPES.put(ModelType.TYPED_URLS, ManageSyncSettings.PREF_SYNC_HISTORY);
         UI_DATATYPES.put(ModelType.PASSWORDS, ManageSyncSettings.PREF_SYNC_PASSWORDS);
+        UI_DATATYPES.put(ModelType.READING_LIST, ManageSyncSettings.PREF_SYNC_READING_LIST);
         UI_DATATYPES.put(ModelType.PROXY_TABS, ManageSyncSettings.PREF_SYNC_RECENT_TABS);
         UI_DATATYPES.put(ModelType.PREFERENCES, ManageSyncSettings.PREF_SYNC_SETTINGS);
     }
