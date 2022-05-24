@@ -116,18 +116,7 @@ base::LazyInstance<std::multiset<int>>::Leaky g_explicitly_allowed_ports =
 // should only remain in this list for about a year to give time for users to
 // migrate off while stopping them from becoming permanent parts of the web
 // platform.
-constexpr int kAllowablePorts[] = {
-    // TODO(https://crbug.com/1199642) Remove port 554 around 2021/10/15.
-    554,
-    // TODO(https://crbug.com/1220079) Remove ports 989 and 990 around
-    // 2022/02/01.
-    989,
-    990,
-    // TODO(https://crbig.com/1210779) Remove port 6566 around 2021/08/12.
-    6566,
-    // TODO(https://crbug.com/1196846) Remove port 10080 around 2022/04/01.
-    10080,
-};
+constexpr int kAllowablePorts[] = {};
 
 int g_scoped_allowable_port = 0;
 
