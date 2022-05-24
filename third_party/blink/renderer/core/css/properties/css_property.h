@@ -184,6 +184,10 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // https://github.com/WICG/canvas-formatted-text
     kValidForCanvasFormattedText = 1 << 26,
     kValidForCanvasFormattedTextRun = 1 << 27,
+    // See overlapping in css_properties.json5.
+    kOverlapping = 1 << 28,
+    // See legacy_overlapping in css_properties.json5.
+    kLegacyOverlapping = 1 << 29,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

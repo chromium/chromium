@@ -590,6 +590,26 @@
       valid_type: "bool",
     },
 
+    // If true, then the ComputedStyle field for this property overlaps with
+    // another property.
+    //
+    // Overlapping properties are *partially* overlapping, or do otherwise not
+    // have compatible or interchangeable values with each other.
+    overlapping: {
+      default: false,
+      valid_type: "bool",
+    },
+
+    // Like 'overlapping', but set on -webkit-prefixed properties that should
+    // ultimately be removed.
+    //
+    // Note that properties that are legacy_overlapping are also overlapping
+    // (i.e. legacy_overlapping:true implies overlapping:true).
+    legacy_overlapping: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - valid_for_canvas_formatted_text: true
     //
     // Whether the property can be used to style the top-level container
@@ -1701,6 +1721,8 @@
         name: "border-width",
         resolver: "bottom",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-collapse",
@@ -1723,6 +1745,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-repeat",
@@ -1735,6 +1759,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-slice",
@@ -1747,6 +1773,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-source",
@@ -1757,6 +1785,8 @@
       style_builder_custom_functions: ["value"],
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-image-width",
@@ -1770,6 +1800,8 @@
       },
       valid_for_first_letter: true,
       is_border: true,
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-left-color",
@@ -1831,6 +1863,8 @@
         name: "border-width",
         resolver: "left",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-right-color",
@@ -1892,6 +1926,8 @@
         name: "border-width",
         resolver: "right",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "border-top-color",
@@ -1992,6 +2028,8 @@
         name: "border-width",
         resolver: "top",
       },
+      // Overlaps with -webkit-border-image.
+      overlapping: true,
     },
     {
       name: "bottom",
@@ -3654,6 +3692,8 @@
       type_name: "LengthPoint",
       converter: "ConvertPosition",
       typedom_types: ["Position"],
+      // Overlaps with -webkit-perspective-origin-[x,y].
+      overlapping: true,
     },
     {
       name: "pointer-events",
@@ -4697,6 +4737,8 @@
       type_name: "TransformOrigin",
       converter: "ConvertTransformOrigin",
       supports_incremental_style: true,
+      // Overlaps with -webkit-transform-origin-[x,y,z].
+      overlapping: true,
     },
     {
       name: "transform-style",
@@ -4873,6 +4915,8 @@
       style_builder_custom_functions: ["value"],
       valid_for_first_letter: true,
       affected_by_all: false,
+      // Overlaps with border-image.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-border-vertical-spacing",
@@ -5245,6 +5289,8 @@
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
+      // Overlaps with perspective-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-perspective-origin-y",
@@ -5253,6 +5299,8 @@
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
+      // Overlaps with perspective-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-print-color-adjust",
@@ -5406,6 +5454,8 @@
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
+      // Overlaps with transform-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-transform-origin-y",
@@ -5414,6 +5464,8 @@
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
+      // Overlaps with transform-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-transform-origin-z",
@@ -5422,6 +5474,8 @@
       converter: "ConvertComputedLength<float>",
       computable: false,
       affected_by_all: false,
+      // Overlaps with transform-origin.
+      legacy_overlapping: true,
     },
     {
       name: "-webkit-user-drag",

@@ -118,4 +118,42 @@ TEST(CascadeFilterTest, SetDoesOverwrite) {
   EXPECT_TRUE(filter.Rejects(CSSProperty::kInherited, true));
 }
 
+TEST(CascadeFilterTest, FilterLegacyOverlapping) {
+  auto filter = CascadeFilter().Add(CSSProperty::kLegacyOverlapping, true);
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitTransformOriginX()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitTransformOriginY()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitTransformOriginZ()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitPerspectiveOriginX()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitPerspectiveOriginY()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitBorderImage()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyTransformOrigin()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyPerspectiveOrigin()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyBorderImageSource()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyBorderImageSlice()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyBorderImageRepeat()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyBorderImageWidth()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyBorderImageOutset()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyColor()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyFloat()));
+}
+
+TEST(CascadeFilterTest, FilterOverlapping) {
+  auto filter = CascadeFilter().Add(CSSProperty::kOverlapping, true);
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitTransformOriginX()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitTransformOriginY()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitTransformOriginZ()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitPerspectiveOriginX()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitPerspectiveOriginY()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyWebkitBorderImage()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyTransformOrigin()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyPerspectiveOrigin()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyBorderImageSource()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyBorderImageSlice()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyBorderImageRepeat()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyBorderImageWidth()));
+  EXPECT_TRUE(filter.Rejects(GetCSSPropertyBorderImageOutset()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyColor()));
+  EXPECT_FALSE(filter.Rejects(GetCSSPropertyFloat()));
+}
+
 }  // namespace blink
