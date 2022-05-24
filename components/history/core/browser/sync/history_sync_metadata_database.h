@@ -1,0 +1,89 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_SYNC_METADATA_DATABASE_H_
+#define COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_SYNC_METADATA_DATABASE_H_
+
+#include <string>
+
+#include "components/sync/base/model_type.h"
+#include "components/sync/model/sync_metadata_store.h"
+
+namespace base {
+class Time;
+}
+
+namespace sql {
+class Database;
+class MetaTable;
+}  // namespace sql
+
+namespace syncer {
+class MetadataBatch;
+}
+
+namespace history {
+
+// A sync metadata database maintains two things: the entity metadata table and
+// the datatype state, stored in the MetaTable. The entity metadata table
+// contains metadata (sync states) for each entity. The datatype state is the
+// overall state of the history sync datatype.
+class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
+ public:
+  // After construction, subclasses must call InitHistoryMetadataTable() before
+  // doing anything else to make sure the database is initialized.
+  HistorySyncMetadataDatabase();
+
+  HistorySyncMetadataDatabase(const HistorySyncMetadataDatabase&) = delete;
+  HistorySyncMetadataDatabase& operator=(const HistorySyncMetadataDatabase&) =
+      delete;
+
+  ~HistorySyncMetadataDatabase() override;
+
+  // Reads all stored metadata for History and fills `metadata_batch` with it.
+  bool GetAllSyncMetadata(syncer::MetadataBatch* metadata_batch);
+
+  // syncer::SyncMetadataStore implementation.
+  bool UpdateSyncMetadata(syncer::ModelType model_type,
+                          const std::string& storage_key,
+                          const sync_pb::EntityMetadata& metadata) override;
+  bool ClearSyncMetadata(syncer::ModelType model_type,
+                         const std::string& storage_key) override;
+  bool UpdateModelTypeState(
+      syncer::ModelType model_type,
+      const sync_pb::ModelTypeState& model_type_state) override;
+  bool ClearModelTypeState(syncer::ModelType model_type) override;
+
+  // Conversion between timestamps and storage keys, exposed so that the bridge
+  // (and tests) can access this.
+  static uint64_t StorageKeyToMicrosSinceWindowsEpoch(
+      const std::string& storage_key);
+  static std::string StorageKeyFromMicrosSinceWindowsEpoch(uint64_t micros);
+
+  static base::Time StorageKeyToVisitTime(const std::string& storage_key);
+  static std::string StorageKeyFromVisitTime(base::Time visit_time);
+
+ protected:
+  // Called by derived classes on initialization to make sure the tables and
+  // indices are properly set up. Must be called before anything else.
+  bool InitHistoryMetadataTable();
+
+  // Returns the underlying database to be used.
+  virtual sql::Database& GetDB() = 0;
+
+  // Returns the database's MetaTable, where the ModelTypeState will be stored.
+  virtual sql::MetaTable& GetMetaTable() = 0;
+
+ private:
+  // Reads all sync_pb::EntityMetadata for History and fills `metadata_batch`
+  // with it.
+  bool GetAllEntityMetadata(syncer::MetadataBatch* metadata_batch);
+
+  // Reads sync_pb::ModelTypeState for History and fills `state` with it.
+  bool GetModelTypeState(sync_pb::ModelTypeState* state);
+};
+
+}  // namespace history
+
+#endif  // COMPONENTS_HISTORY_CORE_BROWSER_SYNC_HISTORY_SYNC_METADATA_DATABASE_H_
