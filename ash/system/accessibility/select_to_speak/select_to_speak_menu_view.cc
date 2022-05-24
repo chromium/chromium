@@ -151,7 +151,7 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
           views::Builder<views::Separator>()
               .SetColor(AshColorProvider::Get()->GetContentLayerColor(
                   AshColorProvider::ContentLayerType::kSeparatorColor))
-              .SetPreferredHeight(kSeparatorHeight)
+              .SetPreferredLength(kSeparatorHeight)
               .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                   separator_spacing - kUnifiedTopShortcutSpacing, 0,
                   separator_spacing, 0))),

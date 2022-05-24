@@ -32,23 +32,34 @@ void Separator::SetColor(SkColor color) {
   OnPropertyChanged(&overridden_color_, kPropertyEffectsPaint);
 }
 
-int Separator::GetPreferredHeight() const {
-  return preferred_height_;
+int Separator::GetPreferredLength() const {
+  return preferred_length_;
 }
 
-void Separator::SetPreferredHeight(int height) {
-  if (preferred_height_ == height)
+void Separator::SetPreferredLength(int length) {
+  if (preferred_length_ == length)
     return;
 
-  preferred_height_ = height;
-  OnPropertyChanged(&preferred_height_, kPropertyEffectsPreferredSizeChanged);
+  preferred_length_ = length;
+  OnPropertyChanged(&preferred_length_, kPropertyEffectsPreferredSizeChanged);
+}
+
+Separator::Orientation Separator::GetOrientation() const {
+  return orientation_;
+}
+
+void Separator::SetOrientation(Orientation orientation) {
+  orientation_ = orientation;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Separator, View overrides:
 
 gfx::Size Separator::CalculatePreferredSize() const {
-  gfx::Size size(kThickness, preferred_height_);
+  gfx::Size size(kThickness, preferred_length_);
+  if (orientation_ == Orientation::kHorizontal)
+    size.Transpose();
+
   gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
   return size;
@@ -96,7 +107,8 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
 
 BEGIN_METADATA(Separator, View)
 ADD_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(int, PreferredHeight)
+ADD_PROPERTY_METADATA(int, PreferredLength)
+ADD_PROPERTY_METADATA(Separator::Orientation, Orientation)
 END_METADATA
 
 }  // namespace views

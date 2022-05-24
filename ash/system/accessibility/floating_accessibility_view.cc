@@ -54,7 +54,7 @@ std::unique_ptr<views::Separator> CreateSeparator() {
   auto separator = std::make_unique<views::Separator>();
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetPreferredHeight(kSeparatorHeight);
+  separator->SetPreferredLength(kSeparatorHeight);
   int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
   int separator_spacing = (total_height - kSeparatorHeight) / 2;
   separator->SetBorder(views::CreateEmptyBorder(

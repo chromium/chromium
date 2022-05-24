@@ -140,7 +140,7 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   separator_ = new views::Separator();
   separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator_->SetPreferredHeight(kSeparatorHeight);
+  separator_->SetPreferredLength(kSeparatorHeight);
   AddView(TriView::Container::CENTER, separator_);
 
   settings_button_ = new IconButton(

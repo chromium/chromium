@@ -109,7 +109,7 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
                                    base::Unretained(pause_button_)))),
           views::Builder<views::Separator>()
               .CopyAddressTo(&separator_)
-              .SetPreferredHeight(kSeparatorHeight)
+              .SetPreferredLength(kSeparatorHeight)
               .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                   separator_spacing - kUnifiedTopShortcutSpacing, 0,
                   separator_spacing, 0))),

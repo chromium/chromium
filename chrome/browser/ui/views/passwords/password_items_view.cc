@@ -229,7 +229,7 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
         parent_->AddChildView(std::make_unique<views::Separator>());
     separator->SetFocusBehavior(
         LocationBarBubbleDelegateView::FocusBehavior::NEVER);
-    separator->SetPreferredHeight(views::style::GetLineHeight(
+    separator->SetPreferredLength(views::style::GetLineHeight(
         views::style::CONTEXT_MENU, views::style::STYLE_SECONDARY));
     separator->SetCanProcessEventsWithinSubtree(false);
   }

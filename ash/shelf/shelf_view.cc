@@ -431,7 +431,7 @@ void ShelfView::Init() {
   separator_ = new views::Separator();
   separator_->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator_->SetPreferredHeight(kSeparatorSize);
+  separator_->SetPreferredLength(kSeparatorSize);
   separator_->SetVisible(false);
   ConfigureChildView(separator_, ui::LAYER_TEXTURED);
   AddChildView(separator_);

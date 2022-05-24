@@ -431,7 +431,7 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
 
     SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0, kLeadingPadding, 0, kPaddingWidth - kLeadingPadding)));
-    SetPreferredHeight(gfx::kFaviconSize);
+    SetPreferredLength(gfx::kFaviconSize);
   }
   ButtonSeparatorView(const ButtonSeparatorView&) = delete;
   ButtonSeparatorView& operator=(const ButtonSeparatorView&) = delete;

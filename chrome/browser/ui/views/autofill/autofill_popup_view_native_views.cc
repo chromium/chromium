@@ -312,7 +312,7 @@ class PopupSeparator : public views::Separator {
 };
 
 PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
-  SetPreferredHeight(views::MenuConfig::instance().separator_thickness);
+  SetPreferredLength(views::MenuConfig::instance().separator_thickness);
   // Add some spacing between the previous item and the separator.
   // If the feature AutofillVisualImprovementsForSuggestionUi is enabled, also
   // add a padding after the separator.

@@ -165,7 +165,7 @@ class TitleView : public views::View {
       AddChildView(std::make_unique<BatteryView>());
 
       auto* separator = AddChildView(std::make_unique<views::Separator>());
-      separator->SetPreferredHeight(GetPreferredSize().height());
+      separator->SetPreferredLength(GetPreferredSize().height());
       separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kSeparatorColor));
     }

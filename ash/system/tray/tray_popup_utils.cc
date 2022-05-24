@@ -267,7 +267,7 @@ views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(
 
 views::Separator* TrayPopupUtils::CreateVerticalSeparator() {
   views::Separator* separator = new views::Separator();
-  separator->SetPreferredHeight(24);
+  separator->SetPreferredLength(24);
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
   return separator;

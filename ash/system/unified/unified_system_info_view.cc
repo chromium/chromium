@@ -598,7 +598,7 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
 
   if (PowerStatus::Get()->IsBatteryPresent()) {
     separator_ = AddChildView(std::make_unique<views::Separator>());
-    separator_->SetPreferredHeight(kUnifiedSystemInfoHeight);
+    separator_->SetPreferredLength(kUnifiedSystemInfoHeight);
 
     const bool use_smart_charging_ui = UseSmartChargingUI();
     if (use_smart_charging_ui)

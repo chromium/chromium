@@ -20,6 +20,9 @@ class VIEWS_EXPORT Separator : public View {
   // The separator's thickness in dip.
   static constexpr int kThickness = 1;
 
+  // The separator's orientation, set to `kVertical` by default.
+  enum class Orientation { kVertical, kHorizontal };
+
   Separator();
 
   Separator(const Separator&) = delete;
@@ -30,21 +33,28 @@ class VIEWS_EXPORT Separator : public View {
   SkColor GetColor() const;
   void SetColor(SkColor color);
 
-  int GetPreferredHeight() const;
-  void SetPreferredHeight(int height);
+  // Vertical or horizontal extension depending on the orientation. Set to
+  // `kThickness` by default.
+  int GetPreferredLength() const;
+  void SetPreferredLength(int length);
+
+  Orientation GetOrientation() const;
+  void SetOrientation(Orientation orientation);
 
   // Overridden from View:
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
-  int preferred_height_ = kThickness;
+  int preferred_length_ = kThickness;
   absl::optional<SkColor> overridden_color_;
+  Orientation orientation_ = Orientation::kVertical;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Separator, View)
 VIEW_BUILDER_PROPERTY(SkColor, Color)
-VIEW_BUILDER_PROPERTY(int, PreferredHeight)
+VIEW_BUILDER_PROPERTY(int, PreferredLength)
+VIEW_BUILDER_PROPERTY(Separator::Orientation, Orientation)
 END_VIEW_BUILDER
 
 }  // namespace views

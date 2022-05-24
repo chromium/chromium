@@ -71,9 +71,25 @@ void SeparatorTest::ExpectDrawAtLeastOnePixel(float image_scale) {
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(painted, unpainted.GetBitmap()));
 }
 
+TEST_F(SeparatorTest, GetPreferredSize_VerticalOrientation) {
+  // Orientation is vertical by default.
+  constexpr int kLength = 8;
+  separator_->SetPreferredLength(kLength);
+  EXPECT_EQ(separator_->GetPreferredSize(),
+            gfx::Size(Separator::kThickness, kLength));
+}
+
+TEST_F(SeparatorTest, GetPreferredSize_HorizontalOrientation) {
+  constexpr int kLength = 8;
+  separator_->SetOrientation(Separator::Orientation::kHorizontal);
+  separator_->SetPreferredLength(kLength);
+  EXPECT_EQ(separator_->GetPreferredSize(),
+            gfx::Size(kLength, Separator::kThickness));
+}
+
 TEST_F(SeparatorTest, ImageScaleBelowOne) {
   // Vertical line with 1[dp] thickness by default.
-  separator_->SetPreferredHeight(8);
+  separator_->SetPreferredLength(8);
   ExpectDrawAtLeastOnePixel(0.4);
 }
 

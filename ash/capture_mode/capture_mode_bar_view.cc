@@ -108,9 +108,9 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
   const SkColor separator_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
   separator_1_->SetColor(separator_color);
-  separator_1_->SetPreferredHeight(kSeparatorHeight);
+  separator_1_->SetPreferredLength(kSeparatorHeight);
   separator_2_->SetColor(separator_color);
-  separator_2_->SetPreferredHeight(kSeparatorHeight);
+  separator_2_->SetPreferredLength(kSeparatorHeight);
 
   close_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));

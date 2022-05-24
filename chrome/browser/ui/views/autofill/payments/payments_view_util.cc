@@ -112,7 +112,7 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
   auto* icon_view_ptr = AddChildView(std::make_unique<IconView>(icon_to_show));
 
   auto separator = std::make_unique<views::Separator>();
-  separator->SetPreferredHeight(kSeparatorHeight);
+  separator->SetPreferredLength(kSeparatorHeight);
   auto* separator_ptr = AddChildView(std::move(separator));
 
   auto title_label = std::make_unique<views::Label>(
