@@ -68,6 +68,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -114,7 +115,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
@@ -414,27 +414,21 @@ class CaptureModeTest : public AshTestBase {
   }
 };
 
-class CaptureSessionWidgetObserver : public views::WidgetObserver {
+class CaptureSessionWidgetClosed {
  public:
-  explicit CaptureSessionWidgetObserver(views::Widget* widget) {
+  explicit CaptureSessionWidgetClosed(views::Widget* widget) {
     DCHECK(widget);
-    observer_.Observe(widget);
+    widget_ = widget->GetWeakPtr();
   }
-  CaptureSessionWidgetObserver(const CaptureSessionWidgetObserver&) = delete;
-  CaptureSessionWidgetObserver& operator=(const CaptureSessionWidgetObserver&) =
+  CaptureSessionWidgetClosed(const CaptureSessionWidgetClosed&) = delete;
+  CaptureSessionWidgetClosed& operator=(const CaptureSessionWidgetClosed&) =
       delete;
-  ~CaptureSessionWidgetObserver() override = default;
+  ~CaptureSessionWidgetClosed() = default;
 
-  bool GetWidgetDestroyed() const { return !observer_.IsObserving(); }
-
-  // views::WidgetObserver
-  void OnWidgetClosing(views::Widget* widget) override {
-    DCHECK(observer_.IsObservingSource(widget));
-    observer_.Reset();
-  }
+  bool GetWidgetClosed() const { return !widget_ || widget_->IsClosed(); }
 
  private:
-  base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
+  base::WeakPtr<views::Widget> widget_;
 };
 
 class CaptureNotificationWaiter : public message_center::MessageCenterObserver {
@@ -531,13 +525,13 @@ TEST_F(CaptureModeTest, CheckWidgetClosed) {
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
   EXPECT_TRUE(GetCaptureModeBarWidget());
-  CaptureSessionWidgetObserver observer(GetCaptureModeBarWidget());
-  EXPECT_FALSE(observer.GetWidgetDestroyed());
+  CaptureSessionWidgetClosed observer(GetCaptureModeBarWidget());
+  EXPECT_FALSE(observer.GetWidgetClosed());
   controller->Stop();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_FALSE(controller->capture_mode_session());
   // The Widget should have been destroyed by now.
-  EXPECT_TRUE(observer.GetWidgetDestroyed());
+  EXPECT_TRUE(observer.GetWidgetClosed());
 }
 
 TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
