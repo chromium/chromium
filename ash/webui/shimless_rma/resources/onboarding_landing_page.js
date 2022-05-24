@@ -81,10 +81,10 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
       },
 
       /**
-       * After the cancel button is clicked, true until the next state is
+       * After the exit button is clicked, true until the next state is
        * processed. It is set back to false by shimless_rma.js.
        */
-      landingCancelButtonClicked: {
+      landingExitButtonClicked: {
         type: Boolean,
         value: false,
       },
@@ -146,13 +146,13 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   /**
    * @protected
    */
-  onLandingCancelButtonClicked_(e) {
+  onLandingExitButtonClicked_(e) {
     e.preventDefault();
 
-    this.landingCancelButtonClicked = true;
+    this.landingExitButtonClicked = true;
 
     this.dispatchEvent(new CustomEvent(
-        'click-cancel-button',
+        'click-exit-button',
         {
           bubbles: true,
           composed: true,

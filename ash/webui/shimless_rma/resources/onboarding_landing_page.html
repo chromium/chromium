@@ -62,14 +62,14 @@
             hidden$="[[!getStartedButtonClicked]]" active>
         </paper-spinner-lite>
       </cr-button>
-      <cr-button id="landingCancel" class="pill"
-          on-click="onLandingCancelButtonClicked_"
+      <cr-button id="landingExit" class="pill"
+          on-click="onLandingExitButtonClicked_"
           disabled="[[allButtonsDisabled]]">
-        <span id="cancelButtonLabel">
+        <span id="exitButtonLabel">
           [[i18n('exitButtonLabel')]]
         </span>
         <paper-spinner-lite class="button-spinner"
-            hidden$="[[!landingCancelButtonClicked]]" active>
+            hidden$="[[!landingExitButtonClicked]]" active>
         </paper-spinner-lite>
       </cr-button>
     </div>

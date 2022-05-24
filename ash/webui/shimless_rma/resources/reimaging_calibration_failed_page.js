@@ -80,12 +80,12 @@ export class ReimagingCalibrationFailedPage extends
 
     /**
      * The "Skip calibration" button on this page is styled and positioned like
-     * a cancel button. So we use the common cancel button from shimless_rma.js
+     * a exit button. So we use the common exit button from shimless_rma.js
      * This function needs to be public, because it's invoked by
-     * shimless_rma.js as part of the response to the cancel button click.
+     * shimless_rma.js as part of the response to the exit button click.
      * @return {!Promise<!StateResult>}
      */
-    this.onCancelButtonClick = () => {
+    this.onExitButtonClick = () => {
       if (this.tryingToSkipWithFailedComponents_()) {
         this.shadowRoot.querySelector('#failedComponentsDialog').showModal();
         return Promise.reject(

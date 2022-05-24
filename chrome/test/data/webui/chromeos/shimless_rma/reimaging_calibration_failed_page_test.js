@@ -142,7 +142,7 @@ export function reimagingCalibrationFailedPageTest() {
         CalibrationStatus.kCalibrationSkip, getComponentsList()[0].status);
   });
 
-  test('CancelButtonTriggersCalibrationComplete', async () => {
+  test('ExitButtonTriggersCalibrationComplete', async () => {
     const resolver = new PromiseResolver();
     await initializeCalibrationPage(fakeCalibrationComponentsWithoutFails);
     let startCalibrationCalls = 0;
@@ -158,7 +158,7 @@ export function reimagingCalibrationFailedPageTest() {
 
     const expectedResult = {foo: 'bar'};
     let savedResult;
-    component.onCancelButtonClick().then((result) => savedResult = result);
+    component.onExitButtonClick().then((result) => savedResult = result);
     // Resolve to a distinct result to confirm it was not modified.
     resolver.resolve(expectedResult);
     await flushTasks();
@@ -215,7 +215,7 @@ export function reimagingCalibrationFailedPageTest() {
     await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
 
     let wasPromiseRejected = false;
-    component.onCancelButtonClick()
+    component.onExitButtonClick()
         .then(() => assertNotReached('Do not proceed with failed components'))
         .catch(() => {
           wasPromiseRejected = true;
@@ -235,7 +235,7 @@ export function reimagingCalibrationFailedPageTest() {
       return resolver.promise;
     };
 
-    component.onCancelButtonClick().catch(() => {});
+    component.onExitButtonClick().catch(() => {});
 
     await flushTasks();
     assertEquals(0, startCalibrationCalls);
@@ -259,7 +259,7 @@ export function reimagingCalibrationFailedPageTest() {
       return resolver.promise;
     };
 
-    component.onCancelButtonClick().catch(() => {});
+    component.onExitButtonClick().catch(() => {});
 
     await flushTasks();
     assertEquals(0, startCalibrationCalls);
