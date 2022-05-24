@@ -108,14 +108,12 @@ CalendarEventListView::CalendarEventListView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  // Set up background color and blur.
+  // Set up background color.
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kOpaque);
   SetBackground(views::CreateSolidBackground(background_color));
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
 
   views::BoxLayout* button_layout = close_button_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
