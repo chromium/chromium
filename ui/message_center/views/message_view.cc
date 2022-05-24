@@ -355,10 +355,12 @@ void MessageView::OnThemeChanged() {
 
 ui::Layer* MessageView::GetSlideOutLayer() {
   // If a message view is contained in a parent message view it should give up
-  // slide behavior to the parent message view when it is collapsed.
-  auto* nested_layer = (parent_message_view_ && !IsExpanded())
-                           ? parent_message_view_->layer()
-                           : layer();
+  // slide behavior to the parent message view when the parent view is
+  // collapsed.
+  auto* nested_layer =
+      (parent_message_view_ && !parent_message_view_->IsExpanded())
+          ? parent_message_view_->layer()
+          : layer();
   bool is_nested = (parent_message_view_ && !IsExpanded())
                        ? parent_message_view_->is_nested()
                        : is_nested_;
