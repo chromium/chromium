@@ -15,6 +15,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
@@ -158,8 +159,8 @@ class HistoryClustersMediator implements SearchDelegate {
         for (HistoryCluster cluster : result.getClusters()) {
             PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
             clusterModel.set(HistoryClustersItemProperties.TITLE, cluster.getLabel());
-            Drawable journeysDrawable = UiUtils.getTintedDrawable(
-                    mContext, R.drawable.ic_journeys, R.color.default_icon_color_tint_list);
+            Drawable journeysDrawable =
+                    AppCompatResources.getDrawable(mContext, R.drawable.ic_journeys);
             clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
             ListItem clusterItem = new ListItem(ItemType.CLUSTER, clusterModel);
             mModelList.add(clusterItem);

@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 
 class HistoryClusterView extends SelectableItemView<HistoryCluster> {
@@ -26,6 +30,12 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
 
     @Override
     protected void onClick() {}
+
+    @Override
+    protected @Nullable ColorStateList getDefaultStartIconTint() {
+        return ColorStateList.valueOf(
+                SemanticColorUtils.getDefaultIconColorSecondary(getContext()));
+    }
 
     void setTitle(String text) {
         mTitleView.setText(text);

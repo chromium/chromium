@@ -11,15 +11,13 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-
-import androidx.annotation.ColorRes;
-import androidx.annotation.DrawableRes;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,8 +28,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -41,14 +37,13 @@ import org.chromium.base.Promise;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersMediatorTest.ShadowUiUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -58,18 +53,9 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for HistoryClustersMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowUiUtils.class})
+@Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class})
 public class HistoryClustersMediatorTest {
     private static final String ITEM_URL_SPEC = "https://www.wombats.com/";
-    @Implements(UiUtils.class)
-    static class ShadowUiUtils {
-        static Drawable sDrawable;
-        @Implementation
-        public static Drawable getTintedDrawable(
-                Context context, @DrawableRes int drawableId, @ColorRes int tintColorId) {
-            return sDrawable;
-        }
-    }
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -116,7 +102,6 @@ public class HistoryClustersMediatorTest {
     @Before
     public void setUp() {
         ContextUtils.initApplicationContextForTests(mContext);
-        ShadowUiUtils.sDrawable = mDrawable;
         doReturn(mResources).when(mContext).getResources();
         doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
         doReturn(mIntent).when(mUrlIntentCreator).apply(mMockGurl);
@@ -160,8 +145,9 @@ public class HistoryClustersMediatorTest {
         assertTrue(clusterModel.getAllSetProperties().containsAll(Arrays.asList(
                 HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.LABEL,
                 HistoryClustersItemProperties.END_BUTTON_DRAWABLE)));
-        assertEquals(
-                clusterModel.get(HistoryClustersItemProperties.END_BUTTON_DRAWABLE), mDrawable);
+        assertEquals(shadowOf(clusterModel.get(HistoryClustersItemProperties.END_BUTTON_DRAWABLE))
+                             .getCreatedFromResId(),
+                R.drawable.ic_expand_more_black_24dp);
 
         ListItem visitItem = mModelList.get(1);
         assertEquals(visitItem.type, ItemType.VISIT);
