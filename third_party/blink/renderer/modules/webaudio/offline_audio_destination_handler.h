@@ -119,13 +119,13 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
 
   // These variables are for counting the number of frames for the current
   // progress and the remaining frames to be processed.
-  size_t frames_processed_;
+  size_t frames_processed_ = 0;
   uint32_t frames_to_process_;
 
   // This flag is necessary to distinguish the state of the context between
   // 'created' and 'suspended'. If this flag is false and the current state
   // is 'suspended', it means the context is created and have not started yet.
-  bool is_rendering_started_;
+  bool is_rendering_started_ = false;
 
   unsigned number_of_channels_;
   float sample_rate_;

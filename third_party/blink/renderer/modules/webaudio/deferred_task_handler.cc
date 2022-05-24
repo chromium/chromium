@@ -295,9 +295,7 @@ void DeferredTaskHandler::UpdateChangedChannelInterpretation() {
 
 DeferredTaskHandler::DeferredTaskHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : automatic_pull_handlers_need_updating_(false),
-      task_runner_(std::move(task_runner)),
-      audio_thread_(0) {}
+    : task_runner_(std::move(task_runner)), audio_thread_(0) {}
 
 scoped_refptr<DeferredTaskHandler> DeferredTaskHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {

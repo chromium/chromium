@@ -228,7 +228,7 @@ class MODULES_EXPORT DeferredTaskHandler final
   Vector<scoped_refptr<AudioHandler>> rendering_automatic_pull_handlers_;
 
   // Keeps track if the |automatic_pull_handlers| storage is touched.
-  bool automatic_pull_handlers_need_updating_;
+  bool automatic_pull_handlers_need_updating_ = false;
 
   // Number of frames to use when rendering the graph.  This is the frames to
   // process for each node.

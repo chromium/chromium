@@ -49,10 +49,7 @@ MediaElementAudioSourceHandler::MediaElementAudioSourceHandler(
     : AudioHandler(kNodeTypeMediaElementAudioSource,
                    node,
                    node.context()->sampleRate()),
-      media_element_(media_element),
-      source_number_of_channels_(0),
-      source_sample_rate_(0),
-      is_origin_tainted_(false) {
+      media_element_(media_element) {
   DCHECK(IsMainThread());
   // Default to stereo. This could change depending on what the media element
   // .src is set to.

@@ -53,8 +53,7 @@ RealtimeAnalyser::RealtimeAnalyser(unsigned render_quantum_frames)
       magnitude_buffer_(kDefaultFFTSize / 2),
       smoothing_time_constant_(kDefaultSmoothingTimeConstant),
       min_decibels_(kDefaultMinDecibels),
-      max_decibels_(kDefaultMaxDecibels),
-      last_analysis_time_(-1) {
+      max_decibels_(kDefaultMaxDecibels) {
   analysis_frame_ = std::make_unique<FFTFrame>(kDefaultFFTSize);
 }
 

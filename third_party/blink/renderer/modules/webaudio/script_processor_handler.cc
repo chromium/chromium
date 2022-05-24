@@ -37,9 +37,7 @@ ScriptProcessorHandler::ScriptProcessorHandler(
     const HeapVector<Member<AudioBuffer>>& input_buffers,
     const HeapVector<Member<AudioBuffer>>& output_buffers)
     : AudioHandler(kNodeTypeScriptProcessor, node, sample_rate),
-      double_buffer_index_(0),
       buffer_size_(buffer_size),
-      buffer_read_write_index_(0),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),
       internal_input_bus_(AudioBus::Create(

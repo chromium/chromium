@@ -29,9 +29,7 @@ OfflineAudioDestinationHandler::OfflineAudioDestinationHandler(
     uint32_t frames_to_process,
     float sample_rate)
     : AudioDestinationHandler(node),
-      frames_processed_(0),
       frames_to_process_(frames_to_process),
-      is_rendering_started_(false),
       number_of_channels_(number_of_channels),
       sample_rate_(sample_rate),
       main_thread_task_runner_(Context()->GetExecutionContext()->GetTaskRunner(

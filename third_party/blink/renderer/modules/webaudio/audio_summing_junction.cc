@@ -30,7 +30,7 @@
 namespace blink {
 
 AudioSummingJunction::AudioSummingJunction(DeferredTaskHandler& handler)
-    : deferred_task_handler_(&handler), rendering_state_need_updating_(false) {}
+    : deferred_task_handler_(&handler) {}
 
 AudioSummingJunction::~AudioSummingJunction() {
   GetDeferredTaskHandler().AssertGraphOwner();

@@ -101,8 +101,6 @@ AudioListener::AudioListener(BaseAudioContext& context)
                              0.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
-      last_update_time_(-1),
-      is_listener_dirty_(false),
       position_x_values_(
           context.GetDeferredTaskHandler().RenderQuantumFrames()),
       position_y_values_(

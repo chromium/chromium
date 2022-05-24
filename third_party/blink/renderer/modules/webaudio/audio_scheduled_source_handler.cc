@@ -26,7 +26,6 @@ AudioScheduledSourceHandler::AudioScheduledSourceHandler(NodeType node_type,
                                                          AudioNode& node,
                                                          float sample_rate)
     : AudioHandler(node_type, node, sample_rate),
-      start_time_(0),
       end_time_(kUnknownTime),
       playback_state_(UNSCHEDULED_STATE) {
   if (Context()->GetExecutionContext()) {

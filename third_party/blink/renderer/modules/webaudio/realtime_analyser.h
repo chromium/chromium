@@ -116,7 +116,7 @@ class RealtimeAnalyser final {
   double max_decibels_;
 
   // Time at which the FFT was last computed.
-  double last_analysis_time_;
+  double last_analysis_time_ = -1;
 };
 
 }  // namespace blink

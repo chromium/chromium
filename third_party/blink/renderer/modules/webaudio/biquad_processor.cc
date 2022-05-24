@@ -42,13 +42,10 @@ BiquadProcessor::BiquadProcessor(float sample_rate,
     : AudioDSPKernelProcessor(sample_rate,
                               number_of_channels,
                               render_quantum_frames),
-      type_(FilterType::kLowPass),
       parameter1_(&frequency),
       parameter2_(&q),
       parameter3_(&gain),
-      parameter4_(&detune),
-      filter_coefficients_dirty_(true),
-      has_sample_accurate_values_(false) {}
+      parameter4_(&detune) {}
 
 BiquadProcessor::~BiquadProcessor() {
   if (IsInitialized()) {

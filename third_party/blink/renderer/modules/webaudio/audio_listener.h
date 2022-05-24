@@ -167,12 +167,12 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
   gfx::Vector3dF last_up_;
 
   // Last time that the automations were updated.
-  double last_update_time_;
+  double last_update_time_ = -1;
 
   // Set every rendering quantum if the listener has moved in any way
   // (position, forward, or up).  This should only be read or written to from
   // the audio thread.
-  bool is_listener_dirty_;
+  bool is_listener_dirty_ = false;
 
   void UpdateValuesIfNeeded(uint32_t frames_to_process);
 

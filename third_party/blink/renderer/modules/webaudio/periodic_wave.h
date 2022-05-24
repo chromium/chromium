@@ -123,7 +123,7 @@ class PeriodicWaveImpl final : public GarbageCollected<PeriodicWaveImpl> {
  private:
   void GenerateBasicWaveform(int);
 
-  size_t v8_external_memory_;
+  size_t v8_external_memory_ = 0;
 
   float sample_rate_;
   unsigned number_of_ranges_;

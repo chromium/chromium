@@ -36,8 +36,7 @@ WaveShaperProcessor::WaveShaperProcessor(float sample_rate,
                                          unsigned render_quantum_frames)
     : AudioDSPKernelProcessor(sample_rate,
                               number_of_channels,
-                              render_quantum_frames),
-      oversample_(kOverSampleNone) {}
+                              render_quantum_frames) {}
 
 WaveShaperProcessor::~WaveShaperProcessor() {
   if (IsInitialized()) {

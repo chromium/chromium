@@ -88,7 +88,7 @@ class AudioSummingJunction {
   Vector<AudioNodeOutput*> rendering_outputs_;
 
   // m_renderingStateNeedUpdating keeps track if m_outputs is modified.
-  bool rendering_state_need_updating_;
+  bool rendering_state_need_updating_ = false;
 };
 
 }  // namespace blink

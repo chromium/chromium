@@ -22,16 +22,9 @@ namespace blink {
 AudioHandler::AudioHandler(NodeType node_type,
                            AudioNode& node,
                            float sample_rate)
-    : last_processing_time_(-1),
-      last_non_silent_time_(0),
-      is_initialized_(false),
-      node_type_(kNodeTypeUnknown),
-      node_(&node),
+    : node_(&node),
       context_(node.context()),
-      deferred_task_handler_(&context_->GetDeferredTaskHandler()),
-      connection_ref_count_(0),
-      is_disabled_(false),
-      channel_count_(2) {
+      deferred_task_handler_(&context_->GetDeferredTaskHandler()) {
   SetNodeType(node_type);
   SetInternalChannelCountMode(kMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);

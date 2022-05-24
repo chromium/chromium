@@ -36,8 +36,6 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
     : AudioScheduledSourceHandler(kNodeTypeOscillator, node, sample_rate),
       frequency_(&frequency),
       detune_(&detune),
-      first_render_(true),
-      virtual_read_index_(0),
       phase_increments_(GetDeferredTaskHandler().RenderQuantumFrames()),
       detune_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   if (wave_table) {

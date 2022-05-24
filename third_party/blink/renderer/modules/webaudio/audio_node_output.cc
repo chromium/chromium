@@ -39,12 +39,7 @@ AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
                                  unsigned number_of_channels)
     : handler_(*handler),
       number_of_channels_(number_of_channels),
-      desired_number_of_channels_(number_of_channels),
-      is_in_place_(false),
-      is_enabled_(true),
-      did_call_dispose_(false),
-      rendering_fan_out_count_(0),
-      rendering_param_fan_out_count_(0) {
+      desired_number_of_channels_(number_of_channels) {
   DCHECK_LE(number_of_channels, BaseAudioContext::MaxNumberOfChannels());
 
   internal_bus_ = AudioBus::Create(

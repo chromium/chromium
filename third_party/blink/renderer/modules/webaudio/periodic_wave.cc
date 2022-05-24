@@ -161,9 +161,7 @@ void PeriodicWave::Trace(Visitor* visitor) const {
 }
 
 PeriodicWaveImpl::PeriodicWaveImpl(float sample_rate)
-    : v8_external_memory_(0),
-      sample_rate_(sample_rate),
-      cents_per_range_(kCentsPerRange) {
+    : sample_rate_(sample_rate), cents_per_range_(kCentsPerRange) {
   float nyquist = 0.5 * sample_rate_;
   lowest_fundamental_frequency_ = nyquist / MaxNumberOfPartials();
   rate_scale_ = PeriodicWaveSize() / sample_rate_;

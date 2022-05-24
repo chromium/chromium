@@ -137,7 +137,7 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // running. Note that initial state of context is 'Suspended', which is the
   // same state when the context is suspended, so we cannot utilize it for this
   // purpose.
-  bool is_rendering_started_;
+  bool is_rendering_started_ = false;
 
   // Total render sample length.
   uint32_t total_render_frames_;

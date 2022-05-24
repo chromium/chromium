@@ -383,12 +383,12 @@ class MODULES_EXPORT BaseAudioContext
   // True if we're in the process of resolving promises for resume().  Resolving
   // can take some time and the audio context process loop is very fast, so we
   // don't want to call resolve an excessive number of times.
-  bool is_resolving_resume_promises_;
+  bool is_resolving_resume_promises_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
  private:
-  bool is_cleared_;
+  bool is_cleared_ = false;
   void Clear();
 
   // When the context goes away, there might still be some sources which
@@ -401,13 +401,13 @@ class MODULES_EXPORT BaseAudioContext
   // Set to |true| by the audio thread when it posts a main-thread task to
   // perform delayed state sync'ing updates that needs to be done on the main
   // thread. Cleared by the main thread task once it has run.
-  bool has_posted_cleanup_task_;
+  bool has_posted_cleanup_task_ = false;
 
   // Graph locking.
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
 
   // The state of the BaseAudioContext.
-  AudioContextState context_state_;
+  AudioContextState context_state_ = kSuspended;
 
   AsyncAudioDecoder audio_decoder_;
 

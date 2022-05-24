@@ -81,8 +81,8 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   CrossThreadWeakPersistent<HTMLMediaElement> media_element_;
   Mutex process_lock_;
 
-  unsigned source_number_of_channels_;
-  double source_sample_rate_;
+  unsigned source_number_of_channels_ = 0;
+  double source_sample_rate_ = 0;
 
   std::unique_ptr<MediaMultiChannelResampler> multi_channel_resampler_;
 
@@ -92,7 +92,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   // this node outputs silence.  This can happen if the media element source is
   // a cross-origin source which we're not allowed to access due to CORS
   // restrictions.
-  bool is_origin_tainted_;
+  bool is_origin_tainted_ = false;
 };
 
 }  // namespace blink

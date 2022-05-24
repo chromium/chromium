@@ -122,7 +122,7 @@ class AudioScheduledSourceHandler
 
   // m_startTime is the time to start playing based on the context's timeline (0
   // or a time less than the context's current time means "now").
-  double start_time_;  // in seconds
+  double start_time_ = 0;  // in seconds
 
   // m_endTime is the time to stop playing based on the context's timeline (0 or
   // a time less than the context's current time means "now").  If it hasn't

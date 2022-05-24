@@ -61,7 +61,7 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
   mutable Mutex process_lock_;
 
   // Normalize the impulse response or not. Must default to true.
-  bool normalize_;
+  bool normalize_ = true;
 
   FRIEND_TEST_ALL_PREFIXES(ConvolverNodeTest, ReverbLifetime);
 };

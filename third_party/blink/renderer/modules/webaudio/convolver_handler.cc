@@ -28,7 +28,7 @@ const unsigned MaxFFTSize = 32768;
 namespace blink {
 
 ConvolverHandler::ConvolverHandler(AudioNode& node, float sample_rate)
-    : AudioHandler(kNodeTypeConvolver, node, sample_rate), normalize_(true) {
+    : AudioHandler(kNodeTypeConvolver, node, sample_rate) {
   AddInput();
   AddOutput(1);
 
