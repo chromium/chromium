@@ -1212,8 +1212,6 @@ static_library("browser") {
     "policy/messaging_layer/util/report_queue_manual_test_context.h",
     "policy/messaging_layer/util/user_dm_token_retriever.cc",
     "policy/messaging_layer/util/user_dm_token_retriever.h",
-    "policy/network_prediction_policy_handler.cc",
-    "policy/network_prediction_policy_handler.h",
     "policy/policy_ui_utils.cc",
     "policy/policy_ui_utils.h",
     "policy/profile_policy_connector.cc",

@@ -1638,6 +1638,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kStabilityRendererLaunchCount);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // Added 05/2022.
+#if !BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(prefs::kTabFreezingEnabled);
+#endif
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
