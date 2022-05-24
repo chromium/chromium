@@ -57,7 +57,8 @@ BackgroundBridge.ChromeVoxBackground = {
    */
   async getCurrentVoice() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.CHROMEVOX_BACKGROUND, BridgeActions.GET_CURRENT_VOICE);
+        BridgeConstants.ChromeVoxBackground.TARGET,
+        BridgeConstants.ChromeVoxBackground.Action.GET_CURRENT_VOICE);
   },
 };
 

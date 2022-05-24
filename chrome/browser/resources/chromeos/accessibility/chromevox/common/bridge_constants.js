@@ -13,7 +13,6 @@ goog.provide('BridgeTargets');
 
 /** @enum {string} */
 BridgeTargets = {
-  CHROMEVOX_BACKGROUND: 'ChromeVoxBackground',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
@@ -46,6 +45,15 @@ BridgeConstants = {
     /** @enum {string} */
     Action: {
       SET_ENABLED: 'setEnabled',
+    },
+  },
+
+  ChromeVoxBackground: {
+    /** @public {BridgeTarget} */
+    TARGET: 'ChromeVoxBackground',
+    /** @enum {string} */
+    Action: {
+      GET_CURRENT_VOICE: 'getCurrentVoice',
     },
   },
 
@@ -82,7 +90,6 @@ BridgeActions = {
   DESTROY_I_SEARCH: 'destroyISearch',
   FOCUS_TAB: 'focusTab',
   GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
-  GET_CURRENT_VOICE: 'getCurrentVoice',
   GET_LOGS: 'getLogs',
   GET_PREFS: 'getPrefs',
   GET_TAB_MENU_DATA: 'getTabMenuData',
@@ -105,6 +112,7 @@ BridgeActions = {
  * @typedef {BridgeActions |
  *           BridgeConstants.BrailleBackground.Action |
  *           BridgeConstants.BrailleCommandHandler.Action |
+ *           BridgeConstants.ChromeVoxBackground.Action |
  *           BridgeConstants.CommandHandler.Action |
  *           BridgeConstants.EventSourceState.Action}
  */

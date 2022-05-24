@@ -311,7 +311,8 @@ export class ChromeVoxBackground {
 
     ChromeVoxState.backgroundTts = background.backgroundTts_;
     BridgeHelper.registerHandler(
-        BridgeTargets.CHROMEVOX_BACKGROUND, BridgeActions.GET_CURRENT_VOICE,
+        BridgeConstants.ChromeVoxBackground.TARGET,
+        BridgeConstants.ChromeVoxBackground.Action.GET_CURRENT_VOICE,
         () => background.getCurrentVoice());
   }
 }
