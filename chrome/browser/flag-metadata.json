@@ -3445,11 +3445,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "google-lens-sdk-intent",
-    "owners": [ "juanmojica@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 103
-  },
-  {
     "name": "google-mobile-services-passwords",
     "owners": [ "fhorschig@chromium.org", "vasilii" ],
     "expiry_milestone": 108

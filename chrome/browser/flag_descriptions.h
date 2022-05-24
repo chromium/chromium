@@ -794,9 +794,6 @@ extern const char kCastUseBlocklistForRemotingQueryDescription[];
 extern const char kCastForceEnableRemotingQueryName[];
 extern const char kCastForceEnableRemotingQueryDescription[];
 
-extern const char kGoogleLensSdkIntentName[];
-extern const char kGoogleLensSdkIntentDescription[];
-
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 

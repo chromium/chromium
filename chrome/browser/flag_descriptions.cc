@@ -1427,11 +1427,6 @@ const char kCastForceEnableRemotingQueryDescription[] =
     "Enables querying for remoting capabilities for ALL devices, regardless of "
     "the contents of the allowlist or blocklist.";
 
-const char kGoogleLensSdkIntentName[] =
-    "Enable the use of the Lens SDK when starting intent into Lens.";
-const char kGoogleLensSdkIntentDescription[] =
-    "Starts Lens using the Lens SDK if supported.";
-
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 

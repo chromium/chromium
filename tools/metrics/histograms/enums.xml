@@ -56038,7 +56038,6 @@ from previous Chrome versions.
   <int value="-1144754105" label="ScalableStatusArea:enabled"/>
   <int value="-1144501989" label="UserActivityPredictionMlService:disabled"/>
   <int value="-1144170722" label="DisableProcessReuse:enabled"/>
-  <int value="-1144128534" label="GoogleLensSdkIntent:enabled"/>
   <int value="-1143496217" label="enable-oop-rasterization"/>
   <int value="-1143007275" label="EnableNewStyleLauncher:disabled"/>
   <int value="-1142933895" label="ReduceDisplayNotifications:disabled"/>
@@ -59793,7 +59792,6 @@ from previous Chrome versions.
   <int value="1367487214" label="VaapiJpegImageDecodeAcceleration:enabled"/>
   <int value="1367529437" label="NTPAssetDownloadSuggestions:enabled"/>
   <int value="1367671275" label="enable-proximity-auth-proximity-detection"/>
-  <int value="1368907760" label="GoogleLensSdkIntent:disabled"/>
   <int value="1369022678" label="OrganicRepeatableQueries:disabled"/>
   <int value="1369449914" label="SysInternals:disabled"/>
   <int value="1369649674" label="ChromeShareScreenshot:enabled"/>

@@ -229,7 +229,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kExploreSites,
     &kFixedUmaSessionResumeOrder,
     &kFocusOmniboxInIncognitoTabIntents,
-    &kGoogleLensSdkIntent,
     &kGridTabSwitcherForTablets,
     &kHandleMediaIntents,
     &kImmersiveUiMode,
@@ -552,9 +551,6 @@ const base::Feature kContextMenuSearchAndShopWithGoogleLens{
 
 const base::Feature kContextMenuTranslateWithGoogleLens{
     "ContextMenuTranslateWithGoogleLens", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kGoogleLensSdkIntent{"GoogleLensSdkIntent",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kLensCameraAssistedSearch{"LensCameraAssistedSearch",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
