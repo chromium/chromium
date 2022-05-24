@@ -1168,11 +1168,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "desktop-restructured-language-settings",
-    "owners": [ "chrome-language@google.com" ],
-    "expiry_milestone": 101
-  },
-  {
     "name": "destroy-profile-on-browser-close",
     "owners": [ "nicolaso" ],
     "expiry_milestone": 100

@@ -3308,9 +3308,6 @@ extern const char kSideSearchDSESupportDescription[];
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 
-extern const char kDesktopRestructuredLanguageSettingsName[];
-extern const char kDesktopRestructuredLanguageSettingsDescription[];
-
 extern const char kDesktopDetailedLanguageSettingsName[];
 extern const char kDesktopDetailedLanguageSettingsDescription[];
 

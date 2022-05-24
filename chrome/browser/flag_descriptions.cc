@@ -5758,11 +5758,6 @@ const char kSideSearchDSESupportDescription[] =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 
-const char kDesktopRestructuredLanguageSettingsName[] =
-    "Restructured Language Settings (Desktop)";
-const char kDesktopRestructuredLanguageSettingsDescription[] =
-    "Enable the new restructured language settings page";
-
 const char kDesktopDetailedLanguageSettingsName[] =
     "Detailed Language Settings (Desktop)";
 const char kDesktopDetailedLanguageSettingsDescription[] =

@@ -7355,12 +7355,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQuickCommandsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kQuickCommands)},
 
-    {"desktop-restructured-language-settings",
-     flag_descriptions::kDesktopRestructuredLanguageSettingsName,
-     flag_descriptions::kDesktopRestructuredLanguageSettingsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(language::kDesktopRestructuredLanguageSettings)},
-
     {"desktop-detailed-language-settings",
      flag_descriptions::kDesktopDetailedLanguageSettingsName,
      flag_descriptions::kDesktopDetailedLanguageSettingsDescription, kOsDesktop,
