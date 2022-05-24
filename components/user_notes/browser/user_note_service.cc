@@ -194,6 +194,12 @@ void UserNoteService::OnNoteCreationCancelled(
   (*entry_it->second.managers.begin())->RemoveNote(id);
 }
 
+void UserNoteService::OnNoteUpdated(const base::UnguessableToken& id,
+                                    const std::string& note_content) {
+  DCHECK(IsUserNotesEnabled());
+  NOTIMPLEMENTED();
+}
+
 UserNoteService::ModelMapEntry::ModelMapEntry(std::unique_ptr<UserNote> model)
     : model(std::move(model)) {}
 
