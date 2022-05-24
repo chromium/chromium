@@ -74,7 +74,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final float EXTRA_HEIGHT_RATIO = 0.1f;
     private static final int SCROLL_DURATION_MS = 200;
     private static final int NAVBAR_FADE_DURATION_MS = 16;
-    private static final int SPINNER_FADE_DURATION_MS = 200;
+    private static final int SPINNER_FADE_DURATION_MS = 400;
 
     @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION})
     @Retention(RetentionPolicy.SOURCE)
