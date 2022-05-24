@@ -660,6 +660,7 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
         layout_object->SetIntrinsicLogicalWidthsDirty();
         layout_object->SetChildNeedsLayout();
         // Make sure we don't use cached NGFragmentItem objects.
+        To<LayoutBox>(layout_object)->DisassociatePhysicalFragments();
         To<LayoutBox>(layout_object)->ClearLayoutResults();
       }
     }
