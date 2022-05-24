@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -122,7 +123,7 @@ void ChromeScanningAppDelegate::ShowFileInFilesApp(
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::PathExists, path_to_file),
       base::BindOnce(&ChromeScanningAppDelegate::OnPathExists,
-                     base::Unretained(this), path_to_file,
+                     weak_ptr_factory_.GetWeakPtr(), path_to_file,
                      std::move(callback)));
 }
 
