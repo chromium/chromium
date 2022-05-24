@@ -781,7 +781,6 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_Notes& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_Notes_Note& proto) {
-  VISIT(id);
   VISIT(unique_display_name);
   VISIT(value);
   VISIT(date_created_windows_epoch_micros);
