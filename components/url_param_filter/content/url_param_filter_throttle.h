@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_THROTTLE_H_
-#define CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_THROTTLE_H_
+#ifndef COMPONENTS_URL_PARAM_FILTER_CONTENT_URL_PARAM_FILTER_THROTTLE_H_
+#define COMPONENTS_URL_PARAM_FILTER_CONTENT_URL_PARAM_FILTER_THROTTLE_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -52,4 +52,4 @@ class UrlParamFilterThrottle : public blink::URLLoaderThrottle {
   base::WeakPtr<CrossOtrObserver> observer_;
 };
 }  // namespace url_param_filter
-#endif  // CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_THROTTLE_H_
+#endif  // COMPONENTS_URL_PARAM_FILTER_CONTENT_URL_PARAM_FILTER_THROTTLE_H_

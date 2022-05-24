@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
 
 #include <string>
 #include <utility>
@@ -11,8 +11,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
-#include "chrome/common/chrome_features.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 

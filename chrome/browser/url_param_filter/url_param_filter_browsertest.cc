@@ -10,12 +10,12 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -33,6 +33,8 @@ constexpr static const char kCrossOtrRefreshCountMetricName[] =
     "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
 constexpr static const char kFilteredParamCountMetricName[] =
     "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+
+}  // namespace
 
 class ContextMenuIncognitoFilterDisabledBrowserTest
     : public InProcessBrowserTest {
@@ -916,7 +918,5 @@ IN_PROC_BROWSER_TEST_F(EnterpriseContextMenuIncognitoFilterBrowserTest,
   GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
   ASSERT_EQ(expected, tab->GetLastCommittedURL());
 }
-
-}  // namespace
 
 }  // namespace url_param_filter

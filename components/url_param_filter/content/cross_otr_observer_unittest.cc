@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
 
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +24,7 @@ constexpr char kResponseCodeMetricName[] =
 constexpr char kCrossOtrRefreshCountMetricName[] =
     "Navigation.CrossOtr.ContextMenu.RefreshCountExperimental";
 
-class CrossOtrObserverTest : public ChromeRenderViewHostTestHarness {
+class CrossOtrObserverTest : public content::RenderViewHostTestHarness {
  public:
   CrossOtrObserverTest() = default;
 
@@ -36,76 +35,58 @@ class CrossOtrObserverTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(CrossOtrObserverTest, NotContextMenuInitiated) {
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/web_contents(), /*is_cross_otr=*/false,
+      /*started_from_context_menu=*/false,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
 
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::DEFAULT;
-  params.started_from_context_menu = false;
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  CrossOtrObserver::MaybeCreateForWebContents(web_contents.get(), params);
-
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
+  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents()), nullptr);
 }
 TEST_F(CrossOtrObserverTest, DefaultSensitivity) {
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/web_contents(), /*is_cross_otr=*/false,
+      /*started_from_context_menu=*/false,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
 
-  params.started_from_context_menu = false;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::DEFAULT;
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  CrossOtrObserver::MaybeCreateForWebContents(web_contents.get(), params);
-
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
+  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents()), nullptr);
 }
 TEST_F(CrossOtrObserverTest, BookmarkLink) {
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/web_contents(), /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_AUTO_BOOKMARK);
 
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  CrossOtrObserver::MaybeCreateForWebContents(web_contents.get(), params);
-
-  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents.get()), nullptr);
+  ASSERT_EQ(CrossOtrObserver::FromWebContents(web_contents()), nullptr);
 }
 TEST_F(CrossOtrObserverTest, CreateKey) {
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
 
   ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
 }
 TEST_F(CrossOtrObserverTest, DuplicateCreateKey) {
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
 
   ASSERT_NE(CrossOtrObserver::FromWebContents(contents), nullptr);
 }
 TEST_F(CrossOtrObserverTest, HandleRedirects) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -138,13 +119,11 @@ TEST_F(CrossOtrObserverTest, HandleRedirects) {
 }
 TEST_F(CrossOtrObserverTest, HandleRedirectsNoParamsFiltering) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
@@ -162,13 +141,11 @@ TEST_F(CrossOtrObserverTest, HandleRedirectsNoParamsFiltering) {
 }
 TEST_F(CrossOtrObserverTest, FinishedNavigation) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -192,13 +169,11 @@ TEST_F(CrossOtrObserverTest, FinishedNavigation) {
 }
 TEST_F(CrossOtrObserverTest, FinishedNavigationNoParamsFiltering) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
@@ -218,13 +193,11 @@ TEST_F(CrossOtrObserverTest, FinishedNavigationNoParamsFiltering) {
 }
 TEST_F(CrossOtrObserverTest, BadRedirectResponse) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -240,13 +213,11 @@ TEST_F(CrossOtrObserverTest, BadRedirectResponse) {
 }
 TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -268,13 +239,11 @@ TEST_F(CrossOtrObserverTest, BadNavigationResponse) {
 }
 TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -304,13 +273,11 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigation) {
 }
 TEST_F(CrossOtrObserverTest, RefreshedAfterNavigationNoParamsFiltering) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   ASSERT_NE(observer, nullptr);
@@ -337,13 +304,11 @@ TEST_F(CrossOtrObserverTest, RefreshedAfterNavigationNoParamsFiltering) {
 }
 TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -390,13 +355,11 @@ TEST_F(CrossOtrObserverTest, UncommittedNavigationWithRefresh) {
 TEST_F(CrossOtrObserverTest,
        UncommittedNavigationWithRefreshNoParamsFiltering) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
@@ -438,13 +401,11 @@ TEST_F(CrossOtrObserverTest,
 }
 TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -488,13 +449,11 @@ TEST_F(CrossOtrObserverTest, MultipleRefreshesAfterNavigation) {
 }
 TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
 
   // Simulate params filtering, making it okay to collect metrics.
@@ -533,13 +492,11 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigation) {
 }
 TEST_F(CrossOtrObserverTest, RedirectsAfterNavigationNoParamsFiltering) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
@@ -574,13 +531,11 @@ TEST_F(CrossOtrObserverTest, RedirectsAfterNavigationNoParamsFiltering) {
 }
 TEST_F(CrossOtrObserverTest, ClientRedirectCrossOtr) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =
@@ -609,13 +564,11 @@ TEST_F(CrossOtrObserverTest, ClientRedirectCrossOtr) {
 }
 TEST_F(CrossOtrObserverTest, ClientRedirectAfterActivationNotCrossOtr) {
   base::HistogramTester histogram_tester;
-  NavigateParams params(profile(), GURL("https://www.foo.com"),
-                        ui::PAGE_TRANSITION_LINK);
-
-  params.started_from_context_menu = true;
-  params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
   content::WebContents* contents = web_contents();
-  CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+  CrossOtrObserver::MaybeCreateForWebContents(
+      /*web_contents=*/contents, /*is_cross_otr=*/true,
+      /*started_from_context_menu=*/true,
+      /*transition=*/ui::PAGE_TRANSITION_LINK);
   CrossOtrObserver* observer = CrossOtrObserver::FromWebContents(contents);
   ASSERT_NE(observer, nullptr);
   std::unique_ptr<content::MockNavigationHandle> handle =

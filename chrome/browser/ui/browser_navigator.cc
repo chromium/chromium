@@ -40,12 +40,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
@@ -532,7 +532,10 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   }
 #endif
   url_param_filter::CrossOtrObserver::MaybeCreateForWebContents(
-      target_contents.get(), params);
+      target_contents.get(),
+      params.privacy_sensitivity ==
+          NavigateParams::PrivacySensitivity::CROSS_OTR,
+      params.started_from_context_menu, params.transition);
 
   return target_contents;
 }

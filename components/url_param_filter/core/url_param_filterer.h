@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTERER_H_
-#define CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTERER_H_
+#ifndef COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTERER_H_
+#define COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTERER_H_
 
-#include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
-#include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
+#include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "url/gurl.h"
 
 // Used to filter URL parameters based on backend classification rules. Note
@@ -47,4 +47,4 @@ FilterResult FilterUrl(const GURL& source_url,
                        const FilterClassification::UseCase use_case);
 
 }  // namespace url_param_filter
-#endif  // CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTERER_H_
+#endif  // COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTERER_H_

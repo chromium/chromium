@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_URL_PARAM_FILTER_CROSS_OTR_OBSERVER_H_
-#define CHROME_BROWSER_URL_PARAM_FILTER_CROSS_OTR_OBSERVER_H_
+#ifndef COMPONENTS_URL_PARAM_FILTER_CONTENT_CROSS_OTR_OBSERVER_H_
+#define COMPONENTS_URL_PARAM_FILTER_CONTENT_CROSS_OTR_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/page_transition_types.h"
 
 namespace url_param_filter {
 
@@ -29,7 +29,9 @@ class CrossOtrObserver : public content::WebContentsObserver,
   // Attaches the observer in cases where it should do so; leaves `web_contents`
   // unchanged otherwise.
   static void MaybeCreateForWebContents(content::WebContents* web_contents,
-                                        const NavigateParams& params);
+                                        bool is_cross_otr,
+                                        bool started_from_context_menu,
+                                        ui::PageTransition transition);
   bool IsCrossOtrState();
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -78,4 +80,4 @@ class CrossOtrObserver : public content::WebContentsObserver,
 };
 
 }  // namespace url_param_filter
-#endif  // CHROME_BROWSER_URL_PARAM_FILTER_CROSS_OTR_OBSERVER_H_
+#endif  // COMPONENTS_URL_PARAM_FILTER_CONTENT_CROSS_OTR_OBSERVER_H_

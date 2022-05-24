@@ -15,9 +15,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
-#include "chrome/common/chrome_features.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,7 +39,8 @@ const char kUrlParamClassificationManifestName[] = "Url Param Classifications";
 
 // Runs on a thread pool.
 absl::optional<std::string> LoadFileFromDisk(const base::FilePath& pb_path) {
-  if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled))
+  if (!base::FeatureList::IsEnabled(
+          url_param_filter::features::kIncognitoParamFilterEnabled))
     return absl::nullopt;
   VLOG(1) << "Reading Url Param Classifications from file: " << pb_path.value();
   std::string file_contents;

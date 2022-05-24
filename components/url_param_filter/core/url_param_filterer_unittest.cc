@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/url_param_filter/url_param_filterer.h"
+#include "components/url_param_filter/core/url_param_filterer.h"
 
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
-#include "chrome/common/chrome_features.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filter_classification.pb.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace url_param_filter {
-namespace {
 
 class UrlParamFiltererTest : public ::testing::Test {};
 
@@ -609,5 +609,4 @@ TEST_F(UrlParamFiltererTest, MultipleUseCases) {
   ASSERT_EQ(result.filtered_param_count, 2);
 }
 
-}  // namespace
 }  // namespace url_param_filter

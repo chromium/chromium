@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/url_param_filter/url_param_filter_throttle.h"
+#include "components/url_param_filter/content/url_param_filter_throttle.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
-#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
+#include "content/public/test/test_renderer_host.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,17 +19,18 @@
 namespace url_param_filter {
 
 namespace {
+constexpr static const char kHistogramName[] =
+    "Navigation.UrlParamFilter.FilteredParamCountExperimental";
+}  // namespace
 
 // Tests the UrlParamFilterThrottle, which is currently a very thin wrapper
 // around the url_param_filter::FilterUrl() function. Coverage is accordingly
 // somewhat less thorough than that seen in url_param_filterer_unittest.
-class UrlParamFilterThrottleTest : public ChromeRenderViewHostTestHarness {
+class UrlParamFilterThrottleTest : public content::RenderViewHostTestHarness {
  public:
   UrlParamFilterThrottleTest() = default;
 
  protected:
-  constexpr static const char kHistogramName[] =
-      "Navigation.UrlParamFilter.FilteredParamCountExperimental";
   std::string encoded_classification =
       CreateBase64EncodedFilterParamClassificationForTesting(
           {{"source.xyz", {"plzblock"}},
@@ -39,13 +39,10 @@ class UrlParamFilterThrottleTest : public ChromeRenderViewHostTestHarness {
           {{"destination.xyz", {"plzblock1"}}});
 
   void CreateCrossOtrState() {
-    NavigateParams params(profile(), GURL("https://www.foo.com"),
-                          ui::PAGE_TRANSITION_LINK);
-
-    params.started_from_context_menu = true;
-    params.privacy_sensitivity = NavigateParams::PrivacySensitivity::CROSS_OTR;
     content::WebContents* contents = web_contents();
-    CrossOtrObserver::MaybeCreateForWebContents(contents, params);
+    CrossOtrObserver::MaybeCreateForWebContents(
+        contents, /*is_cross_otr=*/true, /*started_from_context_menu=*/true,
+        ui::PAGE_TRANSITION_LINK);
   }
 };
 
@@ -368,7 +365,5 @@ TEST_F(UrlParamFilterThrottleFilteringDisabledTest,
             GURL("https://destination.xyz?asdf=1&plzblockredirect2=1"));
   EXPECT_FALSE(defer);
 }
-
-}  // namespace
 
 }  // namespace url_param_filter

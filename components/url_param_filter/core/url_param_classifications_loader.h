@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_CLASSIFICATIONS_LOADER_H_
-#define CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_CLASSIFICATIONS_LOADER_H_
+#ifndef COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_CLASSIFICATIONS_LOADER_H_
+#define COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_CLASSIFICATIONS_LOADER_H_
 
 #include <unordered_map>
 
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
+#include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url_param_filter {
@@ -71,4 +71,4 @@ class ClassificationsLoader {
 };
 
 }  // namespace url_param_filter
-#endif  // CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_CLASSIFICATIONS_LOADER_H_
+#endif  // COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_CLASSIFICATIONS_LOADER_H_

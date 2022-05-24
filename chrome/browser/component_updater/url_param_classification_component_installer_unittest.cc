@@ -14,11 +14,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
-#include "chrome/browser/url_param_filter/url_param_classifications_loader.h"
-#include "chrome/browser/url_param_filter/url_param_filter_classification.pb.h"
-#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_classifications_loader.h"
+#include "components/url_param_filter/core/url_param_filter_classification.pb.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,10 +80,11 @@ class UrlParamClassificationComponentInstallerFeatureAgnosticTest
  public:
   UrlParamClassificationComponentInstallerFeatureAgnosticTest() {
     if (GetParam()) {
-      scoped_list_.InitAndEnableFeature(features::kIncognitoParamFilterEnabled);
+      scoped_list_.InitAndEnableFeature(
+          url_param_filter::features::kIncognitoParamFilterEnabled);
     } else {
       scoped_list_.InitAndDisableFeature(
-          features::kIncognitoParamFilterEnabled);
+          url_param_filter::features::kIncognitoParamFilterEnabled);
     }
   }
 
@@ -240,7 +241,7 @@ TEST_F(UrlParamClassificationComponentInstallerTest,
   base::test::ScopedFeatureList scoped_list;
 
   scoped_list.InitAndEnableFeatureWithParameters(
-      features::kIncognitoParamFilterEnabled,
+      url_param_filter::features::kIncognitoParamFilterEnabled,
       {{"classifications",
         url_param_filter::
             CreateBase64EncodedFilterParamClassificationForTesting(
@@ -273,7 +274,8 @@ TEST_F(UrlParamClassificationComponentInstallerTest,
        FeatureDisabled_ComponentReady_DoesntFireCallback) {
   content::BrowserTaskEnvironment task_env;
   base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(features::kIncognitoParamFilterEnabled);
+  scoped_list.InitAndDisableFeature(
+      url_param_filter::features::kIncognitoParamFilterEnabled);
 
   base::RunLoop run_loop;
   std::unique_ptr<component_updater::ComponentInstallerPolicy> policy =

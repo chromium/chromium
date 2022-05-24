@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
-#include "chrome/browser/url_param_filter/url_param_filterer.h"
+#include "components/url_param_filter/core/url_param_filter_test_helper.h"
 
 #include "base/base64.h"
+#include "components/url_param_filter/core/url_param_filterer.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace url_param_filter {
@@ -129,15 +129,15 @@ FilterClassifications MakeClassificationsProtoFromMapWithUseCases(
                    std::map<FilterClassification::UseCase,
                             std::vector<std::string>>>& dest_map) {
   url_param_filter::FilterClassifications classifications;
-  for (const auto& [site, params] : source_map) {
-    for (const auto& [use_case, params] : params) {
+  for (const auto& [site, param_map] : source_map) {
+    for (const auto& [use_case, params] : param_map) {
       AddClassification(classifications.add_classifications(), site,
                         FilterClassification_SiteRole_SOURCE, params,
                         {use_case});
     }
   }
-  for (const auto& [site, params] : dest_map) {
-    for (const auto& [use_case, params] : params) {
+  for (const auto& [site, param_map] : dest_map) {
+    for (const auto& [use_case, params] : param_map) {
       AddClassification(classifications.add_classifications(), site,
                         FilterClassification_SiteRole_DESTINATION, params,
                         {use_case});

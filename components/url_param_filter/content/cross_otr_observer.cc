@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
 
 #include <memory>
 
@@ -35,11 +35,11 @@ constexpr char kCrossOtrRefreshCountMetricName[] =
 
 void CrossOtrObserver::MaybeCreateForWebContents(
     content::WebContents* web_contents,
-    const NavigateParams& params) {
-  if (params.privacy_sensitivity ==
-          NavigateParams::PrivacySensitivity::CROSS_OTR &&
-      params.started_from_context_menu &&
-      !ui::PageTransitionCoreTypeIs(params.transition,
+    bool privacy_sensitivity_is_cross_otr,
+    bool started_from_context_menu,
+    ui::PageTransition transition) {
+  if (privacy_sensitivity_is_cross_otr && started_from_context_menu &&
+      !ui::PageTransitionCoreTypeIs(transition,
                                     ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
     // Inherited from WebContentsUserData and checks for an already-attached
     // instance internally.

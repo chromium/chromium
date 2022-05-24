@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_TEST_HELPER_H_
-#define CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_TEST_HELPER_H_
+#ifndef COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTER_TEST_HELPER_H_
+#define COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTER_TEST_HELPER_H_
 
-#include "chrome/browser/url_param_filter/url_param_filterer.h"
+#include "components/url_param_filter/core/url_param_filterer.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -104,4 +104,4 @@ void AddClassification(
     const std::vector<std::string>& params,
     const std::vector<FilterClassification::UseCase>& use_cases);
 }  // namespace url_param_filter
-#endif  // CHROME_BROWSER_URL_PARAM_FILTER_URL_PARAM_FILTER_TEST_HELPER_H_
+#endif  // COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTER_TEST_HELPER_H_

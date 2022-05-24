@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/url_param_filter/url_param_filter_throttle.h"
+#include "components/url_param_filter/content/url_param_filter_throttle.h"
 
 #include <memory>
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/url_param_filter/cross_otr_observer.h"
-#include "chrome/browser/url_param_filter/url_param_filterer.h"
-#include "chrome/common/chrome_features.h"
+#include "components/url_param_filter/content/cross_otr_observer.h"
+#include "components/url_param_filter/core/features.h"
+#include "components/url_param_filter/core/url_param_filterer.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"

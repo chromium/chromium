@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/url_param_filter/cross_otr_observer_android.h"
 
+#include "components/url_param_filter/content/cross_otr_observer.h"
+
 namespace url_param_filter {
 void MaybeCreateCrossOtrObserverForTabLaunchType(
     content::WebContents* web_contents,

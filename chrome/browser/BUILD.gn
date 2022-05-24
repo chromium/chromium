@@ -1829,14 +1829,6 @@ static_library("browser") {
     "universal_web_contents_observers.h",
     "update_client/chrome_update_query_params_delegate.cc",
     "update_client/chrome_update_query_params_delegate.h",
-    "url_param_filter/cross_otr_observer.cc",
-    "url_param_filter/cross_otr_observer.h",
-    "url_param_filter/url_param_classifications_loader.cc",
-    "url_param_filter/url_param_classifications_loader.h",
-    "url_param_filter/url_param_filter_throttle.cc",
-    "url_param_filter/url_param_filter_throttle.h",
-    "url_param_filter/url_param_filterer.cc",
-    "url_param_filter/url_param_filterer.h",
     "usb/frame_usb_services.cc",
     "usb/frame_usb_services.h",
     "usb/usb_blocklist.cc",
@@ -1956,7 +1948,6 @@ static_library("browser") {
     ":permissions_proto",
     ":resource_prefetch_predictor_proto",
     ":unexpire_flags",
-    ":url_param_filter_classification_proto",
     "//base",
     "//base:i18n",
     "//base/allocator:buildflags",
@@ -2331,6 +2322,8 @@ static_library("browser") {
     "//components/url_formatter/spoof_checks/top_domains:top500_domains",
     "//components/url_formatter/spoof_checks/top_domains:top500_domains_header",
     "//components/url_matcher",
+    "//components/url_param_filter/content",
+    "//components/url_param_filter/core",
     "//components/user_manager",
     "//components/user_prefs",
     "//components/variations",
@@ -3413,6 +3406,7 @@ static_library("browser") {
       "//components/translate/core/language_detection",
       "//components/ukm/android:ukm_recorder",
       "//components/ukm/content",
+      "//components/url_param_filter/core",
       "//components/viz/common",
       "//components/webapk:proto",
       "//components/webauthn/android",
@@ -7572,10 +7566,6 @@ proto_library("resource_prefetch_predictor_proto") {
 
 proto_library("permissions_proto") {
   sources = [ "permissions/crowd_deny.proto" ]
-}
-
-proto_library("url_param_filter_classification_proto") {
-  sources = [ "url_param_filter/url_param_filter_classification.proto" ]
 }
 
 grit("resources") {
