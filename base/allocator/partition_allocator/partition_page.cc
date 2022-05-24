@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -32,7 +33,7 @@ void UnmapNow(uintptr_t reservation_start,
               pool_handle pool);
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionDirectUnmap(
+PA_ALWAYS_INLINE void PartitionDirectUnmap(
     SlotSpanMetadata<thread_safe>* slot_span) {
   using ::partition_alloc::internal::ScopedUnlockGuard;
 
@@ -84,7 +85,7 @@ ALWAYS_INLINE void PartitionDirectUnmap(
 }  // namespace
 
 template <bool thread_safe>
-ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
+PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
   PA_DCHECK(is_empty());
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
@@ -175,16 +176,16 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
     // chances of it being filled up again. The old current slot span will be
     // the next slot span.
     PA_DCHECK(!next_slot_span);
-    if (LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
+    if (PA_LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
       next_slot_span = bucket->active_slot_spans_head;
     bucket->active_slot_spans_head = this;
     PA_CHECK(bucket->num_full_slot_spans);  // Underflow.
     --bucket->num_full_slot_spans;
   }
 
-  if (LIKELY(num_allocated_slots == 0)) {
+  if (PA_LIKELY(num_allocated_slots == 0)) {
     // Slot span became fully unused.
-    if (UNLIKELY(bucket->is_direct_mapped())) {
+    if (PA_UNLIKELY(bucket->is_direct_mapped())) {
       PartitionDirectUnmap(this);
       return;
     }
@@ -193,7 +194,7 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
 #endif
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
-    if (LIKELY(this == bucket->active_slot_spans_head))
+    if (PA_LIKELY(this == bucket->active_slot_spans_head))
       bucket->SetNewActiveSlotSpan();
     PA_DCHECK(bucket->active_slot_spans_head != this);
 

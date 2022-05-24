@@ -11,13 +11,13 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/sys_byteorder.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
@@ -25,7 +25,7 @@ namespace partition_alloc::internal {
 
 namespace {
 
-[[noreturn]] NOINLINE void FreelistCorruptionDetected(size_t extra) {
+[[noreturn]] PA_NOINLINE void FreelistCorruptionDetected(size_t extra) {
   // Make it visible in minidumps.
   PA_DEBUG_DATA_ON_STACK("extra", extra);
   PA_IMMEDIATE_CRASH();
@@ -37,27 +37,27 @@ class PartitionFreelistEntry;
 
 class EncodedPartitionFreelistEntryPtr {
  private:
-  explicit ALWAYS_INLINE constexpr EncodedPartitionFreelistEntryPtr(
+  explicit PA_ALWAYS_INLINE constexpr EncodedPartitionFreelistEntryPtr(
       std::nullptr_t)
       : encoded_(Transform(0)) {}
-  explicit ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(void* ptr)
+  explicit PA_ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(void* ptr)
       : encoded_(Transform(reinterpret_cast<uintptr_t>(ptr))) {}
 
-  ALWAYS_INLINE PartitionFreelistEntry* Decode() const {
+  PA_ALWAYS_INLINE PartitionFreelistEntry* Decode() const {
     return reinterpret_cast<PartitionFreelistEntry*>(Transform(encoded_));
   }
 
-  ALWAYS_INLINE constexpr uintptr_t Inverted() const { return ~encoded_; }
+  PA_ALWAYS_INLINE constexpr uintptr_t Inverted() const { return ~encoded_; }
 
-  ALWAYS_INLINE constexpr void Override(uintptr_t encoded) {
+  PA_ALWAYS_INLINE constexpr void Override(uintptr_t encoded) {
     encoded_ = encoded;
   }
 
-  explicit ALWAYS_INLINE constexpr operator bool() const { return encoded_; }
+  explicit PA_ALWAYS_INLINE constexpr operator bool() const { return encoded_; }
 
   // Transform() works the same in both directions, so can be used for
   // encoding and decoding.
-  ALWAYS_INLINE static constexpr uintptr_t Transform(uintptr_t address) {
+  PA_ALWAYS_INLINE static constexpr uintptr_t Transform(uintptr_t address) {
     // We use bswap on little endian as a fast transformation for two reasons:
     // 1) On 64 bit architectures, the pointer is very unlikely to be a
     //    canonical address. Therefore, if an object is freed and its vtable is
@@ -116,7 +116,7 @@ class PartitionFreelistEntry {
 
   // Emplaces the freelist entry at the beginning of the given slot span, and
   // initializes it as null-terminated.
-  static ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
+  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
       uintptr_t slot_start) {
     auto* entry = new (reinterpret_cast<void*>(slot_start))
         PartitionFreelistEntry(nullptr);
@@ -129,7 +129,7 @@ class PartitionFreelistEntry {
   // This freelist is built for the purpose of thread-cache. This means that we
   // can't perform a check that this and the next pointer belong to the same
   // super page, as thread-cache spans may chain slots across super pages.
-  static ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitForThreadCache(
+  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitForThreadCache(
       uintptr_t slot_start,
       PartitionFreelistEntry* next) {
     auto* entry =
@@ -142,9 +142,9 @@ class PartitionFreelistEntry {
   //
   // This is for testing purposes only! |make_shadow_match| allows you to choose
   // if the shadow matches the next pointer properly or is trash.
-  static ALWAYS_INLINE void EmplaceAndInitForTest(uintptr_t slot_start,
-                                                  void* next,
-                                                  bool make_shadow_match) {
+  static PA_ALWAYS_INLINE void EmplaceAndInitForTest(uintptr_t slot_start,
+                                                     void* next,
+                                                     bool make_shadow_match) {
     new (reinterpret_cast<void*>(slot_start))
         PartitionFreelistEntry(next, make_shadow_match);
   }
@@ -157,24 +157,24 @@ class PartitionFreelistEntry {
   // Puts |extra| on the stack before crashing in case of memory
   // corruption. Meant to be used to report the failed allocation size.
   template <bool crash_on_corruption>
-  ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
+  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextForThreadCache(
       size_t extra) const;
-  ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t extra) const;
+  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t extra) const;
 
-  NOINLINE void CheckFreeList(size_t extra) const {
+  PA_NOINLINE void CheckFreeList(size_t extra) const {
     for (auto* entry = this; entry; entry = entry->GetNext(extra)) {
       // |GetNext()| checks freelist integrity.
     }
   }
 
-  NOINLINE void CheckFreeListForThreadCache(size_t extra) const {
+  PA_NOINLINE void CheckFreeListForThreadCache(size_t extra) const {
     for (auto* entry = this; entry;
          entry = entry->GetNextForThreadCache<true>(extra)) {
       // |GetNextForThreadCache()| checks freelist integrity.
     }
   }
 
-  ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
+  PA_ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
     // SetNext() is either called on the freelist head, when provisioning new
     // slots, or when GetNext() has been called before, no need to pass the
     // size.
@@ -182,9 +182,10 @@ class PartitionFreelistEntry {
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
-    if (UNLIKELY(ptr &&
-                 (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) !=
-                     (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask))) {
+    if (PA_UNLIKELY(
+            ptr &&
+            (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) !=
+                (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask))) {
       FreelistCorruptionDetected(0);
     }
 #endif  // DCHECK_IS_ON()
@@ -198,7 +199,7 @@ class PartitionFreelistEntry {
   // Zeroes out |this| before returning the slot. The pointer to this memory
   // will be returned to the user (caller of Alloc()), thus can't have internal
   // data.
-  ALWAYS_INLINE uintptr_t ClearForAllocation() {
+  PA_ALWAYS_INLINE uintptr_t ClearForAllocation() {
     encoded_next_.Override(0);
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = 0;
@@ -207,19 +208,19 @@ class PartitionFreelistEntry {
     return slot_start;
   }
 
-  ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
+  PA_ALWAYS_INLINE constexpr bool IsEncodedNextPtrZero() const {
     return !encoded_next_;
   }
 
  private:
   template <bool crash_on_corruption>
-  ALWAYS_INLINE PartitionFreelistEntry* GetNextInternal(
+  PA_ALWAYS_INLINE PartitionFreelistEntry* GetNextInternal(
       size_t extra,
       bool for_thread_cache) const;
 
-  static ALWAYS_INLINE bool IsSane(const PartitionFreelistEntry* here,
-                                   const PartitionFreelistEntry* next,
-                                   bool for_thread_cache) {
+  static PA_ALWAYS_INLINE bool IsSane(const PartitionFreelistEntry* here,
+                                      const PartitionFreelistEntry* next,
+                                      bool for_thread_cache) {
     // Don't allow the freelist to be blindly followed to any location.
     // Checks two constraints:
     // - here and next must belong to the same superpage, unless this is in the
@@ -276,9 +277,9 @@ static_assert(kSmallestUsedBucket >=
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 template <bool crash_on_corruption>
-ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
-    size_t extra,
-    bool for_thread_cache) const {
+PA_ALWAYS_INLINE PartitionFreelistEntry*
+PartitionFreelistEntry::GetNextInternal(size_t extra,
+                                        bool for_thread_cache) const {
   // GetNext() can be called on discarded memory, in which case |encoded_next_|
   // is 0, and none of the checks apply. Don't prefetch nullptr either.
   if (IsEncodedNextPtrZero())
@@ -287,7 +288,7 @@ ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
   auto* ret = encoded_next_.Decode();
   // We rely on constant propagation to remove the branches coming from
   // |for_thread_cache|, since the argument is always a compile-time constant.
-  if (UNLIKELY(!IsSane(this, ret, for_thread_cache))) {
+  if (PA_UNLIKELY(!IsSane(this, ret, for_thread_cache))) {
     if constexpr (crash_on_corruption) {
       // Put the corrupted data on the stack, it may give us more information
       // about what kind of corruption that was.
@@ -314,12 +315,12 @@ ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
 }
 
 template <bool crash_on_corruption>
-ALWAYS_INLINE PartitionFreelistEntry*
+PA_ALWAYS_INLINE PartitionFreelistEntry*
 PartitionFreelistEntry::GetNextForThreadCache(size_t extra) const {
   return GetNextInternal<crash_on_corruption>(extra, true);
 }
 
-ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
+PA_ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext(
     size_t extra) const {
   return GetNextInternal<true>(extra, false);
 }

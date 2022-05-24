@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
@@ -45,8 +46,8 @@ class PA_LOCKABLE Lock {
       // Note that we don't rely on a DCHECK() in base::Lock(), as it would
       // itself allocate. Meaning that without this code, a reentrancy issue
       // hangs on Linux.
-      if (UNLIKELY(owning_thread_ref_.load(std::memory_order_acquire) ==
-                   current_thread)) {
+      if (PA_UNLIKELY(owning_thread_ref_.load(std::memory_order_acquire) ==
+                      current_thread)) {
         // Trying to acquire lock while it's held by this thread: reentrancy
         // issue.
         PA_IMMEDIATE_CRASH();

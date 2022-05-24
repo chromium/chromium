@@ -6,8 +6,8 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_COOKIE_H_
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 
 namespace partition_alloc::internal {
@@ -23,12 +23,12 @@ static constexpr unsigned char kCookieValue[kCookieSize] = {
 
 constexpr size_t kPartitionCookieSizeAdjustment = kCookieSize;
 
-ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* cookie_ptr) {
+PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* cookie_ptr) {
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
     PA_DCHECK(*cookie_ptr == kCookieValue[i]);
 }
 
-ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {
+PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
     *cookie_ptr = kCookieValue[i];
 }
@@ -37,9 +37,9 @@ ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {
 
 constexpr size_t kPartitionCookieSizeAdjustment = 0;
 
-ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* address) {}
+PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* address) {}
 
-ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}
+PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}
 
 #endif  // DCHECK_IS_ON()
 
