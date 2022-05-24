@@ -1444,6 +1444,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
       user_input_active_handle_;
 
+  // Use for metrics reporting. Used to check if
+  // OnRenderFrameMetadataChangedAfterActivation is being called for the first
+  // time.
+  bool first_surface_activated_ = false;
+
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };
 

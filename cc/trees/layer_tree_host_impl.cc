@@ -2432,6 +2432,14 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   }
 
+  metadata.previous_surfaces_visual_update_duration =
+      active_tree()->previous_surfaces_visual_update_duration();
+  metadata.current_surface_visual_update_duration =
+      active_tree()->visual_update_duration();
+  // We only want to report the durations from a Commit the first time. Not for
+  // subsequent Impl-only frames.
+  active_tree()->ClearVisualUpdateDurations();
+
   return metadata;
 }
 

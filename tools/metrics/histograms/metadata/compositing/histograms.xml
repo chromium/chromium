@@ -586,6 +586,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Compositing.Renderer.FirstSurfaceActivationUpdateDuration.{Surface}"
+    units="ms" expires_after="2023-04-28">
+  <owner>jonross@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    The cumulative time spent performing visual updates for the {Surface}.
+
+    The time is measured in the Renderer. The result is reported in the Browser
+    when it is notified that the first Surface for a Renderer has been activated
+    by the GPU process. This is only reported for the first Surface that is
+    activated, and not for subsequent Surfaces.
+  </summary>
+  <token key="Surface">
+    <variant name="CurrentSurface"
+        summary="current surface which was activated. This time overlaps with
+                 when paint holding is deferring commits, and so is an upper
+                 bound"/>
+    <variant name="PreviousSurfaces"
+        summary="previous surfaces which were not activated. This time might
+                 overlap with when paint holding is deferring commits, and so
+                 is an upper bound"/>
+  </token>
+</histogram>
+
 <histogram name="Compositing.Renderer.GPUMemoryForTilingsInKb" units="Kb"
     expires_after="2022-11-09">
   <owner>pdr@chromium.org</owner>

@@ -3622,6 +3622,19 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
   const auto& metadata =
       render_frame_metadata_provider_.LastRenderFrameMetadata();
+  // We only want to report the timings for the very First Surface that is
+  // activated.
+  if (!first_surface_activated_) {
+    first_surface_activated_ = true;
+    UMA_HISTOGRAM_TIMES(
+        "Compositing.Renderer.FirstSurfaceActivationUpdateDuration."
+        "PreviousSurfaces",
+        metadata.previous_surfaces_visual_update_duration);
+    UMA_HISTOGRAM_TIMES(
+        "Compositing.Renderer.FirstSurfaceActivationUpdateDuration."
+        "CurrentSurface",
+        metadata.current_surface_visual_update_duration);
+  }
 
   bool is_mobile_optimized = metadata.is_mobile_optimized;
   input_router_->NotifySiteIsMobileOptimized(is_mobile_optimized);
