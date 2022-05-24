@@ -133,13 +133,14 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
 
   virtual bool IsEligibleForDelay() const { return false; }
 
+  bool IsWatchingForLoad() const { return client_; }
+
  protected:
   PendingScript(ScriptElementBase*, const TextPosition& starting_position);
 
   virtual void DisposeInternal() = 0;
 
   PendingScriptClient* Client() { return client_; }
-  bool IsWatchingForLoad() const { return client_; }
 
   virtual void CheckState() const = 0;
 

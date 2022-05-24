@@ -420,14 +420,21 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
   // of scripts that will execute when the document has finished parsing has
   // its "ready to be parser-executed" flag set and the parser's Document has
   // no style sheet that is blocking scripts.</spec>
-  //
-  // TODO(hiroshige): Add check for style sheet blocking defer scripts
-  // https://github.com/whatwg/html/issues/3890
+  if (!document_->IsScriptExecutionReady())
+    return nullptr;
   if (!waiting_scripts->front()->IsReady()) {
-    waiting_scripts->front()->WatchForLoad(this);
-    TraceParserBlockingScript(waiting_scripts->front().Get(),
-                              !document_->IsScriptExecutionReady());
-    waiting_scripts->front()->MarkParserBlockingLoadStartTime();
+    if (!waiting_scripts->front()->IsWatchingForLoad()) {
+      // First time when all the conditions except for
+      // `PendingScript::IsReady()` are satisfied. Note that
+      // `TryTakeReadyScriptWaitingForParsing()` can triggered by script and
+      // stylesheet load completions multiple times, so `IsWatchingForLoad()` is
+      // checked to avoid double execution of this code block. When
+      // `IsWatchingForLoad()` is true, its existing client is always `this`.
+      waiting_scripts->front()->WatchForLoad(this);
+      TraceParserBlockingScript(waiting_scripts->front().Get(),
+                                !document_->IsScriptExecutionReady());
+      waiting_scripts->front()->MarkParserBlockingLoadStartTime();
+    }
     return nullptr;
   }
   return waiting_scripts->TakeFirst();

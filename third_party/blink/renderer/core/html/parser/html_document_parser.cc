@@ -1147,6 +1147,11 @@ void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
   if (task_runner_state_->WaitingForStylesheets())
     task_runner_state_->SetWaitingForStylesheets(false);
 
+  if (IsStopping()) {
+    AttemptToRunDeferredScriptsAndEnd();
+    return;
+  }
+
   // Document only calls this when the Document owns the DocumentParser so this
   // will not be called in the DocumentFragment case.
   DCHECK(script_runner_);
