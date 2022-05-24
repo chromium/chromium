@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom-forward.h"
 
 namespace base {
 class FilePath;

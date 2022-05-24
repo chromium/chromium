@@ -36,7 +36,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/device/public/mojom/usb_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
