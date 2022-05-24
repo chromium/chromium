@@ -38,8 +38,7 @@ class DrmOverlayValidator {
  private:
   DrmOverlayPlane MakeOverlayPlane(
       const OverlaySurfaceCandidate& param,
-      std::vector<scoped_refptr<DrmFramebuffer>>& reusable_buffers,
-      size_t& total_allocated_memory_size);
+      std::vector<scoped_refptr<DrmFramebuffer>>& reusable_buffers);
 
   DrmWindow* const window_;  // Not owned.
 };

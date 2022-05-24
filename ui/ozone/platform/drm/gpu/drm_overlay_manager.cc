@@ -142,7 +142,6 @@ void DrmOverlayManager::CheckOverlaySupport(
     iter = cache.Put(cache_key, std::move(value));
   }
 
-  bool cache_hit = false;
   OverlayValidationCacheValue& value = iter->second;
   if (value.request_num < kThrottleRequestSize) {
     value.request_num++;
@@ -151,7 +150,6 @@ void DrmOverlayManager::CheckOverlaySupport(
     if (value.status.back() == OVERLAY_STATUS_PENDING)
       SendOverlayValidationRequest(result_candidates, widget);
   } else if (value.status.back() != OVERLAY_STATUS_PENDING) {
-    cache_hit = true;
     size_t size = candidates->size();
     const std::vector<OverlayStatus>& status = value.status;
     DCHECK_EQ(size, status.size());
@@ -161,8 +159,6 @@ void DrmOverlayManager::CheckOverlaySupport(
       candidates->at(i).overlay_handled = status[i] == OVERLAY_STATUS_ABLE;
     }
   }
-  UMA_HISTOGRAM_BOOLEAN("Compositing.Display.DrmOverlayManager.CacheHit",
-                        cache_hit);
 }
 
 void DrmOverlayManager::RegisterOverlayRequirement(

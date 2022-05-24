@@ -260,17 +260,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Display.DrmOverlayManager.CacheHit" enum="Boolean"
-    expires_after="2020-09-01">
-  <owner>samans@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
-  <summary>
-    Indicates whether DrmOverlayManager was able to find the overlay
-    configuration in its cache. Recorded when DrmOverlayManager is asked to
-    verify an overlay configuration.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Display.DrmOverlayManager.FirstTestPageFlipPassed"
     enum="Boolean" expires_after="2022-11-30">
   <owner>khaslett@chromium.org</owner>
@@ -299,18 +288,6 @@ chromium-metrics-reviews@google.com.
     Logged zero or more times per frame, the duration of calling TestPageFlip on
     the HardwareDisplayController. Only reported for platforms supporting high
     resolution clocks.
-  </summary>
-</histogram>
-
-<histogram
-    name="Compositing.Display.DrmOverlayManager.TotalTestBufferMemorySize"
-    units="KB" expires_after="2020-09-01">
-  <owner>samans@chromium.org</owner>
-  <owner>rjkroege@chromium.org</owner>
-  <summary>
-    The amount of memory allocated for the purpose of performing a pageflip
-    test. Recorded every time DRM thread is asked to validate an overlay
-    configuration.
   </summary>
 </histogram>
 
