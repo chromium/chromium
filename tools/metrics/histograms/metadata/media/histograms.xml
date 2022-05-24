@@ -3188,13 +3188,6 @@ chromium-metrics-reviews@google.com.
   <summary>The errors HW video encode encounters in MediaRecorder.</summary>
 </histogram>
 
-<histogram name="Media.MediaRecorder.VEAUsed" enum="MediaRecorderVEAUsed"
-    expires_after="M95">
-  <owner>mcasas@chromium.org</owner>
-  <owner>wtlee@chromium.org</owner>
-  <summary>Whether HW video encode is used in MediaRecorder.</summary>
-</histogram>
-
 <histogram name="Media.MediaStreamManager.DesktopVideoDeviceUpdate"
     enum="MediaStreamRequestResult2" expires_after="2022-12-01">
   <owner>eladalon@chromium.org</owner>

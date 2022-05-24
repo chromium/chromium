@@ -63275,11 +63275,6 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="H264_hw"/>
 </enum>
 
-<enum name="MediaRecorderVEAUsed">
-  <int value="0" label="Not used"/>
-  <int value="1" label="Used"/>
-</enum>
-
 <enum name="MediaRendererType">
   <int value="0" label="kDefault"/>
   <int value="1" label="kMojo"/>
