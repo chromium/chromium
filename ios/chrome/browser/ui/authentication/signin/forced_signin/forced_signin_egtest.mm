@@ -231,7 +231,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 #pragma mark - Tests
 
 // Tests the sign-in screen with accounts that are already available.
-- (void)testSignInScreenWithAccount {
+// TODO(crbug.com/1328822): flaky.
+- (void)DISABLED_testSignInScreenWithAccount {
   // Add an identity to sign-in to enable the "Continue as ..." button in the
   // sign-in screen.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
@@ -267,7 +268,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests the sign-in screen without accounts where an account has to be added
 // before signing in.
-- (void)testSignInScreenWithoutAccount {
+// TODO(crbug.com/1328822): flaky.
+- (void)DISABLED_testSignInScreenWithoutAccount {
   // Tap on the "Sign in" button.
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(
@@ -752,7 +754,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 // Tests that intents are only handled when sign-in is done regardless of the
 // type of sign-in prompt (regular or forced). This test chains the regular
 // sign-in prompt and the forced sign-in prompt.
-- (void)testHandlingIntentWhenSigninAfterSkippingRegularPrompt {
+// TODO(crbug.com/1328822): flaky.
+- (void)DISABLED_testHandlingIntentWhenSigninAfterSkippingRegularPrompt {
   // Serve the test page locally using the internal embedded server.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&PageHttpResponse));
