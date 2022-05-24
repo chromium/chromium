@@ -7486,6 +7486,34 @@ TEST_F(DesksCloseAllTest, ShortcutCloseAll) {
   EXPECT_FALSE(window2.is_valid());
 }
 
+TEST_F(DesksCloseAllTest, ShortcutUndoCloseAll) {
+  WindowHolder window1(CreateAppWindow());
+  WindowHolder window2(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  Desk* desk_1 = controller->desks()[0].get();
+  ASSERT_TRUE(desk_1->is_active());
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window1.window()));
+  ASSERT_TRUE(base::Contains(desk_1->windows(), window2.window()));
+
+  EnterOverview();
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  ASSERT_TRUE(overview_session);
+
+  // Closes the active desk.
+  ClickOnCloseAllButtonForDesk(0);
+  ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+  ASSERT_EQ(1u, controller->desks().size());
+
+  // Tests that after hitting Ctrl + Z, the desk deleting is undone.
+  SendKey(ui::VKEY_Z, ui::EF_CONTROL_DOWN);
+  EXPECT_EQ(2u, controller->desks().size());
+  EXPECT_TRUE(window1.is_valid());
+  EXPECT_TRUE(window2.is_valid());
+}
+
 // Tests CloseAll on active desk will close app windows on it.
 TEST_F(DesksCloseAllTest, CloseActiveDeskCloseWindows) {
   WindowHolder window1(CreateAppWindow());
@@ -7503,7 +7531,7 @@ TEST_F(DesksCloseAllTest, CloseActiveDeskCloseWindows) {
   // Closes the active desk.
   RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
 
-  // Waits for the toaster to disappear.
+  // Waits for the toast to disappear.
   WaitForMilliseconds(
       ToastData::kDefaultToastDuration.InMilliseconds() +
       DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());

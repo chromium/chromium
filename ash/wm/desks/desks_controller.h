@@ -322,6 +322,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // the names based on the desks order.
   void UpdateDesksDefaultNames();
 
+  // Cancels the desk removal toast and then triggers `UndoDeskRemoval()` if
+  // there is a desk removal in progress.
+  void MaybeCancelDeskRemoval();
+
   // ::wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,
                           aura::Window* gaining_active,

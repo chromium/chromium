@@ -1221,6 +1221,20 @@ void DesksController::UpdateDesksDefaultNames() {
   }
 }
 
+void DesksController::MaybeCancelDeskRemoval() {
+  if (!temporary_removed_desk_)
+    return;
+
+  // `UndoDeskRemoval()` will take ownership of `temporary_removed_desk` so we
+  // need to get the toast id beforehand. It also needs to come before
+  // cancelling the toast as if animations are disabled, cancelling will call
+  // `MaybeCommitPendingDeskRemoval()` right away, which would delete
+  // `temporary_removed_desk`.
+  const std::string toast_id = temporary_removed_desk_->toast_id();
+  UndoDeskRemoval();
+  ToastManager::Get()->Cancel(toast_id);
+}
+
 void DesksController::OnWindowActivating(ActivationReason reason,
                                          aura::Window* gaining_active,
                                          aura::Window* losing_active) {

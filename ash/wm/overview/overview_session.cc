@@ -1320,6 +1320,14 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         return;
       break;
     }
+    case ui::VKEY_Z: {
+      // Ctrl + Z undos a close all operation if the toast has not yet expired.
+      if (!is_control_down || !features::IsDesksCloseAllEnabled())
+        return;
+
+      DesksController::Get()->MaybeCancelDeskRemoval();
+      break;
+    }
     case ui::VKEY_RETURN: {
       if (!highlight_controller_->MaybeActivateHighlightedView())
         return;
