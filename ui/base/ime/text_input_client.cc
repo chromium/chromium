@@ -10,8 +10,7 @@ TextInputClient::~TextInputClient() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-absl::optional<GrammarFragment> TextInputClient::GetGrammarFragment(
-    const gfx::Range& range) {
+absl::optional<GrammarFragment> TextInputClient::GetGrammarFragmentAtCursor() {
   return absl::nullopt;
 }
 

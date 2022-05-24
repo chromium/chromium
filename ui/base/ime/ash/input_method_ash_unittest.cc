@@ -86,6 +86,10 @@ class TestableInputMethodAsh : public InputMethodAsh {
     text_committed_ = text;
   }
 
+  void SetEditableSelectionRange(gfx::Range range) {
+    GetTextInputClient()->SetEditableSelectionRange(range);
+  }
+
   void ResetCallCount() { process_key_event_post_ime_call_count_ = 0; }
 
   const ProcessKeyEventPostIMEArgs& process_key_event_post_ime_args() const {
@@ -1325,11 +1329,15 @@ TEST_F(InputMethodAshTest, GetsGrammarFragments) {
   GrammarFragment fragment(gfx::Range(0, 5), "fake");
   ime_->AddGrammarFragments({fragment});
 
-  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(3, 3)), fragment);
-  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(2, 4)), fragment);
+  ime_->SetEditableSelectionRange(gfx::Range(3, 3));
+  EXPECT_EQ(ime_->GetGrammarFragmentAtCursor(), fragment);
+  ime_->SetEditableSelectionRange(gfx::Range(2, 4));
+  EXPECT_EQ(ime_->GetGrammarFragmentAtCursor(), fragment);
 
-  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(7, 7)), absl::nullopt);
-  EXPECT_EQ(ime_->GetGrammarFragment(gfx::Range(4, 7)), absl::nullopt);
+  ime_->SetEditableSelectionRange(gfx::Range(7, 7));
+  EXPECT_EQ(ime_->GetGrammarFragmentAtCursor(), absl::nullopt);
+  ime_->SetEditableSelectionRange(gfx::Range(4, 7));
+  EXPECT_EQ(ime_->GetGrammarFragmentAtCursor(), absl::nullopt);
 }
 
 }  // namespace ui

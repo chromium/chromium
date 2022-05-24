@@ -266,10 +266,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // no modifications are made and this function returns false.
   virtual bool SetAutocorrectRange(const gfx::Range& range) = 0;
 
-  // Returns the grammar fragment which contains |range|. If non-existent,
-  // returns an empty Fragment.
-  virtual absl::optional<GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range);
+  // Returns the grammar fragment which contains the current cursor. If
+  // non-existent, returns nullopt.
+  virtual absl::optional<GrammarFragment> GetGrammarFragmentAtCursor();
 
   // Clears all the grammar fragments in |range|, returns whether the operation
   // is successful. Should return true if the there is no fragment in the range.

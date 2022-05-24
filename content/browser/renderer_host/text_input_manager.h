@@ -165,7 +165,7 @@ class CONTENT_EXPORT TextInputManager {
   gfx::Range GetAutocorrectRange() const;
 
   // Returns the grammar fragment which contains |range|. If non-existent,
-  // returns an empty Fragment.
+  // returns nullopt.
   absl::optional<ui::GrammarFragment> GetGrammarFragment(
       gfx::Range range) const;
 

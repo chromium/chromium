@@ -294,6 +294,7 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   EXPECT_CALL(mock_suggestion_handler,
               SetAssistiveWindowProperties(1, expected_properties, _));
 
+  mock_ime_input_context_handler_.set_cursor_range(gfx::Range(10, 10));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Grammar.Actions",
                                      1 /*GrammarAction::kWindowShown*/, 1);
@@ -352,10 +353,12 @@ TEST_F(GrammarManagerTest, DismissesSuggestionWhenSelectingARange) {
   EXPECT_CALL(mock_suggestion_handler,
               SetAssistiveWindowProperties(1, expected_properties, _));
 
+  mock_ime_input_context_handler_.set_cursor_range(gfx::Range(10, 10));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
   EXPECT_CALL(mock_suggestion_handler, DismissSuggestion(1, _));
 
+  mock_ime_input_context_handler_.set_cursor_range(gfx::Range(9, 10));
   manager.OnSurroundingTextChanged(u"There is error.", 9, 10);
 }
 
@@ -374,6 +377,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithTab) {
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
   EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
+  mock_ime_input_context_handler_.set_cursor_range(gfx::Range(10, 10));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
   ui::ime::AssistiveWindowButton suggestion_button{
@@ -418,6 +422,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithUpArrow) {
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
   EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
+  mock_ime_input_context_handler_.set_cursor_range(gfx::Range(10, 10));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
   ui::ime::AssistiveWindowButton suggestion_button{
@@ -463,6 +468,7 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
 
   EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 1u);
   EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
+  mock_ime_input_context_handler_.set_cursor_range(gfx::Range(10, 10));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
   ui::ime::AssistiveWindowButton suggestion_button{

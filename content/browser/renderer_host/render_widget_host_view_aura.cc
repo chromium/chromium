@@ -1672,10 +1672,15 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
 }
 
 absl::optional<ui::GrammarFragment>
-RenderWidgetHostViewAura::GetGrammarFragment(const gfx::Range& range) {
+RenderWidgetHostViewAura::GetGrammarFragmentAtCursor() {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return absl::nullopt;
-  return text_input_manager_->GetGrammarFragment(range);
+  gfx::Range selection_range;
+  if (GetEditableSelectionRange(&selection_range)) {
+    return text_input_manager_->GetGrammarFragment(selection_range);
+  } else {
+    return absl::nullopt;
+  }
 }
 
 bool RenderWidgetHostViewAura::ClearGrammarFragments(const gfx::Range& range) {

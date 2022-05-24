@@ -104,12 +104,17 @@ bool DummyTextInputClient::GetCompositionTextRange(gfx::Range* range) const {
 }
 
 bool DummyTextInputClient::GetEditableSelectionRange(gfx::Range* range) const {
-  return false;
+  if (!cursor_range_.IsValid())
+    return false;
+  range->set_start(cursor_range_.start());
+  range->set_end(cursor_range_.end());
+  return true;
 }
 
 bool DummyTextInputClient::SetEditableSelectionRange(const gfx::Range& range) {
   selection_history_.push_back(range);
-  return false;
+  cursor_range_ = range;
+  return true;
 }
 
 bool DummyTextInputClient::DeleteRange(const gfx::Range& range) {
@@ -173,10 +178,10 @@ bool DummyTextInputClient::SetAutocorrectRange(
   return true;
 }
 
-absl::optional<GrammarFragment> DummyTextInputClient::GetGrammarFragment(
-    const gfx::Range& range) {
+absl::optional<GrammarFragment>
+DummyTextInputClient::GetGrammarFragmentAtCursor() {
   for (const auto& fragment : grammar_fragments_) {
-    if (fragment.range.Contains(range)) {
+    if (fragment.range.Contains(cursor_range_)) {
       return fragment;
     }
   }

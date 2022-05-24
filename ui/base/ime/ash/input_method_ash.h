@@ -67,8 +67,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   gfx::Rect GetAutocorrectCharacterBounds() override;
   gfx::Rect GetTextFieldBounds() override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range) override;
+  absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragments) override;

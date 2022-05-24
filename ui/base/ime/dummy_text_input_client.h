@@ -73,8 +73,7 @@ class DummyTextInputClient : public TextInputClient {
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range) override;
+  absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragments) override;
@@ -119,6 +118,7 @@ class DummyTextInputClient : public TextInputClient {
   std::vector<gfx::Range> selection_history_;
   gfx::Range autocorrect_range_;
   std::vector<GrammarFragment> grammar_fragments_;
+  gfx::Range cursor_range_ = gfx::Range::InvalidRange();
 };
 
 }  // namespace ui

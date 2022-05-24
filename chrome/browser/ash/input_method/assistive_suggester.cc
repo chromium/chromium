@@ -468,11 +468,8 @@ bool AssistiveSuggester::WithinGrammarFragment(int cursor_pos, int anchor_pos) {
   if (!input_context)
     return false;
 
-  gfx::Range cursor_range = cursor_pos <= anchor_pos
-                                ? gfx::Range(cursor_pos, anchor_pos)
-                                : gfx::Range(anchor_pos, cursor_pos);
   absl::optional<ui::GrammarFragment> grammar_fragment_opt =
-      input_context->GetGrammarFragment(cursor_range);
+      input_context->GetGrammarFragmentAtCursor();
 
   return grammar_fragment_opt != absl::nullopt;
 }

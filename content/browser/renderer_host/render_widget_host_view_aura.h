@@ -254,8 +254,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragment(
-      const gfx::Range& range) override;
+  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;

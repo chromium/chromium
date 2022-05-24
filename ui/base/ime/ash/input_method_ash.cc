@@ -454,11 +454,10 @@ bool InputMethodAsh::SetAutocorrectRange(const gfx::Range& range) {
   }
 }
 
-absl::optional<GrammarFragment> InputMethodAsh::GetGrammarFragment(
-    const gfx::Range& range) {
+absl::optional<GrammarFragment> InputMethodAsh::GetGrammarFragmentAtCursor() {
   if (IsTextInputTypeNone())
     return absl::nullopt;
-  return GetTextInputClient()->GetGrammarFragment(range);
+  return GetTextInputClient()->GetGrammarFragmentAtCursor();
 }
 
 bool InputMethodAsh::ClearGrammarFragments(const gfx::Range& range) {
