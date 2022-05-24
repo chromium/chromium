@@ -243,6 +243,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::string remove_warning_profile = l10n_util::GetStringFUTF8(
       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS,
+      ui::GetChromeOSDeviceName(),
       l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
       l10n_util::GetStringUTF16(IDS_OS_SETTINGS_PEOPLE_V2));
   html_source->AddString("removeWarningProfileLacros", remove_warning_profile);

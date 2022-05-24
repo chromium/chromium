@@ -1481,6 +1481,22 @@ Permissions you've already given to websites and apps may apply to this account.
           A Chrome profile with this account already exists on this device
         </message>
 
+        <!-- First Run Experience -->
+        <if expr="chromeos_lacros">
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE" desc="Title of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
+            Welcome to Chrome, <ph name="ACCOUNT_FIRST_NAME">$1<ex>Jane</ex></ph>
+          </message>
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE" desc="Title of the screen shown when the user runs Chrome for the first time. A simple, generic welcome message.">
+            Welcome to Chrome
+          </message>
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE" desc="Subtitle of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
+            Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL">$1<ex>Jane.Doe@gmail.com</ex></ph>
+          </message>
+          <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION" desc="Disclaimer on the landing screen in first run experience for the primary profile, informing that the session is managed by an administrator.">
+            Your account is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history, and passwords.
+          </message>
+        </if>
+
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
           You can switch between Chrome profiles here
