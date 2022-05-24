@@ -22,6 +22,8 @@ specific_include_rules = {
   ],
   "^form_suggestion_view.mm": [
     "+ios/chrome/browser/ui/util/rtl_geometry.h",
+    "+ios/chrome/browser/ui/util/layout_guide_names.h",
+    "+ios/chrome/browser/ui/util/util_swift.h",
     "+ios/chrome/common/ui/util/constraints_ui_util.h",
   ],
 

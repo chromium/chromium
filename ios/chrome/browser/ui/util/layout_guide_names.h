@@ -55,5 +55,7 @@ extern GuideName* const kPrimaryToolbarLocationViewGuide;
 // A guide that is constrained to match the frame of the bottom toolbar in the
 // tab grid.
 extern GuideName* const kTabGridBottomToolbarGuide;
+// A guide that is constrained to match the frame of the first Autofill result.
+extern GuideName* const kAutofillFirstSuggestionGuide;
 
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

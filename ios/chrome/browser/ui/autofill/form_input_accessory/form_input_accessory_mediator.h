@@ -41,6 +41,9 @@ class WebStateList;
 // The mediator notifies that a password suggestion has been selected.
 - (void)notifyPasswordSuggestionSelected;
 
+// The mediator shows password suggestion tip if needed.
+- (void)showPasswordSuggestionIPHIfNeeded;
+
 @end
 
 // This class contains all the logic to get and provide keyboard input accessory

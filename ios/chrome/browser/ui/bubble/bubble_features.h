@@ -10,10 +10,11 @@
 // Feature flag to enable rich IPH on bubbles.
 extern const base::Feature kBubbleRichIPH;
 
-// Feature parameters for rich IPH on bubbles.
+// Feature parameters for rich IPH on bubbles. If no parameter is set, the
+// default bubble style will be used.
 extern const char kBubbleRichIPHParameterName[];
 
-// Wide bubble view with explicit dismissal.
+// Default bubble view.
 extern const char kBubbleRichIPHParameterTargetHighlight[];
 // Wide bubble view with explicit dismissal.
 extern const char kBubbleRichIPHParameterExplicitDismissal[];

@@ -64,6 +64,7 @@ source_set("autofill") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/util:util_swift",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:form_input_accessory",

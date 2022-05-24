@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
-#include "ios/chrome/browser/ui/bubble/bubble_features.h"
+#import "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -532,9 +532,10 @@ const base::Feature kFormInputKeyboardReloadInputViews{
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
     }
     if (provider.type == SuggestionProviderTypePassword) {
-      [self.handler notifyPasswordSuggestionsShown];
       if (base::FeatureList::IsEnabled(kBubbleRichIPH)) {
-        [self.consumer animateSuggestionLabel];
+        [self.handler showPasswordSuggestionIPHIfNeeded];
+      } else {
+        [self.handler notifyPasswordSuggestionsShown];
       }
     }
   }

@@ -36,17 +36,23 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
+#import "ios/chrome/browser/ui/bubble/bubble_features.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
+#import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/device_form_factor.h"
@@ -55,6 +61,32 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// Delay between the time the view is shown, and the time the password
+// suggestion tip is shown.
+const NSTimeInterval kPasswordSuggestionTipDelay = 1.5f;
+
+// Additional vertical offset for the IPH, so that it doesn't appear below the
+// Autofill strip at the top of the keyboard.
+const CGFloat kIPHVerticalOffset = -5;
+
+// Returns BubbleViewType param from kBubbleRichIPH feature flag.
+BubbleViewType BubbleTypeFromFeature() {
+  DCHECK(base::FeatureList::IsEnabled(kBubbleRichIPH));
+  std::string bubbleTypeName = base::GetFieldTrialParamValueByFeature(
+      kBubbleRichIPH, kBubbleRichIPHParameterName);
+  if (bubbleTypeName == kBubbleRichIPHParameterExplicitDismissal) {
+    return BubbleViewTypeWithClose;
+  } else if (bubbleTypeName == kBubbleRichIPHParameterRich) {
+    return BubbleViewTypeRich;
+  } else if (bubbleTypeName == kBubbleRichIPHParameterRichWithSnooze) {
+    return BubbleViewTypeRichWithSnooze;
+  } else {
+    return BubbleViewTypeDefault;
+  }
+}
+}  // namespace
 
 @interface FormInputAccessoryCoordinator () <
     AddressCoordinatorDelegate,
@@ -89,6 +121,17 @@
 // Active Form Input View Controller.
 @property(nonatomic, strong) UIViewController* formInputViewController;
 
+// Bubble view controller presenter for password suggestion tip.
+@property(nonatomic, strong) BubbleViewControllerPresenter* bubblePresenter;
+
+// UI tap recognizer used to dismiss bubble presenter.
+@property(nonatomic, strong)
+    UITapGestureRecognizer* formInputAccessoryTapRecognizer;
+
+// The layout guide installed in the base view controller on which to anchor the
+// potential IPH bubble.
+@property(nonatomic, strong) UILayoutGuide* layoutGuide;
+
 @end
 
 @implementation FormInputAccessoryCoordinator
@@ -107,6 +150,10 @@
           initWithWebStateList:browser->GetWebStateList()
           securityAlertHandler:securityAlertHandler
         reauthenticationModule:_reauthenticationModule];
+    _formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapInsideRecognized:)];
+    _formInputAccessoryTapRecognizer.cancelsTouchesInView = NO;
   }
   return self;
 }
@@ -115,6 +162,8 @@
   self.formInputAccessoryViewController =
       [[FormInputAccessoryViewController alloc]
           initWithManualFillAccessoryViewControllerDelegate:self];
+  self.formInputAccessoryViewController.layoutGuideCenter =
+      [self layoutGuideCenter];
 
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
       self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
@@ -137,10 +186,18 @@
       reauthenticationModule:self.reauthenticationModule];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
+  [self.formInputAccessoryViewController.view
+      addGestureRecognizer:self.formInputAccessoryTapRecognizer];
+
+  self.layoutGuide = [[self layoutGuideCenter]
+      makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
+  [self.baseViewController.view addLayoutGuide:self.layoutGuide];
 }
 
 - (void)stop {
   [self stopChildren];
+  [self.formInputAccessoryTapRecognizer.view
+      removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
   self.formInputAccessoryViewController = nil;
   self.formInputViewController = nil;
   [GetFirstResponder() reloadInputViews];
@@ -150,6 +207,9 @@
 
   [self.allPasswordCoordinator stop];
   self.allPasswordCoordinator = nil;
+
+  [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
+  self.layoutGuide = nil;
 }
 
 - (void)reset {
@@ -226,6 +286,13 @@
   [self.childCoordinators addObject:addressCoordinator];
 }
 
+#pragma mark - Actions
+
+- (void)tapInsideRecognized:(id)sender {
+  [self.bubblePresenter dismissAnimated:YES];
+  self.bubblePresenter = nil;
+}
+
 #pragma mark - FormInputAccessoryMediatorHandler
 
 - (void)resetFormInputView {
@@ -252,6 +319,65 @@
           self.browser->GetBrowserState());
   engagementTracker->NotifyEvent(
       feature_engagement::events::kPasswordSuggestionSelected);
+}
+
+- (void)showPasswordSuggestionIPHIfNeeded {
+  DCHECK(base::FeatureList::IsEnabled(kBubbleRichIPH));
+  if (self.bubblePresenter) {
+    // Already showing a bubble.
+    return;
+  }
+
+  // At this point, `self.layoutGuide` is usually not yet updated, since the
+  // view it matches has just been added to the hierarchy. Wait for it to be
+  // updated.
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)),
+      dispatch_get_main_queue(), ^{
+        self.bubblePresenter = [self newBubbleViewControllerPresenter];
+
+        // Get the anchor point for the bubble.
+        CGRect anchorFrame = self.layoutGuide.layoutFrame;
+        CGPoint anchorPoint =
+            CGPointMake(CGRectGetMidX(anchorFrame),
+                        CGRectGetMinY(anchorFrame) + kIPHVerticalOffset);
+
+        // Discard if it doesn't fit in the view as it is currently shown.
+        if (![self.bubblePresenter canPresentInView:self.baseViewController.view
+                                        anchorPoint:anchorPoint]) {
+          self.bubblePresenter = nil;
+          return;
+        }
+
+        // Early return if the engagement tracker won't display the IPH.
+        const base::Feature& feature =
+            feature_engagement::kIPHPasswordSuggestionsFeature;
+        if (!feature_engagement::TrackerFactory::GetForBrowserState(
+                 self.browser->GetBrowserState())
+                 ->ShouldTriggerHelpUI(feature)) {
+          self.bubblePresenter = nil;
+          return;
+        }
+
+        // Show the highlight suggestion.
+        [self.formInputAccessoryViewController animateSuggestionLabel];
+
+        // Present the bubble.
+        __weak __typeof(self) weakSelf = self;
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                (int64_t)(kPasswordSuggestionTipDelay * NSEC_PER_SEC)),
+            dispatch_get_main_queue(), ^{
+              __typeof(self) strongSelf = weakSelf;
+              if (strongSelf) {
+                [strongSelf.bubblePresenter
+                    presentInViewController:strongSelf.baseViewController
+                                       view:strongSelf.baseViewController.view
+                                anchorPoint:anchorPoint];
+              }
+            });
+      });
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
@@ -462,6 +588,50 @@
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
   [self.allPasswordCoordinator start];
+}
+
+// Returns a new bubble view controller presenter for password suggestion tip.
+- (BubbleViewControllerPresenter*)newBubbleViewControllerPresenter {
+  NSString* text = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUGGESTIONS_TIP);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SUGGESTIONS_TIP_TITLE);
+  UIImage* image = [UIImage imageNamed:@"password_suggestion_icon"];
+  BubbleViewType bubbleType = BubbleTypeFromFeature();
+  const base::Feature& feature =
+      feature_engagement::kIPHPasswordSuggestionsFeature;
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlockWithSnoozeAction dismissalCallback =
+      ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        __typeof(self) strongSelf = weakSelf;
+        if (strongSelf) {
+          feature_engagement::TrackerFactory::GetForBrowserState(
+              strongSelf.browser->GetBrowserState())
+              ->DismissedWithSnooze(feature, snoozeAction);
+        }
+      };
+  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:text
+                      title:title
+                      image:image
+             arrowDirection:BubbleArrowDirectionDown
+                  alignment:BubbleAlignmentLeading
+                 bubbleType:bubbleType
+          dismissalCallback:dismissalCallback];
+  return bubbleViewControllerPresenter;
+}
+
+// Returns the layout guide center to use to coordinate views.
+- (LayoutGuideCenter*)layoutGuideCenter {
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  LayoutGuideSceneAgent* layoutGuideSceneAgent =
+      [LayoutGuideSceneAgent agentFromScene:sceneState];
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return layoutGuideSceneAgent.incognitoLayoutGuideCenter;
+  } else {
+    return layoutGuideSceneAgent.layoutGuideCenter;
+  }
 }
 
 @end

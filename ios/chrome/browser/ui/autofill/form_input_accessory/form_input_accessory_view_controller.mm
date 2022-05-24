@@ -176,6 +176,7 @@ const NSTimeInterval kAnimateSuggestionLabelDelay = 1.0f;
   if (!self.formSuggestionView) {
     self.formSuggestionView = [[FormSuggestionView alloc] init];
     self.formSuggestionView.formSuggestionViewDelegate = self;
+    self.formSuggestionView.layoutGuideCenter = self.layoutGuideCenter;
   }
 }
 
