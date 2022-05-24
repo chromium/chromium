@@ -130,25 +130,32 @@ void FollowTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
-  BOOL status =
-      ios::GetChromeBrowserProvider().GetFollowProvider()->GetFollowStatus(
-          web_page_urls);
+  DCHECK(web_state_);
 
-  std::string domainName =
-      web::GetMainFrame(web_state_)->GetSecurityOrigin().host();
-  if (domainName.substr(0, kRemovablePrefix.length()) == kRemovablePrefix) {
-    domainName =
-        domainName.substr(kRemovablePrefix.length(), domainName.length());
+  web::WebFrame* web_frame = web::GetMainFrame(web_state_);
+  // Only update the follow menu item when web_page_urls is not null and when
+  // webFrame can be retrieved. Otherwise, leave the option disabled.
+  if (web_page_urls && web_frame) {
+    BOOL status =
+        ios::GetChromeBrowserProvider().GetFollowProvider()->GetFollowStatus(
+            web_page_urls);
+
+    std::string domainName = web_frame->GetSecurityOrigin().host();
+    if (domainName.substr(0, kRemovablePrefix.length()) == kRemovablePrefix) {
+      domainName =
+          domainName.substr(kRemovablePrefix.length(), domainName.length());
+    }
+
+    bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
+
+    [follow_menu_updater_
+        updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
+                                           status:status
+                                       domainName:base::SysUTF8ToNSString(
+                                                      domainName)
+                                          enabled:enabled];
   }
 
-  bool enabled = GetFollowActionState(web_state_) == FollowActionStateEnabled;
-
-  [follow_menu_updater_
-      updateFollowMenuItemWithFollowWebPageURLs:web_page_urls
-                                         status:status
-                                     domainName:base::SysUTF8ToNSString(
-                                                    domainName)
-                                        enabled:enabled];
   should_update_follow_item_ = false;
 }
 
