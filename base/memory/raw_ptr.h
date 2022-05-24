@@ -36,6 +36,7 @@
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/check_op.h"
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_WIN)
@@ -151,7 +152,7 @@ struct MTECheckedPtrImplPartitionAllocSupport {
     //
     // TODO(crbug.com/1307514): Allow direct-map buckets.
     return partition_alloc::IsManagedByPartitionAlloc(as_uintptr) &&
-           partition_alloc::IsManagedByNormalBuckets(as_uintptr);
+           partition_alloc::internal::IsManagedByNormalBuckets(as_uintptr);
   }
 
   // Returns pointer to the tag that protects are pointed by |ptr|.
