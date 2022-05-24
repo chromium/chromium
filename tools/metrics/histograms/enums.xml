@@ -4030,6 +4030,14 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Webview Downgrade Failure"/>
 </enum>
 
+<enum name="ArcCpuRestrictionVmResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Other failure reason"/>
+  <int value="2" label="VM concierge service is not available"/>
+  <int value="3" label="VM concierge client is not available"/>
+  <int value="4" label="VM Concierge did not respond"/>
+</enum>
+
 <enum name="ArcCustomTabsSessionEndReason">
   <obsolete>
     Removed as of 05/2022

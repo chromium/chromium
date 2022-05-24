@@ -37,6 +37,26 @@ enum class UnthrottlingReason {
   kOther = 2,
 };
 
+enum class CpuRestrictionVmResult {
+  // Successfully set/reset CPU restrictions in ARCVM.
+  kSuccess = 0,
+  // Other failure reason.
+  kOther = 1,
+  // VM concierge service is not available.
+  kNoConciergeService = 2,
+  // VM concierge client is not available.
+  kNoConciergeClient = 3,
+  // VM Concierge did not respond.
+  kConciergeDidNotRespond = 4,
+
+  // Note: kMaxValue is needed only for histograms.
+  kMaxValue = kConciergeDidNotRespond,
+};
+
+void RecordCpuRestrictionVMResult(CpuRestrictionVmResult result) {
+  base::UmaHistogramEnumeration("Arc.CpuRestrictionVmResult", result);
+}
+
 // Checks all the |observers| for active ones to find out the reason why the
 // instance is being unthrottled.
 // This function can only be called when the instance is being unthrottled.
@@ -73,10 +93,16 @@ void OnSetArcVmCpuRestriction(
     absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call SetVmCpuRestriction";
+    RecordCpuRestrictionVMResult(
+        CpuRestrictionVmResult::kConciergeDidNotRespond);
     return;
   }
-  if (!response->success())
+  if (response->success()) {
+    RecordCpuRestrictionVMResult(CpuRestrictionVmResult::kSuccess);
+  } else {
     LOG(ERROR) << "SetVmCpuRestriction for ARCVM failed";
+    RecordCpuRestrictionVMResult(CpuRestrictionVmResult::kOther);
+  }
 }
 
 void SetArcVmCpuRestrictionImpl(
@@ -85,12 +111,16 @@ void SetArcVmCpuRestrictionImpl(
   if (!service_is_available) {
     LOG(ERROR)
         << "vm_concierge is not available. ArcInstanceThrottle won't work.";
+    RecordCpuRestrictionVMResult(CpuRestrictionVmResult::kNoConciergeService);
     return;
   }
 
   auto* const client = ash::ConciergeClient::Get();
+  // TODO(khmel): This should never be possible. Confirm via histogram and
+  // change to DCHECK.
   if (!client) {
     LOG(ERROR) << "ConciergeClient is not available";
+    RecordCpuRestrictionVMResult(CpuRestrictionVmResult::kNoConciergeClient);
     return;
   }
 
@@ -101,8 +131,11 @@ void SetArcVmCpuRestrictionImpl(
 void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state,
                             bool use_quota) {
   auto* const client = ash::ConciergeClient::Get();
+  // TODO(khmel): This should never be possible. Confirm via histogram and
+  // change to DCHECK.
   if (!client) {
     LOG(ERROR) << "ConciergeClient is not available";
+    RecordCpuRestrictionVMResult(CpuRestrictionVmResult::kNoConciergeClient);
     return;
   }
 

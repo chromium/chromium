@@ -779,8 +779,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.CpuRestrictionDisabled{ArcThrottleObservers}" units="ms"
     expires_after="2022-09-01">
-  <owner>wvk@google.com</owner>
   <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
   <summary>
     Records the time that throttling was disabled due to a particular throttle
     observer. The duration begins when a new throttle observer becomes active,
@@ -791,11 +791,25 @@ chromium-metrics-reviews@google.com.
     <variant name=".ArcAppLaunchRequested"
         summary="ARC app launch in progress."/>
     <variant name=".ArcIsBooting" summary="ARC is booting or restarting."/>
+    <variant name=".ArcKioskMode" summary="ARC works in Kiosk mode."/>
     <variant name=".ArcPipWindowIsVisible"
         summary="An ARC PIP window is active."/>
+    <variant name=".ArcPower" summary="ARC handles pre-ANR conditions."/>
+    <variant name=".ArcSwitch"
+        summary="ARC throttling is disabled by switch. Not expected in
+                 production."/>
     <variant name=".ArcWindowIsActiveWindow"
         summary="An ARC window is active."/>
   </token>
+</histogram>
+
+<histogram name="Arc.CpuRestrictionVmResult" enum="ArcCpuRestrictionVmResult"
+    expires_after="2022-09-01">
+  <owner>khmel@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    Records the result of setting ARC CPU restrictions in ARCVM.
+  </summary>
 </histogram>
 
 <histogram name="Arc.CumulativeUseTime" units="seconds"
