@@ -65,6 +65,9 @@ extern const base::Feature kDownloadBubble;
 // Enables Enhanced Safe Browsing.
 extern const base::Feature kEnhancedProtection;
 
+// Phase 2 of Enhanced Safe Browsing changes.
+extern const base::Feature kEnhancedProtectionPhase2IOS;
+
 // Enables collection of signals related to extension activity and uploads
 // of telemetry reports to SB servers.
 extern const base::Feature kExtensionTelemetry;

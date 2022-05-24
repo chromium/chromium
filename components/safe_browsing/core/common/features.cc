@@ -74,6 +74,10 @@ const base::Feature kEnhancedProtection {
 #endif
 };
 
+const base::Feature kEnhancedProtectionPhase2IOS{
+    "SafeBrowsingEnhancedProtectionPhase2IOS",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -164,6 +168,7 @@ constexpr struct {
     {&kDelayedWarnings, true},
     {&kDownloadBubble, true},
     {&kEnhancedProtection, true},
+    {&kEnhancedProtectionPhase2IOS, true},
     {&kExtensionTelemetry, true},
     {&kExtensionTelemetryReportContactedHosts, true},
     {&kExtensionTelemetryPersistence, true},

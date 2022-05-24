@@ -179,6 +179,11 @@ extern const char kEditPasswordsInSettingsDescription[];
 extern const char kEnhancedProtectionName[];
 extern const char kEnhancedProtectionDescription[];
 
+// Title and description for the flag to enable kEnhancedProtectionPhase2
+// flag on iOS.
+extern const char kEnhancedProtectionPhase2Name[];
+extern const char kEnhancedProtectionPhase2Description[];
+
 // Title and description for the flag to enable address verification support in
 // autofill address save prompts.
 extern const char kEnableAutofillAddressSavePromptAddressVerificationName[];
