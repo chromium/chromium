@@ -380,7 +380,7 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
         return false;
       }
       WriteUint32(static_cast<uint32_t>(params.PublicExponent().size()));
-      WriteRawBytes(params.PublicExponent().Data(),
+      WriteRawBytes(params.PublicExponent().data(),
                     params.PublicExponent().size());
       WriteUint32(AlgorithmIdForWireFormat(params.GetHash().Id()));
       break;
@@ -413,7 +413,7 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
     return false;
   }
   WriteUint32(static_cast<uint32_t>(key_data.size()));
-  WriteRawBytes(key_data.Data(), key_data.size());
+  WriteRawBytes(key_data.data(), key_data.size());
 
   return true;
 }

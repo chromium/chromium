@@ -97,7 +97,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
     ASSERT_FALSE(serialization_reported_end_of_data_);
 
     // Add data to corresponding frame's content.
-    serialized_contents_.append(data.Data(), data.size());
+    serialized_contents_.append(data.data(), data.size());
 
     // Current frame is completed saving, change the finish status.
     if (status == WebFrameSerializerClient::kCurrentFrameIsFinished)

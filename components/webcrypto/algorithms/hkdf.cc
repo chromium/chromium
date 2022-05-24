@@ -88,8 +88,8 @@ class HkdfImplementation : public AlgorithmImplementation {
     // |algorithm|.
     const std::vector<uint8_t>& raw_key = GetSymmetricKeyData(base_key);
     if (!HKDF(derived_bytes->data(), derived_bytes_len, digest_algorithm,
-              raw_key.data(), raw_key.size(), params->Salt().Data(),
-              params->Salt().size(), params->Info().Data(),
+              raw_key.data(), raw_key.size(), params->Salt().data(),
+              params->Salt().size(), params->Info().data(),
               params->Info().size())) {
       uint32_t error = ERR_get_error();
       if (ERR_GET_LIB(error) == ERR_LIB_HKDF &&

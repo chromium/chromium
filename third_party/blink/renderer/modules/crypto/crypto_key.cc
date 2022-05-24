@@ -123,7 +123,7 @@ class DictionaryBuilder : public WebCryptoKeyAlgorithmDictionary {
   void SetUint8Array(const char* property_name,
                      const WebVector<unsigned char>& vector) override {
     builder_.Add(property_name,
-                 DOMUint8Array::Create(vector.Data(),
+                 DOMUint8Array::Create(vector.data(),
                                        SafeCast<wtf_size_t>(vector.size())));
   }
 

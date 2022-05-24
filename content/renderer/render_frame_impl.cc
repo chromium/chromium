@@ -642,7 +642,7 @@ class RenderFrameWebFrameSerializerClient
       const WebVector<char>& data,
       WebFrameSerializerClient::FrameSerializationStatus status) override {
     DCHECK(handler_remote_.is_bound());
-    handler_remote_->DidReceiveData(std::string(data.Data(), data.size()));
+    handler_remote_->DidReceiveData(std::string(data.data(), data.size()));
 
     // Make sure to report Done() to the browser process when receiving the last
     // chunk of data, and reset the mojo remote so that the DCHECK above ensures

@@ -97,7 +97,7 @@ class Pbkdf2Implementation : public AlgorithmImplementation {
 
     if (!PKCS5_PBKDF2_HMAC(
             reinterpret_cast<const char*>(password.data()), password.size(),
-            params->Salt().Data(), params->Salt().size(), params->Iterations(),
+            params->Salt().data(), params->Salt().size(), params->Iterations(),
             digest_algorithm, keylen_bytes, derived_bytes->data())) {
       return Status::OperationError();
     }

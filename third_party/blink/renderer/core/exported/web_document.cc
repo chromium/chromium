@@ -260,7 +260,7 @@ void WebDocument::WatchCSSSelectors(const WebVector<WebString>& web_selectors) {
   if (!watch && web_selectors.empty())
     return;
   Vector<String> selectors;
-  selectors.Append(web_selectors.Data(),
+  selectors.Append(web_selectors.data(),
                    base::checked_cast<wtf_size_t>(web_selectors.size()));
   CSSSelectorWatch::From(*document).WatchCSSSelectors(selectors);
 }

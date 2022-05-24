@@ -69,7 +69,7 @@ Status CommonEncryptDecrypt(InitFunc init_func,
     // calling set0_rsa_oaep_label().
     bssl::UniquePtr<uint8_t> label_copy;
     label_copy.reset(static_cast<uint8_t*>(OPENSSL_malloc(label.size())));
-    memcpy(label_copy.get(), label.Data(), label.size());
+    memcpy(label_copy.get(), label.data(), label.size());
 
     if (1 != EVP_PKEY_CTX_set0_rsa_oaep_label(ctx.get(), label_copy.release(),
                                               label.size())) {

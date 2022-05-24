@@ -67,7 +67,7 @@ double TimeRanges::start(unsigned index,
         ExceptionMessages::IndexExceedsMaximumBound("index", index, length()));
     return 0;
   }
-  return ranges_.Data()[index].start;
+  return ranges_[index].start;
 }
 
 double TimeRanges::end(unsigned index, ExceptionState& exception_state) const {
@@ -77,7 +77,7 @@ double TimeRanges::end(unsigned index, ExceptionState& exception_state) const {
         ExceptionMessages::IndexExceedsMaximumBound("index", index, length()));
     return 0;
   }
-  return ranges_.Data()[index].end;
+  return ranges_[index].end;
 }
 
 void TimeRanges::Add(double start, double end) {

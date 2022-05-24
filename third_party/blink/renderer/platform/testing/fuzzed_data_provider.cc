@@ -19,7 +19,7 @@ String FuzzedDataProvider::ConsumeRandomLengthString(size_t max_length) {
 
 std::string FuzzedDataProvider::ConsumeRemainingBytes() {
   WebVector<char> bytes = provider_.ConsumeRemainingBytes<char>();
-  return std::string(bytes.Data(), bytes.size());
+  return std::string(bytes.data(), bytes.size());
 }
 
 }  // namespace blink

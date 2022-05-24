@@ -22,7 +22,7 @@ CryptoData::CryptoData(const std::string& bytes)
       byte_length_(static_cast<unsigned int>(bytes.size())) {}
 
 CryptoData::CryptoData(const blink::WebVector<unsigned char>& bytes)
-    : bytes_(bytes.Data()),
+    : bytes_(bytes.data()),
       byte_length_(static_cast<unsigned int>(bytes.size())) {}
 
 }  // namespace webcrypto

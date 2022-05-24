@@ -70,7 +70,7 @@ Status AesCbcEncryptDecrypt(EncryptOrDecrypt cipher_operation,
 
   bssl::ScopedEVP_CIPHER_CTX context;
   if (!EVP_CipherInit_ex(context.get(), cipher, nullptr, &raw_key[0],
-                         params->Iv().Data(), cipher_operation)) {
+                         params->Iv().data(), cipher_operation)) {
     return Status::OperationError();
   }
 

@@ -147,7 +147,7 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
   if (params->Counter().size() != AES_BLOCK_SIZE)
     return Status::ErrorIncorrectSizeAesCtrCounter();
   base::span<const uint8_t, AES_BLOCK_SIZE> counter_block(
-      params->Counter().Data(), params->Counter().size());
+      params->Counter().data(), params->Counter().size());
 
   unsigned int counter_length_bits = params->LengthBits();
   if (counter_length_bits < 1 || counter_length_bits > 128)

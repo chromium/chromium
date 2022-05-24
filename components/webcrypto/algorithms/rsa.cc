@@ -577,8 +577,8 @@ Status RsaHashedAlgorithm::DeserializeKeyForClone(
   if (algorithm.RsaHashedParams()->PublicExponent().size() !=
           key->Algorithm().RsaHashedParams()->PublicExponent().size() ||
       0 !=
-          memcmp(algorithm.RsaHashedParams()->PublicExponent().Data(),
-                 key->Algorithm().RsaHashedParams()->PublicExponent().Data(),
+          memcmp(algorithm.RsaHashedParams()->PublicExponent().data(),
+                 key->Algorithm().RsaHashedParams()->PublicExponent().data(),
                  key->Algorithm().RsaHashedParams()->PublicExponent().size())) {
     return Status::ErrorUnexpected();
   }
