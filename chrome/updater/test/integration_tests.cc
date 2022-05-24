@@ -301,6 +301,8 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectLastStarted() { test_commands_->ExpectLastStarted(); }
 
+  void RunOfflineInstall() { test_commands_->RunOfflineInstall(); }
+
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
  private:
@@ -748,6 +750,13 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
   ExpectInstalled();
   ExpectActiveUpdater();
   ExpectAppVersion(appid, version);
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, OfflineInstall) {
+  Install();
+  ExpectInstalled();
+  RunOfflineInstall();
   Uninstall();
 }
 

@@ -290,6 +290,7 @@ void AppTestHelper::FirstTaskRun() {
                                                     &RunRecoveryComponent))))},
     {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
     {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
+    {"run_offline_install", WithSystemScope(Wrap(&RunOfflineInstall))},
   };
 
   const base::CommandLine* command_line =

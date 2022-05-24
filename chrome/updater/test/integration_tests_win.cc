@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -29,6 +31,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -51,6 +54,10 @@
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/task_scheduler.h"
+#include "chrome/updater/win/test/test_executables.h"
+#include "chrome/updater/win/test/test_strings.h"
+#include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 #include "components/crx_file/crx_verifier.h"
@@ -332,6 +339,63 @@ void SleepFor(int seconds) {
   base::WaitableEvent().TimedWait(base::Seconds(seconds));
   VLOG(2) << "Sleep complete.";
 }
+
+class WindowEnumerator {
+ public:
+  WindowEnumerator(HWND parent,
+                   base::RepeatingCallback<bool(HWND hwnd)> filter,
+                   base::RepeatingCallback<void(HWND hwnd)> action)
+      : parent_(parent), filter_(filter), action_(action) {}
+
+  WindowEnumerator(const WindowEnumerator&) = delete;
+  WindowEnumerator& operator=(const WindowEnumerator&) = delete;
+
+  void Run() const {
+    ::EnumChildWindows(parent_, &OnWindowProc, reinterpret_cast<LPARAM>(this));
+  }
+
+  static std::wstring GetWindowClass(HWND hwnd) {
+    constexpr int kMaxWindowClassNameLength = 256;
+    wchar_t buffer[kMaxWindowClassNameLength + 1] = {0};
+    int name_len = ::GetClassName(hwnd, buffer, std::size(buffer));
+    if (name_len <= 0 || name_len > kMaxWindowClassNameLength)
+      return std::wstring();
+
+    return std::wstring(&buffer[0], name_len);
+  }
+
+  static bool IsSystemDialog(HWND hwnd) {
+    constexpr wchar_t kSystemDialogClass[] = L"#32770";
+    return GetWindowClass(hwnd) == kSystemDialogClass;
+  }
+
+  static std::wstring GetWindowText(HWND hwnd) {
+    const int num_chars = ::GetWindowTextLength(hwnd);
+    if (!num_chars)
+      return std::wstring();
+    std::vector<wchar_t> text(num_chars + 1);
+    if (!::GetWindowText(hwnd, &text.front(), text.size()))
+      return std::wstring();
+    return std::wstring(text.begin(), text.end());
+  }
+
+ private:
+  bool OnWindow(HWND hwnd) const {
+    if (filter_.Run(hwnd))
+      action_.Run(hwnd);
+
+    // Returns true to keep enumerating.
+    return true;
+  }
+
+  static BOOL CALLBACK OnWindowProc(HWND hwnd, LPARAM lparam) {
+    return reinterpret_cast<WindowEnumerator*>(lparam)->OnWindow(hwnd);
+  }
+
+  const HWND parent_;
+  base::RepeatingCallback<bool(HWND hwnd)> filter_;
+  base::RepeatingCallback<void(HWND hwnd)> action_;
+};
 
 }  // namespace
 
@@ -975,6 +1039,127 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
       key.Open(UpdaterScopeToHKeyRoot(scope), CLIENTS_KEY, Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
   ASSERT_EQ(key.DeleteKey(base::SysUTF8ToWide(app_id).c_str()), ERROR_SUCCESS);
+}
+
+void RunOfflineInstall(UpdaterScope scope) {
+  constexpr wchar_t kTestRegKey[] = L"software\\updater\\test";
+  constexpr wchar_t kTestRegValue[] = L"install_result";
+  constexpr char kManifestFormat[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      "<response protocol=\"3.0\">"
+      "  <app appid=\"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}\" status=\"ok\">"
+      "    <updatecheck status=\"ok\">"
+      "      <manifest version=\"1.2.3.4\">"
+      "        <packages>"
+      "          <package hash_sha256=\"sha256hash_foobar\""
+      "            name=\"reg.exe\" required=\"true\" size=\"%lld\"/>"
+      "        </packages>"
+      "        <actions>"
+      "          <action event=\"install\" needsadmin=\"false\""
+      "            run=\"reg.exe\""
+      "            arguments=\"ADD HKCU\\%ls /t REG_DWORD /v %ls /d 123 /f\"/>"
+      "        </actions>"
+      "      </manifest>"
+      "    </updatecheck>"
+      "    <data index=\"verboselogging\" name=\"install\" status=\"ok\">"
+      "      {\"distribution\": { \"verbose_logging\": true}}"
+      "    </data>"
+      "  </app>"
+      "</response>";
+
+  DeleteRegKey(HKEY_CURRENT_USER, kTestRegKey);
+
+  wchar_t reg_exe_path[MAX_PATH] = {0};
+  DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\reg.exe",
+                                        reg_exe_path, std::size(reg_exe_path));
+  ASSERT_TRUE(size > 0 && size < MAX_PATH);
+  const base::FilePath exe_path(reg_exe_path);
+  ASSERT_TRUE(base::PathExists(exe_path));
+
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath& offline_dir = temp_dir.GetPath();
+
+  // Create manifest file.
+  base::FilePath manifest_path =
+      offline_dir.Append(FILE_PATH_LITERAL("OfflineManifest.gup"));
+  int64_t exe_size = 0;
+  EXPECT_TRUE(base::GetFileSize(exe_path, &exe_size));
+  const std::string manifest =
+      base::StringPrintf(kManifestFormat, exe_size, kTestRegKey, kTestRegValue);
+  EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
+
+  // Copy app installer.
+  ASSERT_TRUE(base::CopyFile(exe_path,
+                             offline_dir.Append(FILE_PATH_LITERAL("reg.exe"))));
+
+  // Trigger offline install.
+  const absl::optional<base::FilePath> updater_exe =
+      GetInstalledExecutablePath(scope);
+  ASSERT_TRUE(updater_exe.has_value());
+  base::CommandLine offline_install_cmd(updater_exe.value());
+
+  offline_install_cmd.AppendSwitch(kEnableLoggingSwitch);
+  offline_install_cmd.AppendSwitchASCII(kLoggingModuleSwitch,
+                                        kLoggingModuleSwitchValue);
+  if (scope == UpdaterScope::kSystem)
+    offline_install_cmd.AppendSwitch(kSystemSwitch);
+
+  offline_install_cmd.AppendSwitchASCII(
+      updater::kHandoffSwitch,
+      "appguid={CDABE316-39CD-43BA-8440-6D1E0547AEE6}&lang=en");
+  offline_install_cmd.AppendSwitchASCII(
+      updater::kSessionIdSwitch, "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
+  offline_install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
+                                         offline_dir.value());
+
+  base::Process process = base::LaunchProcess(offline_install_cmd, {});
+  EXPECT_TRUE(process.IsValid());
+
+  // Dismiss the installation completion dialog, then wait for the process exit.
+  WaitFor(base::BindRepeating(
+      [](const wchar_t* test_key_name, const wchar_t* test_value_name) {
+        // Enumerate the top-level dialogs to find the setup dialog.
+        WindowEnumerator(
+            ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
+              return WindowEnumerator::IsSystemDialog(hwnd) &&
+                     base::Contains(WindowEnumerator::GetWindowText(hwnd),
+                                    GetLocalizedStringF(
+                                        IDS_INSTALLER_DISPLAY_NAME_BASE,
+                                        GetLocalizedString(
+                                            IDS_FRIENDLY_COMPANY_NAME_BASE)));
+            }),
+            base::BindRepeating([](HWND hwnd) {
+              // Enumerates the dialog items to search for installation complete
+              // message. Once found, close the dialog.
+              WindowEnumerator(
+                  hwnd, base::BindRepeating([](HWND hwnd) {
+                    return base::Contains(
+                        WindowEnumerator::GetWindowText(hwnd),
+                        GetLocalizedString(
+                            IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE));
+                  }),
+                  base::BindRepeating([](HWND hwnd) {
+                    ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
+                  }))
+                  .Run();
+            }))
+            .Run();
+
+        if (IsUpdaterRunning())
+          return false;
+
+        // Wait for the app installer writes the expected reg value.
+        base::win::RegKey key;
+        DWORD value = 0;
+        return (ERROR_SUCCESS == key.Open(HKEY_CURRENT_USER, test_key_name,
+                                          Wow6432(KEY_QUERY_VALUE)) &&
+                ERROR_SUCCESS == key.ReadValueDW(test_value_name, &value) &&
+                value == 123);
+      },
+      kTestRegKey, kTestRegValue));
+
+  DeleteRegKey(HKEY_CURRENT_USER, kTestRegKey);
 }
 
 }  // namespace test

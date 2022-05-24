@@ -234,6 +234,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::UninstallApp(updater_scope_, app_id);
   }
 
+  void RunOfflineInstall() override {
+    updater::test::RunOfflineInstall(updater_scope_);
+  }
+
  private:
   ~IntegrationTestCommandsUser() override = default;
 

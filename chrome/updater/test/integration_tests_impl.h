@@ -216,6 +216,8 @@ void InstallApp(UpdaterScope scope, const std::string& app_id);
 
 void UninstallApp(UpdaterScope scope, const std::string& app_id);
 
+void RunOfflineInstall(UpdaterScope scope);
+
 }  // namespace test
 }  // namespace updater
 
