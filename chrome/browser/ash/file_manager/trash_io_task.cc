@@ -34,9 +34,8 @@ bool UpdateTrashInfoContents(const base::FilePath& original_path,
                              const base::FilePath& trash_parent_path,
                              TrashEntry& entry) {
   std::string relative_restore_path = original_path.value();
-  if (!file_manager::util::ReplacePrefix(
-          &relative_restore_path,
-          trash_parent_path.AsEndingWithSeparator().value(), "")) {
+  if (!file_manager::util::ReplacePrefix(&relative_restore_path,
+                                         trash_parent_path.value(), "")) {
     return false;
   }
 
