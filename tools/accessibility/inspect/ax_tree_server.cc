@@ -50,8 +50,14 @@ AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
   }
 
   // Otherwise, dump the tree.
-  // Use optional filters with the default filter set.
-  formatter->SetPropertyFilters(scenario.property_filters,
+  // Use user provided filters with the default filter set.
+  std::vector<ui::AXPropertyFilter> property_filters_ext(
+      {{"AXRoleDescription", ui::AXPropertyFilter::ALLOW}});
+  property_filters_ext.insert(property_filters_ext.end(),
+                              scenario.property_filters.begin(),
+                              scenario.property_filters.end());
+
+  formatter->SetPropertyFilters(property_filters_ext,
                                 AXTreeFormatter::kFiltersDefaultSet);
 
   // Get accessibility tree as a nested dictionary.
