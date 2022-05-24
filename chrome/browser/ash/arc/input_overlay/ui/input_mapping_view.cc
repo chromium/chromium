@@ -10,7 +10,7 @@ namespace arc {
 namespace input_overlay {
 namespace {
 // UI specs.
-constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
+constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x99);
 }  // namespace
 
 InputMappingView::InputMappingView(

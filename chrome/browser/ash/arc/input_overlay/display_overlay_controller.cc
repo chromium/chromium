@@ -148,8 +148,10 @@ gfx::Point DisplayOverlayController::CalculateNudgePosition(int nudge_width) {
 }
 
 void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
-  if (menu_entry_)
+  if (menu_entry_) {
+    menu_entry_->SetVisible(true);
     return;
+  }
   DCHECK(overlay_widget);
   auto game_icon = gfx::CreateVectorIcon(
       vector_icons::kVideogameAssetOutlineIcon, SK_ColorBLACK);
@@ -194,6 +196,8 @@ void DisplayOverlayController::OnMenuEntryPressed() {
 
   input_menu_view_ = parent_view->AddChildView(
       InputMenuView::BuildMenuView(this, menu_entry_));
+  // Hide the menu entry when the menu is displayed.
+  menu_entry_->SetVisible(false);
 }
 
 void DisplayOverlayController::RemoveInputMenuView() {
