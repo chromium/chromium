@@ -12830,12 +12830,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // Ensure that we do not corrupt a NavigationEntry's PageState if two forward
 // navigations compete in different frames, and the main frame entry contains an
 // iframe of its own.  See https://crbug.com/623319.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       PageStateWithIframeAfterForwardInCompetingFrames) {
-  // TODO(https://crbug.com/1101292): Remove this when test passes. It only
-  // fails on ASAN builder.
-  if (ShouldCreateNewHostForSameSiteSubframe())
-    return;
+// TODO(https://crbug.com/1101292): flaky.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    DISABLED_PageStateWithIframeAfterForwardInCompetingFrames) {
   // Navigate to a page with an iframe.
   GURL url_a(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_data_iframe.html"));
