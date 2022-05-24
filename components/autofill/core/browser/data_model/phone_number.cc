@@ -290,8 +290,16 @@ bool PhoneNumber::SetInfoWithVerificationStatusImpl(
 
 void PhoneNumber::UpdateCacheIfNeeded(const std::string& app_locale) const {
   std::string region = GetRegion(*profile_, app_locale);
-  if (!number_.empty() && cached_parsed_phone_.region() != region)
-    cached_parsed_phone_ = i18n::PhoneObject(number_, region);
+  if (!number_.empty() && cached_parsed_phone_.region() != region) {
+    // To enable filling of country calling codes for nationally formatted
+    // numbers, infer it from the `profile_`'s country information while parsing
+    // the number.
+    cached_parsed_phone_ = i18n::PhoneObject(
+        number_, region,
+        /*infer_country_code=*/profile_->HasInfo(ADDRESS_HOME_COUNTRY) &&
+            base::FeatureList::IsEnabled(
+                features::kAutofillInferCountryCallingCode));
+  }
 }
 
 PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() {}

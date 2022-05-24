@@ -367,13 +367,9 @@ std::string FormatPhoneForResponse(const std::string& phone_number,
 }
 
 PhoneObject::PhoneObject(const std::u16string& number,
-                         const std::string& region) {
+                         const std::string& region,
+                         bool infer_country_code) {
   DCHECK_EQ(2u, region.size());
-  // TODO(isherman): Autofill profiles should always have a |region| set, but in
-  // some cases it should be marked as implicit.  Otherwise, phone numbers
-  // might behave differently when they are synced across computers:
-  // [ http://crbug.com/100845 ].  Once the bug is fixed, add a DCHECK here to
-  // verify.
 
   std::unique_ptr<::i18n::phonenumbers::PhoneNumber> i18n_number(
       new ::i18n::phonenumbers::PhoneNumber);
@@ -383,6 +379,13 @@ PhoneObject::PhoneObject(const std::u16string& number,
     // The formatted and normalized versions will be set on the first call to
     // the coresponding methods.
     i18n_number_ = std::move(i18n_number);
+    // `ParsePhoneNumber()` only sets `country_code_` for internationally
+    // formatted numbers. `i18n_number_`'s country_code defaults to `region` in,
+    // this case. If `infer_country_code` is true, fall back to that.
+    if (infer_country_code && country_code_.empty() &&
+        i18n_number_->has_country_code()) {
+      country_code_ = base::NumberToString16(i18n_number_->country_code());
+    }
   } else {
     // Parsing failed. Store passed phone "as is" into |whole_number_|.
     whole_number_ = number;

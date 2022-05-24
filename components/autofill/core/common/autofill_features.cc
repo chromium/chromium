@@ -84,6 +84,12 @@ const base::Feature kAutofillAllowDuplicateFormSubmissions{
 const base::Feature kAutofillAllowNonHttpActivation{
     "AutofillAllowNonHttpActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the country calling code for nationally formatted phone numbers
+// is inferred from the profile's country, if available.
+// TODO(crbug.com/1311937): Cleanup when launched.
+const base::Feature kAutofillInferCountryCallingCode{
+    "AutofillInferCountryCallingCode", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, whenever a form without a country field is parsed, the profile's
 // country code is complemented with the predicted country code, used to
 // determine the address requirements.
