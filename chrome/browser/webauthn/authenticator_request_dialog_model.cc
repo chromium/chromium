@@ -1021,6 +1021,18 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   }
 
   if (include_add_phone_option) {
+    // If there's no other priority mechanism, no phones, and nothing on the
+    // platform authenticator, jump directly to showing a QR code.
+    const bool is_priority =
+        std::none_of(mechanisms_.begin(), mechanisms_.end(),
+                     [](const Mechanism& m) { return m.priority; }) &&
+        paired_phone_names().empty() && is_get_assertion &&
+        transport_availability_.has_empty_allow_list &&
+        transport_availability_.has_platform_authenticator_credential !=
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential &&
+        base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI);
+
     const std::u16string label =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
     mechanisms_.emplace_back(
@@ -1028,7 +1040,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this), mechanisms_.size()),
-        /* is_priority= */ false);
+        is_priority);
   }
 
   for (const auto transport : transports_to_list_if_active) {

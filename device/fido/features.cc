@@ -39,4 +39,7 @@ extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege{
     "WebAuthenticationGoogleCorpRemoteDesktopClientPrivilege",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+extern const base::Feature kWebAuthPasskeysUI{
+    "WebAuthenticationPasskeysUI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace device
