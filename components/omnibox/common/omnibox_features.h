@@ -77,7 +77,6 @@ extern const base::Feature kNtpRealboxSuggestionAnswers;
 extern const base::Feature kNtpRealboxTailSuggest;
 extern const base::Feature kOmniboxFuzzyUrlSuggestions;
 extern const base::Feature kOmniboxPedalsAndroidBatch1;
-extern const base::Feature kOmniboxPedalsBatch3NonEnglish;
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).

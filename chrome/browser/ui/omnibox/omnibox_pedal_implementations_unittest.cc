@@ -26,8 +26,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             std::make_unique<TestOmniboxEditController>()) {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch3NonEnglish},
-                                   {});
+    feature_list_.InitWithFeatures({}, {});
     InitPedals();
   }
 

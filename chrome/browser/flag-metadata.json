@@ -4553,16 +4553,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "omnibox-pedals-batch3",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 107
-  },
-  {
-    "name": "omnibox-pedals-batch3-nonenglish",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 107
-  },
-  {
     "name": "omnibox-retain-suggestions-with-headers",
     "owners": [ "ender@google.com", "mahmadi@google.com", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 112

@@ -17,10 +17,7 @@ class OmniboxPedalProviderTest : public testing::Test {
  protected:
   OmniboxPedalProviderTest() = default;
 
-  void SetUp() override {
-    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch3NonEnglish},
-                                   {});
-  }
+  void SetUp() override { feature_list_.InitWithFeatures({}, {}); }
 
   base::test::ScopedFeatureList feature_list_;
 };

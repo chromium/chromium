@@ -271,11 +271,6 @@ const base::Feature kOmniboxFuzzyUrlSuggestions{
 const base::Feature kOmniboxPedalsAndroidBatch1{
     "OmniboxPedalsAndroidBatch1", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature used to enable the third batch of Pedals (Find your phone, etc.)
-// for non-English locales (English locales are 'en' and 'en-GB').
-const base::Feature kOmniboxPedalsBatch3NonEnglish{
-    "OmniboxPedalsBatch3NonEnglish", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 const base::Feature kOmniboxAssistantVoiceSearch{

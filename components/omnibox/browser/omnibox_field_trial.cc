@@ -614,10 +614,6 @@ bool OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsAndroidBatch1);
 }
 
-bool OmniboxFieldTrial::IsPedalsBatch3NonEnglishEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch3NonEnglish);
-}
-
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }
