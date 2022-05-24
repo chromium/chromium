@@ -6,12 +6,6 @@
  * @fileoverview Defines a global object.
  */
 
-// Forward declare.
-goog.addDependency('../common/abstract_earcons.js', ['AbstractEarcons'], []);
-goog.addDependency(
-    '../common/braille/braille_interface.js', ['BrailleInterface'], []);
-goog.addDependency('../common/tts_interface.js', ['TtsInterface'], []);
-
 goog.provide('ChromeVox');
 
 goog.require('AbstractEarcons');
