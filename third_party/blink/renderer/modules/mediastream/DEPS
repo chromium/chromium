@@ -59,6 +59,7 @@ specific_include_rules = {
         "+base/containers/circular_deque.h",
         "+base/run_loop.h",
         "+cc/layers/layer.h",
+        "+media/video/fake_gpu_memory_buffer.h",
         "+media/video/mock_gpu_memory_buffer_video_frame_pool.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
 

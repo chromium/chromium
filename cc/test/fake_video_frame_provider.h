@@ -24,6 +24,7 @@ class FakeVideoFrameProvider : public VideoFrameProvider {
   scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   void PutCurrentFrame() override;
   base::TimeDelta GetPreferredRenderInterval() override;
+  void OnContextLost() override {}
 
   Client* client() { return client_; }
 

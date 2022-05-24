@@ -46,6 +46,7 @@ specific_include_rules = {
     "+components/viz/test",
     "+media/mojo/services",
     "+media/renderers",
+    "+media/video/fake_gpu_memory_buffer.h",
     "+gin/v8_initializer.h",
     "+mojo/core/embedder/embedder.h",
 

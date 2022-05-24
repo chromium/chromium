@@ -109,6 +109,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   void PutCurrentFrame() override;
   base::TimeDelta GetPreferredRenderInterval() override;
+  void OnContextLost() override;
 
   // Returns |current_frame_|, without offering a guarantee as to how recently
   // it was updated. In certain applications, one might need to periodically

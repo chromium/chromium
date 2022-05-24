@@ -290,6 +290,9 @@ void VideoFrameSubmitter::OnContextLost() {
   waiting_for_compositor_ack_ = false;
   last_frame_id_.reset();
 
+  if (video_frame_provider_)
+    video_frame_provider_->OnContextLost();
+
   resource_provider_->OnContextLost();
 
   // NOTE: These objects should be reset last; and if `bundle_proxy`_ is set, it
@@ -526,7 +529,6 @@ void VideoFrameSubmitter::UpdateSubmissionState() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!compositor_frame_sink_)
     return;
-
   const auto is_driving_frame_updates = IsDrivingFrameUpdates();
   compositor_frame_sink_->SetNeedsBeginFrame(is_driving_frame_updates);
   power_mode_voter_->VoteFor(power_scheduler::PowerMode::kVideoPlayback);

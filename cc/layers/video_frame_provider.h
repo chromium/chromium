@@ -97,6 +97,10 @@ class CC_EXPORT VideoFrameProvider {
   // the client.
   virtual base::TimeDelta GetPreferredRenderInterval() = 0;
 
+  // Inform the provider that the context is lost. The provider need to reset
+  // the current frame if it's invald.
+  virtual void OnContextLost() = 0;
+
  protected:
   virtual ~VideoFrameProvider() {}
 };
