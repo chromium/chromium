@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -287,11 +286,7 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
   if (!is_enabled)
     CloseProjectorApp();
 
-  absl::optional<web_app::AppId> app_id = web_app::GetAppIdForSystemWebApp(
-      profile, ash::SystemWebAppType::PROJECTOR);
-  if (!app_id)
-    return;
-
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
-  web_app_provider->sync_bridge().SetAppIsDisabled(app_id.value(), !is_enabled);
+  web_app_provider->sync_bridge().SetAppIsDisabled(
+      ash::kChromeUITrustedProjectorSwaAppId, !is_enabled);
 }
