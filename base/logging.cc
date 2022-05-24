@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include <atomic>
 
 // logging.h is a widely included header and its size has significant impact on
 // build time. Try not to raise this limit unless absolutely necessary. See
@@ -23,6 +24,9 @@
 
 #include "base/base_export.h"
 #include "base/debug/crash_logging.h"
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+#include "base/debug/leak_annotations.h"
+#endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 #include "base/immediate_crash.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
@@ -122,8 +126,18 @@ namespace logging {
 namespace {
 
 #if BUILDFLAG(USE_RUNTIME_VLOG)
-VlogInfo* g_vlog_info = nullptr;
-VlogInfo* g_vlog_info_prev = nullptr;
+// NOTE: Once |g_vlog_info| has been initialized, it might be in use
+// by another thread. Never delete the old VLogInfo, just create a second
+// one and overwrite. We need to use leak-san annotations on this intentional
+// leak.
+//
+// This can be read/written on multiple threads. In tests we don't see that
+// causing a problem as updates tend to happen early. Atomic ensures there are
+// no problems. To avoid some of the overhead of Atomic, we use
+// |load(std::memory_order_acquire)| and |store(...,
+// std::memory_order_release)| when reading or writing. This
+// guarantees that referenced object is available at the time the point is read.
+std::atomic<VlogInfo*> g_vlog_info = nullptr;
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
@@ -405,19 +419,18 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
     // vlog switches.
     if (command_line->HasSwitch(switches::kV) ||
         command_line->HasSwitch(switches::kVModule)) {
-      // NOTE: If |g_vlog_info| has already been initialized, it might be in use
-      // by another thread. Don't delete the old VLogInfo, just create a second
-      // one. We keep track of both to avoid memory leak warnings.
-      CHECK(!g_vlog_info_prev);
-      g_vlog_info_prev = g_vlog_info;
-
-      g_vlog_info =
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+      // See comments on |g_vlog_info|.
+      ScopedLeakSanitizerDisabler lsan_disabler;
+#endif  // defined(LEAK_SANITIZER)
+      g_vlog_info.store(
           new VlogInfo(command_line->GetSwitchValueASCII(switches::kV),
                        command_line->GetSwitchValueASCII(switches::kVModule),
-                       &g_min_log_level);
+                       &g_min_log_level),
+          std::memory_order_release);
     }
   }
-#endif  // defined(USE_RUNTIME_VLOG)
+#endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
   g_logging_destination = settings.logging_dest;
 
@@ -504,7 +517,7 @@ int GetVlogLevelHelper(const char* file, size_t N) {
 #if BUILDFLAG(USE_RUNTIME_VLOG)
   // Note: |g_vlog_info| may change on a different thread during startup
   // (but will always be valid or nullptr).
-  VlogInfo* vlog_info = g_vlog_info;
+  VlogInfo* vlog_info = g_vlog_info.load(std::memory_order_acquire);
   return vlog_info ?
       vlog_info->GetVlogLevel(base::StringPiece(file, N - 1)) :
       GetVlogVerbosity();

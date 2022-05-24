@@ -478,7 +478,7 @@ BASE_EXPORT int GetDisableAllVLogLevel();
 
 #define VLOG_IS_ON(verboselevel) ((verboselevel) <= (ENABLED_VLOG_LEVEL))
 
-#else
+#else  // !BUILDFLAG(USE_RUNTIME_VLOG)
 
 // We don't do any caching tricks with VLOG_IS_ON() like the
 // google-glog version since it increases binary size.  This means
@@ -488,7 +488,7 @@ BASE_EXPORT int GetDisableAllVLogLevel();
 #define VLOG_IS_ON(verboselevel) \
   ((verboselevel) <= ::logging::GetVlogLevel(__FILE__))
 
-#endif
+#endif  // !BUILDFLAG(USE_RUNTIME_VLOG)
 
 // Helper macro which avoids evaluating the arguments to a stream if
 // the condition doesn't hold. Condition is evaluated once and only once.
