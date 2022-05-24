@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/open_tab_result.h"
 
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -70,9 +71,14 @@ OpenTabResult::OpenTabResult(Profile* profile,
 
   UpdateText();
   UpdateIcon();
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->AddObserver(this);
 }
 
-OpenTabResult::~OpenTabResult() = default;
+OpenTabResult::~OpenTabResult() {
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->RemoveObserver(this);
+}
 
 void OpenTabResult::Open(int event_flags) {
   list_controller_->OpenURL(
@@ -83,6 +89,11 @@ void OpenTabResult::Open(int event_flags) {
 
 absl::optional<std::string> OpenTabResult::DriveId() const {
   return drive_id_;
+}
+
+void OpenTabResult::OnColorModeChanged(bool dark_mode_enabled) {
+  if (uses_generic_icon_)
+    SetGenericIcon();
 }
 
 void OpenTabResult::UpdateText() {
@@ -118,6 +129,11 @@ void OpenTabResult::UpdateIcon() {
 
   // Otherwise, fall back to using a generic icon.
   // TODO(crbug.com/1293702): WIP. Decide on the right generic icon here.
+  SetGenericIcon();
+}
+
+void OpenTabResult::SetGenericIcon() {
+  uses_generic_icon_ = true;
   SetIcon(
       IconInfo(gfx::CreateVectorIcon(omnibox::kSwitchIcon, kSystemIconDimension,
                                      GetGenericIconColor()),

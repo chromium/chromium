@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -21,7 +22,9 @@ class Profile;
 
 namespace app_list {
 
-class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
+class OmniboxResult : public ChromeSearchResult,
+                      public BitmapFetcherDelegate,
+                      public ash::ColorModeObserver {
  public:
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
@@ -45,7 +48,12 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
   int dedup_priority() const { return dedup_priority_; }
 
  private:
+  // ash::ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+
   void UpdateIcon();
+  // Creates a generic backup icon: used when rich icons are not available.
+  void SetGenericIcon();
   void UpdateTitleAndDetails();
 
   void Remove();
@@ -76,6 +84,8 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
   AutocompleteMatch match_;
   const bool is_zero_suggestion_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
+  // Whether this omnibox result uses a generic backup icon.
+  bool uses_generic_icon_ = false;
 
   base::WeakPtrFactory<OmniboxResult> weak_factory_{this};
 };

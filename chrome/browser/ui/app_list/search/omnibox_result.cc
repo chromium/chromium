@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -173,9 +174,15 @@ OmniboxResult::OmniboxResult(Profile* profile,
              ash::features::IsProductivityLauncherEnabled()) {
     InitializeButtonActions({ash::SearchResultActionType::kRemove});
   }
+
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->AddObserver(this);
 }
 
-OmniboxResult::~OmniboxResult() = default;
+OmniboxResult::~OmniboxResult() {
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->RemoveObserver(this);
+}
 
 void OmniboxResult::Open(int event_flags) {
   list_controller_->OpenURL(profile_, match_.destination_url, match_.transition,
@@ -255,6 +262,11 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
   }
 }
 
+void OmniboxResult::OnColorModeChanged(bool dark_mode_enabled) {
+  if (uses_generic_icon_)
+    SetGenericIcon();
+}
+
 void OmniboxResult::UpdateIcon() {
   if (IsRichEntity()) {
     FetchRichEntityImage(match_.image_url);
@@ -274,6 +286,11 @@ void OmniboxResult::UpdateIcon() {
     }
   }
 
+  SetGenericIcon();
+}
+
+void OmniboxResult::SetGenericIcon() {
+  uses_generic_icon_ = true;
   // If this is neither a rich entity nor eligible for a favicon, use either
   // the generic bookmark or another generic icon as appropriate.
   BookmarkModel* bookmark_model =

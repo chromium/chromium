@@ -97,9 +97,14 @@ GameResult::GameResult(Profile* profile,
   app_discovery_service->GetIcon(
       game.GetAppId(), dimension_, apps::ResultType::kGameSearchCatalog,
       base::BindOnce(&GameResult::OnIconLoaded, weak_factory_.GetWeakPtr()));
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->AddObserver(this);
 }
 
-GameResult::~GameResult() = default;
+GameResult::~GameResult() {
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->RemoveObserver(this);
+}
 
 void GameResult::Open(int event_flags) {
   // TODO(crbug.com/1305880): Add browser tests for the launch logic.
@@ -122,6 +127,11 @@ void GameResult::Open(int event_flags) {
   // If no suitable app was found, launch the URL in the browser.
   list_controller_->OpenURL(profile_, launch_url_, ui::PAGE_TRANSITION_TYPED,
                             ui::DispositionFromEventFlags(event_flags));
+}
+
+void GameResult::OnColorModeChanged(bool dark_mode_enabled) {
+  if (uses_generic_icon_)
+    SetGenericIcon();
 }
 
 void GameResult::UpdateText(const apps::Result& game,
@@ -169,6 +179,7 @@ void GameResult::OnIconLoaded(const gfx::ImageSkia& image,
 }
 
 void GameResult::SetGenericIcon() {
+  uses_generic_icon_ = true;
   const auto color = cros_styles::ResolveColor(
       cros_styles::ColorName::kIconColorPrimary, IsDarkModeEnabled(),
       /*use_debug_colors=*/false);
