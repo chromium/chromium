@@ -186,11 +186,6 @@ class MetaBuildWrapper(object):
                         help='whether or not to use regression test selection'
                         ' For more info about RTS, please see'
                         ' //docs/testing/regression-test-selection.md')
-      subp.add_argument('--use-st',
-                        action='store_true',
-                        default=False,
-                        help='whether or not to add filter stable tests during'
-                        ' RTS selection')
 
       # TODO(crbug.com/1060857): Remove this once swarming task templates
       # support command prefixes.
@@ -1331,7 +1326,7 @@ class MetaBuildWrapper(object):
 
       # For more info about RTS, please see
       # //docs/testing/regression-test-selection.md
-      if self.args.use_rts or self.args.use_st:
+      if self.args.use_rts:
         self.AddFilterFileArg(target, build_dir, command)
 
       canonical_target = target.replace(':','_').replace('/','_')
@@ -1349,49 +1344,9 @@ class MetaBuildWrapper(object):
       filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
       abs_filter_file_path = self.ToAbsPath(build_dir, filter_file_path)
 
-      self.CreateOrAppendStableTestFilter(abs_filter_file_path, build_dir,
-                                          target)
-
       if self.Exists(abs_filter_file_path):
         command.append('--test-launcher-filter-file=%s' % filter_file_path)
         self.Print('added RTS filter file to command: %s' % filter_file)
-
-  def CreateOrAppendStableTestFilter(self, abs_filter_file_path, build_dir,
-                                     target):
-    if self.args.use_st:
-      stable_filter_file = self.PathJoin(
-          self.chromium_src_dir, 'testing',
-          'buildbot', 'filters', 'stable_test_filters',
-          getattr(self.args, 'builder', None), target) + '.filter'
-      # The path to the filter file to append
-      abs_stable_filter_file = self.ToAbsPath(build_dir, stable_filter_file)
-
-      if self.Exists(abs_stable_filter_file):
-        # A stable filter exists
-        if not self.args.use_rts:
-          self.Print('RTS disabled, using stable filter')
-          dest_dir = os.path.dirname(abs_filter_file_path)
-          if not self.Exists(dest_dir):
-            os.makedirs(dest_dir)
-          shutil.copy(abs_stable_filter_file, abs_filter_file_path)
-        else:
-          # Rts is enabled and will delete ALL .filter files
-          # only rts filters generated this run should remain
-          if not self.Exists(abs_filter_file_path):
-            self.Print('No RTS filter found, using stable filter')
-            shutil.copy(abs_stable_filter_file, abs_filter_file_path)
-          else:
-            self.Print('Adding stable tests filter to RTS filter')
-            with open(abs_filter_file_path, 'a+') as select_filter_file, open(
-                abs_stable_filter_file, 'r') as stable_filter_file:
-              select_filter_file.write('\n')
-              select_filter_file.write(stable_filter_file.read())
-      else:
-        self.Print('No stable filter found at %s' % abs_stable_filter_file)
-    else:
-      self.Print('No stable filter')
-
-    return 0
 
   def PossibleRuntimeDepsPaths(self, vals, ninja_targets, isolate_map):
     """Returns a map of targets to possible .runtime_deps paths.
@@ -1670,7 +1625,7 @@ class MetaBuildWrapper(object):
     if android_version_name:
       gn_args += ' android_default_version_name="%s"' % android_version_name
 
-    if self.args.use_rts or self.args.use_st:
+    if self.args.use_rts:
       gn_args += ' use_rts=true'
 
     args_gn_lines = []
