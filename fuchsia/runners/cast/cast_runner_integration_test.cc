@@ -142,7 +142,7 @@ class FakeApplicationContext final : public chromium::cast::ApplicationContext {
  private:
   // chromium::cast::ApplicationContext implementation.
   void GetMediaSessionId(GetMediaSessionIdCallback callback) override {
-    callback(0);
+    callback(1);
   }
   void SetApplicationController(
       fidl::InterfaceHandle<chromium::cast::ApplicationController> controller)
