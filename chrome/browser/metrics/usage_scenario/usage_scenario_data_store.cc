@@ -157,23 +157,21 @@ void UsageScenarioDataStoreImpl::OnWebRTCConnectionClosed() {
 
 void UsageScenarioDataStoreImpl::OnIsCapturingVideoStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (tabs_capturing_video_ == 0) {
+  if (web_contents_capturing_video_ == 0) {
     DCHECK(capturing_video_since_.is_null());
     capturing_video_since_ = tick_clock_->NowTicks();
   }
-  ++tabs_capturing_video_;
-  DCHECK_GE(current_tab_count_, tabs_capturing_video_);
+  ++web_contents_capturing_video_;
 }
 
 void UsageScenarioDataStoreImpl::OnIsCapturingVideoEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(tabs_capturing_video_, 0U);
-  --tabs_capturing_video_;
-  DCHECK_GE(current_tab_count_, tabs_capturing_video_);
+  DCHECK_GT(web_contents_capturing_video_, 0U);
+  --web_contents_capturing_video_;
 
   // If this was the last tab capturing video then the interval data should be
   // updated.
-  if (tabs_capturing_video_ == 0) {
+  if (web_contents_capturing_video_ == 0) {
     DCHECK(!capturing_video_since_.is_null());
     interval_data_.time_capturing_video +=
         tick_clock_->NowTicks() - capturing_video_since_;
