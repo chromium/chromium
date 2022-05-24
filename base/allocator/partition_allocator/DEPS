@@ -6,7 +6,6 @@ noparent = True
 include_rules = [
     "+base/allocator/buildflags.h",
     "+base/base_export.h",
-    "+base/compiler_specific.h",
     "+base/dcheck_is_on.h",
     "+base/logging_buildflags.h",
     "+base/mac/foundation_util.h",
