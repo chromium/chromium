@@ -7,10 +7,13 @@
 
 #include "base/command_line.h"
 #include "base/fuchsia/process_context.h"
+#include "base/fuchsia/process_lifecycle.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
 #include "fuchsia/base/config_reader.h"
@@ -25,16 +28,14 @@
 
 namespace {
 
-constexpr char kCrashProductName[] = "FuchsiaCastRunner";
-// TODO(https://fxbug.dev/51490): Use a programmatic mechanism to obtain this.
-constexpr char kComponentUrl[] =
-    "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cmx";
-
 // Config-data key for launching Cast content without using Scenic.
 constexpr char kHeadlessConfigKey[] = "headless";
 
 // Config-data key to enable the fuchsia.web.FrameHost provider component.
 constexpr char kFrameHostConfigKey[] = "enable-frame-host-component";
+
+// Config-data key to run the CFv1 runner as a shim to the CFv2 runner.
+constexpr char kRunCfv1ShimConfigKey[] = "run-cfv1-shim";
 
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
@@ -49,12 +50,18 @@ bool GetConfigBool(base::StringPiece config_key) {
 int main(int argc, char** argv) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
-  cr_fuchsia::RegisterProductDataForCrashReporting(kComponentUrl,
-                                                   kCrashProductName);
-
   base::CommandLine::Init(argc, argv);
-  const base::CommandLine* command_line =
+  const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
+  const bool enable_cfv2 = command_line->HasSwitch(kEnableCfv2);
+
+  static constexpr base::StringPiece kComponentUrl(
+      "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm");
+  static constexpr base::StringPiece kComponentUrlCfv1(
+      "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cmx");
+  cr_fuchsia::RegisterProductDataForCrashReporting(
+      enable_cfv2 ? kComponentUrl : kComponentUrlCfv1, "FuchsiaCastRunner");
+
   CHECK(cr_fuchsia::InitLoggingFromCommandLine(*command_line))
       << "Failed to initialize logging.";
 
@@ -64,6 +71,12 @@ int main(int argc, char** argv) {
 
   sys::OutgoingDirectory* const outgoing_directory =
       base::ComponentContextForProcess()->outgoing().get();
+
+  if (!enable_cfv2 && GetConfigBool(kRunCfv1ShimConfigKey)) {
+    // TODO(crbug.com/1065707): Delegate the Runner protocol to the CFv2 runner.
+    NOTIMPLEMENTED();
+    return 1;
+  }
 
   // Publish the fuchsia.sys.Runner implementation for Cast applications.
   cr_fuchsia::WebInstanceHost web_instance_host;
@@ -92,8 +105,12 @@ int main(int argc, char** argv) {
 
   outgoing_directory->ServeFromStartupInfo();
 
-  // TODO(https://crbug.com/952560): Implement Components v2 graceful exit.
   base::RunLoop run_loop;
+  absl::optional<base::ProcessLifecycle> process_lifecycle;
+
+  if (enable_cfv2)
+    process_lifecycle.emplace(run_loop.QuitClosure());
+
   run_loop.Run();
 
   return 0;

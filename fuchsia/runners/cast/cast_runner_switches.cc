@@ -4,6 +4,8 @@
 
 #include "fuchsia/runners/cast/cast_runner_switches.h"
 
-const char kForceHeadlessForTestsSwitch[] = "force-headless-for-tests";
-
 const char kDisableVulkanForTestsSwitch[] = "disable-vulkan-for-tests";
+
+const char kEnableCfv2[] = "enable-cfv2";
+
+const char kForceHeadlessForTestsSwitch[] = "force-headless-for-tests";

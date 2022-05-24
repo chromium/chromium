@@ -160,15 +160,24 @@ if (!is_component_build) {
   }
 }
 
-fuchsia_component("cast_runner_component") {
+fuchsia_component("cast_runner_component_v1") {
   manifest = "cast/cast_runner.cmx"
+  data_deps = [ ":cast_runner_exe" ]
+  visibility = [ ":*" ]
+}
+
+fuchsia_component("cast_runner_component") {
+  manifest = "cast/cast_runner.cml"
   data_deps = [ ":cast_runner_exe" ]
   visibility = [ ":*" ]
 }
 
 fuchsia_package("cast_runner_pkg") {
   package_name = "cast_runner"
-  deps = [ ":cast_runner_component" ]
+  deps = [
+    ":cast_runner_component",
+    ":cast_runner_component_v1",
+  ]
   excluded_files = _web_instance_host_deps_files_to_exclude
 }
 

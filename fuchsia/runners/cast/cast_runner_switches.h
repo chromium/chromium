@@ -5,10 +5,14 @@
 #ifndef FUCHSIA_RUNNERS_CAST_CAST_RUNNER_SWITCHES_H_
 #define FUCHSIA_RUNNERS_CAST_CAST_RUNNER_SWITCHES_H_
 
-// Force headless mode.
-extern const char kForceHeadlessForTestsSwitch[];
-
 // Disable Vulkan flag for the cast runner. Used for tests.
 extern const char kDisableVulkanForTestsSwitch[];
+
+// Run as a CFv2 component, processing StartComponent requests from the CFv1
+// shim.
+extern const char kEnableCfv2[];
+
+// Force headless mode.
+extern const char kForceHeadlessForTestsSwitch[];
 
 #endif  // FUCHSIA_RUNNERS_CAST_CAST_RUNNER_SWITCHES_H_
