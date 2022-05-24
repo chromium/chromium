@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/spinning_mutex.h"
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
@@ -53,7 +54,7 @@ void SpinningMutex::AcquireSpinThenBlock() {
   int tries = 0;
   int backoff = 1;
   do {
-    if (LIKELY(Try()))
+    if (PA_LIKELY(Try()))
       return;
     // Note: Per the intel optimization manual
     // (https://software.intel.com/content/dam/develop/public/us/en/documents/64-ia-32-architectures-optimization-manual.pdf),

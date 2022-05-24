@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
@@ -21,7 +22,6 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
@@ -279,14 +279,16 @@ class BASE_EXPORT ThreadCache {
   // Returns true if the slot was put in the cache, and false otherwise. This
   // can happen either because the cache is full or the allocation was too
   // large.
-  ALWAYS_INLINE bool MaybePutInCache(uintptr_t slot_start, size_t bucket_index);
+  PA_ALWAYS_INLINE bool MaybePutInCache(uintptr_t slot_start,
+                                        size_t bucket_index);
 
   // Tries to allocate a memory slot from the cache.
   // Returns 0 on failure.
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
   // handling. Sets |slot_size| to the allocated size upon success.
-  ALWAYS_INLINE uintptr_t GetFromCache(size_t bucket_index, size_t* slot_size);
+  PA_ALWAYS_INLINE uintptr_t GetFromCache(size_t bucket_index,
+                                          size_t* slot_size);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
@@ -367,7 +369,7 @@ class BASE_EXPORT ThreadCache {
   template <bool crash_on_corruption>
   void ClearBucketHelper(Bucket& bucket, size_t limit);
   void ClearBucket(Bucket& bucket, size_t limit);
-  ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
+  PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
   template <bool crash_on_corruption>
@@ -457,12 +459,12 @@ class BASE_EXPORT ThreadCache {
   PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ClearFromTail);
 };
 
-ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
-                                                size_t bucket_index) {
+PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
+                                                   size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
 
-  if (UNLIKELY(bucket_index > largest_active_bucket_index_)) {
+  if (PA_UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     PA_INCREMENT_COUNTER(stats_.cache_fill_misses);
     return false;
   }
@@ -481,18 +483,18 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
   // gambling that the compiler would not issue multiple loads.
   uint8_t limit = bucket.limit.load(std::memory_order_relaxed);
   // Batched deallocation, amortizing lock acquisitions.
-  if (UNLIKELY(bucket.count > limit)) {
+  if (PA_UNLIKELY(bucket.count > limit)) {
     ClearBucket(bucket, limit / 2);
   }
 
-  if (UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
+  if (PA_UNLIKELY(should_purge_.load(std::memory_order_relaxed)))
     PurgeInternal();
 
   return true;
 }
 
-ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
-                                                  size_t* slot_size) {
+PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
+                                                     size_t* slot_size) {
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
@@ -500,14 +502,14 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
-  if (UNLIKELY(bucket_index > largest_active_bucket_index_)) {
+  if (PA_UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     PA_INCREMENT_COUNTER(stats_.alloc_misses);
     return 0;
   }
 
   auto& bucket = buckets_[bucket_index];
-  if (LIKELY(bucket.freelist_head)) {
+  if (PA_LIKELY(bucket.freelist_head)) {
     PA_INCREMENT_COUNTER(stats_.alloc_hits);
   } else {
     PA_DCHECK(bucket.count == 0);
@@ -518,7 +520,7 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
     // Very unlikely, means that the central allocator is out of memory. Let it
     // deal with it (may return 0, may crash).
-    if (UNLIKELY(!bucket.freelist_head))
+    if (PA_UNLIKELY(!bucket.freelist_head))
       return 0;
   }
 
@@ -541,8 +543,8 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   return reinterpret_cast<uintptr_t>(result);
 }
 
-ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
-                                            uintptr_t slot_start) {
+PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
+                                               uintptr_t slot_start) {
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) && \
     defined(PA_HAS_64_BITS_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
@@ -560,7 +562,7 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   // Everything below requires this alignment.
   static_assert(internal::kAlignment == 16, "");
 
-#if HAS_BUILTIN(__builtin_assume_aligned)
+#if PA_HAS_BUILTIN(__builtin_assume_aligned)
   uintptr_t address = reinterpret_cast<uintptr_t>(__builtin_assume_aligned(
       reinterpret_cast<void*>(slot_start), internal::kAlignment));
 #else
