@@ -2607,20 +2607,17 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
   if (style) {
     if (style->IsInert()) {
       if (ignored_reasons) {
-        // The 'inert' attribute sets forced inertness, which cannot be escaped
-        // by descendants (see details in computed_style_extra_fields.json5).
-        // So we only need to check InertRoot() if inertness is forced.
-        if (style->IsForcedInert()) {
-          const AXObject* inert_root_el = InertRoot();
-          if (inert_root_el == this) {
-            ignored_reasons->push_back(IgnoredReason(kAXInertElement));
-          } else {
-            ignored_reasons->push_back(
-                IgnoredReason(kAXInertSubtree, inert_root_el));
-          }
+        const AXObject* ax_inert_root = InertRoot();
+        if (ax_inert_root == this) {
+          ignored_reasons->push_back(IgnoredReason(kAXInertElement));
           return true;
         }
-        // If the inertness is overridable, it must have been set by a modal
+        if (ax_inert_root) {
+          ignored_reasons->push_back(
+              IgnoredReason(kAXInertSubtree, ax_inert_root));
+          return true;
+        }
+        // If there is no inert root, inertness must have been set by a modal
         // dialog or a fullscreen element (see AdjustStyleForInert).
         Document& document = GetNode()->GetDocument();
         if (HTMLDialogElement* dialog = document.ActiveModalDialog()) {

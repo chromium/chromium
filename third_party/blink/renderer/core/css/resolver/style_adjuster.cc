@@ -701,11 +701,11 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
 }
 
 static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
-  if (!element || style.IsForcedInert())
+  if (!element)
     return;
 
   if (element->IsInertRoot()) {
-    style.SetIsForcedInert();
+    style.SetIsInert(true);
     return;
   }
 

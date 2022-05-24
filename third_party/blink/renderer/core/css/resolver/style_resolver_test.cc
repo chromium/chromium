@@ -1744,8 +1744,8 @@ TEST_F(StyleResolverTest, IsInertWithAttributeAndDialog) {
   EXPECT_TRUE(body->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div->GetComputedStyle()->IsInert());
   EXPECT_TRUE(div_text->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(dialog->GetComputedStyle()->IsInert());
-  EXPECT_TRUE(dialog_text->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog->GetComputedStyle()->IsInert());
+  EXPECT_FALSE(dialog_text->GetComputedStyle()->IsInert());
 
   dialog->close();
   UpdateAllLifecyclePhasesForTest();

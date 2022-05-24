@@ -2230,20 +2230,6 @@ class ComputedStyle : public ComputedStyleBase,
     }
   }
 
-  // Inertness utility functions.
-  bool IsInert() const { return InertnessInternal() != Inertness::kNone; }
-  void SetIsInert(bool is_inert) {
-    if (InertnessInternal() == Inertness::kForced) {
-      DCHECK(is_inert);
-      return;
-    }
-    SetInertnessInternal(is_inert ? Inertness::kOverridable : Inertness::kNone);
-  }
-  bool IsForcedInert() const {
-    return InertnessInternal() == Inertness::kForced;
-  }
-  void SetIsForcedInert() { SetInertnessInternal(Inertness::kForced); }
-
   // Pointer-events utility functions.
   EPointerEvents UsedPointerEvents() const {
     if (IsInert())

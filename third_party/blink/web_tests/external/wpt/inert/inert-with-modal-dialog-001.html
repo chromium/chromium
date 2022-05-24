@@ -3,7 +3,7 @@
 <title>Interaction of 'inert' attribute with modal dialog</title>
 <link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#inert">
-<meta name="assert" content="Checks that being part of a modal dialog does not protect a node from being marked inert by an 'inert' attribute.">
+<meta name="assert" content="Checks that a modal dialog escapes inertness from ancestors.">
 <div id="log"></div>
 <div id="wrapper">
   wrapper
@@ -51,6 +51,6 @@ test(function() {
 test(function() {
   wrapper.inert = true;
   this.add_cleanup(() => { wrapper.inert = false; });
-  checkSelection("");
-}, "If an ancestor of the dialog has the 'inert' attribute, everything becomes inert");
+  checkSelection("dialog child");
+}, "If an ancestor of the dialog has the 'inert' attribute, the dialog escapes inertness");
 </script>
