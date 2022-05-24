@@ -231,8 +231,6 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_document_created.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -1119,25 +1117,6 @@ CreateJavaScriptExecuteRequestForTestsCallback(
           std::move(callback).Run(base::Value());
       },
       std::move(callback));
-}
-
-// Records the identifiable surface metric associated with a document created
-// event when the identifiability study is active.
-void RecordIdentifiabilityDocumentCreatedMetrics(
-    const ukm::SourceId document_ukm_source_id,
-    ukm::UkmRecorder* ukm_recorder,
-    ukm::SourceId navigation_source_id,
-    bool is_cross_origin_frame,
-    bool is_cross_site_frame,
-    bool is_main_frame) {
-  if (blink::IdentifiabilityStudySettings::Get()->IsActive()) {
-    blink::IdentifiabilityStudyDocumentCreated(document_ukm_source_id)
-        .SetNavigationSourceId(navigation_source_id)
-        .SetIsMainFrame(is_main_frame)
-        .SetIsCrossOriginFrame(is_cross_origin_frame)
-        .SetIsCrossSiteFrame(is_cross_site_frame)
-        .Record(ukm_recorder);
-  }
 }
 
 }  // namespace
@@ -13333,10 +13312,6 @@ void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
       .SetIsCrossOriginFrame(is_cross_origin_frame)
       .SetIsCrossSiteFrame(is_cross_site_frame)
       .Record(ukm_recorder);
-
-  RecordIdentifiabilityDocumentCreatedMetrics(
-      document_ukm_source_id, ukm_recorder, GetPageUkmSourceId(),
-      is_cross_origin_frame, is_cross_site_frame, IsOutermostMainFrame());
 }
 
 void RenderFrameHostImpl::BindReportingObserver(
