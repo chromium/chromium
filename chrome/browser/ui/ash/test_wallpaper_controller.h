@@ -92,6 +92,12 @@ class TestWallpaperController : public ash::WallpaperController {
                                 SetWallpaperCallback callback) override;
   std::string GetGooglePhotosDailyRefreshAlbumId(
       const AccountId& account_id) const override;
+  bool SetDailyGooglePhotosWallpaperIdCache(
+      const AccountId& account_id,
+      const DailyGooglePhotosIdCache& ids) override;
+  bool GetDailyGooglePhotosWallpaperIdCache(
+      const AccountId& account_id,
+      DailyGooglePhotosIdCache& ids_out) const override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
@@ -153,6 +159,7 @@ class TestWallpaperController : public ash::WallpaperController {
   absl::optional<ash::WallpaperInfo> wallpaper_info_;
   int update_current_wallpaper_layout_count_ = 0;
   absl::optional<ash::WallpaperLayout> update_current_wallpaper_layout_layout_;
+  DailyGooglePhotosIdCache id_cache_;
 
   base::ObserverList<ash::WallpaperControllerObserver>::Unchecked observers_;
 

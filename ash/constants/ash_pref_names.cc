@@ -697,6 +697,11 @@ const char kSuggestLogoutAfterClosingLastWindow[] =
 // A dictionary pref that maps usernames to wallpaper info.
 const char kUserWallpaperInfo[] = "user_wallpaper_info";
 
+// An ordered list of hashed representations of IDs of Google Photos recently
+// used as wallpapers for Daily Refresh.
+const char kRecentDailyGooglePhotosWallpapers[] =
+    "recent_daily_google_photos_wallpapers";
+
 // A dictionary pref that maps usernames to wallpaper info.
 // This is for wallpapers that are syncable across devices.
 const char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";

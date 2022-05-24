@@ -100,7 +100,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void FetchDailyGooglePhotosPhoto(
       const AccountId& account_id,
       const std::string& album_id,
-      const absl::optional<std::string>& current_photo_id,
       FetchGooglePhotosPhotoCallback callback) override;
   void FetchGooglePhotosAccessToken(
       const AccountId& account_id,

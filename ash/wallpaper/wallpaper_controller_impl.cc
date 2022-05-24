@@ -864,6 +864,7 @@ void WallpaperControllerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kUserWallpaperInfo);
   registry->RegisterDictionaryPref(prefs::kWallpaperColors);
+  registry->RegisterDictionaryPref(prefs::kRecentDailyGooglePhotosWallpapers);
 }
 
 // static
@@ -1398,7 +1399,7 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
       return;
     } else {
       wallpaper_controller_client_->FetchDailyGooglePhotosPhoto(
-          params.account_id, params.id, /*current_photo_id=*/absl::nullopt,
+          params.account_id, params.id,
           base::BindOnce(
               &WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched,
               set_wallpaper_weak_factory_.GetWeakPtr(), params.account_id,
@@ -1419,6 +1420,47 @@ std::string WallpaperControllerImpl::GetGooglePhotosDailyRefreshAlbumId(
   if (info.type != WallpaperType::kDailyGooglePhotos)
     return std::string();
   return info.collection_id;
+}
+
+bool WallpaperControllerImpl::SetDailyGooglePhotosWallpaperIdCache(
+    const AccountId& account_id,
+    const DailyGooglePhotosIdCache& ids) {
+  if (!local_state_)
+    return false;
+  DictionaryPrefUpdate daily_google_photos_ids_update(
+      local_state_, prefs::kRecentDailyGooglePhotosWallpapers);
+  base::Value id_list(base::Value::Type::LIST);
+  for (auto id = ids.rbegin(); id != ids.rend(); id++) {
+    id_list.Append(base::NumberToString(*id));
+  }
+  daily_google_photos_ids_update->SetKey(account_id.GetUserEmail(),
+                                         std::move(id_list));
+  return true;
+}
+
+bool WallpaperControllerImpl::GetDailyGooglePhotosWallpaperIdCache(
+    const AccountId& account_id,
+    DailyGooglePhotosIdCache& ids_out) const {
+  if (!local_state_)
+    return false;
+
+  const base::Value::Dict* dict =
+      local_state_->GetDictionary(prefs::kRecentDailyGooglePhotosWallpapers)
+          ->GetIfDict();
+  if (!dict)
+    return false;
+
+  const base::Value::List* id_list = dict->FindList(account_id.GetUserEmail());
+  if (!id_list)
+    return false;
+
+  for (auto& id_str : *id_list) {
+    uint32_t id;
+    if (base::StringToUint(id_str.GetString(), &id)) {
+      ids_out.Put(std::move(id));
+    }
+  }
+  return true;
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaper(
@@ -3287,7 +3329,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
   if (wallpaper_controller_client_ && GetUserWallpaperInfo(account_id, &info)) {
     if (info.type == WallpaperType::kDailyGooglePhotos) {
       wallpaper_controller_client_->FetchDailyGooglePhotosPhoto(
-          account_id, info.collection_id, info.location,
+          account_id, info.collection_id,
           base::BindOnce(
               &WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched,
               set_wallpaper_weak_factory_.GetWeakPtr(), account_id,

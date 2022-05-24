@@ -13,8 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-TestWallpaperController::TestWallpaperController() = default;
-
+TestWallpaperController::TestWallpaperController() : id_cache_(0) {}
 TestWallpaperController::~TestWallpaperController() = default;
 
 void TestWallpaperController::ShowWallpaperImage(const gfx::ImageSkia& image) {
@@ -90,6 +89,23 @@ std::string TestWallpaperController::GetGooglePhotosDailyRefreshAlbumId(
     return std::string();
   }
   return wallpaper_info_->collection_id;
+}
+
+bool TestWallpaperController::SetDailyGooglePhotosWallpaperIdCache(
+    const AccountId& account_id,
+    const DailyGooglePhotosIdCache& ids) {
+  id_cache_.ShrinkToSize(0);
+  std::for_each(ids.rbegin(), ids.rend(),
+                [&](uint id) { id_cache_.Put(std::move(id)); });
+  return true;
+}
+
+bool TestWallpaperController::GetDailyGooglePhotosWallpaperIdCache(
+    const AccountId& account_id,
+    DailyGooglePhotosIdCache& ids_out) const {
+  std::for_each(id_cache_.rbegin(), id_cache_.rend(),
+                [&](uint id) { ids_out.Put(std::move(id)); });
+  return true;
 }
 
 void TestWallpaperController::SetOnlineWallpaperIfExists(

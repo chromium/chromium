@@ -84,7 +84,6 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   virtual void FetchDailyGooglePhotosPhoto(
       const AccountId& account_id,
       const std::string& album_id,
-      const absl::optional<std::string>& current_photo_id,
       FetchGooglePhotosPhotoCallback callback) = 0;
 
   using FetchGooglePhotosAccessTokenCallback =
