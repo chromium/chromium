@@ -27,6 +27,7 @@ static_library("personalization_app") {
 
   deps = [
     "search:mojo_bindings",
+    "//ash",
     "//ash/constants:constants",
     "//ash/public/cpp",
     "//ash/webui/personalization_app/mojom",

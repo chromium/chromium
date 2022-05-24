@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
+#include "ash/shell.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
@@ -255,7 +257,10 @@ void AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isAmbientModeAllowed", IsAmbientModeAllowed());
 
-  source->AddBoolean("isRgbKeyboardEnabled", features::IsRgbKeyboardEnabled());
+  source->AddBoolean(
+      "isRgbKeyboardSupported",
+      features::IsRgbKeyboardEnabled() &&
+          Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
 }
 
 }  // namespace
