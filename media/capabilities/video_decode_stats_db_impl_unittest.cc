@@ -77,13 +77,19 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
   }
 
   void VerifyOnePendingOp(std::string op_name) {
-    EXPECT_EQ(stats_db_->pending_ops_.size(), 1u);
-    VideoDecodeStatsDBImpl::PendingOperation* pending_op =
-        stats_db_->pending_ops_.begin()->second.get();
+    EXPECT_EQ(stats_db_->pending_operations_.get_pending_ops_for_test().size(),
+              1u);
+    PendingOperations::PendingOperation* pending_op =
+        stats_db_->pending_operations_.get_pending_ops_for_test()
+            .begin()
+            ->second.get();
     EXPECT_EQ(pending_op->uma_str_, op_name);
   }
 
-  void VerifyNoPendingOps() { EXPECT_TRUE(stats_db_->pending_ops_.empty()); }
+  void VerifyNoPendingOps() {
+    EXPECT_TRUE(
+        stats_db_->pending_operations_.get_pending_ops_for_test().empty());
+  }
 
   int GetMaxFramesPerBuffer() {
     return VideoDecodeStatsDBImpl::GetMaxFramesPerBuffer();

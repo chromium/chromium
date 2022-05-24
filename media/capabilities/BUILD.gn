@@ -26,6 +26,8 @@ source_set("capabilities") {
     "in_memory_video_decode_stats_db_impl.h",
     "learning_helper.cc",
     "learning_helper.h",
+    "pending_operations.cc",
+    "pending_operations.h",
     "video_decode_stats_db.cc",
     "video_decode_stats_db.h",
     "video_decode_stats_db_impl.cc",
@@ -61,6 +63,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "in_memory_video_decode_stats_db_unittest.cc",
+    "pending_operations_unittest.cc",
     "video_decode_stats_db_impl_unittest.cc",
     "video_decode_stats_db_unittest.cc",
     "webrtc_video_stats_db_impl_unittest.cc",
