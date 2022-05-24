@@ -4,19 +4,26 @@
 
 #include "ash/system/time/calendar_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -24,6 +31,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/event_utils.h"
+#include "ui/message_center/message_center.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
@@ -481,6 +490,28 @@ TEST_F(CalendarViewTest, HeaderFocusing) {
   // Moves to down button.
   PressTab();
   EXPECT_EQ(down_button(), focus_manager->GetFocusedView());
+
+  // Moves to today's cell.
+  PressTab();
+  EXPECT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+
+  // Moves to down button.
+  PressShiftTab();
+  EXPECT_EQ(down_button(), focus_manager->GetFocusedView());
+
+  // Moves to up button.
+  PressShiftTab();
+  EXPECT_EQ(up_button(), focus_manager->GetFocusedView());
+
+  // Moves to settings button.
+  PressShiftTab();
+  EXPECT_EQ(settings_button(), focus_manager->GetFocusedView());
+
+  // Moves to "Go back to today" button.
+  PressShiftTab();
+  EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
 }
 
 // Tests the focus loop between the back button, today's button, settings
@@ -1328,6 +1359,131 @@ TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_EQ(1.0f, header()->layer()->opacity());
+}
+
+// Test class for testing the `CalendarView` together with the message center
+// bubble.
+class CalendarViewWithMessageCenterTest : public AshTestBase {
+ public:
+  CalendarViewWithMessageCenterTest() = default;
+  CalendarViewWithMessageCenterTest(const CalendarViewWithMessageCenterTest&) =
+      delete;
+  CalendarViewWithMessageCenterTest& operator=(
+      const CalendarViewWithMessageCenterTest&) = delete;
+  ~CalendarViewWithMessageCenterTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatures(
+        {features::kCalendarView, features::kNotificationsRefresh}, {});
+    AshTestBase::SetUp();
+  }
+
+  views::FocusManager* message_center_focus_manager() {
+    return GetPrimaryUnifiedSystemTray()
+        ->message_center_bubble()
+        ->message_center_view()
+        ->GetFocusManager();
+  }
+
+  views::FocusManager* calendar_focus_manager() {
+    return GetPrimaryUnifiedSystemTray()
+        ->bubble()
+        ->unified_view()
+        ->detailed_view_for_testing()
+        ->GetFocusManager();
+  }
+
+  void AddNotification() {
+    message_center::MessageCenter::Get()->AddNotification(
+        std::make_unique<message_center::Notification>(
+            message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+            "test_notification_id", u"test title", u"test message",
+            ui::ImageModel(), std::u16string(), GURL(),
+            message_center::NotifierId(),
+            message_center::RichNotificationData(),
+            new message_center::NotificationDelegate()));
+  }
+
+  void ShowCalendarView() {
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+    GetPrimaryUnifiedSystemTray()->OnDateTrayActionPerformed(event);
+  }
+
+  // Calculates the number of focusable views inside the message center bubble
+  // in order to avoid hardcoding that number / be independent from
+  // implementation details of another widget.
+  int GetNumberOfFocusableViewsInMessageCenter() {
+    int count = 0;
+    auto* widget = GetPrimaryUnifiedSystemTray()
+                       ->message_center_bubble()
+                       ->GetBubbleWidget();
+    views::View* current_focusable_view = nullptr;
+    while ((current_focusable_view =
+                message_center_focus_manager()->GetNextFocusableView(
+                    current_focusable_view, widget, /*reverse=*/false,
+                    /*dont_loop=*/true)))
+      count++;
+    return count;
+  }
+
+  void PressTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  }
+
+  void PressShiftTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  }
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+};
+
+// Tests `Tab` / `Shift+Tab` navigation within two bubbles.
+TEST_F(CalendarViewWithMessageCenterTest,
+       CalendarViewFocusingWithMessageCenterOpened) {
+  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown());
+
+  AddNotification();
+  ShowCalendarView();
+
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown());
+
+  int number_of_focusable_views_in_message_center =
+      GetNumberOfFocusableViewsInMessageCenter();
+
+  // Today's date cell should be focused now.
+  PressTab();
+  auto* current_date_cell_view = calendar_focus_manager()->GetFocusedView();
+  EXPECT_STREQ(current_date_cell_view->GetClassName(), "CalendarDateCellView");
+
+  // Enter the message center.
+  PressTab();
+
+  // Keep tabbing until exiting the message center.
+  for (int i = 0; i < number_of_focusable_views_in_message_center; i++)
+    PressTab();
+
+  // "Previous menu" / exit from calendar button should be focused now.
+  EXPECT_EQ(u"Previous menu",
+            static_cast<IconButton*>(calendar_focus_manager()->GetFocusedView())
+                ->GetAccessibleName());
+
+  // Move back to the message center.
+  PressShiftTab();
+
+  // Keep tabbing backwards until exiting the message center.
+  for (int i = 0; i < number_of_focusable_views_in_message_center; i++)
+    PressShiftTab();
+
+  // Today's date cell should be focused now.
+  EXPECT_EQ(current_date_cell_view, calendar_focus_manager()->GetFocusedView());
 }
 
 }  // namespace ash

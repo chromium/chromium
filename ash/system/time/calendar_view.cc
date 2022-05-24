@@ -1274,6 +1274,17 @@ void CalendarView::OnEvent(ui::Event* event) {
   }
 
   if (!IsDateCellViewFocused()) {
+    if (is_tab_key_pressed && key_event->IsShiftDown()) {
+      // If this is reverse tab navigation (Shift+Tab) and current focused view
+      // is the last focusable view, then make an attempt to navigate to the
+      // previous widget (most likely to the message center). Stop the
+      // propagation of the event if the attempt was successful.
+      const auto* next_reverse_view = focus_manager->GetNextFocusableView(
+          focus_manager->GetFocusedView(), GetWidget(), /*reverse=*/true,
+          /*dont_loop=*/true);
+      if (!next_reverse_view && controller_->FocusOut(/*reverse=*/true))
+        event->StopPropagation();
+    }
     TrayDetailedView::OnEvent(event);
     return;
   }
@@ -1281,10 +1292,10 @@ void CalendarView::OnEvent(ui::Event* event) {
   // When tab key is pressed, stops focusing on any `CalendarDateCellView` and
   // goes to the next focusable button in the header.
   if (is_tab_key_pressed) {
-    // Set focus on `up_button_`/`event_list_view_` or null
+    // Set focus on `down_button_`/`event_list_view_` or null
     // pointer to escape the focusing on the date cell.
     if (key_event->IsShiftDown()) {
-      up_button_->RequestFocus();
+      down_button_->RequestFocus();
     } else if (event_list_view_) {
       // Moves focusing ring to the close button of the event list.
       event_list_view_->RequestFocus();
