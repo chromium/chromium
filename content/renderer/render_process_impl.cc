@@ -25,7 +25,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/initialization_util.h"
@@ -49,10 +48,6 @@
 #endif
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
 #include "v8/include/v8-wasm-trap-handler-posix.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 namespace {
@@ -169,13 +164,7 @@ RenderProcessImpl::RenderProcessImpl()
   bool enable_shared_array_buffer_unconditionally =
       base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kBigLittleScheduling,
-          features::kBigLittleSchedulingRenderMainBigParam, false)) {
-    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
-  }
-#else
+#if !BUILDFLAG(IS_ANDROID)
   // Bypass the SAB restriction for the Finch "kill switch".
   enable_shared_array_buffer_unconditionally =
       enable_shared_array_buffer_unconditionally ||

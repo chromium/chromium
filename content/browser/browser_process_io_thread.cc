@@ -9,7 +9,6 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
@@ -22,14 +21,12 @@
 #include "content/browser/utility_process_host.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 #include "net/url_request/url_fetcher.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -90,13 +87,6 @@ void BrowserProcessIOThread::Run(base::RunLoop* run_loop) {
   if (!thread_name().empty()) {
     base::android::AttachCurrentThreadWithName(thread_name());
   }
-
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kBigLittleScheduling,
-          features::kBigLittleSchedulingBrowserIOBigParam, false)) {
-    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
-  }
-
 #endif
 
   IOThreadRun(run_loop);

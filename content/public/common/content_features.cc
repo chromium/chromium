@@ -1156,11 +1156,6 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
     "BackgroundMediaRendererHasModerateBinding",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Takes advantage of specifying which big.LITTLE cores to schedule different
-// threads on.
-const base::Feature kBigLittleScheduling{"BigLittleScheduling",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Coalesce independent begin frame by ignoring begin frame that is out of date.
 const base::Feature kCoalesceIndependentBeginFrame{
     "CoalesceIndependentBeginFrame", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1192,19 +1187,6 @@ const base::Feature kWarmUpNetworkProcess{"WarmUpNetworkProcess",
 // using the kEnableExperimentalWebPlatformFeatures flag.
 // https://w3c.github.io/web-nfc/
 const base::Feature kWebNfc{"WebNFC", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const char kBigLittleSchedulingBrowserMainBiggerParam[] =
-    "BigLittleSchedulingBrowserMainBiggerParam";
-const char kBigLittleSchedulingBrowserMainBigParam[] =
-    "BigLittleSchedulingBrowserMainBigParam";
-const char kBigLittleSchedulingBrowserIOBigParam[] =
-    "BigLittleSchedulingBrowserIOBigParam";
-const char kBigLittleSchedulingRenderMainBigParam[] =
-    "BigLittleSchedulingRenderMainBigParam";
-const char kBigLittleSchedulingNetworkMainBigParam[] =
-    "BigLittleSchedulingNetworkMainBigParam";
-const char kBigLittleSchedulingGpuMainBigParam[] =
-    "BigLittleSchedulingGpuMainBigParam";
 
 // When the context menu is triggered, the browser allows motion in a small
 // region around the initial touch location menu to allow for finger jittering.

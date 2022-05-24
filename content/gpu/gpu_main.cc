@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
 #include "base/process/process_metrics.h"
@@ -38,7 +37,6 @@
 #include "content/gpu/gpu_child_thread.h"
 #include "content/gpu/gpu_process.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
@@ -76,7 +74,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
-#include "content/common/android/cpu_affinity_setter.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -391,11 +388,6 @@ int GpuMain(MainFunctionParams parameters) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       tracing::GraphicsMemoryDumpProvider::GetInstance(), "AndroidGraphics",
       nullptr);
-  if (base::GetFieldTrialParamByFeatureAsBool(
-          features::kBigLittleScheduling,
-          features::kBigLittleSchedulingGpuMainBigParam, false)) {
-    SetCpuAffinityForCurrentThread(base::CpuAffinityMode::kBigCoresOnly);
-  }
 #endif
 
   internal::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(

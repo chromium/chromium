@@ -257,8 +257,6 @@ source_set("common") {
 
   if (is_android) {
     sources += [
-      "android/cpu_affinity_setter.cc",
-      "android/cpu_affinity_setter.h",
       "android/cpu_time_metrics.cc",
       "android/cpu_time_metrics.h",
       "android/cpu_time_metrics_internal.cc",
