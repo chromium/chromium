@@ -20,7 +20,6 @@ from _helpers import *
 async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
       context_id):
     result = await execute_command(websocket, {
-        "id": 45,
         "method": "script.evaluate",
         "params": {
             "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
@@ -67,7 +66,6 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
 async def test_script_evaluateThrowingError_exceptionReturned(websocket,
       context_id):
     exception_details = await execute_command(websocket, {
-        "id": 45,
         "method": "script.evaluate",
         "params": {
             "expression": "(()=>{const a=()=>{throw new Error('foo');}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
@@ -476,6 +474,29 @@ async def test_script_callFunctionWithNode_resultReceived(websocket,
         "result": {
             "type": "string",
             "value": "!!@@##, test"}}
+
+
+@pytest.mark.asyncio
+async def test_script_evaluate_windowOpen_windowOpened(websocket,
+      context_id):
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "window.open()",
+            "target": {"context": context_id}}})
+
+    recursiveCompare({
+        "result": {
+            "type": "window",
+            "objectId": "__any_value__"
+        }}, result, ["objectId"])
+
+    result = await execute_command(websocket,
+                                   {"method": "browsingContext.getTree",
+                                    "params": {}})
+
+    # Assert 2 contexts are present.
+    assert len(result['contexts']) == 2
 
 # TODO(sadym): re-enable after binding is specified and implemented.
 # @pytest.mark.asyncio

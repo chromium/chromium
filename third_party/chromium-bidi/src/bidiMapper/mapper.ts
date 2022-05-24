@@ -150,7 +150,7 @@ async function _prepareCdp(cdpClient: CdpClient) {
   // Needed to automatically attach to new targets.
   await cdpClient.Target.setAutoAttach({
     autoAttach: true,
-    waitForDebuggerOnStart: false,
+    waitForDebuggerOnStart: true,
     flatten: true,
   });
 }

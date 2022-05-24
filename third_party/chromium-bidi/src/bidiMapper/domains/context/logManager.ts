@@ -43,7 +43,7 @@ export class LogManager {
       serializer
     );
 
-    logManager._initialize();
+    await logManager._initialize();
     return logManager;
   }
 

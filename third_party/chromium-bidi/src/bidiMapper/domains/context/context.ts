@@ -54,22 +54,19 @@ export class Context {
     bidiServer: IBidiServer,
     eventManager: IEventManager
   ) {
+    const scriptEvaluator = ScriptEvaluator.create(cdpClient);
+
     const context = new Context(
       contextId,
       cdpClient,
       bidiServer,
       eventManager,
-      ScriptEvaluator.create(cdpClient)
+      scriptEvaluator
     );
+
+    await LogManager.create(contextId, cdpClient, bidiServer, scriptEvaluator);
 
     await context.#initialize();
-
-    await LogManager.create(
-      contextId,
-      cdpClient,
-      bidiServer,
-      context.#scriptEvaluator
-    );
     return context;
   }
 
@@ -181,7 +178,14 @@ export class Context {
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();
     await this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+    await this.#cdpClient.Target.setAutoAttach({
+      autoAttach: true,
+      waitForDebuggerOnStart: true,
+      flatten: true,
+    });
+
     this.#initializeEventListeners();
+    await this.#cdpClient.Runtime.runIfWaitingForDebugger();
   }
 
   #initializeEventListeners() {
@@ -208,8 +212,6 @@ export class Context {
   }
 
   #initializePageLifecycleEventListener() {
-    this.#cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
-
     this.#cdpClient.Page.on('lifecycleEvent', async (params) => {
       switch (params.name) {
         case 'DOMContentLoaded':
