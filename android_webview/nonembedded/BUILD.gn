@@ -119,6 +119,7 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/VariationsSeedServer.java",
   ]
   deps = [
+    ":devui_resources",
     ":system_webview_manifest",
     "//android_webview:common_aidl_java",
     "//android_webview:common_crash_java",
@@ -137,6 +138,7 @@ android_library("services_java") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  resources_package = "org.chromium.android_webview.devui"
 }
 
 source_set("nonembedded") {

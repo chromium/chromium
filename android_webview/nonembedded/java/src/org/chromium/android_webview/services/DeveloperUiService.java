@@ -54,10 +54,9 @@ public final class DeveloperUiService extends Service {
     private static final int FRAGMENT_ID_CRASHES = 1;
     private static final int FRAGMENT_ID_FLAGS = 2;
 
-    public static final String NOTIFICATION_TITLE =
-            "WARNING: experimental WebView features enabled";
-    public static final String NOTIFICATION_CONTENT = "Tap to see experimental features.";
-    public static final String NOTIFICATION_TICKER = "Experimental WebView features enabled";
+    public static final String NOTIFICATION_TITLE = "Experimental WebView features active";
+    public static final String NOTIFICATION_CONTENT = "Tap to see experimental WebView features.";
+    public static final String NOTIFICATION_TICKER = "Experimental WebView features active";
 
     private static final Object sLock = new Object();
     @GuardedBy("sLock")
@@ -238,14 +237,15 @@ public final class DeveloperUiService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
 
-        Notification.Builder builder = createNotificationBuilder()
-                                               .setContentTitle(NOTIFICATION_TITLE)
-                                               .setContentText(NOTIFICATION_CONTENT)
-                                               .setSmallIcon(android.R.drawable.stat_notify_error)
-                                               .setContentIntent(pendingIntent)
-                                               .setOngoing(true)
-                                               .setVisibility(Notification.VISIBILITY_PUBLIC)
-                                               .setTicker(NOTIFICATION_TICKER);
+        Notification.Builder builder =
+                createNotificationBuilder()
+                        .setContentTitle(NOTIFICATION_TITLE)
+                        .setContentText(NOTIFICATION_CONTENT)
+                        .setSmallIcon(org.chromium.android_webview.devui.R.drawable.ic_flag)
+                        .setContentIntent(pendingIntent)
+                        .setOngoing(true)
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .setTicker(NOTIFICATION_TICKER);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             builder = builder
