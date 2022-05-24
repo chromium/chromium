@@ -701,7 +701,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
       typeface, name.data(), font_size,
       synthetic_bold_requested && font_description.SyntheticBoldAllowed(),
       synthetic_italic_requested && font_description.SyntheticItalicAllowed(),
-      font_description.Orientation());
+      font_description.TextRendering(), font_description.Orientation());
 
   result->SetAvoidEmbeddedBitmaps(
       BitmapGlyphsBlockList::ShouldAvoidEmbeddedBitmapsForTypeface(*typeface));

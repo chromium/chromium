@@ -79,6 +79,7 @@ class PLATFORM_EXPORT FontPlatformData {
                    float text_size,
                    bool synthetic_bold,
                    bool synthetic_italic,
+                   TextRenderingMode text_rendering,
                    FontOrientation = FontOrientation::kHorizontal);
   ~FontPlatformData();
 
@@ -118,6 +119,7 @@ class PLATFORM_EXPORT FontPlatformData {
     avoid_embedded_bitmaps_ = embedded_bitmaps;
   }
   bool operator==(const FontPlatformData&) const;
+  bool operator!=(const FontPlatformData& a) const { return !operator==(a); }
   FontPlatformData& operator=(const FontPlatformData&) = delete;
 
   bool IsHashTableDeletedValue() const { return is_hash_table_deleted_value_; }
@@ -147,7 +149,8 @@ class PLATFORM_EXPORT FontPlatformData {
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
   WebFontRenderStyle QuerySystemRenderStyle(const std::string& family,
                                             float text_size,
-                                            SkFontStyle);
+                                            SkFontStyle,
+                                            TextRenderingMode text_rendering);
 #endif
 #if BUILDFLAG(IS_WIN)
   // TODO(https://crbug.com/808221): Remove and use QuerySystemRenderStyle()
@@ -165,6 +168,7 @@ class PLATFORM_EXPORT FontPlatformData {
   bool synthetic_bold_ = false;
   bool synthetic_italic_ = false;
   bool avoid_embedded_bitmaps_ = false;
+  TextRenderingMode text_rendering_ = TextRenderingMode::kAutoTextRendering;
   FontOrientation orientation_ = FontOrientation::kHorizontal;
 
  private:

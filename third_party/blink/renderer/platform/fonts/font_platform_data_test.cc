@@ -114,4 +114,32 @@ TEST_F(FontPlatformDataTest, TypefaceDigestCrossPlatform_SameDigest) {
   EXPECT_EQ(digest, expected_digest);
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(FontPlatformDataTest, GeometricPrecision) {
+  const float saved_device_scale_factor = FontCache::DeviceScaleFactor();
+  sk_sp<SkTypeface> typeface = SkTypeface::MakeDefault();
+  const std::string name("name");
+  const auto create_font_platform_data = [&]() {
+    return FontPlatformData(typeface, name,
+                            /* text_size */ 10, /* synthetic_bold */ false,
+                            /* synthetic_italic */ false, kGeometricPrecision);
+  };
+
+  FontCache::SetDeviceScaleFactor(1.0f);
+  const FontPlatformData geometric_precision = create_font_platform_data();
+  const WebFontRenderStyle& geometric_precision_style =
+      geometric_precision.GetFontRenderStyle();
+  EXPECT_EQ(geometric_precision_style.use_subpixel_positioning, true);
+  EXPECT_EQ(geometric_precision_style.use_hinting, false);
+
+  // DSF=1.5 means it's high resolution (use_subpixel_positioning) for both
+  // Linux and ChromeOS. See |gfx GetFontRenderParams|.
+  FontCache::SetDeviceScaleFactor(1.5f);
+  const FontPlatformData geometric_precision_high = create_font_platform_data();
+  EXPECT_EQ(geometric_precision, geometric_precision_high);
+
+  FontCache::SetDeviceScaleFactor(saved_device_scale_factor);
+}
+#endif
+
 }  // namespace blink

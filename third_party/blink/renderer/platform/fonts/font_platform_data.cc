@@ -58,6 +58,7 @@ FontPlatformData::FontPlatformData(const FontPlatformData& source)
       synthetic_bold_(source.synthetic_bold_),
       synthetic_italic_(source.synthetic_italic_),
       avoid_embedded_bitmaps_(source.avoid_embedded_bitmaps_),
+      text_rendering_(source.text_rendering_),
       orientation_(source.orientation_)
 #if !BUILDFLAG(IS_MAC)
       ,
@@ -76,6 +77,7 @@ FontPlatformData::FontPlatformData(const FontPlatformData& src, float text_size)
                        text_size,
                        src.synthetic_bold_,
                        src.synthetic_italic_,
+                       src.text_rendering_,
                        src.orientation_) {
 }
 
@@ -84,6 +86,7 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
                                    float text_size,
                                    bool synthetic_bold,
                                    bool synthetic_italic,
+                                   TextRenderingMode text_rendering,
                                    FontOrientation orientation)
     : typeface_(typeface),
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
@@ -92,12 +95,14 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
       text_size_(text_size),
       synthetic_bold_(synthetic_bold),
       synthetic_italic_(synthetic_italic),
+      text_rendering_(text_rendering),
       orientation_(orientation) {
 #if !BUILDFLAG(IS_MAC)
   style_ = WebFontRenderStyle::GetDefault();
   auto system_style =
 #if !BUILDFLAG(IS_WIN)
-      QuerySystemRenderStyle(family_, text_size_, typeface_->fontStyle());
+      QuerySystemRenderStyle(family_, text_size_, typeface_->fontStyle(),
+                             text_rendering);
 
   // In web tests, ignore system preference for subpixel positioning,
   // or explicitly disable if requested.
@@ -135,11 +140,12 @@ bool FontPlatformData::operator==(const FontPlatformData& a) const {
          is_hash_table_deleted_value_ == a.is_hash_table_deleted_value_ &&
          synthetic_bold_ == a.synthetic_bold_ &&
          synthetic_italic_ == a.synthetic_italic_ &&
-         avoid_embedded_bitmaps_ == a.avoid_embedded_bitmaps_
+         avoid_embedded_bitmaps_ == a.avoid_embedded_bitmaps_ &&
+         text_rendering_ == a.text_rendering_ &&
 #if !BUILDFLAG(IS_MAC)
-         && style_ == a.style_
+         style_ == a.style_ &&
 #endif
-         && orientation_ == a.orientation_;
+         orientation_ == a.orientation_;
 }
 
 SkFontID FontPlatformData::UniqueID() const {
@@ -207,7 +213,8 @@ bool FontPlatformData::FontContainsCharacter(UChar32 character) {
 WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
     const std::string& family,
     float text_size,
-    SkFontStyle font_style) {
+    SkFontStyle font_style,
+    TextRenderingMode text_rendering) {
   WebFontRenderStyle result;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
@@ -219,6 +226,20 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
     Platform::Current()->GetSandboxSupport()->GetWebFontRenderStyleForStrike(
         family.data(), text_size, is_bold, is_italic,
         FontCache::DeviceScaleFactor(), &result);
+  }
+
+  // If `text-rendering: geometric-precision`, use subpixel positioning.
+  // https://svgwg.org/svg2-draft/painting.html#TextRenderingProperty
+  //
+  // TODO(crbug.com/1327530): For now, do this only for Linux/Cros to minimize
+  // the impact, and because they're the only platform that adjust these
+  // settings by different device scale factors. See the doc link in the crbug.
+  if (text_rendering == TextRenderingMode::kGeometricPrecision &&
+      result.use_anti_alias) {
+    result.use_subpixel_positioning = true;
+    result.use_hinting = false;
+    // 0 means HINTING_NONE, see |ConvertHinting| in font_service_app.cc.
+    result.hint_style = 0;
   }
 #endif
 

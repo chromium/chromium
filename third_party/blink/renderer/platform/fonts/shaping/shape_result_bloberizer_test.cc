@@ -28,6 +28,7 @@ static scoped_refptr<SimpleFontData> CreateTestSimpleFontData(
     bool force_rotation = false) {
   FontPlatformData platform_data(
       SkTypeface::MakeDefault(), std::string(), 10, false, false,
+      TextRenderingMode::kAutoTextRendering,
       force_rotation ? FontOrientation::kVerticalUpright
                      : FontOrientation::kHorizontal);
   return SimpleFontData::Create(platform_data, nullptr);

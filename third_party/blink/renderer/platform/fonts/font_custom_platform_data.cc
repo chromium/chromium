@@ -92,6 +92,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     const FontSelectionRequest& selection_request,
     const FontSelectionCapabilities& selection_capabilities,
     const OpticalSizing& optical_sizing,
+    TextRenderingMode text_rendering,
     FontOrientation orientation,
     const FontVariationSettings* variation_settings,
     const FontPalette* palette) {
@@ -290,7 +291,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
   return FontPlatformData(std::move(return_typeface), std::string(), size,
                           synthetic_bold && !base_typeface_->isBold(),
                           synthetic_italic && !base_typeface_->isItalic(),
-                          orientation);
+                          text_rendering, orientation);
 }
 
 Vector<VariationAxis> FontCustomPlatformData::GetVariationAxes() const {

@@ -1533,6 +1533,11 @@ crbug.com/1176933 wpt_internal/canvas/canvas-formattedtext-style.html [ Skip ]
 crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-1.html [ Skip ]
 crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]
 
+# DPI-independent text
+crbug.com/1327530 fast/css/text-rendering.html [ Failure ]
+crbug.com/1327530 svg/text/current-text-position-initial.html [ Failure ]
+
+
 # Failures accumulated until 2021-3-3
 crbug.com/591099 accessibility/element-role-mapping-normal.html [ Failure ]
 crbug.com/591099 external/wpt/appmanifest/icons-member/icons-member-cors-fail-manual.sub.html [ Failure ]

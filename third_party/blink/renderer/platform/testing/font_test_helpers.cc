@@ -45,7 +45,8 @@ class TestFontSelector : public FontSelector {
         font_description.IsSyntheticItalic() &&
             font_description.SyntheticItalicAllowed(),
         font_description.GetFontSelectionRequest(), normal_capabilities,
-        font_description.FontOpticalSizing(), font_description.Orientation());
+        font_description.FontOpticalSizing(), font_description.TextRendering(),
+        font_description.Orientation());
     return SimpleFontData::Create(platform_data, CustomFontData::Create());
   }
 
