@@ -135,6 +135,7 @@ AndroidVideoEncodeAccelerator::GetSupportedProfiles() {
     profile.max_resolution.SetSize(kMaxEncodeFrameWidth, kMaxEncodeFrameHeight);
     profile.max_framerate_numerator = kMaxFramerateNumerator;
     profile.max_framerate_denominator = kMaxFramerateDenominator;
+    profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     profiles.push_back(profile);
   }
   return profiles;

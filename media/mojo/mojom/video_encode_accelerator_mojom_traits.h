@@ -18,6 +18,17 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<media::mojom::VideoEncodeAcceleratorSupportedRateControlMode,
+                  media::VideoEncodeAccelerator::SupportedRateControlMode> {
+  static media::mojom::VideoEncodeAcceleratorSupportedRateControlMode ToMojom(
+      media::VideoEncodeAccelerator::SupportedRateControlMode mode);
+
+  static bool FromMojom(
+      media::mojom::VideoEncodeAcceleratorSupportedRateControlMode input,
+      media::VideoEncodeAccelerator::SupportedRateControlMode* out);
+};
+
+template <>
 struct StructTraits<
     media::mojom::VideoEncodeAcceleratorSupportedProfileDataView,
     media::VideoEncodeAccelerator::SupportedProfile> {
@@ -44,6 +55,22 @@ struct StructTraits<
   static uint32_t max_framerate_denominator(
       const media::VideoEncodeAccelerator::SupportedProfile& profile) {
     return profile.max_framerate_denominator;
+  }
+
+  static std::vector<media::VideoEncodeAccelerator::SupportedRateControlMode>
+  rate_control_modes(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    std::vector<media::VideoEncodeAccelerator::SupportedRateControlMode> modes;
+    if (profile.rate_control_modes &
+        media::VideoEncodeAccelerator::kConstantMode) {
+      modes.push_back(media::VideoEncodeAccelerator::kConstantMode);
+    }
+    if (profile.rate_control_modes &
+        media::VideoEncodeAccelerator::kVariableMode) {
+      modes.push_back(media::VideoEncodeAccelerator::kVariableMode);
+    }
+
+    return modes;
   }
 
   static const std::vector<media::SVCScalabilityMode>& scalability_modes(

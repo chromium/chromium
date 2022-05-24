@@ -391,6 +391,7 @@ VideoEncoderShim::GetSupportedProfiles() {
     // notions of denominator/numerator.
     profile.max_framerate_numerator = config.g_timebase.den;
     profile.max_framerate_denominator = config.g_timebase.num;
+    profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     profiles.push_back(profile);
   }
 
@@ -400,6 +401,7 @@ VideoEncoderShim::GetSupportedProfiles() {
     profile.max_resolution = gfx::Size(kMaxWidth, kMaxHeight);
     profile.max_framerate_numerator = config.g_timebase.den;
     profile.max_framerate_denominator = config.g_timebase.num;
+    profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     profile.profile = media::VP9PROFILE_PROFILE0;
     profiles.push_back(profile);
   }

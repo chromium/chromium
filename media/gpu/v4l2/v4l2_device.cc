@@ -2060,6 +2060,8 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
     VideoEncodeAccelerator::SupportedProfile profile;
     profile.max_framerate_numerator = 30;
     profile.max_framerate_denominator = 1;
+    // TODO(b/182240945): remove hard-coding when VBR is supported
+    profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     gfx::Size min_resolution;
     GetSupportedResolution(pixelformat, &min_resolution,
                            &profile.max_resolution);

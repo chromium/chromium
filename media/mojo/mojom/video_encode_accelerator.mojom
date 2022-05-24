@@ -36,12 +36,19 @@ import "media/mojo/mojom/video_encoder_info.mojom";
 // of these messages are acknowledged.
 
 
+enum VideoEncodeAcceleratorSupportedRateControlMode {
+  kNoMode,
+  kConstantMode,
+  kVariableMode
+};
+
 struct VideoEncodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
   gfx.mojom.Size min_resolution;
   gfx.mojom.Size max_resolution;
   uint32 max_framerate_numerator;
   uint32 max_framerate_denominator;
+  array<VideoEncodeAcceleratorSupportedRateControlMode> rate_control_modes;
   array<SVCScalabilityMode> scalability_modes;
 };
 

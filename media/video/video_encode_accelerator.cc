@@ -152,11 +152,13 @@ VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
     const gfx::Size& max_resolution,
     uint32_t max_framerate_numerator,
     uint32_t max_framerate_denominator,
+    SupportedRateControlMode rc_modes,
     const std::vector<SVCScalabilityMode>& scalability_modes)
     : profile(profile),
       max_resolution(max_resolution),
       max_framerate_numerator(max_framerate_numerator),
       max_framerate_denominator(max_framerate_denominator),
+      rate_control_modes(rc_modes),
       scalability_modes(scalability_modes) {}
 
 VideoEncodeAccelerator::SupportedProfile::SupportedProfile(
@@ -202,6 +204,7 @@ bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
          l.max_resolution == r.max_resolution &&
          l.max_framerate_numerator == r.max_framerate_numerator &&
          l.max_framerate_denominator == r.max_framerate_denominator &&
+         l.rate_control_modes == r.rate_control_modes &&
          l.scalability_modes == r.scalability_modes;
 }
 

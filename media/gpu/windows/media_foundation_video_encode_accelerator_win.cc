@@ -47,6 +47,9 @@ namespace media {
 namespace {
 const uint32_t kDefaultGOPLength = 3000;
 const uint32_t kDefaultTargetBitrate = 5000000u;
+const VideoEncodeAccelerator::SupportedRateControlMode kSupportedProfileModes =
+    VideoEncodeAccelerator::kConstantMode |
+    VideoEncodeAccelerator::kVariableMode;
 const size_t kMaxFrameRateNumerator = 30;
 const size_t kMaxFrameRateDenominator = 1;
 const size_t kMaxResolutionWidth = 1920;
@@ -321,6 +324,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   // fallback as well.
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
+  profile.rate_control_modes = kSupportedProfileModes;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
   if (svc_supported) {
     profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);

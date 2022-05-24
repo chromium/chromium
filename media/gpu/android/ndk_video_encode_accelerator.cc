@@ -186,6 +186,9 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
   supported_profile.max_resolution.SetSize(1920, 1080);
   supported_profile.max_framerate_numerator = 30;
   supported_profile.max_framerate_denominator = 1;
+  supported_profile.rate_control_modes =
+      media::VideoEncodeAccelerator::kConstantMode |
+      media::VideoEncodeAccelerator::kVariableMode;
 
   for (auto profile : {H264PROFILE_BASELINE, VP8PROFILE_ANY}) {
     if (!IsThereGoodMediaCodecFor(VideoCodecProfileToVideoCodec(profile)))

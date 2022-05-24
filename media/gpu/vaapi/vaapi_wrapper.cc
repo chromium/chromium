@@ -1551,6 +1551,8 @@ VaapiWrapper::GetSupportedEncodeProfiles() {
     constexpr int kMaxEncoderFramerate = 30;
     profile.max_framerate_numerator = kMaxEncoderFramerate;
     profile.max_framerate_denominator = 1;
+    // TODO(b/193680666): remove hard-coding when VBR is supported
+    profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
     profile.scalability_modes =
         GetSupportedScalabilityModes(media_profile, va_profile);
     profiles.push_back(profile);
