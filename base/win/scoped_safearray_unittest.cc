@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <utility>
 #include <vector>
 
 #include "base/test/gtest_util.h"

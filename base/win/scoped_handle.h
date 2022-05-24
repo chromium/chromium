@@ -5,8 +5,6 @@
 #ifndef BASE_WIN_SCOPED_HANDLE_H_
 #define BASE_WIN_SCOPED_HANDLE_H_
 
-#include "base/win/windows_types.h"
-
 #include <ostream>
 
 #include "base/base_export.h"
@@ -14,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
+#include "base/win/windows_types.h"
 #include "build/build_config.h"
 
 // TODO(rvargas): remove this with the rest of the verifier.

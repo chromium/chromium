@@ -18,7 +18,7 @@
 namespace {
 class ScopedProcessTerminator {
  public:
-  ScopedProcessTerminator(const PROCESS_INFORMATION& process_info)
+  explicit ScopedProcessTerminator(const PROCESS_INFORMATION& process_info)
       : process_info_(process_info) {}
 
   ScopedProcessTerminator(const ScopedProcessTerminator&) = delete;

@@ -28,8 +28,11 @@ class BASE_EXPORT MessageWindow {
   // Implement this callback to handle messages received by the message window.
   // If the callback returns |false|, the first four parameters are passed to
   // DefWindowProc(). Otherwise, |*result| is returned by the window procedure.
-  using MessageCallback = base::RepeatingCallback<
-      bool(UINT message, WPARAM wparam, LPARAM lparam, LRESULT* result)>;
+  using MessageCallback =
+      base::RepeatingCallback<bool(UINT message,
+                                   WPARAM wparam,
+                                   LPARAM lparam,
+                                   LRESULT* result)>;  // NOLINT
 
   MessageWindow();
 

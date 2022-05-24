@@ -74,7 +74,6 @@ class BASE_EXPORT EtwTraceProperties {
   // larger buffer to allow storing the logger name and logger file
   // name contiguously with the structure.
   union {
-   public:
     // Our properties header.
     EVENT_TRACE_PROPERTIES properties_;
     // The actual size of the buffer is forced by this member.

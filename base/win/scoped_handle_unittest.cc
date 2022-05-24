@@ -6,6 +6,9 @@
 
 #include <winternl.h>
 
+#include <string>
+#include <utility>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/handle_hooks_win.h"

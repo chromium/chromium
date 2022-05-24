@@ -7,6 +7,8 @@
 
 #include <hstring.h>
 
+#include <string>
+
 #include "base/scoped_generic.h"
 #include "base/strings/string_piece_forward.h"
 

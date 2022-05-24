@@ -9,6 +9,7 @@
 #include <wrl/implements.h>
 
 #include <map>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -366,8 +367,7 @@ class Map
   IFACEMETHODIMP Clear() override {
     map_.clear();
     NotifyMapChanged(
-        ABI::Windows::Foundation::Collections::CollectionChange_Reset,
-        0);  // NOLINT(modernize-use-nullptr): AbiK may not be a pointer.
+        ABI::Windows::Foundation::Collections::CollectionChange_Reset, 0);
     return S_OK;
   }
 

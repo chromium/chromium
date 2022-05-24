@@ -47,9 +47,9 @@ void* return_address;
 NOINLINE void Bug() {
   void* pvAddressOfReturnAddress = _AddressOfReturnAddress();
   if (!return_address)
-    return_address = *(void**)pvAddressOfReturnAddress;
+    return_address = *reinterpret_cast<void**>(pvAddressOfReturnAddress);
   else
-    *(void**)pvAddressOfReturnAddress = return_address;
+    *reinterpret_cast<void**>(pvAddressOfReturnAddress) = return_address;
 }
 
 NOINLINE void A() {

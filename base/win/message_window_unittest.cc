@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/win/message_window.h"
+
+#include <windows.h>
+
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 // To avoid conflicts with the macro from the Windows SDK...
 #undef FindWindow

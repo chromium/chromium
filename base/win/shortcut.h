@@ -5,8 +5,7 @@
 #ifndef BASE_WIN_SHORTCUT_H_
 #define BASE_WIN_SHORTCUT_H_
 
-#include "guiddef.h"
-
+#include <guiddef.h>
 #include <stdint.h>
 
 #include "base/base_export.h"

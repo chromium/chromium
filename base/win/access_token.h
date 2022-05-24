@@ -229,7 +229,7 @@ class BASE_EXPORT AccessToken {
   bool IsIdentification() const;
 
  private:
-  AccessToken(HANDLE token);
+  explicit AccessToken(HANDLE token);
   ScopedHandle token_;
 };
 

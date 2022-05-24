@@ -19,15 +19,15 @@ extern "C" {
 
 // typedef and define the most commonly used Windows integer types.
 
-typedef unsigned long DWORD;
-typedef long LONG;
+typedef unsigned long DWORD;  // NOLINT(runtime/int)
+typedef long LONG;            // NOLINT(runtime/int)
 typedef __int64 LONGLONG;
 typedef unsigned __int64 ULONGLONG;
 
 #define VOID void
 typedef char CHAR;
-typedef short SHORT;
-typedef long LONG;
+typedef short SHORT;  // NOLINT(runtime/int)
+typedef long LONG;    // NOLINT(runtime/int)
 typedef int INT;
 typedef unsigned int UINT;
 typedef unsigned int* PUINT;
@@ -39,7 +39,7 @@ typedef int BOOL;
 typedef unsigned char BYTE;
 typedef BYTE BOOLEAN;
 typedef DWORD ULONG;
-typedef unsigned short WORD;
+typedef unsigned short WORD;  // NOLINT(runtime/int)
 typedef WORD UWORD;
 typedef WORD ATOM;
 
@@ -53,15 +53,15 @@ typedef unsigned __int64 ULONG_PTR, *PULONG_PTR;
 typedef __w64 int INT_PTR, *PINT_PTR;
 typedef __w64 unsigned int UINT_PTR, *PUINT_PTR;
 
-typedef __w64 long LONG_PTR, *PLONG_PTR;
-typedef __w64 unsigned long ULONG_PTR, *PULONG_PTR;
+typedef __w64 long LONG_PTR, *PLONG_PTR;             // NOLINT(runtime/int)
+typedef __w64 unsigned long ULONG_PTR, *PULONG_PTR;  // NOLINT(runtime/int)
 #endif
 
 typedef UINT_PTR WPARAM;
 typedef LONG_PTR LPARAM;
 typedef LONG_PTR LRESULT;
 #define LRESULT LONG_PTR
-typedef _Return_type_success_(return >= 0) long HRESULT;
+typedef _Return_type_success_(return >= 0) long HRESULT;  // NOLINT(runtime/int)
 
 typedef ULONG_PTR SIZE_T, *PSIZE_T;
 typedef LONG_PTR SSIZE_T, *PSSIZE_T;

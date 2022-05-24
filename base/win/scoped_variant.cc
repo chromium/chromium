@@ -40,7 +40,7 @@ ScopedVariant::ScopedVariant(const wchar_t* str, UINT length) {
   var_.bstrVal = ::SysAllocStringLen(str, length);
 }
 
-ScopedVariant::ScopedVariant(long value, VARTYPE vt) {
+ScopedVariant::ScopedVariant(long value, VARTYPE vt) {  // NOLINT(runtime/int)
   var_.vt = vt;
   var_.lVal = value;
 }
