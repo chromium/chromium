@@ -1607,8 +1607,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest,
 // Printing preview a web page with an iframe from an isolated origin.
 // This test passes whenever the print preview is rendered. This should not be
 // a timed out test which indicates the print preview hung or crash.
-IN_PROC_BROWSER_TEST_F(IsolateOriginsPrintBrowserTest,
-                       DISABLED_PrintIsolatedSubframe) {
+IN_PROC_BROWSER_TEST_F(IsolateOriginsPrintBrowserTest, PrintIsolatedSubframe) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL(
       "/printing/content_with_same_site_iframe.html"));
