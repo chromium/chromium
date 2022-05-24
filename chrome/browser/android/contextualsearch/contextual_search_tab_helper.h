@@ -41,8 +41,7 @@ class ContextualSearchTabHelper {
   // Call when the preferences change.
   void OnContextualSearchPrefChanged();
   // Call when an unhandled tap needs to show the UI for a tap at the given
-  // position, with the given |font_size_dips|, and |text_run_length| of the
-  // enclosing element.
+  // position.
   void OnShowUnhandledTapUIIfNeeded(int x_px, int y_px);
 
   JavaObjectWeakGlobalRef weak_java_ref_;

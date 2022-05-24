@@ -371,7 +371,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
         frame_->GetPage()->GetVisualViewport().RootFrameToViewport(
             tapped_position);
     ShowUnhandledTapUIIfNeeded(dom_tree_changed, style_changed, tapped_node,
-                               tapped_element, tapped_position_in_viewport);
+                               tapped_position_in_viewport);
   }
 
   return event_result;
@@ -557,11 +557,9 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
     bool dom_tree_changed,
     bool style_changed,
     Node* tapped_node,
-    Element* tapped_element,
     const gfx::Point& tapped_position_in_viewport) {
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
   WebNode web_node(tapped_node);
-  // TODO(donnd): roll in ML-identified signals for suppression once identified.
   bool should_trigger = !dom_tree_changed && !style_changed &&
                         tapped_node->IsTextNode() &&
                         !web_node.IsContentEditable() &&
@@ -574,22 +572,9 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
     frame_->GetBrowserInterfaceBroker().GetInterface(
         provider.BindNewPipeAndPassReceiver());
 
-    // Extract text run-length.
-    int text_run_length = 0;
-    if (tapped_element)
-      text_run_length = tapped_element->textContent().length();
-
-    int font_size = 0;
-    // Extract text characteristics from the computed style of the tapped node.
-    if (const ComputedStyle* style = tapped_node->GetComputedStyle())
-      font_size = style->FontSize();
-
-    // TODO(donnd): get the text color and style and return,
-    // e.g. style->GetFontWeight() to return bold.  Need italic, color, etc.
-
     // Notify the Browser.
-    auto tapped_info = mojom::blink::UnhandledTapInfo::New(
-        tapped_position_in_viewport, font_size, text_run_length);
+    auto tapped_info =
+        mojom::blink::UnhandledTapInfo::New(tapped_position_in_viewport);
     provider->ShowUnhandledTapUIIfNeeded(std::move(tapped_info));
   }
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)

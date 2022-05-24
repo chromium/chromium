@@ -4828,27 +4828,19 @@ class MockUnhandledTapNotifierImpl : public mojom::blink::UnhandledTapNotifier {
       mojom::blink::UnhandledTapInfoPtr unhandled_tap_info) override {
     was_unhandled_tap_ = true;
     tapped_position_ = unhandled_tap_info->tapped_position_in_viewport;
-    element_text_run_length_ = unhandled_tap_info->element_text_run_length;
-    font_size_ = unhandled_tap_info->font_size_in_pixels;
   }
   bool WasUnhandledTap() const { return was_unhandled_tap_; }
   int GetTappedXPos() const { return tapped_position_.x(); }
   int GetTappedYPos() const { return tapped_position_.y(); }
-  int GetFontSize() const { return font_size_; }
-  int GetElementTextRunLength() const { return element_text_run_length_; }
   void Reset() {
     was_unhandled_tap_ = false;
     tapped_position_ = gfx::Point();
-    element_text_run_length_ = 0;
-    font_size_ = 0;
     receiver_.reset();
   }
 
  private:
   bool was_unhandled_tap_ = false;
   gfx::Point tapped_position_;
-  int element_text_run_length_ = 0;
-  int font_size_ = 0;
 
   mojo::Receiver<mojom::blink::UnhandledTapNotifier> receiver_{this};
 };
@@ -4934,8 +4926,6 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeeded) {
   EXPECT_TRUE(mock_notifier_.WasUnhandledTap());
   EXPECT_EQ(64, mock_notifier_.GetTappedXPos());
   EXPECT_EQ(278, mock_notifier_.GetTappedYPos());
-  EXPECT_EQ(16, mock_notifier_.GetFontSize());
-  EXPECT_EQ(7, mock_notifier_.GetElementTextRunLength());
 
   // Test basic tap handling and notification.
   Tap("target");
@@ -4963,8 +4953,6 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeeded) {
   constexpr float expected_y = 82 * scale - (scale * visual_y);
   EXPECT_EQ(expected_x, mock_notifier_.GetTappedXPos());
   EXPECT_EQ(expected_y, mock_notifier_.GetTappedYPos());
-  EXPECT_EQ(16, mock_notifier_.GetFontSize());
-  EXPECT_EQ(28, mock_notifier_.GetElementTextRunLength());
 }
 
 TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithMutateDom) {
@@ -5004,16 +4992,6 @@ TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithNonTriggeringNodes) {
 
   Tap("focusable");
   EXPECT_FALSE(mock_notifier_.WasUnhandledTap());
-}
-
-TEST_F(ShowUnhandledTapTest, ShowUnhandledTapUIIfNeededWithTextSizes) {
-  Tap("large");
-  EXPECT_TRUE(mock_notifier_.WasUnhandledTap());
-  EXPECT_EQ(20, mock_notifier_.GetFontSize());
-
-  Tap("small");
-  EXPECT_TRUE(mock_notifier_.WasUnhandledTap());
-  EXPECT_EQ(10, mock_notifier_.GetFontSize());
 }
 
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)
