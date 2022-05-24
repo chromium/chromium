@@ -1635,10 +1635,6 @@ crbug.com/958381 [ Mac ] fragmentation/single-line-cells-paginated-with-text.htm
 
 # ====== MathMLCore-only tests from here ======
 
-# This test fail because we don't properly center elements in MathML tables.
-crbug.com/1125111 external/wpt/mathml/presentation-markup/tables/table-003.html [ Failure ]
-crbug.com/1125111 external/wpt/mathml/presentation-markup/direction/direction-006.html [ Failure ]
-
 # These tests fail because some CSS properties affect MathML layout.
 crbug.com/1227601 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Failure Timeout ]
 crbug.com/1227598 external/wpt/mathml/relations/css-styling/width-height-001.html [ Failure ]
