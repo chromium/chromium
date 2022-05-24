@@ -397,6 +397,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.AccountStorage.MoveToAccountStorePasswordsCount"
     units="credentials" expires_after="2022-05-31">
+  <obsolete>
+    Obsolete since M104.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
