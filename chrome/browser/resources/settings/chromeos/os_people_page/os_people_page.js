@@ -19,7 +19,6 @@ import '../../people_page/sync_page.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
-import '../parental_controls_page/parental_controls_page.js';
 import './account_manager.js';
 import './fingerprint_list.js';
 import './lock_screen.js';
@@ -43,6 +42,7 @@ import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
+import {SettingsParentalControlsPageElement} from '../parental_controls_page/parental_controls_page.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';

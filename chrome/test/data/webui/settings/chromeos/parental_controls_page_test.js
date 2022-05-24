@@ -46,7 +46,7 @@ suite('Chrome OS parental controls page setup item tests', function() {
 
   setup(function() {
     parentalControlsBrowserProxy = new TestParentalControlsBrowserProxy();
-    ParentalControlsBrowserProxyImpl.instance_ = parentalControlsBrowserProxy;
+    ParentalControlsBrowserProxyImpl.setInstance(parentalControlsBrowserProxy);
 
     PolymerTest.clearBody();
     parentalControlsPage =
@@ -62,8 +62,8 @@ suite('Chrome OS parental controls page setup item tests', function() {
 
   test('parental controls page enabled when online', () => {
     // Setup button is shown and enabled.
-    const setupButton =
-        assert(parentalControlsPage.$$('#parental-controls-item cr-button'));
+    const setupButton = assert(parentalControlsPage.shadowRoot.querySelector(
+        '#parental-controls-item cr-button'));
 
     setupButton.click();
 
@@ -78,8 +78,8 @@ suite('Chrome OS parental controls page setup item tests', function() {
     // Simulate going offline
     window.dispatchEvent(new CustomEvent('offline'));
     // Setup button is shown but disabled.
-    const setupButton =
-        assert(parentalControlsPage.$$('#parental-controls-item cr-button'));
+    const setupButton = assert(parentalControlsPage.shadowRoot.querySelector(
+        '#parental-controls-item cr-button'));
     assertTrue(setupButton.disabled);
 
     setupButton.click();
@@ -95,8 +95,8 @@ suite('Chrome OS parental controls page setup item tests', function() {
     // Simulate going offline
     window.dispatchEvent(new CustomEvent('offline'));
     // Setup button is shown but disabled.
-    const setupButton =
-        assert(parentalControlsPage.$$('#parental-controls-item cr-button'));
+    const setupButton = assert(parentalControlsPage.shadowRoot.querySelector(
+        '#parental-controls-item cr-button'));
     assertTrue(setupButton.disabled);
 
     // Come back online.
@@ -124,7 +124,7 @@ suite('Chrome OS parental controls page child account tests', function() {
 
   setup(async function() {
     parentalControlsBrowserProxy = new TestParentalControlsBrowserProxy();
-    ParentalControlsBrowserProxyImpl.instance_ = parentalControlsBrowserProxy;
+    ParentalControlsBrowserProxyImpl.setInstance(parentalControlsBrowserProxy);
 
     PolymerTest.clearBody();
     parentalControlsPage =
@@ -140,8 +140,8 @@ suite('Chrome OS parental controls page child account tests', function() {
 
   test('parental controls page child view shown to child account', () => {
     // Get the link row.
-    const linkRow =
-        assert(parentalControlsPage.$$('#parental-controls-item cr-link-row'));
+    const linkRow = assert(parentalControlsPage.shadowRoot.querySelector(
+        '#parental-controls-item cr-link-row'));
 
     linkRow.click();
     // Ensure that the request to launch FLH went through.

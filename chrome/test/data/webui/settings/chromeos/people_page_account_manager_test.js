@@ -456,7 +456,7 @@ suite('AccountManagerAccountChildAccountTests', function() {
 
   setup(function() {
     parentalControlsBrowserProxy = new TestParentalControlsBrowserProxy();
-    ParentalControlsBrowserProxyImpl.instance_ = parentalControlsBrowserProxy;
+    ParentalControlsBrowserProxyImpl.setInstance(parentalControlsBrowserProxy);
     PolymerTest.clearBody();
 
     accountManager = document.createElement('settings-account-manager');

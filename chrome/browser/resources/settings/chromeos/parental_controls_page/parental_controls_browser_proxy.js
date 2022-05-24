@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * @fileoverview
  * Browser Proxy for Parental Controls functions.
  */
 
-  /** @interface */
+/** @interface */
 export class ParentalControlsBrowserProxy {
   /**
    * Shows the Add Supervsion dialog.
@@ -35,6 +33,17 @@ export class ParentalControlsBrowserProxyImpl {
   launchFamilyLinkSettings() {
     chrome.send('launchFamilyLinkSettings');
   }
+
+  /** @return {!ParentalControlsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new ParentalControlsBrowserProxyImpl());
+  }
+
+  /** @param {!ParentalControlsBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(ParentalControlsBrowserProxyImpl);
+/** @type {?ParentalControlsBrowserProxy} */
+let instance = null;
