@@ -129,9 +129,10 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
     static constexpr char kObserveEmptyReportsTableScript[] = R"(
     let table = document.querySelector('#reportTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText === "No sent or pending reports.") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -170,8 +171,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("feature-status-content");
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (status.innerText.trim() === "enabled") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -202,8 +204,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("feature-status-content");
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (status.innerText.trim() === "disabled") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -225,10 +228,11 @@ IN_PROC_BROWSER_TEST_F(
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText ===
           "No sources.") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -298,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 8 &&
           table.children[0].children[0].innerText === $1 &&
           table.children[0].children[7].innerText === "Navigation" &&
@@ -321,6 +325,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[5].children[1].innerText === "Rejected: insufficient source capacity" &&
           table.children[6].children[1].innerText === "Rejected: insufficient unique destination capacity" &&
           table.children[7].children[1].innerText === "Rejected: excessive reporting origins") {
+        obs.disconnect();
         document.title = $3;
       }
     });
@@ -356,8 +361,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("debug-mode-content");
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (status.innerText.trim() === "") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -383,8 +389,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // results are returned in promises.
   static constexpr char wait_script[] = R"(
     let status = document.getElementById("debug-mode-content");
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (status.innerText.trim() !== "") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -466,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
@@ -484,6 +491,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[5].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
+          obs.disconnect();
           document.title = $1;
         }
       });
@@ -499,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
@@ -517,6 +525,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
+          obs.disconnect();
           document.title = $1;
         }
       });
@@ -535,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
@@ -553,6 +562,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[5].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
+          obs.disconnect();
           document.title = $1;
         }
       });
@@ -601,10 +611,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#reportTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 2 &&
           table.children[0].children[6].innerText === "7" &&
           table.children[1].children[2].innerText === "Sent: HTTP 200") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -650,10 +661,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 2 &&
           table.children[0].children[0].innerText === "5" &&
           table.children[1].children[0].innerText === "6") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -671,9 +683,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kObserveEmptySourcesTableScript[] = R"(
     let table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText === "No sources.") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -714,9 +727,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#reportTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[6].innerText === "7") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -836,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(
     static constexpr char wait_script[] = R"(
       let table = document.querySelector('#aggregatableReportTable')
           .shadowRoot.querySelector('tbody');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-aggregate-attribution" &&
@@ -849,6 +863,7 @@ IN_PROC_BROWSER_TEST_F(
             table.children[5].children[2].innerText === "Network error: ERR_INTERNET_DISCONNECTED" &&
             table.children[5].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution") {
+          obs.disconnect();
           document.title = $1;
         }
       });
@@ -898,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
       let table = document.querySelector('#triggerTable')
           .shadowRoot.querySelector('tbody');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 1 &&
             table.children[0].children[1].innerText === "Success: Report stored" &&
             table.children[0].children[2].innerText === "Success: Report stored" &&
@@ -907,6 +922,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[5].innerText === "1" &&
             table.children[0].children[6].innerText === '{ "a": [  "b" ]}' &&
             table.children[0].children[7].innerText === $2) {
+          obs.disconnect();
           document.title = $1;
         }
       });
@@ -969,8 +985,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#aggregatableReportTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1) {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -989,9 +1006,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char kObserveEmptyReportsTableScript[] = R"(
     let table = document.querySelector('#aggregatableReportTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver(() => {
+    let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText === "No sent or pending reports.") {
+        obs.disconnect();
         document.title = $1;
       }
     });
@@ -1045,11 +1063,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       let label = document.querySelector('#show-debug-event-reports span');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 2 &&
             table.children[0].children[6].innerText === "1" &&
             table.children[1].children[6].innerText === "2" &&
             label.innerText === '') {
+          obs.disconnect();
           document.title = $1;
         }
       });
@@ -1083,10 +1102,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector('#reportTable')
           .shadowRoot.querySelector('tbody');
       let label = document.querySelector('#show-debug-event-reports span');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 1 &&
             table.children[0].children[6].innerText === "2" &&
             label.innerText === ' (2 hidden)') {
+          obs.disconnect();
           document.title = $1;
         }
       });
@@ -1110,12 +1130,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let table = document.querySelector('#reportTable').shadowRoot
           .querySelector('tbody');
       let label = document.querySelector('#show-debug-event-reports span');
-      let obs = new MutationObserver(() => {
+      let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 3 &&
             table.children[0].children[6].innerText === "1" &&
             table.children[1].children[6].innerText === "2" &&
             table.children[2].children[6].innerText === "3" &&
             label.innerText === '') {
+          obs.disconnect();
           document.title = $1;
         }
       });
