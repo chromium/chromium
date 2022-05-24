@@ -16,6 +16,8 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 namespace blink {
 class StorageKey;
@@ -26,6 +28,15 @@ class DownloadItem;
 }
 
 namespace content {
+
+class IndexedDBInternalsUI;
+
+class IndexedDBInternalsUIConfig
+    : public DefaultWebUIConfig<IndexedDBInternalsUI> {
+ public:
+  IndexedDBInternalsUIConfig()
+      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIIndexedDBInternalsHost) {}
+};
 
 // The implementation for the chrome://indexeddb-internals page.
 class IndexedDBInternalsUI : public WebUIController {

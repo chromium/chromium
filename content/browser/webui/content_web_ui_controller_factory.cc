@@ -6,17 +6,14 @@
 
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
-#include "content/browser/indexed_db/indexed_db_internals_ui.h"
 #include "content/browser/media/media_internals_ui.h"
 #include "content/browser/metrics/histograms_internals_ui.h"
 #include "content/browser/net/network_errors_listing_ui.h"
 #include "content/browser/prerender/prerender_internals_ui.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/quota/quota_internals_ui.h"
-#include "content/browser/service_worker/service_worker_internals_ui.h"
 #include "content/browser/tracing/tracing_ui.h"
 #include "content/browser/ukm_internals_ui.h"
-#include "content/browser/webrtc/webrtc_internals_ui.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -32,14 +29,11 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
   if (!url.SchemeIs(kChromeUIScheme))
     return WebUI::kNoWebUI;
 
-  if (url.host_piece() == kChromeUIWebRTCInternalsHost ||
+  if (url.host_piece() == kChromeUIHistogramHost ||
 #if !BUILDFLAG(IS_ANDROID)
       url.host_piece() == kChromeUITracingHost ||
 #endif
-      url.host_piece() == kChromeUIHistogramHost ||
-      url.host_piece() == kChromeUIIndexedDBInternalsHost ||
       url.host_piece() == kChromeUIMediaInternalsHost ||
-      url.host_piece() == kChromeUIServiceWorkerInternalsHost ||
       url.host_piece() == kChromeUINetworkErrorsListingHost ||
       url.host_piece() == kChromeUIPrerenderInternalsHost ||
       url.host_piece() == kChromeUIProcessInternalsHost ||
@@ -64,18 +58,12 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return nullptr;
   if (url.host_piece() == kChromeUIHistogramHost)
     return std::make_unique<HistogramsInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIIndexedDBInternalsHost)
-    return std::make_unique<IndexedDBInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIServiceWorkerInternalsHost)
-    return std::make_unique<ServiceWorkerInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUINetworkErrorsListingHost)
     return std::make_unique<NetworkErrorsListingUI>(web_ui);
 #if !BUILDFLAG(IS_ANDROID)
   if (url.host_piece() == kChromeUITracingHost)
     return std::make_unique<TracingUI>(web_ui);
 #endif
-  if (url.host_piece() == kChromeUIWebRTCInternalsHost)
-    return std::make_unique<WebRTCInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIPrerenderInternalsHost)
     return std::make_unique<PrerenderInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIProcessInternalsHost)

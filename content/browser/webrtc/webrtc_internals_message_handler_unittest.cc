@@ -8,11 +8,13 @@
 #include <string>
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/webrtc/webrtc_internals.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,6 +68,10 @@ class WebRtcInternalsMessageHandlerTest : public RenderViewHostTestHarness {
   }
 
   std::unique_ptr<TestWebUI> web_ui_;
+
+  // Unregister the existing WebUIConfig so that the test uses the test WebUI.
+  ScopedWebUIConfigRegistration config_{
+      GURL(base::StrCat({"chrome://", kChromeUIWebRTCInternalsHost}))};
 };
 
 TEST_F(WebRtcInternalsMessageHandlerTest, DontRunJSBeforeNavigationCommitted) {

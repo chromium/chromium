@@ -106,9 +106,15 @@ WebUIConfig* WebUIConfigMap::GetConfig(BrowserContext* browser_context,
   return config.get();
 }
 
-void WebUIConfigMap::RemoveForTesting(const url::Origin& origin) {
-  DCHECK(base::Contains(configs_map_, origin));
-  configs_map_.erase(origin);
+std::unique_ptr<WebUIConfig> WebUIConfigMap::RemoveForTesting(
+    const url::Origin& origin) {
+  auto it = configs_map_.find(origin);
+  if (it == configs_map_.end())
+    return nullptr;
+
+  auto webui_config = std::move(it->second);
+  configs_map_.erase(it);
+  return webui_config;
 }
 
 }  // namespace content

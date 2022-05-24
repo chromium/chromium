@@ -14,6 +14,26 @@
 
 namespace content {
 
+namespace {
+
+void AddWebUIConfig(std::unique_ptr<WebUIConfig> webui_config) {
+  auto& config_map = WebUIConfigMap::GetInstance();
+
+  if (webui_config->scheme() == kChromeUIScheme) {
+    config_map.AddWebUIConfig(std::move(webui_config));
+    return;
+  }
+
+  if (webui_config->scheme() == kChromeUIUntrustedScheme) {
+    config_map.AddUntrustedWebUIConfig(std::move(webui_config));
+    return;
+  }
+
+  NOTREACHED();
+}
+
+}  // namespace
+
 ScopedWebUIControllerFactoryRegistration::
     ScopedWebUIControllerFactoryRegistration(
         content::WebUIControllerFactory* factory,
@@ -37,23 +57,35 @@ ScopedWebUIControllerFactoryRegistration::
 
 ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
     std::unique_ptr<WebUIConfig> webui_config)
-    : webui_config_origin_(url::Origin::Create(GURL(
-          base::StrCat({webui_config->scheme(), url::kStandardSchemeSeparator,
-                        webui_config->host()})))) {
-  if (webui_config_origin_.scheme() == kChromeUIScheme) {
-    WebUIConfigMap::GetInstance().AddWebUIConfig(std::move(webui_config));
-    return;
-  }
-  if (webui_config_origin_.scheme() == kChromeUIUntrustedScheme) {
-    WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-        std::move(webui_config));
-    return;
-  }
-  NOTREACHED();
+    : ScopedWebUIConfigRegistration(
+          GURL(base::StrCat({webui_config->scheme(),
+                             url::kStandardSchemeSeparator,
+                             webui_config->host()})),
+          std::move(webui_config)) {}
+
+ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
+    const GURL& webui_origin)
+    : ScopedWebUIConfigRegistration(webui_origin,
+                                    /*webui_config=*/nullptr) {}
+
+ScopedWebUIConfigRegistration::ScopedWebUIConfigRegistration(
+    const GURL& webui_origin,
+    std::unique_ptr<WebUIConfig> webui_config)
+    : webui_config_origin_(url::Origin::Create(webui_origin)) {
+  auto& config_map = WebUIConfigMap::GetInstance();
+  replaced_webui_config_ = config_map.RemoveForTesting(webui_config_origin_);
+
+  if (webui_config != nullptr)
+    AddWebUIConfig(std::move(webui_config));
 }
 
 ScopedWebUIConfigRegistration::~ScopedWebUIConfigRegistration() {
   WebUIConfigMap::GetInstance().RemoveForTesting(webui_config_origin_);
+
+  // If we replaced a WebUIConfig, re-register it to keep the global state
+  // clean for future tests.
+  if (replaced_webui_config_ != nullptr)
+    AddWebUIConfig(std::move(replaced_webui_config_));
 }
 
 void CheckForLeakedWebUIRegistrations::OnTestStart(
