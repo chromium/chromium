@@ -125,7 +125,8 @@ BackgroundBridge.CommandHandler = {
    */
   async onCommand(command) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.COMMAND_HANDLER, BridgeActions.ON_COMMAND, command);
+        BridgeConstants.CommandHandler.TARGET,
+        BridgeConstants.CommandHandler.Action.ON_COMMAND, command);
   },
 };
 

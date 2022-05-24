@@ -16,7 +16,6 @@ BridgeTargets = {
   CHROMEVOX_BACKGROUND: 'ChromeVoxBackground',
   CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
-  COMMAND_HANDLER: 'CommandHandler',
   EVENT_SOURCE_STATE: 'EventSourceState',
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
   GESTURE_COMMAND_HANDLER: 'GestureCommandHandler',
@@ -50,6 +49,15 @@ BridgeConstants = {
       SET_ENABLED: 'setEnabled',
     },
   },
+
+  CommandHandler: {
+    /** @public {BridgeTarget} */
+    TARGET: 'CommandHandler',
+    /** @enum {string} */
+    Action: {
+      ON_COMMAND: 'onCommand',
+    },
+  },
 };
 
 /**
@@ -74,7 +82,6 @@ BridgeActions = {
   INCREMENTAL_SEARCH: 'incrementalSearch',
   NODE_MENU_CALLBACK: 'nodeMenuCallback',
   NOTIFY_EVENT_STREAM_FILTER_CHANGED: 'notifyEventStreamFilterChanged',
-  ON_COMMAND: 'onCommand',
   ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
@@ -90,6 +97,7 @@ BridgeActions = {
  * The action that the message is requesting be performed.
  * @typedef {BridgeActions |
  *           BridgeConstants.BrailleBackground.Action |
- *           BridgeConstants.BrailleCommandHandler.Action}
+ *           BridgeConstants.BrailleCommandHandler.Action |
+ *           BridgeConstants.CommandHandler.Action}
  */
 BridgeAction;
