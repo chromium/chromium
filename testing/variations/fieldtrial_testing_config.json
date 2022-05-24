@@ -5293,6 +5293,26 @@
             ]
         }
     ],
+    "NaviOnboarding": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "NoBackground-ForYou1",
+                    "params": {
+                        "new-user-modules": "nux-google-apps,nux-set-as-default,signin-view",
+                        "onboarding-group": "NoBackgroundSynthetic-ForYou1",
+                        "returning-user-modules": "nux-set-as-default"
+                    },
+                    "enable_features": [
+                        "NuxOnboarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbySharingOnePageOnboarding": [
         {
             "platforms": [
