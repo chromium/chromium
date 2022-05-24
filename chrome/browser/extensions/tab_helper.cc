@@ -426,7 +426,7 @@ void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {
   // creation, the renderer-side Frame object would not have been created yet.
   // We should wait for RenderFrameCreated() to happen, to avoid sending this
   // message twice.
-  if (render_frame_host->IsRenderFrameCreated()) {
+  if (render_frame_host->IsRenderFrameLive()) {
     SessionID id = sessions::SessionTabHelper::IdForTab(web_contents());
     CHECK(id.is_valid());
     ExtensionWebContentsObserver::GetForWebContents(web_contents())

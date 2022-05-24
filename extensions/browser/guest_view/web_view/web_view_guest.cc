@@ -983,7 +983,7 @@ void WebViewGuest::RenderFrameHostChanged(content::RenderFrameHost* old_host,
   // remove live RenderFrameHosts here, as they could still need their
   // WebViewRendererState entry while in pending deletion state.  For those
   // cases, we rely on calling RemoveGuest() from RenderFrameDeleted().
-  if (!old_host->IsRenderFrameCreated()) {
+  if (!old_host->IsRenderFrameLive()) {
     WebViewRendererState::GetInstance()->RemoveGuest(
         old_host->GetProcess()->GetID(), old_host->GetRoutingID());
   }
