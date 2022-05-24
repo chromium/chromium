@@ -870,7 +870,6 @@ public class LibraryLoader {
     }
 
     @VisibleForTesting
-    // After Android M, this function is likely a no-op.
     protected void loadNonMainDex() {
         if (mLoadState == LoadState.LOADED) return;
         synchronized (mNonMainDexLock) {
@@ -878,6 +877,7 @@ public class LibraryLoader {
             if (mLoadState == LoadState.LOADED) return;
             try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadNonMainDex")) {
                 if (!JNIUtils.isSelectiveJniRegistrationEnabled()) {
+                    // On M+ the native symbols are exported, and registering natives seems fast.
                     LibraryLoaderJni.get().registerNonMainDexJni();
                 }
                 mLoadState = LoadState.LOADED;
