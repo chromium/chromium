@@ -4644,6 +4644,14 @@
       },
     },
 
+    'pytype_tests': {
+      'gpu_pytype': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+    },
+
     'rendering_desktop_representative_perf_tests_isolated_scripts': {
       'rendering_representative_perf_tests': {
         'isolate_name': 'rendering_representative_perf_tests',
@@ -6017,6 +6025,7 @@
       'desktop_chromium_isolated_scripts',
       'linux_specific_chromium_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
+      'pytype_tests',
       'telemetry_perf_unittests_isolated_scripts',
       'vulkan_swiftshader_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',

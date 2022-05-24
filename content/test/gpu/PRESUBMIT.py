@@ -11,9 +11,10 @@ for more details about the presubmit API built into depot_tools.
 USE_PYTHON3 = True
 
 EXTRA_PATHS_COMPONENTS = [
-    tuple(['build']),
+    ('build', ),
     ('build', 'fuchsia'),
-    tuple(['testing']),
+    ('build', 'util'),
+    ('testing', ),
     ('third_party', 'catapult', 'common', 'py_utils'),
     ('third_party', 'catapult', 'devil'),
     ('third_party', 'catapult', 'telemetry'),
@@ -21,11 +22,8 @@ EXTRA_PATHS_COMPONENTS = [
     ('tools', 'perf'),
 ]
 
-# Directories that should have pytype run on them when Python files are changed.
-PYTYPE_DIRECTORIES = []
 
-
-def CommonChecks(input_api, output_api, run_pytype):
+def CommonChecks(input_api, output_api):
   results = []
 
   gpu_env = dict(input_api.environ)
@@ -92,56 +90,10 @@ def CommonChecks(input_api, output_api, run_pytype):
       version='2.7')
   results.extend(input_api.RunTests(pylint_checks))
 
-  # pytype can take quite a long time to run on the GPU code, likely due to all
-  # the dependencies that it has to check as well. So, don't run pytype except
-  # on commit (i.e. on the bots).
-  if run_pytype:
-    # pytype specifies that the provided PYTHONPATH is :-separated.
-    pytype_paths = [testing_path, current_path] + pylint_extra_paths
-    pytype_python_path = ':'.join(pytype_paths)
-    results.extend(RunPytype(input_api, output_api, pytype_python_path,
-                             gpu_env))
-
   results.extend(CheckForNewSkipExpectations(input_api, output_api))
+  results.extend(CheckPytypePathsInSync(input_api, output_api))
 
   return results
-
-
-def RunPytype(input_api, output_api, python_path, gpu_env):
-  """Runs pytype on changed Python files to enforce type hinting."""
-  affected_directories = set()
-  abspath_directories = {
-      input_api.os_path.join(input_api.PresubmitLocalPath(), d): d
-      for d in PYTYPE_DIRECTORIES
-  }
-  file_filter = lambda f: f.AbsoluteLocalPath().endswith('.py')
-  for affected_file in input_api.AffectedFiles(file_filter=file_filter):
-    for abs_d, d in abspath_directories.items():
-      if affected_file.AbsoluteLocalPath().startswith(abs_d):
-        affected_directories.add(d)
-        break
-
-  if not affected_directories:
-    return []
-
-  script_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                       'run_pytype.py')
-  pytype_cmd = [
-      input_api.python3_executable,
-      script_path,
-      '--pythonpath',
-      python_path,
-      '--keep-going',
-      '--jobs',
-      'auto',
-  ]
-  pytype_cmd.extend(list(affected_directories))
-  pytype_test = input_api.Command(name='run_content_test_gpu_pytype',
-                                  cmd=pytype_cmd,
-                                  kwargs={'env': gpu_env},
-                                  message=output_api.PresubmitPromptWarning,
-                                  python3=True)
-  return input_api.RunTests([pytype_test])
 
 
 def CheckForNewSkipExpectations(input_api, output_api):
@@ -170,9 +122,37 @@ def CheckForNewSkipExpectations(input_api, output_api):
   return result
 
 
+def CheckPytypePathsInSync(input_api, output_api):
+  """Checks that run_pytype.py's paths are in sync with PRESUBMIT.py's"""
+  filepath = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                    'run_pytype.py')
+  with open(filepath) as infile:
+    contents = infile.read()
+  # Grab the EXTRA_PATHS_COMPONENTS = [...] portion as a string.
+  match = input_api.re.search(r'(EXTRA_PATHS_COMPONENTS\s*=\s*[^=]*\]\n)',
+                              contents, input_api.re.DOTALL)
+  if not match:
+    return [
+        output_api.PresubmitError(
+            'Unable to find EXTRA_PATHS_COMPONENTS in run_pytype.py. Maybe '
+            'the code in PRESUBMIT.py needs to be updated?')
+    ]
+  expression = match.group(0)
+  expression = expression.split('=', 1)[1]
+  expression = expression.lstrip()
+  pytype_path_components = input_api.ast.literal_eval(expression)
+  if EXTRA_PATHS_COMPONENTS != pytype_path_components:
+    return [
+        output_api.PresubmitError(
+            'EXTRA_PATHS_COMPONENTS is not synced between PRESUBMIT.py and '
+            'run_pytype.py, please ensure they are identical.')
+    ]
+  return []
+
+
 def CheckChangeOnUpload(input_api, output_api):
-  return CommonChecks(input_api, output_api, run_pytype=False)
+  return CommonChecks(input_api, output_api)
 
 
 def CheckChangeOnCommit(input_api, output_api):
-  return CommonChecks(input_api, output_api, run_pytype=True)
+  return CommonChecks(input_api, output_api)

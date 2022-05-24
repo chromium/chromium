@@ -925,6 +925,11 @@
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
   },
+  "gpu_pytype": {
+    "label": "//content/test:gpu_pytype",
+    "script": "//content/test/gpu/run_pytype.py",
+    "type": "script",
+  },
   "gpu_unittests": {
     "label": "//gpu:gpu_unittests",
     "type": "windowed_test_launcher",

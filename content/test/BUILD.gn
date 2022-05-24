@@ -3061,3 +3061,20 @@ if (is_android) {
     ]
   }
 }
+
+group("gpu_pytype") {
+  testonly = true
+
+  data = [
+    "//content/test/gpu/run_pytype.py",
+
+    "//build/util/lib/results/",
+  ]
+
+  data_deps = [
+    # This includes more than we strictly need to, but this ensures that we
+    # don't accidentally omit Python files that the real tests would be using.
+    ":telemetry_gpu_integration_test_scripts_only",
+    ":telemetry_gpu_integration_test_support",
+  ]
+}

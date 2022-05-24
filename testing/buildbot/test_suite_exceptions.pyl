@@ -1807,6 +1807,11 @@
       'Android FYI Release (Pixel 2)',
     ],
   },
+  'gpu_pytype': {
+    'remove_from': [
+      'linux-code-coverage',
+    ],
+  },
   'gpu_unittests': {
     'modifications': {
       'fuchsia-code-coverage': {
