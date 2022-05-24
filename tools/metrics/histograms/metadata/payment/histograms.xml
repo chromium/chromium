@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="DigitalGoods.CrossSite" enum="Boolean"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>glenrob@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>rouslan@chromium.org</owner>
