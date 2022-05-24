@@ -1034,7 +1034,7 @@ void DesktopNativeWidgetAura::ScheduleLayout() {
     content_window_->ScheduleDraw();
 }
 
-void DesktopNativeWidgetAura::SetCursor(gfx::NativeCursor cursor) {
+void DesktopNativeWidgetAura::SetCursor(const ui::Cursor& cursor) {
   cursor_ = cursor;
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(host_->window());

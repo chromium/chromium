@@ -21,7 +21,7 @@ class OverlayWindowImageButton : public views::ImageButton {
   ~OverlayWindowImageButton() override = default;
 
   // views::View:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
 };
 

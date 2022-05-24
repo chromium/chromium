@@ -710,7 +710,7 @@ void NativeWidgetMac::ScheduleLayout() {
     compositor->ScheduleDraw();
 }
 
-void NativeWidgetMac::SetCursor(gfx::NativeCursor cursor) {
+void NativeWidgetMac::SetCursor(const ui::Cursor& cursor) {
   if (GetInProcessNSWindowBridge())
     GetInProcessNSWindowBridge()->SetCursor(cursor);
 }

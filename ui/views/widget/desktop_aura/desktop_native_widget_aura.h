@@ -190,7 +190,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
                     ui::mojom::DragEventSource source) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
   void ScheduleLayout() override;
-  void SetCursor(gfx::NativeCursor cursor) override;
+  void SetCursor(const ui::Cursor& cursor) override;
   bool IsMouseEventsEnabled() const override;
   bool IsMouseButtonDown() const override;
   void ClearNativeFocus() override;

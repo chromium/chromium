@@ -136,7 +136,7 @@ class TopBackgroundView : public views::View {
     event->SetHandled();
   }
 
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
     auto pair = GetParentWidgetAndEvent(this, &event);
     if (pair.widget) {
       views::View* omnibox_view =
@@ -145,7 +145,7 @@ class TopBackgroundView : public views::View {
       return omnibox_view->GetCursor(*pair.event);
     }
 
-    return nullptr;
+    return ui::Cursor();
   }
 #endif  // !USE_AURA
 

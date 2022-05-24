@@ -84,7 +84,7 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
 
    protected:
     // View overrides.
-    gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+    ui::Cursor GetCursor(const ui::MouseEvent& event) override;
     gfx::Size CalculatePreferredSize() const override;
     void OnPaint(gfx::Canvas* canvas) override;
     bool OnMousePressed(const ui::MouseEvent& event) override;

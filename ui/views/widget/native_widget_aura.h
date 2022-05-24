@@ -147,7 +147,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
                     ui::mojom::DragEventSource source) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
   void ScheduleLayout() override;
-  void SetCursor(gfx::NativeCursor cursor) override;
+  void SetCursor(const ui::Cursor& cursor) override;
   bool IsMouseEventsEnabled() const override;
   bool IsMouseButtonDown() const override;
   void ClearNativeFocus() override;
@@ -251,7 +251,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // Are we in the destructor?
   bool destroying_;
 
-  gfx::NativeCursor cursor_;
+  ui::Cursor cursor_;
 
   std::unique_ptr<TooltipManagerAura> tooltip_manager_;
 

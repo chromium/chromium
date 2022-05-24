@@ -11,7 +11,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/native_cursor.h"
 
 OverlayWindowImageButton::OverlayWindowImageButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
@@ -24,9 +23,8 @@ OverlayWindowImageButton::OverlayWindowImageButton(PressedCallback callback)
   SetInstallFocusRingOnFocus(true);
 }
 
-gfx::NativeCursor OverlayWindowImageButton::GetCursor(
-    const ui::MouseEvent& event) {
-  return views::GetNativeHandCursor();
+ui::Cursor OverlayWindowImageButton::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kHand;
 }
 
 void OverlayWindowImageButton::OnThemeChanged() {

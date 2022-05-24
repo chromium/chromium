@@ -175,7 +175,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
                     ui::mojom::DragEventSource source) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
   void ScheduleLayout() override;
-  void SetCursor(gfx::NativeCursor cursor) override;
+  void SetCursor(const ui::Cursor& cursor) override;
   void ShowEmojiPanel() override;
   bool IsMouseEventsEnabled() const override;
   bool IsMouseButtonDown() const override;

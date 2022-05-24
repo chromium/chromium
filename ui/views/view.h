@@ -29,6 +29,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -994,7 +995,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // responsible for managing the lifetime of the returned object, though that
   // lifetime may vary from platform to platform. On Windows and Aura,
   // the cursor is a shared resource.
-  virtual gfx::NativeCursor GetCursor(const ui::MouseEvent& event);
+  virtual ui::Cursor GetCursor(const ui::MouseEvent& event);
 
   // A convenience function which calls HitTestRect() with a rect of size
   // 1x1 and an origin of |point|. |point| is in the local coordinate space

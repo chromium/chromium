@@ -63,7 +63,7 @@ class VIEWS_EXPORT Link : public Label {
   void SetForceUnderline(bool force_underline);
 
   // Label:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   bool GetCanProcessEventsWithinSubtree() const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;

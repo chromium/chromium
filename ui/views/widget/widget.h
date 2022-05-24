@@ -816,9 +816,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // not need to call this.
   void ScheduleLayout();
 
-  // Sets the currently visible cursor. If |cursor| is NULL, the cursor used
-  // before the current is restored.
-  void SetCursor(gfx::NativeCursor cursor);
+  // Sets the currently visible cursor.
+  void SetCursor(const ui::Cursor& cursor);
 
   // Returns true if and only if mouse events are enabled.
   bool IsMouseEventsEnabled() const;

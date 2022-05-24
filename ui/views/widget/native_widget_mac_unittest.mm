@@ -37,7 +37,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/native/native_view_host.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
@@ -568,7 +567,7 @@ TEST_F(NativeWidgetMacTest, MiniaturizeFramelessWindow) {
 // Simple view for the SetCursor test that overrides View::GetCursor().
 class CursorView : public View {
  public:
-  CursorView(int x, NSCursor* cursor) : cursor_(cursor) {
+  CursorView(int x, const ui::Cursor& cursor) : cursor_(cursor) {
     SetBounds(x, 0, 100, 300);
   }
 
@@ -576,12 +575,10 @@ class CursorView : public View {
   CursorView& operator=(const CursorView&) = delete;
 
   // View:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
-    return cursor_;
-  }
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override { return cursor_; }
 
  private:
-  NSCursor* cursor_;
+  ui::Cursor cursor_;
 };
 
 // Test for Widget::SetCursor(). There is no Widget::GetCursor(), so this uses
@@ -590,15 +587,15 @@ class CursorView : public View {
 // is safe to use this in a non-interactive UI test with the EventGenerator.
 TEST_F(NativeWidgetMacTest, SetCursor) {
   NSCursor* arrow = [NSCursor arrowCursor];
-  NSCursor* hand = GetNativeHandCursor();
-  NSCursor* ibeam = GetNativeIBeamCursor();
+  NSCursor* hand = [NSCursor pointingHandCursor];
+  NSCursor* ibeam = [NSCursor IBeamCursor];
 
   Widget* widget = CreateTopLevelPlatformWidget();
   widget->SetBounds(gfx::Rect(0, 0, 300, 300));
   auto* view_hand = widget->non_client_view()->frame_view()->AddChildView(
-      std::make_unique<CursorView>(0, hand));
+      std::make_unique<CursorView>(0, ui::mojom::CursorType::kHand));
   auto* view_ibeam = widget->non_client_view()->frame_view()->AddChildView(
-      std::make_unique<CursorView>(100, ibeam));
+      std::make_unique<CursorView>(100, ui::mojom::CursorType::kIBeam));
   widget->Show();
   NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
 

@@ -326,7 +326,7 @@ class VIEWS_EXPORT Textfield : public View,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   void SetBorder(std::unique_ptr<Border> b) override;
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;

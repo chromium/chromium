@@ -234,7 +234,7 @@ gfx::NativeViewAccessible NativeViewHost::GetNativeViewAccessible() {
   return View::GetNativeViewAccessible();
 }
 
-gfx::NativeCursor NativeViewHost::GetCursor(const ui::MouseEvent& event) {
+ui::Cursor NativeViewHost::GetCursor(const ui::MouseEvent& event) {
   return native_wrapper_->GetCursor(event.x(), event.y());
 }
 

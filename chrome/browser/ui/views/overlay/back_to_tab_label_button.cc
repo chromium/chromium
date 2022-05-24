@@ -13,7 +13,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -63,8 +62,8 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
 
 BackToTabLabelButton::~BackToTabLabelButton() = default;
 
-gfx::NativeCursor BackToTabLabelButton::GetCursor(const ui::MouseEvent& event) {
-  return views::GetNativeHandCursor();
+ui::Cursor BackToTabLabelButton::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kHand;
 }
 
 void BackToTabLabelButton::OnThemeChanged() {

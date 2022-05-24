@@ -112,7 +112,7 @@ class VIEWS_EXPORT NativeViewHost : public View {
   void VisibilityChanged(View* starting_from, bool is_visible) override;
   void OnFocus() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void SetVisible(bool visible) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 

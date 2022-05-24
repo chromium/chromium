@@ -25,7 +25,7 @@ class VIEWS_EXPORT ResizeArea : public View {
   ~ResizeArea() override;
 
   // views::View:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

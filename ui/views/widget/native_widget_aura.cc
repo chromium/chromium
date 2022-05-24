@@ -104,8 +104,7 @@ NativeWidgetAura::NativeWidgetAura(internal::NativeWidgetDelegate* delegate)
     : delegate_(delegate),
       window_(new aura::Window(this, aura::client::WINDOW_TYPE_UNKNOWN)),
       ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET),
-      destroying_(false),
-      cursor_(gfx::kNullCursor) {
+      destroying_(false) {
   aura::client::SetFocusChangeObserver(window_, this);
   wm::SetActivationChangeObserver(window_, this);
 }
@@ -768,7 +767,7 @@ void NativeWidgetAura::ScheduleLayout() {
     window_->ScheduleDraw();
 }
 
-void NativeWidgetAura::SetCursor(gfx::NativeCursor cursor) {
+void NativeWidgetAura::SetCursor(const ui::Cursor& cursor) {
   cursor_ = cursor;
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(window_->GetRootWindow());

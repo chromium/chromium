@@ -19,7 +19,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {
@@ -60,10 +59,10 @@ void Link::SetForceUnderline(bool force_underline) {
   RecalculateFont();
 }
 
-gfx::NativeCursor Link::GetCursor(const ui::MouseEvent& event) {
+ui::Cursor Link::GetCursor(const ui::MouseEvent& event) {
   if (!GetEnabled())
-    return gfx::kNullCursor;
-  return GetNativeHandCursor();
+    return ui::Cursor();
+  return ui::mojom::CursorType::kHand;
 }
 
 bool Link::GetCanProcessEventsWithinSubtree() const {

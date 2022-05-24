@@ -27,7 +27,6 @@
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 
 namespace views {
@@ -227,9 +226,9 @@ void TableHeader::AddedToWidget() {
   table_->UpdateVirtualAccessibilityChildrenBounds();
 }
 
-gfx::NativeCursor TableHeader::GetCursor(const ui::MouseEvent& event) {
+ui::Cursor TableHeader::GetCursor(const ui::MouseEvent& event) {
   return GetResizeColumn(GetMirroredXInView(event.x())) != -1
-             ? GetNativeColumnResizeCursor()
+             ? ui::mojom::CursorType::kColumnResize
              : View::GetCursor(event);
 }
 

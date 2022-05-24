@@ -35,6 +35,7 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
+#include "ui/base/cocoa/cursor_utils.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -911,6 +912,10 @@ void NativeWidgetNSWindowBridge::EndMoveLoop() {
 
 void NativeWidgetNSWindowBridge::SetCursor(NSCursor* cursor) {
   [window_delegate_ setCursor:cursor];
+}
+
+void NativeWidgetNSWindowBridge::SetCursor(const ui::Cursor& cursor) {
+  SetCursor(ui::GetNativeCursor(cursor));
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {

@@ -25,6 +25,7 @@
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/cocoa/command_dispatcher.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/display_observer.h"
 
@@ -121,6 +122,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   // Sets the cursor associated with the NSWindow. Retains |cursor|.
   void SetCursor(NSCursor* cursor);
+  void SetCursor(const ui::Cursor& cursor);
 
   // Called internally by the NSWindowDelegate when the window is closing.
   void OnWindowWillClose();

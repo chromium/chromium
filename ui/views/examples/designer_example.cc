@@ -41,7 +41,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
-#include "ui/views/native_cursor.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
@@ -305,21 +304,20 @@ void DesignerExample::GrabHandle::UpdatePosition(bool reorder) {
   }
 }
 
-gfx::NativeCursor DesignerExample::GrabHandle::GetCursor(
-    const ui::MouseEvent& event) {
+ui::Cursor DesignerExample::GrabHandle::GetCursor(const ui::MouseEvent& event) {
   switch (position_) {
     case GrabHandlePosition::kTop:
     case GrabHandlePosition::kBottom:
-      return views::GetNativeNorthSouthResizeCursor();
+      return ui::mojom::CursorType::kNorthSouthResize;
     case GrabHandlePosition::kLeft:
     case GrabHandlePosition::kRight:
-      return views::GetNativeEastWestResizeCursor();
+      return ui::mojom::CursorType::kEastWestResize;
     case GrabHandlePosition::kTopLeft:
     case GrabHandlePosition::kBottomRight:
-      return views::GetNativeNorthWestSouthEastResizeCursor();
+      return ui::mojom::CursorType::kNorthWestSouthEastResize;
     case GrabHandlePosition::kTopRight:
     case GrabHandlePosition::kBottomLeft:
-      return views::GetNativeNorthEastSouthWestResizeCursor();
+      return ui::mojom::CursorType::kNorthEastSouthWestResize;
   }
 }
 

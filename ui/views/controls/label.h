@@ -339,7 +339,7 @@ class VIEWS_EXPORT Label : public View,
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
   void OnThemeChanged() override;
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
