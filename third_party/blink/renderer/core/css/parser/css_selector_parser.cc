@@ -564,14 +564,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
 bool IsPseudoClassValidWithinHasArgument(CSSParserSelector& selector) {
   DCHECK_EQ(selector.Match(), CSSSelector::kPseudoClass);
   switch (selector.GetPseudoType()) {
-    // Limited these logical combinations inside :has() to avoid increasing
-    // the :has() invalidation complexity.
-    // Currently, SelectorChecker supports these cases, but StyleEngine doesn't
-    // support invalidation for these cases yet because it can increase
-    // invalidation complexity.
-    case CSSSelector::kPseudoIs:
-    case CSSSelector::kPseudoWhere:
-    case CSSSelector::kPseudoAny:
+    // Limited nested :has() to avoid increasing :has() invalidation complexity.
     case CSSSelector::kPseudoHas:
       return false;
     default:

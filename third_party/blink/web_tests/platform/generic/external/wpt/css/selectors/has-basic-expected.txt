@@ -6,8 +6,8 @@ PASS :has(.descendant) matches expected elements
 PASS .parent:has(.target) matches expected elements
 PASS :has(.sibling ~ .target) matches expected elements
 PASS .parent:has(.sibling ~ .target) matches expected elements
-FAIL :has(:is(.target ~ .sibling .descendant)) matches expected elements assert_equals: expected "a,h,j" but got ""
-FAIL .parent:has(:is(.target ~ .sibling .descendant)) matches expected elements assert_equals: expected "h" but got ""
+PASS :has(:is(.target ~ .sibling .descendant)) matches expected elements
+PASS .parent:has(:is(.target ~ .sibling .descendant)) matches expected elements
 PASS .sibling:has(.descendant) ~ .target matches expected elements
 FAIL :has(.sibling:has(.descendant) ~ .target) matches expected elements assert_equals: expected "a,b" but got ""
 FAIL :has(.sibling:has(.descendant) ~ .target) ~ .parent > .descendant matches expected elements assert_equals: expected "g,i,j" but got ""

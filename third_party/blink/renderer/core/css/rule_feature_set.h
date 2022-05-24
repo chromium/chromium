@@ -153,7 +153,7 @@ class CORE_EXPORT RuleFeatureSet {
       const QualifiedName& attribute_name) const;
   bool NeedsHasInvalidationForId(const AtomicString& id) const;
   bool NeedsHasInvalidationForTagName(const AtomicString& tag_name) const;
-  bool NeedsHasInvalidationForElement(Element&) const;
+  bool NeedsHasInvalidationForInsertedOrRemovedElement(Element&) const;
   bool NeedsHasInvalidationForPseudoClass(
       CSSSelector::PseudoType pseudo_type) const;
 
@@ -169,8 +169,8 @@ class CORE_EXPORT RuleFeatureSet {
   inline bool NeedsHasInvalidationForPseudoStateChange() const {
     return !pseudos_in_has_argument_.IsEmpty();
   }
-  inline bool NeedsHasInvalidation() const {
-    return universal_in_has_argument_ ||
+  inline bool NeedsHasInvalidationForInsertionOrRemoval() const {
+    return not_pseudo_in_has_argument_ || universal_in_has_argument_ ||
            !tag_names_in_has_argument_.IsEmpty() ||
            NeedsHasInvalidationForClassChange() ||
            NeedsHasInvalidationForAttributeChange() ||
@@ -474,6 +474,7 @@ class CORE_EXPORT RuleFeatureSet {
   void AddFeaturesToUniversalSiblingInvalidationSet(
       const InvalidationSetFeatures& sibling_features,
       const InvalidationSetFeatures& descendant_features);
+  void AddValuesInComplexSelectorInsideIsWhereNot(const CSSSelectorList*);
   bool AddValueOfSimpleSelectorInHasArgument(
       const CSSSelector& has_pseudo_class);
 
@@ -524,6 +525,9 @@ class CORE_EXPORT RuleFeatureSet {
   ValuesInHasArgument ids_in_has_argument_;
   ValuesInHasArgument tag_names_in_has_argument_;
   bool universal_in_has_argument_{false};
+  // We always need to invalidate on insertion/removal when we have :not()
+  // inside :has().
+  bool not_pseudo_in_has_argument_{false};
   PseudosInHasArgument pseudos_in_has_argument_;
 
   // If true, the RuleFeatureSet is alive and can be used.

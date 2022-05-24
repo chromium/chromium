@@ -915,11 +915,8 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
 
 static const SelectorTestCase invalid_pseudo_has_arguments_data[] = {
     // clang-format off
-    // restrict use of :is(), :where() and :has() inside :has()
+    // restrict use of nested :has()
     {":has(:has(.a))", ":has()"},
-    {":has(:is(.a))", ":has()"},
-    {":has(:where(.a))", ":has()"},
-    {":has(:-webkit-any(.a, .b))", ":has()"},
 
     // restrict use of pseudo element inside :has()
     {":has(::-webkit-progress-bar)", ":has()"},

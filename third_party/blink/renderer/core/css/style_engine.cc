@@ -1539,7 +1539,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
     return;
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
-  if (!features.NeedsHasInvalidation())
+  if (!features.NeedsHasInvalidationForInsertionOrRemoval())
     return;
 
   Element* previous_sibling = SelfOrPreviousSibling(node_before_change);
@@ -1568,14 +1568,15 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
 
   if (descendants_possibly_affecting_has_state) {
     bool needs_has_invalidation_for_inserted_subtree =
-        features.NeedsHasInvalidationForElement(inserted_element);
+        features.NeedsHasInvalidationForInsertedOrRemovedElement(
+            inserted_element);
 
     // Do not stop subtree traversal early so that all the descendants have the
     // AncestorsOrAncestorSiblingsAffectedByHas flag set.
     for (Element& element : ElementTraversal::DescendantsOf(inserted_element)) {
       element.SetAncestorsOrAncestorSiblingsAffectedByHas();
       if (!needs_has_invalidation_for_inserted_subtree &&
-          features.NeedsHasInvalidationForElement(element)) {
+          features.NeedsHasInvalidationForInsertedOrRemovedElement(element)) {
         needs_has_invalidation_for_inserted_subtree = true;
       }
     }
@@ -1585,7 +1586,8 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
       return;
     }
   } else {
-    if (features.NeedsHasInvalidationForElement(inserted_element)) {
+    if (features.NeedsHasInvalidationForInsertedOrRemovedElement(
+            inserted_element)) {
       InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
       return;
     }
@@ -1608,7 +1610,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
     return;
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
-  if (!features.NeedsHasInvalidation())
+  if (!features.NeedsHasInvalidationForInsertionOrRemoval())
     return;
 
   Element* previous_sibling = SelfOrPreviousSibling(node_before_change);
@@ -1623,7 +1625,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
 
   for (Element& element :
        ElementTraversal::InclusiveDescendantsOf(removed_element)) {
-    if (features.NeedsHasInvalidationForElement(element)) {
+    if (features.NeedsHasInvalidationForInsertedOrRemovedElement(element)) {
       InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
       return;
     }

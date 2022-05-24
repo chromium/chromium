@@ -415,6 +415,7 @@ RuleFeatureSet::~RuleFeatureSet() {
   ids_in_has_argument_.clear();
   tag_names_in_has_argument_.clear();
   universal_in_has_argument_ = false;
+  not_pseudo_in_has_argument_ = false;
   pseudos_in_has_argument_.clear();
 
   is_alive_ = false;
@@ -448,6 +449,7 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
          ids_in_has_argument_ == other.ids_in_has_argument_ &&
          tag_names_in_has_argument_ == other.tag_names_in_has_argument_ &&
          universal_in_has_argument_ == other.universal_in_has_argument_ &&
+         not_pseudo_in_has_argument_ == other.not_pseudo_in_has_argument_ &&
          pseudos_in_has_argument_ == other.pseudos_in_has_argument_ &&
          is_alive_ == other.is_alive_;
 }
@@ -919,6 +921,20 @@ void RuleFeatureSet::CollectValuesInHasArgument(
   }
 }
 
+void RuleFeatureSet::AddValuesInComplexSelectorInsideIsWhereNot(
+    const CSSSelectorList* selector_list) {
+  DCHECK(selector_list);
+  for (const CSSSelector* complex = selector_list->First(); complex;
+       complex = CSSSelectorList::Next(*complex)) {
+    DCHECK(complex);
+
+    for (const CSSSelector* simple = complex; simple;
+         simple = simple->TagHistory()) {
+      AddValueOfSimpleSelectorInHasArgument(*simple);
+    }
+  }
+}
+
 bool RuleFeatureSet::AddValueOfSimpleSelectorInHasArgument(
     const CSSSelector& selector) {
   if (selector.Match() == CSSSelector::kClass) {
@@ -941,9 +957,21 @@ bool RuleFeatureSet::AddValueOfSimpleSelectorInHasArgument(
   if (selector.Match() == CSSSelector::kPseudoClass) {
     CSSSelector::PseudoType pseudo_type = selector.GetPseudoType();
 
-    // Ignore :visited to prevent history leakage.
-    if (pseudo_type != CSSSelector::kPseudoVisited)
-      pseudos_in_has_argument_.insert(pseudo_type);
+    switch (pseudo_type) {
+      case CSSSelector::kPseudoNot:
+        not_pseudo_in_has_argument_ = true;
+        [[fallthrough]];
+      case CSSSelector::kPseudoIs:
+      case CSSSelector::kPseudoWhere:
+        AddValuesInComplexSelectorInsideIsWhereNot(selector.SelectorList());
+        break;
+      case CSSSelector::kPseudoVisited:
+        // Ignore :visited to prevent history leakage.
+        break;
+      default:
+        pseudos_in_has_argument_.insert(pseudo_type);
+        break;
+    }
     return true;
   }
   return false;
@@ -1328,6 +1356,7 @@ void RuleFeatureSet::Add(const RuleFeatureSet& other) {
   for (const auto& tag_name : other.tag_names_in_has_argument_)
     tag_names_in_has_argument_.insert(tag_name);
   universal_in_has_argument_ |= other.universal_in_has_argument_;
+  not_pseudo_in_has_argument_ |= other.not_pseudo_in_has_argument_;
   for (const auto& pseudo_type : other.pseudos_in_has_argument_)
     pseudos_in_has_argument_.insert(pseudo_type);
 }
@@ -1350,6 +1379,7 @@ void RuleFeatureSet::Clear() {
   ids_in_has_argument_.clear();
   tag_names_in_has_argument_.clear();
   universal_in_has_argument_ = false;
+  not_pseudo_in_has_argument_ = false;
   pseudos_in_has_argument_.clear();
 }
 
@@ -1613,7 +1643,11 @@ bool RuleFeatureSet::NeedsHasInvalidationForTagName(
          tag_names_in_has_argument_.Contains(tag_name);
 }
 
-bool RuleFeatureSet::NeedsHasInvalidationForElement(Element& element) const {
+bool RuleFeatureSet::NeedsHasInvalidationForInsertedOrRemovedElement(
+    Element& element) const {
+  if (not_pseudo_in_has_argument_)
+    return true;
+
   if (element.HasID()) {
     if (NeedsHasInvalidationForId(element.IdForStyleResolution()))
       return true;

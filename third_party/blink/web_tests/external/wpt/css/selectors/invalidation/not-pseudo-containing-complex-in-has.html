@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>CSS Selectors Invalidation: :not(&lt;complex-selector&gt;) in :has() argument (complex selector)</title>
+<link rel="author" title="Byungwoo Lee" href="blee@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+div { color: grey }
+.red:has(#descendant:not(.a .b)) { color: red }
+.green:has(#descendant:not(.c ~ .d .e)) { color: green }
+.blue:has(~ #indirect_next:not(.f ~ .g)) { color: blue }
+.yellow:has(~ #indirect_next:not(.h .i)) { color: yellow }
+.purple:has(~ #indirect_next:not(.j ~ .k .l)) { color: purple }
+.orange:has(#descendant:not(.m:not(.n) .o)) { color: orange }
+</style>
+<div>
+  <div id="parent_previous"></div>
+  <div id="parent" class="d k">
+    <div id="previous"></div>
+    <div id="has_scope" class="d">
+      <div id="child_previous"></div>
+      <div id="child" class="d">
+        <div id="descendant" class="b e o"></div>
+      </div>
+    </div>
+    <div id="direct_next"></div>
+    <div id="indirect_next" class="g i l"></div>
+  </div>
+</div>
+<script>
+const grey = "rgb(128, 128, 128)";
+const red = "rgb(255, 0, 0)";
+const green = "rgb(0, 128, 0)";
+const blue = "rgb(0, 0, 255)";
+const yellow = "rgb(255, 255, 0)";
+const purple = "rgb(128, 0, 128)";
+const orange = "rgb(255, 165, 0)";
+
+function changeAndTest(operation, class_name, element_id,
+                       selector, matches_result, scope_color) {
+  let element = document.getElementById(element_id);
+  assert_equals(element ? element.id : "", element_id);
+  let message_prefix = [
+      "[", selector, "]",
+      ["#", element.id, ".classList.", operation, "('", class_name, "')"].join(""),
+      ": "].join(" ");
+  if (operation == "add") {
+    element.classList.add(class_name);
+  } else {
+    assert_equals(operation, "remove");
+    element.classList.remove(class_name);
+  }
+  test(function() {
+      assert_equals(has_scope.matches(selector), matches_result);
+  }, message_prefix + "check matches (" + matches_result + ")");
+  test(function() {
+      assert_equals(getComputedStyle(has_scope).color, scope_color);
+  }, message_prefix + "check #has_scope color");
+}
+
+assert_equals(getComputedStyle(has_scope).color, grey);
+
+let selector = ".red:has(#descendant:not(.a .b))";
+changeAndTest("add", "red", "has_scope", selector, true, red);
+changeAndTest("add", "a", "parent", selector, false, grey);
+changeAndTest("remove", "a", "parent", selector, true, red);
+changeAndTest("add", "a", "has_scope", selector, false, grey);
+changeAndTest("remove", "a", "has_scope", selector, true, red);
+changeAndTest("add", "a", "child", selector, false, grey);
+changeAndTest("remove", "a", "child", selector, true, red);
+changeAndTest("remove", "red", "has_scope", selector, false, grey);
+
+selector = ".green:has(#descendant:not(.c ~ .d .e))";
+changeAndTest("add", "green", "has_scope", selector, true, green);
+changeAndTest("add", "c", "parent_previous", selector, false, grey);
+changeAndTest("remove", "c", "parent_previous", selector, true, green);
+changeAndTest("add", "c", "previous", selector, false, grey);
+changeAndTest("remove", "c", "previous", selector, true, green);
+changeAndTest("add", "c", "child_previous", selector, false, grey);
+changeAndTest("remove", "c", "child_previous", selector, true, green);
+changeAndTest("remove", "green", "has_scope", selector, false, grey);
+
+selector = ".blue:has(~ #indirect_next:not(.f ~ .g))";
+changeAndTest("add", "blue", "has_scope", selector, true, blue);
+changeAndTest("add", "f", "previous", selector, false, grey);
+changeAndTest("remove", "f", "previous", selector, true, blue);
+changeAndTest("add", "f", "has_scope", selector, false, grey);
+changeAndTest("remove", "f", "has_scope", selector, true, blue);
+changeAndTest("add", "f", "direct_next", selector, false, grey);
+changeAndTest("remove", "f", "direct_next", selector, true, blue);
+changeAndTest("remove", "blue", "has_scope", selector, false, grey);
+
+selector = ".yellow:has(~ #indirect_next:not(.h .i))"
+changeAndTest("add", "yellow", "has_scope", selector, true, yellow);
+changeAndTest("add", "h", "parent", selector, false, grey);
+changeAndTest("remove", "h", "parent", selector, true, yellow);
+changeAndTest("remove", "yellow", "has_scope", selector, false, grey);
+
+selector = ".purple:has(~ #indirect_next:not(.j ~ .k .l))"
+changeAndTest("add", "purple", "has_scope", selector, true, purple);
+changeAndTest("add", "j", "parent_previous", selector, false, grey);
+changeAndTest("remove", "j", "parent_previous", selector, true, purple);
+changeAndTest("remove", "purple", "has_scope", selector, false, grey);
+
+selector = ".orange:has(#descendant:not(.m:not(.n) .o))";
+changeAndTest("add", "orange", "has_scope", selector, true, orange);
+changeAndTest("add", "m", "parent", selector, false, grey);
+changeAndTest("add", "n", "parent", selector, true, orange);
+changeAndTest("remove", "n", "parent", selector, false, grey);
+changeAndTest("remove", "m", "parent", selector, true, orange);
+changeAndTest("add", "m", "has_scope", selector, false, grey);
+changeAndTest("add", "n", "has_scope", selector, true, orange);
+changeAndTest("remove", "n", "has_scope", selector, false, grey);
+changeAndTest("remove", "m", "has_scope", selector, true, orange);
+changeAndTest("add", "m", "child", selector, false, grey);
+changeAndTest("add", "n", "child", selector, true, orange);
+changeAndTest("remove", "n", "child", selector, false, grey);
+changeAndTest("remove", "m", "child", selector, true, orange);
+changeAndTest("remove", "orange", "has_scope", selector, false, grey);
+</script>
